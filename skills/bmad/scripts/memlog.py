@@ -123,19 +123,24 @@ def touch(meta: dict) -> None:
     meta["updated"] = now()
 
 
-def write_atomic(path: Path, text: str) -> None:
+def eol_of(raw: str) -> str:
+    """The line ending a file already uses: CRLF if it has any, else LF."""
+    return "\r\n" if "\r\n" in raw else "\n"
+
+
+def write_atomic(path: Path, text: str, eol: str = os.linesep) -> None:
     """Temp + flush + fsync + atomic rename, so a crash never half-writes an entry."""
     tmp = path.with_suffix(path.suffix + ".tmp")
-    with open(tmp, "w", encoding="utf-8") as f:
+    with open(tmp, "w", encoding="utf-8", newline="") as f:
+        text = text.replace("\n", eol)
         f.write(text)
         f.flush()
         os.fsync(f.fileno())
     os.replace(tmp, path)
 
 
-def append_line(path: Path, text: str) -> None:
-    """Add text at end of file in one OS append write, then sync it to disk. Never creates the file."""
-    data = text.replace("\n", os.linesep).encode("utf-8")  # match text-mode line endings
+def append_line(path: Path, data: bytes) -> None:
+    """Add data at end of file in one OS append write, then sync it to disk. Never creates the file."""
     if sys.platform != "win32":
         fd = os.open(path, os.O_WRONLY | os.O_APPEND)
         try:
@@ -226,7 +231,7 @@ def cmd_init(args) -> int:
 
 def cmd_append(args) -> int:
     path = resolve(args)
-    raw = path.read_text(encoding="utf-8")
+    raw = path.read_bytes().decode("utf-8")
     split(raw)  # a missing or malformed log fails here, before anything is written
     text = " ".join(args.text.split())  # collapse newlines/runs → one-line entry, no prose bloat
     label = args.type or ""
@@ -234,17 +239,19 @@ def cmd_append(args) -> int:
         label = f"{label} by {args.by}".strip()  # attribution: "(idea by user)" / "(by coach)"
     tag = f"({label}) " if label else ""
     entry = f"- {tag}{text}"
-    append_line(path, ("" if raw.endswith("\n") else "\n") + entry + "\n")
-    ack(path, split(path.read_text(encoding="utf-8"))[1])
+    line = ("" if raw.endswith("\n") else "\n") + entry + "\n"
+    append_line(path, line.replace("\n", eol_of(raw)).encode("utf-8"))
+    ack(path, split(path.read_bytes().decode("utf-8"))[1])
     return 0
 
 
 def cmd_set(args) -> int:
     path = resolve(args)
-    meta, body = split(path.read_text(encoding="utf-8"))
+    raw = path.read_bytes().decode("utf-8")
+    meta, body = split(raw)
     meta[args.key] = args.value
     touch(meta)
-    write_atomic(path, render(meta, body))
+    write_atomic(path, render(meta, body), eol_of(raw))
     ack(path, body)
     return 0
 

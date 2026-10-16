@@ -363,3 +363,56 @@ def test_parallel_appends_all_land(ws):
     failures = [p.stderr.read().decode() for p in procs if p.wait() != 0]
     assert failures == []
     assert sorted(entries(ws)) == sorted(f"- entry {i}" for i in range(n))
+
+
+# --- line endings -------------------------------------------------------
+
+
+def raw_bytes(ws):
+    return (Path(ws) / MEMLOG).read_bytes()
+
+
+def set_ending(ws, ending):
+    p = Path(ws) / MEMLOG
+    p.write_bytes(p.read_bytes().replace(b"\r\n", b"\n").replace(b"\n", ending))
+
+
+def set_field(ws, key, value):
+    assert memlog.main(["set", "--workspace", ws, "--key", key, "--value", value]) == 0
+
+
+@pytest.fixture(params=[b"\n", b"\r\n"], ids=["lf", "crlf"])
+def ending(request, monkeypatch):
+    # The opposite of the file's own ending, so a platform-ending write is the wrong one.
+    monkeypatch.setattr(memlog.os, "linesep", "\r\n" if request.param == b"\n" else "\n")
+    return request.param
+
+
+def test_append_keeps_the_files_line_ending(ws, ending):
+    init(ws)
+    set_ending(ws, ending)
+    append(ws, "one")
+    append(ws, "two")
+    raw = raw_bytes(ws)
+    assert raw.count(b"\r\n") == (raw.count(b"\n") if ending == b"\r\n" else 0)
+    assert raw.endswith(b"- two" + ending)
+
+
+def test_append_after_missing_trailing_newline_keeps_the_ending(ws, ending):
+    init(ws)
+    set_ending(ws, ending)
+    p = Path(ws) / MEMLOG
+    p.write_bytes(p.read_bytes().rstrip(b"\r\n"))
+    append(ws, "one")
+    assert raw_bytes(ws).endswith(ending + b"- one" + ending)
+    assert raw_bytes(ws).count(b"\r\n") in (0, raw_bytes(ws).count(b"\n"))
+
+
+def test_set_keeps_the_files_line_ending(ws, ending):
+    init(ws)
+    append(ws, "one")
+    set_ending(ws, ending)
+    set_field(ws, "goal", "x")
+    raw = raw_bytes(ws)
+    assert raw.count(b"\r\n") == (raw.count(b"\n") if ending == b"\r\n" else 0)
+    assert b"goal: x" in raw
