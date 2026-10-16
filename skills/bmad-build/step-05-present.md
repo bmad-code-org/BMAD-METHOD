@@ -30,7 +30,7 @@ Display a very short completion summary — one or two sentences — including:
 
 Do not list changed files, repeat details from the plan, or narrate the process unless the user asks.
 
-Offer applicable next actions in one short line: when version control and a remote are available, create a pull request (and push first if needed); use `bmad-walkthrough`; or make another change.
+Offer applicable next actions in one short line: when version control and a remote are available, create a pull request with `bmad-pr-writer` (and push first if needed); use `bmad-walkthrough`; or make another change.
 
 Workflow complete.
 

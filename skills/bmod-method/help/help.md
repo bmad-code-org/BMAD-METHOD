@@ -73,6 +73,7 @@ Situations the tree above does not settle.
 | A v6 project (`epics.md`, `sprint-status.yaml`, dated folders under the planning folder) that wants the v7 layout | `bmad migrate method` | The module ships `migration-1.toml`: the rules for turning the planning folder into an initiative, moving document folders into it whole, and turning epics and sprint status into a ticket tree. Unrecognized files outside the planning folder stay where they are. The `bmad` skill plans it with the user, then performs it. |
 | A PR, a branch, a ticket in review, or code `bmad-build` did not write | `bmad-code-review` | Agent lenses over any diff. With no argument it offers the tickets in review. |
 | "Walk me through what changed" | `bmad-walkthrough` | The human is the reviewer. |
+| "Write the PR", "open a PR", or a commit message for finished work | `bmad-pr-writer` | Fills the repo's PR template when it has one. Opens nothing until the user approves the text. |
 | Every ticket of an epic is built, done, or dropped | `bmad-retrospective` | It judges the whole against the epic's Done when and the initiative's requirements. |
 | A big change surfaced mid-build | A spec-only change: update through `bmad-spec`. Otherwise `bmad-correct-course`. | Correct course needs a PRD or a spec and halts when it has neither. The user describes the affected epics and stories. |
 | Wants an expert to think a phase through with, or is unsure where to begin in it | The agent for that phase (see "The agents") | It guides across turns and runs the phase's skills from its menu. |
@@ -96,6 +97,7 @@ One line per skill: what it is for and what it writes. The files it writes are h
 | **Implementation** (`help/implementation-skills.md`) | | |
 | `bmad-build` | One session of delivery: clarifies intent, plans, implements, reviews, commits. The default for any real change. Takes free text, a ticket from the tree (nothing means the next ready one), or any file as intent. | A ticket's plan beside `tickets.toml`, or `plan-<slug>.md`; `deferred-work.md` |
 | `bmad-build-auto` | One unattended build of one ticket, dispatched by a loop or script. Never for attended work. | The same plans as `bmad-build` |
+| `bmad-pr-writer` | A PR title and body, or a commit message, for finished work: what changed, how it was verified, what is still open. | `pr-drafts/<branch>.md`, then the PR or commit once the user approves |
 | `bmad-correct-course` | Assesses a significant midstream change. Needs a PRD or a spec; lists epic and story changes for `bmad-ticket`. | `change-<slug>/change-<slug>.md` |
 | **Validation** (`help/validation-skills.md`) | | |
 | `bmad-code-review` | Agent review of any diff, PR, or branch, with triaged findings. Redundant right after a thorough `bmad-build` review of the same change. | A dated block in the plan's `## Code Review` section, or chat |
@@ -141,7 +143,7 @@ An agent and its skills are two ways into the same work: a skill run directly do
 | `bmad-ux` | `bmad-spec` to adopt the files as companions. When UX came first and requirements are still thin, `bmad-prd` or the lighter `bmad-product-brief` with the UX files as input. |
 | `bmad-architecture` | `bmad-spec` to adopt the spine as a companion. |
 | `bmad-spec` | Its open questions and assumptions, if any. Then `bmad-ticket` with the spec folder to plan the stories, and `bmad-build` per story, or straight to `bmad-build` when one session can do it. |
-| `bmad-build` | Open a PR, or `bmad-walkthrough` when a person wants to understand the change. Once the user marks the ticket done, the next ticket. `bmad-qa-generate-e2e-tests` when end-to-end coverage is wanted. |
+| `bmad-build` | Open a PR with `bmad-pr-writer`, or `bmad-walkthrough` when a person wants to understand the change. Once the user marks the ticket done, the next ticket. `bmad-qa-generate-e2e-tests` when end-to-end coverage is wanted. |
 | The last ticket of an epic | `bmad-retrospective`, then a refactoring pass over the whole changeset, which is commonly skipped (`help/preparing-a-repo-for-agents.md`). Then close the epic through `bmad-ticket` and retain its plans (`help/artifact-lifetime.md`). |
 
 ## Answering "what's next?"
