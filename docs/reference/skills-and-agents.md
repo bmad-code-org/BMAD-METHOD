@@ -134,9 +134,9 @@ Facilitates a brainstorming session using proven creative techniques, guiding yo
 
 ### bmad-deep-recon
 
-Researches a topic to support a decision, three ways: drafts a research prompt for the tool you already use, turns a finished report into a cited summary other skills consume, or runs the research here with parallel web searches. Built-in types cover market, domain, technical, competitive, user-voice, and academic literature research, plus choosing between candidates.
+Researches a topic to support a decision, three ways: drafts a research prompt for the tool you already use, turns a finished report into a cited summary other skills consume, or runs the research here with parallel web searches. Built-in types cover market, domain, technical, competitive, user-voice, and academic literature research, plus choosing between candidates. It also answers questions about your own repository from its code and git history: a question one file answers gets a cited answer in chat, and anything larger a document that cites a line or commit for every claim and that `bmad-build` reads as evidence.
 
-**Output:** a cited `research-<topic>.md` and an optional HTML briefing. See [Research a Decision](../plan/research-a-decision.md).
+**Output:** a cited `research-<topic>.md` and an optional HTML briefing; codebase research also writes each decision record you approve. See [Research a Decision](../plan/research-a-decision.md).
 
 ### bmad-forge-idea
 

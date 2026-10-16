@@ -7,7 +7,7 @@ BMad is installed per project. The existing repository needs its own install and
 ## Suggested order
 
 1. **`bmad-project-context`**, recommended. A good initial `AGENTS.md` is worth having: it records a small, verified set of rules for agents. Skipping it does not fail a build; the cost is the same mistake every session until someone writes the rule down. When the repo already has a maintained `AGENTS.md` or `CLAUDE.md`, it adopts that file instead of starting over. It does not produce a repo overview or a stack list, so it will not teach the user the app.
-2. **`bmad-walkthrough`**, when the user does not know the code. It guides them through a file, directory, commit, or PR at their own pace: intent first, then broad strokes, then detail.
+2. **`bmad-walkthrough`**, when the user does not know the code. It guides them through a file, directory, commit, or PR at their own pace: intent first, then broad strokes, then detail. `bmad-deep-recon` writes a cited account of how the code works and why, from the code and git history, and `bmad-build`'s plan step reads it as evidence; the walkthrough is for learning the code interactively.
 3. **`bmad-architecture`**, only when needed. It can start from the codebase and ratify the conventions worth keeping in a short decisions list. Skip it when the codebase is well documented or the changes are small.
 4. **`bmad-build`** for the first change. Pick something one session can finish. A change that follows established patterns, such as a new route in a layered API, needs no planning skill: a short intent file or a few sentences is enough input.
 5. **`bmad-spec`**, then one `bmad-build` per story, when a change is bigger than one session.
