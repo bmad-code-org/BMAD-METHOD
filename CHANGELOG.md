@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### 🐛 Fixes
+
+* Quick update no longer fails with "module definition was not found" for CIS or TEA installed from `next` before the registry pin. A recorded `next` now yields to the registry pin, and the installer says so. An explicit `--next=CODE` still overrides the pin.
+
 ## v6.12.4 - 2026-10-14
 
 ### 🐛 Fixes

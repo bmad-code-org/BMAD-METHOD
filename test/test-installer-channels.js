@@ -18,6 +18,7 @@ const {
   orphanPinWarnings,
   bundledTargetWarnings,
   parsePinSpec,
+  replayRecordedChannel,
 } = require('../tools/installer/modules/channel-plan');
 
 const { parseGitHubRepo, normalizeStableTag, classifyUpgrade, releaseNotesUrl } = require('../tools/installer/modules/channel-resolver');
@@ -342,6 +343,31 @@ function runTests() {
   assertEqual(releaseNotesUrl('https://gitlab.com/foo/bar', 'v1.0.0'), null, 'non-github repo → null');
   assertEqual(releaseNotesUrl('https://github.com/foo/bar', null), null, 'null tag → null');
   assertEqual(releaseNotesUrl('', 'v1.0.0'), null, 'empty URL → null');
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // channel-plan.js :: replayRecordedChannel (quick-update)
+  // ─────────────────────────────────────────────────────────────────────────
+  section('channel-plan :: replayRecordedChannel (quick-update)');
+
+  {
+    const r = replayRecordedChannel({ channel: 'next', version: 'main' });
+    assertEqual(r.channel, 'next', 'recorded next with no registry pin replays as next');
+  }
+  {
+    const r = replayRecordedChannel({ channel: 'next', version: 'main', registryPin: 'v0.3.2' });
+    assertEqual(r.channel, 'pinned', 'recorded next yields to the registry pin');
+    assertEqual(r.pin, 'v0.3.2', 'registry pin value carried through');
+    assertEqual(r.source, 'registry:pin', 'source: registry:pin');
+  }
+  {
+    const r = replayRecordedChannel({ channel: 'pinned', version: 'v0.3.1', registryPin: 'v0.3.2' });
+    assertEqual(r.pin, 'v0.3.1', 'recorded pin is kept over the registry pin');
+    assertEqual(r.source, 'manifest', 'source: manifest');
+  }
+  {
+    assertEqual(replayRecordedChannel({ channel: 'pinned' }), null, 'recorded pinned without a version → null');
+    assertEqual(replayRecordedChannel({ channel: 'stable', version: 'v1.0.0' }), null, 'recorded stable → null (resolved by caller)');
+  }
 
   // ─────────────────────────────────────────────────────────────────────────
   // Summary

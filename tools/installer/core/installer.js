@@ -1477,13 +1477,23 @@ class Installer {
     const channelOptions = { global: null, nextSet: new Set(), stableSet: new Set(), pins: new Map(), warnings: [] };
     if (manifestData?.modulesDetailed) {
       const { fetchStableTags, classifyUpgrade, parseGitHubRepo } = require('../modules/channel-resolver');
+      const { replayRecordedChannel } = require('../modules/channel-plan');
       for (const entry of manifestData.modulesDetailed) {
         if (!entry?.name || !entry?.channel) continue;
-        if (entry.channel === 'pinned' && entry.version) {
-          channelOptions.pins.set(entry.name, entry.version);
+        const registryInfo = entry.channel === 'next' ? await this.externalModuleManager.getModuleByCode(entry.name) : null;
+        const replay = replayRecordedChannel({ channel: entry.channel, version: entry.version, registryPin: registryInfo?.pin });
+        if (replay?.channel === 'pinned') {
+          channelOptions.pins.set(entry.name, replay.pin);
+          if (replay.source === 'registry:pin') {
+            const repo = registryInfo.url ? parseGitHubRepo(registryInfo.url) : null;
+            const where = repo ? ` Newer versions need the v7 installer: npx skills add ${repo.owner}/${repo.repo}` : '';
+            await prompts.log.warn(
+              `${entry.name} was installed from next, but the registry pins it to ${replay.pin}; installing ${replay.pin}.${where}`,
+            );
+          }
           continue;
         }
-        if (entry.channel === 'next') {
+        if (replay?.channel === 'next') {
           channelOptions.nextSet.add(entry.name);
           continue;
         }
