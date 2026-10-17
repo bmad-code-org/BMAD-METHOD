@@ -8,6 +8,7 @@ One section per scope. `validate.md` says which sections an agent runs and what 
 - Nothing contradicts the requirement source, its companions, the architecture, or a recorded decision.
 - An entry has a description, known uncertainty, and a `verify` check someone other than the builder can run. Full criteria are required before execution only for a bug, an entry with `refine = true`, and a ticket with no epic.
 - A ticket that needs full criteria and whose `covers` includes an id named in a `Source conflict:` line with no later `Decision:` settling it has `refined: false`.
+- A ticket with full criteria that crosses a trust boundary (input it does not control, who may do or see what, secrets, another tenant's data) has a criterion for each boundary saying what a caller without the right gets instead.
 
 ## Set
 
