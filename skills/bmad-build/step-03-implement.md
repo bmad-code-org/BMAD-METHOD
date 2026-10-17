@@ -40,6 +40,10 @@ Stage the diff and read it first: using the repository's version-control tooling
 
 If the implementer reported anything unfinished, finish it before proceeding — and when that changes code, rewrite `{diff_file}` and re-read it. Acceptance criteria are judged at review, not here.
 
+### Run Verification
+
+Run every command in the plan's `## Verification` and read the output; do not rely on the implementer's report. Fix any failure, rewriting and re-reading `{diff_file}` when that changes code. If you cannot make it pass, HALT and tell the human.
+
 ### Matrix Test Audit
 
 If `{plan_file}`'s `<frozen-after-approval>` block contains an I/O & Edge-Case Matrix, verify every matrix row is covered by at least one test that verifies its expected behavior, and that each covering test ran and passed in the verification output. A covering test that exists but did not run — unregistered, filtered out, skipped, or disabled — counts as missing. If a test disagrees with the matrix, never edit the expectation to match the code: fix the code, or if the matrix row itself is ambiguous, HALT and ask the human. Fix any other audit failure before proceeding.

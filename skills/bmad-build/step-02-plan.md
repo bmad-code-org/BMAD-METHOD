@@ -14,6 +14,8 @@
 
    Do not ask the human during investigation. When something is unclear, look in the repository, planning artifacts, or history first. Keep looking until you know, or until those sources have nothing more to say. Leave any remaining choice for the next step.
 
+   For a bug fix, reproduce the defect first. Put the failing test or command in the plan's `## Verification`; the fix is done only when it passes.
+
    Then score the change's `risk` for `{plan_file}` frontmatter: `low`, `medium`, or `high`, the business impact if this change is wrong. For a ticket from the tree, start from `risk` in `tickets.py find`'s output and raise it when the investigation shows more; go below it only when the user says so. Write `risk` wherever this step writes `{plan_file}`.
 {% if workflow.route == "oneshot" %}
 3. Read `{{ rendered("plan-template.md") }}` fully and write `{plan_file}`.
