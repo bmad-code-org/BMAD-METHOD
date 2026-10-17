@@ -28,7 +28,7 @@ Lead by questioning, not lecturing. Ask one question at a time, press on weak po
 
    Apply the resolved `{workflow.*}` values throughout.
 2. Run each `{workflow.activation_steps_prepend}` entry; treat each `{workflow.persistent_facts}` entry as foundational context (`file:` entries load their contents, `skill:` names a skill to consult, others are facts verbatim).
-3. Resolve central config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`. Greet the user.
+3. Resolve central config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`. Greet the user, and let them know they can invoke `bmad-party-mode` for multi-agent perspectives or `bmad-advanced-elicitation` for deeper exploration at any point.
    - Script not found, or no `output_folder`: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - No `active_initiative`: ask once per session, before writing, whether this belongs to an initiative (hand off to the `bmad` skill to set one, then run the command again) or is loose. Loose work drops `/{active_initiative}` from every path.
 4. Note whether a BMad persona is already active in this conversation — the user loaded one (e.g. the analyst, the storyteller) and invoked the forge from within it. If so, that persona leads the session, in voice, throughout.
@@ -103,7 +103,7 @@ Voice the personas yourself by default. Spawn separate agents only when a branch
 
 The session can end in three valid states:
 
-- **Hardened** — the idea is stronger and specific enough to use. Distill the memlog into the forged idea, `{workspace}/{workflow.run_folder_pattern}.md`. Keep it extremely short: only the decisions, rejected options, and reasons that matter downstream, in the user's meaning. Do not write a prose summary, template, or conversation recap. If it reads like a document, it is too long. If planning or dev skills are installed (`bmad-spec`, `bmad-prd`, `bmad-prfaq`, `bmad-build`), offer the file as their input; if none are, the file stands on its own — never treat a missing skill as an error.
+- **Hardened** — the idea is stronger and specific enough to use. Distill the memlog into the forged idea, `{workspace}/{workflow.run_folder_pattern}.md`. Keep it extremely short: only the decisions, rejected options, and reasons that matter downstream, in the user's meaning. Do not write a prose summary, template, or conversation recap. If it reads like a document, it is too long. If planning or dev skills are installed (`bmad-agent-po`, `bmad-prd`, `bmad-prfaq`, `bmad-build`), offer the file as their input — to Sofia, the Product Owner, as what she writes the initiative's requirements from; if none are, the file stands on its own — never treat a missing skill as an error.
 - **Killed** — the idea does not hold up. Say so plainly and record why. Finding that out early is a valid outcome.
 - **Clearer** — the user understands the idea better, but there is no hardened idea to hand off. Leave the memlog as the record; no forged idea is needed.
 

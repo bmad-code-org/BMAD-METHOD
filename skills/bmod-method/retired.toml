@@ -2,7 +2,7 @@
 # skill's `_bmad/custom/` files to the new name. A retired name is never reused.
 renamed = [
   { from = "bmad-create-ux-design", to = "bmad-ux" },
-  { from = "bmad-preview-ticketing", to = "bmad-ticket" },
+  { from = "bmad-ticket", to = "bmad-agent-po" },
 ]
 removed = [
   "bmad-agent-sm",
@@ -50,4 +50,7 @@ removed = [
   "bmad-check-implementation-readiness",
   "bmad-create-epics-and-stories",
   "bmad-sprint-planning",
+  "bmad-correct-course",
+  "bmad-spec",
+  "bmad-preview-ticketing",
 ]

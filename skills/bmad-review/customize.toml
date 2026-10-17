@@ -115,7 +115,7 @@ instruction = "Load `references/lens-adversarial.md` from the skill root and fol
 code = "edge-case-hunter"
 name = "Edge-Case Hunter"
 applies_to = "any"
-when = "Content with behavior to trace: code, diffs, and the specs, requirements, plans, and stories that define behavior. Skip for prose documents with no behavioral surface."
+when = "Content with behavior to trace: code, diffs, and the tickets, plans, and requirements that define behavior. Skip for prose documents with no behavioral surface."
 instruction = "Load `references/lens-edge-case-hunter.md` from the skill root and follow it."
 
 [[workflow.lenses]]

@@ -18,7 +18,7 @@ headless: true | false
 ---
 ```
 
-`epic` is the folder's name, as `tickets.py` spells the epic. Keep `verdict` in sync with the Acceptance verdict section below. Never write a `type` or `ticket` field into this frontmatter: `tickets.py` reads a markdown file in the epic folder as a ticket when `type` is a ticket type and as a plan when `ticket` is present. This frontmatter is the only machine-readable verdict; nothing in the tree records it, so a gate or orchestrator that acts on the verdict **must** read this file.
+`epic` is the folder's name, as `tickets.py` spells the epic. Keep `verdict` in sync with the Acceptance verdict section below. This frontmatter is the only machine-readable verdict; nothing in the tree records it, so a gate or orchestrator that acts on the verdict **must** read this file.
 
 Sections:
 

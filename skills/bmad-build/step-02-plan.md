@@ -12,7 +12,7 @@
 
    Treat a codebase research document as evidence for this investigation, read at its `commit`. Before the plan uses a claim from it, re-check it against the current code when the plan rests on it or its cited file changed since that commit (`git diff --stat <commit> -- <path>`). Investigate afresh any claim that no longer holds.
 
-   Do not ask the human during investigation. When something is unclear, look in the repository, planning artifacts, or history first. Keep looking until you know, or until those sources have nothing more to say. Leave any remaining choice for the next step.
+   Do not ask the human during investigation. When something is unclear, look in the ticket and the companions it names, or the planning documents loaded without one, then the repository or history. Keep looking until you know, or until those sources have nothing more to say. Leave any remaining choice for the next step.
 
    Then score the change's `risk` for `{plan_file}` frontmatter: `low`, `medium`, or `high`, the business impact if this change is wrong. For a ticket from the tree, start from `risk` in `tickets.py find`'s output and raise it when the investigation shows more; go below it only when the user says so. Write `risk` wherever this step writes `{plan_file}`.
 {% if workflow.route == "oneshot" %}

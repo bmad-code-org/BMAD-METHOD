@@ -24,7 +24,7 @@ Use this when the user asks how much review to run, how to get another pass, whe
 ## `bmad-code-review`
 
 - Target: a PR, commit, branch, commit range, uncommitted changes, a pasted diff, or files.
-- Tell the user to supply the intent: a plan, a spec, or a plain description. A ticket in review brings its plan. Without it the reviewers can only judge the diff against itself.
+- Tell the user to supply the intent: a ticket, a plan, or a plain description. A ticket in review brings its plan; both are read in full. Without it the reviewers can only judge the diff against itself.
 - Defaults to `thorough`; "quick" uses one reviewer. Above about 3000 diff lines it offers to review in file groups.
 - Triage checks every finding against the code and rejects disproved ones, plus low ones whose fix would add complexity.
 - Survivors become patch (a clear fix), defer (pre-existing or unverified), or decision needed (when the right fix depends on what you meant).
@@ -45,7 +45,7 @@ Recommend it when a person must understand and accept a change: after a build, o
 - **Test**: helps test the part. **Drive**: starts the app and says what to click.
 - **Wrap-up**: proposes the follow-through, such as merging, and waits for a yes.
 
-For specs and docs, `bmad-review` (core tools), if installed, reports findings and fixes nothing.
+For tickets and other documents, `bmad-review` (core tools), if installed, reports findings and fixes nothing.
 
 ## What `bmad-customize` can change
 

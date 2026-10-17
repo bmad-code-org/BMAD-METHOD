@@ -18,7 +18,7 @@ When ambiguous, default to interactive.
 The caller passes inputs in their first message (free-form structured payload; no fixed schema, but every field below should be present when applicable):
 
 - `intent` — `"create"`, `"update"`, or `"validate"`. If absent, infer from the artifact set.
-- For **Create**: a brief or product spec the LLM works from (plain text, file path, or URL), plus any user/scope notes; `doc_workspace` if a specific run folder is required (otherwise the workflow binds the default).
+- For **Create**: a brief, an initiative or epic file (read in full), or notes the LLM works from (plain text, file path, or URL), plus any user/scope notes; `doc_workspace` if a specific run folder is required (otherwise the workflow binds the default).
 - For **Update**: the existing PRD path (`prd-<slug>.md`, or a workspace path that contains one), and a change signal (the request: what to change and why).
 - For **Validate**: the existing PRD path (or workspace path), and optionally a checklist override path. Workspace defaults to the PRD's containing directory.
 

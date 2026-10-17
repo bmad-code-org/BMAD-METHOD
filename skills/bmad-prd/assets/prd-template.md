@@ -13,7 +13,7 @@ updated: {YYYY-MM-DD}
 *Working title — confirm.*
 
 ## 0. Document Purpose
-[1 paragraph: who this PRD is for (PM, stakeholders, downstream workflow owners), how it's structured (Glossary-anchored vocabulary, features grouped with FRs nested, assumptions tagged inline and indexed). If UX work or other inputs already exist, name them here and reference where they live — this PRD builds on them, it does not duplicate.]
+[1 paragraph: who this PRD is for (PM, stakeholders, downstream workflow owners), how it's structured (Glossary-anchored vocabulary, features grouped with FRs nested, assumptions tagged inline and indexed). If an initiative file, UX work or other inputs already exist, name them here and reference where they live — this PRD builds on them, it does not duplicate.]
 
 ## 1. Vision
 [2-3 paragraphs: what this is, what it does for the user, why it matters. Compelling enough to stand alone.]

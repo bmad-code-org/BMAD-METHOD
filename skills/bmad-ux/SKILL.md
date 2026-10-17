@@ -26,7 +26,7 @@ When Foundation names a UI system (shadcn, MUI, native UIKit, Compose, internal 
 
 ## Sources
 
-UX may lead, follow, or stand alone. Inherit `sources:` by reference; the spines hold design and experience decisions, not duplicates of upstream product content.
+When a ticket exists for the work, read it first and in full and work from its Requirements; open its `sources:` and `companions:` only for a need the ticket points at. With no ticket, UX may lead or stand alone. DESIGN.md and EXPERIENCE.md hold design and experience decisions, not duplicates of upstream product content.
 
 ## On Activation
 
@@ -34,11 +34,11 @@ UX may lead, follow, or stand alone. Inherit `sources:` by reference; the spines
    - Script not found: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - Any other failure: read `{skill-root}/customize.toml` directly and use defaults.
 2. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context (entries prefixed `file:` are loaded). `{workflow.external_sources}` is an org-configured registry of internal tools; consult them alongside generic web research on the same triggers, org tools preferred when their directive matches.
-3. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.project_name --key core.output_folder --key core.active_initiative`. `{date}` is the current system datetime. `{slug}` is what the design is about, in kebab-case: the run lands in `ux-{slug}/ux-{slug}.md`.
+3. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.project_name --key core.output_folder --key core.active_initiative`. `{date}` is the current system datetime. `{slug}` is what the design is about, in kebab-case, or on an epic the epic's slug without `epic-`: the run lands in `ux-{slug}/ux-{slug}.md`.
    - Script not found, or no `output_folder`: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - No `active_initiative`: hand off to the `bmad` skill to set or create one, then run the command again and continue. Headless: write loose.
 4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user. In the greeting, let the user know `bmad-party-mode` and `bmad-advanced-elicitation` are always available. Then scan for misroute on the first message: PRD → `bmad-prd`; architecture → `bmad-architecture`; game UX → BMad GDS; agent/skill → `bmad-workflow-builder` (if the BMad Builder module is installed); brief → `bmad-product-brief`.
-5. Detect intent: **Create**, **Update**, **Validate**. For Create, before binding a fresh workspace, scan `{workflow.ux_output_path}` for prior in-progress runs (folders matching `{workflow.run_folder_pattern}` whose `DESIGN.md` frontmatter `status` is not `final`) and offer to resume rather than starting over.
+5. Detect intent: **Create**, **Update**, **Validate**. For Create, before binding a fresh workspace, scan `{workflow.ux_output_path}`, and the epic's folder when the ticket is an epic, for prior in-progress runs (folders matching `{workflow.run_folder_pattern}` whose `DESIGN.md` frontmatter `status` is not `final`) and offer to resume rather than starting over.
 
 Run `{workflow.activation_steps_append}`.
 
@@ -46,9 +46,9 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 ## Modes
 
-**Create.** Bind `{doc_workspace}` to `{workflow.ux_output_path}/{workflow.run_folder_pattern}/`. Create `.working/` and `imports/`; seed the memlog with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field topic="<product/UX>"`; create `DESIGN.md` (frontmatter only), `EXPERIENCE.md` (frontmatter only), and `{workflow.run_folder_pattern}.md`, frontmatter plus one line each naming the two spines. Run Discovery → Finalize.
+**Create.** Bind `{doc_workspace}` to `{workflow.ux_output_path}/{workflow.run_folder_pattern}/`, with the epic's folder in place of `{workflow.ux_output_path}` when the ticket is an epic. Create `.working/` and `imports/`; seed the memlog with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field topic="<product/UX>"`; create `DESIGN.md` (frontmatter only), `EXPERIENCE.md` (frontmatter only), and `{workflow.run_folder_pattern}.md`, frontmatter plus one line each naming the two spines. Run Discovery → Finalize.
 
-**Update.** Read spines + memlog + sources. If `.memlog.md` is missing, init it with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace}` — this update is entry one. Surface conflicts with prior decisions. Run Finalize.
+**Update.** Read spines + memlog + the ticket in full (the sources when there is none); open a source only for a need the ticket or the change names. If `.memlog.md` is missing, init it with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace}` — this update is entry one. Surface conflicts with prior decisions. Run Finalize.
 
 **Validate.** See `references/validate.md`.
 
@@ -56,9 +56,9 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 **Capture; do not author.** The spines are distilled at Finalize toward the memlog. Decisions → `.memlog.md` (canonical), each appended via `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <decision|change|override|assumption|event> --text "…"` — never hand-edited; a resume reloads it. Creative-tool artifacts → `.working/`. User-supplied visuals (Figma, sketches, brand decks, image folders) → `imports/`, one `memlog.py append` per item. Spines win on conflict.
 
-**Source scan.** List candidate inputs by type — `<type>-*/<type>-*.md` for `brief`, `prd`, `spec`, `architecture`, `research` — in `{output_folder}/{active_initiative}/`, then `{output_folder}/`; surface paths only — never read content in the parent. User confirms which apply or adds others; subagent-extracts on confirm.
+**Ticket first.** Find the ticket for the work (`initiative-*.md`, `tickets/epic-*/epic-*.md`, and `story-*.md`, `bug-*.md`, `spike-*.md` in a `tickets/` folder, under `{output_folder}/{active_initiative}/`) and read it in full in the parent; its Requirements are the brief, and its `sources:` and `companions:` list what else exists. Open one of those only for a need the ticket points at; never re-derive requirements from a PRD or brief it already distilled. No ticket: list `<type>-*/<type>-*.md` for `brief`, `prd`, `architecture`, `research` there, then in `{output_folder}/`; surface paths only; user confirms which apply or adds others; subagent-extracts on confirm.
 
-Brain dump first — even when the user opens with paragraphs (that's intake). Subagent-extract big docs. One "anything else?" probe. Stakes: hobby / internal / consumer / regulated.
+Ticket Requirements first, then brain dump what they leave open — even when the user opens with paragraphs (that's intake). Subagent-extract big source docs. One "anything else?" probe. Stakes: hobby / internal / consumer / regulated.
 
 Working mode:
 
@@ -70,7 +70,7 @@ Creative tools — scan `{workflow.creative_tools}`, invoke when seeing helps. D
 
 Concern scan — name what the UX carries: accessibility, platforms, brand, regulated language, motion, i18n, dark mode, offline, content density, input modalities, notifications. Open list; drives invented sections.
 
-Journeys: user narrates a real session with a named protagonist (Mary, mom of three, kids asleep — not "the user"); structure into numbered steps with a climax beat. Mirror source-spec names verbatim when defined.
+Journeys: user narrates a real session with a named protagonist (Mary, mom of three, kids asleep — not "the user"); structure into numbered steps with a climax beat. Mirror the ticket's journey and requirement names verbatim when defined, the sources' when there is no ticket.
 
 Form-factor: mobile / web / desktop / multi-surface must resolve before IA closes. Named-protagonist journeys often derive it (Pary on iPad implies an iPad surface; Skeeter on Android adds a multi-surface need); when journeys don't disambiguate, probe.
 
@@ -84,12 +84,12 @@ Used by Validate and Finalize. **Opt-in, lens-selectable** — reviewers are cos
 
 Outcomes, in order:
 
-- **Spines distilled.** Subagent reads `.memlog.md`, `.working/`, `imports/`, sources; produces `DESIGN.md` against `## The DESIGN.md spine` + `{workflow.design_md_examples}` and `EXPERIENCE.md` against `## The EXPERIENCE.md spine` + `{workflow.experience_md_examples}`. Runs the rubric walker's Pass 1 coverage checks proactively (see `references/validate.md`). Surface gaps; never invent.
+- **Spines distilled.** Subagent reads `.memlog.md`, `.working/`, `imports/`, and the ticket in full, opening a source only where the memlog or ticket cites it; produces `DESIGN.md` against `## The DESIGN.md spine` + `{workflow.design_md_examples}` and `EXPERIENCE.md` against `## The EXPERIENCE.md spine` + `{workflow.experience_md_examples}`. Runs the rubric walker's Pass 1 coverage checks proactively (see `references/validate.md`). Surface gaps; never invent.
 - **Inputs reconciled.** Subagent per user-supplied input → `reconcile-{input}.md`. Surface dropped qualitative ideas.
 - **Reviewer Gate offered.** Ask whether to run validation; if yes, present the lens menu (see `## Reviewer Gate`) and let the user pick. If any lens ran, resolve findings before polish; otherwise proceed.
 - **Open items triaged.** Open Questions, `[ASSUMPTION]`, `[NOTE FOR UX]`. Phase-blockers one at a time; non-blockers → `memlog.py append`.
 - **Key-screen mocks rendered.** Key-screens tool → `.working/` for surfaces where layout drives behavior or anchors visual language.
 - **Mock coverage confirmed.** Walk every IA surface; classify *mocked* vs *spine-only*. Ask: *"These will be built from spine tables alone — any need a visual reference?"* Render more if named; log spine-only choices.
 - **Layout extracted, artifacts promoted.** Distill subagent re-reads each `.working/` and `imports/` artifact; lifts visual decisions into DESIGN.md and behavioral decisions into EXPERIENCE.md. Promote `.working/` keepers to `mockups/` (HTML) or `wireframes/` (Excalidraw); imports stay. Inline relative links at relevant spine sections; state spines-win-on-conflict once.
-- **Polished, handed off, closed.** Apply `{workflow.doc_standards}` in order. Execute `{workflow.external_handoffs}`; surface URLs. Set both files' `status: final`, `updated: {date}`. Log finalization via `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type event --text "spines finalized"`. Share paths. Common next: `bmad-architecture`, `bmad-ticket`, `bmad-build`. Run `{workflow.on_complete}`.
+- **Polished, handed off, closed.** Apply `{workflow.doc_standards}` in order. Execute `{workflow.external_handoffs}`; surface URLs. Set both files' `status: final`, `updated: {date}`. Log finalization via `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type event --text "spines finalized"`. Share paths. Common next: `bmad-architecture`, asking Sofia (`bmad-agent-po`) to update the ticket's requirements from the spines, `bmad-build`. Run `{workflow.on_complete}`.
 

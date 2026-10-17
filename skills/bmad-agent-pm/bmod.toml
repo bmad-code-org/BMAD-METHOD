@@ -2,7 +2,6 @@
 bmod = "bmod-method"
 source = "github:bmad-code-org/BMAD-METHOD/skills"
 recommended_skills = [
-  "bmad-correct-course",
-  "bmad-ticket",
+  "bmad-agent-po",
   "bmad-prd",
 ]
