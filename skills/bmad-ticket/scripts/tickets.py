@@ -1165,6 +1165,15 @@ def quoted(value: str) -> str:
     return text.translate({c: f"\\u{c:04x}" for c in (0x85, 0x2028, 0x2029)})
 
 
+def single_quoted(value: str) -> str:
+    """The plan template's scalar form (`status: 'draft'`), for the fields the build writes too, so a plan
+    carries one spelling of each. `_scalar` reads a single-quoted scalar back through `''`; a value that
+    form cannot carry exactly, such as a stem holding "   #", keeps `quoted`'s escaping instead."""
+    if "   #" in value or any(c in value for c in "\n\r\v\f\x1c\x1d\x1e\x85\u2028\u2029"):
+        return quoted(value)
+    return "'" + value.replace("'", "''") + "'"
+
+
 def edit_frontmatter(path: Path, values: dict[str, str]) -> str:
     """Set frontmatter values in a file, keeping its line endings and byte-order mark; an empty value removes
     the line. Returns the new text."""
@@ -1197,8 +1206,8 @@ def cmd_mark(args) -> dict:
         assignee = args.assignee if args.assignee is not None else t["assignee"]
         fields = [
             ("title", quoted(t["title"])),
-            ("ticket", str(t["id"]) if t["id"] is not None else quoted(t["file"][:-3])),
-            ("status", args.status),
+            ("ticket", single_quoted(str(t["id"]) if t["id"] is not None else t["file"][:-3])),
+            ("status", single_quoted(args.status)),
             ("assignee", quoted(assignee) if assignee else ""),
             *blocked.items(),
         ]
@@ -1210,7 +1219,7 @@ def cmd_mark(args) -> dict:
         except FileExistsError:
             raise TicketError(f"{path.name} exists already and is not the plan for {ref_name(t, tree)}") from None
     else:
-        values = {"status": args.status, **blocked}
+        values = {"status": single_quoted(args.status), **blocked}
         if args.assignee is not None:
             values["assignee"] = quoted(args.assignee)
         text = edit_frontmatter(path, values)
