@@ -14,7 +14,7 @@ If the invocation asks for a `no-code` review, append `--set workflow.fixes=hand
 If the invocation is clearly non-interactive -- it says not to ask questions, or a bot, a CI job or another workflow is running the review -- append `--set workflow.interactive=false`. When in doubt, don't.
 
 ```bash
-uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"
+uv run --cache-dir "{project-root}/.bmad-uv-cache" "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"
 ```
 
 - The command prints the skill's workflow: follow it. `HALT: <reason>`: report the reason and stop.

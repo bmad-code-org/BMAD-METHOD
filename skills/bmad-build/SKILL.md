@@ -9,7 +9,7 @@ Replace `{project-root}` with the nearest folder containing `_bmad/`, from the w
 Replace `{skill-root}` with the absolute path to this skill's directory.
 
 ```bash
-uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"
+uv run --cache-dir "{project-root}/.bmad-uv-cache" "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"
 ```
 
 - When the invocation names a route (`oneshot` or `full`), append `--set workflow.route=<value>` to the command.
