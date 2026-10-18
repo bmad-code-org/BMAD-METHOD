@@ -41,7 +41,7 @@ Add review, retrospective, or other skills as needed. Keep project and global in
 
 ## Security Scan Warnings
 
-During install, the Skills CLI shows a Security Risk Assessments table from three scanners: Gen Agent Trust Hub, Socket, and Snyk. Some BMad skills get a Med Risk or High Risk rating. You can ignore these warnings. The scanners flag behavior the skills use on purpose:
+During install, the Skills CLI shows a Security Risk Assessments table from three scanners: Gen Agent Trust Hub, Socket, and Snyk. Some BMad skills get a Med Risk or High Risk rating. The scanners flag behavior the skills use on purpose:
 
 - Skills run Python scripts from the project's `_bmad/scripts/` folder with `uv run` to load configuration and customizations.
 - Customization files under `_bmad/custom/` can add activation steps that the skill runs.
