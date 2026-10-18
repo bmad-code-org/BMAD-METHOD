@@ -7,11 +7,16 @@ shape.
 {{ workflow.on_block_activation }}
 {% endif %}
 
-Suggest 1-3 moves that fit. Then stop. The named moves are not
-exhaustive; if something else is more obvious, suggest that instead.
-The user may choose something you did not suggest. Do what the user
-says. Stay with the current block until the user explicitly says it
-is done.
+On block 1, list the moves in one line so the user knows the
+repertoire; past seven, name seven at random and say how many more
+there are. On every block, suggest 1-3 moves that fit; when more fit
+than you will name, prefer ones not yet suggested in this review.
+Then stop. The named moves are not exhaustive; if something else is
+more obvious, suggest that instead. The user may choose something you
+did not suggest, or just ask a question: answer it in this session
+with clickable references, without any formal review skill. Do what
+the user says. Stay with the current block until the user explicitly
+says it is done.
 
 Do not add status chatter ("still current", "waiting on you") on
 later turns unless the reviewer asks where they are.
@@ -37,12 +42,8 @@ A repertoire the user may select from. Do not start a move unless the user
 picks it. Record the outcome in the review log and keep their place in
 the review narrative.
 
-- **Thoughts:** In this session, look at the requested area and say
-  what you think. Report concrete findings with clickable
-  references. Do not use any formal review skills. Suggest it when
-  something in the block looks off or the user pauses on a spot.
-- **Second opinion:** The same question, in a fresh subagent that
-  does not have this review's conversation. Do not use any formal review
+- **Second opinion:** Put a question to a fresh subagent that does
+  not have this review's conversation. Do not use any formal review
   skills. Suggest it when your own read may be anchored by the review
   so far.
 - **Formal review:** Use the most appropriate formal review skill
