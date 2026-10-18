@@ -28,16 +28,27 @@ You need an AI coding tool that supports skills and [uv](https://docs.astral.sh/
 From your project directory, run:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD
+npx skills add bmad-code-org/BMAD-METHOD --all
 ```
 
-Select your coding tool and skills. Include `bmad` for setup and help, and the module records `bmod-core-tools` and `bmod-method` for the modules you use. To install a small set by name:
+`--all` installs the full BMad Method, every skill for every coding tool the CLI supports, with no prompts. To choose instead, run the command without `--all` and select your coding tool and skills. Include `bmad` for setup and help, and the module records `bmod-core-tools` and `bmod-method` for the modules you use. To install a small set by name:
 
 ```bash
 npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build --skill bmad-agent-po
 ```
 
 Add review, retrospective, or other skills as needed. Keep project and global installation scopes consistent.
+
+## Security Scan Warnings
+
+During install, the Skills CLI shows a Security Risk Assessments table from three scanners: Gen Agent Trust Hub, Socket, and Snyk. Some BMad skills get a Med Risk or High Risk rating. You can ignore these warnings. The scanners flag behavior the skills use on purpose:
+
+- Skills run Python scripts from the project's `_bmad/scripts/` folder with `uv run` to load configuration and customizations.
+- Customization files under `_bmad/custom/` can add activation steps that the skill runs.
+- Some skills read text written by other people, such as tickets, issues, and pull request diffs, which scanners treat as a prompt injection risk.
+- Some skills tell you to install a missing skill with `npx skills add`.
+
+Skills run with your coding tool's permissions, so add only customizations you trust. The full report for each skill is on [skills.sh](https://skills.sh/bmad-code-org/BMAD-METHOD).
 
 ## Install through a Plugin Marketplace
 
