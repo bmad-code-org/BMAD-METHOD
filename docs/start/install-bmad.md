@@ -28,10 +28,10 @@ You need an AI coding tool that supports skills and [uv](https://docs.astral.sh/
 From your project directory, run:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD --all
+npx skills add bmad-code-org/BMAD-METHOD --skill '*'
 ```
 
-`--all` installs the full BMad Method, every skill for every coding tool the CLI supports, with no prompts. To choose instead, run the command without `--all` and select your coding tool and skills. Include `bmad` for setup and help, and the module records `bmod-core-tools` and `bmod-method` for the modules you use. To install a small set by name:
+`--skill '*'` installs the full BMad Method and asks which coding tools to install to. To choose skills instead, run the command without `--skill '*'` and select your coding tool and skills. Include `bmad` for setup and help, and the module records `bmod-core-tools` and `bmod-method` for the modules you use. To install a small set by name:
 
 ```bash
 npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build --skill bmad-agent-po

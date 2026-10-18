@@ -34,10 +34,10 @@ Expect breaking changes between updates. You need an AI coding tool that support
 **Skills CLI** — with [Node.js and npm](https://nodejs.org) and Git, run in your project:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD --all
+npx skills add bmad-code-org/BMAD-METHOD --skill '*'
 ```
 
-`--all` installs the full BMad Method, every skill for every coding tool the CLI supports, with no prompts. To pick skills instead, run the command without `--all` and include `bmad` for setup and help, plus the module record for each module you pick skills from: `bmod-method` and `bmod-core-tools`.
+`--skill '*'` installs the full BMad Method and asks which coding tools to install to. To pick skills instead, run the command without `--skill '*'` and include `bmad` for setup and help, plus the module record for each module you pick skills from: `bmod-method` and `bmod-core-tools`.
 
 The CLI prints a security risk table that rates some skills Med or High Risk. You can ignore these warnings; [read why the skills are flagged](https://docs.bmad-method.org/start/install-bmad/#security-scan-warnings).
 
