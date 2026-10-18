@@ -29,6 +29,10 @@
 * `bmad setup` and `bmad status` cover every skills folder your tool loads, so a module installed in the project is set up while `bmad` is global, and a skill installed twice is reported with an offer to delete the extra copy.
 * `bmad setup` is one flow that also updates and migrates: when a module has a newer version it runs `npx skills update`, and it ends by checking whether any migration applies and asking whether to run it. Asking for status runs only the check.
 
+### 🐛 Fixes
+
+* **The verification-gap lens files only gaps worth a test.** A gap finding now exists only when the lens names a concrete regression a test in the repo's own suite could catch; unreachable states, defensive branches and redundant code are dropped rather than deferred, and the `defer` disposition is gone. The lens no longer asks for tests of build, toolchain or configuration plumbing that CI exercises by building. It reports a fourth shape, the stale-verification gap: a test that asserts the outcome the change got wrong, so the fix will fail it. Dead tests and stale test comments go to `Other findings`, where triage can grade them low. Applies to `bmad-code-review`, `bmad-build`, `bmad-build-auto` and the `verification-gap` lens of `bmad-review`.
+
 ## v6.12.0 - 2026-09-03
 
 **Build decides how much ceremony a change needs after investigating it, not before.** Simple changes now get a two-section spec and finish in one session.
