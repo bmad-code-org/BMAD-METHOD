@@ -53,7 +53,7 @@ interactive = true
 fixes = "apply"
 
 # What a no-code review writes for the coding agent instead of fixing the
-# patch findings. Override wins; empty uses the text in step 4.
+# patch findings. Override wins; empty uses the text in step 5.
 
 handoff_format = ""
 
