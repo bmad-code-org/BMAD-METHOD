@@ -388,7 +388,7 @@ Only for work that benefits from architecture. Clear work can enter implementati
 
 ### Can I change my plan later?
 
-Yes. The `bmad-correct-course` workflow handles scope changes mid-implementation.
+Yes. Sofia, the Product Owner (`bmad-agent-po`), replans scope changes mid-implementation.
 
 **Have a question not answered here?** [Open an issue](...) or ask in [Discord](...).
 ```

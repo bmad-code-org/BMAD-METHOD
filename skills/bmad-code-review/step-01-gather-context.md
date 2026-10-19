@@ -2,6 +2,7 @@
 diff_file: '' # set at runtime: path to the diff file
 claims_file: '' # set at runtime (path or empty)
 plan_file: '' # set at runtime (path or empty)
+ticket_file: '' # set at runtime: the story file, else the epic file, of the ticket under review (path or empty)
 review_mode: '' # set at runtime: full or no-plan
 ---
 
@@ -18,8 +19,8 @@ review_mode: '' # set at runtime: full or no-plan
 ## INSTRUCTIONS
 
 1. **Find the review target.** Check in this order and stop at the first that identifies it:
-   - **Request or recent conversation.** A PR (resolve via `gh pr view`; if that fails, ask for a SHA or branch), commit, branch, commit range, staged or uncommitted changes, a provided diff or file list, or a plan file. A plan sets `plan_file`; a non-empty frontmatter `baseline_revision` other than `NO_VCS` makes the diff source the **plan baseline** — otherwise say so and continue, since a plan without one does not identify the diff.
-   - **The ticket tree.** Run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} status`. On a non-zero exit, continue. Otherwise offer the `tickets` rows whose `state` is `review`, `<ref>` and `<title>` each, plus a choice of another target, and HALT for the user's pick. With none, or another target chosen, continue. For a picked ticket, run `tickets.py find <ref>` (same command form) and treat its `plan` as a plan file from the request.
+   - **Request or recent conversation.** A PR (resolve via `gh pr view`; if that fails, ask for a SHA or branch), commit, branch, commit range, staged or uncommitted changes, a provided diff or file list, or a plan file. A plan sets `plan_file`, and when its frontmatter `ticket` is set, `tickets.py find <the plan's folder> <ticket>` (command form in the next bullet) names the ticket to read the same way; a non-empty frontmatter `baseline_revision` other than `NO_VCS` makes the diff source the **plan baseline** — otherwise say so and continue, since a plan without one does not identify the diff.
+   - **The ticket tree.** Run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} status`. On a non-zero exit, continue. Otherwise offer the `tickets` rows whose `state` is `review`, `<ref>` and `<title>` each, plus a choice of another target, and HALT for the user's pick. With none, or another target chosen, continue. For a picked ticket, run `tickets.py find <ref>` (same command form): set `ticket_file` to its `story_file`, else its `epic_file`, read that file in full (with `story_file` null, the entry's `description` and `verify` are in `find`'s output), and treat its `plan` as a plan file from the request.
    - **Current git state.** If HEAD is not on the default branch, confirm: "I see HEAD is `<short-sha>` on `<branch>` — do you want to review this branch's changes?" If confirmed, it is a branch diff against the default branch.
    - **Ask.** Go to instruction 2.
 
@@ -42,13 +43,13 @@ review_mode: '' # set at runtime: full or no-plan
    - Otherwise → `review_mode` = `no-plan`, `plan_file` = `''`.
 {% endif %}
 
-6. If `review_mode` = `full` and `{plan_file}`'s frontmatter has a `context` list, load each referenced doc and warn about any that cannot be found.
+6. If `review_mode` = `full` and `{plan_file}`'s frontmatter has a `context` list, load each referenced doc and warn about any that cannot be found. Open a file `{ticket_file}` lists in `sources:` or `companions:` only for a section the ticket cites; never re-derive requirements from it.
 
 7. If `{diff_file}` exceeds about 3000 lines, warn the user and offer to chunk the review by file group. If they accept, agree on the first group, rebuild `{diff_file}` for it, and list the remaining groups for follow-up runs.
 
 ### CHECKPOINT
 
-Present a summary before proceeding: diff stats (files changed, lines added/removed), `{review_mode}`, and loaded plan/context docs (if any).
+Present a summary before proceeding: diff stats (files changed, lines added/removed), `{review_mode}`, and the loaded ticket, plan, and context docs (if any).
 {% if workflow.interactive %}
 HALT and wait for user confirmation to proceed.
 {% endif %}

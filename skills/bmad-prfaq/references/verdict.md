@@ -37,7 +37,7 @@ title: "PRFAQ Distillate: {project_name}"
 type: llm-distillate
 source: "prfaq-{slug}.md"
 created: "{timestamp}"
-purpose: "Token-efficient context for downstream PRD creation"
+purpose: "Token-efficient context for the initiative's requirements or a PRD"
 ---
 ```
 
@@ -58,7 +58,7 @@ purpose: "Token-efficient context for downstream PRD creation"
 **PRFAQ:** `{doc_workspace}/prfaq-{slug}.md`
 **Detail Pack:** `{doc_workspace}/prfaq-{slug}-distillate.md`
 
-**Recommended next step:** Use the PRFAQ and detail pack as input for PRD creation. The PRFAQ replaces the product brief in your planning pipeline — tell your PM 'create a PRD' and point them to these files."
+**Recommended next step:** ask Sofia the Product Owner (`bmad-agent-po`) to write the initiative's requirements from the PRFAQ and detail pack, or update them if the initiative file exists; go through `bmad-prd` first only when the requirements still need drawing out."
 
 **Headless mode output:**
 ```json

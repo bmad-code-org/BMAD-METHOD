@@ -3314,7 +3314,7 @@ class BmadRetiredSkillTests(unittest.TestCase):
         self.tool_skills = self.project / ".claude" / "skills"
 
     def method(
-        self, *, renamed=(), removed=(), skills=("bmad-ticket", "bmad-code-review"), update_source=BMAD_SOURCE
+        self, *, renamed=(), removed=(), skills=("bmad-new", "bmad-code-review"), update_source=BMAD_SOURCE
     ) -> None:
         write_bmod(self.installed, "bmod-method", "method", skills=skills, update_source=update_source)
         write(self.installed / "bmod-method" / "retired.toml", retired_toml(renamed, removed))
@@ -3324,7 +3324,7 @@ class BmadRetiredSkillTests(unittest.TestCase):
         return self.tool_skills / name
 
     def test_a_renamed_skill_is_offered_for_removal_and_its_customization_moves(self):
-        self.method(renamed=(("bmad-preview-ticketing", "bmad-ticket"),))
+        self.method(renamed=(("bmad-preview-ticketing", "bmad-new"),))
         self.tool_skill("bmad-preview-ticketing")
         custom = self.project / "_bmad" / "custom"
         write(custom / "bmad-preview-ticketing.toml", "[workflow]\nkeep = true\n")
@@ -3340,7 +3340,7 @@ class BmadRetiredSkillTests(unittest.TestCase):
                 {
                     "skill": "bmad-preview-ticketing",
                     "module": "method",
-                    "renamed_to": "bmad-ticket",
+                    "renamed_to": "bmad-new",
                     "paths": [".claude/skills/bmad-preview-ticketing"],
                     "global": False,
                 }
@@ -3348,18 +3348,18 @@ class BmadRetiredSkillTests(unittest.TestCase):
         )
         self.assertEqual(
             report["custom_renames"],
-            [{"from": "_bmad/custom/bmad-preview-ticketing.toml", "to": "_bmad/custom/bmad-ticket.toml"}],
+            [{"from": "_bmad/custom/bmad-preview-ticketing.toml", "to": "_bmad/custom/bmad-new.toml"}],
         )
-        self.assertEqual((custom / "bmad-ticket.toml").read_text(), "[workflow]\nkeep = true\n")
+        self.assertEqual((custom / "bmad-new.toml").read_text(), "[workflow]\nkeep = true\n")
         self.assertFalse((custom / "bmad-preview-ticketing.toml").exists())
         self.assertEqual(
             report["install_offers"],
             [
                 {
-                    "skill": "bmad-ticket",
+                    "skill": "bmad-new",
                     "replaces": "bmad-preview-ticketing",
                     "module": "method",
-                    "install": "npx skills add bmad-code-org/BMAD-METHOD --skill bmad-ticket",
+                    "install": "npx skills add bmad-code-org/BMAD-METHOD --skill bmad-new",
                 }
             ],
         )
@@ -3411,22 +3411,22 @@ class BmadRetiredSkillTests(unittest.TestCase):
         self.assertTrue((custom / "bmad-gone.toml").is_file())
 
     def test_an_existing_new_customization_is_never_overwritten(self):
-        self.method(renamed=(("bmad-old", "bmad-ticket"),))
+        self.method(renamed=(("bmad-old", "bmad-new"),))
         custom = self.project / "_bmad" / "custom"
         write(custom / "bmad-old.user.toml", "old = 1\n")
-        write(custom / "bmad-ticket.user.toml", "new = 1\n")
+        write(custom / "bmad-new.user.toml", "new = 1\n")
 
         report = setup_report(self, self.project, self.skill)
         self.assertEqual(report["custom_renames"], [])
         self.assertEqual(
             report["custom_not_renamed"],
-            [{"from": "_bmad/custom/bmad-old.user.toml", "to": "_bmad/custom/bmad-ticket.user.toml"}],
+            [{"from": "_bmad/custom/bmad-old.user.toml", "to": "_bmad/custom/bmad-new.user.toml"}],
         )
         self.assertEqual((custom / "bmad-old.user.toml").read_text(), "old = 1\n")
-        self.assertEqual((custom / "bmad-ticket.user.toml").read_text(), "new = 1\n")
+        self.assertEqual((custom / "bmad-new.user.toml").read_text(), "new = 1\n")
 
     def test_two_renames_to_one_name_never_overwrite_a_customization(self):
-        self.method(renamed=(("bmad-a", "bmad-ticket"), ("bmad-b", "bmad-ticket")))
+        self.method(renamed=(("bmad-a", "bmad-new"), ("bmad-b", "bmad-new")))
         custom = self.project / "_bmad" / "custom"
         write(custom / "bmad-a.user.toml", "a = 1\n")
         write(custom / "bmad-b.user.toml", "b = 1\n")
@@ -3434,19 +3434,19 @@ class BmadRetiredSkillTests(unittest.TestCase):
         report = setup_report(self, self.project, self.skill)
         self.assertEqual(
             report["custom_renames"],
-            [{"from": "_bmad/custom/bmad-a.user.toml", "to": "_bmad/custom/bmad-ticket.user.toml"}],
+            [{"from": "_bmad/custom/bmad-a.user.toml", "to": "_bmad/custom/bmad-new.user.toml"}],
         )
         self.assertEqual(
             report["custom_not_renamed"],
-            [{"from": "_bmad/custom/bmad-b.user.toml", "to": "_bmad/custom/bmad-ticket.user.toml"}],
+            [{"from": "_bmad/custom/bmad-b.user.toml", "to": "_bmad/custom/bmad-new.user.toml"}],
         )
-        self.assertEqual((custom / "bmad-ticket.user.toml").read_text(), "a = 1\n")
+        self.assertEqual((custom / "bmad-new.user.toml").read_text(), "a = 1\n")
         self.assertEqual((custom / "bmad-b.user.toml").read_text(), "b = 1\n")
 
     def test_no_install_is_offered_when_the_new_name_is_in_another_active_root(self):
-        self.method(renamed=(("bmad-old", "bmad-ticket"),))
+        self.method(renamed=(("bmad-old", "bmad-new"),))
         self.tool_skill("bmad-old")
-        self.tool_skill("bmad-ticket")
+        self.tool_skill("bmad-new")
         report = setup_report(self, self.project, self.skill, "--root", str(self.tool_skills))
         self.assertEqual(report["install_offers"], [])
 
@@ -3458,7 +3458,7 @@ class BmadRetiredSkillTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 2)
 
     def test_status_reports_the_same_and_changes_nothing(self):
-        self.method(renamed=(("bmad-old", "bmad-ticket"),), update_source="file:skills")
+        self.method(renamed=(("bmad-old", "bmad-new"),), update_source="file:skills")
         self.tool_skill("bmad-old")
         write(self.project / "_bmad" / "custom" / "bmad-old.toml", "x = 1\n")
         before = snapshot(self.project)
@@ -3526,10 +3526,10 @@ class BmadRetiredSkillTests(unittest.TestCase):
             installed,
             "bmod-method",
             "method",
-            skills=("bmad-ticket",),
+            skills=("bmad-new",),
             update_source=BMAD_SOURCE,
         )
-        write(installed / "bmod-method" / "retired.toml", retired_toml((("bmad-old", "bmad-ticket"),), ()))
+        write(installed / "bmod-method" / "retired.toml", retired_toml((("bmad-old", "bmad-new"),), ()))
         write(installed / "bmad-old" / "SKILL.md", "x\n")
         lock = home / ".agents" / ".skill-lock.json"
         write(lock, json.dumps({"version": 3, "skills": {"bmad-old": {}, "bmad": {}}}, indent=2))
@@ -3551,7 +3551,7 @@ class BmadRetiredSkillTests(unittest.TestCase):
         self.assertEqual(entry["paths"], ["~/.claude/skills/bmad-old"])
         self.assertTrue(entry["global"])
         (offer,) = report["install_offers"]
-        self.assertEqual(offer["install"], "npx skills add bmad-code-org/BMAD-METHOD --skill bmad-ticket -g")
+        self.assertEqual(offer["install"], "npx skills add bmad-code-org/BMAD-METHOD --skill bmad-new -g")
 
         removal = run("--remove-retired", "bmad-old")
         self.assertEqual(removal["removed"], ["~/.claude/skills/bmad-old"])
@@ -3561,7 +3561,7 @@ class BmadRetiredSkillTests(unittest.TestCase):
         self.assertFalse((installed / "bmad-old").exists())
 
     def test_only_retired_names_can_be_removed(self):
-        self.method(removed=("bmad-old",), skills=("bmad-ticket", "bmad-code-review"))
+        self.method(removed=("bmad-old",), skills=("bmad-new", "bmad-code-review"))
         self.tool_skill("bmad-code-review")
         self.tool_skill("bmad-old")
         write(self.project / "skills-lock.json", "{ not json")

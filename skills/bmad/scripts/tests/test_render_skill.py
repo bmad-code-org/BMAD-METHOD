@@ -38,9 +38,14 @@ SHARED_SCRIPTS = (
     "resolve_customization.py",
 )
 SHIPPED_SKILLS = ("bmad-build-auto", "bmad-build", "bmad-code-review")
-RENDERED_SKILLS = (*SHIPPED_SKILLS, "bmad-walkthrough", "bmad-retrospective", "bmad-qa-generate-e2e-tests")
-COMPILE_TOKEN = re.compile(r"\{\{\s*(?:config|workflow)\.|\{\{\s*(?:rendered\(|initiative_folder)|\{%")
-DISPATCH_PREFIX = "read and follow "
+RENDERED_SKILLS = (
+    *SHIPPED_SKILLS,
+    "bmad-walkthrough",
+    "bmad-retrospective",
+    "bmad-qa-generate-e2e-tests",
+    "bmad-agent-po",
+)
+COMPILE_TOKEN = re.compile(r"\{\{\s*(?:config|workflow|agent)\.|\{\{\s*(?:rendered\(|initiative_folder)|\{%")
 
 sys.path.insert(0, str(SCRIPTS_SRC))
 import render_skill as rs  # noqa: E402
@@ -169,17 +174,23 @@ class RenderSkillTests(unittest.TestCase):
             ],
             cwd=cwd or project,
             text=True,
+            encoding="utf-8",
             capture_output=True,
             check=False,
             timeout=timeout,
         )
 
-    def _entry(self, result: subprocess.CompletedProcess[str]) -> Path:
+    def _entry(self, result: subprocess.CompletedProcess[str], project: Path, skill: Path) -> Path:
+        """The CLI prints the rendered workflow; return the one published workflow.md it printed."""
         self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-        lines = result.stdout.strip().split("\n")
-        self.assertEqual(len(lines), 1, msg=result.stdout)
-        self.assertTrue(lines[0].startswith(DISPATCH_PREFIX), msg=result.stdout)
-        output = Path(lines[0][len(DISPATCH_PREFIX) :])
+        self.assertFalse(result.stdout.startswith("HALT:"), msg=result.stdout)
+        printed = [
+            path
+            for path in _namespace_dir(project, skill.name).glob("*/workflow.md")
+            if path.read_text(encoding="utf-8") == result.stdout
+        ]
+        self.assertEqual(len(printed), 1, msg=result.stdout)
+        output = printed[0]
         self.assertTrue(output.is_absolute())
         return output
 
@@ -250,7 +261,7 @@ class RenderSkillTests(unittest.TestCase):
                 "workflow.message=command = wins",
             ),
         ):
-            entry = self._entry(self._cli(ws.project, skill, cwd=override_file.parent, args=args))
+            entry = self._entry(self._cli(ws.project, skill, cwd=override_file.parent, args=args), ws.project, skill)
             self.assertEqual(entry.read_text(), "command = wins\n")
             if expected is not None:
                 self.assertEqual(entry, expected)
@@ -407,6 +418,142 @@ class RenderSkillTests(unittest.TestCase):
                 override = ws.project / "bad.toml"
                 override.write_text(content, encoding="utf-8")
                 self._assert_halt(self._cli(ws.project, skill, args=("--overrides", str(override))), ws)
+
+    def test_agent_table_layers_like_workflow_and_merges_menu_by_code(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(
+            ws,
+            "\n".join(
+                [
+                    "[agent]",
+                    'name = "Sofia"',
+                    'title = "Product Owner"',
+                    'icon = "🧭"',
+                    'role = "Own the backlog."',
+                    'persistent_facts = ["shipped fact"]',
+                    "[[agent.menu]]",
+                    'code = "SPEC"',
+                    'description = "Write the spec"',
+                    'prompt = "Read `{skill-root}/references/spec.md` fully and follow it."',
+                    "[[agent.menu]]",
+                    'code = "TICKETS"',
+                    'description = "Slice the work"',
+                    'skill = "bmad-fixture-a"',
+                    "[workflow]",
+                    'spec_before = ""',
+                    'checks = ["shipped check"]',
+                    "",
+                ]
+            ),
+            "{{ agent.icon }} {{ agent.name }}, {{ agent.title }}: {{ agent.role }}\n"
+            "{{ agent.persistent_facts }}\n"
+            "{% for item in agent.menu %}\n{{ item.code }}: {{ item.description }}\n{% endfor %}\n"
+            "{{ agent.menu }}\n{{ workflow.spec_before }}{{ workflow.checks }}\n",
+        )
+        (ws.bmad / "custom" / f"{skill.name}.toml").write_text(
+            "\n".join(
+                [
+                    "[agent]",
+                    'persistent_facts = ["team fact"]',
+                    "[[agent.menu]]",
+                    'code = "TICKETS"',
+                    'description = "Slice the work our way"',
+                    'skill = "bmad-fixture-a"',
+                    "[workflow]",
+                    'checks = ["team check"]',
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        (ws.bmad / "custom" / f"{skill.name}.user.toml").write_text(
+            '[agent]\npersistent_facts = ["user fact"]\n', encoding="utf-8"
+        )
+        entry = rs.render(
+            ws.project,
+            skill,
+            assignments=['agent.menu=[{ code = "BOARD", description = "Show the board", skill = "bmad-fixture-a" }]'],
+        )
+        snap = entry.parent
+        self.assertEqual(
+            entry.read_text(encoding="utf-8"),
+            "🧭 Sofia, Product Owner: Own the backlog.\n"
+            "- shipped fact\n- team fact\n- user fact\n"
+            "SPEC: Write the spec\nTICKETS: Slice the work our way\nBOARD: Show the board\n"
+            "- code: SPEC\n  description: Write the spec\n"
+            f"  prompt: Read `{snap.as_posix()}/references/spec.md` fully and follow it.\n"
+            "- code: TICKETS\n  description: Slice the work our way\n  skill: bmad-fixture-a\n"
+            "- code: BOARD\n  description: Show the board\n  skill: bmad-fixture-a\n"
+            "- shipped check\n- team check\n",
+        )
+        manifest = json.loads((snap / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(
+            manifest["inputs"]["resolved_values"]["customization.agent.menu"],
+            [
+                {
+                    "code": "SPEC",
+                    "description": "Write the spec",
+                    "prompt": "Read `{skill-root}/references/spec.md` fully and follow it.",
+                },
+                {"code": "TICKETS", "description": "Slice the work our way", "skill": "bmad-fixture-a"},
+                {"code": "BOARD", "description": "Show the board", "skill": "bmad-fixture-a"},
+            ],
+        )
+        self.assertEqual(
+            manifest["inputs"]["resolved_values"]["customization.agent.persistent_facts"],
+            ["shipped fact", "team fact", "user fact"],
+        )
+        for content, expected in (
+            ('[[agent.menu]]\ncode = ""\ndescription = "blank"\n', "`code` must not be empty"),
+            ('[[agent.menu]]\ncode = "SPEC"\ndescription = 7\n', r"agent\.menu\[0\]\.description must be a string"),
+        ):
+            with self.subTest(content=content):
+                (ws.bmad / "custom" / f"{skill.name}.user.toml").write_text(content, encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, expected):
+                    rs.render(ws.project, skill)
+        # Layers merge by code, so only the shipped default can carry a duplicate.
+        shipped_duplicate = self._workspace()
+        duplicate = self._fixture_skill(
+            shipped_duplicate,
+            '[[agent.menu]]\ncode = "SPEC"\ndescription = "one"\n[[agent.menu]]\ncode = "SPEC"\ndescription = "two"\n',
+            "{{ agent.menu }}\n",
+        )
+        with self.assertRaisesRegex(rs.RenderError, r"duplicate customization\.agent\.menu code `SPEC`"):
+            rs.render(shipped_duplicate.project, duplicate)
+
+    def test_undefined_agent_name_halts_with_source_location(self):
+        ws = self._workspace()
+        defaults = '[agent]\nname = "Sofia"\n[workflow]\nmessage = "base"\n'
+        skill = self._fixture_skill(ws, defaults, "ok\n{{ agent.missing }}\n")
+        result = self._cli(ws.project, skill)
+        self._assert_halt(result, ws)
+        self.assertEqual(result.stdout, "HALT: workflow.md:2: missing customization parameter `agent.missing`\n")
+        (skill / "workflow.md").write_text("{{ agent.name }}\n", encoding="utf-8")
+        with self.assertRaisesRegex(rs.RenderError, "missing customization parameter `agent.title`"):
+            rs.render(ws.project, skill, assignments=["agent.title=PO"])
+        (ws.bmad / "custom" / f"{skill.name}.toml").write_text('[agent]\ntitle = "PO"\n', encoding="utf-8")
+        with self.assertRaisesRegex(rs.RenderError, r"fixture\.toml sets keys fixture does not declare: agent\.title$"):
+            rs.render(ws.project, skill)
+
+    def test_skill_without_agent_table_renders_as_before_and_rejects_agent_references(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(ws, '[workflow]\nmessage = "shipped"\n', "{{ workflow.message }}\n")
+        entry = rs.render(ws.project, skill)
+        self.assertEqual(entry.read_text(encoding="utf-8"), "shipped\n")
+        manifest = json.loads((entry.parent / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["inputs"]["resolved_values"], {"customization.workflow.message": "shipped"})
+        (skill / "workflow.md").write_text("{{ workflow.message }} {{ agent.name }}\n", encoding="utf-8")
+        with self.assertRaisesRegex(rs.RenderError, r"^workflow\.md:1: missing customization parameter `agent\.name`$"):
+            rs.render(ws.project, skill)
+        (skill / "workflow.md").write_text("{{ workflow.message }} {{ workflow.name }}\n", encoding="utf-8")
+        with self.assertRaisesRegex(
+            rs.RenderError, r"^workflow\.md:1: missing customization parameter `workflow\.name`$"
+        ):
+            rs.render(ws.project, skill)
+        (skill / "customize.toml").unlink()
+        (skill / "workflow.md").write_text("{{ agent.name }}\n", encoding="utf-8")
+        with self.assertRaisesRegex(rs.RenderError, r"^workflow\.md:1: `agent\.name` requires customize\.toml$"):
+            rs.render(ws.project, skill)
 
     def test_nested_conditions_omit_files_and_do_not_resolve_excluded_expressions(self):
         ws = self._workspace()
@@ -654,10 +801,34 @@ class RenderSkillTests(unittest.TestCase):
         self.assertNotEqual(other.parent, snap)
         self.assertIn((elsewhere / "scripts" / "git_evidence.py").as_posix(), _markdown(other.parent))
 
+    def test_non_markdown_assets_are_copied_into_the_generation_and_reached_by_values(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(
+            ws, '[workflow]\ntemplate = "{skill-root}/assets/x.toml"\n', "{{ workflow.template }}\n"
+        )
+        asset = skill / "assets" / "x.toml"
+        asset.parent.mkdir()
+        content = b'# keys\n[[entries]]\nid = 1\ntitle = "\xc3\xa9"\n'
+        asset.write_bytes(content)
+        workflow = rs.render(ws.project, skill)
+        snap = workflow.parent
+        copied = snap / "assets" / "x.toml"
+        self.assertEqual(copied.read_bytes(), content)
+        self.assertEqual(workflow.read_text(encoding="utf-8"), f"{copied.as_posix()}\n")
+        manifest = json.loads((snap / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["outputs"]["assets/x.toml"], rs._hash_bytes(content))
+        self.assertEqual(manifest["inputs"]["source_sha256"]["assets/x.toml"], rs._hash_bytes(content))
+        self.assertEqual(rs.render(ws.project, skill), workflow)
+        asset.write_bytes(content + b"\n[[entries]]\nid = 2\n")
+        changed = rs.render(ws.project, skill)
+        self.assertNotEqual(changed, workflow)
+        self.assertEqual((changed.parent / "assets" / "x.toml").read_bytes(), asset.read_bytes())
+        self.assertEqual(copied.read_bytes(), content)
+
     def test_cli_from_nested_cwd_dispatches_one_absolute_workflow(self):
         ws = self._workspace()
         skill = self._skill(ws, "bmad-build")
-        workflow = self._entry(self._cli(ws.project, skill, cwd=ws.project / "nested" / "cwd"))
+        workflow = self._entry(self._cli(ws.project, skill, cwd=ws.project / "nested" / "cwd"), ws.project, skill)
         self._assert_rendered(workflow, ws.project, "bmad-build")
         self.assertFalse((ws.bmad / "scripts" / "__pycache__").exists())
         self.assertFalse((skill / "__pycache__").exists())
@@ -737,7 +908,7 @@ class RenderSkillTests(unittest.TestCase):
         skill = self._skill(ws, "bmad-build")
         with ThreadPoolExecutor(max_workers=2) as pool:
             results = list(pool.map(lambda _: self._cli(ws.project, skill), range(2)))
-        entries = [self._entry(result) for result in results]
+        entries = [self._entry(result, ws.project, skill) for result in results]
         self.assertEqual(entries[0], entries[1])
         self.assertTrue((entries[0].parent / "manifest.json").is_file())
 
@@ -748,7 +919,7 @@ class RenderSkillTests(unittest.TestCase):
         result = self._cli(ws.project, skill)
         self.assertNotEqual(result.returncode, 0)
         self.assertTrue(result.stdout.startswith("HALT:"), result.stdout)
-        self.assertNotIn(DISPATCH_PREFIX, result.stdout)
+        self.assertEqual(len(result.stdout.splitlines()), 1, result.stdout)
         self.assertNotIn("Traceback", result.stdout + result.stderr)
 
         (ws.bmad / "custom" / "config.toml").unlink()
@@ -846,10 +1017,10 @@ class RenderSkillTests(unittest.TestCase):
     def test_installed_renderer_identity_change_publishes_a_new_generation(self):
         ws = self._workspace()
         skill = self._skill(ws, "bmad-build")
-        original = self._entry(self._cli(ws.project, skill))
+        original = self._entry(self._cli(ws.project, skill), ws.project, skill)
         with (ws.bmad / "scripts" / "render_skill.py").open("a", encoding="utf-8") as handle:
             handle.write("\n# renderer identity change\n")
-        changed = self._entry(self._cli(ws.project, skill))
+        changed = self._entry(self._cli(ws.project, skill), ws.project, skill)
         self.assertNotEqual(changed, original)
         self.assertTrue(original.exists())
 
@@ -908,7 +1079,7 @@ class RenderSkillTests(unittest.TestCase):
         result = self._cli(broken.project, skill)
         self.assertNotEqual(result.returncode, 0)
         self.assertTrue(result.stdout.startswith("HALT:"), result.stdout)
-        self.assertNotIn(DISPATCH_PREFIX, result.stdout)
+        self.assertEqual(len(result.stdout.splitlines()), 1, result.stdout)
         current = _files(original.parent)
         for name, content in original_files.items():
             self.assertEqual(current[name], content, name)
@@ -931,7 +1102,7 @@ class RenderSkillTests(unittest.TestCase):
         stray.write_bytes(b"explorer")
         result = self._cli(ws.project, skill)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertEqual(result.stdout, f"{DISPATCH_PREFIX}{workflow}\n")
+        self.assertEqual(result.stdout, workflow.read_text(encoding="utf-8"))
         self.assertEqual(stray.read_bytes(), b"explorer")
 
         workflow.unlink()
@@ -964,9 +1135,12 @@ class RenderSkillTests(unittest.TestCase):
                         cwd=ws.project / "nested" / "cwd",
                         shell=True,
                         text=True,
+                        encoding="utf-8",
                         capture_output=True,
                         check=False,
-                    )
+                    ),
+                    ws.project,
+                    skill,
                 )
                 self.assertEqual(dispatched.name, "workflow.md")
                 self.assertTrue(dispatched.is_file())

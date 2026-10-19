@@ -9,7 +9,7 @@ Read this when the question is about `bmad-code-review`, `bmad-walkthrough`, `bm
 | `bmad-walkthrough` | The human, guided | A commit, PR, file, or directory | Nothing unless asked |
 | `bmad-retrospective` | Agents, across tickets | A whole epic folder | Nothing; proposes action items |
 
-**`bmad-code-review`** — agent review of any diff, with verified and triaged findings. With no argument it offers the tickets in review and diffs from the chosen plan's `baseline_revision`.
+**`bmad-code-review`** — agent review of any diff, with verified and triaged findings. With no argument it offers the tickets in review, reads the chosen ticket and its plan in full, and diffs from the plan's `baseline_revision`.
 - Pick when: the code did not come from `bmad-build`; a PR or branch needs review; after material fixes. For another pass on a `bmad-build` run, hand `bmad-build` its `built` plan; once the user has marked the plan `done`, hand it to `bmad-code-review`. After an unattended run that sets `followup_review_recommended`, dispatch `bmad-build-auto` on the same ticket again; it goes straight to a fresh review pass.
 - Not when: `bmad-build` just ran a thorough review on the same change. It is the same four lenses again. A run can take half an hour or more, and more than two rounds on one change usually points to a problem outside the change, such as weak planning or a messy codebase. A finished epic → `bmad-retrospective`, which runs the review lenses over the epic's diff.
 - Writes: a dated block in the plan's `## Code Review` section when it reviews a plan; otherwise findings stay in the chat. It never changes the ticket's `status`.

@@ -11,7 +11,7 @@ Headless when any of: caller sets `headless: true` (or harness equivalent); invo
 Free-form structured payload in the first message:
 
 - `intent` — `"create"`, `"update"`, or `"validate"`. If absent, infer from the artifact set.
-- **Create**: any source spec (PRD, brief, requirements list, design-thinking output, prior UX — text, path, or URL) plus brand / platform / accessibility notes; `doc_workspace` if a specific run folder is required.
+- **Create**: the ticket path (`initiative-*.md`, `epic-*.md`, `story-*.md`, `bug-*.md`, `spike-*.md`), read in full, or with no ticket a PRD, brief, requirements list, design-thinking output, or prior UX (text, path, or URL); plus brand / platform / accessibility notes; `doc_workspace` if a specific run folder is required.
 - **Update**: existing workspace containing `DESIGN.md` + `EXPERIENCE.md` (or path to either) + change signal.
 - **Validate**: existing workspace containing `DESIGN.md` + `EXPERIENCE.md` (or path to either). Workspace defaults to the spines' containing directory.
 
@@ -21,7 +21,7 @@ Creative tools default off in headless. Caller can override; artifacts land in `
 
 ## Behavior
 
-Do not ask. Do not greet. Complete the intent from what's provided, what exists in `{doc_workspace}`, or what you can discover. If intent stays ambiguous after inference, halt with `status: "blocked"` and a one-sentence `reason`.
+Do not ask. Do not greet. Complete the intent from what's provided, what exists in `{doc_workspace}`, and any ticket under `{output_folder}/{active_initiative}/`, read in full. If intent stays ambiguous after inference, halt with `status: "blocked"` and a one-sentence `reason`.
 
 `status`:
 - `"complete"` — stands on its own.

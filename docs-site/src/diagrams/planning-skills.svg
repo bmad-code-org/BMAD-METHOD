@@ -1,6 +1,6 @@
 <svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img" aria-labelledby="title description">
   <title id="title">Planning skills and what they produce</title>
-  <desc id="description">Three columns of skills and their artifacts. Analysis: bmad-brainstorming, bmad-forge-idea, bmad-deep-recon, bmad-product-brief, bmad-prfaq. Planning: bmad-prd, bmad-ux, bmad-spec. Solutioning: bmad-architecture and bmad-ticket. The columns flow left to right and hand off to bmad-build, one session per unit. Build finishes at built; the user marks done and retains the plan.</desc>
+  <desc id="description">Three columns of skills and their artifacts. Analysis: bmad-brainstorming, bmad-forge-idea, bmad-deep-recon, bmad-product-brief, bmad-prfaq. Planning: bmad-prd, bmad-ux. Solutioning: bmad-architecture and bmad-agent-po, Sofia the Product Owner. The columns flow left to right and hand off to bmad-build, one session per unit. Build finishes at built; the user marks done and retains the plan.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path class="head" d="M 0 0 L 10 5 L 0 10 z"/>
@@ -9,7 +9,7 @@
 
   <g fill="var(--dg-ink)">
     <text x="450" y="40" font-size="20" font-weight="700" text-anchor="middle" letter-spacing="1">PLANNING SKILLS AND WHAT THEY PRODUCE</text>
-    <text x="450" y="64" font-size="14" text-anchor="middle" fill="var(--dg-ink)">Pick the ones the gap calls for, in any order. Each lands in its own &lt;type&gt;-&lt;slug&gt;/ folder in the active initiative. Hand the results to bmad-spec.</text>
+    <text x="450" y="64" font-size="14" text-anchor="middle" fill="var(--dg-ink)">Pick the ones the gap calls for, in any order. Each lands in its own &lt;type&gt;-&lt;slug&gt;/ folder in the active initiative. Hand the results to Sofia.</text>
 
     <!-- Analysis column -->
     <g transform="translate(20 90)">
@@ -61,15 +61,9 @@
         <text x="12" y="23" font-size="14" font-weight="700" class="mono">bmad-ux</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)">ux-&lt;slug&gt;.md, DESIGN.md, EXPERIENCE.md</text>
       </g>
-      <g transform="translate(15 218)">
-        <rect class="node" width="240" height="74" rx="2"/>
-        <text x="12" y="23" font-size="14" font-weight="700" class="mono">bmad-spec</text>
-        <text x="12" y="45" font-size="12" fill="var(--dg-ink)">spec-&lt;slug&gt;.md + companions</text>
-        <text x="12" y="62" font-size="12" fill="var(--dg-ink)">bmad-ticket handoff</text>
-      </g>
-      <text x="135" y="330" font-size="12" text-anchor="middle" fill="var(--dg-ink)">Use a spec when needed.</text>
+      <text x="135" y="330" font-size="12" text-anchor="middle" fill="var(--dg-ink)">Use a PRD when needed.</text>
       <text x="135" y="348" font-size="12" text-anchor="middle" fill="var(--dg-ink)">One session of work goes</text>
-      <text x="135" y="366" font-size="12" text-anchor="middle" fill="var(--dg-ink)">straight from the spec to Build.</text>
+      <text x="135" y="366" font-size="12" text-anchor="middle" fill="var(--dg-ink)">straight to Build.</text>
     </g>
 
     <!-- Solutioning column -->
@@ -84,9 +78,10 @@
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)">architecture-&lt;slug&gt;.md</text>
       </g>
       <g transform="translate(15 134)">
-        <rect class="node" width="240" height="58" rx="2"/>
-        <text x="12" y="23" font-size="14" font-weight="700" class="mono">bmad-ticket</text>
-        <text x="12" y="45" font-size="12" fill="var(--dg-ink)">ordered tickets.toml entries</text>
+        <rect class="node" width="240" height="74" rx="2"/>
+        <text x="12" y="23" font-size="14" font-weight="700" class="mono">bmad-agent-po</text>
+        <text x="12" y="45" font-size="12" fill="var(--dg-ink)">Sofia, the Product Owner</text>
+        <text x="12" y="62" font-size="12" fill="var(--dg-ink)">Requirements + tickets.toml</text>
       </g>
     </g>
 

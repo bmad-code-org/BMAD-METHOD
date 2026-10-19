@@ -6,8 +6,9 @@ sidebar:
 ---
 
 Use this page to decide how much planning a change needs. The answer turns on
-one question: is the intent already well defined? If it is, feed it to
-`bmad-spec`, which shapes it to the size of the work, and build. If it is not,
+one question: is the intent already well defined? If it is, give it to Sofia,
+the Product Owner (`bmad-agent-po`), who writes the ticket's requirements at
+the size of the work, and build. If it is not,
 the other pages in this chapter are how you get a defined intent. If the work
 belongs to an organization, with a PRD other people must approve and several
 engineers building in parallel, read
@@ -22,18 +23,18 @@ could build it without guessing, and no longer than that. Where it came from
 does not matter: a sentence, an issue, a forged idea, a research report, a
 PRD.
 
-Keep the input short. `bmad-spec` reads everything you give it in one pass,
+Keep the input short. Sofia reads everything you give her in one pass,
 and the practical ceiling is a few tens of thousands of tokens, roughly a
-40-page document. Hand it a pile of raw documents several times that size and
-it silently loses the parts that mattered; condense them first. If the spec
+40-page document. Hand her a pile of raw documents several times that size and
+she silently loses the parts that mattered; condense them first. If Sofia
 says the input is too thin, you are not done on this chapter yet.
 
-- **Well-defined intent**: run `bmad-spec` with it. A spec that fits one Build
-  session goes straight to `bmad-build`; an epic-sized one goes to
-  `bmad-ticket` for stories, then a Build per story. See
+- **Well-defined intent**: give it to Sofia. Work that fits one Build
+  session goes straight to `bmad-build`; for epic-sized work she fills the
+  epic's requirements, then slices it into stories, then a Build per story. See
   [Define Requirements and a Specification](./define-requirements-and-a-specification.md).
 - **Anything else**: the intent is not ready yet. Use the pages below until it
-  is, then run `bmad-spec`. The spec skill writes the contract; it does not
+  is, then give it to Sofia. She writes the requirements; she does not
   help you figure out what you want.
 
 If the change fits one implementation session, you are on the Build page's
@@ -49,7 +50,7 @@ for an obvious, low-risk edit.
 
 These are independent tools, not stages. Pick the ones the gap calls for, in
 any order. None of them build anything. Condense what they produce and hand
-`bmad-spec` the result, not the raw pile.
+Sofia the result, not the raw pile.
 
 | The intent is missing                                            | Do this                                                                                                      |
 | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -61,18 +62,13 @@ any order. None of them build anything. Condense what they produce and hand
 
 A short list of decisions is often enough on its own. You need a PRD when more
 than one person must agree on what the product is, or more than one epic must
-not diverge; otherwise skip it. A multi-epic product runs `bmad-spec` once per
-epic with those documents as sources.
+not diverge; otherwise skip it. A multi-epic product gives those documents to
+Sofia once, at the initiative; each epic's requirements are cut from the
+initiative's lines.
 
 ## Planning Skills and What They Produce
 
-Every skill in this chapter writes a document you can hand on. The table runs
-from analysis through planning to solutioning; each chapter page is linked
-from the first skill it covers and explains when its skills fit. In an
-installed project, `bmad` recommends the next one. Each document lands in
-its own `<type>-<slug>/` folder inside the active initiative's folder, or
-directly in the output folder (`_bmad-output` by default) when no initiative
-is active.
+Every skill in this chapter writes a document you can hand on. The table runs from analysis through planning to solutioning; each chapter page is linked from the first skill it covers and explains when its skills fit. In an installed project, `bmad` recommends the next one. Each document lands in its own `<type>-<slug>/` folder inside the active initiative's folder, or directly in the output folder (`_bmad-output` by default) when no initiative is active. A `bmad-prd`, `bmad-ux`, or `bmad-architecture` run on an epic lands in that epic's folder instead.
 
 | Skill                           | Purpose                                                                                                                                        | Produces                                                                            |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
@@ -83,15 +79,14 @@ is active.
 | `bmad-prfaq`                    | Stress-test a product concept customer-first, working backwards from the press release                                                         | `prfaq-<slug>.md` + a distillate                                                    |
 | `bmad-prd`                      | Create, update, or validate a PRD                                                                                                              | Create/update: `prd-<slug>.md`, `addendum.md`, `.memlog.md`; validate: HTML + `.md` report |
 | `bmad-ux`                       | Record how the product looks and behaves ([Design UX and Architecture](./design-ux-and-architecture.md))                                       | `DESIGN.md`, `EXPERIENCE.md`, `ux-<slug>.md`, `.memlog.md`                          |
-| `bmad-spec`                     | Condense any intent into a short contract; hand it to `bmad-ticket` for stories on request                                          | `spec-<slug>.md` + companions                                                       |
 | `bmad-architecture`             | Make the technical decisions that keep separately built parts consistent                                                                       | `architecture-<slug>.md` by default                                                 |
-| `bmad-ticket` | [Plan and track entries](./break-work-into-stories-and-track-it.md) | Epic envelopes, ordered `tickets.toml`, and optional leaf files |
+| `bmad-agent-po` | Sofia, the Product Owner: write a ticket's requirements from any input, then [plan and track entries](./break-work-into-stories-and-track-it.md) | Requirements and Constraints in the initiative, epic, or story file, `.memlog.md` beside it, ordered `tickets.toml`, and optional leaf files |
 
 `bmad-prd` has three intents, create, update, and validate; say which one you
 want when you invoke it, or it will ask. `bmad-product-brief` feeds `bmad-prd`,
 which reads the brief during discovery, but neither requires the other.
 
-![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning (PRD, UX, spec), and solutioning (architecture and ticket), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
+![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning (PRD, UX), and solutioning (architecture and Sofia, the Product Owner), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
 
 ## Size Follows the Intent
 
@@ -117,11 +112,12 @@ coherent outcome.
 
 **Define and divide the epic**
 
-1. Run `bmad-spec` with the epic intent. See
+1. Give Sofia the epic intent. She fills the epic's requirements from what
+   you have, then slices. See
    [Define Requirements and a Specification](./define-requirements-and-a-specification.md)
-   for what a spec contains and when it is enough on its own.
-2. Run `bmad-ticket` with the spec folder. It plans the epic with
-   you and records the stories in build order in the epic's `tickets.toml`.
+   for what the requirements hold and when they are enough on their own.
+2. She plans the epic with you and records the stories in build order in the
+   epic's `tickets.toml`.
 3. Review the proposed order and decide which stories need a checkpoint.
 4. Build each story from its entry when you are ready; no story file is
    needed. Refine a story first only when its entry says `refine = true`, the
@@ -129,8 +125,9 @@ coherent outcome.
    build.
 
 The breakdown is an execution plan, not a promise that nothing will change.
-Update the spec and re-slice the remaining stories when earlier work reveals a
-missing constraint, a better division, or a conflict between stories.
+Tell Sofia what changed, and she updates the requirements and re-slices the
+remaining stories, when earlier work reveals a missing constraint, a better
+division, or a conflict between stories.
 
 **Establish the implementation pattern**
 
@@ -141,7 +138,7 @@ before automating repetitions of them.
 
 Run Build once per story, naming the story. Build writes its plan beside the
 epic's `tickets.toml` and leaves the plan at `built` until you mark it done
-through `bmad-ticket`. To run stories unattended instead, give
+through Sofia. To run stories unattended instead, give
 `bmad-build-auto` the story as its intent, one run per story; see
 [Autonomous Development Loops](../build/autonomous-development-loops.md).
 
@@ -155,12 +152,9 @@ See [Finish an Epic](../build/finish-an-epic.md).
 Use the full BMad flow for a greenfield product, a multi-epic initiative, or
 work likely to need roughly 20 or more implementation sessions.
 
-Prepare only the planning the project actually needs from the table above
-([Plan Inside an Organization](./plan-inside-an-organization.md) covers who
-owns which document and where sign-off happens). Then run `bmad-spec` per epic,
-track the stories with
-[Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md),
-and close each epic with [Finish an Epic](../build/finish-an-epic.md).
+Prepare only the planning the project actually needs from the table above ([Plan Inside an Organization](./plan-inside-an-organization.md) covers who owns which document and where sign-off happens). Then give the documents to Sofia, who fills the initiative's requirements and slices it into epics. Each epic starts thin: before its stories are planned, ask Sofia to refine it. On a small initiative that is a single question; on a larger one she names what is still open, with her pick for each, and you can add a PRD, UX, architecture, or research run on the epic itself. Track the stories with [Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md), and close each epic with [Finish an Epic](../build/finish-an-epic.md).
+
+When the work is more than one initiative's worth, Sofia proposes a parent initiative that lists its child initiatives in build order. Each child is planned and built like any other initiative.
 
 These documents coordinate implementation. They do not replace Build. Each
 epic still becomes a sequence of one-session units. Independent epic streams
@@ -171,7 +165,7 @@ boundary.
 
 Dividing work can lose information: a requirement weakens, a constraint
 disappears, or two correct stories fail when combined. The PRD, architecture,
-and specs exist so later sessions can still see the whole.
+and each ticket's requirements exist so later sessions can still see the whole.
 
 ## After Decisions Stabilize
 
@@ -182,6 +176,6 @@ implementation decisions are stable. For the worker contract, see
 
 ## What You Get
 
-A path sized to the work: a spec and stories for an epic, or shared product
-documents plus one spec per epic for a project — each still implemented one
-Build session at a time.
+A path sized to the work: an epic with its requirements and stories, or shared
+product documents plus an initiative sliced into epics for a project — each
+still implemented one Build session at a time.

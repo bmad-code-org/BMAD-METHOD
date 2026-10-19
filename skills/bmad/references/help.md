@@ -4,7 +4,7 @@ The output of `knowledge.py` is your source for every answer. Its `documents` ho
 
 ## 1. See where the project stands
 
-When the project's `_bmad/config.toml` exists, run `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`, then list the `<type>-<slug>/` folders in the active initiative's folder and at the root of `output_folder`, and match them against the outputs the module help names. A match shows a skill ran, not that its work is finished; ask when it matters.
+When the project's `_bmad/config.toml` exists, run `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`, then read the active initiative's `initiative-<slug>.md` in full, and each `tickets/epic-<slug>/epic-<slug>.md` the question concerns. List the other `<type>-<slug>/` folders in the initiative's folder and at the root of `output_folder` to know what inputs exist, and match them against the outputs the module help names; do not open a source the ticket lists to re-derive its state. A match shows a skill ran, not that its work is finished; ask when it matters.
 
 ## 2. Answer
 

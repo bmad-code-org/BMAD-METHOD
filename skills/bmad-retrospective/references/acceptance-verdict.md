@@ -1,6 +1,6 @@
 # Decide: Routing and the Acceptance Verdict
 
-Phase 4. Turn the consolidated findings into two outputs: routed action items the human can act on, and an honest verdict on whether the epic met its acceptance criteria. This skill proposes; it does not auto-apply fixes or edit the project spec. The human decides what executes.
+Phase 4. Turn the consolidated findings into two outputs: routed action items the human can act on, and an honest verdict on whether the epic met its acceptance criteria. This skill proposes; it does not auto-apply fixes or edit a ticket. The human decides what executes.
 
 ## Route each finding
 
@@ -9,14 +9,14 @@ Give every finding two independent dispositions:
 - **What to do about this instance** — *fix now*, *defer*, or *accept as-is*. Fix-now findings become action items. Deferred findings carry enough context to be acted on later without re-investigation. Accepted deviations are recorded so later retros stop re-flagging them.
 - **What would prevent the next one** — the upstream lesson: spec wording, story sizing, a missing convention or gate, or nothing. This is where a recurring finding becomes a process change rather than a one-off fix.
 
-Findings from sub-agents or the team discussion are unverified reports, not established facts. Before an action item relies on one, re-check it against the primary source — reopen the file, the commit, the spec. A finding whose source does not hold up is dropped, not routed.
+Findings from sub-agents or the team discussion are unverified reports, not established facts. Before an action item relies on one, re-check it against the primary source — reopen the file, the commit, the ticket. A finding whose source does not hold up is dropped, not routed.
 
 ## Action items
 
 Compile fix-now findings and process lessons into specific, owned action items. Each names what to change and who owns it. Two kinds are *proposed, not applied* in this version:
 
 - **Remediation** — code fixes are written up as action items (or story-shaped work) for the normal dev loop to execute later. The retrospective does not run the dev loop itself.
-- **Spec reconciliation** — where the as-built diverges from the spec, propose the reconciliation as an action item with the evidence attached. The human applies it to the project contract; an uncertain interpretation is never written into the spec automatically.
+- **Spec reconciliation** — where the as-built diverges from the ticket, propose the reconciliation as an action item with the evidence attached. The human applies it to the ticket through `bmad-agent-po`; an uncertain interpretation is never written into a ticket automatically.
 
 ## Decision records
 
@@ -35,7 +35,7 @@ No status is written anywhere; the record is the follow-through. A run with no p
 
 ## The verdict
 
-Judge the final state against the epic file's Done when. If the epic file has none, profile the criteria from the diff and plans and mark the verdict as **profiled** rather than declared. Weigh verification results (the Phase 2 behavior check) and unresolved findings. Render one of:
+Judge the final state against the epic file's Requirements and Done when. If the epic file has neither, profile the criteria from the diff and plans and mark the verdict as **profiled** rather than declared. Weigh verification results (the Phase 2 behavior check) and unresolved findings. Render one of:
 
 - **Accepted** — criteria demonstrably met in the evidence, no blocking findings open, and **no unfinished tickets** for this epic.
 - **Accepted-with-open-items** — criteria met, but named findings remain deferred and tracked — still only when every ticket of this epic is finished.

@@ -16,7 +16,7 @@ You will receive:
    - Research documents (`*research*`, `*analysis*`, `*findings*`)
    - Project context (`*context*`, `*overview*`, `*background*`)
    - Existing briefs or summaries (`*brief*`, `*summary*`)
-   - Any markdown, text, or structured documents that look relevant
+   - Any markdown, text, or structured documents that look relevant. Skip ticket files (`initiative-*.md`, `tickets/epic-*/epic-*.md`, older `SPEC*.md`): the parent reads those itself, in full.
 
 2. **For sharded documents** (a folder with `index.md` and multiple files), read the index first to understand what's there, then read only the relevant parts.
 

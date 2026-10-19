@@ -12,7 +12,7 @@ review: '' # none | quick | thorough — set by step-04
 review_source: '' # pinned | auto — set with review by step-04
 lenses_ran: [] # ids of the lenses launched, set by step-04
 review_loop_iteration: 0 # incremented by step-04 before each review loopback
-context: [] # optional: `{project-root}/`-prefixed paths to project-wide standards/docs the implementation agent should load. Keep short — only what isn't already distilled into the plan body.
+context: [] # optional: `{project-root}/`-prefixed paths the implementation agent should load: companions the ticket names that this work needs, and project-wide standards. Keep short — only what isn't already distilled into the plan body.
 ---
 
 <!-- Target: 900–1300 tokens (less if route is oneshot). Above 1600 = high risk of context rot.

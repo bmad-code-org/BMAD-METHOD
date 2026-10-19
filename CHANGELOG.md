@@ -12,7 +12,8 @@
 * `planning_artifacts` and `implementation_artifacts` are no longer read or seeded. Run `bmad migrate method` on a v6 project.
 * The ticketing store's `root` key is gone; the ticket tree is `{output_folder}/{active_initiative}`. To move the store, set `core.output_folder` in `_bmad/custom/config.toml`.
 * `active_initiative` is now a core setting: it moved from `[modules.bmm]` to `[core]` in `_bmad/custom/config.user.toml`, since core skills such as brainstorming and research also write into the initiative folder. If you set it on a preview build, move the line.
-* `bmad-preview-ticketing` is now `bmad-ticket`, and the forwarder under the old name is gone. Run `bmad setup`: it updates the skills, moves `_bmad/custom/bmad-preview-ticketing.toml` to `bmad-ticket.toml`, offers to delete the old skill, and offers to install `bmad-ticket`.
+* Sofia the Product Owner (`bmad-agent-po`) replaces `bmad-spec`, `bmad-ticket` and `bmad-correct-course`, and `bmad-preview-ticketing` is gone. Run `bmad setup`: it moves `_bmad/custom/bmad-ticket.toml` to `bmad-agent-po.toml`, moves its `persistent_facts` and `activation_steps_*` from `[workflow]` to `[agent]`, drops the keys Sofia does not read, and offers to delete the old skills. Overrides of `bmad-spec`, `bmad-correct-course` or `bmad-preview-ticketing` do not move; copy what you still need into `bmad-agent-po.toml`.
+* An initiative or epic keeps its `tickets.toml`, child epics, leaf files and plans in a `tickets/` folder inside it. `tickets.py` refuses a tree in the earlier layout; run `bmad migrate method` to move it.
 * Web bundles are removed: the `web-bundles/` folder, its packager and its docs pages. Gemini Gems and ChatGPT Custom GPTs are deprecated and are being replaced by skills on both platforms.
 
 ### ✨ Features
@@ -27,6 +28,10 @@
 * `bmad setup` and `bmad status` name the skills of each module you did not install and give one command that installs them.
 * `bmad setup` and `bmad status` cover every skills folder your tool loads, so a module installed in the project is set up while `bmad` is global, and a skill installed twice is reported with an offer to delete the extra copy.
 * `bmad setup` is one flow that also updates and migrates: when a module has a newer version it runs `npx skills update`, and it ends by checking whether any migration applies and asking whether to run it. Asking for status runs only the check.
+
+### 🐛 Fixes
+
+* **The verification-gap lens files only gaps worth a test.** A gap finding now exists only when the lens names a concrete regression a test in the repo's own suite could catch; unreachable states, defensive branches and redundant code are dropped rather than deferred, and the `defer` disposition is gone. The lens no longer asks for tests of build, toolchain or configuration plumbing that CI exercises by building. It reports a fourth shape, the stale-verification gap: a test that asserts the outcome the change got wrong, so the fix will fail it. Dead tests and stale test comments go to `Other findings`, where triage can grade them low. Applies to `bmad-code-review`, `bmad-build`, `bmad-build-auto` and the `verification-gap` lens of `bmad-review`.
 
 ## v6.12.0 - 2026-09-03
 

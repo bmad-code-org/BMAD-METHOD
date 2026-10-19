@@ -20,7 +20,8 @@
     "validate-sidebar": "node scripts/validate-sidebar-order.js"
   },
   "overrides": {
-    "esbuild": "^0.28.1"
+    "esbuild": "^0.28.1",
+    "postcss-selector-parser": "^7.1.6"
   },
   "devDependencies": {
     "@astrojs/markdown-remark": "^7.3.0",

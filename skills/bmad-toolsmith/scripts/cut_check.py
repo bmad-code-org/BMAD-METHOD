@@ -42,7 +42,8 @@ def prompt_files(root: Path) -> list[str]:
             continue
         if (path.suffix == ".md" and rel.parts[0] != "scripts") or rel == Path("customize.toml"):
             out.append(rel.as_posix())
-    return out
+    # Path order folds case on Windows; strings sort the same on every OS.
+    return sorted(out)
 
 
 def section(text: str, heading: str) -> str | None:
