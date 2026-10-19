@@ -5,7 +5,7 @@ not for: Deciding whether to build (`brief`, `opportunity`); one feature for a c
 stance: The user narrates journeys as real sessions; you structure them.
 inputs: Form factor if the sources do not say. Only the user knows who it is for, what is out, and what success looks like.
 writing: Capabilities, not implementation: technology choices go to the addendum. Ids (UJ-N, FR-N, SM-N) are global; no traceability matrix. Domain nouns are used exactly as the glossary defines them.
-done when: Every FR has testable consequences and traces to a journey or need; non-goals and out-of-scope reasons are stated; every primary metric has a counter-metric.
+done when: Every FR can be checked at its altitude and traces to a journey or need, and every journey beat that needs the product has an FR; non-goals and out-of-scope reasons are stated; every primary metric has a counter-metric.
 view: document
 -->
 ---
@@ -25,13 +25,13 @@ updated: ""
 <!-- required. What this is, for whom, why it matters, and why now when timing matters. -->
 
 ## Users and journeys
-<!-- required. Who it serves and their jobs; UJ-N journeys: a named protagonist with persona inline, entry state, three to five beats, the climax where value lands, the resolution, optionally one failure. One sentence each at low stakes; add a flow and edge cases when it feeds UX or architecture. -->
+<!-- required. Who it serves and their jobs; UJ-N journeys: a named protagonist with persona inline, entry state, three to five beats, the climax where value lands, the resolution, optionally one failure, ending with the FRs that realize it. One sentence each at low stakes; add a flow and edge cases when it feeds UX or architecture. -->
 
 ## Glossary
 <!-- required. Each domain noun defined once. -->
 
 ## Features and requirements
-<!-- required. By feature: its behavior and the journeys it realizes, then nested FR-N: "[Actor] can [capability] [under conditions]", testable consequences, out-of-scope bounds. -->
+<!-- required. By feature: its behavior and the journeys it realizes, then nested FR-N: "[Actor] can [capability] [under conditions]" and out-of-scope bounds. At epic altitude each FR adds testable consequences; above it, one checkable result per capability, the edge cases left to the epics. -->
 
 ## Non-goals
 <!-- required. What this is not and will not become, so no level below adds the nearby thing. -->
@@ -49,7 +49,7 @@ updated: ""
 <!-- include when: a consumer or branded product. Tone, information architecture, platforms, monetization. -->
 
 ## Stakeholders, risks and rollout
-<!-- include when: several teams or an enterprise. Sign-offs, risks and mitigations, rollout, change management. -->
+<!-- include when: several teams or an enterprise. Sign-offs, risks and mitigations, rollout with an owner and needed-by date per gate, change management. -->
 
 ## Integrations and operations
 <!-- include when: it depends on existing systems or carries service levels. -->
