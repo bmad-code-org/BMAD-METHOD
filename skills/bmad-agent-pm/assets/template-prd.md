@@ -49,7 +49,7 @@ updated: ""
 <!-- include when: a consumer or branded product. Tone, information architecture, platforms, monetization. -->
 
 ## Stakeholders, risks and rollout
-<!-- include when: several teams or an enterprise. Sign-offs, risks and mitigations, rollout with an owner and needed-by date per gate, change management. -->
+<!-- include when: several teams or an enterprise. Sign-offs, risks and mitigations, rollout with an owner and needed-by date per gate, change management. diagram: gantt -->
 
 ## Integrations and operations
 <!-- include when: it depends on existing systems or carries service levels. -->

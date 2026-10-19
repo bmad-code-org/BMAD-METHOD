@@ -25,7 +25,7 @@ updated: ""
 <!-- required. Who feels the pain, how they cope today, and what the status quo costs them. -->
 
 ## Solution
-<!-- required. What gets built and how it solves the problem, as experience and outcome rather than implementation. -->
+<!-- required. What gets built, the form it takes (app, web tool, service), and how it solves the problem, as experience and outcome rather than implementation. -->
 
 ## What makes it different
 <!-- required. Why this over the alternatives, including doing nothing; the real advantage, even when it is only speed or focus. -->
