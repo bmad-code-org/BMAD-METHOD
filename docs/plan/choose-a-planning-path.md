@@ -86,7 +86,7 @@ John (`bmad-agent-pm`) creates, updates, and validates ten planning documents;
 the work's altitude picks which, and he names close alternatives. A brief feeds
 the PRD, which John reads during discovery, but neither requires the other.
 
-![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning (PRD, UX), and solutioning (architecture and Sofia, the Product Owner), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
+![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, PRFAQ), planning (John for a brief, PRD or other planning document, and UX), and solutioning (architecture and Sofia, the Product Owner), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
 
 ## Size Follows the Intent
 
