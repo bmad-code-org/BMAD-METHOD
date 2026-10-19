@@ -68,23 +68,23 @@ initiative's lines.
 
 ## Planning Skills and What They Produce
 
-Every skill in this chapter writes a document you can hand on. The table runs from analysis through planning to solutioning; each chapter page is linked from the first skill it covers and explains when its skills fit. In an installed project, `bmad` recommends the next one. Each document lands in its own `<type>-<slug>/` folder inside the active initiative's folder, or directly in the output folder (`_bmad-output` by default) when no initiative is active. A PRD, `bmad-ux`, or `bmad-architecture` run on an epic lands in that epic's folder instead.
+Every skill in this chapter writes a document you can hand on. The table runs from analysis through planning to solutioning; each chapter page is linked from the first skill it covers and explains when its skills fit. In an installed project, `bmad` recommends the next one. Each document lands in its own `<type>-<slug>/` folder inside the active initiative's folder, or directly in the output folder (`_bmad-output` by default) when no initiative is active. A document from John, or a `bmad-ux` or `bmad-architecture` run, on an epic lands in that epic's folder instead.
 
 | Skill                           | Purpose                                                                                                                                        | Produces                                                                            |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | `bmad-brainstorming`            | Generate ideas with a facilitated session ([Explore and Validate an Idea](./explore-and-validate-an-idea.md))                                  | `brainstorm.html` keepsake plus an optional `brainstorm-<topic>.md`                 |
 | `bmad-forge-idea`               | Pressure-test an idea until it hardens, proves out, or dies cheaply                                                                            | `forge-report.html` every run; `forge-<slug>.md` when the idea hardens              |
 | `bmad-deep-recon`               | Research a subject to support a decision ([Research a Decision](./research-a-decision.md))                                                     | Cited `research-<topic>.md` plus an optional HTML briefing                          |
-| `bmad-product-brief`            | Capture the product vision when the concept is clear ([Define Requirements and a Specification](./define-requirements-and-a-specification.md)) | `brief-<slug>.md` + `addendum.md`                                                   |
+| `bmad-product-brief`            | Capture the product vision when the concept is clear ([Define Requirements and a Specification](./define-requirements-and-a-specification.md)); kept for comparison with John's brief and will be retired | `brief-<slug>.md` + `addendum.md`                                                   |
 | `bmad-prfaq`                    | Stress-test a product concept customer-first, working backwards from the press release                                                         | `prfaq-<slug>.md` + a distillate                                                    |
-| `bmad-agent-pm`                 | John, the Product Manager: create, update, or validate a PRD                                                                                                              | Create/update: `prd-<slug>.md`, `addendum.md`, `.memlog.md`; validate: HTML + `.md` report |
+| `bmad-agent-pm`                 | John, the Product Manager: create, update, or validate a brief, PRD, or another planning document                                                                         | Create/update: `<id>-<slug>.md` (such as `prd-<slug>.md`), `.memlog.md`, `addendum.md` when needed, optional HTML view; validate: `review-*.md` findings |
 | `bmad-ux`                       | Record how the product looks and behaves ([Design UX and Architecture](./design-ux-and-architecture.md))                                       | `DESIGN.md`, `EXPERIENCE.md`, `ux-<slug>.md`, `.memlog.md`                          |
 | `bmad-architecture`             | Make the technical decisions that keep separately built parts consistent                                                                       | `architecture-<slug>.md` by default                                                 |
 | `bmad-agent-po` | Sofia, the Product Owner: write a ticket's requirements from any input, then [plan and track entries](./break-work-into-stories-and-track-it.md) | Requirements and Constraints in the initiative, epic, or story file, `.memlog.md` beside it, ordered `tickets.toml`, and optional leaf files |
 
-John (`bmad-agent-pm`) creates, updates, and validates a PRD; say which you
-want when you ask him, or he will ask. `bmad-product-brief` feeds the PRD,
-which John reads during discovery, but neither requires the other.
+John (`bmad-agent-pm`) creates, updates, and validates ten planning documents;
+the work's altitude picks which, and he names close alternatives. A brief feeds
+the PRD, which John reads during discovery, but neither requires the other.
 
 ![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning (PRD, UX), and solutioning (architecture and Sofia, the Product Owner), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
 

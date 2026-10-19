@@ -23,7 +23,7 @@ initiative, epic, or story file is the specification at its level, its
 Requirements section is what Build reads, and when there is a PRD, that is
 where those lines come from.
 
-The brief, PRD, and UX skills steer the same way. Each opens with a brain
+John's documents and the UX skill steer the same way. Each opens with a brain
 dump: tell it everything and point it at any files you have. Then you choose a
 working mode. **Fast path** batches the remaining gaps into a question or two
 and drafts the whole document with `[ASSUMPTION]` tags for you to correct.
@@ -32,17 +32,17 @@ back where an answer is thin. Sessions can be paused and resumed.
 
 ## Product Brief: Capture Conviction
 
-Run `bmad-product-brief` to create, update, or validate a brief: a one- to
+Ask John, the Product Manager (`bmad-agent-pm`), to create, update, or validate a brief ("write a product brief"): a one- to
 two-page account of the product concept, right-sized to its purpose. A passion
-project does not get investor-grade rigor; a pitch input does. The coach reads
-the stakes early and calibrates how hard it pushes.
+project does not get investor-grade rigor; a pitch input does. He reads
+the stakes early and calibrates how hard he pushes.
 
 Use it when your concept is relatively clear and you want it written down
-before a PRD. It produces `brief-<slug>.md` plus `addendum.md`, which holds the depth
+before a PRD. It produces `brief-<slug>.md`, plus `addendum.md` when there is depth
 that belongs later rather than in the brief: rejected alternatives, options
 considered, technical constraints, sizing data. John reads both when he writes the PRD. For
-serious market sizing or competitor teardowns it hands you to
-[Deep Recon](./research-a-decision.md).
+serious market sizing or competitor teardowns, use
+[Deep Recon](./research-a-decision.md). `bmad-product-brief` still writes a brief the older way; it is kept for comparison with John and will be retired.
 
 ## PRFAQ: Working Backwards
 
@@ -75,13 +75,12 @@ required; John starts a PRD from a brain dump on his own.
 
 Talk to John, the Product Manager (`bmad-agent-pm`), to create, update, or validate a Product Requirements Document. Ask for him by name or say what you want: "create a PRD", "update the PRD", "validate this PRD".
 
-- **Create** runs discovery, then drafts. On the Coaching path you also pick
-  an entry point: **Vision + Features** for capability-first products and
-  internal tools, or **Journey-led** for consumer and multi-stakeholder
-  products, where user journeys are told with a named protagonist.
+- **Create** runs discovery, then drafts. User journeys are told with a named
+  protagonist.
 - **Update** reconciles the PRD with a change signal, surfacing conflicts with
   earlier decisions before applying anything.
-- **Validate** critiques without changing and produces a findings report.
+- **Validate** critiques without changing and writes the findings to
+  `review-*.md` files beside the PRD.
 
 The PRD describes capabilities, not implementation: features grouped, with
 functional requirements under stable IDs and non-functional requirements in
@@ -93,8 +92,14 @@ It answers "what should we build and why." It does not say how; that is
 [Design UX and Architecture](./design-ux-and-architecture.md). It does not
 divide work into stories; that is
 [Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md).
-If you open with a one-pager in mind or an idea to vet, John points you at
-the brief or the PRFAQ instead.
+If you open with a one-pager in mind, John offers the brief; an idea to vet
+goes to the PRFAQ.
+
+## Other Planning Documents
+
+Besides the brief and the PRD, John writes a spec for a coding agent, an opportunity assessment, a business case, a program charter, a strategy narrative, a Shape Up pitch, a requirements specification, and a launch plan. The work's altitude picks the document: a program takes a charter or a strategy narrative, an epic a PRD or a pitch, and a feature outside the ticket tree a spec for a coding agent. He says why he chose it and names any close alternative, so you can switch. Each works like the PRD: fast or coaching path; create, update, or validate.
+
+Your team can add its own planning documents, replace or disable John's, or add its rules to one, in `_bmad/custom/bmad-agent-pm.toml`. Doc standards, reviewers, output, style, and the HTML view are set on `bmad-doc-pro`, the skill that runs John's documents. See [Write a Document Template](../customize/write-a-document-template.md).
 
 ## Requirements: The Contract Implementation Reads
 
@@ -138,9 +143,9 @@ To run the planned stories unattended, explicitly dispatch each ticket to
 one run per ticket. No leaf file needs to be pulled first.
 
 :::note[What each skill produces]
-`bmad-product-brief`: `brief-<slug>.md` and `addendum.md`. `bmad-prfaq`: a
-PRFAQ document with a short summary for the PRD or for Sofia. John (`bmad-agent-pm`):
-`prd-<slug>.md` and `addendum.md`, or a validation report. Each document
+John (`bmad-agent-pm`): `<id>-<slug>.md`, such as `brief-<slug>.md` or
+`prd-<slug>.md`, with `addendum.md` when needed, or `review-*.md` findings.
+`bmad-prfaq`: a PRFAQ document with a short summary for the PRD or for Sofia. Each document
 lands in its own `<type>-<slug>/` folder in the active initiative's folder,
 or in the output folder when no initiative is active. Sofia writes the
 Requirements and Constraints sections of the initiative, epic, or story file,

@@ -150,7 +150,7 @@ headings, frontmatter) so the agent adapts to what it finds. When several
 teams share one repository, each can point at its own template from
 `.user.toml` without touching the committed file.
 
-`bmad-facilitate` reads template libraries instead of one template key: add a file to `_bmad/custom/facilitate-templates/`, replace a shipped template, or add your rules to one. See [Write a Document Template](./write-a-document-template.md).
+John (`bmad-agent-pm`), who now writes briefs, and `bmad-facilitate` read template libraries instead of one template key: add a file to `_bmad/custom/facilitate-templates/`, replace a shipped template, or extend one. See recipe 6 and [Write a Document Template](./write-a-document-template.md).
 
 ## Recipe 5: Customize the agent roster
 
@@ -256,12 +256,14 @@ Keep the IDE file short. The model reads it every turn.
 
 ## Recipe 6: Advanced fields
 
-**File and keys:** `_bmad/custom/bmad-agent-pm.toml`, `[workflow] external_sources`,
-`external_handoffs`, `doc_standards`, and template scalars.
+**File and keys:** `_bmad/custom/bmad-doc-pro.toml`, `[workflow] external_sources`,
+`external_handoffs`, and `doc_standards`; `_bmad/custom/bmad-agent-pm.toml`,
+`[[workflow.templates]]` and `[workflow.additions.<id>]`.
 
 Some workflows expose more fields than recipes 1 through 5 use. Check a
 workflow's `customize.toml` to see which of these it has; the examples use
-John's PRD workflow (`bmad-agent-pm`), which has all of them. The same pattern applies wherever a
+`bmad-doc-pro`, which runs every document John (`bmad-agent-pm`) writes, so
+its settings apply to his documents too. The same pattern applies wherever a
 field appears.
 
 ### On-demand knowledge sources
@@ -271,7 +273,7 @@ competitive databases, or compliance references. The agent consults them
 only when the conversation surfaces a matching need, never preemptively.
 
 ```toml
-# _bmad/custom/bmad-agent-pm.toml
+# _bmad/custom/bmad-doc-pro.toml
 
 [workflow]
 external_sources = [
@@ -291,12 +293,12 @@ the workflow finalizes. Unlike `on_complete` (recipe 3), it is an append
 array: team entries stack, and each handoff fires independently.
 
 ```toml
-# _bmad/custom/bmad-agent-pm.toml
+# _bmad/custom/bmad-doc-pro.toml
 
 [workflow]
 external_handoffs = [
-  "After finalize, upload the PRD and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd'). Capture and surface the returned page URL.",
-  "Mirror to Notion via notion:create_page (database_id='abc123', title='PRD: ' + {project_name}).",
+  "After finalize, upload the document and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='Planning'). Capture and surface the returned page URL.",
+  "Mirror to Notion via notion:create_page (database_id='abc123', title=the document's title).",
 ]
 ```
 
@@ -314,7 +316,7 @@ stack on the workflow's shipped default
 before narrow prose passes.
 
 ```toml
-# _bmad/custom/bmad-agent-pm.toml
+# _bmad/custom/bmad-doc-pro.toml
 
 [workflow]
 doc_standards = [
@@ -324,22 +326,35 @@ doc_standards = [
 ]
 ```
 
-### Swappable templates and checklists
+### Template libraries and additions
 
-Workflows that produce structured documents expose their template and
-checklist paths as scalars. Point them at files under `{project-root}`, as
-in recipe 4.
+John keeps a template library instead of one template key per document. An
+entry with a shipped `id` replaces that template whole, a new `id` adds one,
+and `disabled = true` hides one. `[workflow.additions.<id>]` adds your rules
+to a template without replacing it, so they survive updates to the shipped
+template. Point files at `{project-root}`, as in recipe 4.
 
 ```toml
 # _bmad/custom/bmad-agent-pm.toml
 
-[workflow]
-# Regulated-industry PRD structure
-prd_template = "{project-root}/docs/enterprise/prd-template-hipaa.md"
+# Regulated-industry PRD structure and review rubric
+[[workflow.templates]]
+id = "prd"
+name = "PRD"
+description = "Committed work that needs requirements to build from, at any altitude."
+file = "{project-root}/docs/enterprise/prd-template-hipaa.md"
+methods = ""
+rubric = "{project-root}/docs/enterprise/prd-rubric-regulated.md"
+disabled = false
 
-# Org-specific validation rubric
-validation_checklist_template = "{project-root}/docs/enterprise/prd-checklist-regulated.md"
+# Rules added to the shipped business case
+[workflow.additions.business-case]
+include = ["The budget owner and cost center"]
+checks = ["Every cost line names its source"]
 ```
+
+The template file format and every additions field are in
+[Write a Document Template](./write-a-document-template.md).
 
 ## Combining recipes
 

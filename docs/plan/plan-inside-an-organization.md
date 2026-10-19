@@ -34,7 +34,9 @@ Reach for the full path when one of these is true:
 The PRD is the document the organization owns. It is written by John, the
 Product Manager (`bmad-agent-pm`), validated by him, and updated through him; nothing else in the chain claims to
 say what the product is. Brainstorming, Forge Idea, Deep Recon, a product
-brief, and a PRFAQ exist to get the PRD written well. Everything after the PRD
+brief, and a PRFAQ exist to get the PRD written well. When the organization
+asks for a business case, a program charter, or a requirements specification
+for audited or contracted work, John writes those too. Everything after the PRD
 is derived from it:
 
 - `bmad-ux` writes `DESIGN.md` and `EXPERIENCE.md` in its own `ux-<slug>/` folder, as input beside the PRD.
@@ -86,7 +88,7 @@ document can be regenerated from it.
 
 | Role                     | Runs                                                                                              | Owns                                                                      |
 | ------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Product manager          | Brainstorming, Forge Idea, Deep Recon, then `bmad-product-brief` or `bmad-prfaq`, then John (`bmad-agent-pm`) | The PRD and its update cycle; the one-pager the steering committee reads  |
+| Product manager          | Brainstorming, Forge Idea, Deep Recon, then `bmad-prfaq` or a brief from John, then John (`bmad-agent-pm`) for the PRD | The PRD and its update cycle; the one-pager the steering committee reads  |
 | Designer                 | `bmad-ux`                                                                                         | `DESIGN.md`, `EXPERIENCE.md`                                              |
 | Tech lead or architect   | `bmad-architecture`                                                                               | The architecture spine                                                    |
 | One engineer, per epic   | Sofia (`bmad-agent-po`), Build per story, `bmad-retrospective`                                    | That epic: its file, its `tickets.toml`, its verdict                      |

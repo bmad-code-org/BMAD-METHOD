@@ -50,7 +50,7 @@ The BMad Method module installs six named agents. Load one with its skill ID, th
 | Agent                  | Skill ID                 | Codes                                                              | Menu                                                                                                                                                                 |
 | ---------------------- | ------------------------ | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Analyst (Mary)         | `bmad-agent-analyst`     | `BP`, `MR`, `DR`, `TR`, `TS`, `CR`, `UV`, `CB`, `WB`, `PC`         | Brainstorm; market, domain, and technical research; technology selection; competitive teardown; user-voice research; product brief; PRFAQ challenge; project context |
-| Product Manager (John) | `bmad-agent-pm`          | `PRD`, `VALIDATE`                                                  | Create or update a PRD; validate one into a findings report                                                                                                          |
+| Product Manager (John) | `bmad-agent-pm`          | `CREATE`, `VALIDATE`                                               | Create or update a brief, PRD, or one of eight more planning documents; validate one into review findings                                                           |
 | Product Owner (Sofia)  | `bmad-agent-po`          | `SPEC`, `TICKETS`, `REFINE`, `BOARD`, `VALIDATE`, `REPLAN`, `STORE` | Requirements from a PRD, brief, or notes into a ticket; slice an initiative or epic; refine a ticket; the board; validation; replan a mid-flight change; tracker setup |
 | Architect (Winston)    | `bmad-agent-architect`   | `CA`                                                               | Architecture spine                                                                                                                                                   |
 | Developer (Amelia)     | `bmad-agent-dev`         | `BD`, `QA`, `CR`, `ER`                                             | Build; QA test generation; code review; epic retrospective                                                                                                           |
@@ -147,7 +147,7 @@ Pressure-tests a half-formed idea in a questioning conversation, one question at
 
 ### bmad-facilitate
 
-Coaches you through one document from a template library, then updates or validates it. It reads your inputs, asks only what you alone know, reviews the draft against a rubric, and polishes it. Rigor follows the stakes you state. Five general templates ship: `decision-record`, `postmortem`, `proposal`, `security-review`, and `pitch-deck`. Your team can add its own, replace a shipped one, or add rules to one; see [Write a Document Template](../customize/write-a-document-template.md). PRDs and product briefs belong to John (`bmad-agent-pm`).
+Coaches you through one document from a template library, then updates or validates it. It reads your inputs, asks only what you alone know, reviews the draft against a rubric, and polishes it. Rigor follows the stakes you state. Five general templates ship: `decision-record`, `postmortem`, `proposal`, `security-review`, and `pitch-deck`. Your team can add its own, replace a shipped one, or add rules to one; see [Write a Document Template](../customize/write-a-document-template.md). Planning documents such as PRDs and product briefs belong to John (`bmad-agent-pm`).
 
 **Output:** `<id>-<slug>.md` with a `.memlog.md` and review files in its own folder, any companion files the template asks for, and an optional HTML view, which a pitch deck renders as slides.
 
@@ -182,9 +182,10 @@ The BMad Method module adds the six agents above and these workflow skills. The 
 
 | Skill                           | Purpose                                                                                           | See                                                                                                    |
 | ------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `bmad-product-brief`            | Create, update, or validate a product brief                                                       | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
+| `bmad-product-brief`            | Create, update, or validate a product brief; kept for comparison with John and will be retired     | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
 | `bmad-prfaq`                    | Stress-test a product concept with the Working Backwards PRFAQ method                             | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
-| `bmad-agent-pm`                 | John, the Product Manager: create, update, or validate a PRD                                      | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
+| `bmad-prd`                      | Create, update, or validate a PRD; kept for comparison with John and will be retired              | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
+| `bmad-agent-pm`                 | John, the Product Manager: create, update, or validate a brief, PRD, or another planning document | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
 | `bmad-ux`                       | Capture the UX vision as `DESIGN.md` and `EXPERIENCE.md`                                          | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
 | `bmad-architecture`             | Record the architecture decisions that keep separately built parts consistent                     | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
 | `bmad-project-context`          | Set up, refresh, or audit the repository's agent instructions                                     | [Set and Maintain Project Context](../existing-codebases/set-and-maintain-project-context.md)          |
@@ -206,7 +207,7 @@ The Toolsmith module is for authoring skills and is installed separately. See [T
 
 ## Deprecated Names
 
-Earlier skill IDs, such as `bmad-create-prd`, `bmad-edit-prd`, `bmad-market-research`, `bmad-generate-project-context`, and `bmad-checkpoint-preview`, still resolve as forwarders to the current skill. Use the current names in new work. `bmad-prd` became John, the Product Manager (`bmad-agent-pm`); `bmad setup` offers to remove the old install and moves its `_bmad/custom/` overrides to the new name.
+Earlier skill IDs, such as `bmad-create-prd`, `bmad-edit-prd`, `bmad-market-research`, `bmad-generate-project-context`, and `bmad-checkpoint-preview`, still resolve as forwarders to the current skill. Use the current names in new work.
 
 ## Naming and Modules
 
