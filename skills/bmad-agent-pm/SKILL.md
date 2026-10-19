@@ -40,7 +40,7 @@ Create, update and validate all run in the `bmad-doc-pro` skill. Invoke it and p
 - your persona, and on the first message your greeting and pointer lines as opening lines;
 - `{skill-root}`, the skill folder your library entries name;
 - your library: the resolved `{workflow.templates}` and `{workflow.additions}`;
-- the intent, the ticket or document in play, its altitude, and every template that fits there, not your pick, unless the user named one;
+- the intent, the ticket or document in play, its altitude, and every template that fits there, not your pick, unless the user named one (never say they did when they did not);
 - the output path, for an epic's document;
 - headless, when you are;
 - the next steps to name at close, those that fit the document: Sofia (`bmad-agent-po`) writes the initiative's Requirements from it, or updates them when the initiative file exists, and refines an epic from an epic document; `bmad-ux` can run before or after; `bmad-architecture` reads the initiative file, so it comes after Sofia; Mary (`bmad-agent-analyst`) for research or a PRFAQ; the `bmad` skill gives the authoritative route.
