@@ -1,0 +1,49 @@
+<!-- doc-pro template
+purpose: Learn from something that went wrong: what happened, why, and what changes so it does not recur.
+good for: An outage, a security incident, a failed launch, a missed deadline, a project over budget.
+not for: Judging a person's performance; choosing what to do next (`decision-record`).
+stance:
+  - Blameless: assume people acted sensibly on what they knew, and fix systems and processes, not people. When an answer names a person as the cause, ask what let the mistake happen.
+  - Facts before causes: settle the timeline, then analyze.
+inputs: Logs, chat history, tickets, alerts and emails with timestamps. Ask for them before reconstructing anything, because records beat memory; tag an event placed from memory alone `[ASSUMPTION]`. Only the user knows what people saw and believed at each moment, where the team got lucky, and which actions it will commit to.
+writing:
+  - Roles, not names, wherever cause is discussed.
+  - Contributing factors are usually several; the trigger is not the cause.
+  - Every action item has an owner, a due date and the factor it addresses; prefer changing a system over "be more careful".
+  - One time zone, stated once.
+done when: A reader who was not involved can follow the timeline and see how each factor contributed, and every factor has an action or a stated reason it has none.
+view: document
+-->
+---
+title: ""
+template: postmortem
+status: draft
+created: ""
+updated: ""
+---
+
+# {title}
+
+## Summary
+<!-- required. What happened, the impact, and where things stand, in two or three sentences. -->
+
+## Impact
+<!-- required. Who or what was affected, how much, for how long. -->
+
+## Timeline
+<!-- required. From the earliest trigger through detection, response and resolution, with times. diagram: timeline -->
+
+## Detection and response
+<!-- optional. How it was noticed, how long it went unnoticed, what sped or slowed the response. -->
+
+## Contributing factors
+<!-- required. The conditions and decisions that combined to cause it, the trigger separated from what let it do harm. diagram: flowchart -->
+
+## Lessons
+<!-- optional. What went well, what went poorly, where the team got lucky. -->
+
+## Action items
+<!-- required. Owner, due date, the factor addressed, and whether it prevents, detects or mitigates. -->
+
+## Communication
+<!-- include when: customers, funders or the public were told or still need telling. What was said and what remains. -->

@@ -1,0 +1,86 @@
+[
+  {
+    "query": "we picked Postgres over DynamoDB for the ledger service last week, help me write that up as a decision record",
+    "should_trigger": true
+  },
+  {
+    "query": "write an ADR for moving our auth tokens from cookies to the Authorization header",
+    "should_trigger": true
+  },
+  {
+    "query": "checkout was down for 40 minutes yesterday after a bad config push. I need a blameless postmortem for the team",
+    "should_trigger": true
+  },
+  {
+    "query": "help me run an incident review for Saturday's data loss in the sync service, timeline and action items",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm applying for a community arts grant due Friday, can you help me draft the application",
+    "should_trigger": true
+  },
+  {
+    "query": "write a proposal asking my director for two more engineers next quarter",
+    "should_trigger": true
+  },
+  {
+    "query": "do a security review of our payments API against the OWASP Top 10 and write it up in docs/security",
+    "should_trigger": true
+  },
+  {
+    "query": "threat model the new file upload service with STRIDE",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm pitching the seed round in two weeks, help me build the pitch deck story and slides",
+    "should_trigger": true
+  },
+  {
+    "query": "coach me through writing a runbook for rotating the database credentials",
+    "should_trigger": true
+  },
+  {
+    "query": "use template docs/templates/rfc.md and help me fill it in for the search rewrite",
+    "should_trigger": true
+  },
+  {
+    "query": "write the PRD for the booking app, I have a brief and three interview transcripts",
+    "should_trigger": false
+  },
+  {
+    "query": "help me create a product brief for a habit-tracking app",
+    "should_trigger": false
+  },
+  {
+    "query": "review the code changes on this branch before I open the PR",
+    "should_trigger": false
+  },
+  {
+    "query": "run a code review on src/payments, focus on error handling",
+    "should_trigger": false
+  },
+  {
+    "query": "research the market for AI meeting note tools and give me a report with competitors and pricing",
+    "should_trigger": false
+  },
+  {
+    "query": "create the architecture document for the ticketing system",
+    "should_trigger": false
+  },
+  {
+    "query": "help me brainstorm names and features for a pet adoption app",
+    "should_trigger": false
+  },
+  {
+    "query": "fix the null pointer in the upload handler and add a test",
+    "should_trigger": false
+  },
+  {
+    "query": "talk to John about the requirements for our onboarding flow",
+    "should_trigger": false
+  },
+  {
+    "query": "update the docs site page on installation to mention the new CLI flag",
+    "should_trigger": false
+  }
+]
