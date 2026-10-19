@@ -10,7 +10,9 @@
 1. Draft resume check. If `{plan_file}` exists with `status: draft`, read it and capture the verbatim `<frozen-after-approval>...</frozen-after-approval>` block as `preserved_intent`. Otherwise `preserved_intent` is empty.
 2. Investigate the codebase. When you can, send deep searches to subagents and wait for them in this turn. Tell them to return short summaries only, so this session does not fill up with their notes. Keep only what the work needs: the specific files, symbols or lines, what to reuse, and what not to change. Write that into the Code Map. Do not retell the investigation when implementation starts — the plan already has it.
 
-   Do not ask the human during investigation. When something is unclear, look in the repository, planning artifacts, or history first. Keep looking until you know, or until those sources have nothing more to say. Leave any remaining choice for the next step.
+   Treat a codebase research document as evidence for this investigation, read at its `commit`. Before the plan uses a claim from it, re-check it against the current code when the plan rests on it or its cited file changed since that commit (`git diff --stat <commit> -- <path>`). Investigate afresh any claim that no longer holds.
+
+   Do not ask the human during investigation. When something is unclear, look in the ticket and the companions it names, or the planning documents loaded without one, then the repository or history. Keep looking until you know, or until those sources have nothing more to say. Leave any remaining choice for the next step.
 
    For a bug fix, run a reproduction that fails on the reported symptom before fixing it. Record the command and its pass/fail criterion in the plan's `## Verification`; for intermittent failures, state the repetitions and threshold. If reproduction remains impossible after investigation, record what was tried and the missing evidence, and HALT before implementation on either route. The fix is done only when Verification passes.
 

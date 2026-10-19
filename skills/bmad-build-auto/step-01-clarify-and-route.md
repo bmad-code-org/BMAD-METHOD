@@ -25,14 +25,14 @@ If the invocation prompt explicitly points to an existing plan file with recogni
 - `dropped` → HALT with status `blocked` and blocking condition `dropped plan supplied`.
 - `built` or `done` → set `review_loop_iteration` to `0` in the frontmatter and set `followup_pass` to `true`, then **EARLY EXIT** to `{{ rendered("step-04-review.md") }}` for a fresh review pass.
 
-Otherwise, treat the invocation prompt as starting intent. This may be a story ID, ticket ID, file path, short description, or longer free-form intent. Do not infer workflow state from non-plan files.
+Otherwise, treat the invocation prompt as starting intent. This may be a story ID, ticket ID, a ticket file whose `type` is `initiative` or `epic` (read it in full), another file path, short description, or longer free-form intent. Do not infer workflow state from non-plan files.
 If the invocation prompt does not contain enough intent to identify what to implement, HALT with status `blocked` and blocking condition `unclear intent`.
 
 One ticket per invocation: never read another entry, and never advance to a different ticket regardless of outcome.
 
 ### Ticket resolution
 
-This runs on the output of `tickets.py find` for one ticket. Set `ticket_args` to the arguments find resolved it with. Find's `description`, `verify`, `references`, `notes`, and `unknown` are the intent, together with `epic_file` and what that file's References name when it is not null, and `story_file` when it is not null. Never write to a ticket file, and never run `pull`; only HALT runs `mark`.
+This runs on the output of `tickets.py find` for one ticket. Set `ticket_args` to the arguments find resolved it with. Read `story_file` in full when it is not null, else take find's `description`, `verify`, `covers`, `references`, `notes`, and `unknown`; then read `epic_file` in full when it is not null. That is the intent. The ticket distills its `sources:`, so never re-read them; open a file its References or `companions:` name only for a need the ticket points at. Never write to a ticket file, and never run `pull`; only HALT runs `mark`.
 
 - When the file at find's `plan` exists on disk, treat it as a plan file the invocation prompt pointed to and route it by its `status` (above).
 - Otherwise set `plan_file` to find's `plan`; the plan's frontmatter carries `ticket` set to find's `id`, or to the stem of find's `story_file` when `id` is null, never its `ref`. Continue to INSTRUCTIONS, skipping item 5.
@@ -40,7 +40,7 @@ This runs on the output of `tickets.py find` for one ticket. Set `ticket_args` t
 ## INSTRUCTIONS
 
 1. Load context.
-   - **A ticket from the tree** — when **Ticket resolution** set `plan_file`: the entry, its epic file and what that file's References name, and the story file when there is one are already the intent. For continuity, read the plans beside `plan_file` whose `ticket` is one of find's `after` ids that is a plain number (an entry of the same epic; a ref such as `1.5` is another epic's). Carry forward each one's **Code Map**, **Design Notes**, **Implementation Notes**, **Plan Change Log**, and **Tasks & Acceptance**, where present, as continuity context for step-02.
+   - **A ticket from the tree** — when **Ticket resolution** set `plan_file`: the story file (or the entry) and the epic file, read in full under **Ticket resolution**, are already the intent. Then list the `research-*` folders in `{{ initiative_folder }}/` and load each `type: codebase` document whose `ticket` names this ticket, since a research run on an entry with no ticket file leaves no References line to follow. For continuity, read the plans beside `plan_file` whose `ticket` is one of find's `after` ids that is a plain number (an entry of the same epic; a ref such as `1.5` is another epic's). Carry forward each one's **Code Map**, **Design Notes**, **Implementation Notes**, **Plan Change Log**, and **Tasks & Acceptance**, where present, as continuity context for step-02.
    - **Anything else:**
      {% if initiative_folder == config.output_folder %}
      - List `{{ config.output_folder }}/`.
@@ -49,12 +49,13 @@ This runs on the output of `tickets.py find` for one ticket. Set `ticket_args` t
      {% endif %}
      - If the invocation prompt points to an unformatted plan or intent file, ingest that file. Do not scan for unrelated intent files.
      - Planning documents sit in folders by type, main file named after the folder. Typical ones:
+       - **Ticket file** (`initiative-*/initiative-*.md`, and `tickets/epic-*/epic-*.md` under it) — the spec at its altitude; the documents below are its `sources:`, distilled into it, or its `companions:`
        - **PRD** (`prd-*/prd-*.md`) — product requirements and success criteria
        - **Architecture** (`architecture-*/architecture-*.md`) — technical design decisions and constraints
        - **UX/Design** (`ux-*/`, with `DESIGN.md` and `EXPERIENCE.md`) — user experience and interaction design
        - **Product Brief** (`brief-*/brief-*.md`) — project vision and scope
-       - **Spec** (`spec-*/spec-*.md`) — the capability contract
-     - Scan the listing for folders matching these patterns. If any look relevant to the current intent, load them selectively — you don't need all of them, but you need the right constraints and requirements rather than guessing from code alone.
+       - **Research** (`research-*/research-*.md`) — cited evidence; a `type: codebase` one says how the code works and how it got that way, as of the commit in its frontmatter
+     - When the listing holds a ticket file for this work, read it first and in full and do not re-read its `sources:`; open a file its References or `companions:` name only for a need the ticket points at. With no ticket, load the planning documents that fit the intent.
 2. Resolve intent from the invocation prompt and loaded artifacts. Do not fantasize or leave open questions. If the intent cannot be resolved, HALT with status `blocked` and the unresolved questions as blocking condition.
 3. Version control sanity check. If version control is unavailable, skip this check. Otherwise require a clean working tree, a branch that fits the intent, and writable repository metadata. For Git, run `git add --refresh -- .`, then confirm the tree is still clean; on failure or change, HALT with status `blocked` and blocking condition `version-control metadata not writable`. For a ticket from the tree, judge the branch against the epic, not the story. HALT on a dirty tree or obvious branch mismatch.
 4. Multi-goal warning. If the intent appears to contain multiple independently shippable goals, carry `multiple-goals` forward so step-02 can add it to `{plan_file}` frontmatter `warnings`. Do not split or block.

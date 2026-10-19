@@ -1,9 +1,9 @@
 # Implementation skills in detail
 
-Read this when the question is about `bmad-build`, `bmad-build-auto`, or `bmad-correct-course`. For running stories without a human, see `help/unattended-builds.md`.
+Read this when the question is about `bmad-build` or `bmad-build-auto`. For running stories without a human, see `help/unattended-builds.md`.
 
 **`bmad-build`** — one session of delivery: clarifies intent, plans, implements, reviews, and presents a commit.
-- Takes: free text however brief; a ticket from the tree, named by a ref such as `1.2`, its file, or its title; nothing, for the next ready ticket of the active initiative; a plan to resume; any other file as intent; or the recent conversation.
+- Takes: free text however brief; a ticket from the tree, named by a ref such as `1.2`, its file, or its title; nothing, for the next ready ticket of the active initiative; a plan to resume; any other file as intent; or the recent conversation. With a ticket it reads the entry, its epic file and any story file in full, and opens a companion only where the ticket points; the PRD and UX are not build input.
 - Pick when: any feature, story, bug fix, or meaningful change. It is the default, and risky or foundational stories belong here because a human approves the plan.
 - Not when: typo-level or config edits, or edits the user is directing line by line.
 - Size: one session is one goal, roughly 500 changed lines, not counting tests, in a handful of files. Start it in a fresh chat.
@@ -15,9 +15,4 @@ Read this when the question is about `bmad-build`, `bmad-build-auto`, or `bmad-c
 - Fits when: decisions and patterns are stable and the tickets are well specified.
 - Writes: the same plans as `bmad-build`.
 
-**`bmad-correct-course`** — assesses a significant midstream change.
-- Gives: a change proposal covering impact across PRD, epics, architecture, and UX; a recommended path (adjust, roll back, or cut scope); and proposed edits. It drafts the edits to the PRD, architecture, UX, and stories and does not apply them: the user applies those through the owning skills. Its handoff lists the added, removed, resequenced, or rescoped epics and stories for the user to apply with `bmad-ticket`.
-- Pick when: a ticket exposes something that reaches across artifacts, such as a technical limit, a new or misread requirement, a pivot, or a failed approach.
-- Not when: there is neither a PRD nor a spec (it halts). A change that touches only the spec → update it with `bmad-spec`. A change that only re-slices tickets → `bmad-ticket`.
-- Reads: the PRD or spec, plus architecture and UX when present. It reads no epics file or ticket tree; the user describes the affected epics and stories.
-- Writes: `{output_folder}/{active_initiative}/change-<slug>/change-<slug>.md`.
+A significant midstream change, such as a technical limit, a new or misread requirement, a pivot, or a failed approach, means talking to Sofia the Product Owner (`bmad-agent-po`, `help/planning-skills.md`) to replan: "this changed, what now". She reads the ticket tree, proposes the path (adjust, roll back, or cut scope), updates the ticket's Requirements when what is required changed, re-slices or drops the affected entries, and records the reason as a dated Decision line.

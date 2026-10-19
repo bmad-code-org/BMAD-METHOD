@@ -29,7 +29,7 @@ RECORD = (
 
 SKILL = f'[skill]\nbmod = "{{bmod}}"\nsource = "{SOURCE}"\n'
 
-MEMBERS = {"method": ("bmad-build", "bmad-spec"), "core-tools": ("bmad", "bmad-flow")}
+MEMBERS = {"method": ("bmad-build", "bmad-fixture-a"), "core-tools": ("bmad", "bmad-flow")}
 
 
 def load_module(name: str, path: Path):

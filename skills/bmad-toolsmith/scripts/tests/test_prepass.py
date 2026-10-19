@@ -120,6 +120,14 @@ class PrepassTest(unittest.TestCase):
             )
             self.assertEqual(prepass(rendered)["shape_hint"], "rendered-skill")
 
+            rendered_agent = make_skill(
+                root,
+                name="bmad-rendered-agent",
+                body='Run `uv run "{project-root}/_bmad/scripts/render_skill.py"`.',
+                files={"customize.toml": "[agent]\nname = 'Ann'\n"},
+            )
+            self.assertEqual(prepass(rendered_agent)["shape_hint"], "rendered-agent")
+
             memory_text = make_skill(root, name="bmad-mem2", body="Memory at `{project-root}/_bmad/memory/bmad-mem2/`.")
             self.assertEqual(prepass(memory_text)["shape_hint"], "memory-agent")
 

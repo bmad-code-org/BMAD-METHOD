@@ -1,6 +1,6 @@
 # Retrospective Workflow
 
-**Goal:** Review a completed epic by reading the evidence it left in the ticket tree — the epic file, the initiative's requirements, each ticket's entry, story file, and plan, the diff and commits between plan baselines, and session logs when they exist. An unattended epic run leaves a record; this workflow reads that record, surfaces the defects no single ticket could show, and judges the epic against the criteria it set for itself.
+**Goal:** Review a completed epic by reading the evidence it left in the ticket tree — the epic file, each ticket's entry, story file, and plan, the diff and commits between plan baselines, and session logs when they exist. An unattended epic run leaves a record; this workflow reads that record, surfaces the defects no single ticket could show, and judges the epic against the criteria it set for itself.
 
 Every finding you report carries a source reference (file, line, commit, or log). A claim you cannot point at — an invented root cause, a pattern the diff does not actually show — is not a finding. Drop it.
 
@@ -43,9 +43,9 @@ Activation is complete after all activation steps have run.
 | Input | Where | Use |
 |-------|-------|-----|
 | epic | invocation argument — an epic folder, or an epic id or slug in the active initiative — or chosen from the offer below | which epic to retro |
-| epic folder | `tickets.toml`, the epic file `epic-<slug>.md` (the folder's name plus `.md`), one `<type>-<slug>-plan.md` per ticket, and a story file where a ticket was pulled | the record the epic left |
-| initiative file | the epic folder's parent's same-named file, section Requirements | what each ticket's `covers` points at |
-| architecture / prd | `architecture-*/architecture-*.md` and `prd-*/prd-*.md` in the initiative folder (the epic folder's parent) | context for judging as-built vs intended |
+| epic folder | the epic file `epic-<slug>.md` (the folder's name plus `.md`), and in its `tickets/` folder the `tickets.toml`, one `<type>-<slug>-plan.md` per ticket, and a story file where a ticket was pulled | the record the epic left |
+| initiative file | `<initiative>/<initiative>.md`, the epic folder being `<initiative>/tickets/epic-<slug>/` | opened only for a `covers` id the epic file does not restate |
+| companions | the files the epic file lists in `companions:` | opened only for a section the epic or a ticket cites; requirements come from the ticket |
 | previous retro (optional) | `<folder name>-retrospective.md` in the previous epic's folder: run `status` with no folder for the `epics` order; the previous epic's folder is the sibling folder of that name | check whether last epic's actions landed |
 | session logs (optional) | conversation/session records for the epic's tickets | process lessons; record the gap when absent |
 
@@ -92,8 +92,9 @@ Skip by default; never runs headless. When the user asks to "discuss it as a tea
 ### Phase 4 — Decide
 
 - **Action items** — compile fix-now findings and process lessons into specific, owned action items. Fixes and spec reconciliations are *proposed here*, not auto-applied; the human decides what to execute.
-- **Acceptance verdict** — judge the final state against the epic file's Done when (profile the criteria from the diff and plans if it has none): **accepted**, **accepted-with-open-items**, or **rejected** — one spelling, everywhere a machine reads it. Unfinished tickets in `pending_tickets` force the machine verdict to **rejected**. A human decision always overrides. An epic that fails its criteria with no human decision is recorded as *not accepted* — never as silently accepted. Read fully and follow `{{ rendered("references/acceptance-verdict.md") }}` for the rubric, the finding-routing dispositions, and the previous-retro follow-through record.
+- **Decision records** — apply the test in `{{ rendered("references/acceptance-verdict.md") }}` to each decision in the plans' `<frozen-after-approval>` blocks (`<intent-contract>` in a plan `bmad-build-auto` wrote), Design Notes and Implementation Notes, propose the ones that pass, and write those the user approves.
+- **Acceptance verdict** — judge the final state against the epic file's Requirements and Done when (profile the criteria from the diff and plans if it has neither): **accepted**, **accepted-with-open-items**, or **rejected** — one spelling, everywhere a machine reads it. Unfinished tickets in `pending_tickets` force the machine verdict to **rejected**. A human decision always overrides. An epic that fails its criteria with no human decision is recorded as *not accepted* — never as silently accepted. Read fully and follow `{{ rendered("references/acceptance-verdict.md") }}` for the rubric, the finding-routing dispositions, and the previous-retro follow-through record.
 
 ### Phase 5 — Finalize
 
-Finalize the retrospective document and stop. Read fully and follow `{{ rendered("references/retro-document.md") }}` for the document's location, frontmatter, and sections, and the terminal instruction that ends the run. The document is the run's only write: no status change, no `tickets.py mark`, and no edit to the epic file, any plan, or any story file. Closing the epic is `bmad-ticket`'s, confirmed by the user.
+Finalize the retrospective document and stop. Read fully and follow `{{ rendered("references/retro-document.md") }}` for the document's location, frontmatter, and sections, and the terminal instruction that ends the run. Besides the decision records the user approved, the document is the run's only write: no status change, no `tickets.py mark`, and no edit to the epic file, any plan, or any story file. Closing the epic is Sofia's (`bmad-agent-po`), confirmed by the user.

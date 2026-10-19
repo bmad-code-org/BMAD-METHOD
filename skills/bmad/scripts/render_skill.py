@@ -178,6 +178,30 @@ def _require_review_layers(value: Any, label: str) -> list[dict[str, str]]:
     return result
 
 
+def _keyed_by_code(tables: list[dict[str, Any]]) -> bool:
+    """Menus key their items on `code`; review layers on `id`. Same order as `structural_merge`."""
+    return all("code" in table for table in tables)
+
+
+def _require_keyed_tables(value: Any, label: str, key: str) -> list[dict[str, str]]:
+    if not isinstance(value, list):
+        raise RenderError(f"{label} must be a list of tables")
+    result: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for index, item in enumerate(value):
+        item_label = f"{label}[{index}]"
+        if not isinstance(item, dict):
+            raise RenderError(f"{item_label} must be a table")
+        identifier = _require_string(item.get(key), f"{item_label}.{key}")
+        if identifier in seen:
+            raise RenderError(f"duplicate {label} {key} `{identifier}`")
+        seen.add(identifier)
+        result.append(
+            {field: _require_string(text, f"{item_label}.{field}", allow_empty=True) for field, text in item.items()}
+        )
+    return result
+
+
 def _load_sources(skill_dir: Path) -> dict[str, str]:
     sources: dict[str, str] = {}
     for candidate in sorted(skill_dir.rglob("*.md")):
@@ -196,6 +220,24 @@ def _load_sources(skill_dir: Path) -> dict[str, str]:
     if "workflow.md" not in sources:
         raise RenderError(f"render entry is missing: {skill_dir / 'workflow.md'}")
     return sources
+
+
+def _load_assets(skill_dir: Path) -> dict[str, bytes]:
+    """Non-Markdown files under assets/ are copied into the generation unchanged, so a
+    customization value's `{skill-root}` (bound to the generation) reaches them too."""
+    assets: dict[str, bytes] = {}
+    for candidate in sorted((skill_dir / "assets").rglob("*")):
+        if candidate.suffix == ".md" or not candidate.is_file():
+            continue
+        name = candidate.relative_to(skill_dir).as_posix()
+        path = candidate.resolve(strict=True)
+        if not path.is_relative_to(skill_dir):
+            raise RenderError(f"render asset escapes skill directory: {name}")
+        try:
+            assets[name] = path.read_bytes()
+        except OSError as error:
+            raise RenderError(f"failed to read render asset {path}: {error}") from error
+    return assets
 
 
 def _resolve_config_value(value: Any, label: str, project_root: Path) -> str:
@@ -263,6 +305,8 @@ def _resolve_customization_value(value: Any, default: Any, label: str) -> Any:
         return _require_string(value, label, allow_empty=allow_empty)
     if isinstance(default, list):
         if default and all(isinstance(item, dict) for item in default):
+            if _keyed_by_code(default):
+                return _require_keyed_tables(value, label, "code")
             return _require_review_layers(value, label)
         return _require_string_list(value, label)
     if isinstance(default, (bool, int, float, date, time)):
@@ -305,6 +349,13 @@ class _LayerList(list):
         return _format_review_layers(list(self))
 
 
+class _TableList(list):
+    """A code-keyed table customization such as a menu; inserted directly it renders one bullet per table."""
+
+    def __str__(self) -> str:
+        return _format_markdown_list(["\n".join(f"{key}: {text}" for key, text in table.items()) for table in self])
+
+
 def _bind_customization(value: Any, label: str, destination: Path) -> Any:
     """Bind `{skill-root}` in customization prose to the generation and wrap lists for insertion."""
     root = destination.as_posix()
@@ -312,9 +363,8 @@ def _bind_customization(value: Any, label: str, destination: Path) -> Any:
         return _Text(value.replace("{skill-root}", root), label)
     if isinstance(value, list):
         if value and all(isinstance(item, dict) for item in value):
-            return _LayerList(
-                [{key: text.replace("{skill-root}", root) for key, text in layer.items()} for layer in value]
-            )
+            tables = [{key: text.replace("{skill-root}", root) for key, text in table.items()} for table in value]
+            return _TableList(tables) if _keyed_by_code(tables) else _LayerList(tables)
         return _MarkdownList([item.replace("{skill-root}", root) for item in value])
     return value
 
@@ -422,6 +472,12 @@ class _RenderContext:
                 None if defaults is None else defaults.get("workflow", {}),
                 customization.get("workflow", {}),
                 "workflow",
+                self,
+            ),
+            "agent": _CustomizationTable(
+                None if defaults is None else defaults.get("agent", {}),
+                customization.get("agent", {}),
+                "agent",
                 self,
             ),
             "rendered": self._rendered,
@@ -583,6 +639,7 @@ def render(
         raise RenderError(f"project root does not contain _bmad/: {project_root}")
 
     sources = _load_sources(skill_dir)
+    assets = _load_assets(skill_dir)
     central = load_central_config(project_root)
     has_customization = bool(overrides is not None or assignments) or (skill_dir / "customize.toml").is_file()
     defaults = load_toml(skill_dir / "customize.toml", required=True) if has_customization else None
@@ -594,7 +651,9 @@ def render(
         customization = structural_merge(structural_merge(customization, file_layer), command_layer)
         supplied = _leaf_paths(file_layer) | _leaf_paths(command_layer)
 
+    # Copied assets key the generation like rendered sources do, so an edited asset is not served stale.
     source_hashes = {name: _hash_bytes(content.encode("utf-8")) for name, content in sources.items()}
+    source_hashes |= {name: _hash_bytes(content) for name, content in assets.items()}
     root_hash = _hash_bytes(str(project_root).encode("utf-8"))[:12]
     slug = re.sub(r"[^a-z0-9]+", "-", project_root.name.lower()).strip("-") or "project"
     slug = slug[:80].rstrip("-") or "project"
@@ -633,7 +692,7 @@ def render(
     generation_hash = _hash_bytes(_canonical_json(identity))[:20]
     destination = namespace / generation_hash
     _, rendered = render_pass(destination)
-    outputs = {name: content.encode("utf-8") for name, content in rendered.items()}
+    outputs = {name: content.encode("utf-8") for name, content in rendered.items()} | assets
     output_hashes = {name: _hash_bytes(content) for name, content in outputs.items()}
     manifest = {
         "schema_version": 1,
@@ -650,7 +709,7 @@ def render(
 
 
 def report_owed_setup(skill_dir: Path, project_root: Path) -> None:
-    # Runs before rendering so the note lands ahead of the instruction to follow,
+    # Runs before rendering so the note lands ahead of the printed workflow,
     # and still shows when rendering halts. It must never fail the render.
     try:
         import setup_check
@@ -674,10 +733,12 @@ def main() -> int:
         entry = render(
             Path(args.project_root), Path(args.skill), overrides=args.overrides, assignments=args.assignments
         )
+        # Printed, not named: a file the model is told to read may be read only in part.
+        workflow = entry.read_text(encoding="utf-8")
     except (ConfigError, RenderError, OSError, UnicodeError, ValueError) as error:
         sys.stdout.write(f"HALT: {' '.join(str(error).splitlines())}\n")
         return 1
-    sys.stdout.write(f"read and follow {entry}\n")
+    sys.stdout.write(workflow)
     return 0
 
 

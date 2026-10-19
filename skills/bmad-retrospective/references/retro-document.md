@@ -18,7 +18,7 @@ headless: true | false
 ---
 ```
 
-`epic` is the folder's name, as `tickets.py` spells the epic. Keep `verdict` in sync with the Acceptance verdict section below. Never write a `type` or `ticket` field into this frontmatter: `tickets.py` reads a markdown file in the epic folder as a ticket when `type` is a ticket type and as a plan when `ticket` is present. This frontmatter is the only machine-readable verdict; nothing in the tree records it, so a gate or orchestrator that acts on the verdict **must** read this file.
+`epic` is the folder's name, as `tickets.py` spells the epic. Keep `verdict` in sync with the Acceptance verdict section below. This frontmatter is the only machine-readable verdict; nothing in the tree records it, so a gate or orchestrator that acts on the verdict **must** read this file.
 
 Sections:
 
@@ -27,15 +27,16 @@ Sections:
 - **Behavior verification** — what was exercised end to end and what was observed, or an explicit note that runtime behavior was not exercised.
 - **Previous-retro follow-through** — if a prior retro exists, whether its action items landed, with evidence (`{{ rendered("references/acceptance-verdict.md") }}` specifies what to record).
 - **Action items** — the routed fix-now items and process lessons, each with an owner. Note which are proposed remediation or spec reconciliations awaiting human application.
+- **Decision records** — each decision proposed as a record, and whether it was approved and written (`{{ rendered("references/acceptance-verdict.md") }}` specifies what to record).
 - **Acceptance verdict** — accepted / accepted-with-open-items / rejected, whether the criteria were declared or profiled, and the evidence behind the call.
 - **Open questions** — what a human answer would materially change, and anything the analyses could not resolve.
-- **Assumptions** — in headless runs, every choice made without the user: how the epic reference resolved to its folder, any non-empty `pending_tickets`, a machine **rejected** verdict forced by unfinished tickets or rendered with no human decision, each proposed item. Omit in interactive runs — an interactive run records the same facts where the user confirmed them, in Epic summary.
+- **Assumptions** — in headless runs, every choice made without the user: how the epic reference resolved to its folder, any non-empty `pending_tickets`, a machine **rejected** verdict forced by unfinished tickets or rendered with no human decision, each proposed item and decision record. Omit in interactive runs — an interactive run records the same facts where the user confirmed them, in Epic summary.
 
 Do not state time estimates anywhere in the document.
 
 ## Finish
 
-Report the document's path, the verdict, and the action-item count. Nothing else was written: no status changed, and no tree file was edited.
+Report the document's path, the verdict, the action-item count, and the path of each decision record written. Nothing else was written: no status changed, and no tree file was edited.
 
 ## On Complete
 

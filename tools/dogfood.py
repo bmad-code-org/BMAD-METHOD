@@ -42,10 +42,9 @@ from pathlib import Path
 DEFAULT_SKILLS = (
     "bmad",
     "bmod-method",
-    "bmad-ticket",
+    "bmad-agent-po",
     "bmad-build",
     "bmad-code-review",
-    "bmad-spec",
     "bmad-retrospective",
     "bmad-walkthrough",
 )

@@ -17,7 +17,7 @@ METHOD_RECORD = (
     'code = "method"\n'
     'version = "{version}"\n'
     f'update_source = "{SOURCE}"\n'
-    'skills = ["bmad-build", "bmad-spec"]\n'
+    'skills = ["bmad-build", "bmad-fixture-a"]\n'
     'required_skills = ["bmad"]\n'
     f"{MESSAGES}"
     "\n"
@@ -52,7 +52,7 @@ ROSTER = (
     'members = ["bmad-build", "guest"]\n'
 )
 
-MEMBERS = {"bmod-method": ("bmad-build", "bmad-spec"), "bmod-core-tools": ("bmad", "bmad-flow")}
+MEMBERS = {"bmod-method": ("bmad-build", "bmad-fixture-a"), "bmod-core-tools": ("bmad", "bmad-flow")}
 
 
 def load_module(name: str, path: Path):
@@ -120,7 +120,7 @@ class CleanTreeTests(ValidatorCase):
         path = self.skills / "bmod-method" / "bmod.toml"
         write(path, path.read_text(encoding="utf-8") + '\n[builder]\nversion = "9.9.9"\n')
         write(
-            self.skills / "bmad-spec" / "bmod.toml",
+            self.skills / "bmad-fixture-a" / "bmod.toml",
             SKILL.format(bmod="bmod-method") + "later = true\n\n[extra]\nx = 1\n",
         )
         self.assertEqual(self.problems(), "")
@@ -181,9 +181,9 @@ class FileRuleTests(ValidatorCase):
         self.assertIn("skills/bmad-orphan: missing bmod.toml", self.problems())
 
     def test_file_the_runtime_parser_rejects(self):
-        write(self.skills / "bmad-spec" / "bmod.toml", 'note = "neither table"\n')
+        write(self.skills / "bmad-fixture-a" / "bmod.toml", 'note = "neither table"\n')
         problems = self.problems()
-        self.assertIn("skills/bmad-spec/bmod.toml: the runtime parser rejects this file", problems)
+        self.assertIn("skills/bmad-fixture-a/bmod.toml: the runtime parser rejects this file", problems)
         self.assertIn("[bmod] table, a [skill] table, or both", problems)
 
     def test_record_missing_a_required_key(self):
@@ -206,9 +206,9 @@ class FileRuleTests(ValidatorCase):
         self.assertIn("'bmod.pre_install_message' must be a string", problems)
 
     def test_skill_missing_a_required_key(self):
-        write(self.skills / "bmad-spec" / "bmod.toml", '[skill]\nbmod = "bmod-method"\n')
+        write(self.skills / "bmad-fixture-a" / "bmod.toml", '[skill]\nbmod = "bmod-method"\n')
         problems = self.problems()
-        self.assertIn("skills/bmad-spec/bmod.toml", problems)
+        self.assertIn("skills/bmad-fixture-a/bmod.toml", problems)
         self.assertIn("'skill.source'", problems)
 
     def test_github_source_with_two_parts_is_accepted(self):
@@ -218,7 +218,7 @@ class FileRuleTests(ValidatorCase):
         self.assertEqual(self.problems(), "")
 
     def test_github_source_with_one_part_is_rejected(self):
-        write(self.skills / "bmad-spec" / "bmod.toml", '[skill]\nbmod = "bmod-method"\nsource = "github:o"\n')
+        write(self.skills / "bmad-fixture-a" / "bmod.toml", '[skill]\nbmod = "bmod-method"\nsource = "github:o"\n')
         self.assertIn("github source must name owner/repo", self.problems())
 
 
@@ -285,8 +285,8 @@ class RetiredRuleTests(ValidatorCase):
         self.assertEqual(self.problems(), "")
 
     def test_a_retired_name_that_still_ships_is_a_problem(self):
-        self.retire("bmod-method", 'removed = ["bmad-spec"]\n')
-        self.assertIn("retires 'bmad-spec', but skills/bmad-spec still ships", self.problems())
+        self.retire("bmod-method", 'removed = ["bmad-fixture-a"]\n')
+        self.assertIn("retires 'bmad-fixture-a', but skills/bmad-fixture-a still ships", self.problems())
 
     def test_a_rename_to_a_skill_the_repository_does_not_ship_is_a_problem(self):
         self.retire("bmod-method", 'renamed = [{ from = "bmad-old", to = "bmad-missing" }]\n')
@@ -331,14 +331,14 @@ class StampRuleTests(ValidatorCase):
 
 class MembershipRuleTests(ValidatorCase):
     def test_skill_naming_a_record_the_repo_lacks(self):
-        write(self.skills / "bmad-spec" / "bmod.toml", SKILL.format(bmod="bmod-absent"))
+        write(self.skills / "bmad-fixture-a" / "bmod.toml", SKILL.format(bmod="bmod-absent"))
         self.assertIn(
-            "skills/bmad-spec/bmod.toml: [skill] bmod names 'bmod-absent', which is not a module record",
+            "skills/bmad-fixture-a/bmod.toml: [skill] bmod names 'bmod-absent', which is not a module record",
             self.problems(),
         )
 
     def test_skill_naming_a_folder_that_is_not_a_record(self):
-        write(self.skills / "bmad-spec" / "bmod.toml", SKILL.format(bmod="bmad-build"))
+        write(self.skills / "bmad-fixture-a" / "bmod.toml", SKILL.format(bmod="bmad-build"))
         self.assertIn("[skill] bmod names 'bmad-build', which is not a module record", self.problems())
 
     def test_skill_its_record_does_not_list(self):
@@ -350,28 +350,28 @@ class MembershipRuleTests(ValidatorCase):
         )
 
     def test_listed_skill_the_repo_does_not_ship(self):
-        self.method_record('["bmad-build", "bmad-spec"]', '["bmad-build", "bmad-spec", "bmad-typo"]')
+        self.method_record('["bmad-build", "bmad-fixture-a"]', '["bmad-build", "bmad-fixture-a", "bmad-typo"]')
         self.assertIn(
             "skills/bmod-method/bmod.toml: lists the skill 'bmad-typo', which this repository does not ship",
             self.problems(),
         )
 
     def test_listed_skill_that_names_another_record(self):
-        write(self.skills / "bmad-spec" / "bmod.toml", SKILL.format(bmod="bmod-core-tools"))
+        write(self.skills / "bmad-fixture-a" / "bmod.toml", SKILL.format(bmod="bmod-core-tools"))
         self.assertIn(
-            "skills/bmod-method/bmod.toml: lists the skill 'bmad-spec', but skills/bmad-spec/bmod.toml names "
+            "skills/bmod-method/bmod.toml: lists the skill 'bmad-fixture-a', but skills/bmad-fixture-a/bmod.toml names "
             "'bmod-core-tools' as its bmod",
             self.problems(),
         )
 
     def test_listed_folder_that_is_a_record(self):
-        self.method_record('["bmad-build", "bmad-spec"]', '["bmad-build", "bmad-spec", "bmod-core-tools"]')
+        self.method_record('["bmad-build", "bmad-fixture-a"]', '["bmad-build", "bmad-fixture-a", "bmod-core-tools"]')
         self.assertIn("lists 'bmod-core-tools', which is a module record", self.problems())
 
     def test_member_source_differs_from_its_record(self):
-        write(self.skills / "bmad-spec" / "bmod.toml", '[skill]\nbmod = "bmod-method"\nsource = "github:o/r"\n')
+        write(self.skills / "bmad-fixture-a" / "bmod.toml", '[skill]\nbmod = "bmod-method"\nsource = "github:o/r"\n')
         self.assertIn(
-            f"skills/bmad-spec/bmod.toml: [skill] source 'github:o/r' differs from skills/bmod-method/bmod.toml "
+            f"skills/bmad-fixture-a/bmod.toml: [skill] source 'github:o/r' differs from skills/bmod-method/bmod.toml "
             f"update_source {SOURCE!r}",
             self.problems(),
         )
@@ -390,7 +390,7 @@ class RequirementRuleTests(ValidatorCase):
         write(path, path.read_text(encoding="utf-8") + line)
 
     def test_plain_names_in_this_repo_are_accepted_in_both_tables(self):
-        self.add("bmad-build", 'required_skills = ["bmad"]\nrecommended_skills = ["bmad-spec"]\n')
+        self.add("bmad-build", 'required_skills = ["bmad"]\nrecommended_skills = ["bmad-fixture-a"]\n')
         self.assertEqual(self.problems(), "")
 
     def test_required_plain_name_the_repo_lacks(self):

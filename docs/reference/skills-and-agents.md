@@ -45,15 +45,16 @@ Open your skills directory to see every installed skill with its description. Ru
 
 ## Agents
 
-The BMad Method module installs five named agents. Load one with its skill ID, then type a code from its menu. Codes are scoped to the agent that shows them: `CR` is a competitive teardown for the Analyst and a code review for the Developer.
+The BMad Method module installs six named agents. Load one with its skill ID, then type a code from its menu. Codes are scoped to the agent that shows them: `CR` is a competitive teardown for the Analyst and a code review for the Developer.
 
-| Agent                  | Skill ID                 | Codes                                                      | Menu                                                                                                                                                                 |
-| ---------------------- | ------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Analyst (Mary)         | `bmad-agent-analyst`     | `BP`, `MR`, `DR`, `TR`, `TS`, `CR`, `UV`, `CB`, `WB`, `PC` | Brainstorm; market, domain, and technical research; technology selection; competitive teardown; user-voice research; product brief; PRFAQ challenge; project context |
-| Product Manager (John) | `bmad-agent-pm`          | `PRD`, `CC`, `TK`                                          | Create, update, or validate a PRD; correct course; plan and manage tickets                                                                                          |
-| Architect (Winston)    | `bmad-agent-architect`   | `CA`, `TK`                                                 | Architecture spine; plan work and dependencies                                                                                                                     |
-| Developer (Amelia)     | `bmad-agent-dev`         | `BD`, `QA`, `CR`, `ER`, `TK`                               | Build; QA test generation; code review; epic retrospective; ticket planning and tracking                                                                            |
-| UX Designer (Sally)    | `bmad-agent-ux-designer` | `CU`                                                       | UX design                                                                                                                                                            |
+| Agent                  | Skill ID                 | Codes                                                              | Menu                                                                                                                                                                 |
+| ---------------------- | ------------------------ | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Analyst (Mary)         | `bmad-agent-analyst`     | `BP`, `MR`, `DR`, `TR`, `TS`, `CR`, `UV`, `CB`, `WB`, `PC`         | Brainstorm; market, domain, and technical research; technology selection; competitive teardown; user-voice research; product brief; PRFAQ challenge; project context |
+| Product Manager (John) | `bmad-agent-pm`          | `PRD`                                                              | Create, update, or validate a PRD                                                                                                                                    |
+| Product Owner (Sofia)  | `bmad-agent-po`          | `SPEC`, `TICKETS`, `REFINE`, `BOARD`, `VALIDATE`, `REPLAN`, `STORE` | Requirements from a PRD, brief, or notes into a ticket; slice an initiative or epic; refine a ticket; the board; validation; replan a mid-flight change; tracker setup |
+| Architect (Winston)    | `bmad-agent-architect`   | `CA`                                                               | Architecture spine                                                                                                                                                   |
+| Developer (Amelia)     | `bmad-agent-dev`         | `BD`, `QA`, `CR`, `ER`                                             | Build; QA test generation; code review; epic retrospective                                                                                                           |
+| UX Designer (Sally)    | `bmad-agent-ux-designer` | `CU`                                                               | UX design                                                                                                                                                            |
 
 :::note[Where is Paige?]
 The Technical Writer (Paige) is on hiatus. Project context lives on: use the Analyst's `PC` code or invoke `bmad-project-context` directly.
@@ -96,7 +97,7 @@ A structured second pass over what the model just produced. Instead of "try agai
 
 Dozens of methods are available. Examples: pre-mortem analysis, first principles thinking, inversion, red team vs. blue team, Socratic questioning, constraint removal, stakeholder mapping, and analogical reasoning.
 
-The brief, PRD, UX, and spec skills offer it at their own pauses; you can also run it directly on anything recent in the conversation.
+The brief, PRD, and UX skills offer it at their own pauses; you can also run it directly on anything recent in the conversation.
 
 :::tip[Start with a pre-mortem]
 Pre-mortem analysis is a good first pick for any spec or plan. It consistently finds gaps that a standard review misses.
@@ -134,9 +135,9 @@ Facilitates a brainstorming session using proven creative techniques, guiding yo
 
 ### bmad-deep-recon
 
-Researches a topic to support a decision, three ways: drafts a research prompt for the tool you already use, turns a finished report into a cited summary other skills consume, or runs the research here with parallel web searches. Built-in types cover market, domain, technical, competitive, user-voice, and academic literature research, plus choosing between candidates.
+Researches a topic to support a decision, three ways: drafts a research prompt for the tool you already use, turns a finished report into a cited summary other skills consume, or runs the research here with parallel web searches. Built-in types cover market, domain, technical, competitive, user-voice, and academic literature research, plus choosing between candidates. It also answers questions about your own repository from its code and git history: a question one file answers gets a cited answer in chat, and anything larger a document that cites a line or commit for every claim and that `bmad-build` reads as evidence.
 
-**Output:** a cited `research-<topic>.md` and an optional HTML briefing. See [Research a Decision](../plan/research-a-decision.md).
+**Output:** a cited `research-<topic>.md` and an optional HTML briefing; codebase research also writes each decision record you approve. See [Research a Decision](../plan/research-a-decision.md).
 
 ### bmad-forge-idea
 
@@ -150,18 +151,15 @@ Puts your installed agents, or custom personas, in one conversation, in characte
 
 ## BMad Method Skills
 
-The BMad Method module adds the five agents above and these workflow skills. The linked page covers when to use the skill and what it produces.
+The BMad Method module adds the six agents above and these workflow skills. The linked page covers when to use the skill and what it produces.
 
 | Skill                           | Purpose                                                                                           | See                                                                                                    |
 | ------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `bmad-product-brief`            | Create, update, or validate a product brief                                                       | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
 | `bmad-prfaq`                    | Stress-test a product concept with the Working Backwards PRFAQ method                             | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
 | `bmad-prd`                      | Create, update, or validate a PRD                                                                 | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
-| `bmad-spec`                     | Condense input into a short spec; hand story breakdown to `bmad-ticket`                | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
 | `bmad-ux`                       | Capture the UX vision as `DESIGN.md` and `EXPERIENCE.md`                                          | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
 | `bmad-architecture`             | Record the architecture decisions that keep separately built parts consistent                     | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
-| `bmad-ticket` | Plan and track initiatives, epics, and entries | [Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md) |
-| `bmad-correct-course`           | Assess a significant mid-sprint change and produce a change proposal                              | [Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md#correct-course) |
 | `bmad-project-context`          | Set up, refresh, or audit the repository's agent instructions                                     | [Set and Maintain Project Context](../existing-codebases/set-and-maintain-project-context.md)          |
 | `bmad-build`                    | Turn a work item into working code, reviewed and verified                                         | [Build a Change](../build/build-a-change.md)                                                           |
 | `bmad-build-auto`               | Run one iteration of an unattended development loop                                               | [Autonomous Development Loops](../build/autonomous-development-loops.md)                               |

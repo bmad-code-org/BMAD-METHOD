@@ -1,25 +1,27 @@
 ---
 title: 'Define Requirements and a Specification'
-description: Choose between a succinct spec and the full product-planning path — product brief or PRFAQ, then a PRD — and know what each produces.
+description: Choose between writing a ticket's requirements with Sofia and the full product-planning path — product brief or PRFAQ, then a PRD — and know what each produces.
 sidebar:
   order: 5
 ---
 
-Use this page to pick the requirements skill for the work in front of you: a
-product brief or a PRFAQ, then a PRD, for a product; or `bmad-spec` for the
-contract implementation reads.
+Use this page to pick the requirements path for the work in front of you: a
+product brief or a PRFAQ, then a PRD, for a product; or Sofia, the Product
+Owner (`bmad-agent-po`), to write the ticket's requirements that
+implementation reads.
 
 ## Which Path Applies
 
 [Choose a Planning Path](./choose-a-planning-path.md) decides the size. Most
-work goes straight to `bmad-spec` from whatever defined the intent: a forged
-idea, a PRFAQ summary, a brainstorm intent, an issue. A PRD becomes necessary
-when several people must agree on what the product is or several epics must
-stay aligned; [Plan Inside an Organization](./plan-inside-an-organization.md)
+work goes straight to Sofia from whatever defined the intent: a forged idea,
+a PRFAQ summary, a brainstorm intent, an issue. A PRD becomes necessary when
+several people must agree on what the product is or several epics must stay
+aligned; [Plan Inside an Organization](./plan-inside-an-organization.md)
 covers that setting. This page covers what each document is for and which
-skill writes it. None of them replaces the spec: every epic still ends up as a
-`spec-<slug>.md` that Build reads, and when there is a PRD, that is where the spec's
-answers come from.
+skill writes it. None of them replaces the ticket's requirements: the
+initiative, epic, or story file is the specification at its level, its
+Requirements section is what Build reads, and when there is a PRD, that is
+where those lines come from.
 
 The brief, PRD, and UX skills steer the same way. Each opens with a brain
 dump: tell it everything and point it at any files you have. Then you choose a
@@ -60,11 +62,11 @@ brainstorming or Forge Idea instead of forcing it.
 
 Use it when you want the concept stress-tested before committing resources.
 If you cannot write a compelling press release, the product is not ready. It
-produces the PRFAQ document plus a short summary a PRD or spec can read, and
+produces the PRFAQ document plus a short summary a PRD or Sofia can read, and
 it accepts `-H` for an unattended first draft when you supply the customer,
 problem, stakes, and concept up front.
 
-Brief and PRFAQ both feed a PRD, and the PRFAQ summary can feed `bmad-spec`
+Brief and PRFAQ both feed a PRD, and the PRFAQ summary can feed Sofia
 directly when no PRD is needed. Choose by how much challenge you want: the
 brief is collaborative discovery, the PRFAQ is the harder path. Neither is
 required; `bmad-prd` starts from a brain dump on its own.
@@ -94,49 +96,56 @@ divide work into stories; that is
 If you open it with a one-pager in mind or an idea to vet, it points you at
 the brief or the PRFAQ instead.
 
-## Spec: The Contract Implementation Reads
+## Requirements: The Contract Implementation Reads
 
-Run `bmad-spec` to turn an intent into a short contract that Build reads.
-`spec-<slug>.md` has five fields: Why, Capabilities (each with an intent and a
-success condition), Constraints, Non-goals, and Success signal. Tables,
-diagrams, glossaries, and documents other skills already wrote sit beside it;
-the spec points at them rather than copying them.
+Point Sofia at what you have: "distill this PRD", "write the requirements
+from these notes", or `/bmad-agent-po <path>`. She writes the Requirements
+and Constraints sections of the ticket's own file, the initiative, epic, or
+story that is active or that you name. Each Requirements line says what is
+possible and what shows it was met, under a stable `R<n>` id that names its
+source: `R1 (FR-2, FR-5)` on an initiative, `R1 (parent R3)` on an epic. The
+input's non-goals go to Boundaries and its open questions to Notes. Tables,
+diagrams, glossaries, and documents other skills already wrote sit beside
+the ticket or stay where they are; the ticket names them in References
+rather than copying them.
 
-The spec writes the contract; it does not help you figure out what you want.
-Rich input is extracted with no questions. Sparse input gets a choice: a
-best-effort draft where every gap becomes an open question, or a guided walk
-through the five fields. Input too thin to use ("an app for hikers") is sent
-to `bmad-prd`. Input too large is the other failure: a few tens of thousands
-of tokens is the practical ceiling, so condense a pile of material first.
+Sofia writes the requirements; she does not help you figure out what you
+want. Rich input is extracted with no questions. Sparse input gets a choice:
+a best-effort draft where every gap becomes an open question, or a guided
+walk through the sections. Input too thin to use ("an app for hikers") is
+sent to `bmad-prd`. Input too large is the other failure: a few tens of
+thousands of tokens is the practical ceiling, so condense a pile of material
+first.
 
-`bmad-spec` is the only writer of the spec. Do not hand-edit it; run the
-skill again with the change and it updates the spec in place, keeping
-capability IDs stable. The PRD, UX, and architecture skills can run in any
-order and feed the same spec. After every run it reports assumptions it made
-and open questions it could not answer, for you to resolve.
+After every run she reports the ticket's path, the requirement count, the
+companions, and the verdict of her own check, then lists the `Assumption:`
+and `Open question:` lines for you to walk through. Resolving one can update
+the source input, the ticket, or both; say which. Read the `R` lines
+yourself: a line you would not defend to a stakeholder is one to change now,
+before anything is cut from it.
 
-`bmad-spec` does not split a spec into stories. When a spec it writes reads as
-several slices, it offers once to hand off to `bmad-ticket`. To
-split a spec at any time, run `bmad-ticket` with the spec folder.
-It plans one epic with you in build order and records the stories in the
-epic's `tickets.toml`. Each story cites the spec's capability IDs. A constraint or design decision that comes up while slicing
-goes back into the spec as an update. See
-[Choose a Planning Path](./choose-a-planning-path.md#1-start-epic-sized-work)
-for how the epic then runs.
+Sofia is the only writer of the Requirements and Constraints sections. Do not
+hand-edit them; she derives them from `.memlog.md` beside the ticket, so a
+hand edit is overwritten on the next run. When the input changes, run her
+again with the change and she updates the sections in place, keeps every `R`
+id stable, and names the entries whose `covers` cite a changed id. The PRD,
+UX, and architecture skills can run in any order and feed the same ticket.
 
-`bmad-spec` delegates story breakdown to `bmad-ticket`. To run
-the planned stories unattended, explicitly dispatch each ticket to
+When the ticket's lines read as several slices, she offers once to slice. To split at any time, say "slice this initiative", which cuts it into epics and writes each one thin; "refine this epic", which works out with you what its stories must agree on and writes its requirements; or "incept this epic", which plans one epic with you in build order and records the stories in the epic's `tickets.toml`, each citing the epic's `R` ids. A constraint or design decision that comes up while slicing goes back into the ticket's requirements as an update. See [Choose a Planning Path](./choose-a-planning-path.md#1-start-epic-sized-work) for how the epic then runs.
+
+To run the planned stories unattended, explicitly dispatch each ticket to
 [`bmad-build-auto`](../build/autonomous-development-loops.md) as `ticket <ref>`,
 one run per ticket. No leaf file needs to be pulled first.
 
 :::note[What each skill produces]
 `bmad-product-brief`: `brief-<slug>.md` and `addendum.md`. `bmad-prfaq`: a
-PRFAQ document with a short summary for the PRD or spec. `bmad-prd`:
-`prd-<slug>.md` and `addendum.md`, or a validation report. `bmad-spec`:
-`spec-<slug>.md` plus supporting files. Each lands in its own `<type>-<slug>/`
-folder in the active initiative's folder, or in the output folder when no
-initiative is active. Exact paths and options belong to each
-skill; see
+PRFAQ document with a short summary for the PRD or for Sofia. `bmad-prd`:
+`prd-<slug>.md` and `addendum.md`, or a validation report. Each document
+lands in its own `<type>-<slug>/` folder in the active initiative's folder,
+or in the output folder when no initiative is active. Sofia writes the
+Requirements and Constraints sections of the initiative, epic, or story file,
+with `.memlog.md` and any companions beside it. Exact paths and options
+belong to each skill; see
 [Planning Skills and What They Produce](./choose-a-planning-path.md#planning-skills-and-what-they-produce).
 :::
 
@@ -144,6 +153,5 @@ skill; see
 
 With a PRD in hand for multi-epic work, decide whether the work needs shared
 design decisions: [Design UX and Architecture](./design-ux-and-architecture.md).
-With a spec in hand for one epic, run `bmad-ticket` with the spec
-folder and go to
+With an epic's requirements written, ask Sofia to slice it and go to
 [Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md).

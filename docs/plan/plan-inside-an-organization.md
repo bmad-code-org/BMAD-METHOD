@@ -15,9 +15,10 @@ the skills second.
 
 A single builder, or a small team that already agrees, does not need most of
 what follows. A forged idea, a PRFAQ summary, a brainstorm intent, or a
-well-written issue goes straight to `bmad-spec`, and the rest is one spec per
-epic. [Choose a Planning Path](./choose-a-planning-path.md) covers that route.
-`bmad-spec` will tell you if the input is too thin; until it does, no PRD is
+well-written issue goes straight to Sofia, the Product Owner
+(`bmad-agent-po`), who writes the requirements into the ticket and slices it.
+[Choose a Planning Path](./choose-a-planning-path.md) covers that route.
+Sofia will tell you if the input is too thin; until she does, no PRD is
 required.
 
 Reach for the full path when one of these is true:
@@ -39,12 +40,16 @@ is derived from it:
 - `bmad-ux` writes `DESIGN.md` and `EXPERIENCE.md` in its own `ux-<slug>/` folder, as input beside the PRD.
 - `bmad-architecture` writes a short architecture document (the spine): the
   decisions that keep independently built epics compatible.
-- `bmad-spec` writes one spec per epic from the PRD, pointing at the spine and
-  the UX documents rather than copying them.
-- `bmad-ticket` turns the specs into ordered entries and tracks their joined plans.
+- Sofia writes the initiative's requirements from the PRD and each epic's
+  from the initiative's lines, pointing at the spine and the UX documents
+  rather than copying them.
+- Sofia slices them into ordered entries and tracks their joined plans.
 
-Nothing downstream reinterprets the PRD. If a spec needs an answer the PRD
-does not give, the answer goes into the PRD first; the spec is re-run after.
+Nothing downstream reinterprets the PRD. If a ticket's requirements need an
+answer the PRD does not give, the answer goes into the PRD first; Sofia is
+re-run after. When the PRD and a ticket's Requirements disagree, the ticket's
+Requirements win and the PRD is a source; Sofia surfaces the contradiction
+and you decide.
 
 ## Bring the Documents You Have
 
@@ -67,15 +72,15 @@ Linear, and a review cadence, and all of it stays.
   skill reads the code and records the conventions already there rather than
   proposing new ones.
 - **Your tracker stays your tracker.** Jira remains where the organization
-  plans, reports, and reviews. `bmad-ticket` publishes leaf files when needed; build status lives in local joined plans. Tracker status is mirrored separately and never makes a build skip work.
+  plans, reports, and reviews. Sofia publishes leaf files when needed; build status lives in local joined plans. Tracker status is mirrored separately and never makes a build skip work.
 - **Your reviews stay your reviews.** The five sign-off moments below are
   where the skills produce something reviewable. Put your existing approvals
   at those points and the documents the skills write become the material
   those meetings already needed.
 
 The one thing that does change is where an edit goes: in the PRD the skills
-read, not in a spec or a story, so that every derived document can be
-regenerated from it.
+read, not in a ticket's requirements or a story, so that every derived
+document can be regenerated from it.
 
 ## Who Owns What
 
@@ -84,8 +89,8 @@ regenerated from it.
 | Product manager          | Brainstorming, Forge Idea, Deep Recon, then `bmad-product-brief` or `bmad-prfaq`, then `bmad-prd` | The PRD and its update cycle; the one-pager the steering committee reads  |
 | Designer                 | `bmad-ux`                                                                                         | `DESIGN.md`, `EXPERIENCE.md`                                              |
 | Tech lead or architect   | `bmad-architecture`                                                                               | The architecture spine                                                    |
-| One engineer, per epic   | `bmad-spec`, `bmad-ticket`, Build per story, `bmad-retrospective`                      | That epic: its spec, its `tickets.toml`, its verdict                      |
-| Whoever tracks the whole | `bmad-ticket`                                                                            | The ticket tree and plan statuses                                   |
+| One engineer, per epic   | Sofia (`bmad-agent-po`), Build per story, `bmad-retrospective`                                    | That epic: its file, its `tickets.toml`, its verdict                      |
+| Whoever tracks the whole | Sofia (`bmad-agent-po`)                                                                           | The ticket tree and plan statuses                                         |
 
 The rows are roles, not headcount. One person can hold several; what matters
 is that each document has exactly one owner, because each has exactly one
@@ -103,7 +108,7 @@ gates.
 | ------------------------- | --------------------------------------------------------------------- | ---------------------------- |
 | PRFAQ verdict             | Whether the concept is strong enough to resource                      | Writing the PRD              |
 | PRD validate              | A findings report on the PRD without changing it                      | Design and architecture work |
-| Architecture spine review | The decisions every epic will follow, with alternatives weighed       | Writing specs for the epics  |
+| Architecture spine review | The decisions every epic will follow, with alternatives weighed       | Writing the epics' requirements |
 | Ticket-breakdown approval | The entries, requirement coverage, and validated dependencies         | Starting the agreed work     |
 | Retrospective verdict     | Did the epic meet its own acceptance criteria                         | Starting the next epic       |
 
@@ -113,17 +118,18 @@ trail. PRFAQ and Retrospective can run unattended (`-H`) when you want the
 same check without a conversation.
 
 :::note[Reviewers read copies; change the source]
-People will review the PRD, the spine, and a spec, and they will ask for
-changes in whichever one they happen to be reading. Apply the change where it
-belongs: to the PRD if it is about what the product is, to the spine if it is
-about how epics stay compatible, to the spec only if it is about that epic
-alone. Then re-run the later skills. Editing a spec to work around a PRD that
-no longer says the right thing is how the documents stop agreeing.
+People will review the PRD, the spine, and an epic's ticket, and they will ask
+for changes in whichever one they happen to be reading. Apply the change where
+it belongs: to the PRD if it is about what the product is, to the spine if it
+is about how epics stay compatible, to the epic's requirements only if it is
+about that epic alone. Then re-run the later skills. Editing an epic's
+requirements to work around a PRD that no longer says the right thing is how
+the documents stop agreeing.
 :::
 
 ## Several Epics at Once
 
-One PRD, one spine, one spec per epic. Several engineers can each take an
+One PRD, one spine, one ticket per epic. Several engineers can each take an
 epic at the same time when the boundaries are explicit; the spine is what
 makes that safe, because it records the calls two people would otherwise make
 differently: the API style, how state is changed, who owns shared data. Each
@@ -132,21 +138,27 @@ left open. Run integration checks and a retrospective at every epic boundary,
 not only at the end. [Design UX and Architecture](./design-ux-and-architecture.md)
 shows what goes wrong without the spine.
 
+Sofia cuts epics by outcome, deployment, and slice size, not by who builds them. If your organization cuts epics by its own rule, tell her and she offers to save it to `_bmad/custom/bmad-agent-po.toml`.
+
+Each epic starts thin, with its scope agreed and its detail left open. Ask Sofia to refine each epic before its stories are planned. She says what is already settled and names each open point with her pick: settle it now, spike it, or leave it to the stories. On a large initiative you can flesh an epic out further with a `bmad-prd`, `bmad-ux` or `bmad-architecture` run on the epic, or research with `bmad-deep-recon`. Those runs land in the epic's folder and become its companions, so whoever takes the epic finds them beside its file.
+
+## More Than One Initiative
+
+When the work is more than one initiative's worth, such as a program of several products, Sofia proposes a parent initiative instead of nesting deeper. The parent holds the requirements and decisions its children share and the order between them; it has no epics or stories of its own. Each child is an ordinary initiative with its own epics and stories, citing the parent's requirements. Set the active initiative to the child being worked on, or to the parent to see the whole program.
+
 ## When Requirements Change Mid-Flight
 
 They will. The path for a change is the same as the path for the original:
 
 1. Run `bmad-prd` in **Update** mode with the change signal. It surfaces
    conflicts with earlier decisions before applying anything.
-2. If the change touches a cross-epic decision, update the spine.
-3. Re-run `bmad-spec` for each affected epic. It updates the spec in place
-   and keeps capability IDs stable, so stories that are unaffected stay
-   unaffected.
-4. For the affected epics, re-slice the stories `bmad-spec` names as no longer
-   matching, then revise the remaining breakdown with `bmad-ticket`. Keep historical plans and completed states.
-
-For a change large enough to threaten the plan itself, run
-`bmad-correct-course` before touching documents.
+2. Tell Sofia what changed. She updates the affected tickets' requirements in
+   place and keeps requirement ids stable, so stories that are unaffected
+   stay unaffected, and names the entries that went stale.
+3. If the change touches a cross-epic decision, update the spine. It reads the
+   updated requirements.
+4. For the affected epics, she re-slices those entries and revises the
+   remaining breakdown. Keep historical plans and completed states.
 
 ## What You Get
 

@@ -11,8 +11,9 @@ what each script prints on its own.
 
 shape_hint is inferred, first match wins:
   memory-agent         `_bmad/memory` in SKILL.md, or scripts/wake.py or scripts/init-sanctum.py present
-  agent                customize.toml has an [agent] table
+  rendered-agent       SKILL.md calls render_skill.py and customize.toml has an [agent] table
   rendered-skill       SKILL.md calls render_skill.py
+  agent                customize.toml has an [agent] table
   single-skill-module  bmod.toml has both [bmod] and [skill]
   multi-skill-module   bmod.toml has [bmod] only (a module record)
   script-utility       scripts/ exists and SKILL.md is under 60 lines
@@ -76,10 +77,11 @@ def shape_hint(root: Path, skill_text: str | None) -> str:
     scripts = root / "scripts"
     if MEMORY_RE.search(skill_text) or (scripts / "wake.py").is_file() or (scripts / "init-sanctum.py").is_file():
         return "memory-agent"
-    if "agent" in load_toml(root / "customize.toml"):
-        return "agent"
+    is_agent = "agent" in load_toml(root / "customize.toml")
     if "render_skill.py" in skill_text:
-        return "rendered-skill"
+        return "rendered-agent" if is_agent else "rendered-skill"
+    if is_agent:
+        return "agent"
     bmod = load_toml(root / "bmod.toml")
     if "bmod" in bmod:
         return "single-skill-module" if "skill" in bmod else "multi-skill-module"

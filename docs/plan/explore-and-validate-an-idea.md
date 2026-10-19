@@ -48,8 +48,8 @@ wrap. Say when you want to narrow and it switches to prioritizing and
 deciding. Sessions can be paused and resumed.
 
 You get an HTML record of the session, and a short `brainstorm-<topic>.md`
-holding only the chosen discoveries, shaped to feed `bmad-spec`,
-`bmad-product-brief`, or `bmad-prd`.
+holding only the chosen discoveries, shaped to feed Sofia, the Product Owner
+(`bmad-agent-po`), `bmad-product-brief`, or `bmad-prd`.
 
 ## Pressure-Test an Idea with Forge Idea
 
@@ -98,7 +98,7 @@ and each is a valid result:
 | **Killed**   | The idea does not hold up. The report records why.                                                                                           |
 | **Clearer**  | You understand the idea better, but there is nothing to hand off. The session log is the record.                                             |
 
-`forge-<slug>.md` should be short enough to feed `bmad-spec`, `bmad-prd`, or
+`forge-<slug>.md` should be short enough to feed Sofia, `bmad-prd`, or
 `bmad-prfaq`. If it reads like a document, it is too long.
 
 :::note[Example]
@@ -121,8 +121,8 @@ bet you could test with a plain email and no model at all.
 Point `bmad-advanced-elicitation` at a recent piece of output (a section, a
 plan, a draft, a decision) and it offers a short menu of critique methods,
 such as pre-mortem, first principles, or red team, runs the ones you pick, and
-shows proposed changes for you to apply or reject. The brief, PRD, UX, and
-spec skills offer it at their own pauses. See
+shows proposed changes for you to apply or reject. The brief, PRD, and UX
+skills offer it at their own pauses. See
 [`bmad-advanced-elicitation`](../reference/skills-and-agents.md#bmad-advanced-elicitation).
 
 ## What Comes Next

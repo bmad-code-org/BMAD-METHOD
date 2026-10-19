@@ -1,6 +1,6 @@
 # Prototyping with the method
 
-Prototypes are underused, in hobby work and in the enterprise alike. Recommend one readily. The method has no prototype phase and needs none: a prototype is a fast, cheap way to learn, and what it teaches is some of the best input `bmad-spec` can get. Current models can produce an impressive first version from one prompt.
+Prototypes are underused, in hobby work and in the enterprise alike. Recommend one readily. The method has no prototype phase and needs none: a prototype is a fast, cheap way to learn, and what it teaches is some of the best input Sofia (`bmad-agent-po`) can get for a ticket's requirements. Current models can produce an impressive first version from one prompt.
 
 ## What a prototype is good for
 
@@ -25,14 +25,14 @@ Both work. In an existing codebase, a prototype on a branch shows how a change s
 | Something running fast, expected to be thrown away | Prompt it directly, no skill | For a throwaway, the smallest path is no path. |
 | A fast first version with a plan to approve, a review, and a commit | `bmad-build` with a one-line prompt | It accepts free text however brief. In an existing codebase it investigates the code first, so the prototype fits what is there. |
 | To see the screens and flows before any code | `bmad-ux` | It can produce HTML mocks of key screens and Excalidraw wireframes alongside its two design files. |
-| A technical unknown answered from outside sources instead of by building | `bmad-deep-recon` (core tools), if installed | Some feasibility questions are research, not code. |
+| A technical unknown answered from outside sources, or from the existing code and its history, instead of by building | `bmad-deep-recon` (core tools), if installed | Some feasibility questions are research, not code. |
 
 ## After the prototype: throw it away or keep it
 
 Ask the user to decide this on purpose. The outcome to avoid is a prototype that becomes the real product with nobody deciding it should, and with no spec.
 
-- **Throw it away.** The prototype was research. Have the user note what it taught them: what worked, what surprised them, what users said, what they would do differently. Feed those notes, and the prototype itself if useful, to `bmad-spec`, or to `bmad-product-brief` first when the picture is still loose. Then build cleanly, one story at a time. This is the usual choice in an enterprise codebase and whenever a non-engineer built the prototype.
-- **Keep it.** Treat it as an existing codebase (see `help/existing-codebase.md`): `bmad-project-context` to record the rules agents must follow, `bmad-architecture` to ratify the decisions worth keeping and name what is still open, then `bmad-spec` for the rest of the work.
+- **Throw it away.** The prototype was research. Have the user note what it taught them: what worked, what surprised them, what users said, what they would do differently. Talk to Sofia the Product Owner to write the initiative from those notes, and the prototype itself if useful, or run `bmad-product-brief` first when the picture is still loose. Then build cleanly, one story at a time. This is the usual choice in an enterprise codebase and whenever a non-engineer built the prototype.
+- **Keep it.** Treat it as an existing codebase (see `help/existing-codebase.md`): `bmad-project-context` to record the rules agents must follow, talk to Sofia the Product Owner to write the initiative from the prototype, then `bmad-architecture` to ratify the decisions worth keeping and name what is still open, adopted into the initiative before she slices the rest of the work.
 - **Drop the idea.** The prototype showed it is not worth doing. Nothing more is needed.
 
 ## Why plan at all after a good prototype

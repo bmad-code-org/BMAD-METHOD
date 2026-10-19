@@ -1,19 +1,21 @@
 # Rules for skills that use the ticket tree
 
-Every skill that takes work from the tree, builds it, reviews it, or looks back on it follows these rules: `bmad-ticket`, `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-retrospective`, and `bmad migrate`.
+Every skill that takes work from the tree, builds it, reviews it, or looks back on it follows these rules: `bmad-agent-po`, `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-retrospective`, and `bmad migrate`.
 
 This page is for people and agents who change those skills. No skill loads it: each one states the rules it acts on in its own files. When a rule changes here, change it in every skill that states it.
 
 ## Finding the tree
 
 - The tree is `{output_folder}/{active_initiative}`: `output_folder` and `active_initiative` from `[core]` in the merged BMad config.
-- `tickets.py` is installed at `{project-root}/_bmad/method/scripts/tickets.py`. `bmad-ticket` declares it in its `bmod.toml`. Other skills run it from there and never open `bmad-ticket`'s folder.
+- Each container (initiative or epic) keeps its own file, `.memlog.md`, other skills' run folders and its retrospective at the top of its folder, and its breakdown in a `tickets/` folder inside it: `tickets.toml`, the child epic folders, the leaf files and plans. `backlog/` has no `tickets/` folder. `tickets.py` folder arguments name the container, and it refuses the earlier layout with an error naming `bmad migrate`.
+- `tickets.py` is installed at `{project-root}/_bmad/method/scripts/tickets.py`. `bmad-agent-po` declares it in its `bmod.toml`. Other skills run it from there and never open `bmad-agent-po`'s folder.
 - Called with no folder, `tickets.py next`, `status`, `find`, `mark`, and `mirror` resolve the active initiative themselves; `next` and `status` then also report `backlog/`. When no initiative is set, they exit with an error that names the missing key, and the calling skill works without the tree.
+- On a parent initiative, `find`, `pull`, `mark`, `mirror` and `move` exit with an error naming its children, and `next` and `status` list the children; a build needs a child as the active initiative.
 - A ticket is read through `tickets.py find`: its entry's fields, its epic file, its story file when one was pulled, and its plan path, whether or not the plan exists yet. The build's input is the entry and its epic, plus the story file when there is one. No skill writes a ticket file to start work.
 
 ## The plan file
 
-- One plan per leaf, written by `bmad-build` or `bmad-build-auto`. It sits in the leaf's folder (the epic folder, or `backlog/`) and is named `<type>-<slug>-plan.md`, where `<type>-<slug>` is the name the leaf's file would have. `find` returns this path.
+- One plan per leaf, written by `bmad-build` or `bmad-build-auto`. It sits in the leaf's folder (its epic's `tickets/` folder, the initiative's `tickets/` folder when the initiative has no epics, or `backlog/`) and is named `<type>-<slug>-plan.md`, where `<type>-<slug>` is the name the leaf's file would have. `find` returns this path.
 - Its frontmatter carries `ticket: <entry id>`. That field joins the plan to its entry, so a title change that renames the plan never breaks the link. A backlog leaf has a file and no entry, so its plan carries `ticket: <file stem>` instead. Its `type` is the build's (`feature`, `bugfix`, `refactor`, `chore`), never a ticket type.
 - It stays local on every store. A tracker never receives it.
 - On a tracker store, publishing writes the leaf's file, because that file is the body the tracker receives. `tracker_id`, `remote`, and `tracker_status` stay in that file, written by `tickets.py mirror`. The plan is still a separate file beside it.
@@ -29,7 +31,7 @@ This page is for people and agents who change those skills. No skill loads it: e
 | `draft`, `ready-for-dev`, `in-progress`, `in-review`, `built` | `bmad-build`, `bmad-build-auto` as they work |
 | `blocked` | `bmad-build-auto` when it halts, with the reason in the plan |
 | `done` | the user, or an orchestrator, through `tickets.py mark` |
-| `dropped` | `bmad-ticket`, when the user says so |
+| `dropped` | `bmad-agent-po`, when the user says so |
 
 - An open ticket follows its type's template. A done or dropped ticket and its plan are the record: no skill reshapes them to a newer template.
 - No skill moves a ticket past `built`: the build's last status, meaning the build finished and nobody has called it done. When the user tells a skill that a ticket is done, the skill runs `mark` for them. `bmad-code-review` never changes `status`.
@@ -42,4 +44,4 @@ This page is for people and agents who change those skills. No skill loads it: e
 ## Where review and retrospective write
 
 - `bmad-code-review` appends a `## Code Review` section to the reviewed ticket's plan. Each run adds a dated block with that run's findings. Deferred findings go into the same block.
-- `bmad-retrospective` writes `epic-<slug>-retrospective.md` in the epic folder, with `verdict` in its frontmatter. It does not edit the epic file. Closing the epic is still `bmad-ticket`'s closure check, confirmed by the user.
+- `bmad-retrospective` writes `epic-<slug>-retrospective.md` in the epic folder, beside the epic file and outside its `tickets/` folder, with `verdict` in its frontmatter. Outside the tree it writes only the decision records the user approves, each beside the code it governs or in the decisions folder when system-wide, and only in interactive runs. It does not edit the epic file. Closing the epic is still `bmad-agent-po`'s closure check, confirmed by the user.
