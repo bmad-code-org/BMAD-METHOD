@@ -5,7 +5,7 @@ Read this when the question is about `bmad-product-brief` or `bmad-prfaq`: what 
 **`bmad-product-brief`** — describes a product the user already believes in. The light way to give Sofia good input: more than a hand-written intent file, much less than a full PRD.
 - Gives: a 1-2 page brief (problem, solution, who it serves, what is different, success criteria, scope, vision) that is the user's own, plus an addendum holding detail meant for later documents.
 - Pick when: the user knows what they want and needs it written down, would otherwise hand-write an intent file and wants it sharper, does not need the rigor of a PRD, needs a pitch or alignment document, has material to distill, is short on time (its fast path drafts everything with `[ASSUMPTION]` tags), or has a brief to update or pressure-test.
-- Not when: the user doubts the idea itself → `bmad-prfaq`. The brief never asks whether the product should exist. Requirements need ids, journeys, and metrics, or compliance and many stakeholders are involved → `bmad-prd`.
+- Not when: the user doubts the idea itself → `bmad-prfaq`. The brief never asks whether the product should exist. Requirements need ids, journeys, and metrics, or compliance and many stakeholders are involved → John the Product Manager (`bmad-agent-pm`).
 - Writes: `{output_folder}/{active_initiative}/brief-<slug>/brief-<slug>.md`.
 
 **`bmad-prfaq`** — tests whether a concept survives scrutiny, using Amazon's Working Backwards.

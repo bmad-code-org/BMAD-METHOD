@@ -40,7 +40,7 @@ the stakes early and calibrates how hard it pushes.
 Use it when your concept is relatively clear and you want it written down
 before a PRD. It produces `brief-<slug>.md` plus `addendum.md`, which holds the depth
 that belongs later rather than in the brief: rejected alternatives, options
-considered, technical constraints, sizing data. `bmad-prd` reads both. For
+considered, technical constraints, sizing data. John reads both when he writes the PRD. For
 serious market sizing or competitor teardowns it hands you to
 [Deep Recon](./research-a-decision.md).
 
@@ -69,11 +69,11 @@ problem, stakes, and concept up front.
 Brief and PRFAQ both feed a PRD, and the PRFAQ summary can feed Sofia
 directly when no PRD is needed. Choose by how much challenge you want: the
 brief is collaborative discovery, the PRFAQ is the harder path. Neither is
-required; `bmad-prd` starts from a brain dump on its own.
+required; John starts a PRD from a brain dump on his own.
 
 ## PRD: Agree on What and Why
 
-Run `bmad-prd` to create, update, or validate a Product Requirements Document.
+Talk to John, the Product Manager (`bmad-agent-pm`), to create, update, or validate a Product Requirements Document. Ask for him by name or say what you want: "create a PRD", "update the PRD", "validate this PRD".
 
 - **Create** runs discovery, then drafts. On the Coaching path you also pick
   an entry point: **Vision + Features** for capability-first products and
@@ -93,7 +93,7 @@ It answers "what should we build and why." It does not say how; that is
 [Design UX and Architecture](./design-ux-and-architecture.md). It does not
 divide work into stories; that is
 [Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md).
-If you open it with a one-pager in mind or an idea to vet, it points you at
+If you open with a one-pager in mind or an idea to vet, John points you at
 the brief or the PRFAQ instead.
 
 ## Requirements: The Contract Implementation Reads
@@ -113,7 +113,7 @@ Sofia writes the requirements; she does not help you figure out what you
 want. Rich input is extracted with no questions. Sparse input gets a choice:
 a best-effort draft where every gap becomes an open question, or a guided
 walk through the sections. Input too thin to use ("an app for hikers") is
-sent to `bmad-prd`. Input too large is the other failure: a few tens of
+sent to John for a PRD. Input too large is the other failure: a few tens of
 thousands of tokens is the practical ceiling, so condense a pile of material
 first.
 
@@ -139,7 +139,7 @@ one run per ticket. No leaf file needs to be pulled first.
 
 :::note[What each skill produces]
 `bmad-product-brief`: `brief-<slug>.md` and `addendum.md`. `bmad-prfaq`: a
-PRFAQ document with a short summary for the PRD or for Sofia. `bmad-prd`:
+PRFAQ document with a short summary for the PRD or for Sofia. John (`bmad-agent-pm`):
 `prd-<slug>.md` and `addendum.md`, or a validation report. Each document
 lands in its own `<type>-<slug>/` folder in the active initiative's folder,
 or in the output folder when no initiative is active. Sofia writes the

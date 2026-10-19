@@ -254,12 +254,12 @@ Keep the IDE file short. The model reads it every turn.
 
 ## Recipe 6: Advanced fields
 
-**File and keys:** `_bmad/custom/bmad-prd.toml`, `[workflow] external_sources`,
+**File and keys:** `_bmad/custom/bmad-agent-pm.toml`, `[workflow] external_sources`,
 `external_handoffs`, `doc_standards`, and template scalars.
 
 Some workflows expose more fields than recipes 1 through 5 use. Check a
 workflow's `customize.toml` to see which of these it has; the examples use
-`bmad-prd`, which has all of them. The same pattern applies wherever a
+John's PRD workflow (`bmad-agent-pm`), which has all of them. The same pattern applies wherever a
 field appears.
 
 ### On-demand knowledge sources
@@ -269,7 +269,7 @@ competitive databases, or compliance references. The agent consults them
 only when the conversation surfaces a matching need, never preemptively.
 
 ```toml
-# _bmad/custom/bmad-prd.toml
+# _bmad/custom/bmad-agent-pm.toml
 
 [workflow]
 external_sources = [
@@ -289,7 +289,7 @@ the workflow finalizes. Unlike `on_complete` (recipe 3), it is an append
 array: team entries stack, and each handoff fires independently.
 
 ```toml
-# _bmad/custom/bmad-prd.toml
+# _bmad/custom/bmad-agent-pm.toml
 
 [workflow]
 external_handoffs = [
@@ -312,7 +312,7 @@ stack on the workflow's shipped default
 before narrow prose passes.
 
 ```toml
-# _bmad/custom/bmad-prd.toml
+# _bmad/custom/bmad-agent-pm.toml
 
 [workflow]
 doc_standards = [
@@ -329,7 +329,7 @@ checklist paths as scalars. Point them at files under `{project-root}`, as
 in recipe 4.
 
 ```toml
-# _bmad/custom/bmad-prd.toml
+# _bmad/custom/bmad-agent-pm.toml
 
 [workflow]
 # Regulated-industry PRD structure

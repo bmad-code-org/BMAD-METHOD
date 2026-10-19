@@ -3,6 +3,7 @@
 renamed = [
   { from = "bmad-create-ux-design", to = "bmad-ux" },
   { from = "bmad-ticket", to = "bmad-agent-po" },
+  { from = "bmad-prd", to = "bmad-agent-pm" },
 ]
 removed = [
   "bmad-agent-sm",

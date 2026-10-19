@@ -77,7 +77,7 @@ Critical warnings only — data loss, security issues
 | Skill        | Agent   | Purpose                              |
 | ------------ | ------- | ------------------------------------ |
 | `bmad-brainstorming` | Analyst | Brainstorm a new project             |
-| `bmad-prd`        | PM      | Create Product Requirements Document |
+| `bmad-agent-pm`   | PM      | Create, update, or validate a PRD    |
 ```
 
 ## Folder Structure Blocks

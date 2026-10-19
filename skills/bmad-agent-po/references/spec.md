@@ -34,7 +34,7 @@ An unaddressed domain implication (healthcare silent on PHI) becomes an `Open qu
 
 A later memlog entry supersedes an earlier one. A new input, or a source changed since the memlog last cited it, is read against the memlog and the other sources; each disagreement, and any either/or never resolved, is put to the user as fix (a new memlog entry, the lines re-derived) or ignore (a `Decision:` line in Notes), never settled silently.
 
-When the user would rather work the idea itself out first, offer `bmad-product-brief` or `bmad-prd`.
+When the user would rather work the idea itself out first, offer `bmad-product-brief` or John the Product Manager (`bmad-agent-pm`).
 
 ## Load-bearing
 

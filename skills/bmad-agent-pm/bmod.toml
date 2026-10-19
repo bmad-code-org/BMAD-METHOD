@@ -3,5 +3,9 @@ bmod = "bmod-method"
 source = "github:bmad-code-org/BMAD-METHOD/skills"
 recommended_skills = [
   "bmad-agent-po",
-  "bmad-prd",
+  "bmad-product-brief",
+  "bmad-prfaq",
+  "bmad-review",
+  "bmad-party-mode",
+  "bmad-advanced-elicitation",
 ]

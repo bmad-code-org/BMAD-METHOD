@@ -45,12 +45,12 @@ Open your skills directory to see every installed skill with its description. Ru
 
 ## Agents
 
-The BMad Method module installs six named agents. Load one with its skill ID, then type a code from its menu. Codes are scoped to the agent that shows them: `CR` is a competitive teardown for the Analyst and a code review for the Developer.
+The BMad Method module installs six named agents. Load one with its skill ID, then say what you want or type a code from its menu. Agents show the menu only when you ask what they can do. Codes are scoped to the agent that shows them: `CR` is a competitive teardown for the Analyst and a code review for the Developer.
 
 | Agent                  | Skill ID                 | Codes                                                              | Menu                                                                                                                                                                 |
 | ---------------------- | ------------------------ | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Analyst (Mary)         | `bmad-agent-analyst`     | `BP`, `MR`, `DR`, `TR`, `TS`, `CR`, `UV`, `CB`, `WB`, `PC`         | Brainstorm; market, domain, and technical research; technology selection; competitive teardown; user-voice research; product brief; PRFAQ challenge; project context |
-| Product Manager (John) | `bmad-agent-pm`          | `PRD`                                                              | Create, update, or validate a PRD                                                                                                                                    |
+| Product Manager (John) | `bmad-agent-pm`          | `PRD`, `VALIDATE`                                                  | Create or update a PRD; validate one into a findings report                                                                                                          |
 | Product Owner (Sofia)  | `bmad-agent-po`          | `SPEC`, `TICKETS`, `REFINE`, `BOARD`, `VALIDATE`, `REPLAN`, `STORE` | Requirements from a PRD, brief, or notes into a ticket; slice an initiative or epic; refine a ticket; the board; validation; replan a mid-flight change; tracker setup |
 | Architect (Winston)    | `bmad-agent-architect`   | `CA`                                                               | Architecture spine                                                                                                                                                   |
 | Developer (Amelia)     | `bmad-agent-dev`         | `BD`, `QA`, `CR`, `ER`                                             | Build; QA test generation; code review; epic retrospective                                                                                                           |
@@ -174,7 +174,7 @@ The BMad Method module adds the six agents above and these workflow skills. The 
 | ------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `bmad-product-brief`            | Create, update, or validate a product brief                                                       | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
 | `bmad-prfaq`                    | Stress-test a product concept with the Working Backwards PRFAQ method                             | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
-| `bmad-prd`                      | Create, update, or validate a PRD                                                                 | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
+| `bmad-agent-pm`                 | John, the Product Manager: create, update, or validate a PRD                                      | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
 | `bmad-ux`                       | Capture the UX vision as `DESIGN.md` and `EXPERIENCE.md`                                          | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
 | `bmad-architecture`             | Record the architecture decisions that keep separately built parts consistent                     | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
 | `bmad-project-context`          | Set up, refresh, or audit the repository's agent instructions                                     | [Set and Maintain Project Context](../existing-codebases/set-and-maintain-project-context.md)          |
@@ -196,11 +196,11 @@ The Toolsmith module is for authoring skills and is installed separately. See [T
 
 ## Deprecated Names
 
-Earlier skill IDs, such as `bmad-create-prd`, `bmad-edit-prd`, `bmad-market-research`, `bmad-generate-project-context`, and `bmad-checkpoint-preview`, still resolve as forwarders to the current skill. Use the current names in new work.
+Earlier skill IDs, such as `bmad-create-prd`, `bmad-edit-prd`, `bmad-market-research`, `bmad-generate-project-context`, and `bmad-checkpoint-preview`, still resolve as forwarders to the current skill. Use the current names in new work. `bmad-prd` became John, the Product Manager (`bmad-agent-pm`); `bmad setup` offers to remove the old install and moves its `_bmad/custom/` overrides to the new name.
 
 ## Naming and Modules
 
-Every skill shipped by the bmad-code-org uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-dev`, `bmad-prd`, `bmad-build`. A custom module uses its own code as the prefix; see [Add Modules](../customize/add-modules.md) and [Modules and Registration](../toolsmith/modules.md).
+Every skill shipped by the bmad-code-org uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-dev`, `bmad-ux`, `bmad-build`. A custom module uses its own code as the prefix; see [Add Modules](../customize/add-modules.md) and [Modules and Registration](../toolsmith/modules.md).
 
 ## Troubleshooting
 

@@ -1,0 +1,74 @@
+[
+  {
+    "query": "hey John, let's write the PRD for the booking app",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to talk to the product manager about requirements for our new onboarding flow",
+    "should_trigger": true
+  },
+  {
+    "query": "create a PRD. I have a product brief and three customer interview transcripts in docs/research",
+    "should_trigger": true
+  },
+  {
+    "query": "the pricing model changed since we wrote the PRD last month, the PRD needs to change to match",
+    "should_trigger": true
+  },
+  {
+    "query": "validate this PRD before I hand it to the architects: _bmad-output/initiative-checkout/prd-checkout/prd-checkout.md",
+    "should_trigger": true
+  },
+  {
+    "query": "can you review my PRD and tell me if it's ready for engineering",
+    "should_trigger": true
+  },
+  {
+    "query": "we're building an internal tool for the finance team to reconcile invoices. draft the product requirements, I'll answer questions as we go",
+    "should_trigger": true
+  },
+  {
+    "query": "ask the PM to update the PRD so the mobile journey covers offline mode",
+    "should_trigger": true
+  },
+  {
+    "query": "I need a product requirements document for a CLI that developers will install, enterprise launch, compliance matters",
+    "should_trigger": true
+  },
+  {
+    "query": "distill this PRD into the initiative's requirements",
+    "should_trigger": false
+  },
+  {
+    "query": "slice the PRD's epics into stories we can start building",
+    "should_trigger": false
+  },
+  {
+    "query": "write a one-page product brief for the booking app, I don't need a full PRD",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm not sure this product should exist at all, help me pressure-test it with a press release first",
+    "should_trigger": false
+  },
+  {
+    "query": "create the architecture from the initiative file",
+    "should_trigger": false
+  },
+  {
+    "query": "the PRD says we need SSO; build the SSO login story",
+    "should_trigger": false
+  },
+  {
+    "query": "help me brainstorm names and positioning for the product",
+    "should_trigger": false
+  },
+  {
+    "query": "design the UX for the checkout flow, I want DESIGN.md and EXPERIENCE.md",
+    "should_trigger": false
+  },
+  {
+    "query": "what does PRD stand for and how is it different from a spec?",
+    "should_trigger": false
+  }
+]
