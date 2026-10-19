@@ -2,9 +2,9 @@
 purpose: Coordinate the release of a built feature across product, marketing, sales and support.
 good for: A feature or product that is built or nearly built and needs several teams ready on one date.
 not for: Deciding what to build (`brief` or `prd`); a launch talk or slides (`pitch-deck`).
-stance: Settle who drives and who approves, and the go or no-go criteria, before planning activities. Ask what each team needs in order to be ready.
+stance: Settle who drives and who approves, and the go or no-go criteria, before planning activities. Ask what each team needs to be ready.
 inputs: What is shipping, for whom, and the target date. Only the user knows owners, dates, pricing and channels.
-writing: Messaging uses the customer's words, not internal names. Never invent dates, owners, prices, targets or competitive claims.
+writing: Messaging uses the customer's words, not internal names.
 done when: Every team can find its tasks, owner and date, and the go or no-go criteria are written down.
 view: document
 -->

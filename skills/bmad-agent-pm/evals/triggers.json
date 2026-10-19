@@ -40,7 +40,7 @@
     "should_trigger": true
   },
   {
-    "query": "write the business case for the data platform migration, finance needs cost and return before they fund it",
+    "query": "finance won't fund the data platform migration until they see the cost and the expected return; help me make the case",
     "should_trigger": true
   },
   {
@@ -48,15 +48,15 @@
     "should_trigger": true
   },
   {
-    "query": "we run six-week cycles; help me shape a pitch for the betting table on the new search",
+    "query": "we run six-week cycles; get the new search ready for the betting table",
     "should_trigger": true
   },
   {
-    "query": "plan the launch of the mobile app across marketing, sales and support for March",
+    "query": "marketing, sales and support all need to be ready for the mobile app release in March; who does what and when",
     "should_trigger": true
   },
   {
-    "query": "draft the program charter for our three payments initiatives",
+    "query": "our three payments initiatives need one mandate, a sponsor and governance before the next planning round",
     "should_trigger": true
   },
   {
@@ -105,6 +105,18 @@
   },
   {
     "query": "record this decision as an ADR: we're moving from REST to gRPC",
+    "should_trigger": false
+  },
+  {
+    "query": "make a pitch deck for our seed round",
+    "should_trigger": false
+  },
+  {
+    "query": "write a grant proposal for the city arts fund",
+    "should_trigger": false
+  },
+  {
+    "query": "create a spec for the checkout epic so it's ready for stories",
     "should_trigger": false
   }
 ]

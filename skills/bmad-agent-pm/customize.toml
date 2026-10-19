@@ -56,7 +56,8 @@ prompt = "Call the `bmad-doc-pro` skill as Calling the engine in SKILL.md says, 
 # Doc standards, reviewers, external sources and handoffs, output, style, html_view and on_complete are bmad-doc-pro's: set them in {project-root}/_bmad/custom/bmad-doc-pro.toml.
 
 # John's template library. `description` is the only text read when choosing. A team entry with a shipped `id`
-# replaces it, a new `id` adds one, `disabled = true` hides one. Empty `rubric` uses bmad-doc-pro's planning rubric.
+# replaces it, a new `id` adds one, `disabled = true` hides one; team entries name files under {project-root}.
+# Empty `rubric` uses bmad-doc-pro's planning rubric.
 
 [[workflow.templates]]
 id = "brief"
@@ -149,11 +150,12 @@ rubric = ""
 disabled = false
 
 # What a team adds to a template without replacing it. Fields merge across layers and arrays append.
-#
+[workflow.additions]
+
 # [workflow.additions.prd]
 # facts = ["file:{project-root}/docs/policy/data-retention.md"]   # loaded once this template is chosen
 # include = ["A data retention section citing policy DR-2"]       # content the document must contain
 # checks = ["Every requirement touching personal data names its retention rule"]   # added to the review
 # polish = ["file:{project-root}/_bmad/style/company-voice.md"]   # run after doc_standards
-# output = "docs/product/{slug}"                                  # the run folder itself
+# output = "docs/product/{slug}"                                  # the run folder itself; an epic's document stays in its epic folder
 # style = "{project-root}/_bmad/style/product.css"                # this template's rendered view

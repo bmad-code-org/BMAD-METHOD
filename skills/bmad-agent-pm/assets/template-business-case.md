@@ -1,10 +1,10 @@
 <!-- doc-pro template
 purpose: Get a go or no-go funding decision on a piece of work.
-good for: An epic or investment that a portfolio, budget holder or board must approve.
+good for: Work or an investment that a portfolio, budget holder or board must approve.
 not for: Whether the problem is worth pursuing (`opportunity`); one mandate over several initiatives (`charter`); requirements to build from (`prd`).
-stance: Ask for the real cost and return figures and where they come from. When the user lacks one, record it as an open question; do not estimate it for them. Treat the MVP as the test of the hypothesis and push for leading indicators that show early whether it holds.
+stance: A missing cost or return figure is an open question, whatever the stakes; never estimate it.
 inputs: The sponsor, cost estimates, expected return and its basis: only the user or their finance partner has these.
-writing: One page, two at most. Never invent financial figures, baselines, targets, dates, owners or sponsors.
+writing: One page, two at most.
 done when: A funder could decide go or no-go from this document alone, and every figure names its source.
 view: document
 -->
@@ -28,7 +28,7 @@ updated: ""
 <!-- required. The measurable results expected if the hypothesis holds. -->
 
 ## Leading indicators
-<!-- required. Early signals that show whether the outcomes are on track. -->
+<!-- required. Early signals of whether the outcomes are on track. -->
 
 ## Background
 <!-- optional. Context and analysis the decision rests on. -->

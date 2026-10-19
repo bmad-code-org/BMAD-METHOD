@@ -1,10 +1,10 @@
 <!-- doc-pro template
-purpose: Requirements a team, human or AI, builds from without this conversation.
+purpose: Requirements a team, human or AI, builds from.
 good for: Committed work at any altitude, from a program down to small work.
 not for: Deciding whether to build (`brief`, `opportunity`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`).
-stance: Draw the product out of the user; when you start naming wedges, MVP cuts or phases, hand the decision back. The user narrates journeys as real sessions; you structure them.
+stance: The user narrates journeys as real sessions; you structure them.
 inputs: Form factor if the sources do not say. Only the user knows who it is for, what is out, and what success looks like.
-writing: Program and initiative documents state outcomes, capabilities and rules for everything below them; epic documents state testable requirements; small work does both, briefly. Capabilities, not implementation: technology choices go to the addendum. Ids (UJ-N, FR-N, SM-N) are global and stable; no traceability matrix. Domain nouns are used exactly as the glossary defines them.
+writing: Capabilities, not implementation: technology choices go to the addendum. Ids (UJ-N, FR-N, SM-N) are global; no traceability matrix. Domain nouns are used exactly as the glossary defines them.
 done when: Every FR has testable consequences and traces to a journey or need; non-goals and out-of-scope reasons are stated; every primary metric has a counter-metric.
 view: document
 -->
