@@ -12,7 +12,7 @@
 
    Do not ask the human during investigation. When something is unclear, look in the repository, planning artifacts, or history first. Keep looking until you know, or until those sources have nothing more to say. Leave any remaining choice for the next step.
 
-   For a bug fix, reproduce the defect first. Put the failing test or command in the plan's `## Verification`; the fix is done only when it passes.
+   For a bug fix, run a reproduction that fails on the reported symptom before fixing it. Record the command and its pass/fail criterion in the plan's `## Verification`; for intermittent failures, state the repetitions and threshold. If reproduction remains impossible after investigation, record what was tried and the missing evidence, and HALT before implementation on either route. The fix is done only when Verification passes.
 
    Then score the change's `risk` for `{plan_file}` frontmatter: `low`, `medium`, or `high`, the business impact if this change is wrong. For a ticket from the tree, start from `risk` in `tickets.py find`'s output and raise it when the investigation shows more; go below it only when the user says so. Write `risk` wherever this step writes `{plan_file}`.
 {% if workflow.route == "oneshot" %}
