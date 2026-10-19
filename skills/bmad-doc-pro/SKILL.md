@@ -51,7 +51,7 @@ Coach, do not quiz: open questions for vision and discovery, options with a reco
 
 Fill every required section; one line is enough at hobby stakes. Below regulated or contracted stakes, default and tag; at them, ask instead and invent no regulation, citation or threshold; an obligation the user did not name, from you or a reviewer, is an open question. Length, unless the template's `writing` sets it: about 800 words at hobby stakes or for small work, 2,000 to 3,500 for internal or pitch work, as needed above, counted with `wc -w`; overflow, rejected alternatives and detail for later documents go to `{run}/addendum.md` as they come.
 
-Add what the additions' `include` requires. Give stable ids to anything others will cite; make every requirement testable and every scope edge explicit. Invent nothing: an unconfirmed inference, your own knowledge and any requirement you added included, is `[ASSUMPTION: ...]`, the only tag; an open question goes in the template's section for them or a final `## Open questions`. Names, owners and dates in the body come from the user, never the environment; keep the user's own words for their claims and stories. Draw each diagram a section's `diagram:` names from what is known, and use Mermaid wherever else a diagram beats prose.
+Add what the additions' `include` requires. Give stable ids to anything others will cite; make every requirement testable and every scope edge explicit. Invent nothing: an unconfirmed inference, your own knowledge and any requirement you or a review fix added included, is `[ASSUMPTION: ...]`, the only tag; an open question goes in the template's section for them or a final `## Open questions`. Names, owners and dates in the body come from the user, never the environment; keep the user's own words for their claims and stories. Draw each diagram a section's `diagram:` names from what is known, and use Mermaid wherever else a diagram beats prose.
 
 ## Review
 
@@ -67,7 +67,7 @@ Run every step in order, on the fast path too. At hobby stakes, skip step 2 unle
 
 1. Memlog audit: each meaningful entry lands in the document, the addendum, or is set aside; each logged assumption is tagged where it lands. Then run `uv run {skill-root}/scripts/check_ids.py {run}/{id}-{slug}.md` (adding `{run}/addendum.md` when it exists) and fix every `undefined`, `duplicate` and `withdrawn` hit.
 2. Reconciliation: one subagent per user-supplied input returns what the document dropped, above all tone and feel.
-3. The review.
+3. The review, its reviewers named to the user first above hobby stakes.
 4. Triage each `[ASSUMPTION]` and open question: resolve blockers (unsafe for the reader's next step, and the user agrees; never one the user deferred) one at a time; defer the rest with an owner and a revisit condition.
 5. Polish the triaged text: apply `{workflow.doc_standards}`, then the additions' `polish`, structure before prose, ending within the length budget; what still overflows moves to the addendum. Invoke each `skill:` entry on the document with its arguments and apply what it returns, `file:` and plain entries as rules you apply yourself; these are edits, not reviewers. Polish adds no claim the memlog does not hold. Log each pass only once its edits are in.
 6. Run `{workflow.external_handoffs}`.
