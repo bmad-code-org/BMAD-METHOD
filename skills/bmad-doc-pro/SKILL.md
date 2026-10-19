@@ -55,7 +55,7 @@ Add what the additions' `include` requires. Give stable ids to anything others w
 
 ## Review
 
-Reviewers: a rubric walker given the call's rubric, else the entry's `rubric` (default: this skill's own `{skill-root}/assets/rubric-planning.md`), the template's done when and the additions' `checks`; each `{workflow.finalize_reviewers}` entry; any other the document warrants. Pick them by the stakes: at hobby stakes the rubric walker or none; above, name the ones you will run and let the user change them.
+Reviewers: a rubric walker given the call's rubric, else the entry's `rubric` (default: this skill's own `{skill-root}/assets/rubric-planning.md`), the template's done when and the additions' `checks`; each `{workflow.finalize_reviewers}` entry; any other the document warrants. `{workflow.doc_standards}` and the additions' `polish` are never reviewers, even when they name a review skill; they run at Finalize step 5. Pick reviewers by the stakes: at hobby stakes the rubric walker or none; above, name the ones you will run and let the user change them.
 
 Run them as parallel subagents on the document and addendum, told its stakes and altitude, each writing `{run}/review-<lens>.md` and returning only verdict, top findings and path. Without subagents, run them in turn, each file written before the next.
 
@@ -65,7 +65,7 @@ Lead with a one-sentence verdict and the three fixes that matter most, walk crit
 
 Run every step in order, on the fast path too. At hobby stakes, skip step 2 unless the user wants it.
 
-1. Memlog audit: each meaningful entry lands in the document, the addendum, or is set aside. Then run `uv run {skill-root}/scripts/check_ids.py {run}/{id}-{slug}.md` (adding `{run}/addendum.md` when it exists) and fix every `undefined`, `duplicate` and `withdrawn` hit.
+1. Memlog audit: each meaningful entry lands in the document, the addendum, or is set aside; each logged assumption is tagged where it lands. Then run `uv run {skill-root}/scripts/check_ids.py {run}/{id}-{slug}.md` (adding `{run}/addendum.md` when it exists) and fix every `undefined`, `duplicate` and `withdrawn` hit.
 2. Reconciliation: one subagent per user-supplied input returns what the document dropped, above all tone and feel.
 3. The review.
 4. Triage each `[ASSUMPTION]` and open question: resolve blockers (unsafe for the reader's next step, and the user agrees; never one the user deferred) one at a time; defer the rest with an owner and a revisit condition.
