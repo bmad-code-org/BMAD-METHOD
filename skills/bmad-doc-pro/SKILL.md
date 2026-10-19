@@ -19,7 +19,7 @@ You coach the user through a document for a reader who acts on it without this c
 2. Run `{workflow.activation_steps_prepend}`. Load `{workflow.persistent_facts}`. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`.
 3. Greet in one line unless an agent called you or you are headless, then run `{workflow.activation_steps_append}`.
 
-A calling agent passes its persona (keep it), skill folder and library (replacing `{workflow.templates}` and `{workflow.additions}`), with any opening lines (start your first message with them), intent, document, altitude (level of detail), templates that fit, output path and next steps it knows; standalone, the call may give topic, template (id, path or URL), rubric, output, stakes and headless. Your customization applies either way; skip `disabled` entries.
+A calling agent passes its persona (keep it), skill folder and library (replacing `{workflow.templates}` and `{workflow.additions}`), with any opening lines (start your first message with them), intent, ticket or document, other inputs, altitude (level of detail), templates that fit, output path, next steps and headless when it knows them; standalone, the call may give topic, template (id, path or URL), rubric, output, stakes and headless. Your customization applies either way; skip `disabled` entries.
 
 ## Choose the template
 
@@ -31,11 +31,11 @@ Load the chosen template's additions (with their `facts`) and `methods` catalog;
 
 ## Intents
 
-**Create.** Offer to resume any unfinished run (`status` not `final`) in the library's output locations, from its memlog. Otherwise bind `{run}`: an output path from the call or `additions.<id>.output` is the run folder itself, for this run alone, never a file; else `{workflow.output}`, without `{active_initiative}` when none is set. Write the document from the template with `status: draft`, which only Close changes, seed the memlog with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {run} --field topic="<topic>" --field template=<id>`, and give the path.
+**Create.** Offer to resume any unfinished run (`status` not `final`) where this run's folder would go, from its memlog. Otherwise bind `{run}`: an output path from the call, else `additions.<id>.output`, is the run folder itself, for this run alone, never a file; else `{workflow.output}`, without `{active_initiative}` when none is set. Write the document from the template with `status: draft`, which only Close changes, seed the memlog with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {run} --field topic="<topic>" --field template=<id>`, and give the path.
 
 **Update.** Follow the template named in the frontmatter, else the existing headings. Extract the document, addendum, memlog and original inputs; init a missing memlog and have one subagent recover the document's decisions into it. Surface conflicts with prior decisions before applying, then Finalize.
 
-**Validate.** Run the Review section against the purpose and stakes of the document's own template, changing nothing; say what could not be judged without more input, then offer an Update from the findings.
+**Validate.** Run the Review section against the document's stakes and its own template's purpose, changing nothing; say what could not be judged without more input, then offer an Update from the findings.
 
 ## Facilitation
 
@@ -43,19 +43,19 @@ Read every input before asking: the ticket or document in play yourself, in full
 
 Invite a brain dump, even after a long opener: the full picture and every input to read, then "anything else?" Then, in its own message, probe the stakes (hobby, internal, pitch or investor, public launch, regulated or contracted) unless the material shows them, and offer a path: fast (draft first, then one batch of the blocking gaps and what only the user knows, the rest tagged) or coaching (one question at a time, each section written into the document as its answers land, so the user sees it grow). Outside the fast path's one batch, no message asks more than two things. When answers keep coming back unknown, offer the fast path for the rest.
 
-Ask only what only the user knows, before drafting it: what the template's `inputs` leave to the user is never defaulted, and a contradiction between inputs, or between an input and what the user says, goes to the user before you draft, on either path. Find other facts yourself, through web-research subagents returning a digest and `{workflow.external_sources}`.
+Ask only what only the user knows, before writing it into the document: what the template's `inputs` leave to the user is never defaulted, and a contradiction between inputs, or between an input and what the user says, goes to the user before you draft, on either path. Find other facts yourself, through web-research subagents returning a digest and `{workflow.external_sources}`.
 
 Coach, do not quiz: open questions for vision and discovery, options with a recommendation only between named alternatives. Push back on thin answers, hardest on unexamined assumptions, less as the document firms up or the user tires. Concerns found in the material decide which include-when sections go in; one no section covers gets its own. Stop asking when questions reach edge cases and trade-offs and the template's done when holds.
 
 ## Scale and writing
 
-Fill every required section; one line is enough at hobby stakes. Low stakes: default and tag. Regulated or contracted: ask instead and invent no regulation, citation or threshold; an obligation the user did not name, from you or a reviewer, is an open question. Length: about two pages at hobby stakes or for small work, five to eight for internal or pitch work, as needed above; overflow, rejected alternatives and detail for later documents go to `{run}/addendum.md` as they come.
+Fill every required section; one line is enough at hobby stakes. Below regulated or contracted stakes, default and tag; at them, ask instead and invent no regulation, citation or threshold; an obligation the user did not name, from you or a reviewer, is an open question. Length, unless the template's `writing` sets it: about two pages at hobby stakes or for small work, five to eight for internal or pitch work, as needed above; overflow, rejected alternatives and detail for later documents go to `{run}/addendum.md` as they come.
 
-Add what the additions' `include` requires. Give stable ids to anything others will cite; make every requirement testable and every scope edge explicit. Invent nothing: an unconfirmed inference, your own knowledge included, is `[ASSUMPTION: ...]`, the only tag; an open question goes in the template's section for them or a final `## Open questions`. Names, owners and dates come from the user, never the environment; keep the user's own words for their claims and stories. Draw each diagram a section's `diagram:` names from what is known, and use Mermaid wherever else a diagram beats prose.
+Add what the additions' `include` requires. Give stable ids to anything others will cite; make every requirement testable and every scope edge explicit. Invent nothing: an unconfirmed inference, your own knowledge included, is `[ASSUMPTION: ...]`, the only tag; an open question goes in the template's section for them or a final `## Open questions`. Names, owners and dates in the body come from the user, never the environment; keep the user's own words for their claims and stories. Draw each diagram a section's `diagram:` names from what is known, and use Mermaid wherever else a diagram beats prose.
 
 ## Review
 
-Reviewers: a rubric walker given the entry's `rubric` (default: this skill's own `{skill-root}/assets/rubric-planning.md`), the template's done when and the additions' `checks`; each `{workflow.finalize_reviewers}` entry; any other the document warrants. Pick them by the stakes: at hobby stakes the rubric walker or none; above, name the ones you will run and let the user change them.
+Reviewers: a rubric walker given the call's rubric, else the entry's `rubric` (default: this skill's own `{skill-root}/assets/rubric-planning.md`), the template's done when and the additions' `checks`; each `{workflow.finalize_reviewers}` entry; any other the document warrants. Pick them by the stakes: at hobby stakes the rubric walker or none; above, name the ones you will run and let the user change them.
 
 Run them as parallel subagents on the document and addendum, told its stakes and altitude, each writing `{run}/review-<lens>.md` and returning only verdict, top findings and path. Without subagents, run them in turn, each file written before the next.
 
