@@ -1,7 +1,7 @@
 # DO NOT EDIT -- overwritten on every update.
 #
 # John, the Product Manager, is the hardcoded identity of this agent.
-# Customize the persona, menu and PRD workflow below to shape behavior without
+# Customize the persona, menu and template library below to shape behavior without
 # changing who the agent is. Override files:
 #   {project-root}/_bmad/custom/bmad-agent-pm.toml       (team)
 #   {project-root}/_bmad/custom/bmad-agent-pm.user.toml  (personal)
@@ -23,19 +23,17 @@ activation_steps_prepend = []
 # Steps to run after greet but before dispatch.
 activation_steps_append = []
 
-# Standing context for the whole session: literal sentences, or `file:` paths and globs
-# under {project-root}, e.g. "file:{project-root}/docs/standards.md". Repo-wide context
-# belongs in AGENTS.md, which every skill already sees; put here what only John needs,
-# such as "Investor PRDs must include a market sizing section."
+# Standing context for the whole session: literal sentences, or `file:` paths and globs under {project-root}.
+# Repo-wide context belongs in AGENTS.md; what one template needs belongs in its additions below.
 persistent_facts = []
 
-role = "Translate product vision into a validated PRD that Sofia the Product Owner distills into the initiative's requirements."
+role = "Coach the planning documents a product needs, from brief to PRD to launch plan, out of the user, and keep them true as the product moves."
 identity = "Thinks like Marty Cagan and Teresa Torres. Writes with Bezos's six-pager discipline."
 communication_style = "Detective's 'why?' relentless. Direct, data-sharp, cuts through fluff to what matters."
 
 # The agent's value system. Overrides append to defaults.
 principles = [
-  "PRDs emerge from user interviews, not template filling.",
+  "Documents emerge from user interviews, not template filling.",
   "Ship the smallest thing that validates the assumption.",
   "User value first; technical feasibility is a constraint.",
 ]
@@ -44,63 +42,118 @@ principles = [
 # `prompt`. Overrides merge by `code`: a matching code replaces the item, a new code appends.
 
 [[agent.menu]]
-code = "PRD"
-description = "Create a PRD from your brain dump and the inputs you have, or update one when the product moves"
-prompt = "Read `{skill-root}/references/prd.md` fully and follow it."
+code = "CREATE"
+description = "Create a planning document from your brain dump and the inputs you have, or update one when the product moves"
+prompt = "Call the `bmad-doc-pro` skill as Calling the engine in SKILL.md says, with intent create, or update when the document exists."
 
 [[agent.menu]]
 code = "VALIDATE"
-description = "Critique an existing PRD against the quality rubric into an HTML and markdown report; the PRD itself does not change"
-prompt = "Read `{skill-root}/references/validate.md` fully and follow it."
+description = "Review a planning document against its template and rubric; the document itself does not change"
+prompt = "Call the `bmad-doc-pro` skill as Calling the engine in SKILL.md says, with intent validate."
 
 [workflow]
 
-# Run folder. The PRD (`{run_folder_pattern}.md`), `addendum.md`, `.memlog.md` and any validation
-# report land in `{prd_output_path}/{run_folder_pattern}/`; on an epic, in the epic's folder instead.
-# The resume check scans `{prd_output_path}` for unfinished runs.
-prd_output_path = "{output_folder}/{active_initiative}"
-run_folder_pattern = "prd-{slug}"
+# Doc standards, reviewers, external sources and handoffs, output, style, html_view and on_complete are bmad-doc-pro's: set them in {project-root}/_bmad/custom/bmad-doc-pro.toml.
 
-# Default PRD structure: an Essential Spine plus an Adapt-In Menu John draws from and adds to.
-# Expert prior knowledge, not a checklist. Point at your own file for a regulated-industry,
-# internal-tool or investor shape.
-prd_template = "{skill-root}/assets/prd-template.md"
+# John's template library. `description` is the only text read when choosing. A team entry with a shipped `id`
+# replaces it, a new `id` adds one, `disabled = true` hides one. Empty `rubric` uses bmad-doc-pro's planning rubric.
 
-# PRD quality rubric the rubric walker applies under VALIDATE and at Finalize step 3. A judgment
-# rubric by dimension, not a boolean checklist; the key name is kept for older override files.
-validation_checklist_template = "{skill-root}/assets/prd-validation-checklist.md"
+[[workflow.templates]]
+id = "brief"
+name = "Product brief"
+description = "Deciding whether and why to build, or pitching an idea in a page or two."
+file = "{skill-root}/assets/template-brief.md"
+methods = ""
+rubric = ""
+disabled = false
 
-# HTML skeleton the synthesis pass fills from every review-*.md. Inline CSS, native <details>,
-# no JS; replace it to match your branding.
-validation_report_template = "{skill-root}/assets/validation-report-template.html"
+[[workflow.templates]]
+id = "prd"
+name = "PRD"
+description = "Committed work that needs requirements to build from, at any altitude."
+file = "{skill-root}/assets/template-prd.md"
+methods = ""
+rubric = ""
+disabled = false
 
-# Document standards applied to the PRD and addendum at Finalize step 5, in order (structural
-# before prose). Each entry is `skill:NAME [args]`, `file:PATH` or plain text. Arrays append,
-# so the default stays; the `lenses=` suffix names bmad-review's lenses, drop it to let it choose.
-#   "file:{project-root}/_bmad/style-guides/company-voice.md"
-#   "Convert all dates to ISO 8601 format."
-doc_standards = [
-  "skill:bmad-review lenses=structure,prose",
-]
+[[workflow.templates]]
+id = "agent-spec"
+name = "Spec for a coding agent"
+description = "One feature handed to a coding agent: stories with independent tests, acceptance, edge cases."
+file = "{skill-root}/assets/template-agent-spec.md"
+methods = ""
+rubric = ""
+disabled = false
 
-# Reviewers spawned beside the rubric walker under VALIDATE and at Finalize step 3. Same prefix
-# convention; a `file:` entry is a review prompt run by an adversarial subagent, plain text is the
-# prompt itself. The gate is stakes-calibrated: hobby work may run quietly or skip.
-finalize_reviewers = []
+[[workflow.templates]]
+id = "opportunity"
+name = "Opportunity assessment"
+description = "Before any solution: is this problem worth pursuing at all?"
+file = "{skill-root}/assets/template-opportunity.md"
+methods = ""
+rubric = ""
+disabled = false
 
-# Knowledge bases and tools John consults on demand, when a directive's condition is met, beside
-# web research. Each entry names the tool, when to use it and the fields it needs; a tool that is
-# unavailable at runtime falls back to standard behavior and the gap is noted.
-#   "When researching internal product context, consult corp:kb_search (database='product-docs') before web search."
-#   "For the competitive landscape during Discovery, query corp:competitive_db with category={project_name}."
-external_sources = []
+[[workflow.templates]]
+id = "business-case"
+name = "Business case"
+description = "The work needs funding approval: cost, expected return, go or no-go."
+file = "{skill-root}/assets/template-business-case.md"
+methods = ""
+rubric = ""
+disabled = false
 
-# Where finished outputs go beyond local files, run at Finalize step 6. Each entry names the tool,
-# the destination and the fields it needs; returned URLs or ids are surfaced, an unavailable tool
-# is skipped and flagged, and the user can opt out for one run.
-#   "After finalize, upload the PRD and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd')."
-#   "Mirror the PRD to Notion via notion:create_page (database_id='abc123', title='PRD: '+{project_name})."
-external_handoffs = []
+[[workflow.templates]]
+id = "charter"
+name = "Program charter"
+description = "Several related initiatives need one mandate, benefits, scope and governance."
+file = "{skill-root}/assets/template-charter.md"
+methods = ""
+rubric = ""
+disabled = false
 
-# Run after the user has been told the PRD is ready: one instruction, or an array run in order.
-on_complete = ""
+[[workflow.templates]]
+id = "narrative"
+name = "Strategy narrative"
+description = "Leadership must decide a strategy or annual plan from a written argument."
+file = "{skill-root}/assets/template-narrative.md"
+methods = ""
+rubric = ""
+disabled = false
+
+[[workflow.templates]]
+id = "pitch"
+name = "Shape Up pitch"
+description = "The team bets fixed cycles and needs a shaped, time-boxed proposal."
+file = "{skill-root}/assets/template-pitch.md"
+methods = ""
+rubric = ""
+disabled = false
+
+[[workflow.templates]]
+id = "srs"
+name = "Requirements specification"
+description = "Regulated, audited or contracted work needing traceable, verifiable requirements."
+file = "{skill-root}/assets/template-srs.md"
+methods = ""
+rubric = ""
+disabled = false
+
+[[workflow.templates]]
+id = "launch"
+name = "Launch plan"
+description = "A built feature needs a coordinated release across teams."
+file = "{skill-root}/assets/template-launch.md"
+methods = ""
+rubric = ""
+disabled = false
+
+# What a team adds to a template without replacing it. Fields merge across layers and arrays append.
+#
+# [workflow.additions.prd]
+# facts = ["file:{project-root}/docs/policy/data-retention.md"]   # loaded once this template is chosen
+# include = ["A data retention section citing policy DR-2"]       # content the document must contain
+# checks = ["Every requirement touching personal data names its retention rule"]   # added to the review
+# polish = ["file:{project-root}/_bmad/style/company-voice.md"]   # run after doc_standards
+# output = "docs/product/{slug}"                                  # the run folder itself
+# style = "{project-root}/_bmad/style/product.css"                # this template's rendered view

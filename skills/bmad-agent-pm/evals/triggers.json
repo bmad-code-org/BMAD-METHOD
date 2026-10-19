@@ -36,6 +36,34 @@
     "should_trigger": true
   },
   {
+    "query": "John, is this problem even worth pursuing? Support keeps flagging slow refunds and I want a go or no-go before anyone designs a fix",
+    "should_trigger": true
+  },
+  {
+    "query": "write the business case for the data platform migration, finance needs cost and return before they fund it",
+    "should_trigger": true
+  },
+  {
+    "query": "spec this CSV export feature so I can hand it to a coding agent",
+    "should_trigger": true
+  },
+  {
+    "query": "we run six-week cycles; help me shape a pitch for the betting table on the new search",
+    "should_trigger": true
+  },
+  {
+    "query": "plan the launch of the mobile app across marketing, sales and support for March",
+    "should_trigger": true
+  },
+  {
+    "query": "draft the program charter for our three payments initiatives",
+    "should_trigger": true
+  },
+  {
+    "query": "we're a medical device company and need a requirements specification the auditors can trace",
+    "should_trigger": true
+  },
+  {
     "query": "distill this PRD into the initiative's requirements",
     "should_trigger": false
   },
@@ -45,7 +73,7 @@
   },
   {
     "query": "write a one-page product brief for the booking app, I don't need a full PRD",
-    "should_trigger": false
+    "should_trigger": true
   },
   {
     "query": "I'm not sure this product should exist at all, help me pressure-test it with a press release first",
@@ -69,6 +97,14 @@
   },
   {
     "query": "what does PRD stand for and how is it different from a spec?",
+    "should_trigger": false
+  },
+  {
+    "query": "write a blameless postmortem for last night's outage",
+    "should_trigger": false
+  },
+  {
+    "query": "record this decision as an ADR: we're moving from REST to gRPC",
     "should_trigger": false
   }
 ]

@@ -2,6 +2,7 @@
 bmod = "bmod-method"
 source = "github:bmad-code-org/BMAD-METHOD/skills"
 recommended_skills = [
+  "bmad-doc-pro",
   "bmad-agent-po",
   "bmad-product-brief",
   "bmad-prfaq",
