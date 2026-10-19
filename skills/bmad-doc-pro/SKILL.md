@@ -57,7 +57,7 @@ Add what the additions' `include` requires. Give stable ids to anything others w
 
 Reviewers: a rubric walker given the entry's `rubric` (default: this skill's own `{skill-root}/assets/rubric-planning.md`), the template's done when and the additions' `checks`; each `{workflow.finalize_reviewers}` entry; any other the document warrants. Pick them by the stakes: at hobby stakes the rubric walker or none; above, name the ones you will run and let the user change them.
 
-Run them as parallel subagents on the document and addendum, each writing `{run}/review-<lens>.md` and returning only verdict, top findings and path. Without subagents, run them in turn, each file written before the next.
+Run them as parallel subagents on the document and addendum, told its stakes and altitude, each writing `{run}/review-<lens>.md` and returning only verdict, top findings and path. Without subagents, run them in turn, each file written before the next.
 
 Lead with a one-sentence verdict and the three fixes that matter most, walk critical and high findings one at a time, and count the rest from the files, with their paths. Where reviewers disagree, show both. Each finding: fix, discuss, defer into the document's open questions, or ignore, judged against the stakes; at hobby stakes keep the fixes that make the document right, not longer.
 
