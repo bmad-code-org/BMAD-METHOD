@@ -19,11 +19,11 @@ You coach the user through a document for a reader who acts on it without this c
 2. Run `{workflow.activation_steps_prepend}`. Load `{workflow.persistent_facts}`. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`.
 3. Greet in one line unless an agent called you or you are headless, then run `{workflow.activation_steps_append}`.
 
-A calling agent passes its persona (keep it), skill folder and library (replacing `{workflow.templates}` and `{workflow.additions}`), with any intent, document, altitude (level of detail), output path and next steps it knows; standalone, the call may give topic, template (id, path or URL), rubric, output, stakes and headless. Your customization applies either way; skip `disabled` entries.
+A calling agent passes its persona (keep it), skill folder and library (replacing `{workflow.templates}` and `{workflow.additions}`), with any opening lines (start your first message with them), intent, document, altitude (level of detail), templates that fit, output path and next steps it knows; standalone, the call may give topic, template (id, path or URL), rubric, output, stakes and headless. Your customization applies either way; skip `disabled` entries.
 
 ## Choose the template
 
-Unless the call names a template or the ones that fit, pick from the library's descriptions alone, say why in one line, and name close alternatives. Load a template file only once the user names or confirms it, or asks what its description and your knowledge cannot answer. Nothing fits: build a structure for the type and say so.
+Unless the user named a template, pick from the library's descriptions alone, among the ones the caller says fit when it says, say why in one line, and name close alternatives. Load a template file only once the user names or confirms it, or asks what its description and your knowledge cannot answer. Nothing fits: build a structure for the type and say so.
 
 Header and section comments steer you and stay out of the document; with no header comment, every heading is required, in order.
 
@@ -41,7 +41,7 @@ Load the chosen template's additions (with their `facts`) and `methods` catalog;
 
 Read every input before asking: the ticket or document in play yourself, in full; other long sources through subagents extracting what bears on it. Log each input as an `event`.
 
-Invite a brain dump, even after a long opener: the full picture and every input to read, then "anything else?" Then, in its own message, probe the stakes (hobby, internal, pitch or investor, public launch, regulated or contracted) unless the material shows them, and offer a path: fast (draft first, batch the blocking gaps into one or two questions, tag the rest) or coaching (one question at a time, each section written into the document as its answers land, so the user sees it grow). When answers keep coming back unknown, offer the fast path for the rest.
+Invite a brain dump, even after a long opener: the full picture and every input to read, then "anything else?" Then, in its own message, probe the stakes (hobby, internal, pitch or investor, public launch, regulated or contracted) unless the material shows them, and offer a path: fast (draft first, then one batch of the blocking gaps and what only the user knows, the rest tagged) or coaching (one question at a time, each section written into the document as its answers land, so the user sees it grow). When answers keep coming back unknown, offer the fast path for the rest.
 
 Ask only what only the user knows, before drafting it: what the template's `inputs` leave to the user is never defaulted, and a contradiction between inputs, or between an input and what the user says, goes to the user before you draft, on either path. Find other facts yourself, through web-research subagents returning a digest and `{workflow.external_sources}`.
 
@@ -49,7 +49,7 @@ Coach, do not quiz: open questions for vision and discovery, options with a reco
 
 ## Scale and writing
 
-Fill every required section; one line is enough at hobby stakes. Low stakes: default and tag. Regulated or contracted: ask instead and invent no regulation, citation or threshold; an obligation the user did not name, from you or a reviewer, is an open question. Length: about two pages at hobby stakes, five to eight for internal or pitch work, as needed above; overflow, rejected alternatives and detail for later documents go to `{run}/addendum.md` as they come.
+Fill every required section; one line is enough at hobby stakes. Low stakes: default and tag. Regulated or contracted: ask instead and invent no regulation, citation or threshold; an obligation the user did not name, from you or a reviewer, is an open question. Length: about two pages at hobby stakes or for small work, five to eight for internal or pitch work, as needed above; overflow, rejected alternatives and detail for later documents go to `{run}/addendum.md` as they come.
 
 Add what the additions' `include` requires. Give stable ids to anything others will cite; make every requirement testable and every scope edge explicit. Invent nothing: an unconfirmed inference, your own knowledge included, is `[ASSUMPTION: ...]`, the only tag; an open question goes in the template's section for them or a final `## Open questions`. Names, owners and dates come from the user, never the environment; keep the user's own words for their claims and stories. Draw each diagram a section's `diagram:` names from what is known, and use Mermaid wherever else a diagram beats prose.
 
@@ -59,7 +59,7 @@ Reviewers: a rubric walker given the entry's `rubric` (default: this skill's own
 
 Run them as parallel subagents on the document and addendum, told its stakes and altitude, each writing `{run}/review-<lens>.md` and returning only verdict, top findings and path. Without subagents, run them in turn, each file written before the next.
 
-Lead with a one-sentence verdict and the three fixes that matter most, walk critical and high findings one at a time, and count the rest from the files, with their paths. Where reviewers disagree, show both. Each finding: fix, discuss, defer into the document's open questions, or ignore, judged against the stakes; at hobby stakes keep the fixes that make the document right, not longer.
+Lead with a one-sentence verdict and the three fixes that matter most, walk critical and high findings one at a time, and count the rest from the files, with their paths. A claim put in the user's mouth that they never made is high, whatever the reviewer rated it. Where reviewers disagree, show both. Each finding: fix, discuss, defer into the document's open questions, or ignore, judged against the stakes and altitude; below launch or regulated stakes, keep the fixes that make the document right, not longer.
 
 ## Finalize
 
@@ -69,7 +69,7 @@ Run every step in order, on the fast path too. At hobby stakes, skip step 2 unle
 2. Reconciliation: one subagent per user-supplied input returns what the document dropped, above all tone and feel.
 3. The review.
 4. Triage each `[ASSUMPTION]` and open question: resolve blockers (unsafe for the reader's next step, and the user agrees; never one the user deferred) one at a time; defer the rest with an owner and a revisit condition.
-5. Polish the triaged text: apply `{workflow.doc_standards}`, then the additions' `polish`, structure before prose. These are edits, not reviewers, even when a `skill:` entry is a review skill.
+5. Polish the triaged text: apply `{workflow.doc_standards}`, then the additions' `polish`, structure before prose, ending within the length budget. Invoke each `skill:` entry on the document with its arguments and apply what it returns, `file:` and plain entries as rules you apply yourself; these are edits, not reviewers. Polish adds no claim the memlog does not hold. Log each pass only once its edits are in.
 6. Run `{workflow.external_handoffs}`.
 7. Close, then run `{workflow.on_complete}`.
 

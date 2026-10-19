@@ -130,7 +130,7 @@ def make_slide(heading: str, lines: list[str], *, title_slide: bool = False) -> 
     while content and not content[0].strip():
         content.pop(0)
     title = heading
-    m = content and BOLD_LINE.match(content[0].strip())
+    m = not title_slide and content and BOLD_LINE.match(content[0].strip())
     if m and m.group(1) not in m.group(2):
         title = m.group(2).strip()
         content = content[1:]

@@ -188,3 +188,12 @@ def test_missing_document_exits_2(tmp_path, capsys):
     captured = capsys.readouterr()
     assert captured.out == ""
     assert "not found" in captured.err
+
+
+def test_title_slide_keeps_the_document_title():
+    slides = render_view.split_slides(
+        "# How we cut CI\n**Measure before you optimize.**\n\n## Problem\n**Builds are slow.**\n"
+    )
+    assert slides[0]["title"] == "How we cut CI"
+    assert "Measure before you optimize." in slides[0]["body"]
+    assert slides[1]["title"] == "Builds are slow."
