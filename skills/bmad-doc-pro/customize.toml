@@ -1,8 +1,6 @@
 # DO NOT EDIT -- overwritten on every update.
 #
-# Workflow customization surface for bmad-doc-pro.
-#
-# Override files (not edited here):
+# Override files:
 #   {project-root}/_bmad/custom/bmad-doc-pro.toml        (team)
 #   {project-root}/_bmad/custom/bmad-doc-pro.user.toml   (personal)
 
@@ -12,16 +10,16 @@
 #   scalars: override wins • arrays: append
 #   arrays-of-tables with `id`: replace matching items, append new ones.
 
-# Steps to run before the standard activation (customization, config, greet).
+# Runs after customization resolves, before facts, config and greet.
 activation_steps_prepend = []
 
-# Steps to run after greet but before the run begins.
+# Runs after greet, before the run begins.
 activation_steps_append = []
 
-# Context loaded once for every document: literal sentences, or `file:` paths and globs under {project-root}.
+# Loaded once per document: literal sentences, or `file:` paths and globs under {project-root}.
 persistent_facts = []
 
-# Knowledge bases and tools consulted on demand beside web research; each entry names the tool and when to use it.
+# Consulted on demand beside web research; each entry names the tool and when to use it.
 #   "For internal standards, consult corp:kb_search (database='engineering') before web search."
 external_sources = []
 
@@ -30,7 +28,7 @@ doc_standards = [
   "skill:bmad-review lenses=structure,prose",
 ]
 
-# Reviewers run beside the rubric walker, same prefixes; resolved only when the review runs.
+# Run beside the rubric walker, same prefixes; resolved only when the review runs.
 finalize_reviewers = []
 
 # Where finished documents go beyond local files; each entry names the tool, destination and fields.
@@ -49,8 +47,8 @@ style = ""
 # "offer", "always" or "never"; a `view: slides` template renders unless "never".
 html_view = "offer"
 
-# The template library. `description` is the only text read when choosing. A team entry with a shipped `id`
-# replaces it, a new `id` adds one, `disabled = true` hides one. Empty `rubric` uses assets/rubric-planning.md.
+# `description` is the only text read when choosing. A team entry with a shipped `id` replaces it,
+# a new `id` adds one, `disabled = true` hides one. Empty `rubric` uses assets/rubric-planning.md.
 
 [[workflow.templates]]
 id = "decision-record"
@@ -98,7 +96,8 @@ rubric = "{skill-root}/assets/rubric-proposal.md"
 disabled = false
 
 # What a team adds to a template without replacing it. Fields merge across layers and arrays append.
-#
+[workflow.additions]
+
 # [workflow.additions.postmortem]
 # facts = ["file:{project-root}/docs/oncall/severity-levels.md"]   # loaded once this template is chosen
 # include = ["A section naming the on-call rotation at the time"]  # content the document must contain

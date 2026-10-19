@@ -44,6 +44,14 @@
     "should_trigger": true
   },
   {
+    "query": "validate my grant proposal against the funder's scoring criteria before I submit it",
+    "should_trigger": true
+  },
+  {
+    "query": "I have to write an RFC for the search rewrite and want someone to push back on my reasoning as I draft it",
+    "should_trigger": true
+  },
+  {
     "query": "write the PRD for the booking app, I have a brief and three interview transcripts",
     "should_trigger": false
   },
@@ -56,10 +64,6 @@
     "should_trigger": false
   },
   {
-    "query": "run a code review on src/payments, focus on error handling",
-    "should_trigger": false
-  },
-  {
     "query": "research the market for AI meeting note tools and give me a report with competitors and pricing",
     "should_trigger": false
   },
@@ -68,19 +72,27 @@
     "should_trigger": false
   },
   {
-    "query": "help me brainstorm names and features for a pet adoption app",
-    "should_trigger": false
-  },
-  {
-    "query": "fix the null pointer in the upload handler and add a test",
-    "should_trigger": false
-  },
-  {
-    "query": "talk to John about the requirements for our onboarding flow",
-    "should_trigger": false
-  },
-  {
     "query": "update the docs site page on installation to mention the new CLI flag",
+    "should_trigger": false
+  },
+  {
+    "query": "do a security review of the changes on this branch before I merge",
+    "should_trigger": false
+  },
+  {
+    "query": "help me choose between Postgres and DynamoDB for the ledger service",
+    "should_trigger": false
+  },
+  {
+    "query": "run a retrospective on epic 3: what went wrong and the action items",
+    "should_trigger": false
+  },
+  {
+    "query": "coach me through writing the PRD for the booking app",
+    "should_trigger": false
+  },
+  {
+    "query": "run an adversarial review of docs/proposals/hiring-plan.md",
     "should_trigger": false
   }
 ]

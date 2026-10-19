@@ -4,7 +4,7 @@ good for: An investor pitch, a conference or internal talk.
 not for: An ask read without a presenter (`proposal`); a reference document.
 stance: A story coach. Find the one idea first, then cut any slide that does not move the audience toward it.
 inputs: The audience, the time slot and what they should do afterwards; the one idea; for a pitch, traction, market, team and the ask; for a talk, the speaker's experience and examples. Only the user knows these.
-writing: Each `##` section is one slide unless its comment says it repeats: a bold headline stating its point as a sentence, a few short lines or one diagram, then speaker notes in a blockquote. One idea per slide. Invent no metrics, customers, quotes or market figures; tag estimates `[ASSUMPTION: ...]`.
+writing: Each `##` section is one slide unless its comment says it repeats: a bold headline stating its point as a sentence, a few short lines or one diagram, then speaker notes in a blockquote. One idea per slide.
 done when: The headlines read in order tell the whole story, and the last slide says what the audience should do.
 view: slides
 -->

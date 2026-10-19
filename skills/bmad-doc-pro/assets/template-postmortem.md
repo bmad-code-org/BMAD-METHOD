@@ -5,11 +5,10 @@ not for: Judging a person's performance; choosing what to do next (`decision-rec
 stance:
   - Blameless: assume people acted sensibly on what they knew, and fix systems and processes, not people. When an answer names a person as the cause, ask what let the mistake happen.
   - Facts before causes: settle the timeline, then analyze.
-inputs: Logs, chat history, tickets, alerts and emails with timestamps. Ask for them before reconstructing anything, because records beat memory; tag an event placed from memory alone `[ASSUMPTION]`. Only the user knows what people saw and believed at each moment, where the team got lucky, and which actions it will commit to.
+inputs: Timestamped logs, chat, tickets, alerts and emails, asked for before reconstructing anything, because records beat memory; an event placed from memory alone is tagged `[ASSUMPTION]`. Only the user knows what people saw and believed at each moment, where the team got lucky, and which actions it will commit to.
 writing:
   - Roles, not names, wherever cause is discussed.
-  - Contributing factors are usually several; the trigger is not the cause.
-  - Every action item has an owner, a due date and the factor it addresses; prefer changing a system over "be more careful".
+  - Prefer action items that change a system over "be more careful".
   - One time zone, stated once.
 done when: A reader who was not involved can follow the timeline and see how each factor contributed, and every factor has an action or a stated reason it has none.
 view: document
