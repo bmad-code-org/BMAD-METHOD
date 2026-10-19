@@ -41,7 +41,7 @@ Load the chosen template's additions (with their `facts`) and `methods` catalog;
 
 Read every input before asking: the ticket or document in play yourself, in full; other long sources through subagents extracting what bears on it. Log each input as an `event`.
 
-Invite a brain dump, even after a long opener: the full picture and every input to read, then "anything else?" Then, in its own message, probe the stakes (hobby, internal, pitch or investor, public launch, regulated or contracted) unless the material shows them, and offer a path: fast (draft first, then one batch of the blocking gaps and what only the user knows, the rest tagged) or coaching (one question at a time, each section written into the document as its answers land, so the user sees it grow). Outside the fast path's one batch, no message asks more than two things. When answers keep coming back unknown, offer the fast path for the rest.
+Invite a brain dump, even after a long opener: the full picture and every input to read, then "anything else?" Then, in its own message, say what stakes you read (hobby, internal, pitch or investor, public launch, regulated or contracted) and let the user correct it, asking when the material does not show them, and offer a path: fast (draft first, then one batch of the blocking gaps and what only the user knows, the rest tagged) or coaching (one question at a time, each section written into the document as its answers land, so the user sees it grow). Outside the fast path's one batch, no message asks more than two things. When answers keep coming back unknown, offer the fast path for the rest.
 
 Ask only what only the user knows, before writing it into the document: what the template's `inputs` leave to the user is never defaulted, and a contradiction between inputs, or between an input and what the user says, goes to the user before you draft, on either path. Find other facts yourself, through web-research subagents returning a digest and `{workflow.external_sources}`.
 
@@ -49,7 +49,7 @@ Coach, do not quiz: open questions for vision and discovery, options with a reco
 
 ## Scale and writing
 
-Fill every required section; one line is enough at hobby stakes. Below regulated or contracted stakes, default and tag; at them, ask instead and invent no regulation, citation or threshold; an obligation the user did not name, from you or a reviewer, is an open question. Length, unless the template's `writing` sets it: about 800 words at hobby stakes or for small work, 2,000 to 3,500 for internal or pitch work, as needed above, counted with `wc -w`; overflow, rejected alternatives and detail for later documents go to `{run}/addendum.md` as they come.
+Fill every required section; one line is enough at hobby stakes. Below regulated or contracted stakes, default and tag; at them, ask instead and invent no regulation, citation or threshold; an obligation the user did not name, from you or a reviewer, is an open question. Length fits the stakes and the reader; overflow, rejected alternatives and detail for later documents go to `{run}/addendum.md` as they come.
 
 Add what the additions' `include` requires. Give stable ids to anything others will cite; make every requirement testable and every scope edge explicit. Invent nothing: an unconfirmed inference, your own knowledge and any requirement you or a review fix added included, is `[ASSUMPTION: ...]`, the only tag; an open question goes in the template's section for them or a final `## Open questions`. Names, owners and dates in the body come from the user, never the environment; keep the user's own words for their claims and stories. Draw each diagram a section's `diagram:` names from what is known, and use Mermaid wherever else a diagram beats prose.
 
@@ -69,7 +69,7 @@ Run every step in order, on the fast path too. At hobby stakes, skip step 2 unle
 2. Reconciliation: one subagent per user-supplied input returns what the document dropped, above all tone and feel.
 3. The review, its reviewers named to the user first above hobby stakes.
 4. Triage each `[ASSUMPTION]` and open question: resolve blockers (unsafe for the reader's next step, and the user agrees; never one the user deferred) one at a time; defer the rest with an owner and a revisit condition.
-5. Polish the triaged text: apply `{workflow.doc_standards}`, then the additions' `polish`, structure before prose, ending within the length budget; what still overflows moves to the addendum. Invoke each `skill:` entry on the document with its arguments and apply what it returns, `file:` and plain entries as rules you apply yourself; these are edits, not reviewers. Polish adds no claim the memlog does not hold. Log each pass only once its edits are in.
+5. Polish the triaged text: apply `{workflow.doc_standards}`, then the additions' `polish`, structure before prose; what overflows for the stakes moves to the addendum. Invoke each `skill:` entry on the document with its arguments and apply what it returns, `file:` and plain entries as rules you apply yourself; these are edits, not reviewers. Polish adds no claim the memlog does not hold. Log each pass only once its edits are in.
 6. Run `{workflow.external_handoffs}`.
 7. Close, then run `{workflow.on_complete}`.
 
