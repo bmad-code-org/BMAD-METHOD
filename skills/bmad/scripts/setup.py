@@ -311,7 +311,7 @@ def setup(
 
     created = not bmad.exists()
     done = {"missing": "created", "stale": "repaired", "current": "current"}
-    shared_state = done[tree_state(bmad / "scripts", read_plain_tree(scripts_src))]
+    shared_state = done[tree_state(bmad / "scripts", shared_scripts_tree(scripts_src))]
     module_states = {code: done[tree_state(bmad / code / "scripts", tree)] for code, tree in module_trees.items()}
     config_state = team_config_state(project_root, existing_text, config_text)
     gitignore_state = custom_gitignore_state(project_root)
@@ -1744,7 +1744,7 @@ def status_report(
         )
 
     scripts_src, config_src = payload(skill_root)
-    shared_state = tree_state(bmad / "scripts", read_plain_tree(scripts_src))
+    shared_state = tree_state(bmad / "scripts", shared_scripts_tree(scripts_src))
     existing_text, _merged, base_text = team_config_plan(project_root, config_src)
     output = project_root / output_folder(base_text)
     custom = bmad / "custom"
@@ -2079,6 +2079,15 @@ def read_plain_tree(root: Path) -> PlainTree:
     return PlainTree(tuple(directories), tuple(files))
 
 
+def shared_scripts_tree(src: Path) -> PlainTree:
+    # The bmad skill's own tests ship with its scripts but do not belong in a project.
+    tree = read_plain_tree(src)
+    return PlainTree(
+        tuple(path for path in tree.directories if path.parts[0] != "tests"),
+        tuple(item for item in tree.files if item[0].parts[0] != "tests"),
+    )
+
+
 def tree_matches(root: Path, expected: PlainTree) -> bool:
     if not root.is_dir() or root.is_symlink():
         return False
@@ -2403,7 +2412,7 @@ def stage_bmad(
 
 
 def ensure_scripts(dest: Path, src: Path) -> None:
-    source = read_plain_tree(src)
+    source = shared_scripts_tree(src)
     if tree_matches(dest, source):
         return
     if dest.is_symlink() or dest.is_file():
