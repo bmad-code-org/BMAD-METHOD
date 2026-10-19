@@ -41,7 +41,7 @@ on_complete = ""
 # Run folder for a template with no `additions.<id>.output`; `{active_initiative}` is dropped when none is set.
 output = "{output_folder}/{active_initiative}/{id}-{slug}"
 
-# A CSS file or a style guide applied to every rendered view; empty uses a clean readable default.
+# A CSS file applied to every rendered view, after the default styles; empty uses the default.
 style = ""
 
 # "offer", "always" or "never"; a `view: slides` template renders unless "never".

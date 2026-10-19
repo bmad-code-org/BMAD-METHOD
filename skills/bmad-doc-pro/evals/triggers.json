@@ -36,6 +36,10 @@
     "should_trigger": true
   },
   {
+    "query": "I'm giving a 10 minute talk at a meetup next month about how we sped up our builds. Help me put the deck together.",
+    "should_trigger": true
+  },
+  {
     "query": "coach me through writing a runbook for rotating the database credentials",
     "should_trigger": true
   },

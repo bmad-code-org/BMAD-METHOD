@@ -178,7 +178,7 @@ style = "{project-root}/_bmad/style/brand.css"
 html_view = "always"
 ```
 
-`style` is a CSS file or a written style guide applied to every view; empty uses a clean default. A template's `additions.<id>.style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template with `view: slides` renders unless `html_view` is `never`.
+`style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or an addition's `polish` instead. A template's `additions.<id>.style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template with `view: slides` renders unless `html_view` is `never`.
 
 :::tip[Templates for an agent]
 When an agent runs `bmad-doc-pro` with its own library, that agent's override file holds its templates and additions. The settings in `bmad-doc-pro.toml` (style, views, review and polish) still apply.

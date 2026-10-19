@@ -1,6 +1,6 @@
 ---
 name: bmad-doc-pro
-description: 'Coaches the user through writing, updating or validating a document. Use when the user says ''decision record'', ''ADR'', ''postmortem'', ''proposal'', ''grant application'', ''security review'', ''threat model'', ''pitch deck'', ''coach me through writing a ...'' or ''use template X''. Not for PRDs or product briefs (bmad-agent-pm).'
+description: 'Coaches the user through writing, updating or validating a document. Use when the user says ''decision record'', ''ADR'', ''postmortem'', ''proposal'', ''grant application'', ''security review'', ''threat model'', ''pitch deck'', ''slides for a talk'', ''presentation'', ''coach me through writing a ...'' or ''use template X''. Not for PRDs or product briefs (bmad-agent-pm).'
 ---
 
 # BMad Doc Pro
@@ -23,7 +23,7 @@ A calling agent passes its persona (keep it), skill folder, library (replacing `
 
 ## Choose the template
 
-Unless the call names a template, pick from the library's descriptions alone, say why in one line, and name close alternatives; load a template file only once the user confirms it or asks what its description and your knowledge cannot answer. Nothing fits: build a structure for the type, say so, and at close offer to save it as a template, its entry added through the `bmad-customize` skill to the library in use.
+Unless the call names a template or the ones that fit, pick from the library's descriptions alone, say why in one line, and name close alternatives; load a template file only once the user confirms it or asks what its description and your knowledge cannot answer. Nothing fits: build a structure for the type and say so.
 
 The header and section comments steer you and stay out of the document. With no header comment, every heading is required, in order.
 
@@ -31,7 +31,7 @@ Load the chosen template's additions (with their `facts`) and `methods` catalog;
 
 ## Intents
 
-**Create.** Offer to resume any unfinished run (`status` not `final`) in the library's output locations, from its memlog. Otherwise bind `{run}`: an output path from the call or `additions.<id>.output` is the run folder itself; else `{workflow.output}`, without `{active_initiative}` when none is set. Write the document from the template, seed the memlog with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {run} --field topic="<topic>" --field template=<id>`, and give the path.
+**Create.** Offer to resume any unfinished run (`status` not `final`) in the library's output locations, from its memlog. Otherwise bind `{run}`: an output path from the call or `additions.<id>.output` is the run folder itself; else `{workflow.output}`, without `{active_initiative}` when none is set. Write the document from the template with `status: draft`, seed the memlog with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {run} --field topic="<topic>" --field template=<id>`, and give the path.
 
 **Update.** Follow the template named in the frontmatter, or the existing headings. Extract the document, addendum, memlog and original inputs; a missing memlog is initialized and one subagent recovers the document's decisions into it. Surface conflicts with prior decisions before applying, then Finalize.
 
@@ -43,7 +43,7 @@ Read every input before asking: the ticket or document in play yourself, in full
 
 Invite a brain dump even after a long opener: the full picture and every input to read, then "anything else?" Probe the stakes early: hobby, internal, pitch or investor, public launch, regulated or contracted. Offer a path: fast (draft first, batch blocking gaps into one or two questions, tag the rest `[ASSUMPTION: ...]`) or coaching (one question at a time, writing each answer in at once).
 
-Ask only what only the user knows. Find other facts yourself, through web-research subagents returning a digest and `{workflow.external_sources}`.
+Ask only what only the user knows, and ask it before drafting it: what the template's `inputs` say only the user knows is never defaulted. Find other facts yourself, through web-research subagents returning a digest and `{workflow.external_sources}`.
 
 Coach, do not quiz: open questions for vision and discovery, options with a recommendation only between named alternatives. Push back on thin answers, hardest on unexamined assumptions, less as the document firms up or the user tires.
 
@@ -53,19 +53,19 @@ Concerns found in the material decide which include-when sections go in; one no 
 
 Fill every required section; one line is enough at hobby stakes. Low stakes: default and tag; regulated or contracted: ask instead, and never invent a regulation, citation or threshold. Length fits the stakes; overflow, rejected alternatives and detail for later documents go to `{run}/addendum.md` as they come.
 
-Add what the additions' `include` requires. Give stable ids to anything others will cite; make every requirement testable and every scope edge explicit. Invent nothing: an unconfirmed inference is `[ASSUMPTION: ...]`, an open question goes in the template's section for them or a final `## Open questions`. Use Mermaid where a diagram beats prose.
+Add what the additions' `include` requires. Give stable ids to anything others will cite; make every requirement testable and every scope edge explicit. Invent nothing: an unconfirmed inference, including what you add from your own knowledge, is `[ASSUMPTION: ...]`, the only tag; an open question goes in the template's section for them or a final `## Open questions`. Names, owners and dates come from the user, never from the environment. Keep the user's own words for their claims and stories. Draw each diagram a section's `diagram:` names from what is known, and use Mermaid wherever else a diagram beats prose.
 
 ## Review
 
-Reviewers: a rubric walker given the entry's `rubric` (default: this skill's own `{skill-root}/assets/rubric-planning.md`), the template's done when and the additions' `checks`; each `{workflow.finalize_reviewers}` entry; any other the document warrants. At hobby stakes, the rubric walker or none; above, the user picks.
+Reviewers: a rubric walker given the entry's `rubric` (default: this skill's own `{skill-root}/assets/rubric-planning.md`), the template's done when and the additions' `checks`; each `{workflow.finalize_reviewers}` entry; any other the document warrants. Pick them by the stakes: at hobby stakes the rubric walker or none; above, name the ones you will run and let the user change them.
 
 Run them as parallel subagents on the document and addendum. Each writes `{run}/review-<lens>.md` and returns only verdict, top findings and path. Without subagents, run them in turn, writing each file before the next.
 
-Lead with a one-sentence verdict and the three fixes that matter most, walk critical and high findings one at a time, give the rest as a count and the file. Each finding: fix, discuss, defer to open questions or ignore.
+Lead with a one-sentence verdict and the three fixes that matter most, walk critical and high findings one at a time, give the rest as a count and the file. Each finding: fix, discuss, defer to open questions or ignore. Where reviewers disagree, show the user both.
 
 ## Finalize
 
-At hobby stakes, skip step 2 unless the user wants it.
+Run the steps in order. At hobby stakes, skip step 2 unless the user wants it.
 
 1. Memlog audit: each meaningful entry lands in the document, the addendum, or is set aside.
 2. Reconciliation: one subagent per user-supplied input returns what the document dropped, above all tone and feel.
@@ -77,8 +77,8 @@ At hobby stakes, skip step 2 unless the user wants it.
 
 ## Close
 
-Set `status: final` and `updated`. Render the view when `{workflow.html_view}` is `always` or the user accepts its `offer`, and for a `view: slides` template unless `never`: a self-contained `{run}/{id}-{slug}.html`, Mermaid rendered, laid out per the template's view, styled by the additions' `style` or `{workflow.style}`. Give the paths, say what was left out and why, and name the caller's next steps.
+Set `updated`, and `status: final` unless a blocking open question remains; then it stays `draft` and you say what blocks it. Render the view when `{workflow.html_view}` is `always` or the user accepts its `offer`, and for a `view: slides` template unless `never`: `uv run {skill-root}/scripts/render_view.py {run}/{id}-{slug}.md --layout <the template's view> --style "<the additions' style or {workflow.style}>"`. Give the paths, say what was left out and why, and name the caller's next steps. For a structure you built, offer to save it as a template, its entry added through the `bmad-customize` skill to the library in use.
 
 ## Headless
 
-When the call says so or no person is present (unsure: interactive), ask nothing. `status` is `complete` when the document stands alone, `partial` with open questions or an inferred critical input, `blocked` when nothing was produced, as when intent stays ambiguous. End with one JSON payload, omitting keys for files not produced: always `status`, `intent`, `template`, `assumptions`, `open_questions`, `external_handoffs` (`directive`, `tool`, `url`, `status`), and `reason` when blocked. Create adds `document`, `addendum`, `memlog`; update adds those plus `changes_summary`, `conflicts_with_prior_decisions`; validate adds `reviews`, `findings_summary` by severity, `offer_to_update: true`.
+When the call says so or no person is present (unsure: interactive), ask nothing. `status` is `complete` when the document stands alone, `partial` with open questions or an inferred critical input, `blocked` when nothing was produced, as when intent stays ambiguous; a `partial` document stays `draft`. Reviewers are picked by the stakes. End with one JSON payload, omitting keys for files not produced: always `status`, `intent`, `template`, `assumptions`, `open_questions`, `external_handoffs` (`directive`, `tool`, `url`, `status`), and `reason` when blocked. Create adds `document`, `addendum`, `memlog`; update adds those plus `changes_summary`, `conflicts_with_prior_decisions`; validate adds `document`, `reviews`, `findings_summary` by severity, `offer_to_update: true`.

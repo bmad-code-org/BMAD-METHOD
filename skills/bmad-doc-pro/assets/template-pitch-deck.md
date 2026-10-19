@@ -4,8 +4,8 @@ good for: An investor pitch, a conference or internal talk.
 not for: An ask read without a presenter (`proposal`); a reference document.
 stance: A story coach. Find the one idea first, then cut any slide that does not move the audience toward it.
 inputs: The audience, the time slot and what they should do afterwards; the one idea; for a pitch, traction, market, team and the ask; for a talk, the speaker's experience and examples. Only the user knows these.
-writing: Each `##` section is one slide unless its comment says it repeats: a bold headline stating its point as a sentence, a few short lines or one diagram, then speaker notes in a blockquote. One idea per slide.
-done when: The headlines read in order tell the whole story, and the last slide says what the audience should do.
+writing: Each `##` section is one slide unless its comment says it repeats: a bold headline stating its point as a sentence, a few short lines or one diagram, then speaker notes in a blockquote. One idea per slide. The headline is the slide's title on screen; section names never show.
+done when: The headlines read in order tell the whole story, the speaker notes fill the time slot, and the last slide says what the audience should do.
 view: slides
 -->
 ---
@@ -17,9 +17,7 @@ updated: ""
 ---
 
 # {title}
-
-## Title
-<!-- required. Name, speaker and the one idea in a sentence. -->
+<!-- required. The title slide: speaker and the one idea in a sentence. -->
 
 ## Hook
 <!-- include when: a talk. A question, story or fact that puts the audience in the problem. -->
@@ -37,7 +35,7 @@ updated: ""
 <!-- optional. A demo or the mechanism in one picture. diagram: flowchart -->
 
 ## Point
-<!-- include when: a talk. Repeats, one slide per supporting point, at most three, each with an example from the speaker's experience. -->
+<!-- include when: a talk. Repeats, one slide per supporting point, at most three, each with a story from the speaker's experience; what was tried and failed is a point too. -->
 
 ## Traction
 <!-- include when: a pitch. Evidence it works: users, revenue, growth, pilots. -->
