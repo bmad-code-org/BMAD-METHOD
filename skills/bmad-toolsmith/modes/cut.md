@@ -18,7 +18,7 @@ Before the cutters run, take each worked example (a sample artifact, a filled-in
 
 Launch one subagent per file to cut, in parallel, with the Cutter prompt from `modes/cut-roles.md`, filled with the file, the protected passages in it, and the decisions. Then run `uv run {skill-root}/scripts/cut_check.py <copy> {target} [--protect ...]` and restore, from the copy, every item it lists under a file's `lost` and every file under `missing`. Then one subagent per rewritten file runs the Checker. Restore each loss and meaning change it lists as the shortest sentence that states it, and apply the shorter wordings you agree with.
 
-Run the list under Checks in `ship.md` and fix until clean. When `SKILL.md` calls `render_skill.py`, render the skill with `uv run --no-cache {project-root}/_bmad/scripts/render_skill.py --project-root {project-root} --skill {target}`, once as shipped and once per allowed value of each selector with `--set workflow.<key>=<value>`; each render finishes without error. Where that script does not exist, report the render as not run.
+Run the list under Checks in `ship.md` and fix until clean. When `SKILL.md` calls `render_skill.py`, render the skill with `uv run --cache-dir "{project-root}/.bmad-uv-cache" "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{target}"`, once as shipped and once per allowed value of each selector with `--set workflow.<key>=<value>`; each render finishes without error. Where that script does not exist, report the render as not run.
 
 ## Hand over
 
