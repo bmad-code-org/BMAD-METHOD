@@ -1,6 +1,6 @@
 ---
 name: bmad-build-auto
-description: 'One iteration of an unattended development loop. Use when invoked by name'
+description: 'Implements one story, feature, or bug fix end to end without human interaction: plan, code, review, verify, report status. Use when invoked by name, usually by an orchestrator'
 ---
 
 Run the following command exactly once without changing the current working directory.
