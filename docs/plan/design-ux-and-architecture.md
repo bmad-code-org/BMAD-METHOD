@@ -59,7 +59,7 @@ A Fast path drafts the whole spine with `[ASSUMPTION]` tags instead. For a
 new project it recommends a current, well-known starter, because a good one
 already decides a lot of the architecture.
 
-Point it at the whole system or at one epic; an epic spine inherits the parent's decisions, records only what the parent left open, and is written in the epic's folder. When Sofia refines an epic, she reminds you that an epic run is one way to flesh it out. When the architecture skill finishes, it offers to add the spine to the ticket's References through Sofia, the Product Owner (`bmad-agent-po`), which is how Build and the readiness gate find it. Seed [project context](../existing-codebases/set-and-maintain-project-context.md) from it so every later skill reads the same rules.
+Point it at the whole system or at one epic; an epic spine inherits the parent's decisions, records only what the parent left open, and is written in the epic's folder. When Sofia refines an epic, she reminds you that an epic run is one way to flesh it out. When the architecture skill finishes, it offers to add the spine to the ticket's References through Sofia, the Product Owner (`bmad-agent-po`), which is how Build and Sofia's checks find it. Seed [project context](../existing-codebases/set-and-maintain-project-context.md) from it so every later skill reads the same rules.
 
 :::caution[Common mistakes]
 Deciding the API style "as we go", documenting every minor choice, and a spine
@@ -85,5 +85,6 @@ changes to an existing UI that already has established patterns.
 
 The spine and the UX documents become References of the ticket and input to
 [Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md),
-where the readiness gate checks that stories do not depend on decisions
-nothing records.
+where Sofia checks each breakdown before you approve it: nothing may
+contradict the architecture, and every decision two or more epics must adopt
+needs a home.

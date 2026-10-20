@@ -109,6 +109,11 @@ party, choose its starting mode, and set house rules for the whole session.
 Any set of voices becomes a party: a founder squad, a compliance team, the
 authors of the Agile Manifesto, a room of comedians.
 
+Installed modules can bring their own personas and parties, which appear
+with no setup. BMad Method adds The Product Team (`--party product-team`),
+its five agents in a planning room. To share a cast beyond one repository,
+package it as a module; see [Add Modules](./add-modules.md).
+
 ## The Code Review Crew
 
 The Code Review Crew ships alongside the default party as a template to
@@ -170,9 +175,11 @@ breaking character.
 In a remembered party, someone who joined from an open-cast scene or a
 member you add mid-conversation is kept too; at wrap-up the room offers to
 save them into the roster. The default installed-agent room remembers unless
-you turn it off in `/bmad-customize bmad-party-mode`. Both shipped parties
-and any cast you create inline start fresh each time; save a cast as a party
-and choose memory to give it one.
+you turn it off in `/bmad-customize bmad-party-mode`. The Product Team
+remembers too. The Code Review Crew, the Anti-Consensus Club, and any cast
+you create inline start fresh each time; save a cast as a party and choose
+memory to give it one. To wipe a party's memory, delete its
+folder under `{output_folder}/party-mode/memories/`.
 
 ## A keepsake of the session
 

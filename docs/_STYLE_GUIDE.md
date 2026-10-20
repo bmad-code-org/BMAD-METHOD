@@ -259,7 +259,7 @@ cd docs-site && npm run export-readme-diagrams
 | ----------------- | --------------------- |
 | **Index/Landing** | `workflows/index.md`  |
 | **Catalog**       | `agents/index.md`     |
-| **Deep-Dive**     | `document-project.md` |
+| **Deep-Dive**     | `bmad-eval.md`        |
 | **Configuration** | `core-tasks.md`       |
 | **Glossary**      | `glossary/index.md`   |
 | **Comprehensive** | `bmgd-workflows.md`   |
@@ -360,7 +360,7 @@ Starlight generates right-side "On this page" navigation from headers:
 Add italic context at definition start for limited-scope terms:
 
 - `*Direct-entry implementation only.*`
-- `*BMad Method/Enterprise.*`
+- `*BMad Method.*`
 - `*Phase N.*`
 - `*BMGD.*`
 - `*Established projects.*`

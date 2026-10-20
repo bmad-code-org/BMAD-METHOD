@@ -20,7 +20,7 @@ is not the manual observations in [Walk Through a Change](walk-through-a-change.
 | Factor | `bmad-qa-generate-e2e-tests` | `bmad-testarch-automate` |
 | --- | --- | --- |
 | **Best for** | Simple coverage of implemented features | Heavier coverage of the same kind of work |
-| **Setup** | Included with BMM | Install the TEA module |
+| **Setup** | Included with the BMad Method module | Install the TEA module |
 | **Approach** | Generate from the code that exists | Same, standalone; optional test design improves the run |
 | **What it covers** | API and E2E; the main path and the errors a user can see | API, E2E, fixtures, more patterns; optional component tests |
 

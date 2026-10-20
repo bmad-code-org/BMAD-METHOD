@@ -86,16 +86,16 @@ every layer has reported, triage judges each finding on its own:
   occurs
 - **Assign severity** from the verified consequence (`low`, `medium`,
   `high`)
-- **Dismiss** noise, refuted claims, and unsubstantiated claims, with a
-  recorded reason — never silently
+- **Dismiss** noise, refuted claims, and unverified claims that would be
+  minor even if true, with a recorded reason — never silently
 - **Route** survivors to **patch**, **defer**, or **decision needed**
 
 Patch is a problem with one clear fix. Defer is a real problem that was
-already there before this change; a problem this change caused is never
-deferred. Decision needed is a problem with more than one reasonable fix,
-where the right one depends on what you want. The review lists the
-fixes and says which one it recommends. This happens with or without a
-plan.
+already there before this change, or a serious claim triage could not
+verify; a problem this change caused is never deferred. Decision needed is
+a problem with more than one reasonable fix, where the right one depends on
+what you want. The review lists the fixes and says which one it recommends.
+This happens with or without a plan.
 
 The review assumes someone is there to answer its questions. When nobody
 is, such as a review bot or a CI job, say so when you invoke it ("don't
@@ -187,8 +187,9 @@ review quality.
 Some runtimes have no subagents. Vendors, including Anthropic and
 OpenAI, sometimes ship changes that alter how subagents run. Until
 BMad catches up, the lenses execute one after another instead of in
-parallel — or they fall back to the main session, which is far worse
-for review quality than it sounds.
+parallel. With no subagents at all, the skill writes each lens's
+prompt to a file and asks you to run it in a separate session and
+paste back the findings.
 
 If a review that usually runs for ten minutes suddenly takes an hour,
 or becomes inexplicably stupid, resume that session and ask why.
