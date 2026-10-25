@@ -38,12 +38,7 @@ Use this when the user asks how much review to run, how to get another pass, whe
 
 ## `bmad-walkthrough`: the human reviews
 
-Recommend it when a person must understand and accept a change: after a build, or on someone else's PR. It walks the change in blocks, intent first, and stays on a block until the user says it is done. It gives no severity and no verdict. Moves the user can pick:
-
-- **Thoughts**: the agent's own read. **Second opinion**: a fresh subagent's read.
-- **Formal review**: runs `bmad-code-review` when installed.
-- **Test**: helps test the part. **Drive**: starts the app and says what to click.
-- **Wrap-up**: proposes the follow-through, such as merging, and waits for a yes.
+Recommend it when a person must understand and accept a change: after a build, at the end of an epic, or on someone else's PR. It walks the change in blocks, intent first, and stays on a block until the user says it is done. It gives no severity and no verdict. It is the human's review pass: the findings come from the person, not from the agent. `bmad-code-review` and `bmad-retrospective` are the agentic passes over the same change.
 
 For tickets and other documents, `bmad-review` (core tools), if installed, reports findings and fixes nothing.
 
