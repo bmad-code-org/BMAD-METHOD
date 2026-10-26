@@ -1,3 +1,4 @@
+import importlib.util
 import json
 import shutil
 import subprocess
@@ -2019,6 +2020,45 @@ class ActiveInitiativeTests(TreeCase):
         self.configure("initiative-gone")
         self.configure("initiative-checkout", layer="config.user.toml")
         self.assertEqual(self.ok(run("next", cwd=self.root))["folder"], "initiative-checkout")
+
+
+def load_tickets():
+    spec = importlib.util.spec_from_file_location("tickets_under_test", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class FrontmatterParseTests(unittest.TestCase):
+    """parse_frontmatter reads a value the way YAML does: a `#` after whitespace starts a comment."""
+
+    def parse(self, line):
+        return load_tickets().parse_frontmatter(f"---\n{line}\n---\n")
+
+    def test_a_comment_after_a_value_is_dropped(self):
+        for line, expected in (
+            ("status: done # merged in #42", {"status": "done"}),
+            ("status: done   # three spaces, as before", {"status": "done"}),
+            ("status: 'built' # draft | built | done", {"status": "built"}),
+            ('after: ["a", "b"] # gates', {"after": ["a", "b"]}),
+        ):
+            with self.subTest(line=line):
+                self.assertEqual(self.parse(line), expected)
+
+    def test_a_hash_that_is_not_a_comment_is_kept(self):
+        for line, expected in (
+            ('title: "Fix #42"', {"title": "Fix #42"}),
+            ("title: 'it''s # here' # note", {"title": "it's # here"}),
+            ("title: Fix#42", {"title": "Fix#42"}),
+            ("link: https://example.com/#anchor", {"link": "https://example.com/#anchor"}),
+        ):
+            with self.subTest(line=line):
+                self.assertEqual(self.parse(line), expected)
+
+    def test_inline_list_items_split_only_on_commas_outside_quotes(self):
+        self.assertEqual(self.parse('after: ["a, b", c]'), {"after": ["a, b", "c"]})
+        self.assertEqual(self.parse("after: ['x, ''y''', z]"), {"after": ["x, 'y'", "z"]})
+        self.assertEqual(self.parse("after: [it's, 'a, b'] # gates"), {"after": ["it's", "a, b"]})
 
 
 if __name__ == "__main__":
