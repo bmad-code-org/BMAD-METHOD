@@ -10,7 +10,7 @@ Before running inference-based validation, run the deterministic validator:
 uv run --python 3.11 tools/validate_skills.py --json path/to/skill-dir
 ```
 
-This checks 11 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, PATH-02, PATH-06, SEQ-02, TPL-01.
+This checks 12 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, SKILL-08, PATH-02, PATH-06, SEQ-02, TPL-01.
 
 Review its JSON output. Skip any rule that produced zero findings — it is already verified. A rule that produced findings still gets reviewed (SKILL-06's what-and-when check benefits from judgment). The 10 rules that need judgment are PATH-01, PATH-03, PATH-04, PATH-05, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03.
 
@@ -156,6 +156,14 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Rule:** SKILL.md must have non-empty markdown body content after the frontmatter. A SKILL.md with only frontmatter is incomplete.
 - **Detection:** Extract content after the closing `---` frontmatter delimiter and check it is non-empty after trimming whitespace.
 - **Fix:** Add markdown body with skill instructions after the closing `---`.
+
+### SKILL-08 — SKILL.md Frontmatter Must Be Valid YAML
+
+- **Severity:** CRITICAL
+- **Applies to:** `SKILL.md`
+- **Rule:** The frontmatter block must parse as a YAML mapping. The skills CLI and the agents that load a skill parse it as YAML, and skip a skill whose frontmatter fails.
+- **Detection:** Parse the `---` delimited frontmatter block with a YAML parser and check that the result is a mapping. A file with no frontmatter block is left to SKILL-02 and SKILL-03.
+- **Fix:** Correct the YAML. A common cause is an apostrophe inside a single-quoted value; write it as `''`, or use double quotes.
 
 ---
 
