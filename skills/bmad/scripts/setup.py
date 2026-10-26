@@ -2265,10 +2265,23 @@ def materialize_bmad(
             user_config_text=user_config_text,
             custom_renames=custom_renames,
         )
+        if not bmad.exists():
+            # Staging is private while it fills; a new _bmad gets the mode a plain mkdir would.
+            # An existing one keeps its own mode, which copytree carried onto staging.
+            publish_dir_mode(staging)
         replace_dir(staging, bmad)
     except Exception:
         shutil.rmtree(staging, ignore_errors=True)
         raise
+
+
+def publish_dir_mode(path: Path) -> None:
+    """Give a private staging folder the mode a plain mkdir would give it under the umask."""
+    if sys.platform == "win32":
+        return  # POSIX mode bits do not apply; Windows staging inherits its ACLs.
+    mask = os.umask(0o022)
+    os.umask(mask)
+    path.chmod(0o777 & ~mask)
 
 
 def replace_dir(src: Path, dest: Path) -> None:

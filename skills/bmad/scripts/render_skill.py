@@ -599,6 +599,15 @@ def _verify_existing(destination: Path, manifest: dict[str, Any]) -> None:
             raise RenderError(f"generation output hash mismatch: {destination / name}")
 
 
+def _publish_dir_mode(path: Path) -> None:
+    """Give a private staging folder the mode a plain mkdir would give it under the umask."""
+    if sys.platform == "win32":
+        return  # POSIX mode bits do not apply; Windows staging inherits its ACLs.
+    mask = os.umask(0o022)
+    os.umask(mask)
+    path.chmod(0o777 & ~mask)
+
+
 def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, Any]) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.exists():
@@ -618,6 +627,7 @@ def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, A
             json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True, default=_json_scalar).encode("utf-8")
             + b"\n"
         )
+        _publish_dir_mode(staging)
         try:
             os.rename(staging, destination)
         except OSError:
