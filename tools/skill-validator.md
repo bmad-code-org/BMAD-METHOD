@@ -161,8 +161,8 @@ Every value reached during the render is part of the generation's identity. Cust
 
 - **Severity:** CRITICAL
 - **Applies to:** `SKILL.md`
-- **Rule:** The frontmatter block must parse as a YAML mapping. The skills CLI and the agents that load a skill parse it as YAML, and skip a skill whose frontmatter fails.
-- **Detection:** Parse the `---` delimited frontmatter block with a YAML parser and check that the result is a mapping. A file with no frontmatter block is left to SKILL-02 and SKILL-03.
+- **Rule:** The frontmatter block must parse as a YAML mapping, and `name` and `description`, when present, must be strings. The skills CLI and the agents that load a skill parse it as YAML, and skip a skill whose frontmatter fails.
+- **Detection:** Parse the `---` delimited frontmatter block with a YAML parser and check that the result is a mapping whose `name` and `description` are strings. A file with no frontmatter block is left to SKILL-02 and SKILL-03.
 - **Fix:** Correct the YAML. A common cause is an apostrophe inside a single-quoted value; write it as `''`, or use double quotes.
 
 ---

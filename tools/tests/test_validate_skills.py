@@ -336,6 +336,36 @@ class TestRules(ProjectCase):
         self.assertNotIn("SKILL-08", rules)
         self.assertIn("SKILL-02", rules)
 
+    def test_skill_08_line_counts_blank_lines_around_the_block(self):
+        bad = "description: 'Reads each ticket's plan. Use when testing.'"
+        for content in (
+            f"---\n\n\nname: bmad-quote\n{bad}\n---\n\n# Body\n\nText.\n",
+            f"\n\n---\nname: bmad-quote\n{bad}\n---\n\n# Body\n\nText.\n",
+        ):
+            with self.subTest(content=content[:12]):
+                skill = self.add_skill("bmad-quote", content)
+                found = findings_by_rule(self.findings_for(skill), "SKILL-08")
+                self.assertEqual([f["line"] for f in found], [5])
+
+    def test_skill_08_invalid_date_is_a_finding_not_a_crash(self):
+        skill = self.add_skill(
+            "bmad-date", skill_md("bmad-date", "Dated. Use when testing.", extra_fm="updated: 2026-02-30\n")
+        )
+        found = findings_by_rule(self.findings_for(skill), "SKILL-08")
+        self.assertEqual(len(found), 1)
+        self.assertIn("out of range", found[0]["detail"])
+
+    def test_skill_08_name_and_description_must_be_strings(self):
+        for field, content in (
+            ("description", "---\nname: bmad-typed\ndescription: [Use when testing.]\n---\n\n# Body\n\nText.\n"),
+            ("name", "---\nname: 42\ndescription: 'Typed. Use when testing.'\n---\n\n# Body\n\nText.\n"),
+        ):
+            with self.subTest(field=field):
+                skill = self.add_skill("bmad-typed", content)
+                found = findings_by_rule(self.findings_for(skill), "SKILL-08")
+                self.assertEqual(len(found), 1)
+                self.assertIn(f"`{field}` must be a string", found[0]["detail"])
+
     def test_path_02_frontmatter_key_and_content_line(self):
         skill = self.valid(
             "bmad-path",
