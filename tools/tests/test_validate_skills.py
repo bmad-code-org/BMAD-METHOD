@@ -299,6 +299,43 @@ class TestRules(ProjectCase):
         self.assertEqual(empty_f[0]["severity"], "HIGH")
         self.assertEqual(len(unclosed_f), 1)
 
+    def test_skill_08_unescaped_apostrophe_is_invalid_yaml(self):
+        # The form that shipped in bmad-retrospective (#3130): `'` ends a single-quoted scalar.
+        skill = self.add_skill(
+            "bmad-quote",
+            skill_md("bmad-quote", "Reads each ticket's plan. Use when testing."),
+        )
+        found = findings_by_rule(self.findings_for(skill), "SKILL-08")
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0]["severity"], "CRITICAL")
+        self.assertEqual(found[0]["line"], 3)
+        self.assertTrue(found[0]["detail"].startswith("Frontmatter is not valid YAML"))
+
+    def test_skill_08_escaped_apostrophe_is_valid(self):
+        skill = self.add_skill(
+            "bmad-quote",
+            skill_md("bmad-quote", "Reads each ticket''s plan. Use when testing."),
+        )
+        self.assertEqual(findings_by_rule(self.findings_for(skill), "SKILL-08"), [])
+
+    def test_skill_08_frontmatter_that_is_not_a_mapping(self):
+        skill = self.add_skill("bmad-list", "---\n- name\n- description\n---\n\n# Body\n\nText.\n")
+        found = findings_by_rule(self.findings_for(skill), "SKILL-08")
+        self.assertEqual(len(found), 1)
+        self.assertIn("mapping", found[0]["detail"])
+
+    def test_skill_08_strict_run_fails_on_invalid_yaml(self):
+        self.add_skill("bmad-quote", skill_md("bmad-quote", "Reads each ticket's plan. Use when testing."))
+        code, out, _ = self.run_validator(strict=True)
+        self.assertEqual(code, 1)
+        self.assertIn("SKILL-08", out)
+
+    def test_skill_08_no_frontmatter_is_left_to_skill_02(self):
+        skill = self.add_skill("bmad-bare", "# Body\n\nText.\n")
+        rules = {finding["rule"] for finding in self.findings_for(skill)}
+        self.assertNotIn("SKILL-08", rules)
+        self.assertIn("SKILL-02", rules)
+
     def test_path_02_frontmatter_key_and_content_line(self):
         skill = self.valid(
             "bmad-path",
