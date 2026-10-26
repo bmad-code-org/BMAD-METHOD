@@ -16,7 +16,7 @@ What it checks:
 - SKILL-05: name matches directory basename
 - SKILL-06: description quality (length, "Use when"/"Use if"; the fixed text for a module record)
 - SKILL-07: SKILL.md has body content after frontmatter
-- SKILL-08: SKILL.md frontmatter parses as a YAML mapping
+- SKILL-08: SKILL.md frontmatter parses as a YAML mapping with string name and description
 - PATH-02: no installed_path variable
 - PATH-06: script calls use {skill-root}, not a bare scripts/ path
 - SEQ-02: no time estimates
@@ -197,12 +197,19 @@ def frontmatter_yaml_error(content: str) -> tuple[str, int | None] | None:
         data = yaml.safe_load(fm_block)
     except yaml.YAMLError as error:
         mark = getattr(error, "problem_mark", None)
-        # The block starts on the line after the opening `---`.
-        line = mark.line + 2 if mark is not None else None
+        # _frontmatter_block strips the text around the block, so count the file lines before it.
+        first_line = content[: content.find(fm_block)].count("\n") + 1 if fm_block else 1
+        line = first_line + mark.line if mark is not None else None
         problem = getattr(error, "problem", None) or str(error).splitlines()[0]
         return f"Frontmatter is not valid YAML: {problem}.", line
+    except ValueError as error:  # PyYAML builds dates and times, e.g. an unquoted 2026-02-30
+        return f"Frontmatter is not valid YAML: {error}.", None
     if not isinstance(data, dict):
         return f"Frontmatter must be a YAML mapping, got {type(data).__name__}.", None
+    for key in ("name", "description"):
+        value = data.get(key)
+        if value is not None and not isinstance(value, str):
+            return f"Frontmatter `{key}` must be a string, got {type(value).__name__}.", None
     return None
 
 
