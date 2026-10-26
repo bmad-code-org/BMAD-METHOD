@@ -133,6 +133,19 @@ class PublishInternalsTests(unittest.TestCase):
                     os.umask(previous)
                 self.assertEqual(dest.stat().st_mode & 0o777, expected)
 
+    @unittest.skipIf(sys.platform == "win32", "POSIX mode bits")
+    def test_new_generation_keeps_the_setgid_bit_a_shared_parent_gives(self):
+        manifest = {"schema_version": 1, "outputs": {"workflow.md": rs._hash_bytes(b"hello\n")}}
+        with tempfile.TemporaryDirectory() as temp_dir:
+            shared = Path(temp_dir) / "shared"
+            shared.mkdir()
+            shared.chmod(0o2775)
+            probe = shared / "probe"
+            probe.mkdir()
+            rs._publish(shared / "generation", {"workflow.md": b"hello\n"}, manifest)
+            setgid = (shared / "generation").stat().st_mode & 0o2000
+            self.assertEqual(setgid, probe.stat().st_mode & 0o2000)
+
 
 class RenderSkillTests(unittest.TestCase):
     def _workspace(

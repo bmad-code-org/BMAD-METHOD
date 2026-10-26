@@ -13,6 +13,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import sys
 import tomllib
 from collections.abc import Callable
@@ -605,7 +606,8 @@ def _publish_dir_mode(path: Path) -> None:
         return  # POSIX mode bits do not apply; Windows staging inherits its ACLs.
     mask = os.umask(0o022)
     os.umask(mask)
-    path.chmod(0o777 & ~mask)
+    # Keep a setgid bit staging inherited from a shared parent, as a plain mkdir would.
+    path.chmod((0o777 & ~mask) | (path.stat().st_mode & stat.S_ISGID))
 
 
 def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, Any]) -> None:
