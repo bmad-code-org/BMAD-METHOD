@@ -2045,6 +2045,16 @@ class FrontmatterParseTests(unittest.TestCase):
             with self.subTest(line=line):
                 self.assertEqual(self.parse(line), expected)
 
+    def test_an_empty_value_with_a_comment_stays_empty(self):
+        for line in ("after: # no prerequisites", "after:   # no prerequisites", "status:\t# none yet"):
+            with self.subTest(line=line):
+                self.assertEqual(self.parse(line), {line.split(":")[0]: ""})
+
+    def test_an_empty_after_with_a_comment_still_loads_the_tree(self):
+        tickets = load_tickets()
+        fm = tickets.parse_frontmatter("---\nafter:   # no prerequisites\n---\n")
+        self.assertEqual(tickets._list(fm["after"], "story.md"), [])
+
     def test_a_hash_that_is_not_a_comment_is_kept(self):
         for line, expected in (
             ('title: "Fix #42"', {"title": "Fix #42"}),

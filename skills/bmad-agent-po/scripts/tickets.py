@@ -144,6 +144,8 @@ def _closing(value: str) -> int | None:
 
 def _strip_comment(value: str) -> str:
     """Drop a YAML comment: a `#` after whitespace, outside a quoted scalar or an inline list."""
+    if value[:1].isspace() and value.lstrip().startswith("#"):
+        return ""  # `key:   # note` is an empty value with a comment
     value = value.strip()
     if value[:1] in ("'", '"', "["):
         end = _closing(value)
