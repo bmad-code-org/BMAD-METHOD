@@ -152,13 +152,13 @@ why refresh and audit exist as their own commands.
 
 ## Versus the two replaced skills
 
-`bmad-document-project` scanned an existing repo and generated a documentation
-tree — overview, source tree, per-area deep dives. Large, unverified, stale on
+The earlier documentation-generating skill scanned an existing repo and
+generated a documentation tree — overview, source tree, per-area deep dives. Large, unverified, stale on
 arrival: the kind of context that makes agents worse. Its valid instinct —
 understand the repo before working in it — survives as the discovery pass,
 which now feeds verification instead of prose.
 
-`bmad-generate-project-context` had the right instinct: a single small rules
+The earlier rules-file skill had the right instinct: a single small rules
 file of unobvious, project-specific facts. What it lacked was everything
 around the file — no verification, no maintenance loop, no way to tell an
 inference from a confirmed fact.

@@ -69,7 +69,7 @@ Install BMad Method with the skills CLI, then let the `bmad` skill set up the
 project:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD
+npx skills add bmad-code-org/BMAD-METHOD --skill '*'
 ```
 
 Open Claude Code in this directory and ask the `bmad` skill to run `bmad setup`. Restart Claude Code once the skills are installed.
@@ -100,7 +100,7 @@ documentation. Leave the implementation in the working tree for local
 inspection.
 ```
 
-Build asks any questions it needs before it writes a plan. Answer according
+Build asks any questions it needs before it presents a plan. Answer according
 to your own preferences for the new JSON output. There is no single required
 JSON design for this exercise.
 
@@ -163,7 +163,7 @@ Sofia first has you pick or create an initiative, then writes `_bmad-output/init
 ## 9. Build the Three Stories
 
 Run Build once for each story, in order. Complete each Build run before moving
-to the next one. Every run uses the same spec. You will run these stories
+to the next one. Every run reads the same epic file. You will run these stories
 attentively because they establish how filtering, redaction, and exit behavior
 fit together. Later epics with stable, repeated patterns may be better
 candidates for automation.
@@ -244,7 +244,7 @@ the JSON shape you chose earlier is `[REDACTED]`; neither original value
 appears. The underlying values still differ, so the final line is `exit: 1`.
 
 The first exercise gave Build one bounded change directly. This exercise gave
-three separate Build runs one spec. Filtering, redaction, and CI status still
+three separate Build runs one epic. Filtering, redaction, and CI status still
 work together at the end. You have extended a mature Django command, and the
 final result still does what you asked for at the start.
 
@@ -259,7 +259,7 @@ Run Retrospective against the epic:
 /bmad-retrospective epic-diffsettings-audit
 ```
 
-Retrospective reads the epic's `tickets.toml` and joined plans, then checks the integrated result against its requirements and source spec. It writes `epic-diffsettings-audit-retrospective.md` directly in the epic folder. Review its evidence, acceptance verdict, and proposed follow-up work. Keep the plans: they own status and historical evidence.
+Retrospective reads the epic's `tickets.toml` and joined plans, then checks the integrated result against the epic file's Requirements and Done when. It writes `epic-diffsettings-audit-retrospective.md` directly in the epic folder. Review its evidence, acceptance verdict, and proposed follow-up work. Keep the plans: they own status and historical evidence.
 
 ## 12. Keep Building
 

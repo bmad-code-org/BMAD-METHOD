@@ -124,7 +124,8 @@ pull requests that brought the code in, and the reasons given there. When the
 history shows a decision that is hard to reverse, surprising without context,
 and the result of a real trade-off, and no existing decision record covers it,
 Deep Recon proposes a new decision record (ADR) and asks you about it. An
-approved one is written beside the code it governs, and you commit it.
+approved one is written beside the code it governs, or in the repository's
+decisions folder when it is system-wide, and you commit it.
 
 The document lands in the active initiative's folder like any other research,
 and research started from a ticket file adds it to that ticket's References.
@@ -148,6 +149,7 @@ commit; for a later state of the code, ask again.
 | Ask why code is this way     | "why is eviction one-way here"                                                                     |
 | Customize defaults           | `/bmad-customize bmad-deep-recon`                                                                  |
 
-The v6 `bmad-market-research`, `bmad-domain-research`, and
-`bmad-technical-research` skills merged into Deep Recon as the `market`,
-`domain`, and `technical` types; the old names still forward here.
+The separate v6 market, domain, and technical research skills are now Deep
+Recon's `market`, `domain`, and `technical` types, and no skill remains under
+the old names. Name the type in your request, or pick `MR`, `DR`, or `TR` from
+the Analyst's menu (`bmad-agent-analyst`).

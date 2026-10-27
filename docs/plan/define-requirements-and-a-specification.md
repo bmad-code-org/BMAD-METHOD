@@ -141,8 +141,9 @@ one run per ticket. No leaf file needs to be pulled first.
 `bmad-product-brief`: `brief-<slug>.md` and `addendum.md`. `bmad-prfaq`: a
 PRFAQ document with a short summary for the PRD or for Sofia. `bmad-prd`:
 `prd-<slug>.md` and `addendum.md`, or a validation report. Each document
-lands in its own `<type>-<slug>/` folder in the active initiative's folder,
-or in the output folder when no initiative is active. Sofia writes the
+lands in its own `<type>-<slug>/` folder in the active initiative's folder.
+With no initiative active, `bmad-prfaq` asks whether the work belongs to
+one, and the other two have you set one first. Sofia writes the
 Requirements and Constraints sections of the initiative, epic, or story file,
 with `.memlog.md` and any companions beside it. Exact paths and options
 belong to each skill; see

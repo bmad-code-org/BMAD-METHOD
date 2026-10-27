@@ -56,9 +56,7 @@ The BMad Method module installs six named agents. Load one with its skill ID, th
 | Developer (Amelia)     | `bmad-agent-dev`         | `BD`, `QA`, `CR`, `ER`                                             | Build; QA test generation; code review; epic retrospective                                                                                                           |
 | UX Designer (Sally)    | `bmad-agent-ux-designer` | `CU`                                                               | UX design                                                                                                                                                            |
 
-:::note[Where is Paige?]
-The Technical Writer (Paige) is on hiatus. Project context lives on: use the Analyst's `PC` code or invoke `bmad-project-context` directly.
-:::
+Sofia shows no menu. Say what you want and she runs the capability that fits; a code works too.
 
 The Developer's `QA` code runs `bmad-qa-generate-e2e-tests`; the full Test Architect is a separate module. See [Test Completed Work](../build/test-completed-work.md).
 
@@ -70,7 +68,7 @@ Every installation includes the core module: eight skills that work in any proje
 
 ### bmad
 
-The BMad hub. Ask it a question and it answers from the installed modules and recommends the next skill: it reads the active initiative, lists the `<type>-<slug>/` folders already written there, and puts the next steps in priority order with their skill commands. It also runs `bmad setup` and `bmad status` for the project's runtime, `bmad migrate method` to move a v6 project onto the current layout, and shows, switches, creates, or clears the active initiative.
+The BMad hub. Ask it a question and it answers from the installed modules and recommends the next skill: it reads the active initiative, lists the `<type>-<slug>/` folders already written there, and puts the next steps in priority order with their skill commands. It also runs `bmad setup` and `bmad status` for the project's runtime, `bmad migrate method` to move a v6 project, or one on the v7 preview layout, onto the current layout, and shows, switches, creates, or clears the active initiative.
 
 **Input:** a question in plain language, or one of the commands above. **Output:** an answer with the prioritized next steps, or the command's result.
 
@@ -105,7 +103,7 @@ Pre-mortem analysis is a good first pick for any spec or plan. It consistently f
 
 ### bmad-review
 
-Reviews a diff, document, or other artifact through one or more lenses and reports every finding in one shape. Zero findings is a valid outcome; it never pads to look thorough.
+Reviews a diff, document, or other artifact through one or more lenses and reports every finding in one shape. Zero findings is a valid outcome for every lens but the adversarial one; it never pads to look thorough.
 
 | Lens                 | Applies to | Method                                                                                 |
 | -------------------- | ---------- | -------------------------------------------------------------------------------------- |
@@ -168,13 +166,9 @@ The BMad Method module adds the six agents above and these workflow skills. The 
 | `bmad-qa-generate-e2e-tests`    | Generate automated API and end-to-end tests for implemented features                              | [Test Completed Work](../build/test-completed-work.md)                                                 |
 | `bmad-retrospective`            | Review a completed epic against its evidence and decide whether to accept it                      | [Finish an Epic](../build/finish-an-epic.md)                                                           |
 
-## Deprecated Names
-
-Earlier skill IDs, such as `bmad-create-prd`, `bmad-edit-prd`, `bmad-market-research`, `bmad-generate-project-context`, and `bmad-checkpoint-preview`, still resolve as forwarders to the current skill. Use the current names in new work.
-
 ## Naming and Modules
 
-Every skill uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-dev`, `bmad-prd`, `bmad-build`. Modules add their own skills under the same prefix; see [Add Modules](../customize/add-modules.md).
+Every skill BMad ships uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-dev`, `bmad-prd`, `bmad-build`. A module of your own takes a prefix of its own, such as `acme-release-notes` with the record `bmod-acme`, and never a `bmad-` name; see [Add Modules](../customize/add-modules.md).
 
 ## Troubleshooting
 
@@ -182,4 +176,6 @@ Every skill uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-
 
 **Expected skills are missing.** The skills CLI installs only the skills you named. Run `npx skills add bmad-code-org/BMAD-METHOD` again with the missing `--skill` entries, then `bmad setup`, and check that the skill directories exist.
 
-**Skills from a removed module still appear.** The installer does not delete old skill directories. Remove the stale directories, or delete the whole skills directory and re-run the installer for a clean set.
+**Skills a module no longer ships still appear.** Run `bmad setup`. It offers to delete them.
+
+**Skills from a removed module still appear.** `bmad setup` only knows the skills of installed modules. Remove the stale directories, or delete the whole skills directory and re-run the installer for a clean set.
