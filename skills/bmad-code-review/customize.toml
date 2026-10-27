@@ -144,7 +144,7 @@ Read `{skill-root}/review-prompts/security-vulnerability.md` completely and foll
 
 Review content: the unified diff at `{diff_file}`. Read that file — it is the content under review.
 
-Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
+Review by inspection only. Do not modify code, run builds or tests, or invoke quality gates. Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
