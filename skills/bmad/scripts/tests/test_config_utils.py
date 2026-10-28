@@ -1,3 +1,4 @@
+import os
 import sys
 import tempfile
 import unittest
@@ -10,6 +11,7 @@ from config_utils import (  # noqa: E402
     load_central_config,
     load_customization,
     load_toml,
+    merge_central_config,
     structural_merge,
 )
 
@@ -59,6 +61,45 @@ class ConfigUtilsTests(unittest.TestCase):
             path = Path(temp_dir) / "optional.toml"
 
             self.assertEqual(load_toml(path), {})
+
+    def test_broken_optional_layer_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            target = root / "missing.toml"
+            path = root / "optional.toml"
+            try:
+                os.symlink(target, path)
+            except OSError:
+                self.skipTest("symlinks not available")
+
+            with self.assertRaisesRegex(ConfigError, f"TOML layer is not a file: {path}"):
+                load_toml(path)
+
+    def test_prospective_base_layer_precedence(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            custom = root / "_bmad" / "custom"
+            custom.mkdir(parents=True)
+            (custom / "config.toml").write_text('[core]\noutput_folder = "team-store"\n', encoding="utf-8")
+            (custom / "config.user.toml").write_text('[core]\noutput_folder = "user-store"\n', encoding="utf-8")
+
+            merged = merge_central_config(root, {"core": {"output_folder": "_bmad-output"}})
+
+            self.assertEqual(merged["core"]["output_folder"], "user-store")
+            (custom / "config.user.toml").unlink()
+            merged = merge_central_config(root, {"core": {"output_folder": "_bmad-output"}})
+            self.assertEqual(merged["core"]["output_folder"], "team-store")
+
+    def test_prospective_base_layer_rejects_malformed_custom_file(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            custom = root / "_bmad" / "custom"
+            custom.mkdir(parents=True)
+            path = custom / "config.user.toml"
+            path.write_text("[broken\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ConfigError, f"failed to parse {path}"):
+                merge_central_config(root, {"core": {"output_folder": "_bmad-output"}})
 
     def test_filesystem_layer_precedence(self):
         with tempfile.TemporaryDirectory() as temp_dir:

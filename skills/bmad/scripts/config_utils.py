@@ -17,7 +17,7 @@ _KEYED_MERGE_FIELDS = ("code", "id")
 
 def load_toml(path: Path, *, required: bool = False) -> dict[str, Any]:
     """Load a TOML table, allowing absence only for optional layers."""
-    if not path.exists():
+    if not path.exists() and not path.is_symlink():
         if required:
             raise ConfigError(f"required TOML file not found: {path}")
         return {}
@@ -93,15 +93,20 @@ def merge_layers(layers: Iterable[dict[str, Any]]) -> dict[str, Any]:
     return merged
 
 
-def load_central_config(project_root: Path) -> dict[str, Any]:
+def merge_central_config(project_root: Path, base: dict[str, Any]) -> dict[str, Any]:
     bmad_dir = project_root / "_bmad"
     return merge_layers(
         (
-            load_toml(bmad_dir / "config.toml", required=True),
+            base,
             load_toml(bmad_dir / "custom" / "config.toml"),
             load_toml(bmad_dir / "custom" / "config.user.toml"),
         )
     )
+
+
+def load_central_config(project_root: Path) -> dict[str, Any]:
+    bmad_dir = project_root / "_bmad"
+    return merge_central_config(project_root, load_toml(bmad_dir / "config.toml", required=True))
 
 
 def load_customization(project_root: Path | None, skill_dir: Path) -> dict[str, Any]:

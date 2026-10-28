@@ -23,6 +23,14 @@ from typing import NamedTuple
 
 sys.dont_write_bytecode = True
 
+try:
+    from config_utils import merge_central_config
+except ModuleNotFoundError as error:
+    if error.name != "tomllib":
+        raise
+    sys.stderr.write("error: Python 3.11+ is required (stdlib `tomllib` not found).\n")
+    raise SystemExit(3) from None
+
 MANIFEST_NAME = "bmod.toml"
 RETIRED_NAME = "retired.toml"
 QUESTION_KEYS = frozenset({"key", "prompt", "default"})
@@ -323,6 +331,7 @@ def setup(
         or any(state != "current" for state in module_states.values())
         or bool(retirement.renames)
     )
+    output = project_root / effective_output_folder(project_root, config_text)
     if changed:
         materialize_bmad(
             project_root,
@@ -332,7 +341,6 @@ def setup(
             user_config_text=user_text,
             custom_renames=retirement.renames,
         )
-    output = project_root / output_folder(config_text)
     if not output.exists() and not output.is_symlink():
         changed = True
     ensure_dir(output)
@@ -1733,7 +1741,7 @@ def status_report(
     scripts_src, config_src = payload(skill_root)
     shared_state = tree_state(bmad / "scripts", read_plain_tree(scripts_src))
     existing_text, _merged, base_text = team_config_plan(project_root, config_src)
-    output = project_root / output_folder(base_text)
+    output = project_root / effective_output_folder(project_root, base_text)
     custom = bmad / "custom"
     pending = pending_config_questions(project_root, skill_root, scoped)
     unmet = unmet_requirements(installation, skill_root, module=code)
@@ -2216,11 +2224,20 @@ def fill_team_config(text: str, project_root: Path) -> str:
 
 
 def output_folder(config_text: str) -> str:
-    folder = tomllib.loads(config_text).get("core", {}).get("output_folder", "_bmad-output")
+    return output_folder_value(tomllib.loads(config_text))
+
+
+def output_folder_value(config: dict) -> str:
+    folder = config.get("core", {}).get("output_folder", "_bmad-output")
     prefix = "{project-root}/"
     if folder.startswith(prefix):
         folder = folder[len(prefix) :]
     return folder or "_bmad-output"
+
+
+def effective_output_folder(project_root: Path, base_text: str) -> str:
+    base = tomllib.loads(base_text)
+    return output_folder_value(merge_central_config(project_root, base))
 
 
 def materialize_bmad(
