@@ -377,6 +377,7 @@ class TestRules(ProjectCase):
         self.assertTrue(any("{{workflow.other}}" in f["detail"] for f in findings))
         self.assertTrue(any("{{ agent.icon }}" in f["detail"] for f in findings))
 
+    @unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root bypasses file permission bits")
     def test_read_err_on_unreadable_file_continues(self):
         skill = self.valid("bmad-perm", {"secret.md": "ok\n"})
         target = skill / "secret.md"
