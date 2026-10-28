@@ -352,6 +352,46 @@ class BmadSetupTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("failed to parse", result.stderr)
 
+    @unittest.skipIf(sys.platform == "win32", "POSIX mode bits")
+    def test_new_bmad_gets_the_umask_mode_and_an_existing_one_keeps_its_own(self):
+        for umask, expected in ((0o022, 0o755), (0o027, 0o750)):
+            with self.subTest(umask=oct(umask)), tempfile.TemporaryDirectory() as temp_dir:
+                root = Path(temp_dir)
+                project = root / "project"
+                skill = write_dest_bmad(root)
+                project.mkdir()
+                previous = os.umask(umask)
+                try:
+                    result = run_setup_python(project, skill)
+                finally:
+                    os.umask(previous)
+                self.assertEqual(result.returncode, 0, msg=result.stderr)
+                self.assertEqual((project / "_bmad").stat().st_mode & 0o777, expected)
+
+                # A rewrite keeps the mode the user gave _bmad.
+                (project / "_bmad").chmod(0o751)
+                shared = project / "_bmad" / "scripts" / SHARED_SCRIPTS[0]
+                shared.write_text(shared.read_text(encoding="utf-8") + "# stale\n", encoding="utf-8")
+                result = run_setup_python(project, skill)
+                self.assertEqual(result.returncode, 0, msg=result.stderr)
+                self.assertTrue(json.loads(result.stdout)["changed"], msg=result.stdout)
+                self.assertEqual((project / "_bmad").stat().st_mode & 0o777, 0o751)
+
+    @unittest.skipIf(sys.platform == "win32", "POSIX mode bits")
+    def test_new_bmad_keeps_the_setgid_bit_a_shared_project_gives(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            project.chmod(0o2775)
+            probe = project / "probe"
+            probe.mkdir()
+            result = run_setup_python(project, skill)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            setgid = (project / "_bmad").stat().st_mode & 0o2000
+            self.assertEqual(setgid, probe.stat().st_mode & 0o2000)
+
     def test_first_setup_fixture_dest_bmad(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
