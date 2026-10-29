@@ -35,6 +35,8 @@ RESERVED_MODULE_DIRS = frozenset({"_config", "custom", "modules", "scripts"})
 TEAM_CONFIG = "_bmad/config.toml"
 USER_CONFIG = "_bmad/custom/config.user.toml"
 CUSTOM_GITIGNORE = "*.user.toml\n"
+# Rendered skills are regenerated on demand, so none of _bmad/render/ belongs in git.
+RENDER_GITIGNORE = "*\n"
 GITIGNORE_COVERS_USER_CONFIG = frozenset({"*.user.toml", "config.user.toml", "*.toml", "*"})
 
 SEMVER = re.compile(
@@ -319,6 +321,7 @@ def setup(
         or config_state != "current"
         or bool(user_added)
         or gitignore_state == "missing"
+        or render_gitignore_missing(project_root)
         or not (custom.exists() or custom.is_symlink())
         or any(state != "current" for state in module_states.values())
         or bool(retirement.renames)
@@ -546,6 +549,14 @@ def custom_gitignore_state(project_root: Path) -> str:
     except (OSError, UnicodeError):
         return "unprotected"
     return "current" if lines & GITIGNORE_COVERS_USER_CONFIG else "unprotected"
+
+
+def render_gitignore_missing(project_root: Path) -> bool:
+    render = project_root / "_bmad" / "render"
+    if render.is_symlink() or (render.exists() and not render.is_dir()):
+        return False
+    gitignore = render / ".gitignore"
+    return not gitignore.exists() and not gitignore.is_symlink()
 
 
 def custom_gitignore_problems(state: str) -> list[dict[str, object]]:
@@ -1748,6 +1759,7 @@ def status_report(
         or not (output.exists() or output.is_symlink())
         or bool(pending)
         or gitignore_state == "missing"
+        or render_gitignore_missing(project_root)
         or any(item["scripts"] in ("missing", "stale") for item in modules)
         or bool(retirement.renames)
     )
@@ -2301,6 +2313,16 @@ def stage_bmad(
     # so a second run reports current, not repaired.
     for code, tree in module_trees.items():
         ensure_plain_tree(staging / code / "scripts", tree)
+    render = staging / "render"
+    ensure_dir(render)
+    render_gitignore = render / ".gitignore"
+    if (
+        render.is_dir()
+        and not render.is_symlink()
+        and not render_gitignore.exists()
+        and not render_gitignore.is_symlink()
+    ):
+        write_text(render_gitignore, RENDER_GITIGNORE)
     custom = staging / "custom"
     ensure_dir(custom)
     if custom.is_symlink() or not custom.is_dir():
