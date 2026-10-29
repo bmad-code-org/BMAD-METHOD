@@ -35,8 +35,9 @@ RESERVED_MODULE_DIRS = frozenset({"_config", "custom", "modules", "scripts"})
 TEAM_CONFIG = "_bmad/config.toml"
 USER_CONFIG = "_bmad/custom/config.user.toml"
 CUSTOM_GITIGNORE = "*.user.toml\n"
-# Rendered skills are regenerated on demand, so none of _bmad/render/ belongs in git.
-RENDER_GITIGNORE = "*\n"
+# Rendered skills are regenerated on demand, so only this ignore file is committed, and a fresh clone
+# that renders before running setup still has a clean tree.
+RENDER_GITIGNORE = "*\n!.gitignore\n"
 GITIGNORE_COVERS_USER_CONFIG = frozenset({"*.user.toml", "config.user.toml", "*.toml", "*"})
 
 SEMVER = re.compile(
