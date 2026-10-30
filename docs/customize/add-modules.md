@@ -83,7 +83,7 @@ the two.
 **Provides:**
 
 - Murat agent (Master Test Architect and Quality Advisor)
-- Workflows for test design, automation (ATDD red mode and expand mode), test review, and traceability
+- Workflows for test design, automation (expand mode, and red mode for acceptance test-driven development, or ATDD), test review, and traceability
 - NFR assessment, CI setup, and framework scaffolding
 - P0-P3 prioritization with optional Playwright Utils and MCP integrations
 

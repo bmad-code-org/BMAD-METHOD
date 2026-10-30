@@ -1,15 +1,15 @@
 ---
 title: 'Test Completed Work'
-description: Choose a generate skill after implementation — simple coverage with bmad-qa-generate-e2e-tests, or heavier coverage with bmad-tea-automate.
+description: Choose a test-generation skill after implementation. Use bmad-qa-generate-e2e-tests for simple coverage or bmad-tea-automate for heavier coverage.
 sidebar:
   order: 4
 ---
 
 After a change is implemented, decide whether it needs more automated
-coverage and which generate skill should produce it. Both
+coverage and which test-generation skill should produce it. Both
 `bmad-qa-generate-e2e-tests` and `bmad-tea-automate` generate tests
 from code that already exists. The built-in skill stays simple. Automate
-is the heavier generate: fixtures, more test levels, and knowledge-base
+is the heavier test generation: fixtures, more test levels, and knowledge-base
 patterns. See [how the built-in skill runs](#run-bmad-qa-generate-e2e-tests).
 
 This is generated coverage of finished work. It is not code review, and it
@@ -26,12 +26,13 @@ is not the manual observations in [Walk Through a Change](walk-through-a-change.
 
 :::tip[Start with built-in QA]
 Most projects should start with `bmad-qa-generate-e2e-tests`. Use
-`bmad-tea-automate` when you want the heavier generate of the same
+`bmad-tea-automate` when you want heavier test generation of the same
 kind of work.
 :::
 
 Other TEA skills (test design, trace, test review, NFRs, and gates) and
-Automate's red mode for ATDD are available. They are not the default generate path.
+Automate's red mode for acceptance test-driven development (ATDD) are
+available. They are not the default test-generation path.
 
 ## Run `bmad-qa-generate-e2e-tests`
 
@@ -87,15 +88,15 @@ or a reason to use Automate.
 
 ## When to Use TEA
 
-Install the TEA module when you want `bmad-tea-automate` — heavier
-generate of the same kind of work. Automate still generates from existing
-code and can run standalone.
+Install the TEA module when you want `bmad-tea-automate` for heavier
+test generation of the same kind of work. Automate still generates from
+existing code and can run standalone.
 
 `bmad-tea-test-design` is optional before Automate. It improves the
 run; it is not a prerequisite.
 
 `bmad-tea-trace` is optional after generation, to check coverage. It
-is not part of generate.
+is not part of test generation.
 
 ATDD, Automate's red mode, is for features that do not exist yet. Test review, NFR assessment,
 and release gates are available when you need them. They are not required
