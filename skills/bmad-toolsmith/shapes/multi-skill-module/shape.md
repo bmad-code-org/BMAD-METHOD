@@ -4,7 +4,7 @@ A `bmod-<code>/` record folder beside the skills it ships, and a `[skill]` `bmod
 
 ## When the conversation is here
 
-The read-back lists two or more skills that ship and install together, or one skill joining a module that already has a record. Planning what a large module should contain is the user's own discovery with you, or the method's planning skills; this shape starts once the skill list exists. One skill with its own questions is `shapes/single-skill-module/shape.md`.
+The read-back lists two or more skills that ship and install together, or one skill joining a module that already has a record. Planning what a large module should contain is the user's own discovery with you, or the method's planning skills; this shape starts once the skill list exists. One skill on its own, even the first of a module the user is planning, is `shapes/single-skill-module/shape.md`: a `bmod-<code>/` folder is never written for one skill.
 
 ## Files
 

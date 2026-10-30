@@ -10,7 +10,7 @@ The user points at a folder of skills or at one skill. Run `uv run {skill-root}/
 
 Show one plan and wait for a yes or changes:
 
-- The shape: one skill with its own answers is the single-skill module; two or more, or a skill joining an existing record, is the multi-skill module. Load the shape file at the write step, not now.
+- The shape: one skill is the single-skill module, whether or not it has answers to ask; two or more, or a skill joining an existing record, is the multi-skill module. Load the shape file at the write step, not now.
 - The code: short, lowercase, the user's org or the module's purpose, and not a module the user already has. Members carry it as prefix (`acme-...`, agents `acme-agent-...`); `bmad-` belongs to the bmad-code-org. Offer a rename for a member that lacks it, say that renaming changes how the skill is invoked, and let the user decline.
 - `update_source`: the pushed repo, `github:<owner>/<repo>` or `github:<owner>/<repo>/<path>`; ask when it is not in the conversation.
 - The config questions, one per path or setting the skills hardcode or share, each with `key`, `prompt`, `default` and `scope`. A value several skills read the same way is one question.

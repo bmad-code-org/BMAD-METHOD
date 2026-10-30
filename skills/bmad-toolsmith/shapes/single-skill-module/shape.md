@@ -1,10 +1,10 @@
 # Single-skill module
 
-One folder that is both a module record and the module's only skill. It is the default offer for a standalone skill that needs its own config questions or wants `bmad` to know it: setup asks its questions, help answers from its document, updates are checked, and there is no second folder to install.
+One folder that is both a module record and the module's only skill. It is the default registration for a standalone skill: setup asks its questions when it has any, help answers from its document, updates are checked, and there is no second folder to install.
 
 ## When the conversation is here
 
-The read-back names one skill, nothing else ships with it, and either it needs an answer that belongs to the project rather than the session (an output folder, a file it maintains, a style) or the user wants `bmad` to know it: recommend it from help, set it up, check it for updates. A skill with neither, whose user wants none of that, is a plain skill and needs no record. A second skill arriving later turns this into `shapes/multi-skill-module/shape.md`: the record moves to a `bmod-<code>/` folder and this `bmod.toml` keeps only `[skill]`.
+The read-back names one skill and nothing else ships with it, whether or not it has anything to ask. Only a user who wants no record, or a project with no `_bmad/`, makes it a plain skill instead. A second skill arriving later turns this into `shapes/multi-skill-module/shape.md`: the record moves to a `bmod-<code>/` folder and this `bmod.toml` keeps only `[skill]`.
 
 ## Files
 
