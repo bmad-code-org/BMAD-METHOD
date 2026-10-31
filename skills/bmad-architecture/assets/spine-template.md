@@ -47,6 +47,7 @@ sources: []                 # the ticket, plus any companion the spine read
 | Naming (entities, files, interfaces, events) | |
 | Data & formats (ids, dates, error shapes, envelopes) | |
 | State & cross-cutting (mutation, errors, logging, config, auth) | |
+| Trust boundaries (who checks a caller's right and where, ownership checks on shared data, secrets) | |
 
 ## Stack
 
