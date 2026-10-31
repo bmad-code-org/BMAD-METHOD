@@ -6,13 +6,13 @@ Wrap one or more existing skills into a module so `bmad` sets them up, answers h
 
 For each skill the user points at, alone or in a folder, run `uv run {skill-root}/scripts/prepass.py <skill>`. Read raw files only for what it does not give: the `[agent]` block in `customize.toml`, each path or value the skill hardcodes or reads from config, and the skills it invokes.
 
-A skill whose `bmod.toml` already carries `[skill]` belongs to another module: it can be a dependency here, not a member. Say so.
+A skill whose `bmod.toml` carries `[skill]` without `[bmod]` belongs to another module: it can be a dependency here, not a member. Say so.
 
 ## Propose
 
 Show one plan and wait for a yes or changes:
 
-- The shape: one skill is the single-skill module, whether or not it has answers to ask; two or more, or a skill joining an existing record, is the multi-skill module. Load the shape file at the write step, not now.
+- The shape: one skill is the single-skill module, whether or not it has answers to ask; two or more, or a skill joining an existing record, is the multi-skill module. A single-skill module among them keeps its code. Load the shape file at the write step, not now.
 - The code: short, lowercase, the user's org or the module's purpose, and not a module the user already has.
 - The prefix: members carry the code (`acme-...`, agents `acme-agent-...`); `bmad-` belongs to the bmad-code-org. Offer a rename for a member that lacks it, say that renaming changes how the skill is invoked, and let the user decline.
 - `update_source`: the pushed repo, `github:<owner>/<repo>` or `github:<owner>/<repo>/<path>`; ask when it is not in the conversation.

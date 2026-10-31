@@ -34,6 +34,10 @@ The scaffold writes the member `bmod.toml` (`--bmod bmod-<code> --source <the re
 
 Leave the record's version unchanged. The read-back's files list shows these edits.
 
+## From a single-skill module
+
+A single-skill module has no record folder yet, so build one before anything joins. Write `bmod-<code>/` as Files says, keeping `code`, `version`, `update_source`, dependencies and questions from its `[bmod]`, so installed answers still resolve, and move its `help/` there. Its `bmod.toml` becomes a member file.
+
 ## Rules
 
 - Names: members carry the code as prefix (`acme-brainstorm`, agents `acme-agent-<name>`); `bmad-` names belong to the bmad-code-org, which writes `bmad-<code>-<skill>`. The record folder is `bmod-` plus the code exactly.
