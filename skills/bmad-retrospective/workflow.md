@@ -46,6 +46,7 @@ Activation is complete after all activation steps have run.
 | epic folder | the epic file `epic-<slug>.md` (the folder's name plus `.md`), and in its `tickets/` folder the `tickets.toml`, one `<type>-<slug>-plan.md` per ticket, and a story file where a ticket was pulled | the record the epic left |
 | initiative file | `<initiative>/<initiative>.md`, the epic folder being `<initiative>/tickets/epic-<slug>/` | opened only for a `covers` id the epic file does not restate |
 | companions | the files the epic file lists in `companions:` | opened only for a section the epic or a ticket cites; requirements come from the ticket |
+| run folders | the `<type>-*/` folders in the epic folder, each with its main document `<type>-*/<type>-*.md` | evidence the epic's runs left, such as a gate decision or test results; read each document and the output it points at |
 | previous retro (optional) | `<folder name>-retrospective.md` in the previous epic's folder: run `status` with no folder for the `epics` order; the previous epic's folder is the sibling folder of that name | check whether last epic's actions landed |
 | session logs (optional) | conversation/session records for the epic's tickets | process lessons; record the gap when absent |
 

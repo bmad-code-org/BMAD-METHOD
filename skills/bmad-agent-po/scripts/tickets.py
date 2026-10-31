@@ -907,12 +907,28 @@ def locate(args, folder: Path, text: str) -> tuple[dict, dict]:
         backlog = getattr(args, "backlog", None)
         if backlog is None:
             raise
+        number = text.strip()
         try:
             other = load_tree(backlog)
             other["fallback"] = True
-            return resolve_ticket(other, text), other
+            try:
+                # A number that is a ticket's tracker id names that ticket, whatever local ids the backlog holds.
+                return by_tracker_id(other, number) if number.isdigit() else resolve_ticket(other, text), other
+            except NoMatch:
+                found = resolve_ticket(other, text)
         except (NoMatch, OSError, ValueError):  # not there, or a backlog that cannot be read
             raise miss from None
+        if number.isdigit():
+            # A bare number names an entry of some epic; the backlog's file that carries that id is only a guess.
+            named = [ref_name(t, tree) for t in tree["tickets"] if t["id"] == _id(number)]
+            if named:
+                what = f"could name more than one ticket: {', '.join([*named, ref_name(found, other)])}"
+            else:
+                what = f"names no ticket in the initiative, and in the backlog it matches {ref_name(found, other)}"
+            raise TicketError(
+                f"{number!r} is a bare number and {what}; name the ticket's epic folder or its file name"
+            ) from None
+        return found, other
 
 
 def next_view(folder: Path) -> dict:
@@ -1385,6 +1401,8 @@ def cmd_mirror(args) -> dict:
         hit = miss = container = None
         for tree in trees:
             try:
+                if "ref" in item and tree is not trees[0] and str(name).strip().isdigit():
+                    raise NoMatch(f"a bare number does not name a backlog ticket: {name!r}")
                 # A tracker id alone never falls back to an entry id or a title that happens to match it.
                 t = resolve_ticket(tree, str(name)) if "ref" in item else by_tracker_id(tree, str(name))
             except NoMatch as e:
@@ -1687,7 +1705,10 @@ DIR_HELP = """<dir> is an epic folder, a backlog folder, or an initiative folder
 folder's name under the store, the active initiative, or its `tickets/` folder. A `tickets/` folder is
 read as the folder that holds it. Left out, it is the active initiative."""
 
-BACKLOG_HELP = "With no <dir>, a ticket the initiative does not hold is looked for in the backlog folder."
+BACKLOG_HELP = (
+    "With no <dir>, a ticket the initiative does not hold is looked for in the backlog folder, "
+    "except by a bare number, which is ambiguous there unless it is the ticket's tracker id."
+)
 
 PARENT_HELP = """A parent initiative, whose `tickets.toml` lists `[[initiative]]` tables, works only with status
 and next; the other commands want one of its initiatives."""

@@ -20,7 +20,7 @@ is not the manual observations in [Walk Through a Change](walk-through-a-change.
 | Factor | `bmad-qa-generate-e2e-tests` | `bmad-tea-automate` |
 | --- | --- | --- |
 | **Best for** | Simple coverage of implemented features | Heavier coverage of the same kind of work |
-| **Setup** | Included with BMM | Install the TEA module |
+| **Setup** | Install the `bmad-qa-generate-e2e-tests` skill | Install the TEA module |
 | **Approach** | Generate from the code that exists | Same, standalone; optional test design improves the run |
 | **What it covers** | API and E2E; the main path and the errors a user can see | API, E2E, fixtures, more patterns; optional component tests |
 
@@ -104,8 +104,8 @@ to generate tests.
 
 TEA is a separate module. Its current workflows, commands, and setup live
 in the [TEA documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/).
-Install it with the rest of BMad; see [Add Modules](../customize/add-modules.md)
-for how modules are selected.
+Add it with `npx skills add bmad-code-org/bmad-method-test-architecture-enterprise`
+and run `bmad setup tea`; see [Add Modules](../customize/add-modules.md).
 
 ## Where It Fits
 

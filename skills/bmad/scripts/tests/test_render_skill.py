@@ -36,6 +36,8 @@ SHARED_SCRIPTS = (
     "render_skill.py",
     "resolve_config.py",
     "resolve_customization.py",
+    "setup.py",
+    "setup_check.py",
 )
 SHIPPED_SKILLS = ("bmad-build-auto", "bmad-build", "bmad-code-review")
 RENDERED_SKILLS = (
@@ -384,6 +386,28 @@ class RenderSkillTests(unittest.TestCase):
         self.assertIn("denied", result.stdout.lower())
         self.assertNotIn("Traceback", result.stdout + result.stderr)
         self.assertEqual(list(namespace.iterdir()), [])
+
+    def test_the_setup_preflight_reads_only_the_roots_it_is_given(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(ws, "[workflow]\n", "hello\n")
+        source = "github:acme/tools/skills"
+        (skill / "bmod.toml").write_text(
+            f'[skill]\nbmod = "bmod-demo"\nsource = "{source}"\nrequired_skills = ["other-skill"]\n', encoding="utf-8"
+        )
+        record = skill.parent / "bmod-demo"
+        record.mkdir()
+        (record / "bmod.toml").write_text(
+            f'[bmod]\ncode = "demo"\nversion = "1.0.0"\nupdate_source = "{source}"\nskills = ["fixture"]\n',
+            encoding="utf-8",
+        )
+        elsewhere = ws.outer / "global"
+        (elsewhere / "other-skill").mkdir(parents=True)
+
+        self.assertNotIn("setup:", self._cli(ws.project, skill).stderr)
+        named = self._cli(ws.project, skill, args=("--root", str(skill.parent)))
+        self.assertIn("needs the `other-skill` skill", named.stderr)
+        both = self._cli(ws.project, skill, args=("--root", str(skill.parent), "--root", str(elsewhere)))
+        self.assertNotIn("setup:", both.stderr)
 
     def test_invalid_invocation_halts_before_publication(self):
         invalid = (
