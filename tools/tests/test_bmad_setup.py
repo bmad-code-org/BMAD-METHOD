@@ -3122,6 +3122,31 @@ class BmadStatusTests(unittest.TestCase):
             self.assertEqual(report["state"], "pinned")
             self.assertTrue(report["install"].endswith(" -g"))
 
+    def test_a_pinned_module_is_settled_in_the_status_report(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root
+            skill = write_dest_bmad(root)
+            write_core(root, update_source="file:sources")
+            write_module_skill(root, "alpha-skill", "alpha", update_source="file:sources", version="3.5.0")
+            write_bmod(project / "sources", "bmod-alpha", "alpha", version="3.6.0")
+            write(
+                project / "skills-lock.json",
+                json.dumps(
+                    {"version": 1, "skills": {"bmod-alpha": {"ref": "v3.5.0"}, "bmod-core-tools": {"ref": "v1.2.3"}}}
+                ),
+            )
+            write(project / "sources" / "bmod-core-tools" / "bmod.toml", '[bmod]\nversion = "1.2.3"\n')
+            setup_report(self, project, skill)
+
+            report = status_report(self, project, skill)
+
+            alpha = next(item for item in report["modules"] if item["module"] == "alpha")
+            self.assertEqual(alpha["update"]["state"], "pinned")
+            self.assertEqual(alpha["update"]["pinned_ref"], "v3.5.0")
+            self.assertTrue(report["current"], report)
+            self.assertIsNone(report["next"])
+
     def test_a_github_source_with_no_path_reads_the_file_at_the_repo_root(self):
         setup = load_setup()
         with tempfile.TemporaryDirectory() as temp_dir:

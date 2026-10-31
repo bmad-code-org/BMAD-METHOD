@@ -1816,10 +1816,15 @@ def module_update_report(project_root: Path, installed: InstalledModule) -> dict
     if pinned is not None:
         # `npx skills update` keeps a pinned install on its ref, so it cannot apply the newer version.
         tag = f"v{source_version}" if pinned.startswith("v") else source_version
+        # One command covers one scope: the skills that sit with the module record.
+        global_install = is_global(installed.source, project_root)
+        beside = (
+            member.folder for member in installed.members if is_global(member.source, project_root) == global_install
+        )
         command = install_command(
             update_source,
-            *dict.fromkeys((installed.folder, *installed.skills)),
-            global_install=is_global(installed.source, project_root),
+            *dict.fromkeys((installed.folder, *beside)),
+            global_install=global_install,
             ref=tag,
         )
         report.update(
