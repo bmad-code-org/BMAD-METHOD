@@ -1,22 +1,25 @@
-<!-- doc-pro template
-purpose: Coordinate the release of a built feature across product, marketing, sales and support.
-good for: A feature or product that is built or nearly built and needs several teams ready on one date.
-not for: Deciding what to build (`brief` or `prd`); a launch talk or slides (`pitch-deck`).
-stance: Settle who drives and who approves, and the go or no-go criteria, before planning activities. Ask what each team needs to be ready.
-inputs: What is shipping, for whom, and the target date. Only the user knows owners, dates, pricing and channels.
-writing: Messaging uses the customer's words, not internal names.
-done when: Every team can find its tasks, owner and date, and the go or no-go criteria are written down.
-view: document
--->
 ---
 title: ""
 template: launch
+description: "A built feature needs a coordinated release across teams. Not for deciding what to build (`brief` or `prd`); a launch talk or slides (`pitch-deck`)."
 status: draft
 created: ""
 updated: ""
 ---
 
+<!-- purpose: Coordinate the release of a built feature across product, marketing, sales and support. -->
+
+<!-- stance: Settle who drives and who approves, and the go or no-go criteria, before planning activities. Ask what each team needs to be ready. -->
+
+<!-- inputs: What is shipping, for whom, and the target date. Only the user knows owners, dates, pricing and channels. -->
+
+<!-- writing: Messaging uses the customer's words, not internal names. -->
+
+<!-- done when: Every team can find its tasks, owner and date, and the go or no-go criteria are written down. -->
+
 # {title}
+
+## Table of Contents
 
 ## Roles
 <!-- required. Driver, approver, contributors and informed. -->

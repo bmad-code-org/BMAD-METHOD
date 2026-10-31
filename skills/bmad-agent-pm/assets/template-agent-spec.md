@@ -1,22 +1,25 @@
-<!-- doc-pro template
-purpose: A feature spec a coding agent can build and test from with no other context.
-good for: One feature outside the ticket tree, or one handed to an external agent or tool.
-not for: Work a story or epic ticket already specifies. Several features or a product (`prd`).
-stance: Draft first from the conversation and the codebase, then ask only what changes scope, security or what the user experiences, each with a recommended answer; read the code for the rest.
-inputs: The requested behavior, who uses it, the codebase's conventions and terms, constraints and boundaries. Only the user knows priority and what is out.
-writing: Behavior, not implementation: no file paths or code, except a fragment that pins a decision more exactly than prose (a schema, a state machine). Success criteria are measurable without knowing the implementation.
-done when: Every story has an independent test and Given/When/Then acceptance; edge cases cover boundaries and failures; nothing about scope is left for the agent to guess.
-view: document
--->
 ---
 title: ""
 template: agent-spec
+description: "One feature handed to a coding agent: stories with independent tests, acceptance, edge cases. Not for work a story or epic ticket already specifies. Several features or a product (`prd`)."
 status: draft
 created: ""
 updated: ""
 ---
 
+<!-- purpose: A feature spec a coding agent can build and test from with no other context. -->
+
+<!-- stance: Draft first from the conversation and the codebase, then ask only what changes scope, security or what the user experiences, each with a recommended answer; read the code for the rest. -->
+
+<!-- inputs: The requested behavior, who uses it, the codebase's conventions and terms, constraints and boundaries. Only the user knows priority and what is out. -->
+
+<!-- writing: Behavior, not implementation: no file paths or code, except a fragment that pins a decision more exactly than prose (a schema, a state machine). Success criteria are measurable without knowing the implementation. -->
+
+<!-- done when: Every story has an independent test and Given/When/Then acceptance; edge cases cover boundaries and failures; nothing about scope is left for the agent to guess. -->
+
 # {title}
+
+## Table of Contents
 
 ## Problem
 <!-- required. Who is affected and what they cannot do now. -->

@@ -24,7 +24,7 @@ activation_steps_prepend = []
 activation_steps_append = []
 
 # Standing context for the whole session: literal sentences, or `file:` paths and globs under {project-root}.
-# Repo-wide context belongs in AGENTS.md; what one template needs belongs in its additions below.
+# Repo-wide context belongs in AGENTS.md; what one template needs belongs in the template.
 persistent_facts = []
 
 role = "Coach the planning documents a product needs, from brief to PRD to launch plan, out of the user, and keep them true as the product moves."
@@ -44,118 +44,17 @@ principles = [
 [[agent.menu]]
 code = "CREATE"
 description = "Create a planning document from your brain dump and the inputs you have, or update one when the product moves"
-prompt = "Call the `bmad-doc-pro` skill as Calling the engine in SKILL.md says, with intent create, or update when the document exists."
+prompt = "Call the `bmad-doc-coach` skill as Calling the engine in SKILL.md says, with intent create, or update when the document exists."
 
 [[agent.menu]]
 code = "VALIDATE"
 description = "Review a planning document against its template and rubric; the document itself does not change"
-prompt = "Call the `bmad-doc-pro` skill as Calling the engine in SKILL.md says, with intent validate."
+prompt = "Call the `bmad-doc-coach` skill as Calling the engine in SKILL.md says, with intent validate."
 
 [workflow]
 
-# Doc standards, reviewers, external sources and handoffs, output, style, html_view and on_complete are bmad-doc-pro's: set them in {project-root}/_bmad/custom/bmad-doc-pro.toml.
+# Doc standards, reviewers, external sources and handoffs, output, style, html_view and on_complete are bmad-doc-coach's: set them in {project-root}/_bmad/custom/bmad-doc-coach.toml.
 
-# John's template library. `description` is the only text read when choosing. A team entry with a shipped `id`
-# replaces it, a new `id` adds one, `disabled = true` hides one; team entries name files under {project-root}.
-# Empty `rubric` uses bmad-doc-pro's planning rubric.
-
-[[workflow.templates]]
-id = "brief"
-name = "Product brief"
-description = "Deciding whether and why to build, or pitching an idea in a page or two."
-file = "{skill-root}/assets/template-brief.md"
-methods = ""
-rubric = ""
-disabled = false
-
-[[workflow.templates]]
-id = "prd"
-name = "PRD"
-description = "Committed work that needs requirements to build from, at any altitude."
-file = "{skill-root}/assets/template-prd.md"
-methods = ""
-rubric = ""
-disabled = false
-
-[[workflow.templates]]
-id = "agent-spec"
-name = "Spec for a coding agent"
-description = "One feature handed to a coding agent: stories with independent tests, acceptance, edge cases."
-file = "{skill-root}/assets/template-agent-spec.md"
-methods = ""
-rubric = ""
-disabled = false
-
-[[workflow.templates]]
-id = "opportunity"
-name = "Opportunity assessment"
-description = "Before any solution: is this problem worth pursuing at all?"
-file = "{skill-root}/assets/template-opportunity.md"
-methods = ""
-rubric = ""
-disabled = false
-
-[[workflow.templates]]
-id = "business-case"
-name = "Business case"
-description = "The work needs funding approval: cost, expected return, go or no-go."
-file = "{skill-root}/assets/template-business-case.md"
-methods = ""
-rubric = ""
-disabled = false
-
-[[workflow.templates]]
-id = "charter"
-name = "Program charter"
-description = "Several related initiatives need one mandate, benefits, scope and governance."
-file = "{skill-root}/assets/template-charter.md"
-methods = ""
-rubric = ""
-disabled = false
-
-[[workflow.templates]]
-id = "narrative"
-name = "Strategy narrative"
-description = "Leadership must decide a strategy or annual plan from a written argument."
-file = "{skill-root}/assets/template-narrative.md"
-methods = ""
-rubric = ""
-disabled = false
-
-[[workflow.templates]]
-id = "pitch"
-name = "Shape Up pitch"
-description = "The team bets fixed cycles and needs a shaped, time-boxed proposal."
-file = "{skill-root}/assets/template-pitch.md"
-methods = ""
-rubric = ""
-disabled = false
-
-[[workflow.templates]]
-id = "srs"
-name = "Requirements specification"
-description = "Regulated, audited or contracted work needing traceable, verifiable requirements."
-file = "{skill-root}/assets/template-srs.md"
-methods = ""
-rubric = ""
-disabled = false
-
-[[workflow.templates]]
-id = "launch"
-name = "Launch plan"
-description = "A built feature needs a coordinated release across teams."
-file = "{skill-root}/assets/template-launch.md"
-methods = ""
-rubric = ""
-disabled = false
-
-# What a team adds to a template without replacing it. Fields merge across layers and arrays append.
-[workflow.additions]
-
-# [workflow.additions.prd]
-# facts = ["file:{project-root}/docs/policy/data-retention.md"]   # loaded once this template is chosen
-# include = ["A data retention section citing policy DR-2"]       # content the document must contain
-# checks = ["Every requirement touching personal data names its retention rule"]   # added to the review
-# polish = ["file:{project-root}/_bmad/style/company-voice.md"]   # run after doc_standards
-# output = "docs/product/{slug}"                                  # the run folder itself; an epic's document stays in its epic folder
-# style = "{project-root}/_bmad/style/product.css"                # this template's rendered view
+# John's templates, passed to bmad-doc-coach and searched after its libraries. To add, replace or
+# extend one, put a file in {project-root}/_bmad/custom/doc-coach-templates/.
+template_libraries = ["{skill-root}/assets"]

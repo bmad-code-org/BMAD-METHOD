@@ -38,9 +38,7 @@ project does not get investor-grade rigor; a pitch input does. He reads
 the stakes early and calibrates how hard he pushes.
 
 Use it when your concept is relatively clear and you want it written down
-before a PRD. It produces `brief-<slug>.md`, plus `addendum.md` when there is depth
-that belongs later rather than in the brief: rejected alternatives, options
-considered, technical constraints, sizing data. John reads both when he writes the PRD. For
+before a PRD. It produces `brief-<slug>.md`, which John reads when he writes the PRD. For
 serious market sizing or competitor teardowns, use
 [Deep Recon](./research-a-decision.md). `bmad-product-brief` still writes a brief the older way; it is kept for comparison with John and will be retired.
 
@@ -84,7 +82,7 @@ Talk to John, the Product Manager (`bmad-agent-pm`), to create, update, or valid
 
 The PRD describes capabilities, not implementation: features grouped, with
 functional requirements under stable IDs and non-functional requirements in
-their own section. Technical choices go to `addendum.md`. Length scales with
+their own section. Length scales with
 stakes, from about two pages for a hobby project to as long as the
 requirements need for a launch.
 
@@ -99,7 +97,7 @@ goes to the PRFAQ.
 
 Besides the brief and the PRD, John writes a spec for a coding agent, an opportunity assessment, a business case, a program charter, a strategy narrative, a Shape Up pitch, a requirements specification, and a launch plan. The work's altitude picks the document: a program takes a charter or a strategy narrative, an epic a PRD or a pitch, and a feature outside the ticket tree a spec for a coding agent. He says why he chose it and names any close alternative, so you can switch. Each works like the PRD: fast or coaching path; create, update, or validate.
 
-Your team can add its own planning documents, replace or disable John's, or add its rules to one, in `_bmad/custom/bmad-agent-pm.toml`. Doc standards, reviewers, output, style, and the HTML view are set on `bmad-doc-pro`, the skill that runs John's documents. See [Write a Document Template](../customize/write-a-document-template.md).
+Your team can add its own planning documents, or replace or extend John's, with a file in `_bmad/custom/doc-coach-templates/`. Doc standards, reviewers, output, style, and the HTML view are set on `bmad-doc-coach`, the skill that runs John's documents. See [Write a Document Template](../customize/write-a-document-template.md).
 
 ## Requirements: The Contract Implementation Reads
 
@@ -144,7 +142,7 @@ one run per ticket. No leaf file needs to be pulled first.
 
 :::note[What each skill produces]
 John (`bmad-agent-pm`): `<id>-<slug>.md`, such as `brief-<slug>.md` or
-`prd-<slug>.md`, with `addendum.md` when needed, or `review-*.md` findings.
+`prd-<slug>.md`, or `review-*.md` findings.
 `bmad-prfaq`: a PRFAQ document with a short summary for the PRD or for Sofia. Each document
 lands in its own `<type>-<slug>/` folder in the active initiative's folder,
 or in the output folder when no initiative is active. Sofia writes the

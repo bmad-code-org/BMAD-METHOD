@@ -256,13 +256,13 @@ Keep the IDE file short. The model reads it every turn.
 
 ## Recipe 6: Advanced fields
 
-**File and keys:** `_bmad/custom/bmad-doc-pro.toml`, `[workflow] external_sources`,
-`external_handoffs`, and `doc_standards`; `_bmad/custom/bmad-agent-pm.toml`,
-`[[workflow.templates]]` and `[workflow.additions.<id>]`.
+**File and keys:** `_bmad/custom/bmad-doc-coach.toml`, `[workflow] external_sources`,
+`external_handoffs`, and `doc_standards`; template files in
+`_bmad/custom/doc-coach-templates/`.
 
 Some workflows expose more fields than recipes 1 through 5 use. Check a
 workflow's `customize.toml` to see which of these it has; the examples use
-`bmad-doc-pro`, which runs every document John (`bmad-agent-pm`) writes, so
+`bmad-doc-coach`, which runs every document John (`bmad-agent-pm`) writes, so
 its settings apply to his documents too. The same pattern applies wherever a
 field appears.
 
@@ -273,7 +273,7 @@ competitive databases, or compliance references. The agent consults them
 only when the conversation surfaces a matching need, never preemptively.
 
 ```toml
-# _bmad/custom/bmad-doc-pro.toml
+# _bmad/custom/bmad-doc-coach.toml
 
 [workflow]
 external_sources = [
@@ -293,11 +293,11 @@ the workflow finalizes. Unlike `on_complete` (recipe 3), it is an append
 array: team entries stack, and each handoff fires independently.
 
 ```toml
-# _bmad/custom/bmad-doc-pro.toml
+# _bmad/custom/bmad-doc-coach.toml
 
 [workflow]
 external_handoffs = [
-  "After finalize, upload the document and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='Planning'). Capture and surface the returned page URL.",
+  "After finalize, upload the document to Confluence via corp:confluence_upload (space_key='PROD', parent_page='Planning'). Capture and surface the returned page URL.",
   "Mirror to Notion via notion:create_page (database_id='abc123', title=the document's title).",
 ]
 ```
@@ -316,7 +316,7 @@ stack on the workflow's shipped default
 before narrow prose passes.
 
 ```toml
-# _bmad/custom/bmad-doc-pro.toml
+# _bmad/custom/bmad-doc-coach.toml
 
 [workflow]
 doc_standards = [
@@ -326,34 +326,26 @@ doc_standards = [
 ]
 ```
 
-### Template libraries and additions
+### Template libraries and extensions
 
-John keeps a template library instead of one template key per document. An
-entry with a shipped `id` replaces that template whole, a new `id` adds one,
-and `disabled = true` hides one. `[workflow.additions.<id>]` adds your rules
-to a template without replacing it, so they survive updates to the shipped
-template. Point files at `{project-root}`, as in recipe 4.
+John and `bmad-doc-coach` change templates the same way: put a file in
+`_bmad/custom/doc-coach-templates/`. A new `template:` id adds a template, and a
+shipped id replaces it. To swap in a regulated-industry PRD, save it there with
+`template: prd` and a `rubric:` beside it. A file with `extends:` adds your
+rules without copying the template, so updates to the original still reach you:
 
-```toml
-# _bmad/custom/bmad-agent-pm.toml
+```markdown
+---
+extends: business-case
+---
 
-# Regulated-industry PRD structure and review rubric
-[[workflow.templates]]
-id = "prd"
-name = "PRD"
-description = "Committed work that needs requirements to build from, at any altitude."
-file = "{project-root}/docs/enterprise/prd-template-hipaa.md"
-methods = ""
-rubric = "{project-root}/docs/enterprise/prd-rubric-regulated.md"
-disabled = false
+<!-- done when: Every cost line names its source. -->
 
-# Rules added to the shipped business case
-[workflow.additions.business-case]
-include = ["The budget owner and cost center"]
-checks = ["Every cost line names its source"]
+## Budget Owner
+<!-- required, after the cost section. The budget owner and cost center. -->
 ```
 
-The template file format and every additions field are in
+The template file format and extensions are in
 [Write a Document Template](./write-a-document-template.md).
 
 ## Combining recipes

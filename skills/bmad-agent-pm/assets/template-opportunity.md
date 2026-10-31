@@ -1,22 +1,25 @@
-<!-- doc-pro template
-purpose: Decide whether a problem is worth pursuing before anyone commits to a solution.
-good for: A request, idea or signal that needs a go or no-go on the problem itself.
-not for: A chosen solution that needs a case for building it (`brief`); a funding decision with costs (`business-case`).
-stance: Keep the talk on the problem. When the user describes a solution, park it and ask what problem it solves. Treat a no-go as a good outcome.
-inputs: Evidence the problem exists (support tickets, research, usage data, lost deals). Only the user knows the business objective it serves and why this team should take it.
-writing: Every number and piece of evidence names its source; an estimate is tagged `[ASSUMPTION: ...]`.
-done when: The recommendation follows from the sections above it, and a reader could disagree with it on the evidence stated.
-view: document
--->
 ---
 title: ""
 template: opportunity
+description: "Before any solution: is this problem worth pursuing at all? Not for a chosen solution that needs a case for building it (`brief`); a funding decision with costs (`business-case`)."
 status: draft
 created: ""
 updated: ""
 ---
 
+<!-- purpose: Decide whether a problem is worth pursuing before anyone commits to a solution. -->
+
+<!-- stance: Keep the talk on the problem. When the user describes a solution, park it and ask what problem it solves. Treat a no-go as a good outcome. -->
+
+<!-- inputs: Evidence the problem exists (support tickets, research, usage data, lost deals). Only the user knows the business objective it serves and why this team should take it. -->
+
+<!-- writing: Every number and piece of evidence names its source; an estimate is tagged `[ASSUMPTION: ...]`. -->
+
+<!-- done when: The recommendation follows from the sections above it, and a reader could disagree with it on the evidence stated. -->
+
 # {title}
+
+## Table of Contents
 
 ## Problem
 <!-- required. The problem in the customer's terms, with evidence it exists. -->

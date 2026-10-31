@@ -1,22 +1,25 @@
-<!-- doc-pro template
-purpose: Get a go or no-go funding decision on a piece of work.
-good for: Work or an investment that a portfolio, budget holder or board must approve.
-not for: Whether the problem is worth pursuing (`opportunity`); one mandate over several initiatives (`charter`); requirements to build from (`prd`).
-stance: A missing cost or return figure is an open question, whatever the stakes; never estimate it.
-inputs: The sponsor, cost estimates, expected return and its basis: only the user or their finance partner has these.
-writing: One page, two at most.
-done when: A funder could decide go or no-go from this document alone, and every figure names its source.
-view: document
--->
 ---
 title: ""
 template: business-case
+description: "The work needs funding approval: cost, expected return, go or no-go. Not for whether the problem is worth pursuing (`opportunity`); one mandate over several initiatives (`charter`); requirements to build from (`prd`)."
 status: draft
 created: ""
 updated: ""
 ---
 
+<!-- purpose: Get a go or no-go funding decision on a piece of work. -->
+
+<!-- stance: A missing cost or return figure is an open question, whatever the stakes; never estimate it. -->
+
+<!-- inputs: The sponsor, cost estimates, expected return and its basis: only the user or their finance partner has these. -->
+
+<!-- writing: One page, two at most. -->
+
+<!-- done when: A funder could decide go or no-go from this document alone, and every figure names its source. -->
+
 # {title}
+
+## Table of Contents
 
 ## Sponsors
 <!-- required. Who funds the work and who owns it. -->

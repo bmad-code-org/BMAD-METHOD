@@ -1,22 +1,25 @@
-<!-- doc-pro template
-purpose: Propose shaped work so a betting table can commit a fixed cycle to it.
-good for: Teams that work in fixed cycles and choose what to bet on at the start of each.
-not for: Open-ended requirements (`prd`); funding by estimate (`business-case`); one feature handed to a coding agent (`agent-spec`).
-stance: Ask how much time the problem is worth, then shape the solution to fit it; never derive appetite from an estimate.
-inputs: The raw idea and one specific story of the problem. Only the user knows the appetite: a small or big batch, in weeks.
-writing: Rough, not wireframes, leaving design room for the builders.
-done when: A builder could start without asking what is in or out, and every known rabbit hole has a patch or a no-go.
-view: document
--->
 ---
 title: ""
 template: pitch
+description: "The team bets fixed cycles and needs a shaped, time-boxed proposal. Not for open-ended requirements (`prd`); funding by estimate (`business-case`); one feature handed to a coding agent (`agent-spec`)."
 status: draft
 created: ""
 updated: ""
 ---
 
+<!-- purpose: Propose shaped work so a betting table can commit a fixed cycle to it. -->
+
+<!-- stance: Ask how much time the problem is worth, then shape the solution to fit it; never derive appetite from an estimate. -->
+
+<!-- inputs: The raw idea and one specific story of the problem. Only the user knows the appetite: a small or big batch, in weeks. -->
+
+<!-- writing: Rough, not wireframes, leaving design room for the builders. -->
+
+<!-- done when: A builder could start without asking what is in or out, and every known rabbit hole has a patch or a no-go. -->
+
 # {title}
+
+## Table of Contents
 
 ## Problem
 <!-- required. One specific story that shows what is broken and for whom. -->

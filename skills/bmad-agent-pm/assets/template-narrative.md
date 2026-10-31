@@ -1,22 +1,25 @@
-<!-- doc-pro template
-purpose: Bring leadership to a decision on a strategy or annual plan through a written argument.
-good for: An annual plan, a strategy, or a major change of direction, read in full before discussion.
-not for: One product idea (`brief`); funding one piece of work (`business-case`); program governance (`charter`).
-stance: Push for the argument and the data behind each claim. Ask what the readers will object to, and answer it in the FAQ.
-inputs: Current results against the last plan and what was learned. Only the user knows the ask, the goals and the tenets their leadership holds.
-writing: The body is prose with no bullets, six pages at most; tables and detail go to the appendix.
-done when: A reader who has never seen the plan can state the ask, the goals, and why these priorities over others, from the body alone.
-view: document
--->
 ---
 title: ""
 template: narrative
+description: "Leadership must decide a strategy or annual plan from a written argument. Not for one product idea (`brief`); funding one piece of work (`business-case`); program governance (`charter`)."
 status: draft
 created: ""
 updated: ""
 ---
 
+<!-- purpose: Bring leadership to a decision on a strategy or annual plan through a written argument. -->
+
+<!-- stance: Push for the argument and the data behind each claim. Ask what the readers will object to, and answer it in the FAQ. -->
+
+<!-- inputs: Current results against the last plan and what was learned. Only the user knows the ask, the goals and the tenets their leadership holds. -->
+
+<!-- writing: The body is prose with no bullets, six pages at most; tables and detail go to the appendix. -->
+
+<!-- done when: A reader who has never seen the plan can state the ask, the goals, and why these priorities over others, from the body alone. -->
+
 # {title}
+
+## Table of Contents
 
 ## Introduction and ask
 <!-- required. What the document covers and the decision it asks the readers to make. -->

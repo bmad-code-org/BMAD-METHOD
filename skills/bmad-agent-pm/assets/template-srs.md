@@ -1,22 +1,25 @@
-<!-- doc-pro template
-purpose: A requirements baseline an auditor, regulator or contracting party can verify delivery against.
-good for: Regulated, audited, safety-critical or contracted work, in the ISO/IEC/IEEE 29148 shape.
-not for: Product work with no external check (`prd`); one feature for a coding agent (`agent-spec`).
-stance: Stakes are regulated or contracted; push for a source on every requirement.
-inputs: The governing regulations, standards and contract clauses, stakeholders and their needs, external interfaces, prior baselines. Only the user knows which obligations apply and who approves the baseline.
-writing: Requirement sections are tables: id, one "shall" statement, source (a stakeholder need, regulation clause or contract item), verification method (inspection, analysis, demonstration or test). Ids are never reused. Defined terms are used exactly as defined.
-done when: Every requirement has an id, a source and a verification method; every cited regulation, clause and threshold comes from the user or a supplied document; every term is defined.
-view: document
--->
 ---
 title: ""
 template: srs
+description: "Regulated, audited or contracted work needing traceable, verifiable requirements. Not for product work with no external check (`prd`); one feature for a coding agent (`agent-spec`)."
 status: draft
 created: ""
 updated: ""
 ---
 
+<!-- purpose: A requirements baseline an auditor, regulator or contracting party can verify delivery against. -->
+
+<!-- stance: Stakes are regulated or contracted; push for a source on every requirement. -->
+
+<!-- inputs: The governing regulations, standards and contract clauses, stakeholders and their needs, external interfaces, prior baselines. Only the user knows which obligations apply and who approves the baseline. -->
+
+<!-- writing: Requirement sections are tables: id, one "shall" statement, source (a stakeholder need, regulation clause or contract item), verification method (inspection, analysis, demonstration or test). Ids are never reused. Defined terms are used exactly as defined. -->
+
+<!-- done when: Every requirement has an id, a source and a verification method; every cited regulation, clause and threshold comes from the user or a supplied document; every term is defined. -->
+
 # {title}
+
+## Table of Contents
 
 ## Introduction
 <!-- required. Purpose, scope (what the system does and does not do), intended readers. -->

@@ -1,22 +1,25 @@
-<!-- doc-pro template
-purpose: Requirements a team, human or AI, builds from.
-good for: Committed work at any altitude, from a program down to small work.
-not for: Deciding whether to build (`brief`, `opportunity`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`).
-stance: The user narrates journeys as real sessions; you structure them.
-inputs: Form factor if the sources do not say. Only the user knows who it is for, what is out, and what success looks like.
-writing: Capabilities, not implementation: technology choices go to the addendum. Ids (UJ-N, FR-N, SM-N) are global; no traceability matrix. Domain nouns are used exactly as the glossary defines them.
-done when: Every FR can be checked at its altitude and traces to a journey or need, and every journey beat that needs the product has an FR; non-goals and out-of-scope reasons are stated; every primary metric has a counter-metric.
-view: document
--->
 ---
 title: ""
 template: prd
+description: "Committed work that needs requirements to build from, at any altitude. Not for deciding whether to build (`brief`, `opportunity`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`)."
 status: draft
 created: ""
 updated: ""
 ---
 
+<!-- purpose: Requirements a team, human or AI, builds from. -->
+
+<!-- stance: The user narrates journeys as real sessions; you structure them. -->
+
+<!-- inputs: Form factor if the sources do not say. Only the user knows who it is for, what is out, and what success looks like. -->
+
+<!-- writing: Capabilities, not implementation. Ids (UJ-N, FR-N, SM-N) are global; no traceability matrix. Domain nouns are used exactly as the glossary defines them. -->
+
+<!-- done when: Every FR can be checked at its altitude and traces to a journey or need, and every journey beat that needs the product has an FR; non-goals and out-of-scope reasons are stated; every primary metric has a counter-metric. -->
+
 # {title}
+
+## Table of Contents
 
 ## Document purpose
 <!-- required. Who reads it, and the inputs it builds on (ticket, brief, UX work) with where they live, instead of repeating them. -->

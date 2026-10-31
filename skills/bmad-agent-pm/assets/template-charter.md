@@ -1,22 +1,25 @@
-<!-- doc-pro template
-purpose: Authorize a program: one mandate over several related initiatives.
-good for: Starting or resetting a program whose initiatives share benefits, funding and governance.
-not for: A single initiative (`brief` or `prd`); funding one piece of work (`business-case`); choosing a strategy (`narrative`).
-stance: When talk drops into features or requirements, note the initiative that owns them and move back up.
-inputs: The strategy the program serves and the initiatives in view. Only the user knows the sponsor, decision rights, budget and dates.
-writing: No requirements; each initiative gets its own document.
-done when: Any initiative can be judged in or out of the program from this charter, and anyone can tell who decides what.
-view: document
--->
 ---
 title: ""
 template: charter
+description: "Several related initiatives need one mandate, benefits, scope and governance. Not for a single initiative (`brief` or `prd`); funding one piece of work (`business-case`); choosing a strategy (`narrative`)."
 status: draft
 created: ""
 updated: ""
 ---
 
+<!-- purpose: Authorize a program: one mandate over several related initiatives. -->
+
+<!-- stance: When talk drops into features or requirements, note the initiative that owns them and move back up. -->
+
+<!-- inputs: The strategy the program serves and the initiatives in view. Only the user knows the sponsor, decision rights, budget and dates. -->
+
+<!-- writing: No requirements; each initiative gets its own document. -->
+
+<!-- done when: Any initiative can be judged in or out of the program from this charter, and anyone can tell who decides what. -->
+
 # {title}
+
+## Table of Contents
 
 ## Justification
 <!-- required. Why the program exists and what happens without it. -->

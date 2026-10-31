@@ -1,22 +1,25 @@
-<!-- doc-pro template
-purpose: Decide whether and why to build something, or pitch it.
-good for: A product or feature idea before requirements exist; a pitch to a sponsor, investor or team.
-not for: Committed work that needs requirements (`prd`); a formal funding decision on cost and return (`business-case`); testing a problem before any solution exists (`opportunity`).
-stance: Push hardest on the problem and on what makes it different, where briefs most often overclaim.
-inputs: Only the user knows who it is for and why now.
-writing: One to two pages. Never invent a moat, market size, quote or metric.
-done when: Someone who reads only the executive summary can say what this is, who it is for, and why it matters now.
-view: document
--->
 ---
 title: ""
 template: brief
+description: "Deciding whether and why to build, or pitching an idea in a page or two. Not for committed work that needs requirements (`prd`); a formal funding decision on cost and return (`business-case`); testing a problem before any solution exists (`opportunity`)."
 status: draft
 created: ""
 updated: ""
 ---
 
+<!-- purpose: Decide whether and why to build something, or pitch it. -->
+
+<!-- stance: Push hardest on the problem and on what makes it different, where briefs most often overclaim. -->
+
+<!-- inputs: Only the user knows who it is for and why now. -->
+
+<!-- writing: One to two pages. Never invent a moat, market size, quote or metric. -->
+
+<!-- done when: Someone who reads only the executive summary can say what this is, who it is for, and why it matters now. -->
+
 # {title}
+
+## Table of Contents
 
 ## Executive summary
 <!-- required. What this is, the problem it solves, why it matters and why now. -->
