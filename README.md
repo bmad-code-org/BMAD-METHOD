@@ -15,7 +15,7 @@ _Start anywhere. Use BMad end to end, or carry its briefs, specifications, and a
 
 ## Start Building
 
-BMad ships on two lines. The stable release is **v6.12**, installed by the npm installer and frozen aside from bug fixes. **V7** is in preview alpha on this branch: its skills, install path, and docs change often. The v7 release ETA is October 16, 2026, and it might be sooner. Both routes need [uv](https://docs.astral.sh/uv/) for BMad setup and Python scripts.
+BMad ships on two lines. The stable release is **v6.12**, installed by the npm installer and frozen aside from bug fixes. **V7** is in preview alpha on this branch: its skills, install path, and docs change often. The v7 release ETA is mid-November 2026, and it might be sooner. Both routes need [uv](https://docs.astral.sh/uv/) for BMad setup and Python scripts.
 
 ### Stable: v6.12 (recommended if stability is needed until v7 is finalized for release)
 
