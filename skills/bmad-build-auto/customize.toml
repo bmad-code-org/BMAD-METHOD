@@ -41,6 +41,8 @@ extra reasoning, estimate the lines of code to add or modify.
 100 lines or fewer: oneshot. Otherwise: full.
 If the change touches more than five files and is not simple or mechanical,
 consider upgrading to full.
+If the change crosses a trust boundary (input it does not control, who may do
+or see what, secrets, another tenant's data): full, whatever the size.
 """
 
 # Instruction run by HALT after writing the terminal result.
