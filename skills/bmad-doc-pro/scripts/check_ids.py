@@ -10,7 +10,7 @@ defines it only when punctuation follows (`- FR-3: ...`, `FR-3 (withdrawn)`). An
 a list of ids (`FR-1, FR-2`, `FR-1 to FR-8`) is not a definition. Every other occurrence is a
 reference, and a range such as `FR-1 to FR-8` references each id in it. Fenced code blocks
 and HTML comments are skipped. Definitions in any listed file count for references in all of
-them, so an addendum can cite the document.
+them, so one file can cite another's.
 
 Prints JSON:
   undefined       referenced but never defined, where other ids with that prefix are defined
