@@ -3088,6 +3088,17 @@ class BmadStatusTests(unittest.TestCase):
                 )
                 self.assertEqual(update()["state"], "pinned")
 
+            response.__enter__.return_value.read.return_value = b'[bmod]\nversion = "3.6.0-next"\n'
+            write(
+                project / "skills-lock.json",
+                json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": "v3.5.0"}}}),
+            )
+            report = update()
+            self.assertEqual(report["state"], "pinned")
+            self.assertNotIn("install", report)
+            self.assertIn("not tagged yet", report["instruction"])
+            response.__enter__.return_value.read.return_value = b'[bmod]\nversion = "3.6.0"\n'
+
             write(project / "skills-lock.json", "not json")
             self.assertEqual(update()["state"], "newer-available")
 
