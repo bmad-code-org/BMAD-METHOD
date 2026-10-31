@@ -254,9 +254,9 @@ command in its `SKILL.md`. Persistent project and user files stay as they
 are.
 
 ```bash
-uv run /abs/project/_bmad/scripts/render_skill.py \
-  --project-root /abs/project \
-  --skill /abs/path/to/bmad-build \
+uv run --cache-dir "/abs/project/.bmad-uv-cache" "/abs/project/_bmad/scripts/render_skill.py" \
+  --project-root "/abs/project" \
+  --skill "/abs/path/to/bmad-build" \
   --overrides ./invocation.toml \
   --set 'workflow.on_complete=Summarize the result in three bullets.'
 ```
