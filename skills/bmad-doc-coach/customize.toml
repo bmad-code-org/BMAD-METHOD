@@ -38,10 +38,11 @@ external_handoffs = []
 # Run after close: one instruction, or an array run in order.
 on_complete = ""
 
-# Run folder for a template with no `additions.<id>.output`; `{active_initiative}` is dropped when none is set.
+# Run folder for a template with no `output`; `{active_initiative}` is dropped when none is set.
 output = "{output_folder}/{active_initiative}/{id}-{slug}"
 
-# Where templates live, searched in order; the first template with an id wins. Each entry is a
+# Where templates live, searched in order; the first template with an id wins. To add, replace or
+# extend (`extends: <id>`) a template, put a file in the first folder. Each entry is a
 # folder, one template file, a GitHub URL (pin a version with @ref) or a sentence naming the tool
 # that reaches it. Installed modules' doc-templates/ folders are searched after these. A template
 # overrides this skill, so point only at sources you control.
@@ -52,14 +53,3 @@ style = ""
 
 # "offer", "always" or "never"; a `view: slides` template renders unless "never".
 html_view = "offer"
-
-# What a team adds to a template without replacing it. Fields merge across layers and arrays append.
-[workflow.additions]
-
-# [workflow.additions.postmortem]
-# facts = ["file:{project-root}/docs/oncall/severity-levels.md"]   # loaded once this template is chosen
-# include = ["A section naming the on-call rotation at the time"]  # content the document must contain
-# checks = ["Every action item has an owner and a due date"]       # added to the review
-# polish = ["file:{project-root}/_bmad/style/company-voice.md"]    # run after doc_standards
-# output = "docs/postmortems/{slug}"                               # the run folder itself
-# style = "{project-root}/_bmad/style/incident.css"                # this template's rendered view

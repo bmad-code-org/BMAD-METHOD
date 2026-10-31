@@ -40,8 +40,10 @@ updated: ""
 | `description` | When to offer the template; the only text read when choosing. Quote it, because a colon breaks unquoted YAML. |
 | `rubric` | Optional path to a rubric for the review, relative to the template. Empty uses the shipped planning rubric. |
 | `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
+| `output` | Optional run folder for this template. It may use `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
+| `style` | Optional CSS file for this template's rendered view, relative to the template. |
 
-`description`, `rubric` and `methods` stay out of the finished document.
+These fields, other than `template`, stay out of the finished document.
 
 A method catalog has the header `category,method,name,description,key_questions`, with the key questions separated by `|`. The shipped `security-review` template uses one for the OWASP Top 10 and STRIDE:
 
@@ -62,13 +64,13 @@ The first template with an id wins, and installed modules' templates are searche
 # _bmad/custom/bmad-doc-coach.toml
 
 [workflow]
-template_libraries = ["https://github.com/acme/doc-templates@v1.2.0"]
+template_libraries = ["https://github.com/fernhollow/doc-templates@v1.2.0"]
 ```
 
 | Entry | Example |
 | --- | --- |
 | A folder or one template file | `{project-root}/docs/templates` |
-| A GitHub repo, folder or file, read through `gh` | `https://github.com/acme/doc-templates/tree/v1.2.0/planning` |
+| A GitHub repo, folder or file, read through `gh` | `https://github.com/fernhollow/doc-templates/tree/v1.2.0/planning` |
 | A URL to one `.md` file | `https://example.com/templates/runbook.md` |
 | A sentence naming the tool that reaches it | `Search corp:confluence_search in the DOCS space for templates` |
 
@@ -81,6 +83,8 @@ A template overrides the skill, so a remote library can direct an agent that has
 ## Ship templates in a module
 
 A module adds templates by putting them in `doc-templates/` in its record folder, the folder holding its `bmod.toml`, with any rubric or catalog beside them. They are offered once the module is installed, with no setting, and they update with the module. The shipped examples live this way in `bmod-core-tools`.
+
+An organization can keep its templates in its own modules, one per program if it likes, such as `bmod-fernhollow-cards`. A module should add new ids or extend existing ones, because an extension applies wherever it sits. To replace an id outright, use a project's folder, which is searched first.
 
 ## Write the template file
 
@@ -172,28 +176,33 @@ status: draft
 
 Add the comments when you want the coaching, the optional sections, or the diagrams.
 
-## Add your rules to a template
+## Extend a template
 
-Additions add to a template without replacing it, so a team keeps its rules when the shipped template is updated. Each field is optional. Additions from the team file and a personal file merge, and their lists append.
+An extension adds to a template without copying it, so updates to the original still reach you. Save a file with `extends:` and the template's id in any library or module, and every run of that template includes it. Fernhollow Bank, a fictional company, uses the `proposal` template as it is, but every proposal must name an approval track from a fixed list and leave room for reviewers:
 
-```toml
-[workflow.additions.postmortem]
-facts = ["file:{project-root}/docs/oncall/severity-levels.md"]
-include = ["The severity level, on our scale"]
-checks = ["Every action item links a ticket"]
-polish = ["file:{project-root}/_bmad/style/company-voice.md"]
-output = "docs/postmortems/{slug}"
-style = "{project-root}/_bmad/style/incident.css"
+```markdown
+---
+extends: proposal
+---
+
+## Approval Track
+<!-- required, after Budget. The user must pick exactly one of: fast-track, standard, regulated. -->
+
+## Review Comments
+<!-- required, last. Keep the line below as it is; reviewers fill this in later. -->
+
+_Reviewer comments go here._
 ```
 
-| Field | Effect |
+An extension can hold anything a template can:
+
+| In the extension | Effect |
 | --- | --- |
-| `facts` | Context loaded once the template is chosen: sentences, or `file:` paths and globs. |
-| `include` | Content the document must contain. |
-| `checks` | Rules added to the review. |
-| `polish` | Polish passes run after the skill's standard ones: `skill:NAME [args]`, `file:PATH`, or plain text. |
-| `output` | The run folder for this template. It may use `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
-| `style` | The look of this template's rendered view. |
+| A section | Added where its comment says. If the heading it names is gone, the skill places it by judgment. |
+| `stance`, `inputs`, `writing` or `done when` comments | Added to the template's. A policy to load goes in `inputs`; a review rule goes in `done when`. |
+| `description`, `rubric`, `methods`, `output` or `style` frontmatter | Replaces the template's value. |
+
+When extensions conflict, the first in search order wins. Use a copy instead when you want to change what a template already says.
 
 Rules for every document, whatever the template, go in `persistent_facts`, `doc_standards` and `finalize_reviewers` under `[workflow]` instead.
 
@@ -207,7 +216,7 @@ style = "{project-root}/_bmad/style/brand.css"
 html_view = "always"
 ```
 
-`style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or an addition's `polish` instead. A template's `additions.<id>.style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template with `view: slides` renders unless `html_view` is `never`.
+`style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or a template's `writing` comment instead. A template's `style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template with `view: slides` renders unless `html_view` is `never`.
 
 :::tip[Templates for an agent]
 An agent's own templates ship in its `assets/` folder, and its `customize.toml` lists that folder in `template_libraries`. The agent passes the list when it runs `bmad-doc-coach`, and it is searched after yours, so your copy with the same id wins. The settings in `bmad-doc-coach.toml` (style, views, review and polish) still apply.
@@ -215,4 +224,4 @@ An agent's own templates ship in its `assets/` folder, and its `customize.toml` 
 
 ## Check the result
 
-Run the resolver on `bmad-doc-coach` with `--key workflow.template_libraries` or `--key workflow.additions` to see the merged settings; see [Check what resolved](./customize-bmad.md#check-what-resolved). Then ask `bmad-doc-coach` for your new document type and confirm it offers your template.
+Run the resolver on `bmad-doc-coach` with `--key workflow.template_libraries` to see the merged list; see [Check what resolved](./customize-bmad.md#check-what-resolved). Then ask `bmad-doc-coach` for your new document type and confirm it offers your template.

@@ -9,12 +9,15 @@ or file, a GitHub URL (a repo, a /tree/ folder or a /blob/ file, with an optiona
 through `gh`), a URL to one .md file, or a sentence naming a tool, which only the agent can
 follow. Each --root is a skills folder; the `doc-templates/` folder of every module record in it
 is searched after the sources. A file is a template when its frontmatter has `template:`, the
-template's id. A missing local path adds nothing. `rubric` and `methods` are relative to the
-template and come back resolved.
+template's id. A file with `extends:` adds to the template of that id wherever it sits, and an
+earlier extension's values win over a later one's and the template's. A missing local path adds
+nothing. `rubric`, `methods` and `style` are relative to their file and come back resolved.
 
 Prints JSON:
-  templates     id, description, file, rubric, methods, source, in search order
+  templates     id, description, rubric, methods, output, style, file, source, extensions, in
+                search order
   shadowed      id, file, source, kept: templates hidden by an earlier one with the same id
+  orphaned      extends, file, source: extensions whose template was not found
   unreachable   source, reason: sources that could not be read
   tool_sources  sentences for the agent to follow
 Exits 0, or 2 with no sources and no roots.
@@ -92,8 +95,8 @@ def read_source(source: str) -> list[tuple[str, str]]:
 
 
 def beside(file: str, value: str) -> str:
-    """`value`, a path relative to the template `file`, made usable from anywhere."""
-    if not value or "://" in value or Path(value).is_absolute():
+    """`value`, a path relative to `file`, made usable from anywhere."""
+    if not value or "://" in value or value.startswith("{") or Path(value).is_absolute():
         return value
     return urljoin(file, value) if "://" in file else str(Path(file).parent / value)
 
@@ -112,9 +115,21 @@ def module_libraries(roots: list[str]) -> list[str]:
     return list(libraries.values())
 
 
+def fields(file: str, meta: dict[str, str]) -> dict[str, str]:
+    """What a template or extension sets, with its paths resolved."""
+    return {
+        "description": meta.get("description", ""),
+        "rubric": beside(file, meta.get("rubric", "")),
+        "methods": beside(file, meta.get("methods", "")),
+        "output": meta.get("output", ""),
+        "style": beside(file, meta.get("style", "")),
+    }
+
+
 def scan(sources: list[str]) -> dict:
     found: dict[str, dict] = {}
-    shadowed, unreachable, tool_sources = [], [], []
+    extensions: dict[str, list[dict]] = {}
+    shadowed, unreachable, tool_sources, orphaned = [], [], [], []
     for source in sources:
         if "://" not in source and not Path(source).exists():
             if any(c.isspace() for c in source.strip()):
@@ -130,6 +145,11 @@ def scan(sources: list[str]) -> dict:
             continue
         for file, text in files:
             meta = frontmatter(text)
+            if meta.get("extends"):
+                extensions.setdefault(meta["extends"], []).append(
+                    {"file": file, "source": source, **fields(file, meta)}
+                )
+                continue
             template_id = meta.get("template")
             if not template_id:
                 continue
@@ -139,15 +159,23 @@ def scan(sources: list[str]) -> dict:
                 continue
             found[template_id] = {
                 "id": template_id,
-                "description": meta.get("description", ""),
+                **fields(file, meta),
                 "file": file,
-                "rubric": beside(file, meta.get("rubric", "")),
-                "methods": beside(file, meta.get("methods", "")),
                 "source": source,
+                "extensions": [],
             }
+    for base, adding in extensions.items():
+        template = found.get(base)
+        if template is None:
+            orphaned.extend({"extends": base, "file": e["file"], "source": e["source"]} for e in adding)
+            continue
+        template["extensions"] = [e["file"] for e in adding]
+        for key in ("description", "rubric", "methods", "output", "style"):
+            template[key] = next((e[key] for e in adding if e[key]), template[key])
     return {
         "templates": list(found.values()),
         "shadowed": shadowed,
+        "orphaned": orphaned,
         "unreachable": unreachable,
         "tool_sources": tool_sources,
     }

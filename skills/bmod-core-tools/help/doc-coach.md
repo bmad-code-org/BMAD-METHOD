@@ -34,7 +34,8 @@ Templates are files in `_bmad/custom/doc-coach-templates/`. For settings, recomm
 - Replace or edit a shipped template: copy it from `doc-templates/` in the `bmod-core-tools` record into that folder and keep its `template` id. The project's copy wins.
 - A module adds templates through `doc-templates/` in its record folder; no setting is needed.
 - Use a shared library: add a folder or a pinned GitHub URL to `template_libraries`, in the `.user.toml` when it is private. Only sources the team controls, because a template overrides the skill.
-- Add to a shipped template without replacing it: `[workflow.additions.<id>]` with facts to load, content the document must include, review checks, polish passes and an output folder. Additions survive updates to the shipped template.
+- Add to a template without copying it: a file with `extends: <id>` in its frontmatter, holding the extra sections and comments. It applies on every run of that template, and updates to the original still arrive. For example, an `extends: proposal` file at Fernhollow Bank, a fictional company, adds a required Approval Track with three fixed choices and an empty Review Comments section.
+- An organization can keep templates and extensions in its own modules, one per program if it likes, such as `bmod-fernhollow-cards`. A module adds new ids or extends existing ones; only a project's folder or a library replaces an id.
 - `style` sets the look of every rendered view; `html_view` is `offer`, `always` or `never`.
 
 The file format and worked examples are at `https://docs.bmad-method.org/customize/write-a-document-template/`.

@@ -67,7 +67,7 @@ def test_first_library_wins_and_the_other_is_reported(tmp_path):
 
 def test_missing_folder_adds_nothing(tmp_path):
     result = list_templates.scan([str(tmp_path / "nothing-here")])
-    assert result == {"templates": [], "shadowed": [], "unreachable": [], "tool_sources": []}
+    assert result == {"templates": [], "shadowed": [], "orphaned": [], "unreachable": [], "tool_sources": []}
 
 
 def test_a_source_can_be_one_file(tmp_path):
@@ -207,6 +207,61 @@ def test_roots_alone_are_enough(tmp_path, capsys):
     module(tmp_path, "bmod-x", ("t.md", template("a")))
     assert list_templates.main(["--root", str(tmp_path)]) == 0
     assert json.loads(capsys.readouterr().out)["templates"][0]["id"] == "a"
+
+
+def extension(base: str, extra: str = "") -> str:
+    return f"---\nextends: {base}\n{extra}---\n\n## Review Comments\n"
+
+
+def test_an_extension_adds_to_its_template_and_is_not_offered(tmp_path):
+    (tmp_path / "t.md").write_text(template("a"))
+    (tmp_path / "x.md").write_text(extension("a"))
+    result = list_templates.scan([str(tmp_path)])
+    assert ids(result) == ["a"]
+    assert result["templates"][0]["file"] == str(tmp_path / "t.md")
+    assert result["templates"][0]["extensions"] == [str(tmp_path / "x.md")]
+
+
+def test_a_module_extension_applies_to_a_template_found_earlier(tmp_path):
+    agent, skills = tmp_path / "agent", tmp_path / "skills"
+    agent.mkdir()
+    (agent / "prd.md").write_text(template("prd"))
+    folder = module(skills, "bmod-fernhollow-cards", ("track.md", extension("prd")))
+    result = list_templates.scan([str(agent), *list_templates.module_libraries([str(skills)])])
+    assert result["templates"][0]["extensions"] == [str(folder / "track.md")]
+
+
+def test_extensions_stay_in_search_order_and_the_first_value_wins(tmp_path):
+    local, shared = tmp_path / "local", tmp_path / "shared"
+    local.mkdir()
+    shared.mkdir()
+    (local / "x.md").write_text(extension("a", "output: docs/ours/{slug}\n"))
+    (shared / "x.md").write_text(extension("a", "output: docs/theirs/{slug}\nrubric: r.md\n"))
+    (shared / "t.md").write_text(template("a", extra="rubric: base.md\n"))
+    found = list_templates.scan([str(local), str(shared)])["templates"][0]
+    assert found["extensions"] == [str(local / "x.md"), str(shared / "x.md")]
+    assert found["output"] == "docs/ours/{slug}"
+    assert found["rubric"] == str(shared / "r.md")
+
+
+def test_values_a_template_sets_come_through(tmp_path):
+    extra = "output: docs/a/{slug}\nstyle: a.css\n"
+    (tmp_path / "t.md").write_text(template("a", extra=extra))
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert found["output"] == "docs/a/{slug}"
+    assert found["style"] == str(tmp_path / "a.css")
+
+
+def test_a_placeholder_path_is_left_for_the_agent(tmp_path):
+    (tmp_path / "t.md").write_text(template("a", extra="style: {project-root}/brand.css\n"))
+    assert list_templates.scan([str(tmp_path)])["templates"][0]["style"] == "{project-root}/brand.css"
+
+
+def test_an_extension_with_no_template_is_reported(tmp_path):
+    (tmp_path / "x.md").write_text(extension("gone"))
+    result = list_templates.scan([str(tmp_path)])
+    assert result["templates"] == []
+    assert result["orphaned"] == [{"extends": "gone", "file": str(tmp_path / "x.md"), "source": str(tmp_path)}]
 
 
 def test_no_sources_exits_2(capsys):
