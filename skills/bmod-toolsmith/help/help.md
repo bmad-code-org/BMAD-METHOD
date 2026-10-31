@@ -14,7 +14,7 @@ Smithy runs inside a project where `bmad` is set up (`_bmad/` exists); without i
 
 | Skill | For | When to recommend |
 |---|---|---|
-| `bmad-toolsmith` | Smithy, the Toolsmith. Builds a skill, agent or module from a conversation about what it is for, who uses it and what it produces. Shows a read-back (name, description, shape, registration, approach, location, files) and writes nothing until the user approves it; every line can be changed. Picks the shape as a conclusion of the conversation, never as a menu. After a build the quality lenses run on their own and Smithy fixes what they find before handing over. Also edits, converts, reviews, cuts, packages, validates and migrates skills that exist, and offers evals at the end of every build. | Any request to create or change a skill, agent, persona or module; to review or judge one; to cut one down; to package skills; to convert something from another tool; to migrate an old module. Ask for Smithy by name or describe the thing wanted. |
+| `bmad-toolsmith` | Smithy, the Toolsmith. Builds a skill, agent or module from a conversation about what it is for, who uses it and what it produces. Shows a Smithy execution plan (name, description, shape, registration, approach, location, files) and writes nothing until the user approves it; every line can be changed. Picks the shape as a conclusion of the conversation, never as a menu. After a build the quality lenses run on their own and Smithy fixes what they find before handing over. Also edits, converts, reviews, cuts, packages, validates and migrates skills that exist, and offers evals at the end of every build. | Any request to create or change a skill, agent, persona or module; to review or judge one; to cut one down; to package skills; to convert something from another tool; to migrate an old module. Ask for Smithy by name or describe the thing wanted. |
 | `bmad-eval` | Runs a skill's evals and reports what they show, in four modes: baseline (does the skill beat the bare model), variant (does a stripped or prior version do as well), quality (does the output meet its rubric), trigger (does the description fire on the right requests and stay quiet on the rest). Smithy reaches it from his menu and at the end of a build, so a user rarely needs to call it directly. | The user asks whether a skill works, is worth keeping, triggers reliably, or whether a change made it better or worse. Call it directly when the user has a skill and cases already and wants numbers, not a conversation. |
 
 ## Start here
@@ -29,11 +29,12 @@ Smithy runs inside a project where `bmad` is set up (`_bmad/` exists); without i
 - "Does my skill actually help", "is it worth keeping", "did my change make it better" → `bmad-eval`, baseline or variant mode (`help/evals.md`).
 - "Which agent runs the eval", "can I run evals from Codex", "is the eval sandboxed" → `help/evals.md`, the harness section.
 - "Package these", "make this a module", "ship these together" → `bmad-toolsmith`, package mode.
-- "I have an old module with `module.yaml`", a setup skill, a help CSV → `bmad-toolsmith`, migrate mode. It shows the plan and waits for approval before changing anything.
+- "How do I share this", "publish my module", "how do people install it" → `help/how-to-distribute.md`.
+- "I have an old module with `module.yaml`", a setup skill, a help CSV → `bmad-toolsmith`, migrate mode. It shows the execution plan and waits for approval before changing anything.
 - "Convert my Cursor rule", "turn my GPT into a skill", "port this slash command", "make this skill work with bmad" → `bmad-toolsmith`, convert mode (`help/how-to-convert-external.md`).
 - "Is this a valid bmod", "check my skill" → `bmad-toolsmith`, validate mode.
 - "Fix", "change", "extend", "add a step to" an existing skill → `bmad-toolsmith`, edit mode.
-- "What makes a good skill", "how long should a skill be", "what is progressive disclosure", "how do I write the description" → the `craft-*` topics below; answer from them, and offer Smithy's review mode on a skill they have.
+- "What makes a good skill", "how long should a skill be", "what is progressive disclosure", "how do I write the description", "should this use subagents" → the `craft-*` topics below; answer from them, and offer Smithy's review mode on a skill they have.
 - "Should this be its own module", "how do I add a skill to the method", "what does registering with bmad give me" → `help/registration.md` and `help/how-to-add-to-module.md`.
 - "Where is the official spec", "how does Claude Code / Codex / Cursor load skills" → `help/references.md`.
 
@@ -46,7 +47,7 @@ Smithy runs inside a project where `bmad` is set up (`_bmad/` exists); without i
 
 ## Where things land
 
-Smithy proposes where a new skill goes in the read-back and the user confirms or changes it: the project's `skills/` source folder when the project is a skill repo, otherwise the folder the user's agent reads skills from, so the skill is live as soon as it is written, or the user's own skills folder when it is for them everywhere. The read-back also proposes how the skill registers with BMad, guessed from what is installed: its own module record, a member of an installed module, or a plain skill that help and update checks never see; the user picks (`help/registration.md`). Review reports and eval runs go in an eval-reports folder inside the project's output folder, one timestamped file or folder per run. Both locations can be overridden in the skills' customization files; the module asks no setup questions. At the end of a build Smithy tells the user where the skill is, whether it is already live, and how it is registered.
+Smithy proposes where a new skill goes in the execution plan and the user confirms or changes it: the project's `skills/` source folder when the project is a skill repo, otherwise the folder the user's agent reads skills from, so the skill is live as soon as it is written, or the user's own skills folder when it is for them everywhere. The execution plan also proposes how the skill registers with BMad, guessed from what is installed: its own module record, a member of an installed module, or a plain skill that help and update checks never see; the user picks (`help/registration.md`). Review reports and eval runs go in an eval-reports folder inside the project's output folder, one timestamped file or folder per run. Both locations can be overridden in the skills' customization files; the module asks no setup questions. At the end of a build Smithy tells the user where the skill is, whether it is already live, and how it is registered.
 
 ## After a skill finishes
 
@@ -82,11 +83,13 @@ Each topic file below sits in this folder and goes deeper on one subject. Read o
 | `help/craft-description.md` | Writing the description that makes a skill fire: its two parts, quoted trigger phrases, when to name a sibling, hand-invoked skills. |
 | `help/craft-scripts.md` | When a skill should script something instead of saying it, and how scripts are written and run. |
 | `help/craft-customization.md` | How a skill is customized without forking it: the `customize.toml` surface, the override files, who reads and who writes them. |
+| `help/craft-subagents.md` | When a skill should use subagents, the patterns, and the failure of the parent reading first. |
 | `help/how-to-personal-skill.md` | Walkthrough: a skill for the user's own use, start to live. |
 | `help/how-to-add-to-module.md` | Walkthrough: a skill that joins a module, their own or the BMad Method. |
 | `help/how-to-convert-external.md` | Walkthrough: a Claude, Codex or Cursor skill, rule, GPT or slash command brought to BMad. |
 | `help/how-to-memory-agent.md` | Walkthrough: a memory agent from the first question to its first waking. |
 | `help/how-to-review.md` | Walkthrough: reviewing a skill someone else wrote and acting on the findings. |
+| `help/how-to-distribute.md` | Walkthrough: publishing a skill or module so others can install and update it. |
 | `help/references.md` | The open skill specification and the skill documentation of the harnesses users run, with links. |
 
 ## When this document is not enough

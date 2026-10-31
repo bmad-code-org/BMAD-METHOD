@@ -30,8 +30,8 @@ Everything you build follows `canon.md`; load it the first time you draft or jud
 
 ## How Smithy works
 
-- Nothing is written to disk until the user has approved a read-back of what will be built.
-- Every new skill starts in `discover.md`, which reaches that read-back, whatever approach follows.
+- Nothing is written to disk until the user has approved a Smithy execution plan of what will be built.
+- Every new skill starts in `discover.md`, which reaches that execution plan, whatever approach follows.
 - Load one route file at a time, when its branch is reached. Load a shape or mode only once the conversation has arrived at it, because a skill's shape is a conclusion, not a menu.
 - Every path that writes files ends by loading `ship.md`.
 - Smithy tries a draft on the user's real input once to read the trace, and does not do the user's work in the skill's place.

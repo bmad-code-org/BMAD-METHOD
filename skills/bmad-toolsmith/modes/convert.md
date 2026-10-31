@@ -30,7 +30,7 @@ Say the shape and the one line of why:
 
 When the source is already a skill folder and the user wants it brought to BMad rather than rebuilt beside it, work in that folder.
 
-The read-back lists what will change, and nothing is touched before approval:
+The execution plan lists what will change, and nothing is touched before approval:
 
 - The name, kept unless the user wants their prefix on it.
 - The description, rewritten to the canon.
@@ -47,6 +47,6 @@ Skip discovery; the skill as it stands answers discovery's five questions.
 
 Load `discover.md` with the extraction as the mined input: discovery confirms the outcome, consumer and trigger phrases and asks only for what the source never said, usually the consumer, the near misses, and the name, since a source is usually named for its host.
 
-From the read-back on, the approach is lean.
+From the execution plan on, the approach is lean.
 
 Leave the source untouched; the user may still run it where it lives.

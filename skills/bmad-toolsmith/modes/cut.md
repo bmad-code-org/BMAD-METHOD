@@ -12,13 +12,13 @@ Protected by default: each file's frontmatter; an agent's `customize.toml`, whic
 
 Ask once what else to protect, decisions included. When the work comes from a ticket, the `Decision:` lines in its Notes are decisions every cutter keeps.
 
-## Plan
+## The Smithy execution plan
 
 Copy `{target}` to `{reports_folder}/<YYYYMMDD-HHMMSS>-<skill>-before/`, the old version every later step reads. Count it with `uv run {skill-root}/scripts/count_tokens.py <copy>`.
 
 The prompt files are the `.md` files outside `scripts/` and the root `customize.toml`; leave protected files and those under about 150 tokens uncut.
 
-Show the plan in chat: each file with its tokens, the files not cut, the protected passages, the decisions. Then wait for the user's go.
+Show the execution plan in chat: each file with its tokens, the files not cut, the protected passages, the decisions. Then wait for the user's go.
 
 ## Examples
 

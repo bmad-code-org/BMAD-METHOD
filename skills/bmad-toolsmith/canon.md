@@ -56,7 +56,7 @@ Say what to do rather than what to avoid. A sentence about the wrong behaviour p
 
 ## Use words the model already holds
 
-A term the model met in training arrives with its meaning attached: idempotent, read-back, dry run. Choose it over a coined term, which costs its definition on every use, and over a run of adjectives that circle it. Having chosen the word, reuse it as it is; each paraphrase spends tokens and loosens the meaning. A term only this skill uses is a sign the plain word was not looked for.
+A term the model met in training arrives with its meaning attached: idempotent, execution plan, dry run. Choose it over a coined term, which costs its definition on every use, and over a run of adjectives that circle it. Having chosen the word, reuse it as it is; each paraphrase spends tokens and loosens the meaning. A term only this skill uses is a sign the plain word was not looked for.
 
 ## The description is the trigger
 

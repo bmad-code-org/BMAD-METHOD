@@ -4,7 +4,7 @@ A `bmod-<code>/` record folder beside the skills it ships, and a `[skill]` `bmod
 
 ## When the conversation is here
 
-The read-back lists two or more skills that ship and install together, or one skill joining a module that already has a record.
+The execution plan lists two or more skills that ship and install together, or one skill joining a module that already has a record.
 
 This shape starts once the skill list exists. Planning what a large module should contain is the user's discovery with you, or the method's planning skills.
 
@@ -32,7 +32,7 @@ The scaffold writes the member `bmod.toml` (`--bmod bmod-<code> --source <the re
 - Add a row to `help/help.md`, and a `help/<topic>.md` only when the skill has depth the row cannot hold.
 - For an agent, add a `[[members]]` entry to `roster.toml`.
 
-Leave the record's version unchanged. The read-back's files list shows these edits.
+Leave the record's version unchanged. The execution plan's files list shows these edits.
 
 ## From a single-skill module
 

@@ -8,7 +8,7 @@ Set `{target}` to the skill folder. Read `SKILL.md` and only the files the chang
 
 ## Agree the change
 
-One read-back, then wait: what changes, what stays, whether the shape changes (a menu added to a plain skill, memory added to an agent), whether the description changes. A description change is a trigger change; say so.
+One Smithy execution plan, then wait: what changes, what stays, whether the shape changes (a menu added to a plain skill, memory added to an agent), whether the description changes. A description change is a trigger change; say so.
 
 ## Rebuild instead
 

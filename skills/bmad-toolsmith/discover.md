@@ -1,6 +1,6 @@
 # Discover
 
-The outcome is a read-back the user approves before any file exists. A user with a hardened idea or who wants to move fast gets a confirmation and a read-back, not an interview.
+The outcome is an execution plan the user approves before any file exists. A user with a hardened idea or who wants to move fast gets a confirmation and an execution plan, not an interview.
 
 ## Mine before you ask
 
@@ -56,15 +56,15 @@ The guess is a single-skill module, except:
 
 A skill joining or starting a module takes the module's prefix.
 
-## The read-back
+## The Smithy execution plan
 
-Present, and wait for a yes or changes:
+Present it under that title, and wait for a yes or changes:
 
 - Name, kebab-case, proposed and asked. Suggest a prefix of the user's own, their org or module code, and say why in a line: it tells custom from core BMad, and a module's skills sort together. Do not propose `bmad-`; it belongs to modules shipped by the bmad-code-org, whose skills are `bmad-<code>-<skill>`, agents `bmad-<code>-agent-<name>`, the code dropped for core.
 - One line on what it is for, who consumes the output, and what must be true of it for them to act.
 - The description draft, as it will ship, written to the canon's description rule.
 - Shape, with one line on why.
-- Registration, with one line on why, naming the planned module and its code when this is its first skill. A `bmod-<code>/` record folder is never part of a one-skill read-back. One of:
+- Registration, with one line on why, naming the planned module and its code when this is its first skill. A `bmod-<code>/` record folder is never part of a one-skill execution plan. One of:
   - Single-skill module, the default: its own `bmod.toml` and `help/help.md` in the one folder, visible to `bmad` setup, help and updates.
   - Member of `bmod-<code>`: its `bmod.toml` names the record, whose skill list, help and, for an agent, roster change.
   - Plain skill outside the registry.
@@ -81,4 +81,4 @@ Present, and wait for a yes or changes:
   - Else `~/.claude/skills/<name>` or `~/.agents/skills/<name>` when the skill is for the user everywhere or there is no project.
 - The files it will have, one line each, and any script worth writing because the work is deterministic or would be rewritten every run.
 
-Approval sets `{target}` and fixes the read-back; later files work from it and do not re-ask. Then load `approaches/<approach>.md`.
+Approval sets `{target}` and fixes the execution plan; later files work from it and do not re-ask. Then load `approaches/<approach>.md`.

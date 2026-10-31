@@ -1,6 +1,6 @@
 # How a build runs
 
-Read this when the user asks how Smithy will build something, or which way of working fits them. An approach is the path from a wish to a skill. Every path starts with the same discovery conversation and the same read-back, and ends in the same ship step: the quality lenses run over what Smithy wrote and he fixes what they find, the validators run, and a trigger eval is offered. The approach is proposed in the read-back; lean is the default, and the user can name another up front.
+Read this when the user asks how Smithy will build something, or which way of working fits them. An approach is the path from a wish to a skill. Every path starts with the same discovery conversation and the same execution plan, and ends in the same ship step: the quality lenses run over what Smithy wrote and he fixes what they find, the validators run, and a trigger eval is offered. The approach is proposed in the execution plan; lean is the default, and the user can name another up front.
 
 | Approach | What happens | Fits when |
 |---|---|---|

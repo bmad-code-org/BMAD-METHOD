@@ -14,7 +14,7 @@ Show the file and confirm it with the user, because cases they do not believe in
 
 ## Smallest skill
 
-Scaffold with `uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, adding `--bmod <record> --source <update_source>` when the read-back registers it as a member.
+Scaffold with `uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, adding `--bmod <record> --source <update_source>` when the execution plan registers it as a member.
 
 Load `shapes/<shape>/shape.md`, then the module shape the registration line names, if any.
 

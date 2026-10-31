@@ -8,7 +8,7 @@ Outcome: the skill at `{target}` has been through the lenses and improved from t
 
 ## Manifest
 
-The pre-pass `bmod_kind` must match the read-back's registration line: `skill` for a member, `record+skill` for a single-skill module, `none` for a plain skill.
+The pre-pass `bmod_kind` must match the execution plan's registration line: `skill` for a member, `record+skill` for a single-skill module, `none` for a plain skill.
 
 Fix a mismatch here: write the missing `bmod.toml`, help and record edits from the shape the line names, `shapes/single-skill-module/shape.md` or `shapes/multi-skill-module/shape.md`. Dependencies and install below fills the dependency lists.
 
@@ -20,11 +20,11 @@ For a skill Smithy wrote or rewrote this session (a build, a conversion), not a 
 
 Copy `{target}` to `{reports_folder}/<YYYYMMDD-HHMMSS>-<skill>-before/`, then `uv run {skill-root}/scripts/prepass.py {target}`, then one subagent per lens in parallel: `lenses/lens-architecture.md`, `lenses/lens-determinism.md`, `lenses/lens-leanness.md`, `lenses/lens-customization.md`, `lenses/lens-trigger.md`, each given the pre-pass JSON, `{target}`, its lens file, `lenses/lens-contract.md` and `lenses/standards.md`. Inline, one at a time, when subagents are unavailable; say so.
 
-Apply what is a defect against the standards or the canon's tests. Apply every leanness finding too, its `proposed_smallest` included: the lean version is the default, and the check below guards it. Leave what is a judgment call: a persona line, a split into two skills. Ask before applying a finding that undoes the approved read-back (name, purpose, shape, location).
+Apply what is a defect against the standards or the canon's tests. Apply every leanness finding too, its `proposed_smallest` included: the lean version is the default, and the check below guards it. Leave what is a judgment call: a persona line, a split into two skills. Ask before applying a finding that undoes the approved execution plan (name, purpose, shape, location).
 
 When a high or critical finding was fixed, run the lenses once more; stop after two rounds.
 
-Then run `uv run {skill-root}/scripts/cut_check.py <copy> {target}` and restore, from the copy, each item under `lost` that no finding meant to remove. One subagent per changed prose file runs the Checker from `modes/cut-roles.md`, with what the read-back fixed as its protected passages; restore each loss and meaning change it lists as the shortest sentence that states it.
+Then run `uv run {skill-root}/scripts/cut_check.py <copy> {target}` and restore, from the copy, each item under `lost` that no finding meant to remove. One subagent per changed prose file runs the Checker from `modes/cut-roles.md`, with what the execution plan fixed as its protected passages; restore each loss and meaning change it lists as the shortest sentence that states it.
 
 Last, say in chat what changed, one line per file; the tokens before and after, from `count_tokens.py` on the copy and on `{target}`; and what was left for the user, with its why.
 

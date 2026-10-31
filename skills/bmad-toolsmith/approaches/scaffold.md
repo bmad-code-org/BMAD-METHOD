@@ -4,7 +4,7 @@ For a skill the user will write themselves. Its outcome: a valid folder at `{tar
 
 Load `shapes/<shape>/shape.md` to learn which `assets/` templates the shape starts from. Then `uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --dirs <the folders they asked for> --description "<approved description>"`.
 
-- Add `--bmod <record> --source <update_source>` when the read-back registers it as a member.
+- Add `--bmod <record> --source <update_source>` when the execution plan registers it as a member.
 - A single-skill module, the default, gets its `bmod.toml` and `help/help.md` from `shapes/single-skill-module/shape.md`.
 - With no approved description, leave `--description` off; the scaffold carries a `[TODO:` marker.
 

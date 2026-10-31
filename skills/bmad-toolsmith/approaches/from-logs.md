@@ -24,4 +24,4 @@ The user picks one or none; none ends here.
 
 A customization goes to the `bmad-customize` skill with the corrections as its input, and this approach ends.
 
-For a new skill, load `discover.md` with the candidate as the mined input: discovery confirms the purpose, consumer, trigger phrases and know-how from the digest and asks only what the logs cannot say. Name the declined candidates so discovery does not re-propose them. From the read-back on, the approach is lean unless the user named another.
+For a new skill, load `discover.md` with the candidate as the mined input: discovery confirms the purpose, consumer, trigger phrases and know-how from the digest and asks only what the logs cannot say. Name the declined candidates so discovery does not re-propose them. From the execution plan on, the approach is lean unless the user named another.

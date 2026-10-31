@@ -12,7 +12,7 @@ Ask the user only for `update_source`, the pushed `github:<owner>/<repo>` or `gi
 
 `{bmad_version}` is the `version` in the `bmod-core-tools` record installed beside `{skill-root}`; ask when it is not installed.
 
-## The plan
+## The Smithy execution plan
 
 Show it whole, as tables, then wait for a yes:
 

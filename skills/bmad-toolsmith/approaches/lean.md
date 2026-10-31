@@ -4,7 +4,7 @@ The outcome: the smallest skill that does the job, tried once on the user's real
 
 ## Scaffold
 
-`uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, with `--dirs` for only the folders the read-back listed and `--bmod <record> --source <update_source>` when the read-back registers it as a member.
+`uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, with `--dirs` for only the folders the execution plan listed and `--bmod <record> --source <update_source>` when the execution plan registers it as a member.
 
 A single-skill module, the default, gets its `bmod.toml` and `help/help.md` from `shapes/single-skill-module/shape.md` at the write step.
 
@@ -27,7 +27,7 @@ What the trace means:
 
 Fix what the trace shows, once, and record the decision.
 
-Where discovery ran the trigger phrase bare, compare against it: a line that changed nothing goes. Otherwise judge the trace against the read-back's outcome and bar.
+Where discovery ran the trigger phrase bare, compare against it: a line that changed nothing goes. Otherwise judge the trace against the execution plan's outcome and bar.
 
 Without a real input, ask for one; if none exists, apply the canon's tests line by line and tell the user the skill has not run.
 

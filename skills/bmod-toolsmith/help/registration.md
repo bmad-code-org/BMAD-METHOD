@@ -1,6 +1,6 @@
 # Registering a skill with BMad
 
-Read this when the user asks whether a skill should be its own module, join one, or stay a plain skill; what registering gives; or how to add to the BMad Method. Smithy asks whether the skill stands alone or is part of a module, offers a guess from what is installed, and puts the answer in the read-back as its own line, so the user always sees and can change it. One skill defaults to a single-skill module.
+Read this when the user asks whether a skill should be its own module, join one, or stay a plain skill; what registering gives; or how to add to the BMad Method. Smithy asks whether the skill stands alone or is part of a module, offers a guess from what is installed, and puts the answer in the execution plan as its own line, so the user always sees and can change it. One skill defaults to a single-skill module.
 
 ## The three choices
 
@@ -12,7 +12,7 @@ A new module with several skills gets a `bmod-<code>/` record folder and a membe
 
 ## How Smithy decides
 
-Smithy asks whether the skill is part of a module and whether more skills are planned, naming any installed module it could join. One skill: single-skill module. The user is working on a module, named one, or picked a name carrying an installed module's prefix: member of it. More skills planned: a new module, starting as a single-skill module under its code. No `_bmad/` and nothing said about BMad, or the user declines a record: plain. Several skills described: a new module. The result is one line in the read-back with its consequence; the user confirms or changes it.
+Smithy asks whether the skill is part of a module and whether more skills are planned, naming any installed module it could join. One skill: single-skill module. The user is working on a module, named one, or picked a name carrying an installed module's prefix: member of it. More skills planned: a new module, starting as a single-skill module under its code. No `_bmad/` and nothing said about BMad, or the user declines a record: plain. Several skills described: a new module. The result is one line in the execution plan with its consequence; the user confirms or changes it.
 
 ## Adding to the BMad Method
 

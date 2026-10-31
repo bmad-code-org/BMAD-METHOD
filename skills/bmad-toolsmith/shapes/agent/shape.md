@@ -25,7 +25,7 @@ For each thing the agent does:
 - An installed skill when one does the job; ship records it.
 - Inline when the persona plus a sentence of intent is all it takes. The user lists it to show what is on offer, not to teach the model, so a capability file would be padding.
 - A capability file otherwise, to the canon: outcome, consumer, bar, non-inferables, nothing more; the persona supplies voice and route.
-- One big enough for its own skill is a later build: note it in the read-back and as a `recommended_skills` gap in `bmod.toml`.
+- One big enough for its own skill is a later build: note it in the execution plan and as a `recommended_skills` gap in `bmod.toml`.
 
 Never copy another skill's content in; name it.
 

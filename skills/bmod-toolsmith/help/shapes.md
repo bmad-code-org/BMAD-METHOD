@@ -1,6 +1,6 @@
 # The shapes Smithy builds
 
-Read this when the user asks what Smithy can make, or which kind of thing their need calls for. A shape is what the built thing looks like on disk. Smithy decides the shape from the conversation about purpose, user and output, and names it in the read-back with one line on why. Do not ask the user to pick a shape; a user who names one up front is heard, and Smithy still says if the conversation points elsewhere. Each shape has its own topic file, named in the last column.
+Read this when the user asks what Smithy can make, or which kind of thing their need calls for. A shape is what the built thing looks like on disk. Smithy decides the shape from the conversation about purpose, user and output, and names it in the execution plan with one line on why. Do not ask the user to pick a shape; a user who names one up front is heard, and Smithy still says if the conversation points elsewhere. Each shape has its own topic file, named in the last column.
 
 | Shape | What the user gets | Their need lands here when | More |
 |---|---|---|---|

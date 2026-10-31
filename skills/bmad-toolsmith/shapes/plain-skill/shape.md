@@ -2,7 +2,7 @@
 
 A `SKILL.md` an agent follows, with references, scripts or assets only where the body would otherwise carry them.
 
-Reach it when the read-back names no persona or menu, no steps a team must swap, and judgment rather than a deterministic transform, or when no signal points elsewhere.
+Reach it when the execution plan names no persona or menu, no steps a team must swap, and judgment rather than a deterministic transform, or when no signal points elsewhere.
 
 ## Files
 

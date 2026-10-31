@@ -10,7 +10,7 @@ A skill whose `bmod.toml` carries `[skill]` without `[bmod]` belongs to another 
 
 ## Propose
 
-Show one plan and wait for a yes or changes:
+Show one Smithy execution plan and wait for a yes or changes:
 
 - The shape: one skill is the single-skill module, whether or not it has answers to ask; two or more, or a skill joining an existing record, is the multi-skill module. A single-skill module among them keeps its code. Load the shape file at the write step, not now.
 - The code: short, lowercase, the user's org or the module's purpose, and not a module the user already has.
