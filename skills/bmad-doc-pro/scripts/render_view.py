@@ -13,6 +13,7 @@ no network the page still shows the raw markdown in <pre> blocks.
                       first line replaces the section heading as the slide title, and a
                       trailing blockquote becomes speaker notes, kept out of the slide DOM:
                       `n` shows them under the slide, `p` opens them in a presenter window.
+                      A `## Table of Contents` section gets no slide.
 
 Frontmatter and <!-- comments --> are stripped. `--style` inlines a .css file after the
 default CSS; any other file is ignored with a warning. Prints the output path on success;
@@ -166,7 +167,7 @@ def split_slides(body: str, fallback_title: str = "") -> list[dict]:
                 preamble = preamble[:i] + preamble[i + 1 :]
                 break
         slides.append(make_slide(heading, preamble, title_slide=True))
-    slides.extend(make_slide(heading, group) for heading, group in groups[1:])
+    slides.extend(make_slide(heading, group) for heading, group in groups[1:] if heading.lower() != "table of contents")
     return slides
 
 
@@ -362,7 +363,16 @@ JS = r"""
 
   function renderDocument() {
     var html = md(data.markdown);
-    if (html !== null) document.getElementById('doc').innerHTML = html;
+    if (html === null) return;
+    var doc = document.getElementById('doc');
+    doc.innerHTML = html;
+    // marked adds no heading ids, and table-of-contents links need GitHub's anchors.
+    var seen = {};
+    doc.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach(function (h) {
+      var base = h.textContent.trim().toLowerCase().replace(/[^\p{L}\p{N}_\- ]/gu, '').replace(/ /g, '-');
+      h.id = seen[base] ? base + '-' + seen[base] : base;
+      seen[base] = (seen[base] || 0) + 1;
+    });
   }
 
   function renderSlides() {

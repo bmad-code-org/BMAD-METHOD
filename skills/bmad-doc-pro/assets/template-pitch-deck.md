@@ -13,12 +13,14 @@ view: slides
 
 <!-- inputs: The audience, the time slot and what they should do afterwards; the one idea; for a pitch, traction, market, team and the ask; for a talk, the speaker's experience and examples. Only the user knows these. -->
 
-<!-- writing: Each `##` section is one slide unless its comment says it repeats: a bold headline stating its point as a sentence, a few short lines or one diagram, then speaker notes in a blockquote. One idea per slide. The headline is the slide's title on screen; section names never show. The notes fit the time slot. -->
+<!-- writing: Each `##` section after the table of contents is one slide unless its comment says it repeats: a bold headline stating its point as a sentence, a few short lines or one diagram, then speaker notes in a blockquote. One idea per slide. The headline is the slide's title on screen; section names never show. The notes fit the time slot. -->
 
 <!-- done when: The headlines read in order tell the whole story, the speaker notes fill the time slot, and the last slide says what the audience should do. -->
 
 # {title}
 <!-- required. The title slide: speaker and the one idea in a sentence. -->
+
+## Table of Contents
 
 ## Hook
 <!-- include when: a talk. A question, story or fact that puts the audience in the problem. -->

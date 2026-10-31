@@ -25,7 +25,7 @@ A calling agent passes its persona (keep it), skill folder and library (replacin
 
 Unless the user named a template, pick from the library's descriptions alone, among the ones the caller says fit when it says, say why in one line, and name close alternatives. Load a template file only once the user names or confirms it, or asks what its description and your knowledge cannot answer. Nothing fits: build a structure for the type and say so. Don't phrase it to the user as templates, make it more conversational such as 'I can help you craft a PRD, or alternatively there is a technical PRD and a simple brief could suffice we can work on together'.
 
-Comments above the first heading and under each heading steer you and stay out of the document; with no comments, every heading is required, in order. The template and its additions override this skill wherever they conflict, on every path; only headless still asks nothing.
+Comments above the first heading and under each heading steer you and stay out of the document; a heading with no comment is required; with no comments at all, the headings also keep their order. The template and its additions override this skill wherever they conflict, on every path; only headless still asks nothing.
 
 Load the chosen template's additions (with their `facts`) and `methods` catalog; the `key_questions` of the rows you and the user agree apply drive facilitation.
 
@@ -55,7 +55,7 @@ Coach, do not quiz: open questions for vision and discovery, options with a reco
 
 Fill every required section; one line is enough at hobby stakes. Below regulated or contracted stakes, default and tag; at them, ask instead and invent no regulation, citation or threshold; an obligation the user did not name, from you or a reviewer, is an open question. Length fits the stakes and the reader. Write only the files the template asks for, the document and any companions; a logged decision no section asks for goes where it best answers the template's questions, or you judge it out.
 
-Add what the additions' `include` requires. Give stable ids to anything others will cite; make every requirement testable and every scope edge explicit. Invent nothing: an unconfirmed inference, your own knowledge and any requirement you or a review fix added included, is `[ASSUMPTION: ...]`, the only tag; an open question goes in the template's section for them or a final `## Open questions`. Names, owners and dates in the body come from the user, never the environment; keep the user's own words for their claims and stories. Draw each diagram a section's `diagram:` names from what is known, and use Mermaid wherever else a diagram beats prose.
+Add what the additions' `include` requires. Give stable ids to anything others will cite; make every requirement testable and every scope edge explicit. Invent nothing: an unconfirmed inference, your own knowledge and any requirement you or a review fix added included, is `[ASSUMPTION: ...]`, the only tag; an open question goes in the template's section for them or a final `## Open questions`. Names, owners and dates in the body come from the user, never the environment; keep the user's own words for their claims and stories. Draw each diagram a section's `diagram:` names from what is known, and use Mermaid wherever else a diagram beats prose. A template's `## Table of Contents` sits right after the title: a linked entry per `##` section, each with a line on what it holds and the ids it covers, so a reader or agent that reads only the top can judge the document.
 
 ## Review
 
@@ -74,8 +74,9 @@ Run every step in order, on the fast path too. At hobby stakes, skip step 2 unle
 3. The review, its reviewers named to the user first above hobby stakes.
 4. Triage each remaining `[ASSUMPTION]` and open question: resolve blockers (unsafe for the reader's next step, and the user agrees; never one the user deferred) one at a time; defer the rest with an owner and a revisit condition.
 5. Polish the triaged text: apply `{workflow.doc_standards}`, then the additions' `polish`, structure before prose; cut what overflows for the stakes. Invoke each `skill:` entry on the document with its arguments and apply what it returns, `file:` and plain entries as rules you apply yourself; these are edits, not reviewers. Polish adds no claim the memlog does not hold. Log each pass only once its edits are in.
-6. Run `{workflow.external_handoffs}`.
-7. Close, then run `{workflow.on_complete}`.
+6. When the document has a table of contents, rebuild it from the final headings, rerun `check_ids.py` and fix every `toc` hit.
+7. Run `{workflow.external_handoffs}`.
+8. Close, then run `{workflow.on_complete}`.
 
 ## Close
 

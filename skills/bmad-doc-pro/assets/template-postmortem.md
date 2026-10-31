@@ -25,6 +25,8 @@ updated: ""
 
 # {title}
 
+## Table of Contents
+
 ## Summary
 <!-- required. What happened, the impact, and where things stand, in two or three sentences. -->
 

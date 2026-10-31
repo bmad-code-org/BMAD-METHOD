@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""check-ids — find broken id cross-references in a document and its companions.
+"""check-ids — find broken id cross-references and a stale table of contents.
 
 An id is a token like FR-3, UJ-12 or CAP-4. It is defined where it opens a heading, a table
 row's first cell, or a table cell, list item or line in bold. An unbolded list item or line
@@ -12,12 +12,17 @@ reference, and a range such as `FR-1 to FR-8` references each id in it. Fenced c
 and HTML comments are skipped. Definitions in any listed file count for references in all of
 them, so one file can cite another's.
 
+A file with a `## Table of Contents` has its links compared to its own headings, using
+GitHub's anchors. Every `##` section needs an entry; entries may also link deeper headings.
+
 Prints JSON:
   undefined       referenced but never defined, where other ids with that prefix are defined
   unknown_prefix  referenced, and no id with that prefix is defined anywhere; often an outside
                   name such as UTC-5, sometimes a whole family that was removed
   duplicate       defined more than once
   withdrawn       defined as withdrawn, removed, dropped or superseded, yet still referenced
+  toc             missing: `##` sections with no entry; stale: entries whose heading is gone;
+                  out_of_order: tables whose entries do not follow the sections' order
   counts          per prefix: distinct ids defined and referenced
 Locations are `file:line`. Exits 0, or 2 when a file is missing.
 """
@@ -27,7 +32,7 @@ from __future__ import annotations
 import json
 import re
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 ID = r"(?<![A-Za-z0-9-])[A-Z][A-Z0-9]{0,5}-\d+(?![A-Za-z0-9])"
@@ -41,6 +46,9 @@ CONNECTOR = re.compile(rf"^(?:\*\*)?\s*(?:,|/|&|and\b|or\b|to\b|through\b|[–�
 SEPARATOR = re.compile(r"^\s*(?:[:.()/–—]|-\s)")
 RANGE = re.compile(rf"({ID})(?:\*\*)?\s*(?:to|through|[–—-])\s*(?:\*\*)?({ID})")
 WITHDRAWN = re.compile(r"^[\s*:.)(—–-]*(?:withdrawn|removed|dropped|superseded)\b", re.IGNORECASE)
+TITLED_HEADING = re.compile(r"^ {0,3}(#{1,6})[ \t]+(.+?)[ \t#]*$")
+TOC_LINK = re.compile(r"\[[^\]]*\]\(#([^)\s]+)\)")
+TOC_ANCHOR = "table-of-contents"
 MAX_RANGE = 200
 
 
@@ -113,11 +121,52 @@ def split_id(token: str) -> tuple[str, int]:
     return prefix, int(number)
 
 
+def anchor(heading: str) -> str:
+    """GitHub's anchor for a heading: lowercase, punctuation dropped, spaces as hyphens."""
+    return re.sub(r"[^\w\- ]", "", heading.lower()).replace(" ", "-")
+
+
+def check_toc(name: str, text: str, toc: dict) -> None:
+    """Add this file's table-of-contents problems to `toc`."""
+    lines = prose_lines(text)
+    headings: list[tuple[int, int, str, str]] = []
+    seen: Counter[str] = Counter()
+    for number, line in enumerate(lines, 1):
+        m = TITLED_HEADING.match(line)
+        if m:
+            base = anchor(m.group(2))
+            headings.append((number, len(m.group(1)), f"{base}-{seen[base]}" if seen[base] else base, m.group(2)))
+            seen[base] += 1
+    table = next((i for i, h in enumerate(headings) if h[1] == 2 and h[2] == TOC_ANCHOR), None)
+    if table is None:
+        return
+
+    start = headings[table][0]
+    end = headings[table + 1][0] - 1 if table + 1 < len(headings) else len(lines)
+    links = [
+        (number, m.group(1)) for number, line in enumerate(lines[start:end], start + 1) for m in TOC_LINK.finditer(line)
+    ]
+    anchors = {h[2] for i, h in enumerate(headings) if i != table}
+    sections = [h for i, h in enumerate(headings) if i != table and h[1] == 2]
+    targets = [target for _, target in links]
+    for number, _, slug, title in sections:
+        if slug not in targets:
+            toc["missing"].setdefault(title, []).append(f"{name}:{number}")
+    for number, target in links:
+        if target not in anchors:
+            toc["stale"].setdefault(target, []).append(f"{name}:{number}")
+    order = [slug for _, _, slug, _ in sections]
+    if [t for t in targets if t in order] != [slug for slug in order if slug in targets]:
+        toc["out_of_order"].append(f"{name}:{start}")
+
+
 def scan(files: list[tuple[str, str]]) -> dict:
     defined: dict[str, list[str]] = defaultdict(list)
     referenced: dict[str, list[str]] = defaultdict(list)
     withdrawn: set[str] = set()
+    toc: dict = {"missing": {}, "stale": {}, "out_of_order": []}
     for name, text in files:
+        check_toc(name, text, toc)
         for number, line in enumerate(prose_lines(text), 1):
             where = f"{name}:{number}"
             found = definition(line)
@@ -152,6 +201,7 @@ def scan(files: list[tuple[str, str]]) -> dict:
         "withdrawn": {
             t: list(dict.fromkeys(referenced[t])) for t in sorted(withdrawn, key=split_id) if referenced.get(t)
         },
+        "toc": toc,
         "counts": dict(sorted(counts.items())),
     }
 

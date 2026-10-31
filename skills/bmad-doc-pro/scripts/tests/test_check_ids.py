@@ -124,6 +124,56 @@ def test_references_to_withdrawn_items():
     assert report(text)["withdrawn"] == {"OQ-7": ["doc0.md:3"]}
 
 
+TOC = """# Doc
+
+## Table of Contents
+
+- [Why it matters](#why-it-matters): the problem
+- [Point](#point): first
+- [Point](#point-1): second
+- [Detail](#detail): one part
+
+## Why it matters?
+
+## Point
+
+### Detail
+
+## Point
+"""
+
+
+def test_table_of_contents_in_step_with_headings():
+    assert report(TOC)["toc"] == {"missing": {}, "stale": {}, "out_of_order": []}
+
+
+def test_table_of_contents_section_with_no_entry():
+    toc = report(TOC + "\n## Risks\n")["toc"]
+    assert toc["missing"] == {"Risks": ["doc0.md:18"]}
+
+
+def test_table_of_contents_entry_for_a_removed_heading():
+    toc = report(TOC.replace("## Why it matters?", "## Reasons"))["toc"]
+    assert toc["stale"] == {"why-it-matters": ["doc0.md:5"]}
+    assert toc["missing"] == {"Reasons": ["doc0.md:10"]}
+
+
+def test_table_of_contents_out_of_order():
+    swapped = TOC.replace(
+        "- [Point](#point): first\n- [Point](#point-1): second", "- [Point](#point-1): second\n- [Point](#point): first"
+    )
+    assert report(swapped)["toc"]["out_of_order"] == ["doc0.md:3"]
+
+
+def test_document_without_a_table_of_contents_has_no_toc_hits():
+    assert report(DOC)["toc"] == {"missing": {}, "stale": {}, "out_of_order": []}
+
+
+def test_linked_table_of_contents_entries_define_no_ids():
+    text = "## Table of Contents\n\n- [FR-1: Login](#fr-1-login): sign in\n\n## FR-1: Login\n"
+    assert report(text)["duplicate"] == {}
+
+
 def test_main_prints_json(tmp_path, capsys):
     doc = tmp_path / "prd.md"
     doc.write_text(DOC, encoding="utf-8")

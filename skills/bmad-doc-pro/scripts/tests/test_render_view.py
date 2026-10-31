@@ -94,6 +94,11 @@ def test_slides_split_on_h2_with_h1_first():
     assert slides[0]["body"] == "A talk for the meetup."
 
 
+def test_table_of_contents_gets_no_slide():
+    text = "# T\n\n## Table of Contents\n\n- [Problem](#problem)\n\n## Problem\n\nPain.\n"
+    assert [s["section"] for s in render_view.split_slides(text)] == ["T", "Problem"]
+
+
 def test_bold_first_line_becomes_title_and_heading_is_dropped():
     _, body = render_view.prepare(DECK)
     problem = render_view.split_slides(body)[1]

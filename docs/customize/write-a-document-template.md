@@ -124,11 +124,13 @@ Above the first heading, give each of these keys its own comment, a line or two.
 
 The `template` frontmatter must match the entry's `id`; that is how a later update finds the template. Add `view: slides` to the frontmatter for a slide view; without it the HTML view is one page. `{title}` is the only placeholder.
 
-Each section has one comment: `required`, `optional`, or `include when:` with a condition, then a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A required section is always filled, in one line at hobby stakes. An include-when section goes in only when the condition holds.
+Each section has one comment: `required`, `optional`, or `include when:` with a condition, then a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A heading with no comment is required. A required section is always filled, in one line at hobby stakes. An include-when section goes in only when the condition holds.
 
 Say what goes in each section, not how to write well. Leave out example content, which the model would copy.
 
 A section comment can also steer the conversation or limit the answer, in plain sentences. The `Steps` comment above tells the skill when to press, and `Severity` limits the user to a list. A list can live elsewhere: "The user must pick a team from `docs/teams.md`." The shipped `decision-record` and `security-review` templates show both.
+
+Put a bare `## Table of Contents` heading right after the title of any template whose documents run long. Agents often read only the top of a file to judge it, so the skill fills this with a linked entry and a line per section, then checks it against the final headings. It gets no slide in a slide view.
 
 ## Use a format you already have
 

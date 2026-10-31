@@ -18,6 +18,8 @@ updated: ""
 
 # {title}
 
+## Table of Contents
+
 ## Scope and system
 <!-- required. What is reviewed and what is not, the standard and rows covered, what the system does, who uses it and the data it holds. The user must pick the standard from the method catalog's `category` values; a standard not listed needs its rows added to the catalog first. -->
 

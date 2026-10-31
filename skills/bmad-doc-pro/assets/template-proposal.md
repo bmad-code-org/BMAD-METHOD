@@ -21,6 +21,8 @@ updated: ""
 
 # {title}
 
+## Table of Contents
+
 ## Summary
 <!-- required. The ask, what it achieves, for whom, by when. -->
 
