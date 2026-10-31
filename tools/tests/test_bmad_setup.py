@@ -3102,6 +3102,20 @@ class BmadStatusTests(unittest.TestCase):
             write(project / "skills-lock.json", "not json")
             self.assertEqual(update()["state"], "newer-available")
 
+    def test_a_pinned_module_from_a_local_source_has_no_command_but_a_release(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "alpha-skill", "alpha", update_source="file:sources", version="3.5.0")
+            write_bmod(root / "sources", "bmod-alpha", "alpha", version="3.6.0")
+            write(root / "skills-lock.json", json.dumps({"version": 1, "skills": {"bmod-alpha": {"ref": "v3.5.0"}}}))
+            (module,) = [m for m in setup.discover_installation(skill).modules if m.module == "alpha"]
+            report = setup.module_update_report(root, module)
+            self.assertEqual(report["state"], "pinned")
+            self.assertNotIn("install", report)
+            self.assertIn("from the module's source", report["instruction"])
+
     def test_a_pinned_module_that_is_current_stays_current(self):
         setup = load_setup()
         with tempfile.TemporaryDirectory() as temp_dir:
