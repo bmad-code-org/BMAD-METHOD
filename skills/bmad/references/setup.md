@@ -21,6 +21,7 @@ Run with `--status`; it writes nothing. On a first install (`bmad_exists` false)
 - Call the installation current only when the top-level `current` is true.
 - `absent_skills` are skills the user opted out of or that are new to the module, and `unmet_recommendations` are suggested additions. Both are optional, not faults.
 - `plugin-managed`: relay its `instruction`; the plugin updates the module.
+- `pinned`: the install is held at a tag, so `npx skills update` cannot raise it. Relay its `instruction`; run its `install` only if the user wants the newer version.
 - `unknown-version`: the installed copy predates module records; `npx skills update` fixes it.
 - `custom_gitignore` `unprotected`: personal answers may be committed. Only the user edits that `.gitignore`.
 - `newer_copy_unused`: the duplicate in use is older than another copy.

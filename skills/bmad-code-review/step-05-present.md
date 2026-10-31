@@ -2,12 +2,13 @@
 deferred_work_file: '{{ initiative_folder }}/deferred-work.md'
 ---
 
-# Step 4: Present and Act
+# Step 5: Present and Act
 
 ## RULES
 
 - When `{plan_file}` is set, always write findings to it before offering action choices.
 - Never change a plan's `status`. The build leaves it at `built`; only the user marks a ticket done.
+- `{triage_file}` is the source for every finding below: its verdict, evidence, route, options, and rejection reason. Render from it, not from memory.
 {% if not workflow.interactive %}
 - No human can answer during this run: never ask and never HALT. The report text is the deliverable -- everything a reader must act on is in it, not only in files the run writes.
 {% endif %}

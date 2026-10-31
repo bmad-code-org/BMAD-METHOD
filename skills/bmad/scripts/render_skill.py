@@ -708,14 +708,14 @@ def render(
     return destination / "workflow.md"
 
 
-def report_owed_setup(skill_dir: Path, project_root: Path) -> None:
+def report_owed_setup(skill_dir: Path, project_root: Path, roots: tuple[Path, ...] = ()) -> None:
     # Runs before rendering so the note lands ahead of the printed workflow,
     # and still shows when rendering halts. It must never fail the render.
     try:
         import setup_check
     except Exception:
         return
-    setup_check.report(skill_dir, project_root)
+    setup_check.report(skill_dir, project_root, roots)
 
 
 def main() -> int:
@@ -724,12 +724,19 @@ def main() -> int:
     parser.add_argument("--skill", required=True)
     parser.add_argument("--overrides", type=Path, help="invocation-only customization TOML file")
     parser.add_argument("--set", dest="assignments", action="append", default=[], metavar="KEY=VALUE")
+    parser.add_argument(
+        "--root",
+        type=Path,
+        action="append",
+        default=[],
+        help="a skills root the host has active, in precedence order, project roots first (repeatable)",
+    )
     reconfigure = getattr(sys.stdout, "reconfigure", None)
     if reconfigure is not None:
         reconfigure(encoding="utf-8")
     try:
         args = parser.parse_args()
-        report_owed_setup(Path(args.skill).resolve(), Path(args.project_root).resolve())
+        report_owed_setup(Path(args.skill).resolve(), Path(args.project_root).resolve(), tuple(args.root))
         entry = render(
             Path(args.project_root), Path(args.skill), overrides=args.overrides, assignments=args.assignments
         )

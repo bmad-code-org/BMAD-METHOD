@@ -25,6 +25,8 @@ Capture `baseline_revision` (current HEAD, or `NO_VCS` if version control is una
 
 Build the change from `{plan_file}`. The Intent section is what you implement. As you work, add notes to `## Implementation Notes`: decisions you made, files you changed, surprises.
 
+When you are done, run the commands in `{plan_file}`'s `## Verification` section, if present, and fix any that fail.
+
 {% if workflow.route == "oneshot" %}
 **When to stop.** Stop coding if the request left out something the user would notice in the result. Write the gap in `## Implementation Notes`, then ask the human — do not guess.
 {% else %}

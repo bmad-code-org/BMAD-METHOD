@@ -155,7 +155,7 @@ teams share one repository, each can point at its own template from
 **File:** `_bmad/custom/config.toml` (team) or `_bmad/custom/config.user.toml` (personal).
 
 Use central config to change who roster-driven skills (`bmad-party-mode`,
-`bmad-retrospective`, `bmad-advanced-elicitation`) see, and to pin install
+`bmad-retrospective`, `bmad-advanced-elicitation`) see, and to pin setup
 answers the whole team shares. Per-skill files shape how one agent behaves
 when it activates; central config shapes what other skills see when they
 look at the roster. See
@@ -206,13 +206,13 @@ Ask party mode to "invite the Enterprise crew": it filters by
 `team = "startrek"` and includes Spock and McCoy. You can include real
 BMad agents in the same party.
 
-### 5c. Pin team install settings
+### 5c. Pin team settings
 
-**Keys:** `[core] output_folder` and `[core] document_output_language`.
+**Key:** `[core] output_folder`.
 
 When the team needs one answer for a setting such as where BMad writes its
-output, pin it here; it overrides whatever a developer has in their own
-config. `output_folder` holds every initiative folder, the ticket tree, and
+output, pin it here; it overrides `_bmad/config.toml`, and a developer's own
+`_bmad/custom/config.user.toml` still wins over it. `output_folder` holds every initiative folder, the ticket tree, and
 `backlog/`, so pinning it moves all of them together.
 
 ```toml
@@ -220,12 +220,10 @@ config. `output_folder` holds every initiative folder, the ticket tree, and
 
 [core]
 output_folder = "{project-root}/shared/bmad-output"
-document_output_language = "English"
 ```
 
-Personal settings such as `user_name`, `communication_language`, and
-`user_skill_level` stay in each developer's own `_bmad/config.user.toml`;
-the team file should not set them.
+Personal settings stay in each developer's own
+`_bmad/custom/config.user.toml`; the team file should not set them.
 
 ## Reinforce global rules in your IDE's session file
 
@@ -250,7 +248,7 @@ Each layer owns its own scope:
 | IDE session file (`CLAUDE.md` / `AGENTS.md`) | Every session, before any skill activates | Short, universal rules that should survive outside BMad |
 | BMad agent customization | Every workflow the agent dispatches | Agent-specific behavior |
 | BMad workflow customization | One workflow run | Output shape, publishing hooks, templates |
-| BMad central config | Agent roster and shared install settings | Who is on the roster and which paths the team shares |
+| BMad central config | Agent roster and shared settings | Who is on the roster and which paths the team shares |
 
 Keep the IDE file short. The model reads it every turn.
 
@@ -295,7 +293,7 @@ array: team entries stack, and each handoff fires independently.
 
 [workflow]
 external_handoffs = [
-  "After finalize, upload the PRD and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd', author={user_name}). Capture and surface the returned page URL.",
+  "After finalize, upload the PRD and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd'). Capture and surface the returned page URL.",
   "Mirror to Notion via notion:create_page (database_id='abc123', title='PRD: ' + {project_name}).",
 ]
 ```

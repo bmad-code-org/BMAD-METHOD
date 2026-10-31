@@ -125,6 +125,14 @@ def main() -> int:
         default=[],
         help="Dotted field path to resolve (repeatable). Omit for full dump.",
     )
+    parser.add_argument(
+        "--root",
+        type=Path,
+        action="append",
+        default=[],
+        help="A skills root the host has active, in precedence order, project roots first (repeatable). "
+        "Without it, the setup preflight makes no claim about other skills or the module record.",
+    )
     args = parser.parse_args()
 
     skill_dir = Path(args.skill).resolve()
@@ -150,18 +158,18 @@ def main() -> int:
             if value is not _MISSING:
                 output[key] = value
     write_json_stdout(output)
-    report_owed_setup(skill_dir, project_root)
+    report_owed_setup(skill_dir, project_root, tuple(args.root))
     return 0
 
 
-def report_owed_setup(skill_dir: Path, project_root: Path | None) -> None:
+def report_owed_setup(skill_dir: Path, project_root: Path | None, roots: tuple[Path, ...] = ()) -> None:
     # The resolver is the first thing every skill runs, so it is where a skill
     # learns that setup owes it something. It must never fail the resolve.
     try:
         import setup_check
     except Exception:
         return
-    setup_check.report(skill_dir, project_root)
+    setup_check.report(skill_dir, project_root, roots)
 
 
 if __name__ == "__main__":
