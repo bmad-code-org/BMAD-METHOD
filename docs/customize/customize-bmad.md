@@ -350,7 +350,7 @@ output_folder = "/shared/org-bmad-output"
 | Swap a workflow's output template | Per-skill: `_bmad/custom/<workflow>.toml` scalar override |
 | Rebrand an agent's public descriptor | Central: `_bmad/custom/config.toml` `[agents.<code>]` |
 | Add a custom or fictional agent to the roster | Central: `_bmad/custom/config.*.toml` new `[agents.<code>]` |
-| Pin team-enforced settings | Central: `_bmad/custom/config.toml` `[modules.<code>]` or `[core]` |
+| Set shared team defaults | Central: `_bmad/custom/config.toml` `[modules.<code>]` or `[core]` |
 | Choose which initiative your documents and tickets go to | Central: `_bmad/custom/config.user.toml` `[core] active_initiative`, or ask the `bmad` skill to switch it |
 
 ## Check what resolved

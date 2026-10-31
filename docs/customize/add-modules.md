@@ -45,7 +45,7 @@ When a newer version exists for a module installed from a tag, `bmad status` rep
 
 Ask Smithy, the `bmad-toolsmith` skill, to scaffold a module, add skills and agents to it, and validate it. [Toolsmith](../toolsmith/toolsmith.md) describes what it builds and how.
 
-A module needs a `bmod-<code>` record folder holding a `bmod.toml`, a stub `SKILL.md`, and a `help/help.md` that `bmad` reads to guide users. Each of its skills carries a small `bmod.toml` that names the record. Publish the repository and others add it with `npx skills add`. To test before publishing, add it from the local folder.
+A module needs a `bmod-<code>` record folder holding a `bmod.toml`, a stub `SKILL.md`, and a `help/help.md` that `bmad` reads to guide users. Each of its skills carries a small `bmod.toml` that names the record. A module of one skill needs no record folder: that skill's own `bmod.toml` holds both tables. Publish the repository and others add it with `npx skills add`. To test before publishing, add it from the local folder.
 
 ## Modules in v6.12
 
