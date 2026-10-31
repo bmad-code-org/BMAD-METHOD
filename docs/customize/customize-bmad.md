@@ -25,7 +25,7 @@ There are two surfaces:
 | Surface | File | Shapes |
 |---|---|---|
 | Per-skill override | `_bmad/custom/<skill>.toml` | How one agent or workflow behaves when it activates: persona, facts, hooks, menu, workflow fields |
-| Central configuration | `_bmad/custom/config.toml` | Install answers and the agent roster that other skills read |
+| Central configuration | `_bmad/custom/config.toml` | Setup answers and agent descriptors that other skills read |
 
 `bmad-customize` writes per-skill overrides only. Central configuration is
 hand-authored; see [Central configuration](#central-configuration).
@@ -273,39 +273,38 @@ String values can be written as plain text. Other types use TOML syntax:
 
 ## Central configuration
 
-Per-skill files cover one agent or workflow. Install answers and the agent
-roster live in four TOML files:
+Per-skill files cover one agent or workflow. Setup answers and agent
+overrides live in three TOML files:
 
 ```text
-_bmad/config.toml               (installer-owned)  team scope: install answers + agent roster
-_bmad/config.user.toml          (installer-owned)  user scope: user_name, language, skill level
-_bmad/custom/config.toml        (human-authored)   team overrides (committed)
-_bmad/custom/config.user.toml   (human-authored)   personal overrides (gitignored), including `[core] active_initiative`
+_bmad/config.toml               (setup-owned)     team scope: setup answers
+_bmad/custom/config.toml        (human-authored)  team overrides (committed)
+_bmad/custom/config.user.toml   (human-authored)  personal overrides (gitignored), including `[core] active_initiative`
 ```
 
-**Four layers**, merged with the same shape rules:
+**Three layers**, merged with the same shape rules:
 
 ```text
 Priority 1 (wins): _bmad/custom/config.user.toml
 Priority 2:        _bmad/custom/config.toml
-Priority 3:        _bmad/config.user.toml
-Priority 4 (base): _bmad/config.toml
+Priority 3 (base): _bmad/config.toml
 ```
 
-**What lives where.** The installer splits its answers by the `scope:`
-declared on each prompt in a module's `module.yaml`: `[core]` and
-`[modules.<code>]` answers with scope `team` land in `_bmad/config.toml`,
-scope `user` in `_bmad/config.user.toml`. `[agents.<code>]` holds each
-agent's descriptor — code, name, title, icon, description, team — taken
-from the module's `agents:` block, always team-scoped.
+**What lives where.** `bmad setup` writes the `[modules.<code>]` answers a
+module's setup questions produce, plus the `[core]` defaults. A question with
+scope `team` lands in `_bmad/config.toml`; a question with scope `user` is
+stored in `_bmad/custom/config.user.toml`. `[agents.<code>]` tables are
+optional: the roster comes from each module's `roster.toml`, and a table in
+either `_bmad/custom/` file applies on top.
 
-**Editing rules.** The two installer-owned files are regenerated on every
-install; treat them as read-only output. To change an install answer so it
-survives reinstall, re-run the installer (it remembers prior answers) or
-override the value in `_bmad/custom/config.toml`. The two `_bmad/custom/`
-files are never touched by the installer; they are the place for custom
-agents, descriptor overrides, and any value you want pinned regardless of
-install answers.
+**Editing rules.** `bmad setup` fills in missing keys in `_bmad/config.toml`
+and never changes an existing value. To change an answer, edit its
+`modules.<code>.<key>` value in the file that holds it, or ask `bmad` to
+change it. To pin a value for the whole team, set it in
+`_bmad/custom/config.toml`. Setup adds user-scope answers to
+`_bmad/custom/config.user.toml` and moves the files of renamed skills, but
+never changes a value already in either `_bmad/custom/` file. Both files are
+the place for custom agents, descriptor overrides, and pinned values.
 
 **Rebrand an agent.** Party mode and other roster skills pick up the new
 description automatically:
@@ -315,7 +314,6 @@ description automatically:
 
 [agents.bmad-agent-pm]
 description = "Healthcare PM — regulatory-aware, stakeholder-driven, FDA-shaped questions first."
-icon = "🏥"
 ```
 
 **Add a fictional agent.** No skill folder is needed; the descriptor alone
@@ -333,8 +331,8 @@ icon = "🖖"
 description = "Bold, rule-bending commander. Speaks in dramatic pauses."
 ```
 
-**Override an install setting.** The override wins over whatever each
-developer has in their own config:
+**Override a setup answer.** The override wins over `_bmad/config.toml`; a
+developer's own `_bmad/custom/config.user.toml` still wins over it:
 
 ```toml
 # _bmad/custom/config.toml
@@ -352,7 +350,7 @@ output_folder = "/shared/org-bmad-output"
 | Swap a workflow's output template | Per-skill: `_bmad/custom/<workflow>.toml` scalar override |
 | Rebrand an agent's public descriptor | Central: `_bmad/custom/config.toml` `[agents.<code>]` |
 | Add a custom or fictional agent to the roster | Central: `_bmad/custom/config.*.toml` new `[agents.<code>]` |
-| Pin team-enforced install settings | Central: `_bmad/custom/config.toml` `[modules.<code>]` or `[core]` |
+| Set shared team defaults | Central: `_bmad/custom/config.toml` `[modules.<code>]` or `[core]` |
 | Choose which initiative your documents and tickets go to | Central: `_bmad/custom/config.user.toml` `[core] active_initiative`, or ask the `bmad` skill to switch it |
 
 ## Check what resolved

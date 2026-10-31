@@ -38,6 +38,8 @@ The handoff directs the subagent to load the plan's `context:` files itself, so 
 
 Stage the diff and read it first: using the repository's version-control tooling, write a unified diff of all changes since `{baseline_revision}` (from `{plan_file}` frontmatter) — untracked files included — to a uniquely-named file in the system temp directory, set `{diff_file}` to its absolute path, and read that file into your own context. Judge against the diff, not just the implementation subagent's report.
 
+Run the commands in `{plan_file}`'s `## Verification` section, if present; a failing command is unfinished work.
+
 If the implementer reported anything unfinished, finish it before proceeding — and when that changes code, rewrite `{diff_file}` and re-read it. Acceptance criteria are judged at review, not here.
 
 ### Matrix Test Audit
