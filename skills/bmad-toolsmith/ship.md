@@ -63,7 +63,7 @@ See what is installed:
 
 From the discovery, decide for each installed skill: `required_skills` when the new skill invokes it, `recommended_skills` when it helps beside it, nothing otherwise.
 
-Write them into `bmod.toml` under `[skill]`: a plain name for a skill from the same source, `{ skill = "<name>", source = "<source>", version = "<min>" }` for another, version optional.
+Write them into `bmod.toml`: under `[bmod]` for a single-skill module or a need of the whole module, under the member's `[skill]` for one member's need. Use a plain name for a skill from the same source, `{ skill = "<name>", source = "<source>", version = "<min>" }` for another, version optional.
 
 For anything named but not installed, offer `npx skills add <repo> --skill <name>`; never run it unasked.
 
