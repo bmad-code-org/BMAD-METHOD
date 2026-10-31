@@ -8,7 +8,7 @@ sidebar:
 A module is a set of skills that belong together, plus a `bmod-<code>` record folder that tells the `bmad` skill about them. You add one with the Skills CLI, then run `bmad setup <code>` to configure it. There is no separate installer, registry, or build step.
 
 :::note[Using v6.12?]
-v6.12 adds modules through `npx bmad-method install`, with `--custom-source` for Git URLs and local paths. That flow is documented on the [V6.12 branch](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12). The rest of this page covers v7.
+v6.12 adds modules through `npx bmad-method install`, with `--custom-source` for Git URLs and local paths. That flow is documented on the [V6.12 branch](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12) and summarized at the end of this page.
 :::
 
 ## Official modules
@@ -33,19 +33,19 @@ Select your coding tool and the skills you want. Include the module record, `bmo
 
 Then ask the `bmad` skill to run `bmad setup tea`. Setup asks the module's configuration questions, places its scripts under `_bmad/<code>/`, and offers any migration the module ships. Ask for `bmad status` to confirm the module and its version.
 
-Any repository that follows the module layout installs the same way. The source can also be a local folder, or a tag, with `owner/repo#v1.2.0`.
+Any repository that follows the module layout installs the same way. The source can be a local folder, or a repository at a tag, as in `owner/repo#v1.2.0`.
 
 ## Keep a module updated
 
-`bmad setup` compares each module's version with its source and runs `npx skills update` when a newer one exists. If you update by hand, run `bmad setup` afterwards.
+`bmad setup` compares each module's version with its source and offers to run `npx skills update` when a newer one exists. If you update by hand, run `bmad setup` afterwards.
 
-A module installed from a tag reports `pinned` in `bmad status`, because `npx skills update` keeps it on that tag. To move to a newer version, add it again at the new tag, for example `npx skills add owner/repo#v1.3.0 --skill bmod-tea`.
+When a newer version exists for a module installed from a tag, `bmad status` reports `pinned`, because `npx skills update` keeps it on that tag. It also gives the `npx skills add owner/repo#<tag> --skill …` command that moves the module record and its skills to the newer tag.
 
 ## Create your own module
 
 Ask Smithy, the `bmad-toolsmith` skill, to scaffold a module, add skills and agents to it, and validate it. [Toolsmith](../toolsmith/toolsmith.md) describes what it builds and how.
 
-A module needs one `bmod-<code>` folder holding a `bmod.toml` record, a stub `SKILL.md`, and a `help/help.md` that `bmad` reads to guide users. Publish the repository and others add it with `npx skills add`. To test before publishing, add it from the local folder.
+A module needs a `bmod-<code>` record folder holding a `bmod.toml`, a stub `SKILL.md`, and a `help/help.md` that `bmad` reads to guide users. Each of its skills carries a small `bmod.toml` that names the record. Publish the repository and others add it with `npx skills add`. To test before publishing, add it from the local folder.
 
 ## Modules in v6.12
 
