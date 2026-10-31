@@ -1894,6 +1894,16 @@ class ActiveInitiativeTests(TreeCase):
         self.assertEqual(self.ok(run("find", "epic-cart", "1", cwd=self.root))["file"], "story-scaffold.md")
         self.fails(run("find", "9", cwd=self.root), "no ticket matches")
 
+    def test_mirror_does_not_take_a_bare_number_ref_from_the_backlog(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", 9, kind="bug"), backlog)
+        self.write_store("jira")
+        r = run("mirror", cwd=self.root, stdin=json.dumps([{"ref": "9", "tracker_status": "done"}]))
+        self.assertEqual(self.ok(r)["mirrored"], [])
+        self.assertNotIn("tracker_status", (backlog / "bug-x.md").read_text(encoding="utf-8"))
+        r = run("mirror", cwd=self.root, stdin=json.dumps([{"ref": "bug-x", "tracker_status": "done"}]))
+        self.assertEqual([m["ref"] for m in self.ok(r)["mirrored"]], ["bug-x.md"])
+
     def test_with_no_folder_a_numeric_tracker_id_still_finds_its_backlog_ticket(self):
         backlog = self.add_backlog()
         self.add("bug-x.md", ticket("draft", 7, kind="bug", tracker_id='"1234"'), backlog)

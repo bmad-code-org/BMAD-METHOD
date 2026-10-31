@@ -1401,6 +1401,8 @@ def cmd_mirror(args) -> dict:
         hit = miss = container = None
         for tree in trees:
             try:
+                if "ref" in item and tree is not trees[0] and str(name).strip().isdigit():
+                    raise NoMatch(f"a bare number does not name a backlog ticket: {name!r}")
                 # A tracker id alone never falls back to an entry id or a title that happens to match it.
                 t = resolve_ticket(tree, str(name)) if "ref" in item else by_tracker_id(tree, str(name))
             except NoMatch as e:

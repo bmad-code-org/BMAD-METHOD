@@ -3076,6 +3076,18 @@ class BmadStatusTests(unittest.TestCase):
                 )
                 self.assertEqual(update()["state"], "newer-available")
 
+            write(
+                project / "skills-lock.json",
+                json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": "v3.5.0", "source": "acme/other"}}}),
+            )
+            self.assertEqual(update()["state"], "newer-available")
+            for source in ("bmad-code-org/BMAD-METHOD", "https://github.com/bmad-code-org/bmad-method.git"):
+                write(
+                    project / "skills-lock.json",
+                    json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": "v3.5.0", "source": source}}}),
+                )
+                self.assertEqual(update()["state"], "pinned")
+
             write(project / "skills-lock.json", "not json")
             self.assertEqual(update()["state"], "newer-available")
 
