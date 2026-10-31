@@ -139,15 +139,16 @@ Above the first heading, give each of these keys its own comment, a line or two.
 | `stance` | How to coach for this document, including how a path should run. |
 | `inputs` | What must be asked, and which of it only the user knows. Each one is asked on the coaching and fast paths unless the user already gave it, so list only what you want asked. |
 | `writing` | Rules specific to this document. |
+| `companions` | Other files to write beside the document, when, and what each holds. A file for a different reader belongs here, not overflow from the document. |
 | `done when` | The test that ends the questioning. |
 
-Add `view: slides` to the frontmatter for a slide view; without it the HTML view is one page. `{title}` is the only placeholder.
+Add `view: slides` to the frontmatter for a slide view; without it the HTML view is one page. In the document body, `{title}` is the only placeholder.
 
 Each section has one comment: `required`, `optional`, or `include when:` with a condition, then a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A heading with no comment is required. A required section is always filled, in one line at hobby stakes. An include-when section goes in only when the condition holds.
 
 Say what goes in each section, not how to write well. Leave out example content, which the model would copy.
 
-A section comment can also steer the conversation or limit the answer, in plain sentences. The `Steps` comment above tells the skill when to press, and `Severity` limits the user to a list. A list can live elsewhere: "The user must pick a team from `docs/teams.md`." The shipped `decision-record` and `security-review` templates show both.
+A section comment can also steer the conversation or limit the answer, in plain sentences. The `Steps` comment above tells the skill when to press, and `Severity` limits the user to a list. A list can live elsewhere: "The user must pick a team from `docs/teams.md`." The shipped `decision-record` and `security-review` templates show both, and [Document Templates](../reference/document-templates.md) lists where to see each capability.
 
 Put a bare `## Table of Contents` heading right after the title of any template whose documents run long. Agents often read only the top of a file to judge it, so the skill fills this with a linked entry per section and a short phrase of its key terms, then checks it against the final headings. It gets no slide in a slide view.
 

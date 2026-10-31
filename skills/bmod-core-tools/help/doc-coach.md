@@ -17,7 +17,7 @@ It coaches the user through one document from a template, and later updates or v
 | id | Recommend when |
 |---|---|
 | `decision-record` | Any decision worth recording: context, options, choice, consequences. |
-| `postmortem` | Something went wrong and the team needs causes and actions, blamelessly. The timeline is drawn as a diagram. |
+| `postmortem` | Something went wrong and the team needs causes and actions, blamelessly. The timeline is drawn as a diagram, and it also writes a customer notice when customers were told. |
 | `proposal` | Asking for money, time or approval: a grant, a bid, an internal request. The reader's own guidelines replace its headings. |
 | `security-review` | Reviewing a system against the OWASP Top 10 or STRIDE. The standard's items drive the questions; another standard needs its rows added to the catalog first. |
 | `pitch-deck` | A talk or pitch that needs a story and slides. It always renders as an HTML slide view unless the team turned views off. |
@@ -30,7 +30,7 @@ The user says what they want in plain words: the topic, a template (an id, a fil
 
 Templates are files in `_bmad/custom/doc-coach-templates/`. For settings, recommend `bmad-customize` on `bmad-doc-coach`; the team file `_bmad/custom/bmad-doc-coach.toml` is committed so everyone gets it.
 
-- Add a template: a file in that folder with `template` and `description` in its frontmatter, and any rubric beside it. A plain markdown file of headings works; each heading becomes a required section. A bare `## Table of Contents` heading after the title makes the skill fill and check one.
+- Add a template: a file in that folder with `template` and `description` in its frontmatter, and any rubric beside it. A `companions` comment asks for more files beside the document. A plain markdown file of headings works; each heading becomes a required section. A bare `## Table of Contents` heading after the title makes the skill fill and check one.
 - Replace or edit a shipped template: copy it from `doc-templates/` in the `bmod-core-tools` record into that folder and keep its `template` id. The project's copy wins.
 - A module adds templates through `doc-templates/` in its record folder; no setting is needed.
 - Use a shared library: add a folder or a pinned GitHub URL to `template_libraries`, in the `.user.toml` when it is private. Only sources the team controls, because a template overrides the skill.

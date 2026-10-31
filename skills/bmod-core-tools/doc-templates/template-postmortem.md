@@ -22,6 +22,8 @@ updated: ""
   - One time zone, stated once.
 -->
 
+<!-- companions: When customers were told or still need telling, also write `{id}-{slug}-customer-notice.md`: what happened, who was affected and what changed, in plain words, with no internal names or system details. -->
+
 <!-- done when: A reader who was not involved can follow the timeline and see how each factor contributed, and every factor has an action or a stated reason it has none. -->
 
 # {title}
