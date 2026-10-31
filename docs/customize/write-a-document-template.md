@@ -70,19 +70,9 @@ To hide a shipped template, an entry with its `id` and `disabled = true` is enou
 
 ## Write the template file
 
-A template is a markdown file in three parts: a header comment that guides the coaching, the document's frontmatter, and its sections. The header and the section comments never appear in the finished document.
+A template is a markdown file in three parts: the document's frontmatter, comments that guide the coaching, and its sections. Frontmatter comes first. The comments never appear in the finished document. Where a template and the skill disagree, the template wins, on every path; only a headless run still asks nothing.
 
 ```markdown
-<!-- doc-pro template
-purpose: Let an on-call operator handle one alert or task without help.
-good for: A recurring alert, a deploy, a failover.
-not for: Learning from an incident (`postmortem`).
-stance: Walk the procedure as the operator would and ask what they check after each step.
-inputs: The alert or task, the access it needs, the exact commands. Only the user knows the failures they have seen.
-writing: Numbered steps, one action each, with its expected result. Commands copied exactly.
-done when: Someone new to the system can follow it alone and knows when to escalate.
-view: document
--->
 ---
 title: ""
 template: runbook
@@ -91,13 +81,29 @@ created: ""
 updated: ""
 ---
 
+<!-- purpose: Let an on-call operator handle one alert or task without help. -->
+
+<!-- stance: Walk the procedure as the operator would and ask what they check after each step. -->
+
+<!-- inputs: The alert or task, the access it needs, the exact commands. Only the user knows the failures they have seen. -->
+
+<!-- writing:
+  - Numbered steps, one action each, with its expected result.
+  - Commands copied exactly.
+-->
+
+<!-- done when: Someone new to the system can follow it alone and knows when to escalate. -->
+
 # {title}
 
 ## When to use
 <!-- required. The alert, symptom or schedule that starts this runbook. -->
 
+## Severity
+<!-- required. The user must pick exactly one of: sev1, sev2, sev3. -->
+
 ## Steps
-<!-- required. Numbered actions with expected results. diagram: flowchart -->
+<!-- required. Numbered actions with expected results. When a step says "check the dashboard", ask which one and what a good reading is. diagram: flowchart -->
 
 ## Rollback
 <!-- include when: a step changes production. How to undo each change. -->
@@ -106,28 +112,27 @@ updated: ""
 <!-- optional. Who to call and when. -->
 ```
 
-The header takes these eight keys, each a line or two:
+Above the first heading, give each of these keys its own comment, a line or two. All are optional:
 
 | Key | What it tells the skill |
 | --- | --- |
 | `purpose` | The decision or job the document serves. |
-| `good for` | When to use it. |
-| `not for` | When not to, naming a better template's `id` where one exists. |
-| `stance` | How to coach for this document. |
-| `inputs` | What to gather, and which of it only the user knows. |
+| `stance` | How to coach for this document, including how a path should run. |
+| `inputs` | What must be asked, and which of it only the user knows. Each one is asked on the coaching and fast paths unless the user already gave it, so list only what you want asked. |
 | `writing` | Rules specific to this document. |
 | `done when` | The test that ends the questioning. |
-| `view` | `document` or `slides`: how the HTML view is laid out. |
 
-The `template` frontmatter must match the entry's `id`; that is how a later update finds the template. `{title}` is the only placeholder.
+The `template` frontmatter must match the entry's `id`; that is how a later update finds the template. Add `view: slides` to the frontmatter for a slide view; without it the HTML view is one page. `{title}` is the only placeholder.
 
 Each section has one comment: `required`, `optional`, or `include when:` with a condition, then a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A required section is always filled, in one line at hobby stakes. An include-when section goes in only when the condition holds.
 
 Say what goes in each section, not how to write well. Leave out example content, which the model would copy.
 
+A section comment can also steer the conversation or limit the answer, in plain sentences. The `Steps` comment above tells the skill when to press, and `Severity` limits the user to a list. A list can live elsewhere: "The user must pick a team from `docs/teams.md`." The shipped `decision-record` and `security-review` templates show both.
+
 ## Use a format you already have
 
-A file with no header is followed as written: every heading is required, in order. Point an entry at your organization's existing format and it works without changes.
+A file with no comments is followed as written: every heading is required, in order. Point an entry at your organization's existing format and it works without changes.
 
 ```markdown
 # {title}
@@ -141,7 +146,7 @@ A file with no header is followed as written: every heading is required, in orde
 ## Risks
 ```
 
-Add the header and the section comments when you want the coaching, the optional sections, or the diagrams.
+Add the comments when you want the coaching, the optional sections, or the diagrams.
 
 ## Add your rules to a template
 

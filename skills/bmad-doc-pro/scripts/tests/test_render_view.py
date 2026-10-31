@@ -21,13 +21,13 @@ sys.modules["render_view"] = render_view
 _SPEC.loader.exec_module(render_view)
 
 
-DECK = """<!-- doc-pro template
-view: slides
--->
----
+DECK = """---
 title: "Measure first"
 template: pitch-deck
+view: slides
 ---
+
+<!-- purpose: Move the room to measure first. -->
 
 # Measure first
 
