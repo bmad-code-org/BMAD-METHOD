@@ -1884,6 +1884,34 @@ class ActiveInitiativeTests(TreeCase):
         self.assertEqual([m["ref"] for m in self.ok(r)["mirrored"]], ["bug-x.md"])
         self.assertIn("\ntracker_status: done\n", (backlog / "bug-x.md").read_text(encoding="utf-8"))
 
+    def test_with_no_folder_a_bare_number_does_not_fall_back_to_a_backlog_ticket(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", 1, kind="bug"), backlog)
+        self.fails(run("find", "1", cwd=self.root), "bare number")
+        self.fails(run("mark", "1", "done", cwd=self.root), "bare number")
+        self.assertIn("bug-x.md in backlog", json.loads(run("find", "1", cwd=self.root).stderr)["error"])
+        self.assertEqual(self.ok(run("find", "bug-x.md", cwd=self.root))["folder"], "backlog")
+        self.assertEqual(self.ok(run("find", "epic-cart", "1", cwd=self.root))["file"], "story-scaffold.md")
+        self.fails(run("find", "9", cwd=self.root), "no ticket matches")
+
+    def test_mirror_does_not_take_a_bare_number_ref_from_the_backlog(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", 9, kind="bug"), backlog)
+        self.write_store("jira")
+        r = run("mirror", cwd=self.root, stdin=json.dumps([{"ref": "9", "tracker_status": "done"}]))
+        self.assertEqual(self.ok(r)["mirrored"], [])
+        self.assertNotIn("tracker_status", (backlog / "bug-x.md").read_text(encoding="utf-8"))
+        r = run("mirror", cwd=self.root, stdin=json.dumps([{"ref": "bug-x", "tracker_status": "done"}]))
+        self.assertEqual([m["ref"] for m in self.ok(r)["mirrored"]], ["bug-x.md"])
+
+    def test_with_no_folder_a_numeric_tracker_id_still_finds_its_backlog_ticket(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", 7, kind="bug", tracker_id='"1234"'), backlog)
+        self.assertEqual(self.ok(run("find", "1234", cwd=self.root))["ref"], "bug-x.md")
+        self.fails(run("find", "7", cwd=self.root), "names no ticket in the initiative")
+        self.add("bug-y.md", ticket("draft", 1234, kind="bug", tracker_id='"7"'), backlog)
+        self.assertEqual(self.ok(run("find", "7", cwd=self.root))["ref"], "bug-y.md")
+
     def test_a_backlog_that_cannot_be_read_is_reported_and_the_initiative_still_answers(self):
         backlog = self.add_backlog()
         (backlog / "bug-x.md").write_bytes(b"---\ntype: bug\ntitle: \xff\n---\n")

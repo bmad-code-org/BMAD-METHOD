@@ -3,7 +3,7 @@ title: 'How to Install BMad'
 description: Install the stable BMad release or the preview skills, set up the project runtime, and verify or update it.
 ---
 
-Install BMad through the Skills CLI or your coding tool's plugin marketplace, then run `bmad setup` in the project.
+Install BMad through the Skills CLI, then run `bmad setup` in the project.
 
 :::caution[V7 Preview Alpha]
 This page installs v7 of BMad, which is in preview alpha. Its skills, install path, and documentation change often, and updates can break an existing setup. It is recommended for solo or small teams that can pivot as things will change before beta. The v7 release ETA is October 16, 2026, and it might be sooner. If you need stability until v7 is finalized for release, install v6.12 instead.
@@ -52,7 +52,11 @@ Skills run with your coding tool's permissions, so add only customizations you t
 
 ## Install through a Plugin Marketplace
 
-As an alternative, add the marketplace inside Claude Code:
+:::caution[Not v7-ready yet]
+The `bmad-code-org/bmad-plugins` marketplace was last built before v7 and still carries the earlier skills. Install with the Skills CLI above until the marketplace is rebuilt from the v7 skills.
+:::
+
+Once it is rebuilt, add the marketplace inside Claude Code:
 
 ```text
 /plugin marketplace add bmad-code-org/bmad-plugins

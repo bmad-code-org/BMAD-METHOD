@@ -1057,12 +1057,13 @@ def requirement_channel(source: str) -> str:
     return "skills-cli"
 
 
-def install_command(source: str, *skills: str, global_install: bool = False) -> str | None:
+def install_command(source: str, *skills: str, global_install: bool = False, ref: str | None = None) -> str | None:
     """The `npx skills` command that installs these skills, or None when the source has no such command."""
     if not skills or not source.startswith("github:"):
         return None
     owner, repository, *_tree = source.removeprefix("github:").split("/")
-    return f"npx skills add {owner}/{repository} --skill {' '.join(skills)}" + (" -g" if global_install else "")
+    pin = f"#{ref}" if ref else ""
+    return f"npx skills add {owner}/{repository}{pin} --skill {' '.join(skills)}" + (" -g" if global_install else "")
 
 
 UPDATE_FIXES = ("outdated", "unknown-version")
@@ -1771,7 +1772,7 @@ def status_report(
         setup_owed=setup_owed,
         module=code,
     )
-    settled = ("current", "ahead", "plugin-managed", "could-not-check")
+    settled = ("current", "ahead", "plugin-managed", "pinned", "could-not-check")
     return {
         "mode": "status",
         "module": code,
@@ -1818,12 +1819,76 @@ def module_update_report(project_root: Path, installed: InstalledModule) -> dict
     except Exception as error:
         return {"state": "could-not-check", "source": source, "reason": str(error)}
     state = version_state(installed.parsed.version, source_version)
-    return {
+    report: dict[str, object] = {
         "state": state,
         "source": source,
         "source_version": source_version,
         **(message_json("pre_install_message", pre_message) if state == "newer-available" else {}),
     }
+    pinned = pinned_ref(project_root, installed) if state == "newer-available" else None
+    if pinned is not None:
+        # `npx skills update` keeps a pinned install on its ref, so it cannot apply the newer version.
+        tag = f"v{source_version}" if pinned.startswith("v") else source_version
+        # One command covers one scope: the skills that sit with the module record.
+        global_install = is_global(installed.source, project_root)
+        beside = (
+            member.folder for member in installed.members if is_global(member.source, project_root) == global_install
+        )
+        # The source reads `main`, which carries `X-next` before tag `X` exists.
+        released = (parse_orderable_semver(source_version) or (None, ()))[1] is None
+        command = (
+            install_command(
+                update_source,
+                *dict.fromkeys((installed.folder, *beside)),
+                global_install=global_install,
+                ref=tag,
+            )
+            if released
+            else None
+        )
+        report.update(
+            {
+                "state": "pinned",
+                "pinned_ref": pinned,
+                "instruction": (
+                    f"this module is pinned to {pinned}, which `npx skills update` keeps; "
+                    + (
+                        f"to move to {source_version}, add it again at the newer tag: {command}"
+                        if command is not None
+                        else f"to move to {source_version}, add it again from the module's source"
+                        if released
+                        else f"{source_version} is not tagged yet, so stay on {pinned} until it is released"
+                    )
+                ),
+                **({"install": command} if command is not None else {}),
+            }
+        )
+    return report
+
+
+def pinned_ref(project_root: Path, installed: InstalledModule) -> str | None:
+    """The version tag the skills CLI lock holds for the module's record, when it was installed at one.
+
+    A branch or commit ref is not a pin: `npx skills update` follows a branch and fetches it again.
+    """
+    try:
+        lock = read_skills_lock(lock_path(project_root, installed.source))
+    except Exception:
+        return None
+    entry = lock["skills"].get(installed.folder) if lock is not None else None
+    if isinstance(entry, dict) and not same_repository(entry.get("source"), installed.parsed.update_source):
+        return None
+    ref = entry.get("ref") if isinstance(entry, dict) else None
+    return ref if isinstance(ref, str) and SEMVER.fullmatch(ref.removeprefix("v")) else None
+
+
+def same_repository(lock_source: object, update_source: str) -> bool:
+    """Whether a lock entry came from the repository the module updates from; true when either side names none."""
+    if not isinstance(lock_source, str) or not update_source.startswith("github:"):
+        return True
+    owner, repository, *_ = update_source.removeprefix("github:").split("/")
+    shown = lock_source.strip().lower().removeprefix("https://github.com/").removesuffix("/").removesuffix(".git")
+    return shown == f"{owner}/{repository}".lower()
 
 
 def source_record_report(project_root: Path, update_source: str, folder: str) -> dict[str, object]:

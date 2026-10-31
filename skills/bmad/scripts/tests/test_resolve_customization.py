@@ -90,6 +90,48 @@ def resolve(skill_dir: Path, cwd: Path, *extra: str):
     )
 
 
+class PreflightRootsTests(unittest.TestCase):
+    """The setup preflight claims a dependency is missing only for roots the caller names."""
+
+    SOURCE = "github:acme/tools/skills"
+
+    def layout(self, temp_dir: str) -> tuple[Path, Path, Path]:
+        project = Path(temp_dir) / "project"
+        local = project / ".claude" / "skills"
+        elsewhere = Path(temp_dir) / "global" / "skills"
+        write(
+            local / "bmod-demo" / "bmod.toml",
+            f'[bmod]\ncode = "demo"\nversion = "1.0.0"\nupdate_source = "{self.SOURCE}"\n'
+            'skills = ["demo-skill"]\nrequired_skills = ["other-skill"]\n',
+        )
+        write(local / "demo-skill" / "bmod.toml", f'[skill]\nbmod = "bmod-demo"\nsource = "{self.SOURCE}"\n')
+        write(local / "demo-skill" / "customize.toml", facts("shipped default"))
+        write(elsewhere / "other-skill" / "SKILL.md", "other\n")
+        (project / "_bmad").mkdir(parents=True)
+        return project, local / "demo-skill", elsewhere
+
+    def test_no_roots_means_no_dependency_claim(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, skill, _ = self.layout(temp_dir)
+            result = resolve(skill, project)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(result.stderr, "")
+
+    def test_a_dependency_in_a_named_root_is_met(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, skill, elsewhere = self.layout(temp_dir)
+            result = resolve(skill, project, "--root", str(skill.parent), "--root", str(elsewhere))
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(result.stderr, "")
+
+    def test_a_dependency_absent_from_every_named_root_is_reported(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, skill, _ = self.layout(temp_dir)
+            result = resolve(skill, project, "--root", str(skill.parent))
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertIn("needs the `other-skill` skill", result.stderr)
+
+
 class ProjectRootResolutionTests(unittest.TestCase):
     """Regression cover for #2796 — the project is where the user works, not
     where the skill is installed."""
