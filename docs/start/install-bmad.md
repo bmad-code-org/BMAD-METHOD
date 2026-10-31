@@ -52,7 +52,11 @@ Skills run with your coding tool's permissions, so add only customizations you t
 
 ## Install through a Plugin Marketplace
 
-As an alternative, add the marketplace inside Claude Code:
+:::caution[Not v7-ready yet]
+The `bmad-code-org/bmad-plugins` marketplace was last built before v7 and still carries the earlier skills. Install with the Skills CLI above until the marketplace is rebuilt from the v7 skills.
+:::
+
+Once it is rebuilt, add the marketplace inside Claude Code:
 
 ```text
 /plugin marketplace add bmad-code-org/bmad-plugins
