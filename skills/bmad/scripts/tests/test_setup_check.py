@@ -252,6 +252,27 @@ class OwedSetupTests(unittest.TestCase):
         self.assertIn("6.12.0 is installed", note)
         self.assertEqual(setup_check.owed(folder, self.project, (other, self.skills)), [])
 
+    def test_the_record_that_wins_the_ordered_view_supplies_the_questions(self):
+        question = '\n[[bmod.config_questions]]\nkey = "style"\nprompt = "Style?"\ndefault = "x"\n'
+        other = Path(self.temp.name) / "global" / "skills"
+        write_bmod(other / "bmod-demo", code="demo", version="1.0.0", skills=["demo-skill"])
+        write_skill(other / "demo-skill", bmod="bmod-demo")
+        write_bmod(self.skills / "bmod-demo", code="demo", version="2.0.0", skills=["demo-skill"], extra=question)
+        (note,) = setup_check.owed(other / "demo-skill", self.project, (self.skills, other))
+        self.assertIn("style", note)
+        self.assertEqual(setup_check.owed(other / "demo-skill", self.project, (other, self.skills)), [])
+
+    def test_an_unreadable_record_in_a_root_keeps_the_local_notes(self):
+        question = '\n[[bmod.config_questions]]\nkey = "style"\nprompt = "Style?"\ndefault = "x"\n'
+        other = Path(self.temp.name) / "global" / "skills"
+        write_bmod(other / "bmod-demo", code="demo", version="1.0.0", skills=["demo-skill"], extra=question)
+        folder = other / "demo-skill"
+        write_skill(folder, bmod="bmod-demo")
+        (self.skills / "bmod-demo").mkdir(parents=True)
+        (self.skills / "bmod-demo" / "bmod.toml").write_text("not toml [", encoding="utf-8")
+        (note,) = setup_check.owed(folder, self.project, (self.skills, other))
+        self.assertIn("style", note)
+
     def test_report_writes_each_note_as_an_instruction(self):
         folder = self.skills / "demo-skill"
         write_skill(folder, bmod="bmod-demo")

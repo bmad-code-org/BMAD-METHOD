@@ -49,14 +49,20 @@ def owed(skill_dir: Path, project_root: Path | None, roots: tuple[Path, ...] = (
     notes: list[str] = []
 
     record = parsed.bmod
-    if record is None:
+    viewed = False
+    if roots:
+        # The record that wins the ordered view is the one setup uses, so it is the one read here.
+        try:
+            folders, _ = hub.locate_skills(hub.unique_folders((*roots, skill_dir.parent)), skill_dir.parent)
+            record = record or record_in_view(hub, skill.bmod, folders)
+            notes.extend(dependency_notes(skill_dir, parsed, folders, record))
+            viewed = True
+        except Exception:
+            # An unreadable file in a root says nothing about the dependencies; the local notes still apply.
+            pass
+    if record is None and not viewed:
         other = hub.read_bmod_file(skill_dir.parent / skill.bmod / MANIFEST_NAME)
         record = other.bmod if other is not None else None
-    if roots:
-        folders, _ = hub.locate_skills(hub.unique_folders((*roots, skill_dir.parent)), skill_dir.parent)
-        notes.extend(dependency_notes(skill_dir, parsed, folders))
-        if record is None:
-            record = record_in_view(hub, skill.bmod, folders)
 
     if record is None or project_root is None or not (project_root / "_bmad").is_dir():
         return notes
@@ -98,13 +104,12 @@ def record_in_view(hub, name: str, folders: dict[str, Path]):
     return other.bmod if other is not None else None
 
 
-def dependency_notes(skill_dir: Path, parsed, folders: dict[str, Path]) -> list[str]:
+def dependency_notes(skill_dir: Path, parsed, folders: dict[str, Path], record) -> list[str]:
     """What the skill's module record and required skills lack in the ordered view of the skills roots."""
     import setup as hub
 
     skill = parsed.skill
     notes: list[str] = []
-    record = parsed.bmod or record_in_view(hub, skill.bmod, folders)
     if record is None:
         notes.append(
             f"belongs to a module whose record `{skill.bmod}` is not installed in the active skills roots. "
