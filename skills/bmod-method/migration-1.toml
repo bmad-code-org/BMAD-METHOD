@@ -169,7 +169,7 @@ These stay where they are, listed in the plan and the report with the reason:
 - `party-mode/`: v7 party mode reads its memory there.
 - `project-context.md`: `bmad-project-context` offers to absorb it.
 - `brainstorming/` sessions, `specs/` folders, and `forge/` that belong to no initiative.
-- What another installed module claims: a path its config names (TEA's `test-artifacts/`), or one its own migration (`knowledge.py` `migrations`) covers.
+- What another installed module claims: a path its config names (TEA's `test-artifacts/`) that lies outside the renamed planning folder, or one its own migration (`knowledge.py` `migrations`) covers. A configured path inside the planning folder moves with the folder; see "Configuration and cleanup".
 - Anything else at the store root or in the implementation folder. List it as not recognized, with this note: the migration leaves these alone; moving them is the user's call, and if a BMad module wrote one, that module's migration missed it and is worth an issue.
 
 ## Path rewrites
@@ -180,7 +180,7 @@ Then search the rest of the project, outside the store and `_bmad/`, for the old
 
 ## Configuration and cleanup
 
-Record `active_initiative = "initiative-<slug>"` under `[core]` in `_bmad/custom/config.user.toml`, creating the file if needed. When the store moved (`workspace`), set `output_folder` under `[core]` in `_bmad/custom/config.toml`, the committed team override, never in the installer-managed `_bmad/config.toml`. A `_bmad/custom/` override that names a moved path, such as a `persistent_facts` line, is shown in the plan with its new path and rewritten on approval. Leave `planning_artifacts` and `implementation_artifacts` alone; `bmad setup` owns the rest of `_bmad/`. Its v6 cleanup (`migrate_v6.py --clean`) drops the customization keys the retired skills read, `initiative_template`, `epic_template`, `story_template`, `spec_template`, `spec_output_path`, `run_folder_pattern` and `on_complete`, from `_bmad/custom/bmad-agent-po.toml` and its `.user` file, and prints a note naming `ticket_template` and `<capability>_after` in their place; run it when setup has not. The repo store needs no store config.
+Record `active_initiative = "initiative-<slug>"` under `[core]` in `_bmad/custom/config.user.toml`, creating the file if needed. When the store moved (`workspace`), set `output_folder` under `[core]` in `_bmad/custom/config.toml`, the committed team override, never in the installer-managed `_bmad/config.toml`. A `_bmad/custom/` override that names a moved path, such as a `persistent_facts` line, is shown in the plan with its new path and rewritten on approval. So is a module config key whose path lies inside the renamed planning folder (for example `modules.tea.test_artifacts`): the plan names its new location, and on approval the key is rewritten in `_bmad/custom/config.toml` so it still resolves. Leave `planning_artifacts` and `implementation_artifacts` alone; `bmad setup` owns the rest of `_bmad/`. Its v6 cleanup (`migrate_v6.py --clean`) drops the customization keys the retired skills read, `initiative_template`, `epic_template`, `story_template`, `spec_template`, `spec_output_path`, `run_folder_pattern` and `on_complete`, from `_bmad/custom/bmad-agent-po.toml` and its `.user` file, and prints a note naming `ticket_template` and `<capability>_after` in their place; run it when setup has not. The repo store needs no store config.
 
 Remove empty v6 folders left behind, and add a `.gitkeep` to any created folder that is empty.
 
@@ -213,6 +213,7 @@ checklist = [
   "No `spec-<slug>/` folder holding `spec-<slug>.md` remains under the output folder; each ticket it folded into holds the spec's lines in Requirements and Constraints, its companions beside it as References lines, and one `.memlog.md` with the spec's entries in order, and no `CAP-` id remains outside `archive-v6/`, `archive/`, a Requirements line's parentheses or `.memlog.md`.",
   "Every live path in `inputDocuments:`, `sources:`, `companions:`, References sections, and prose links resolves to a file from the folder that holds it now; archived files and files left in place keep their original paths. A path already dead in v6 is listed apart and does not fail the item; one the migration broke does.",
   "`_bmad/custom/config.user.toml` names the active initiative under `[core]`, and `core.output_folder` resolves to the store.",
+  "Every module config key whose path lay inside the v6 planning folder resolves to the folder it moved to.",
   "The store is under git as the user answered, no file is tracked by two repositories, and in a new workspace `bmad status` at its root reports the installation current.",
   "`.v6-v7-migration-backup-<datetime>/` holds every file the source folders held before the migration, and no commit includes it.",
   "The plan records every question, its answer and reason, the backup's path, every file the user identified, and each item's result.",
