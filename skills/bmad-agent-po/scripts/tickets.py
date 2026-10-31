@@ -73,7 +73,6 @@ EPIC_RE = re.compile(r"^epic-[^/]+$")
 BREAKDOWN = "tickets.toml"
 TICKETS = "tickets"
 TABLES = ("initiative", "epic", "entry")
-QUOTED_COMMENT_RE = re.compile(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')\s+#.*$""")
 FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---(?:\n|\Z)", re.S)
 PLAN_FIELDS = ("status", "assignee", "blocked_at", "blocked_reason")
 COMMENT_RE = re.compile(r"<!--.*?-->", re.S)  # a template's example sits in one
@@ -114,16 +113,79 @@ def parse_frontmatter(text: str, lenient: bool = False) -> dict:
         if not line.strip() or line.lstrip().startswith("#") or ":" not in line:
             continue
         key, _, value = line.partition(":")
-        value = value.split("   #")[0].strip()
-        quoted = QUOTED_COMMENT_RE.match(value)
-        data[key.strip()] = _scalar(quoted.group(1) if quoted else value)
+        data[key.strip()] = _scalar(_strip_comment(value))
     return data
+
+
+def _closing(value: str) -> int | None:
+    """End index just past the quoted scalar or inline list `value` starts with, or None if it never closes."""
+    quote, i, item = None, 0, 1  # item: where the current list item starts
+    while i < len(value):
+        c = value[i]
+        if quote == '"' and c == "\\":
+            i += 2
+            continue
+        if quote is not None and c == quote:
+            if quote == "'" and value[i + 1 : i + 2] == "'":
+                i += 2
+                continue
+            quote = None
+            if value[0] != "[":
+                return i + 1
+        elif quote is None and c in "\"'" and (i == 0 or (value[0] == "[" and not value[item:i].strip())):
+            quote = c
+        elif quote is None and value[0] == "[" and c == ",":
+            item = i + 1
+        elif quote is None and value[0] == "[" and c == "]":
+            return i + 1
+        i += 1
+    return None
+
+
+def _strip_comment(value: str) -> str:
+    """Drop a YAML comment: a `#` after whitespace, outside a quoted scalar or an inline list."""
+    if value[:1].isspace() and value.lstrip().startswith("#"):
+        return ""  # `key:   # note` is an empty value with a comment
+    value = value.strip()
+    if value[:1] in ("'", '"', "["):
+        end = _closing(value)
+        if end is not None:
+            rest = value[end:]
+            if not rest.strip() or (rest[:1].isspace() and rest.lstrip().startswith("#")):
+                return value[:end]
+            return value
+    m = re.search(r"\s#", value)
+    return value[: m.start()].rstrip() if m else value
+
+
+def _split_items(inner: str) -> list[str]:
+    """Split an inline list's items on the commas outside quotes."""
+    items, start, quote, i = [], 0, None, 0
+    while i < len(inner):
+        c = inner[i]
+        if quote == '"' and c == "\\":
+            i += 2
+            continue
+        if quote is not None:
+            if c == quote:
+                if quote == "'" and inner[i + 1 : i + 2] == "'":
+                    i += 2
+                    continue
+                quote = None
+        elif c in "\"'" and not inner[start:i].strip():
+            quote = c
+        elif c == ",":
+            items.append(inner[start:i])
+            start = i + 1
+        i += 1
+    items.append(inner[start:])
+    return [item.strip() for item in items]
 
 
 def _scalar(value: str):
     if value.startswith("[") and value.endswith("]"):
         inner = value[1:-1].strip()
-        return [] if not inner else [_scalar(v.strip()) for v in inner.split(",")]
+        return [] if not inner else [_scalar(v) for v in _split_items(inner)]
     if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
         if value[0] == '"':
             try:
@@ -1253,7 +1315,7 @@ def write_leaf(t: dict, tree: dict, root: Path | None) -> Path:
 
 def quoted(value: str) -> str:
     """A double-quoted scalar that `parse_frontmatter` reads back exactly."""
-    # parse_frontmatter cuts a value at "   #" and splits lines on these characters, so they go in as escapes.
+    # parse_frontmatter splits lines on these characters, so they go in as escapes; "   #" too, for older readers.
     text = json.dumps(value, ensure_ascii=False).replace("   #", "   \\u0023")
     return text.translate({c: f"\\u{c:04x}" for c in (0x85, 0x2028, 0x2029)})
 
