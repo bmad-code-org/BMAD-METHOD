@@ -1,6 +1,6 @@
-# Documents with doc pro
+# Documents with doc coach
 
-Open this when the user asks what `bmad-doc-pro` can write, how to call it without an agent, or how a team adds its own document templates.
+Open this when the user asks what `bmad-doc-coach` can write, how to call it without an agent, or how a team adds its own document templates.
 
 ## What it is for
 
@@ -24,11 +24,11 @@ It coaches the user through one document from a template, and later updates or v
 
 ## Calling it directly
 
-The user says what they want in plain words: the topic, a template (an id, a file path or a URL), an output folder, the stakes, and whether to run without questions. For example: "bmad-doc-pro coach me through a security review covering the OWASP Top 10, output to docs/owasp". It infers what is missing. "Update" or "validate" with a document's path revises it or reviews it without changes.
+The user says what they want in plain words: the topic, a template (an id, a file path or a URL), an output folder, the stakes, and whether to run without questions. For example: "bmad-doc-coach coach me through a security review covering the OWASP Top 10, output to docs/owasp". It infers what is missing. "Update" or "validate" with a document's path revises it or reviews it without changes.
 
 ## A team's own templates
 
-Templates are files in `_bmad/custom/doc-pro-templates/`. For settings, recommend `bmad-customize` on `bmad-doc-pro`; the team file `_bmad/custom/bmad-doc-pro.toml` is committed so everyone gets it.
+Templates are files in `_bmad/custom/doc-coach-templates/`. For settings, recommend `bmad-customize` on `bmad-doc-coach`; the team file `_bmad/custom/bmad-doc-coach.toml` is committed so everyone gets it.
 
 - Add a template: a file in that folder with `template` and `description` in its frontmatter, and any rubric beside it. A plain markdown file of headings works; each heading becomes a required section. A bare `## Table of Contents` heading after the title makes the skill fill and check one.
 - Replace a shipped template: a file in that folder with the same `template` id.

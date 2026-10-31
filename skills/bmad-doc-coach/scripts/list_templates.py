@@ -56,7 +56,7 @@ def run_gh(args: list[str]) -> str:
 
 
 def fetch_url(url: str) -> str:
-    with urlopen(Request(url, headers={"User-Agent": "bmad-doc-pro"}), timeout=TIMEOUT) as response:
+    with urlopen(Request(url, headers={"User-Agent": "bmad-doc-coach"}), timeout=TIMEOUT) as response:
         return response.read().decode("utf-8-sig")
 
 

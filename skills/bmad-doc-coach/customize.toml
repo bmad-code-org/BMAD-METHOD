@@ -1,8 +1,8 @@
 # DO NOT EDIT -- overwritten on every update.
 #
 # Override files:
-#   {project-root}/_bmad/custom/bmad-doc-pro.toml        (team)
-#   {project-root}/_bmad/custom/bmad-doc-pro.user.toml   (personal)
+#   {project-root}/_bmad/custom/bmad-doc-coach.toml        (team)
+#   {project-root}/_bmad/custom/bmad-doc-coach.user.toml   (personal)
 
 [workflow]
 
@@ -44,7 +44,7 @@ output = "{output_folder}/{active_initiative}/{id}-{slug}"
 # Where templates live, searched in order; the first template with an id wins. Each entry is a
 # folder, one template file, a GitHub URL (pin a version with @ref) or a sentence naming the tool
 # that reaches it. A template overrides this skill, so point only at sources you control.
-template_libraries = ["{project-root}/_bmad/custom/doc-pro-templates"]
+template_libraries = ["{project-root}/_bmad/custom/doc-coach-templates"]
 
 # A CSS file applied to every rendered view, after the default styles; empty uses the default.
 style = ""

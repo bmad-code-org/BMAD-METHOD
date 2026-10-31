@@ -145,14 +145,14 @@ Pressure-tests a half-formed idea in a questioning conversation, one question at
 
 **Output:** a `forge-report.html` keepsake every run, plus a `forge-<slug>.md` brief when the idea hardens. See [Explore and Validate an Idea](../plan/explore-and-validate-an-idea.md#pressure-test-an-idea-with-forge-idea).
 
-### bmad-doc-pro
+### bmad-doc-coach
 
 Coaches you through one document from a template library, then updates or validates it. It reads your inputs, asks only what you alone know, reviews the draft against a rubric, and polishes it. Rigor follows the stakes you state. Five general templates ship: `decision-record`, `postmortem`, `proposal`, `security-review`, and `pitch-deck`. Your team can add its own, replace a shipped one, or add rules to one; see [Write a Document Template](../customize/write-a-document-template.md). PRDs and product briefs belong to John (`bmad-agent-pm`).
 
 **Output:** `<id>-<slug>.md` with a `.memlog.md` and review files in its own folder, plus an optional HTML view, which a pitch deck renders as slides.
 
 :::note[Example]
-`bmad-doc-pro coach me through a security review covering the OWASP Top 10, output to docs/owasp`
+`bmad-doc-coach coach me through a security review covering the OWASP Top 10, output to docs/owasp`
 :::
 
 ### bmad-party-mode

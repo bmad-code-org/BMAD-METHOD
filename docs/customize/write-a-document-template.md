@@ -1,11 +1,11 @@
 ---
 title: 'Write a Document Template'
-description: Add your own template to bmad-doc-pro, replace or hide a shipped one, add your team's rules to a template, and set how rendered views look.
+description: Add your own template to bmad-doc-coach, replace or hide a shipped one, add your team's rules to a template, and set how rendered views look.
 sidebar:
   order: 5
 ---
 
-Use the `bmad-doc-pro` template library to make the skill coach your team through your own document types. Everything about a document is data. Template files say what each document asks for and what the review checks. The skill's customization says where templates live, where the result goes, and how the HTML view looks.
+Use the `bmad-doc-coach` template library to make the skill coach your team through your own document types. Everything about a document is data. Template files say what each document asks for and what the review checks. The skill's customization says where templates live, where the result goes, and how the HTML view looks.
 
 ## When to use this
 
@@ -15,12 +15,12 @@ Use the `bmad-doc-pro` template library to make the skill coach your team throug
 - Rendered views should carry your team's look.
 
 :::note[Prerequisites]
-BMad installed with the core tools, and `bmad setup` run. Templates go in `_bmad/custom/doc-pro-templates/`. Settings go in `_bmad/custom/bmad-doc-pro.toml`, which the team commits; `bmad-doc-pro.user.toml` beside it holds personal changes. `bmad-customize` can write either file for you. How overrides merge is in [Customize BMad](./customize-bmad.md).
+BMad installed with the core tools, and `bmad setup` run. Templates go in `_bmad/custom/doc-coach-templates/`. Settings go in `_bmad/custom/bmad-doc-coach.toml`, which the team commits; `bmad-doc-coach.user.toml` beside it holds personal changes. `bmad-customize` can write either file for you. How overrides merge is in [Customize BMad](./customize-bmad.md).
 :::
 
 ## Add a template to the library
 
-Save the template in `_bmad/custom/doc-pro-templates/`, with any rubric or method catalog beside it. The skill lists every markdown file there whose frontmatter has `template:`. Nothing else needs registering.
+Save the template in `_bmad/custom/doc-coach-templates/`, with any rubric or method catalog beside it. The skill lists every markdown file there whose frontmatter has `template:`. Nothing else needs registering.
 
 ```yaml
 ---
@@ -59,7 +59,7 @@ The first template with an id wins and the shipped templates are searched last, 
 `template_libraries` lists where templates live, in search order. An override appends to the list, and a folder that is missing or empty adds nothing.
 
 ```toml
-# _bmad/custom/bmad-doc-pro.toml
+# _bmad/custom/bmad-doc-coach.toml
 
 [workflow]
 template_libraries = ["https://github.com/acme/doc-templates@v1.2.0"]
@@ -72,7 +72,7 @@ template_libraries = ["https://github.com/acme/doc-templates@v1.2.0"]
 | A URL to one `.md` file | `https://example.com/templates/runbook.md` |
 | A sentence naming the tool that reaches it | `Search corp:confluence_search in the DOCS space for templates` |
 
-A library you cannot share goes in `bmad-doc-pro.user.toml`, which stays out of git. A teammate without access who updates one of those documents follows its existing headings instead. If a library cannot be read, the skill names it and carries on with the others.
+A library you cannot share goes in `bmad-doc-coach.user.toml`, which stays out of git. A teammate without access who updates one of those documents follows its existing headings instead. If a library cannot be read, the skill names it and carries on with the others.
 
 :::caution[Trust]
 A template overrides the skill, so a remote library can direct an agent that has tools. Point only at sources you control, and pin a version with `@ref` or a tag so the library cannot change between runs.
@@ -206,9 +206,9 @@ html_view = "always"
 `style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or an addition's `polish` instead. A template's `additions.<id>.style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template with `view: slides` renders unless `html_view` is `never`.
 
 :::tip[Templates for an agent]
-An agent's own templates ship in its `assets/` folder, and its `customize.toml` lists that folder in `template_libraries`. The agent passes the list when it runs `bmad-doc-pro`, and it is searched after yours, so your copy with the same id wins. The settings in `bmad-doc-pro.toml` (style, views, review and polish) still apply.
+An agent's own templates ship in its `assets/` folder, and its `customize.toml` lists that folder in `template_libraries`. The agent passes the list when it runs `bmad-doc-coach`, and it is searched after yours, so your copy with the same id wins. The settings in `bmad-doc-coach.toml` (style, views, review and polish) still apply.
 :::
 
 ## Check the result
 
-Run the resolver on `bmad-doc-pro` with `--key workflow.template_libraries` or `--key workflow.additions` to see the merged settings; see [Check what resolved](./customize-bmad.md#check-what-resolved). Then ask `bmad-doc-pro` for your new document type and confirm it offers your template.
+Run the resolver on `bmad-doc-coach` with `--key workflow.template_libraries` or `--key workflow.additions` to see the merged settings; see [Check what resolved](./customize-bmad.md#check-what-resolved). Then ask `bmad-doc-coach` for your new document type and confirm it offers your template.
