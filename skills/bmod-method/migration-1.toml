@@ -213,7 +213,7 @@ checklist = [
   "No `spec-<slug>/` folder holding `spec-<slug>.md` remains under the output folder; each ticket it folded into holds the spec's lines in Requirements and Constraints, its companions beside it as References lines, and one `.memlog.md` with the spec's entries in order, and no `CAP-` id remains outside `archive-v6/`, `archive/`, a Requirements line's parentheses or `.memlog.md`.",
   "Every live path in `inputDocuments:`, `sources:`, `companions:`, References sections, and prose links resolves to a file from the folder that holds it now; archived files and files left in place keep their original paths. A path already dead in v6 is listed apart and does not fail the item; one the migration broke does.",
   "`_bmad/custom/config.user.toml` names the active initiative under `[core]`, and `core.output_folder` resolves to the store.",
-  "Every module config key whose path lay inside the v6 planning folder resolves to the folder it moved to.",
+  "Every module config key whose folder moved with the renamed planning folder names its new location.",
   "The store is under git as the user answered, no file is tracked by two repositories, and in a new workspace `bmad status` at its root reports the installation current.",
   "`.v6-v7-migration-backup-<datetime>/` holds every file the source folders held before the migration, and no commit includes it.",
   "The plan records every question, its answer and reason, the backup's path, every file the user identified, and each item's result.",
