@@ -25,10 +25,13 @@ Usage:
 Output, one JSON object on stdout:
   {"skill", "shape_hint", "files": [{"path", "tokens", "kind"}], "skill_md_tokens", "total_tokens",
    "has_customize", "has_scripts", "scripts": [{"path", "has_pep723", "has_test"}],
-   "description_chars", "has_use_when", "frontmatter_ok", "bmod_kind", "path_findings": [...], "script_findings": [...]}
+   "description_chars", "has_use_when", "frontmatter_ok", "bmod_kind", "path_findings": [...], "script_findings": [...],
+   "long_paragraphs": [{"path", "line", "words", "longest_sentence"}]}
   kind is one of entry, prompt, script, test, asset, config, other.
   bmod_kind is none (no bmod.toml), skill (a module member), record (a record folder), record+skill (a
   single-skill module) or invalid (a file with neither table, or one that does not parse).
+  long_paragraphs lists the lines of entry and prompt files past 150 words or holding a sentence past 60, a
+  Markdown paragraph being one line; headings, tables, code fences and frontmatter are skipped.
 """
 
 from __future__ import annotations
@@ -49,6 +52,9 @@ from scan_scripts import scan_scripts  # noqa: E402
 
 MEMORY_RE = re.compile(r"_bmad/memory")
 SCRIPT_UTILITY_MAX_LINES = 60
+LONG_PARAGRAPH_WORDS = 150
+LONG_SENTENCE_WORDS = 60
+SENTENCE_END_RE = re.compile(r"(?<=[.?!])\s+")
 
 
 def kind_of(rel: Path) -> str:
@@ -106,16 +112,41 @@ def bmod_kind(root: Path) -> str:
     return "invalid"
 
 
+def long_paragraphs(text: str) -> list[dict]:
+    lines = text.splitlines()
+    start = 0
+    if lines and lines[0].strip() == "---":
+        start = next((i for i, line in enumerate(lines[1:], 2) if line.strip() == "---"), 0)
+    found = []
+    in_fence = False
+    for number, line in enumerate(lines[start:], start + 1):
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+        if in_fence or stripped.startswith(("#", "|", "```")):
+            continue
+        words = len(stripped.split())
+        longest = max(len(s.split()) for s in SENTENCE_END_RE.split(stripped))
+        if words > LONG_PARAGRAPH_WORDS or longest > LONG_SENTENCE_WORDS:
+            found.append({"line": number, "words": words, "longest_sentence": longest})
+    return found
+
+
 def build(root: Path) -> dict:
     skill_path = root / "SKILL.md"
     skill_text = read_text(skill_path) if skill_path.is_file() else None
 
     files = []
+    long_lines = []
     skill_md_tokens = 0
     for path in iter_text_files(root):
         rel = path.relative_to(root)
-        tokens, _ = count_tokens(read_text(path))
-        files.append({"path": rel.as_posix(), "tokens": tokens, "kind": kind_of(rel)})
+        text = read_text(path)
+        tokens, _ = count_tokens(text)
+        kind = kind_of(rel)
+        files.append({"path": rel.as_posix(), "tokens": tokens, "kind": kind})
+        if kind in ("entry", "prompt"):
+            long_lines.extend({"path": rel.as_posix(), **found} for found in long_paragraphs(text))
         if path == skill_path:
             skill_md_tokens = tokens
 
@@ -144,6 +175,7 @@ def build(root: Path) -> dict:
         "bmod_kind": bmod_kind(root),
         "path_findings": scan_skill(root)["findings"],
         "script_findings": scripts_result["findings"],
+        "long_paragraphs": long_lines,
     }
 
 

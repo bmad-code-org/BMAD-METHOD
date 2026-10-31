@@ -24,6 +24,7 @@ KEYS = {
     "bmod_kind",
     "path_findings",
     "script_findings",
+    "long_paragraphs",
 }
 SKILL_MD = "---\nname: {name}\ndescription: 'Does a thing. Use when asked.'\n---\n\n# Body\n\n{body}\n"
 GOOD_SCRIPT = '# /// script\n# requires-python = ">=3.11"\n# ///\nprint(1)\n'
@@ -99,6 +100,28 @@ class PrepassTest(unittest.TestCase):
             self.assertEqual(sorted(f["rule"] for f in data["path_findings"]), ["bare-script-call", "missing-file"])
             self.assertEqual(sorted(f["rule"] for f in data["script_findings"]), ["pep723-missing", "test-missing"])
             self.assertEqual(data["shape_hint"], "script-utility")
+
+    def test_long_paragraphs(self):
+        long_paragraph = " ".join(["Do this thing now."] * 40)
+        long_sentence = " ".join(["word"] * 61) + "."
+        body = f"Short line.\n\n{long_paragraph}\n\n- {long_sentence}\n\n# {long_paragraph}\n\n| {long_paragraph} |"
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                body=body,
+                files={
+                    "references/fenced.md": f"```text\n{long_paragraph}\n```\n",
+                    "assets/template.md": f"{long_paragraph}\n",
+                },
+            )
+            found = prepass(skill)["long_paragraphs"]
+            self.assertEqual(
+                found,
+                [
+                    {"path": "SKILL.md", "line": 10, "words": 160, "longest_sentence": 4},
+                    {"path": "SKILL.md", "line": 12, "words": 62, "longest_sentence": 62},
+                ],
+            )
 
     def test_shape_hints(self):
         with tempfile.TemporaryDirectory() as tmp:
