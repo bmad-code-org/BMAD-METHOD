@@ -14,16 +14,18 @@ Smithy runs inside a project where `bmad` is set up (`_bmad/` exists); without i
 
 | Skill | For | When to recommend |
 |---|---|---|
-| `bmad-toolsmith` | Smithy, the Toolsmith. Builds a skill, agent or module from a conversation about what it is for, who uses it and what it produces. Shows a read-back (name, description, shape, registration, approach, location, files) and writes nothing until the user approves it; every line can be changed. Picks the shape as a conclusion of the conversation, never as a menu. After a build the quality lenses run on their own and Smithy fixes what they find before handing over. Also edits, converts, reviews, packages, validates and migrates skills that exist, and offers evals at the end of every build. | Any request to create or change a skill, agent, persona or module; to review or judge one; to package skills; to convert something from another tool; to migrate an old module. Ask for Smithy by name or describe the thing wanted. |
+| `bmad-toolsmith` | Smithy, the Toolsmith. Builds a skill, agent or module from a conversation about what it is for, who uses it and what it produces. Shows a read-back (name, description, shape, registration, approach, location, files) and writes nothing until the user approves it; every line can be changed. Picks the shape as a conclusion of the conversation, never as a menu. After a build the quality lenses run on their own and Smithy fixes what they find before handing over. Also edits, converts, reviews, cuts, packages, validates and migrates skills that exist, and offers evals at the end of every build. | Any request to create or change a skill, agent, persona or module; to review or judge one; to cut one down; to package skills; to convert something from another tool; to migrate an old module. Ask for Smithy by name or describe the thing wanted. |
 | `bmad-eval` | Runs a skill's evals and reports what they show, in four modes: baseline (does the skill beat the bare model), variant (does a stripped or prior version do as well), quality (does the output meet its rubric), trigger (does the description fire on the right requests and stay quiet on the rest). Smithy reaches it from his menu and at the end of a build, so a user rarely needs to call it directly. | The user asks whether a skill works, is worth keeping, triggers reliably, or whether a change made it better or worse. Call it directly when the user has a skill and cases already and wants numbers, not a conversation. |
 
 ## Start here
 
 - "Make me a skill", "build an agent", "I need a module", "create a persona", "write me a custom command" → `bmad-toolsmith`. Smithy asks what it is for first; the user does not need to know what shape they want (`help/shapes.md`, `help/approaches.md`).
 - "Turn this chat into a skill", "we keep doing this by hand", "I keep pasting this prompt" → `bmad-toolsmith`. The conversation is the material; Smithy mines it before asking anything.
-- "Make a skill from my sessions", a transcript, session logs → `bmad-toolsmith`, the from-logs approach.
+- "Make a skill from my sessions", a transcript, session logs → `bmad-toolsmith`, the from-logs approach. It works from the logs of whichever agent the user runs and confirms where they are first (`help/approaches.md`).
+- "I keep correcting this installed skill" → `bmad-customize` when the user knows what to change, or the from-logs approach to find it, which hands a customization to `bmad-customize`.
 - "My skill does not trigger", "it fires on the wrong things" → `bmad-toolsmith` for the fix, or `bmad-eval` in trigger mode when the user wants the measurement first. A trigger eval, not a rewrite by feel, settles it (`help/evals.md`).
 - "Is this skill any good", "review this skill", "how could it be smaller" → `bmad-toolsmith`, review mode. Findings in chat and a markdown file; nothing fails or blocks (`help/modes.md`, `help/how-to-review.md`).
+- "Cut this skill down", "make it smaller", "tighten this skill" → `bmad-toolsmith`, cut mode. It rewrites the prose, checks that no rule was lost and commits nothing (`help/modes.md`).
 - "Does my skill actually help", "is it worth keeping", "did my change make it better" → `bmad-eval`, baseline or variant mode (`help/evals.md`).
 - "Which agent runs the eval", "can I run evals from Codex", "is the eval sandboxed" → `help/evals.md`, the harness section.
 - "Package these", "make this a module", "ship these together" → `bmad-toolsmith`, package mode.
@@ -52,7 +54,7 @@ Smithy proposes where a new skill goes in the read-back and the user confirms or
 |---|---|
 | Smithy built a skill | The lenses have already run and their defects are fixed; Smithy said what changed. Next: the trigger eval he offers, then one real request to try. A baseline eval when they want proof the skill beats the bare model. For a new module record, `bmad setup <code>`. |
 | Smithy edited, packaged or migrated a skill the user owns | A review, since the lenses do not run unasked over a skill Smithy did not write. Then the trigger eval if the description changed. |
-| A review report | Edit mode for the findings the user accepts. The report is advice; the user picks. |
+| A review report | Edit mode for the findings the user accepts, or cut mode when the leanness findings run through the whole skill. The report is advice; the user picks. |
 | A trigger eval with failures | Smithy revises the description from the failures and runs it again (`help/evals.md`). |
 | A baseline the skill no longer wins | Retire the skill or rethink it; patching a skill the bare model matches is wasted work. |
 | A migration | It converts in place, then validates and ships. Offer setup next, since the module's config questions may have changed. |
@@ -73,7 +75,7 @@ Each topic file below sits in this folder and goes deeper on one subject. Read o
 | `help/shape-multi-skill-module.md` | A module of several skills: the record folder, roster, help and retired list. |
 | `help/registration.md` | Whether a skill joins a module, gets its own record or stays outside the registry; what each gives; contributing to the BMad Method module versus extending it in a project. |
 | `help/approaches.md` | How a build runs: lean, scaffold and guide, eval-first, the skill-creator loop, from session logs; which fits the user's situation. |
-| `help/modes.md` | Working on a skill that exists: edit, convert, review, package, validate, migrate; what each does and the phrase that reaches it. |
+| `help/modes.md` | Working on a skill that exists: edit, convert, review, cut, package, validate, migrate; what each does and the phrase that reaches it. |
 | `help/evals.md` | `bmad-eval` in depth: what each mode answers, what a trigger eval is, why near misses matter, how many runs, which harness runs it and how that is recorded, where runs land. |
 | `help/naming.md` | What to call a skill or module: why a prefix of their own, what `bmad-` means, how agents and module records are named. |
 | `help/craft-progressive-disclosure.md` | How big a skill should be, what loads when, why a complex workflow is carved into files loaded only when reached. |
