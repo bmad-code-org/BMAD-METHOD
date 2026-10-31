@@ -1838,14 +1838,17 @@ def module_update_report(project_root: Path, installed: InstalledModule) -> dict
 
 
 def pinned_ref(project_root: Path, installed: InstalledModule) -> str | None:
-    """The `ref` the skills CLI lock holds for the module's record, when it was installed at one."""
+    """The version tag the skills CLI lock holds for the module's record, when it was installed at one.
+
+    A branch or commit ref is not a pin: `npx skills update` follows a branch and fetches it again.
+    """
     try:
         lock = read_skills_lock(lock_path(project_root, installed.source))
     except Exception:
         return None
     entry = lock["skills"].get(installed.folder) if lock is not None else None
     ref = entry.get("ref") if isinstance(entry, dict) else None
-    return ref if isinstance(ref, str) and ref.strip() else None
+    return ref if isinstance(ref, str) and SEMVER.fullmatch(ref.removeprefix("v")) else None
 
 
 def source_record_report(project_root: Path, update_source: str, folder: str) -> dict[str, object]:

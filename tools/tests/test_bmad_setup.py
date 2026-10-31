@@ -3069,6 +3069,13 @@ class BmadStatusTests(unittest.TestCase):
             )
             self.assertIn(report["install"], report["instruction"])
 
+            for branch in ("main", "next", "0123456789abcdef0123456789abcdef01234567", "V6.12"):
+                write(
+                    project / "skills-lock.json",
+                    json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": branch}}}),
+                )
+                self.assertEqual(update()["state"], "newer-available")
+
             write(project / "skills-lock.json", "not json")
             self.assertEqual(update()["state"], "newer-available")
 
