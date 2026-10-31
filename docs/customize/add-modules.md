@@ -69,7 +69,7 @@ Build.
 ### Test Architect (TEA)
 
 Test strategy, automation guidance, and release-gate decisions through an
-agent and nine workflows. Its `bmad-testarch-automate` skill generates
+agent and eight workflows. Its `bmad-tea-automate` skill generates
 heavier test coverage than the built-in `bmad-qa-generate-e2e-tests`:
 fixtures, more test levels, and knowledge-base patterns. See
 [Test Completed Work](../build/test-completed-work.md) to choose between
@@ -78,11 +78,12 @@ the two.
 - **Code:** `tea`
 - **npm:** [`bmad-method-test-architecture-enterprise`](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)
 - **GitHub:** [bmad-code-org/bmad-method-test-architecture-enterprise](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)
+- **Install (TEA 3.x):** `npx skills add bmad-code-org/bmad-method-test-architecture-enterprise`, then `bmad setup tea`
 
 **Provides:**
 
 - Murat agent (Master Test Architect and Quality Advisor)
-- Workflows for test design, ATDD, automation, test review, and traceability
+- Workflows for test design, automation (expand mode, and red mode for acceptance test-driven development, or ATDD), test review, and traceability
 - NFR assessment, CI setup, and framework scaffolding
 - P0-P3 prioritization with optional Playwright Utils and MCP integrations
 
