@@ -1842,6 +1842,8 @@ def module_update_report(project_root: Path, installed: InstalledModule) -> dict
                     + (
                         f"to move to {source_version}, add it again at the newer tag: {command}"
                         if command is not None
+                        else f"to move to {source_version}, add it again from the module's source"
+                        if released
                         else f"{source_version} is not tagged yet, so stay on {pinned} until it is released"
                     )
                 ),
