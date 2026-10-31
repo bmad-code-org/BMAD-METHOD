@@ -1,6 +1,6 @@
 ---
 name: bmad-doc-pro
-description: 'Coaches the user through writing, updating or validating a document. Use when the user says ''decision record'', ''ADR'', ''postmortem'', ''proposal'', ''grant application'', ''security review'', ''threat model'', ''pitch deck'', ''slides for a talk'', ''presentation'', ''coach me through writing a ...'' or ''use template X''. Not for PRDs or product briefs (bmad-agent-pm).'
+description: 'Coaches the user through writing, updating or validating a document. Use when invoked by name'
 ---
 
 # BMad Doc Pro
