@@ -2852,6 +2852,39 @@ class BmadConfigScopeTests(unittest.TestCase):
             self.assertEqual((custom / ".gitignore").read_text(encoding="utf-8"), "*.user.toml\n")
             self.assertEqual((custom / "keep.txt").read_text(encoding="utf-8"), "keep\n")
 
+    def test_the_render_folder_is_ignored_by_git_and_its_gitignore_is_never_edited(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, skill = self.fixture(Path(temp_dir))
+            self.answer_all(project, skill)
+            render = project / "_bmad" / "render"
+            self.assertEqual((render / ".gitignore").read_text(encoding="utf-8"), "*\n!.gitignore\n")
+
+            # A project that set up before this rule existed is owed a setup, which adds it.
+            (render / ".gitignore").unlink()
+            write(render / "bmad-build" / "snapshot.md", "rendered\n")
+            self.assertEqual(status_report(self, project, skill)["next"], "bmad setup")
+            self.assertTrue(setup_report(self, project, skill)["changed"])
+            self.assertEqual((render / ".gitignore").read_text(encoding="utf-8"), "*\n!.gitignore\n")
+            self.assertEqual((render / "bmad-build" / "snapshot.md").read_text(encoding="utf-8"), "rendered\n")
+            if shutil.which("git"):
+                env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+                subprocess.run(["git", "init", "-q"], cwd=project, env=env, check=True)
+
+                def check_ignore(path: str) -> subprocess.CompletedProcess:
+                    command = ["git", "check-ignore", "-v", "--no-index", path]
+                    return subprocess.run(command, cwd=project, env=env, capture_output=True, text=True)
+
+                self.assertTrue(
+                    check_ignore("_bmad/render/bmad-build/snapshot.md").stdout.startswith("_bmad/render/.gitignore:1:*")
+                )
+                self.assertTrue(
+                    check_ignore("_bmad/render/.gitignore").stdout.startswith("_bmad/render/.gitignore:2:!.gitignore")
+                )
+
+            (render / ".gitignore").write_text("# ours now\n", encoding="utf-8")
+            self.assertFalse(setup_report(self, project, skill)["changed"])
+            self.assertEqual((render / ".gitignore").read_text(encoding="utf-8"), "# ours now\n")
+
 
 class BmadStatusTests(unittest.TestCase):
     def test_status_changes_nothing_on_disk(self):
