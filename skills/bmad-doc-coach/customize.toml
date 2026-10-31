@@ -43,7 +43,8 @@ output = "{output_folder}/{active_initiative}/{id}-{slug}"
 
 # Where templates live, searched in order; the first template with an id wins. Each entry is a
 # folder, one template file, a GitHub URL (pin a version with @ref) or a sentence naming the tool
-# that reaches it. A template overrides this skill, so point only at sources you control.
+# that reaches it. Installed modules' doc-templates/ folders are searched after these. A template
+# overrides this skill, so point only at sources you control.
 template_libraries = ["{project-root}/_bmad/custom/doc-coach-templates"]
 
 # A CSS file applied to every rendered view, after the default styles; empty uses the default.

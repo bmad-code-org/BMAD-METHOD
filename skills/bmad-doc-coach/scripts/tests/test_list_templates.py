@@ -167,6 +167,48 @@ def test_main_prints_json(tmp_path, capsys):
     assert json.loads(capsys.readouterr().out)["templates"][0]["id"] == "a"
 
 
+def module(root: Path, name: str, *files: tuple[str, str], record: str = '[bmod]\ncode = "x"\n') -> Path:
+    folder = root / name / "doc-templates"
+    folder.mkdir(parents=True)
+    (root / name / "bmod.toml").write_text(record)
+    for file, text in files:
+        (folder / file).write_text(text)
+    return folder
+
+
+def test_module_templates_come_after_every_library(tmp_path, capsys):
+    skills = tmp_path / "skills"
+    module(skills, "bmod-core-tools", ("t.md", template("a", "Shipped.")), ("u.md", template("b")))
+    custom = tmp_path / "custom"
+    custom.mkdir()
+    (custom / "t.md").write_text(template("a", "Ours."))
+    assert list_templates.main([str(custom), "--root", str(skills)]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert [(t["id"], t["description"]) for t in result["templates"]] == [("a", "Ours."), ("b", "Use it.")]
+    assert result["shadowed"][0]["id"] == "a"
+
+
+def test_only_module_records_count(tmp_path):
+    module(tmp_path, "bmod-x", ("t.md", template("a")))
+    module(tmp_path, "bmad-skill", ("u.md", template("b")), record='[skill]\nbmod = "bmod-x"\n')
+    module(tmp_path, "bmad-broken", ("v.md", template("c")), record="not toml [")
+    assert list_templates.module_libraries([str(tmp_path)]) == [str(tmp_path / "bmod-x" / "doc-templates")]
+
+
+def test_a_module_in_two_linked_roots_is_read_once(tmp_path):
+    real = tmp_path / "real"
+    module(real, "bmod-x", ("t.md", template("a")))
+    link = tmp_path / "link"
+    link.symlink_to(real)
+    assert len(list_templates.module_libraries([str(real), str(link)])) == 1
+
+
+def test_roots_alone_are_enough(tmp_path, capsys):
+    module(tmp_path, "bmod-x", ("t.md", template("a")))
+    assert list_templates.main(["--root", str(tmp_path)]) == 0
+    assert json.loads(capsys.readouterr().out)["templates"][0]["id"] == "a"
+
+
 def test_no_sources_exits_2(capsys):
     assert list_templates.main([]) == 2
     assert "usage" in capsys.readouterr().err

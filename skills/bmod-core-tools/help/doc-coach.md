@@ -31,7 +31,8 @@ The user says what they want in plain words: the topic, a template (an id, a fil
 Templates are files in `_bmad/custom/doc-coach-templates/`. For settings, recommend `bmad-customize` on `bmad-doc-coach`; the team file `_bmad/custom/bmad-doc-coach.toml` is committed so everyone gets it.
 
 - Add a template: a file in that folder with `template` and `description` in its frontmatter, and any rubric beside it. A plain markdown file of headings works; each heading becomes a required section. A bare `## Table of Contents` heading after the title makes the skill fill and check one.
-- Replace a shipped template: a file in that folder with the same `template` id.
+- Replace or edit a shipped template: copy it from `doc-templates/` in the `bmod-core-tools` record into that folder and keep its `template` id. The project's copy wins.
+- A module adds templates through `doc-templates/` in its record folder; no setting is needed.
 - Use a shared library: add a folder or a pinned GitHub URL to `template_libraries`, in the `.user.toml` when it is private. Only sources the team controls, because a template overrides the skill.
 - Add to a shipped template without replacing it: `[workflow.additions.<id>]` with facts to load, content the document must include, review checks, polish passes and an output folder. Additions survive updates to the shipped template.
 - `style` sets the look of every rendered view; `html_view` is `offer`, `always` or `never`.

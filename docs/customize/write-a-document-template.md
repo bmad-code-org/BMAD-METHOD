@@ -52,7 +52,7 @@ release,rollback,Rollback,How a change is undone.,"How is this change undone?|Wh
 
 ## Replace a shipped template
 
-The first template with an id wins and the shipped templates are searched last, so a template in any library with a shipped `template:` value replaces it. To use your organization's postmortem format, save it in your folder with `template: postmortem`.
+The first template with an id wins, and installed modules' templates are searched last, so a template in any library with the same `template:` value replaces one a module installed. To change an installed template, copy it from the module's `doc-templates/` folder into yours, with any rubric or catalog it names, keep its `template:` value and edit the copy. To use your organization's postmortem format, save it in your folder with `template: postmortem`.
 
 ## Use more than one library
 
@@ -77,6 +77,10 @@ A library you cannot share goes in `bmad-doc-coach.user.toml`, which stays out o
 :::caution[Trust]
 A template overrides the skill, so a remote library can direct an agent that has tools. Point only at sources you control, and pin a version with `@ref` or a tag so the library cannot change between runs.
 :::
+
+## Ship templates in a module
+
+A module adds templates by putting them in `doc-templates/` in its record folder, the folder holding its `bmod.toml`, with any rubric or catalog beside them. They are offered once the module is installed, with no setting, and they update with the module. The shipped examples live this way in `bmod-core-tools`.
 
 ## Write the template file
 

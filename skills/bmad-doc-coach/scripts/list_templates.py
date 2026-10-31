@@ -7,24 +7,27 @@
 Takes sources in search order; the first template with an id wins. A source is a local folder
 or file, a GitHub URL (a repo, a /tree/ folder or a /blob/ file, with an optional @ref, read
 through `gh`), a URL to one .md file, or a sentence naming a tool, which only the agent can
-follow. A file is a template when its frontmatter has `template:`, the template's id. A missing
-local path adds nothing. `rubric` and `methods` are relative to the template and come back
-resolved.
+follow. Each --root is a skills folder; the `doc-templates/` folder of every module record in it
+is searched after the sources. A file is a template when its frontmatter has `template:`, the
+template's id. A missing local path adds nothing. `rubric` and `methods` are relative to the
+template and come back resolved.
 
 Prints JSON:
   templates     id, description, file, rubric, methods, source, in search order
   shadowed      id, file, source, kept: templates hidden by an earlier one with the same id
   unreachable   source, reason: sources that could not be read
   tool_sources  sentences for the agent to follow
-Exits 0, or 2 with no sources.
+Exits 0, or 2 with no sources and no roots.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 from urllib.parse import quote, urljoin, urlsplit
 from urllib.request import Request, urlopen
@@ -35,6 +38,7 @@ GITHUB = re.compile(
     r"^https://github\.com/(?P<owner>[^/]+)/(?P<repo>[^/@]+?)(?:\.git)?"
     r"(?:/(?:tree|blob)/(?P<tree_ref>[^/@]+)(?:/(?P<path>[^@]*?))?)?/?(?:@(?P<ref>[^/]+))?/?$"
 )
+MODULE_FOLDER = "doc-templates"
 TIMEOUT = 30
 
 
@@ -94,6 +98,20 @@ def beside(file: str, value: str) -> str:
     return urljoin(file, value) if "://" in file else str(Path(file).parent / value)
 
 
+def module_libraries(roots: list[str]) -> list[str]:
+    """The `doc-templates/` folder of each module record, once each, roots in order."""
+    libraries: dict[Path, str] = {}
+    for root in roots:
+        for folder in sorted(Path(root).glob(f"*/{MODULE_FOLDER}")):
+            try:
+                record = tomllib.loads((folder.parent / "bmod.toml").read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            if "bmod" in record:
+                libraries.setdefault(folder.resolve(), str(folder))
+    return list(libraries.values())
+
+
 def scan(sources: list[str]) -> dict:
     found: dict[str, dict] = {}
     shadowed, unreachable, tool_sources = [], [], []
@@ -136,10 +154,14 @@ def scan(sources: list[str]) -> dict:
 
 
 def main(argv: list[str]) -> int:
-    if not argv:
-        print("usage: list_templates.py <source> [<source> ...]", file=sys.stderr)
+    parser = argparse.ArgumentParser(description="List the document templates in a set of libraries.")
+    parser.add_argument("sources", nargs="*")
+    parser.add_argument("--root", action="append", default=[], help="a skills folder to search for module templates")
+    args = parser.parse_args(argv)
+    if not args.sources and not args.root:
+        parser.print_usage(sys.stderr)
         return 2
-    print(json.dumps(scan(argv), indent=2))
+    print(json.dumps(scan(args.sources + module_libraries(args.root)), indent=2))
     return 0
 
 

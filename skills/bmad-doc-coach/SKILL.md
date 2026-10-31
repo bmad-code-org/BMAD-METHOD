@@ -1,6 +1,6 @@
 ---
 name: bmad-doc-coach
-description: 'Coaches the user through writing, updating or validating a document. Use when invoked by name'
+description: 'Coaches the user through writing, updating or validating a document. Use when invoked by skill name only'
 ---
 
 # BMad Doc Coach
@@ -23,7 +23,7 @@ A calling agent passes its persona (keep it), its template libraries and additio
 
 ## Choose the template
 
-Unless the user gave a template's path or URL, list the templates: `uv run {skill-root}/scripts/list_templates.py <sources>`, the sources being `{workflow.template_libraries}`, then any the caller passed, then `{skill-root}/assets`, in that order. Find the templates in any `tool_sources` entry with the tool it names. Name any `unreachable` library and go on without it, stopping only if the user asked for a template from it. Read a GitHub file through `gh`.
+Unless the user gave a template's path or URL, list the templates: `uv run {skill-root}/scripts/list_templates.py <sources> --root <folder>`, the sources being `{workflow.template_libraries}`, then any the caller passed, in that order, with one `--root` for each skills folder the host has active, project folders first. Installed modules' templates are searched last. Find the templates in any `tool_sources` entry with the tool it names. Name any `unreachable` library and go on without it, stopping only if the user asked for a template from it. Read a GitHub file through `gh`.
 
 Unless the user named a template, pick from the listed descriptions alone, among the ones the caller says fit when it says, say why in one line, and name close alternatives. Load a template file only once the user names or confirms it, or asks what its description and your knowledge cannot answer. Nothing fits: build a structure for the type and say so. Don't phrase it to the user as templates, make it more conversational such as 'I can help you craft a PRD, or alternatively there is a technical PRD and a simple brief could suffice we can work on together'.
 
@@ -61,7 +61,7 @@ Add what the additions' `include` requires. Give stable ids to anything others w
 
 ## Review
 
-Reviewers: a rubric walker given the call's rubric, else the template's `rubric` (default: this skill's own `{skill-root}/assets/rubric-planning.md`), the template's done when and the additions' `checks`; each `{workflow.finalize_reviewers}` entry; any other the document warrants. `{workflow.doc_standards}` and the additions' `polish` are never reviewers, even when they name a review skill; they run at Finalize step 5. Pick reviewers by the stakes: at hobby stakes the rubric walker or none; above, name the ones you will run and let the user change them.
+Reviewers: a rubric walker given the call's rubric, else the template's `rubric` (default: this skill's own `{skill-root}/references/rubric-planning.md`), the template's done when and the additions' `checks`; each `{workflow.finalize_reviewers}` entry; any other the document warrants. `{workflow.doc_standards}` and the additions' `polish` are never reviewers, even when they name a review skill; they run at Finalize step 5. Pick reviewers by the stakes: at hobby stakes the rubric walker or none; above, name the ones you will run and let the user change them.
 
 Run them as parallel subagents on the document and its companions, told its stakes and altitude, each writing `{run}/review-<lens>.md` and returning only verdict, top findings and path. Without subagents, run them in turn, each file written before the next.
 
