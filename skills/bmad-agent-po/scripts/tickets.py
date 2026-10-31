@@ -1707,7 +1707,7 @@ read as the folder that holds it. Left out, it is the active initiative."""
 
 BACKLOG_HELP = (
     "With no <dir>, a ticket the initiative does not hold is looked for in the backlog folder, "
-    "except by a bare number, which is ambiguous there."
+    "except by a bare number, which is ambiguous there unless it is the ticket's tracker id."
 )
 
 PARENT_HELP = """A parent initiative, whose `tickets.toml` lists `[[initiative]]` tables, works only with status
