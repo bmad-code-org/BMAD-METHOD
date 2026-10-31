@@ -3034,6 +3034,87 @@ class BmadStatusTests(unittest.TestCase):
             self.assertEqual([item["state"] for item in reports], ["current", "current"])
             self.assertEqual([item["source_version"] for item in reports], ["1.2.3", "1.2.3"])
 
+    def test_a_module_installed_at_a_tag_is_pinned_not_newer_available(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "github-skill", "githubmod", update_source=BMAD_SOURCE, version="3.5.0")
+            (module,) = [m for m in setup.discover_installation(skill).modules if m.module == "githubmod"]
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = b'[bmod]\nversion = "3.6.0"\n'
+            response.__exit__.return_value = False
+
+            def update() -> dict:
+                with mock.patch.object(setup.urllib.request, "urlopen", return_value=response):
+                    return setup.module_update_report(project, module)
+
+            self.assertEqual(update()["state"], "newer-available")
+            for entry in ({"source": "bmad-code-org/BMAD-METHOD"}, {"ref": ""}):
+                write(project / "skills-lock.json", json.dumps({"version": 1, "skills": {"bmod-githubmod": entry}}))
+                self.assertEqual(update()["state"], "newer-available")
+
+            write(
+                project / "skills-lock.json",
+                json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": "v3.5.0"}}}),
+            )
+            report = update()
+            self.assertEqual(report["state"], "pinned")
+            self.assertEqual(report["pinned_ref"], "v3.5.0")
+            self.assertEqual(report["source_version"], "3.6.0")
+            self.assertEqual(
+                report["install"],
+                "npx skills add bmad-code-org/BMAD-METHOD#v3.6.0 --skill bmod-githubmod github-skill",
+            )
+            self.assertIn(report["install"], report["instruction"])
+
+            write(project / "skills-lock.json", "not json")
+            self.assertEqual(update()["state"], "newer-available")
+
+    def test_a_pinned_module_that_is_current_stays_current(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "github-skill", "githubmod", update_source=BMAD_SOURCE, version="3.5.0")
+            (module,) = [m for m in setup.discover_installation(skill).modules if m.module == "githubmod"]
+            write(
+                project / "skills-lock.json",
+                json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": "v3.5.0"}}}),
+            )
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = b'[bmod]\nversion = "3.5.0"\n'
+            response.__exit__.return_value = False
+            with mock.patch.object(setup.urllib.request, "urlopen", return_value=response):
+                self.assertEqual(setup.module_update_report(project, module)["state"], "current")
+
+    def test_a_globally_installed_module_reads_the_global_lock(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            state = root / "state"
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "github-skill", "githubmod", update_source=BMAD_SOURCE, version="3.5.0")
+            (module,) = [m for m in setup.discover_installation(skill).modules if m.module == "githubmod"]
+            write(
+                state / "skills" / ".skill-lock.json",
+                json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": "v3.5.0"}}}),
+            )
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = b'[bmod]\nversion = "3.6.0"\n'
+            response.__exit__.return_value = False
+            with (
+                mock.patch.dict(os.environ, {"XDG_STATE_HOME": str(state)}),
+                mock.patch.object(setup.urllib.request, "urlopen", return_value=response),
+            ):
+                report = setup.module_update_report(project, module)
+            self.assertEqual(report["state"], "pinned")
+            self.assertTrue(report["install"].endswith(" -g"))
+
     def test_a_github_source_with_no_path_reads_the_file_at_the_repo_root(self):
         setup = load_setup()
         with tempfile.TemporaryDirectory() as temp_dir:
