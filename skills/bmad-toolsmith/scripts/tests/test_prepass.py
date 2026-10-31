@@ -123,6 +123,19 @@ class PrepassTest(unittest.TestCase):
                 ],
             )
 
+    def test_long_paragraphs_close_a_fence_only_on_its_own_marker(self):
+        prose = " ".join(["word"] * 151)
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                files={
+                    "references/nested.md": f"````\n```\n{prose}\n````\n\n{prose}\n",
+                    "references/tilde.md": f"~~~\n{prose}\n```\n{prose}\n~~~\n\n{prose}\n",
+                },
+            )
+            found = [(item["path"], item["line"]) for item in prepass(skill)["long_paragraphs"]]
+            self.assertEqual(found, [("references/nested.md", 6), ("references/tilde.md", 7)])
+
     def test_shape_hints(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

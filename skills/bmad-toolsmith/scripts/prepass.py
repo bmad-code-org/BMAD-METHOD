@@ -55,6 +55,7 @@ SCRIPT_UTILITY_MAX_LINES = 60
 LONG_PARAGRAPH_WORDS = 150
 LONG_SENTENCE_WORDS = 60
 SENTENCE_END_RE = re.compile(r"(?<=[.?!])\s+")
+FENCE_RE = re.compile(r"^(`{3,}|~{3,})")
 
 
 def kind_of(rel: Path) -> str:
@@ -118,12 +119,18 @@ def long_paragraphs(text: str) -> list[dict]:
     if lines and lines[0].strip() == "---":
         start = next((i for i, line in enumerate(lines[1:], 2) if line.strip() == "---"), 0)
     found = []
-    in_fence = False
+    fence = ""
     for number, line in enumerate(lines[start:], start + 1):
         stripped = line.strip()
-        if stripped.startswith("```"):
-            in_fence = not in_fence
-        if in_fence or stripped.startswith(("#", "|", "```")):
+        marker = FENCE_RE.match(stripped)
+        if fence:
+            if marker and stripped == marker[1] and stripped[0] == fence[0] and len(stripped) >= len(fence):
+                fence = ""
+            continue
+        if marker:
+            fence = marker[1]
+            continue
+        if stripped.startswith(("#", "|")):
             continue
         words = len(stripped.split())
         longest = max(len(s.split()) for s in SENTENCE_END_RE.split(stripped))
