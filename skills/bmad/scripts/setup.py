@@ -1821,11 +1821,17 @@ def module_update_report(project_root: Path, installed: InstalledModule) -> dict
         beside = (
             member.folder for member in installed.members if is_global(member.source, project_root) == global_install
         )
-        command = install_command(
-            update_source,
-            *dict.fromkeys((installed.folder, *beside)),
-            global_install=global_install,
-            ref=tag,
+        # The source reads `main`, which carries `X-next` before tag `X` exists.
+        released = (parse_orderable_semver(source_version) or (None, ()))[1] is None
+        command = (
+            install_command(
+                update_source,
+                *dict.fromkeys((installed.folder, *beside)),
+                global_install=global_install,
+                ref=tag,
+            )
+            if released
+            else None
         )
         report.update(
             {
@@ -1833,8 +1839,11 @@ def module_update_report(project_root: Path, installed: InstalledModule) -> dict
                 "pinned_ref": pinned,
                 "instruction": (
                     f"this module is pinned to {pinned}, which `npx skills update` keeps; "
-                    f"to move to {source_version}, add it again at the newer tag"
-                    + (f": {command}" if command is not None else "")
+                    + (
+                        f"to move to {source_version}, add it again at the newer tag: {command}"
+                        if command is not None
+                        else f"{source_version} is not tagged yet, so stay on {pinned} until it is released"
+                    )
                 ),
                 **({"install": command} if command is not None else {}),
             }
