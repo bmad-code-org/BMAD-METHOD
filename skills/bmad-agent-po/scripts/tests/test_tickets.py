@@ -1899,6 +1899,8 @@ class ActiveInitiativeTests(TreeCase):
         self.add("bug-x.md", ticket("draft", 7, kind="bug", tracker_id='"1234"'), backlog)
         self.assertEqual(self.ok(run("find", "1234", cwd=self.root))["ref"], "bug-x.md")
         self.fails(run("find", "7", cwd=self.root), "names no ticket in the initiative")
+        self.add("bug-y.md", ticket("draft", 1234, kind="bug", tracker_id='"7"'), backlog)
+        self.assertEqual(self.ok(run("find", "7", cwd=self.root))["ref"], "bug-y.md")
 
     def test_a_backlog_that_cannot_be_read_is_reported_and_the_initiative_still_answers(self):
         backlog = self.add_backlog()

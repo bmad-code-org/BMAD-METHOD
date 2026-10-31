@@ -907,14 +907,18 @@ def locate(args, folder: Path, text: str) -> tuple[dict, dict]:
         backlog = getattr(args, "backlog", None)
         if backlog is None:
             raise
+        number = text.strip()
         try:
             other = load_tree(backlog)
             other["fallback"] = True
-            found = resolve_ticket(other, text)
+            try:
+                # A number that is a ticket's tracker id names that ticket, whatever local ids the backlog holds.
+                return by_tracker_id(other, number) if number.isdigit() else resolve_ticket(other, text), other
+            except NoMatch:
+                found = resolve_ticket(other, text)
         except (NoMatch, OSError, ValueError):  # not there, or a backlog that cannot be read
             raise miss from None
-        number = text.strip()
-        if number.isdigit() and number != found["tracker_id"]:
+        if number.isdigit():
             # A bare number names an entry of some epic; the backlog's file that carries that id is only a guess.
             named = [ref_name(t, tree) for t in tree["tickets"] if t["id"] == _id(number)]
             if named:
