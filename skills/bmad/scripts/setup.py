@@ -1852,8 +1852,19 @@ def pinned_ref(project_root: Path, installed: InstalledModule) -> str | None:
     except Exception:
         return None
     entry = lock["skills"].get(installed.folder) if lock is not None else None
+    if isinstance(entry, dict) and not same_repository(entry.get("source"), installed.parsed.update_source):
+        return None
     ref = entry.get("ref") if isinstance(entry, dict) else None
     return ref if isinstance(ref, str) and SEMVER.fullmatch(ref.removeprefix("v")) else None
+
+
+def same_repository(lock_source: object, update_source: str) -> bool:
+    """Whether a lock entry came from the repository the module updates from; true when either side names none."""
+    if not isinstance(lock_source, str) or not update_source.startswith("github:"):
+        return True
+    owner, repository, *_ = update_source.removeprefix("github:").split("/")
+    shown = lock_source.strip().lower().removeprefix("https://github.com/").removesuffix("/").removesuffix(".git")
+    return shown == f"{owner}/{repository}".lower()
 
 
 def source_record_report(project_root: Path, update_source: str, folder: str) -> dict[str, object]:
