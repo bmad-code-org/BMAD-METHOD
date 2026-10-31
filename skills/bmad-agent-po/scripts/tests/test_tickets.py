@@ -1894,6 +1894,12 @@ class ActiveInitiativeTests(TreeCase):
         self.assertEqual(self.ok(run("find", "epic-cart", "1", cwd=self.root))["file"], "story-scaffold.md")
         self.fails(run("find", "9", cwd=self.root), "no ticket matches")
 
+    def test_with_no_folder_a_numeric_tracker_id_still_finds_its_backlog_ticket(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", 7, kind="bug", tracker_id='"1234"'), backlog)
+        self.assertEqual(self.ok(run("find", "1234", cwd=self.root))["ref"], "bug-x.md")
+        self.fails(run("find", "7", cwd=self.root), "names no ticket in the initiative")
+
     def test_a_backlog_that_cannot_be_read_is_reported_and_the_initiative_still_answers(self):
         backlog = self.add_backlog()
         (backlog / "bug-x.md").write_bytes(b"---\ntype: bug\ntitle: \xff\n---\n")

@@ -913,13 +913,16 @@ def locate(args, folder: Path, text: str) -> tuple[dict, dict]:
             found = resolve_ticket(other, text)
         except (NoMatch, OSError, ValueError):  # not there, or a backlog that cannot be read
             raise miss from None
-        if text.strip().isdigit():
+        number = text.strip()
+        if number.isdigit() and number != found["tracker_id"]:
             # A bare number names an entry of some epic; the backlog's file that carries that id is only a guess.
-            named = [ref_name(t, tree) for t in tree["tickets"] if t["id"] == _id(text.strip())]
-            names = ", ".join([*named, ref_name(found, other)])
+            named = [ref_name(t, tree) for t in tree["tickets"] if t["id"] == _id(number)]
+            if named:
+                what = f"could name more than one ticket: {', '.join([*named, ref_name(found, other)])}"
+            else:
+                what = f"names no ticket in the initiative, and in the backlog it matches {ref_name(found, other)}"
             raise TicketError(
-                f"{text.strip()!r} is a bare number and could name more than one ticket: {names}; "
-                "name the ticket's epic folder or its file name"
+                f"{number!r} is a bare number and {what}; name the ticket's epic folder or its file name"
             ) from None
         return found, other
 
