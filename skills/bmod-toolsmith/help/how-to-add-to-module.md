@@ -4,7 +4,7 @@ Read this when the user wants to add a skill or agent to a module: their own, th
 
 ## Your own or your organisation's module
 
-1. Tell Smithy which module, or pick a name carrying an installed module's prefix; either points him there. He does not propose membership on his own, so a lone skill in a repository that happens to hold modules stays a single-skill module until the user says otherwise.
+1. Tell Smithy which module when he asks, or pick a name carrying an installed module's prefix; either points him there.
 2. The read-back shows registration as "member of `bmod-<code>`", the name with the module's prefix, the location beside the module's other skills, and the files: the skill, its small `bmod.toml` naming the record, and the edits to the record itself: the skill list, a help row, and a roster entry when it is an agent.
 3. Smithy builds it, runs the lenses, and validates the module's manifests. For an agent, party mode and `bmad` see it through the roster.
 4. If the module is installed from a repository, the new skill ships when that repository is pushed and the users run `bmad setup`; a skill written into the installed copy is overwritten by the next update, so build it in the source repository.
