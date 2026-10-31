@@ -11,6 +11,12 @@ that: everything here is read from the skill's own `bmod.toml`, its module's
 
 Only what stops a skill from working well is reported, because this runs every
 time a skill starts. Recommended skills belong to setup, status, and help.
+
+Which skills and module records are installed depends on the host's ordered
+skills roots, and only the caller knows them. Without roots, nothing about
+other skills or the module record is claimed; with them, the check reads the
+same ordered view setup and knowledge read, and the first root holding a skill
+wins it.
 """
 
 from __future__ import annotations
@@ -31,7 +37,7 @@ def install_command(source: str, skill: str) -> str:
     return f"`{command}`" if command is not None else f"`{skill}` from {source}"
 
 
-def owed(skill_dir: Path, project_root: Path | None) -> list[str]:
+def owed(skill_dir: Path, project_root: Path | None, roots: tuple[Path, ...] = ()) -> list[str]:
     """Plain sentences for the agent to relay; empty when nothing is owed."""
     import setup as hub
     from config_utils import ConfigError, load_central_config
@@ -46,45 +52,11 @@ def owed(skill_dir: Path, project_root: Path | None) -> list[str]:
     if record is None:
         other = hub.read_bmod_file(skill_dir.parent / skill.bmod / MANIFEST_NAME)
         record = other.bmod if other is not None else None
+    if roots:
+        folders, _ = hub.locate_skills(hub.unique_folders((*roots, skill_dir.parent)), skill_dir.parent)
+        notes.extend(dependency_notes(skill_dir, parsed, folders))
         if record is None:
-            notes.append(
-                f"belongs to a module whose record `{skill.bmod}` is not installed beside it. "
-                f"Offer to install it with {install_command(skill.source, skill.bmod)}."
-            )
-
-    own_source = skill.source if skill.source is not None else record.update_source if record else ""
-    declared = [(requirement, record.update_source) for requirement in (record.required_skills if record else ())]
-    declared += [(requirement, own_source) for requirement in skill.required_skills]
-    # A skill named by both lists is checked once, against the higher minimum.
-    wanted: dict[str, tuple] = {}
-    for requirement, default_source in declared:
-        if requirement.skill == skill_dir.name:
-            continue
-        kept = wanted.get(requirement.skill)
-        if kept is None or (
-            requirement.version is not None
-            and (kept[0].version is None or (hub.compare_semver(requirement.version, kept[0].version) or 0) > 0)
-        ):
-            wanted[requirement.skill] = (requirement, default_source)
-    for requirement, default_source in wanted.values():
-        state, installed = hub.requirement_check(skill_dir.parent, requirement)
-        if state == "missing":
-            source = requirement.source or default_source
-            notes.append(
-                f"needs the `{requirement.skill}` skill, which is not installed beside it. "
-                f"If you have no `{requirement.skill}` skill, offer to install it with "
-                f"{install_command(source, requirement.skill)}."
-            )
-        elif state == "outdated":
-            notes.append(
-                f"needs `{requirement.skill}` {requirement.version} or later, and {installed} is installed. "
-                "Offer to run `npx skills update`."
-            )
-        elif state == "unknown-version":
-            notes.append(
-                f"needs `{requirement.skill}` {requirement.version} or later, and the installed copy's version "
-                "cannot be read. Offer to run `npx skills update`."
-            )
+            record = record_in_view(hub, skill.bmod, folders)
 
     if record is None or project_root is None or not (project_root / "_bmad").is_dir():
         return notes
@@ -120,6 +92,61 @@ def owed(skill_dir: Path, project_root: Path | None) -> list[str]:
     return notes
 
 
+def record_in_view(hub, name: str, folders: dict[str, Path]):
+    folder = hub.skill_path(folders, name)
+    other = hub.read_bmod_file(folder / MANIFEST_NAME) if folder is not None else None
+    return other.bmod if other is not None else None
+
+
+def dependency_notes(skill_dir: Path, parsed, folders: dict[str, Path]) -> list[str]:
+    """What the skill's module record and required skills lack in the ordered view of the skills roots."""
+    import setup as hub
+
+    skill = parsed.skill
+    notes: list[str] = []
+    record = parsed.bmod or record_in_view(hub, skill.bmod, folders)
+    if record is None:
+        notes.append(
+            f"belongs to a module whose record `{skill.bmod}` is not installed in the active skills roots. "
+            f"Offer to install it with {install_command(skill.source, skill.bmod)}."
+        )
+
+    own_source = skill.source if skill.source is not None else record.update_source if record else ""
+    declared = [(requirement, record.update_source) for requirement in (record.required_skills if record else ())]
+    declared += [(requirement, own_source) for requirement in skill.required_skills]
+    # A skill named by both lists is checked once, against the higher minimum.
+    wanted: dict[str, tuple] = {}
+    for requirement, default_source in declared:
+        if requirement.skill == skill_dir.name:
+            continue
+        kept = wanted.get(requirement.skill)
+        if kept is None or (
+            requirement.version is not None
+            and (kept[0].version is None or (hub.compare_semver(requirement.version, kept[0].version) or 0) > 0)
+        ):
+            wanted[requirement.skill] = (requirement, default_source)
+    for requirement, default_source in wanted.values():
+        state, installed = hub.requirement_check(folders, requirement)
+        if state == "missing":
+            source = requirement.source or default_source
+            notes.append(
+                f"needs the `{requirement.skill}` skill, which is not installed. "
+                f"If you have no `{requirement.skill}` skill, offer to install it with "
+                f"{install_command(source, requirement.skill)}."
+            )
+        elif state == "outdated":
+            notes.append(
+                f"needs `{requirement.skill}` {requirement.version} or later, and {installed} is installed. "
+                "Offer to run `npx skills update`."
+            )
+        elif state == "unknown-version":
+            notes.append(
+                f"needs `{requirement.skill}` {requirement.version} or later, and the installed copy's version "
+                "cannot be read. Offer to run `npx skills update`."
+            )
+    return notes
+
+
 def lookup(data: object, keys: tuple[str, ...]) -> object:
     current = data
     for key in keys:
@@ -129,13 +156,13 @@ def lookup(data: object, keys: tuple[str, ...]) -> object:
     return current
 
 
-def report(skill_dir: Path, project_root: Path | None) -> None:
+def report(skill_dir: Path, project_root: Path | None, roots: tuple[Path, ...] = ()) -> None:
     """Write what is owed to stderr, worded as an instruction so no skill has to explain it.
 
     A failure here must never stop the skill from resolving.
     """
     try:
-        notes = owed(skill_dir, project_root)
+        notes = owed(skill_dir, project_root, roots)
     except Exception:
         return
     for note in notes:
