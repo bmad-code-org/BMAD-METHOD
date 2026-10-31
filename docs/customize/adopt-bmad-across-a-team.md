@@ -208,7 +208,7 @@ BMad agents in the same party.
 
 ### 5c. Pin team install settings
 
-**Keys:** `[core] output_folder` and `[core] document_output_language`.
+**Key:** `[core] output_folder`.
 
 When the team needs one answer for a setting such as where BMad writes its
 output, pin it here; it overrides whatever a developer has in their own
@@ -220,12 +220,10 @@ config. `output_folder` holds every initiative folder, the ticket tree, and
 
 [core]
 output_folder = "{project-root}/shared/bmad-output"
-document_output_language = "English"
 ```
 
-Personal settings such as `user_name`, `communication_language`, and
-`user_skill_level` stay in each developer's own `_bmad/config.user.toml`;
-the team file should not set them.
+Personal settings stay in each developer's own
+`_bmad/custom/config.user.toml`; the team file should not set them.
 
 ## Reinforce global rules in your IDE's session file
 
@@ -295,7 +293,7 @@ array: team entries stack, and each handoff fires independently.
 
 [workflow]
 external_handoffs = [
-  "After finalize, upload the PRD and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd', author={user_name}). Capture and surface the returned page URL.",
+  "After finalize, upload the PRD and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd'). Capture and surface the returned page URL.",
   "Mirror to Notion via notion:create_page (database_id='abc123', title='PRD: ' + {project_name}).",
 ]
 ```
