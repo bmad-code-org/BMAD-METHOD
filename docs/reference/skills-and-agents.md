@@ -168,13 +168,22 @@ The BMad Method module adds the six agents above and these workflow skills. The 
 | `bmad-qa-generate-e2e-tests`    | Generate automated API and end-to-end tests for implemented features                              | [Test Completed Work](../build/test-completed-work.md)                                                 |
 | `bmad-retrospective`            | Review a completed epic against its evidence and decide whether to accept it                      | [Finish an Epic](../build/finish-an-epic.md)                                                           |
 
+## Toolsmith Skills
+
+The Toolsmith module is for authoring skills and is installed separately. See [Toolsmith](../toolsmith/toolsmith.md).
+
+| Skill | Purpose | See |
+| ---------------- | ------------------------------------------------------------------ | ------------------------------------------ |
+| `bmad-toolsmith` | Smithy, who builds and maintains skills, agents, and modules | [Toolsmith](../toolsmith/toolsmith.md) |
+| `bmad-eval` | Measure whether a skill works with baseline, variant, quality, and trigger runs | [Eval Runner](../toolsmith/bmad-eval.md) |
+
 ## Deprecated Names
 
 Earlier skill IDs, such as `bmad-create-prd`, `bmad-edit-prd`, `bmad-market-research`, `bmad-generate-project-context`, and `bmad-checkpoint-preview`, still resolve as forwarders to the current skill. Use the current names in new work.
 
 ## Naming and Modules
 
-Every skill uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-dev`, `bmad-prd`, `bmad-build`. Modules add their own skills under the same prefix; see [Add Modules](../customize/add-modules.md).
+Every skill shipped by the bmad-code-org uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-dev`, `bmad-prd`, `bmad-build`. A custom module uses its own code as the prefix; see [Add Modules](../customize/add-modules.md) and [Modules and Registration](../toolsmith/modules.md).
 
 ## Troubleshooting
 
