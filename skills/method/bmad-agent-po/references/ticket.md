@@ -6,7 +6,7 @@ Ask only what is unsettled, with a default for each. Take a new ticket's `id` fr
 
 ## Each fact lives in one place
 
-Reference the Requirements of the ticket above; never copy them. Full criteria ("Reviewing or refining an existing ticket" says when) cover what changes, failure paths and binding decisions, and, where the ticket crosses a trust boundary (input it does not control, who may do or see what, secrets, another tenant's data), what a caller without the right gets instead; point at the epic for the rest.
+Reference the Requirements of the ticket above; never copy them. Full criteria ("Reviewing or refining an existing ticket" says when) cover what changes, failure paths and binding decisions, and, where the ticket crosses a trust boundary (input it does not control, who may do or see what, secrets, another tenant's data), what the crossing gets instead: a caller without the right or untrusted input refused, a secret or another tenant's data withheld; point at the epic for the rest.
 
 ## Rules the template cannot carry
 
