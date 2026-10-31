@@ -18,7 +18,7 @@ You will receive:
    - Existing briefs or summaries (`*brief*`, `*summary*`)
    - Any markdown, text, or structured documents that look relevant. Skip ticket files (`initiative-*.md`, `tickets/epic-*/epic-*.md`, older `SPEC*.md`): the parent reads those itself, in full.
 
-2. **For sharded documents** (a folder with `index.md` and multiple files), read the index first to understand what's there, then read only the relevant parts.
+2. **For sharded documents** (a folder whose main file, named after the folder, says the document is sharded, or an older one with `index.md`), read the map in the main file first, then only the shards that are relevant. Skip `.source/`: it is a frozen, out-of-date copy.
 
 3. **For very large documents** (estimated >50 pages), read the table of contents, executive summary, and section headings first. Read only sections directly relevant to the stated product intent. Note which sections were skimmed vs read fully.
 

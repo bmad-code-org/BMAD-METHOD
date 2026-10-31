@@ -19,6 +19,7 @@ An initiative is one body of work of any kind: a product, a feature, a book, a s
   - It was just produced in this conversation and they want it pushed further, or they name a critique method → `bmad-advanced-elicitation`.
   - They ask for a review of a diff, a file, or a document → `bmad-review`.
   - They want several points of view arguing it out, a roundtable, or a focus group of their customers → `bmad-party-mode`.
+- A document is too long for agents to read well (a large PRD or architecture, a manual, a transcript, a chat export, a pile of notes), or they want to update one already sharded → `bmad-shard-pro`.
 - BMad itself needs attention:
   - Something was installed or updated, or a skill reports that BMad is not set up or a BMad script was not found → `bmad setup`.
   - "What do I have, and is it current?" → `bmad status`.
@@ -36,6 +37,7 @@ An initiative is one body of work of any kind: a product, a feature, a book, a s
 | `bmad-advanced-elicitation` | Pushes the most recent output to be reconsidered and improved. | It offers critique methods such as socratic questioning, first principles, pre-mortem, and red team. Nothing changes unless the user accepts. Other skills call it at their pauses. | Nothing. It improves the work in place. |
 | `bmad-review` | Independent review lenses over any diff or document: adversarial, edge cases, verification gaps, structure, prose. | It runs only when the user asks and says "review". Acting on earlier findings is a change, not a review. No severity ranking. | The report in chat, or a file when the project sets a report path. |
 | `bmad-party-mode` | A group conversation between agents or personas, with the user in the room. | It works alone or beside any skill. Custom parties, a default party, and memory are all configurable, and a module can ship a cast. It debates and does not verify. | On request, a keepsake `{output_folder}/{active_initiative}/party-<slug>/party-<slug>.html`, or under `{output_folder}/` for loose work. Memory under `{output_folder}/party-mode/memories/`. |
+| `bmad-shard-pro` | Makes a long document cheap for an agent to navigate: leaves it, adds a contents list, splits it word for word into a map and shards, or rewrites unstructured input into cited subject shards. | It assesses first and may recommend not splitting. The original is kept frozen in `.source/`, the shards become the document, and later changes go through its main file. Script checks confirm nothing was lost. | In place, in the document's own folder: the main file (note and map) named after the folder, the shards, `.source/`, and an entry in its `.memlog.md`. |
 | `bmad-customize` | Changes how an installed skill or agent behaves without editing it: persona, standing facts, templates, output paths, steps on completion. | Team overrides are committed and shared; personal ones are not. It offers only what the target skill exposes. Central config is edited by hand. | `{project-root}/_bmad/custom/{skill-name}.toml` for the team, `{skill-name}.user.toml` for one person. |
 
 ## `bmad`: setup, status, and help

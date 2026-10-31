@@ -11,6 +11,7 @@ skills = [
   "bmad-forge-idea",
   "bmad-party-mode",
   "bmad-review",
+  "bmad-shard-pro",
 ]
 required_skills = ["bmad"]
 pre_install_message = '''
