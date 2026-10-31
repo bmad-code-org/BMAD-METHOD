@@ -1884,6 +1884,16 @@ class ActiveInitiativeTests(TreeCase):
         self.assertEqual([m["ref"] for m in self.ok(r)["mirrored"]], ["bug-x.md"])
         self.assertIn("\ntracker_status: done\n", (backlog / "bug-x.md").read_text(encoding="utf-8"))
 
+    def test_with_no_folder_a_bare_number_does_not_fall_back_to_a_backlog_ticket(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", 1, kind="bug"), backlog)
+        self.fails(run("find", "1", cwd=self.root), "bare number")
+        self.fails(run("mark", "1", "done", cwd=self.root), "bare number")
+        self.assertIn("bug-x.md in backlog", json.loads(run("find", "1", cwd=self.root).stderr)["error"])
+        self.assertEqual(self.ok(run("find", "bug-x.md", cwd=self.root))["folder"], "backlog")
+        self.assertEqual(self.ok(run("find", "epic-cart", "1", cwd=self.root))["file"], "story-scaffold.md")
+        self.fails(run("find", "9", cwd=self.root), "no ticket matches")
+
     def test_a_backlog_that_cannot_be_read_is_reported_and_the_initiative_still_answers(self):
         backlog = self.add_backlog()
         (backlog / "bug-x.md").write_bytes(b"---\ntype: bug\ntitle: \xff\n---\n")

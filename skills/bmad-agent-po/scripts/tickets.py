@@ -910,9 +910,18 @@ def locate(args, folder: Path, text: str) -> tuple[dict, dict]:
         try:
             other = load_tree(backlog)
             other["fallback"] = True
-            return resolve_ticket(other, text), other
+            found = resolve_ticket(other, text)
         except (NoMatch, OSError, ValueError):  # not there, or a backlog that cannot be read
             raise miss from None
+        if text.strip().isdigit():
+            # A bare number names an entry of some epic; the backlog's file that carries that id is only a guess.
+            named = [ref_name(t, tree) for t in tree["tickets"] if t["id"] == _id(text.strip())]
+            names = ", ".join([*named, ref_name(found, other)])
+            raise TicketError(
+                f"{text.strip()!r} is a bare number and could name more than one ticket: {names}; "
+                "name the ticket's epic folder or its file name"
+            ) from None
+        return found, other
 
 
 def next_view(folder: Path) -> dict:
@@ -1687,7 +1696,10 @@ DIR_HELP = """<dir> is an epic folder, a backlog folder, or an initiative folder
 folder's name under the store, the active initiative, or its `tickets/` folder. A `tickets/` folder is
 read as the folder that holds it. Left out, it is the active initiative."""
 
-BACKLOG_HELP = "With no <dir>, a ticket the initiative does not hold is looked for in the backlog folder."
+BACKLOG_HELP = (
+    "With no <dir>, a ticket the initiative does not hold is looked for in the backlog folder, "
+    "except by a bare number, which is ambiguous there."
+)
 
 PARENT_HELP = """A parent initiative, whose `tickets.toml` lists `[[initiative]]` tables, works only with status
 and next; the other commands want one of its initiatives."""
