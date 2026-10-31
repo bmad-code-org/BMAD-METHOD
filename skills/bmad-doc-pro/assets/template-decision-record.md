@@ -1,6 +1,7 @@
 ---
 title: ""
 template: decision-record
+description: "Any decision worth recording, from picking a supplier to an architecture decision: context, options, choice, consequences. Not for asking someone to approve the choice (proposal)."
 status: draft
 created: ""
 updated: ""

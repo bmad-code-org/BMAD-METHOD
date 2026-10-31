@@ -1,6 +1,8 @@
 ---
 title: ""
 template: security-review
+description: "Reviewing a system against a security standard such as the OWASP Top 10 or STRIDE: a design or pre-release review, audit preparation, threat modeling a new feature. Not for an incident that has happened (postmortem)."
+methods: methods-security.csv
 status: draft
 created: ""
 updated: ""

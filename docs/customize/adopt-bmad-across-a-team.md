@@ -150,7 +150,7 @@ headings, frontmatter) so the agent adapts to what it finds. When several
 teams share one repository, each can point at its own template from
 `.user.toml` without touching the committed file.
 
-`bmad-doc-pro` keeps a template library instead of one template key: add an entry, replace a shipped one, or add your rules to it. See [Write a Document Template](./write-a-document-template.md).
+`bmad-doc-pro` reads template libraries instead of one template key: add a file to `_bmad/custom/doc-pro-templates/`, replace a shipped template, or add your rules to one. See [Write a Document Template](./write-a-document-template.md).
 
 ## Recipe 5: Customize the agent roster
 

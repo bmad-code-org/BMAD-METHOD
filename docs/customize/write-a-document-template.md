@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-Use the `bmad-doc-pro` template library to make the skill coach your team through your own document types. Everything about a document is data in the skill's customization: which templates exist, what each one asks for, what the review checks, where the result goes, and how its HTML view looks.
+Use the `bmad-doc-pro` template library to make the skill coach your team through your own document types. Everything about a document is data. Template files say what each document asks for and what the review checks. The skill's customization says where templates live, where the result goes, and how the HTML view looks.
 
 ## When to use this
 
@@ -15,34 +15,33 @@ Use the `bmad-doc-pro` template library to make the skill coach your team throug
 - Rendered views should carry your team's look.
 
 :::note[Prerequisites]
-BMad installed with the core tools, and `bmad setup` run. The changes below go in `_bmad/custom/bmad-doc-pro.toml`, which the team commits; `bmad-doc-pro.user.toml` beside it holds personal changes. `bmad-customize` can write either file for you. How overrides merge is in [Customize BMad](./customize-bmad.md).
+BMad installed with the core tools, and `bmad setup` run. Templates go in `_bmad/custom/doc-pro-templates/`. Settings go in `_bmad/custom/bmad-doc-pro.toml`, which the team commits; `bmad-doc-pro.user.toml` beside it holds personal changes. `bmad-customize` can write either file for you. How overrides merge is in [Customize BMad](./customize-bmad.md).
 :::
 
 ## Add a template to the library
 
-Each template is one `[[workflow.templates]]` entry. The skill picks from the descriptions alone, so write the description as when to offer the template.
+Save the template in `_bmad/custom/doc-pro-templates/`, with any rubric or method catalog beside it. The skill lists every markdown file there whose frontmatter has `template:`. Nothing else needs registering.
 
-```toml
-# _bmad/custom/bmad-doc-pro.toml
-
-[[workflow.templates]]
-id = "runbook"
-name = "Runbook"
-description = "An operator needs step-by-step instructions for one alert or recurring task."
-file = "{project-root}/_bmad/custom/templates/runbook.md"
-methods = ""
-rubric = ""
-disabled = false
+```yaml
+---
+title: ""
+template: runbook
+description: "An operator needs step-by-step instructions for one alert or recurring task."
+rubric: rubric-runbook.md
+status: draft
+created: ""
+updated: ""
+---
 ```
 
 | Field | What it holds |
 | --- | --- |
-| `id` | Kebab-case name. It names the run folder and the document's `template` frontmatter. |
-| `description` | When to offer the template; the only text read when choosing. |
-| `file` | A path or a URL to the template file. Use `{project-root}` for files in your repository. |
-| `methods` | Optional path to a method catalog: a CSV whose rows supply the questions the coaching asks. |
-| `rubric` | Optional path to a rubric for the review. Empty uses the shipped planning rubric. |
-| `disabled` | `true` hides the template. |
+| `template` | Kebab-case id. It names the run folder, and a later update uses it to find the template. |
+| `description` | When to offer the template; the only text read when choosing. Quote it, because a colon breaks unquoted YAML. |
+| `rubric` | Optional path to a rubric for the review, relative to the template. Empty uses the shipped planning rubric. |
+| `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
+
+`description`, `rubric` and `methods` stay out of the finished document.
 
 A method catalog has the header `category,method,name,description,key_questions`, with the key questions separated by `|`. The shipped `security-review` template uses one for the OWASP Top 10 and STRIDE:
 
@@ -51,22 +50,33 @@ category,method,name,description,key_questions
 release,rollback,Rollback,How a change is undone.,"How is this change undone?|Who can run the rollback?"
 ```
 
-## Replace or hide a shipped template
+## Replace a shipped template
 
-An entry with a shipped `id` replaces that entry whole, so restate every field. To use your organization's postmortem format:
+The first template with an id wins and the shipped templates are searched last, so a template in any library with a shipped `template:` value replaces it. To use your organization's postmortem format, save it in your folder with `template: postmortem`.
+
+## Use more than one library
+
+`template_libraries` lists where templates live, in search order. An override appends to the list, and a folder that is missing or empty adds nothing.
 
 ```toml
-[[workflow.templates]]
-id = "postmortem"
-name = "Incident review"
-description = "Something went wrong and the team needs causes and actions, blamelessly."
-file = "{project-root}/_bmad/custom/templates/incident-review.md"
-methods = ""
-rubric = ""
-disabled = false
+# _bmad/custom/bmad-doc-pro.toml
+
+[workflow]
+template_libraries = ["https://github.com/acme/doc-templates@v1.2.0"]
 ```
 
-To hide a shipped template, an entry with its `id` and `disabled = true` is enough.
+| Entry | Example |
+| --- | --- |
+| A folder or one template file | `{project-root}/docs/templates` |
+| A GitHub repo, folder or file, read through `gh` | `https://github.com/acme/doc-templates/tree/v1.2.0/planning` |
+| A URL to one `.md` file | `https://example.com/templates/runbook.md` |
+| A sentence naming the tool that reaches it | `Search corp:confluence_search in the DOCS space for templates` |
+
+A library you cannot share goes in `bmad-doc-pro.user.toml`, which stays out of git. A teammate without access who updates one of those documents follows its existing headings instead. If a library cannot be read, the skill names it and carries on with the others.
+
+:::caution[Trust]
+A template overrides the skill, so a remote library can direct an agent that has tools. Point only at sources you control, and pin a version with `@ref` or a tag so the library cannot change between runs.
+:::
 
 ## Write the template file
 
@@ -76,6 +86,7 @@ A template is a markdown file in three parts: the document's frontmatter, commen
 ---
 title: ""
 template: runbook
+description: "An operator needs step-by-step instructions for one alert or recurring task."
 status: draft
 created: ""
 updated: ""
@@ -122,7 +133,7 @@ Above the first heading, give each of these keys its own comment, a line or two.
 | `writing` | Rules specific to this document. |
 | `done when` | The test that ends the questioning. |
 
-The `template` frontmatter must match the entry's `id`; that is how a later update finds the template. Add `view: slides` to the frontmatter for a slide view; without it the HTML view is one page. `{title}` is the only placeholder.
+Add `view: slides` to the frontmatter for a slide view; without it the HTML view is one page. `{title}` is the only placeholder.
 
 Each section has one comment: `required`, `optional`, or `include when:` with a condition, then a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A heading with no comment is required. A required section is always filled, in one line at hobby stakes. An include-when section goes in only when the condition holds.
 
@@ -134,9 +145,16 @@ Put a bare `## Table of Contents` heading right after the title of any template 
 
 ## Use a format you already have
 
-A file with no comments is followed as written: every heading is required, in order. Point an entry at your organization's existing format and it works without changes.
+A file with no comments is followed as written: every heading is required, in order. Save your organization's existing format in the folder with `template` and `description` in its frontmatter and it works.
 
 ```markdown
+---
+title: ""
+template: design-note
+description: "A team wants to record the design of a change before building it."
+status: draft
+---
+
 # {title}
 
 ## Background
@@ -188,9 +206,9 @@ html_view = "always"
 `style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or an addition's `polish` instead. A template's `additions.<id>.style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template with `view: slides` renders unless `html_view` is `never`.
 
 :::tip[Templates for an agent]
-When an agent runs `bmad-doc-pro` with its own library, that agent's override file holds its templates and additions. The settings in `bmad-doc-pro.toml` (style, views, review and polish) still apply.
+An agent's own templates ship in its `assets/` folder, and its `customize.toml` lists that folder in `template_libraries`. The agent passes the list when it runs `bmad-doc-pro`, and it is searched after yours, so your copy with the same id wins. The settings in `bmad-doc-pro.toml` (style, views, review and polish) still apply.
 :::
 
 ## Check the result
 
-Run the resolver on `bmad-doc-pro` with `--key workflow.templates` or `--key workflow.additions` to see the merged library; see [Check what resolved](./customize-bmad.md#check-what-resolved). Then ask `bmad-doc-pro` for your new document type and confirm it offers your template.
+Run the resolver on `bmad-doc-pro` with `--key workflow.template_libraries` or `--key workflow.additions` to see the merged settings; see [Check what resolved](./customize-bmad.md#check-what-resolved). Then ask `bmad-doc-pro` for your new document type and confirm it offers your template.

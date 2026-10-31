@@ -1,6 +1,7 @@
 ---
 title: ""
 template: postmortem
+description: "Something went wrong (an outage, a security incident, a failed launch, a missed deadline, a project over budget) and the team needs causes and actions, blamelessly. Not for judging a person's performance."
 status: draft
 created: ""
 updated: ""

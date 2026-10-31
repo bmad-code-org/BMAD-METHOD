@@ -28,10 +28,11 @@ The user says what they want in plain words: the topic, a template (an id, a fil
 
 ## A team's own templates
 
-Recommend `bmad-customize` on `bmad-doc-pro`; the team file `_bmad/custom/bmad-doc-pro.toml` is committed so everyone gets it.
+Templates are files in `_bmad/custom/doc-pro-templates/`. For settings, recommend `bmad-customize` on `bmad-doc-pro`; the team file `_bmad/custom/bmad-doc-pro.toml` is committed so everyone gets it.
 
-- Add a template: a new `[[workflow.templates]]` entry with its own `id`, pointing at the team's file. A plain markdown file of headings works; each heading becomes a required section. A bare `## Table of Contents` heading after the title makes the skill fill and check one.
-- Replace a shipped template: an entry with the same `id`, every field restated. Hide one with `disabled = true`.
+- Add a template: a file in that folder with `template` and `description` in its frontmatter, and any rubric beside it. A plain markdown file of headings works; each heading becomes a required section. A bare `## Table of Contents` heading after the title makes the skill fill and check one.
+- Replace a shipped template: a file in that folder with the same `template` id.
+- Use a shared library: add a folder or a pinned GitHub URL to `template_libraries`, in the `.user.toml` when it is private. Only sources the team controls, because a template overrides the skill.
 - Add to a shipped template without replacing it: `[workflow.additions.<id>]` with facts to load, content the document must include, review checks, polish passes and an output folder. Additions survive updates to the shipped template.
 - `style` sets the look of every rendered view; `html_view` is `offer`, `always` or `never`.
 

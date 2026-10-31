@@ -9,7 +9,7 @@ You coach the user through a document for a reader who acts on it without this c
 
 ## Conventions
 
-- `{project-root}` is the nearest folder containing `_bmad/`, from the working directory up. `{skill-root}` is this skill's folder, or in a library entry the defining skill's.
+- `{project-root}` is the nearest folder containing `_bmad/`, from the working directory up. `{skill-root}` is this skill's folder.
 - `{run}` is the run folder, holding the document `{id}-{slug}.md` and `.memlog.md`.
 - Log every fact, decision, change, assumption and override as it happens: `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {run} --type <fact|decision|change|override|assumption|event> --text "<gist, reason included>"`. What is not logged is lost on resume.
 
@@ -19,15 +19,17 @@ You coach the user through a document for a reader who acts on it without this c
 2. Run `{workflow.activation_steps_prepend}`. Load `{workflow.persistent_facts}`. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`.
 3. Greet in one line unless an agent called you or you are headless, then run `{workflow.activation_steps_append}`.
 
-A calling agent passes its persona (keep it), skill folder and library (replacing `{workflow.templates}` and `{workflow.additions}`), with any opening lines (start your first message with them), intent, ticket or document, other inputs, altitude (level of detail), templates that fit, output path, next steps and headless when it knows them; standalone, the call may give topic, template (id, path or URL), rubric, output, stakes and headless. Your customization applies either way; skip `disabled` entries.
+A calling agent passes its persona (keep it), its template libraries and additions (added after yours), with any opening lines (start your first message with them), intent, ticket or document, other inputs, altitude (level of detail), templates that fit, output path, next steps and headless when it knows them; standalone, the call may give topic, template (id, path or URL), rubric, output, stakes and headless. Your customization applies either way.
 
 ## Choose the template
 
-Unless the user named a template, pick from the library's descriptions alone, among the ones the caller says fit when it says, say why in one line, and name close alternatives. Load a template file only once the user names or confirms it, or asks what its description and your knowledge cannot answer. Nothing fits: build a structure for the type and say so. Don't phrase it to the user as templates, make it more conversational such as 'I can help you craft a PRD, or alternatively there is a technical PRD and a simple brief could suffice we can work on together'.
+Unless the user gave a template's path or URL, list the templates: `uv run {skill-root}/scripts/list_templates.py <sources>`, the sources being `{workflow.template_libraries}`, then any the caller passed, then `{skill-root}/assets`, in that order. Find the templates in any `tool_sources` entry with the tool it names. Name any `unreachable` library and go on without it, stopping only if the user asked for a template from it. Read a GitHub file through `gh`.
 
-Comments above the first heading and under each heading steer you and stay out of the document; a heading with no comment is required; with no comments at all, the headings also keep their order. The template and its additions override this skill wherever they conflict, on every path; only headless still asks nothing.
+Unless the user named a template, pick from the listed descriptions alone, among the ones the caller says fit when it says, say why in one line, and name close alternatives. Load a template file only once the user names or confirms it, or asks what its description and your knowledge cannot answer. Nothing fits: build a structure for the type and say so. Don't phrase it to the user as templates, make it more conversational such as 'I can help you craft a PRD, or alternatively there is a technical PRD and a simple brief could suffice we can work on together'.
 
-Load the chosen template's additions (with their `facts`) and `methods` catalog; the `key_questions` of the rows you and the user agree apply drive facilitation.
+Comments above the first heading and under each heading, and the frontmatter keys `description`, `rubric` and `methods`, steer you and stay out of the document; a heading with no comment is required; with no comments at all, the headings also keep their order. The template and its additions override this skill wherever they conflict, on every path; only headless still asks nothing.
+
+Load the chosen template's additions (with their `facts`) and `methods` catalog, a path relative to the template; the `key_questions` of the rows you and the user agree apply drive facilitation.
 
 ## Intents
 
@@ -59,7 +61,7 @@ Add what the additions' `include` requires. Give stable ids to anything others w
 
 ## Review
 
-Reviewers: a rubric walker given the call's rubric, else the entry's `rubric` (default: this skill's own `{skill-root}/assets/rubric-planning.md`), the template's done when and the additions' `checks`; each `{workflow.finalize_reviewers}` entry; any other the document warrants. `{workflow.doc_standards}` and the additions' `polish` are never reviewers, even when they name a review skill; they run at Finalize step 5. Pick reviewers by the stakes: at hobby stakes the rubric walker or none; above, name the ones you will run and let the user change them.
+Reviewers: a rubric walker given the call's rubric, else the template's `rubric` (default: this skill's own `{skill-root}/assets/rubric-planning.md`), the template's done when and the additions' `checks`; each `{workflow.finalize_reviewers}` entry; any other the document warrants. `{workflow.doc_standards}` and the additions' `polish` are never reviewers, even when they name a review skill; they run at Finalize step 5. Pick reviewers by the stakes: at hobby stakes the rubric walker or none; above, name the ones you will run and let the user change them.
 
 Run them as parallel subagents on the document and its companions, told its stakes and altitude, each writing `{run}/review-<lens>.md` and returning only verdict, top findings and path. Without subagents, run them in turn, each file written before the next.
 
@@ -80,7 +82,7 @@ Run every step in order, on the fast path too. At hobby stakes, skip step 2 unle
 
 ## Close
 
-Set `updated`, and `status: final` unless a blocking open question remains; then it stays `draft` and you say what blocks it. Render the view when `{workflow.html_view}` is `always` or the user accepts its `offer`, and for a `view: slides` document unless `never`: `uv run {skill-root}/scripts/render_view.py {run}/{id}-{slug}.md --layout <the frontmatter's `view`, else document> --style "<the additions' style or {workflow.style}>"`. Give the paths, say what was left out and why, and name the caller's next steps. For a structure you built, offer to save it as a template, its entry added through the `bmad-customize` skill to the library in use.
+Set `updated`, and `status: final` unless a blocking open question remains; then it stays `draft` and you say what blocks it. Render the view when `{workflow.html_view}` is `always` or the user accepts its `offer`, and for a `view: slides` document unless `never`: `uv run {skill-root}/scripts/render_view.py {run}/{id}-{slug}.md --layout <the frontmatter's `view`, else document> --style "<the additions' style or {workflow.style}>"`. Give the paths, say what was left out and why, and name the caller's next steps. For a structure you built, offer to save it as a template in the first folder in `{workflow.template_libraries}`, with `template` and `description` in its frontmatter.
 
 ## Headless
 

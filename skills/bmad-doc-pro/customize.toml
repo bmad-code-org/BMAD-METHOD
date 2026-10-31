@@ -41,59 +41,16 @@ on_complete = ""
 # Run folder for a template with no `additions.<id>.output`; `{active_initiative}` is dropped when none is set.
 output = "{output_folder}/{active_initiative}/{id}-{slug}"
 
+# Where templates live, searched in order; the first template with an id wins. Each entry is a
+# folder, one template file, a GitHub URL (pin a version with @ref) or a sentence naming the tool
+# that reaches it. A template overrides this skill, so point only at sources you control.
+template_libraries = ["{project-root}/_bmad/custom/doc-pro-templates"]
+
 # A CSS file applied to every rendered view, after the default styles; empty uses the default.
 style = ""
 
 # "offer", "always" or "never"; a `view: slides` template renders unless "never".
 html_view = "offer"
-
-# `description` is the only text read when choosing. A team entry with a shipped `id` replaces it,
-# a new `id` adds one, `disabled = true` hides one. Empty `rubric` uses assets/rubric-planning.md.
-
-[[workflow.templates]]
-id = "decision-record"
-name = "Decision record"
-description = "Any decision worth recording, from picking a supplier to an architecture decision: context, options, choice, consequences. Not for asking someone to approve the choice (proposal)."
-file = "{skill-root}/assets/template-decision-record.md"
-methods = ""
-rubric = ""
-disabled = false
-
-[[workflow.templates]]
-id = "postmortem"
-name = "Postmortem"
-description = "Something went wrong (an outage, a security incident, a failed launch, a missed deadline, a project over budget) and the team needs causes and actions, blamelessly. Not for judging a person's performance."
-file = "{skill-root}/assets/template-postmortem.md"
-methods = ""
-rubric = ""
-disabled = false
-
-[[workflow.templates]]
-id = "proposal"
-name = "Proposal"
-description = "Asking someone for money, time or approval: a grant, a bid, an internal request. Not for recording a decision already made (decision-record) or a talk with slides (pitch-deck)."
-file = "{skill-root}/assets/template-proposal.md"
-methods = ""
-rubric = "{skill-root}/assets/rubric-proposal.md"
-disabled = false
-
-[[workflow.templates]]
-id = "security-review"
-name = "Security review"
-description = "Reviewing a system against a security standard such as the OWASP Top 10 or STRIDE: a design or pre-release review, audit preparation, threat modeling a new feature. Not for an incident that has happened (postmortem)."
-file = "{skill-root}/assets/template-security-review.md"
-methods = "{skill-root}/assets/methods-security.csv"
-rubric = ""
-disabled = false
-
-[[workflow.templates]]
-id = "pitch-deck"
-name = "Pitch deck"
-description = "A talk or pitch that needs a story and slides, given by a presenter: an investor pitch, a conference or internal talk. An ask read without a presenter is a proposal."
-file = "{skill-root}/assets/template-pitch-deck.md"
-methods = ""
-rubric = "{skill-root}/assets/rubric-proposal.md"
-disabled = false
 
 # What a team adds to a template without replacing it. Fields merge across layers and arrays append.
 [workflow.additions]
