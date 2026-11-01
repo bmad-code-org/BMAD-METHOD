@@ -64,7 +64,7 @@ This document should be enough to route the user and say what to do next. Each t
 | `help/advanced-elicitation.md` | How to start and aim `bmad-advanced-elicitation`, what it runs when no methods are named, what comes back, default and custom methods, when a plain "push harder" is enough. |
 | `help/party-mode.md` | What party mode is good for alone or with other skills, custom parties, the default party, memory, parties that come with a module. |
 | `help/research.md` | Getting the most from `bmad-deep-recon` and which of its services to use. |
-| `help/doc-coach.md` | What `bmad-doc-coach` can write, its shipped templates, calling it directly, a team's own templates and extensions. |
+| `help/doc-coach.md` | What `bmad-doc-coach` can write and how to list every template available here, so open it before saying what the user can be coached through. Also its shipped templates, calling it directly, a team's own templates and extensions. |
 | `help/customization.md` | How overrides work: team or personal file, how they merge, central config, an override that is not applied, resetting. |
 | `help/team-adoption.md` | Making a whole team's BMad follow shared rules, tools, templates, and publishing steps. |
 | `help/ingest.md` | Processing transcripts, threads, recordings or long reports, ingest's templates and adding them, where the original and the note go, ingest inside a PRD or other work, sensitive recordings. |
