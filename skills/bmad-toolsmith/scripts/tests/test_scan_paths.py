@@ -40,7 +40,8 @@ class ScanPathsTest(unittest.TestCase):
                             "cases": [
                                 {
                                     "files": [
-                                        "/Users/me/data/a.md",
+                                        "/tmp/a.md",
+                                        "~/.bmad/d.md",
                                         "fixtures/b.md",
                                         "https://github.com/o/r/blob/abc/c.md",
                                     ]
@@ -52,7 +53,7 @@ class ScanPathsTest(unittest.TestCase):
             )
             code, data = scan(skill)
             self.assertEqual(code, 1)
-            self.assertEqual(rules(data), [("evals/cases.json", "absolute-path")])
+            self.assertEqual(rules(data), [("evals/cases.json", "absolute-path")] * 2)
 
     def test_python_call_fires_and_uv_run_does_not(self):
         with tempfile.TemporaryDirectory() as tmp:

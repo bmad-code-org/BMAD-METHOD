@@ -38,7 +38,7 @@ import argparse
 import json
 import re
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", "venv"}
 EXAMPLE_DIR = "assets"
@@ -168,7 +168,10 @@ def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
         cases = data.get("cases", []) if isinstance(data, dict) else data
         entries = [str(f) for c in cases if isinstance(c, dict) for f in c.get("files") or []]
         for entry in entries:
-            if not ABS_PATH_RE.match(entry):
+            # The same test the eval runner applies: any absolute or home path is refused there.
+            if "://" in entry or not (
+                entry.startswith("~") or PurePosixPath(entry).is_absolute() or PureWindowsPath(entry).is_absolute()
+            ):
                 continue
             findings.append(
                 finding(

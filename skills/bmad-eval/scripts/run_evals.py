@@ -93,9 +93,14 @@ def fixture_problems(files: list, project_root: Path, cases_dir: Path) -> list[s
     An entry is a path relative to the project root or the cases file's folder, or a GitHub
     file URL. An absolute or home path is refused: it names one person's machine.
     """
-    problems = []
+    problems, dests = [], {}
     for entry in map(str, files or []):
-        if GITHUB_FILE.match(entry):
+        m = GITHUB_FILE.match(entry)
+        dest = Path(unquote(m["path"])).name if m else entry
+        if dest in dests:
+            problems.append(f"{entry}: lands at {dest}, as {dests[dest]} does; one would replace the other")
+        dests.setdefault(dest, entry)
+        if m:
             continue
         if "://" in entry:
             problems.append(

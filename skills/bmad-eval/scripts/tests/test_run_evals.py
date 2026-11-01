@@ -180,17 +180,19 @@ class RunEvalsTest(unittest.TestCase):
             root = Path(tmp)
             skill, cases, harness = make_project(root)
             absolute = str(root / "fixtures" / "notes.md")
-            for entry, said in (
-                (absolute, "absolute paths"),
-                ("~/notes.md", "absolute paths"),
-                ("gone.md", "not found"),
+            two = ["https://github.com/o/r/blob/abc/before/notes.md", "https://github.com/o/r/blob/abc/after/notes.md"]
+            for files, said in (
+                ([absolute], "absolute paths"),
+                (["~/notes.md"], "absolute paths"),
+                (["gone.md"], "not found"),
+                (two, "one would replace the other"),
             ):
-                write(cases, json.dumps([{"id": "f", "input": "hello", "rubric": ["x"], "files": [entry]}]))
+                write(cases, json.dumps([{"id": "f", "input": "hello", "rubric": ["x"], "files": files}]))
                 res = run(
                     "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(root / "out"),
                     "--project-root", str(root), "--harness", str(harness), "--quiet",
                 )  # fmt: skip
-                self.assertEqual(res.returncode, 2, entry)
+                self.assertEqual(res.returncode, 2, files)
                 self.assertIn(said, res.stderr)
                 self.assertFalse((root / "out").exists())
 
