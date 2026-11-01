@@ -59,7 +59,6 @@ def faithful_plan(tmp: Path, src: Path, lines: int, cut: list[int], extra: dict 
         "source": str(src),
         "folder": str(tmp / "doc-sample"),
         "title": "Sample",
-        "kind": "faithful",
         "groups": [{"heading": "All", "shards": shards}],
     }
     plan |= extra or {}
@@ -101,53 +100,6 @@ def test_outline_flags_bare_identifier_headings(tmp_path):
     assert out["bare_heading_share"] == 1.0
 
 
-def test_convert_vtt(tmp_path):
-    vtt = tmp_path / "call.vtt"
-    vtt.write_text(
-        "WEBVTT\n\n00:00:41.000 --> 00:00:44.663\n<v Priya Raman>Okay. Is this\nrecording?\n\n01:02:03.500 --> 01:02:05.000\n<v Jun>Yes.\n"
-    )
-    code, out = run("convert", str(vtt), "--out", str(tmp_path / "call.txt"))
-    assert code == 0
-    assert (tmp_path / "call.txt").read_text().splitlines() == [
-        "[00:00:41] Priya Raman: Okay. Is this recording?",
-        "[01:02:03] Jun: Yes.",
-    ]
-
-
-def test_convert_srt(tmp_path):
-    srt = tmp_path / "call.srt"
-    srt.write_text("1\n00:00:01,000 --> 00:00:02,000\nHello there\n\n2\n00:00:03,000 --> 00:00:04,000\nSecond line\n")
-    run("convert", str(srt), "--out", str(tmp_path / "out.txt"))
-    assert (tmp_path / "out.txt").read_text().splitlines() == ["[00:00:01] Hello there", "[00:00:03] Second line"]
-
-
-def test_convert_slack_nests_threads_and_resolves_users(tmp_path):
-    exp = tmp_path / "export"
-    (exp / "general").mkdir(parents=True)
-    (exp / "users.json").write_text(
-        json.dumps([{"id": "U1", "profile": {"real_name": "Ana"}}, {"id": "U2", "name": "bo"}])
-    )
-    (exp / "channels.json").write_text("[]")
-    msgs = [
-        {"ts": "1782892800.0", "user": "U1", "text": "Plan?", "thread_ts": "1782892800.0"},
-        {"ts": "1782893400.0", "user": "U2", "text": "Yes <@U1>", "thread_ts": "1782892800.0"},
-    ]
-    (exp / "general" / "2026-07-01.json").write_text(json.dumps(msgs))
-    code, _ = run("convert", str(exp), "--out", str(tmp_path / "s.md"))
-    assert code == 0
-    text = (tmp_path / "s.md").read_text()
-    assert "- [08:00] Ana: Plan?" in text and "  - [2026-07-01 08:10] bo: Yes @Ana" in text
-
-
-def test_convert_folder_marks_files(tmp_path):
-    notes = tmp_path / "notes"
-    notes.mkdir()
-    (notes / "a.md").write_text("# A\n")
-    (notes / "b.txt").write_text("b\n")
-    run("convert", str(notes), "--out", str(tmp_path / "all.md"))
-    assert (tmp_path / "all.md").read_text().splitlines()[:2] == ["<!-- file: a.md -->", "# A"]
-
-
 def test_build_moves_source_and_rebuilds_exactly(built):
     assert not (built.parent / "sample.md").exists()
     assert (built / ".source" / "sample.md").exists()
@@ -186,7 +138,7 @@ def test_long_map_splits_into_sub_maps(tmp_path):
         {"file": f"s{i}.md", "title": f"S{i}", "summary": "x", "start": i * 2 + 1, "end": i * 2 + 2} for i in range(250)
     ]
     groups = [{"heading": f"Group {g}", "shards": shards[g * 50 : (g + 1) * 50]} for g in range(5)]
-    plan = {"source": str(src), "folder": str(tmp_path / "big"), "title": "Big", "kind": "faithful", "groups": groups}
+    plan = {"source": str(src), "folder": str(tmp_path / "big"), "title": "Big", "groups": groups}
     (tmp_path / "p.json").write_text(json.dumps(plan))
     code, out = run("build", str(tmp_path / "p.json"))
     assert code == 0 and len(out["sub_maps"]) == 5
@@ -208,51 +160,6 @@ def test_check_catches_broken_links_orphans_names_and_edits(built):
     (built / ".shards.json").write_text(json.dumps(plan))
     _, out = run("check", str(built))
     assert any(f["check"] == "name" for f in out["failures"])
-
-
-def test_check_rewritten_timestamp_citations(tmp_path):
-    src = tmp_path / "t.txt"
-    src.write_text("[00:00:10] Jun: ARR is $4.8M.\n[00:05:00] Jun: Correction, ARR is $4.6M.\n[00:06:00] Ana: Fine.\n")
-    shards = [{"file": "metrics.md", "title": "Metrics", "summary": "ARR", "sources": ["00:00:10-00:06:00"]}]
-    plan = {
-        "source": str(src),
-        "folder": str(tmp_path / "call"),
-        "title": "Call",
-        "kind": "rewrite",
-        "groups": [{"heading": "All", "shards": shards}],
-    }
-    (tmp_path / "p.json").write_text(json.dumps(plan))
-    code, out = run("build", str(tmp_path / "p.json"))
-    assert out["to_write"] == ["metrics.md"]
-    folder = tmp_path / "call"
-    good = "# Metrics\n\nPart of [Call](./call.md).\n\nARR is $4.6M (00:05:00).\n\n**Superseded** (00:05:00, by the correction): $4.8M (00:00:10; 00:05:00-00:06:00).\n"
-    (folder / "metrics.md").write_text(good)
-    code, out = run("check", str(folder))
-    assert code == 0 and not out["warnings"], out
-    bad = "# Metrics\n\nAna agreed (00:05:00-00:05:30). Jun said so (00:00:10, 00:09:00). An aside (not a citation).\n"
-    (folder / "metrics.md").write_text(bad)
-    code, out = run("check", str(folder))
-    texts = [f["text"] for f in out["failures"]]
-    assert code == 1 and len(texts) == 2 and "00:05:30" in texts[0] and "00:09:00" in texts[1]
-
-
-def test_line_citations_out_of_range(tmp_path):
-    src = tmp_path / "s.md"
-    src.write_text("a\nb 30 mm\nc\n")
-    shards = [{"file": "x.md", "title": "X", "summary": "x", "sources": ["L1-3"]}]
-    plan = {
-        "source": str(src),
-        "folder": str(tmp_path / "d"),
-        "title": "D",
-        "kind": "rewrite",
-        "groups": [{"heading": "G", "shards": shards}],
-    }
-    (tmp_path / "p.json").write_text(json.dumps(plan))
-    run("build", str(tmp_path / "p.json"))
-    (tmp_path / "d" / "x.md").write_text("# X\n\nGap 30 mm (L2). Gap 40 mm (L2). Other (L9).\n")
-    _, out = run("check", str(tmp_path / "d"))
-    assert any(f["check"] == "citation" for f in out["failures"])
-    assert [w["text"] for w in out["warnings"]] == ["40 mm is not in the cited source lines"]
 
 
 def test_map_rewrites_after_a_new_shard(built):
@@ -326,7 +233,6 @@ def test_identifier_in_a_title_is_not_a_definition(tmp_path):
         "source": str(src),
         "folder": str(tmp_path / "d"),
         "title": "D",
-        "kind": "faithful",
         "lookup": r"FR-X-\d+",
         "groups": [{"heading": "G", "shards": shards}],
     }
@@ -348,32 +254,6 @@ def test_check_accepts_a_relative_path(built, monkeypatch):
     monkeypatch.chdir(built)
     code, out = run("check", ".")
     assert code == 0, out
-
-
-def test_uncited_statements_fail(tmp_path):
-    src = tmp_path / "s.md"
-    src.write_text("hosting costs 400 a month\nother\n")
-    shards = [
-        {"file": "x.md", "title": "X", "summary": "x", "sources": ["L1-2"]},
-        {"file": "d.md", "title": "D", "summary": "d", "derived": True},
-    ]
-    plan = {
-        "source": str(src),
-        "folder": str(tmp_path / "doc"),
-        "title": "Doc",
-        "kind": "rewrite",
-        "groups": [{"heading": "G", "shards": shards}],
-    }
-    (tmp_path / "p.json").write_text(json.dumps(plan))
-    run("build", str(tmp_path / "p.json"))
-    folder = tmp_path / "doc"
-    (folder / "x.md").write_text(
-        "# X\n\nPart of [Doc](./doc.md).\n\nHosting costs 400 a month (L1).\n\nThe team will cancel in May.\n\n| item | cost |\n|---|---|\n| hosting | 400 (L1) |\n| other | 900 |\n\n- one (L2)\n- two\n"
-    )
-    (folder / "d.md").write_text("# D\n\n- Hosting is 400 ([X](./x.md)).\n\nNo link here.\n")
-    _, out = run("check", str(folder))
-    got = sorted((f["file"], f["line"]) for f in out["failures"] if f["check"] == "uncited")
-    assert got == [("d.md", 5), ("x.md", 7), ("x.md", 12)]
 
 
 def test_build_refuses_a_cut_inside_a_table_or_steps(tmp_path):
@@ -418,26 +298,6 @@ def test_oversized_shard_warns(built):
     (built / "part-2.md").write_text("# Part 2\n\n" + "x" * (shard_tool.MAX_CHARS + 10) + "\n")
     _, out = run("check", str(built))
     assert any(w["check"] == "size" and w["file"] == "part-2.md" for w in out["warnings"])
-
-
-def test_user_updates_cite_the_update(tmp_path):
-    src = tmp_path / "s.md"
-    src.write_text("hosting costs 400 a month\n")
-    shards = [{"file": "x.md", "title": "X", "summary": "x", "sources": ["L1"]}]
-    plan = {
-        "source": str(src),
-        "folder": str(tmp_path / "doc"),
-        "title": "Doc",
-        "kind": "rewrite",
-        "groups": [{"heading": "G", "shards": shards}],
-    }
-    (tmp_path / "p.json").write_text(json.dumps(plan))
-    run("build", str(tmp_path / "p.json"))
-    (tmp_path / "doc" / "x.md").write_text(
-        "# X\n\nHosting costs 400 a month (L1).\n\nHosting rises to 450 in May (updated 2026-11-02).\n"
-    )
-    code, out = run("check", str(tmp_path / "doc"))
-    assert code == 0 and not out["warnings"], out
 
 
 def test_toc_plan_counts_lines_as_the_file_reads_now(tmp_path):
@@ -508,26 +368,6 @@ def test_loose_numbered_list_is_not_cut(tmp_path):
     assert code == 2 and "steps" in out["error"]
 
 
-def test_label_before_a_cited_list_passes(tmp_path):
-    src = tmp_path / "s.md"
-    src.write_text("price 27\nprice 29\n")
-    shards = [{"file": "x.md", "title": "X", "summary": "x", "sources": ["L1-2"]}]
-    plan = {
-        "source": str(src),
-        "folder": str(tmp_path / "doc"),
-        "title": "Doc",
-        "kind": "rewrite",
-        "groups": [{"heading": "G", "shards": shards}],
-    }
-    (tmp_path / "p.json").write_text(json.dumps(plan))
-    run("build", str(tmp_path / "p.json"))
-    (tmp_path / "doc" / "x.md").write_text(
-        "# X\n\n**Conflict:**\n- 27 (L1)\n- 29 (L2)\n\nThe board decided:\n- 27 (L1)\n"
-    )
-    code, out = run("check", str(tmp_path / "doc"))
-    assert code == 0, out
-
-
 def test_plan_missing_a_group_heading_fails_before_writing(tmp_path):
     src = tmp_path / "s.md"
     src.write_text("a\nb\n")
@@ -535,7 +375,6 @@ def test_plan_missing_a_group_heading_fails_before_writing(tmp_path):
         "source": str(src),
         "folder": str(tmp_path / "d"),
         "title": "D",
-        "kind": "faithful",
         "groups": [{"shards": [{"file": "a.md", "title": "A", "summary": "a", "start": 1, "end": 2}]}],
     }
     (tmp_path / "p.json").write_text(json.dumps(plan))

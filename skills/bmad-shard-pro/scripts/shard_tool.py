@@ -12,11 +12,6 @@ Subcommands:
       Size, headings, bare-identifier headings, tables and fenced blocks, frontmatter,
       an existing contents list, identifier prefixes, and a proposed cut along headings
       sized by characters that never splits a table or fenced block.
-  convert INPUT --out FILE
-      Turn non-markdown input into a text file whose lines are what plans and citations count:
-      .vtt/.srt -> `[hh:mm:ss] Speaker: text`; a Slack export folder -> markdown by channel
-      and day with thread replies nested; .docx -> markdown via pandoc; .pdf -> text per page
-      via pypdf; a folder of .md/.txt -> one file with `<!-- file: path -->` markers.
   build PLAN
       Build the sharded folder from a plan: cut faithful shards word for word, write the main
       file (note + map, sub-maps when the map would pass line 200), move the source into
@@ -33,6 +28,8 @@ Subcommands:
       Check a sharded folder or a file with a contents list. --rebuild also checks that the
       faithful shards join back into the source exactly (only true before any update).
 
+Input is markdown or plain text; anything else is converted before this tool sees it.
+
 Plan JSON: see `build --help`.
 """
 
@@ -42,30 +39,24 @@ import argparse
 import json
 import re
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 
 PLAN_HELP = """Plan JSON:
   {
-    "source": "text file the line numbers count (the converted file when there was one)",
-    "original": "raw input when it was converted (optional)",
+    "source": "the markdown or text file being split",
     "folder": "the document folder; the main file is <folder>/<folder name>.md",
     "title": "title for the main file",
-    "kind": "faithful" | "rewrite",
     "lookup": "regex matching identifiers to index (optional)",
     "groups": [
       {"heading": "Map group", "summary": "optional, used when the map is split",
        "shards": [
-         {"file": "name.md", "title": "Title", "summary": "One line", "start": 1, "end": 40},
-         {"file": "name.md", "title": "Title", "summary": "One line", "sources": ["L10-40", "00:01:02-00:05:00"]},
-         {"file": "name.md", "title": "Title", "summary": "One line", "derived": true}
+         {"file": "name.md", "title": "Title", "summary": "One line", "start": 1, "end": 40}
        ]}
     ]
   }
-  Faithful shards carry start/end (1-based, inclusive, covering every line once in order).
-  Rewritten shards carry sources; derived shards are written from other shards. In a toc plan
-  only start and title are read.
+  Shards are cut word for word from start to end (1-based, inclusive); together they cover
+  every line once, in order. In a toc plan only start and title are read.
 """
 
 NOTE_PATH = Path(__file__).resolve().parent.parent / "assets" / "sharded-note.md"
@@ -84,16 +75,6 @@ NUMBERED = re.compile(r"^\s{0,3}\d+[.)]\s")
 BARE_ID = re.compile(r"^[A-Z]?\d+(?:[-.]\d+)*[a-z]?$|^[A-Z](?:-\d+[a-z]?)*$")
 IDENT = re.compile(r"\b[A-Z][A-Z0-9]{0,5}(?:-[A-Z0-9]{1,6})*-\d{1,4}[a-z]?\b")
 LINK = re.compile(r"\]\(\./([^)#\s]+)")
-PAREN = re.compile(r"\(([^()]*)\)")
-CITE_LINES = re.compile(r"^L(\d+)(?:\s*[-–]\s*L?(\d+))?$")
-CITE_TIME = re.compile(r"^(\d{1,2}:\d{2}:\d{2})(?:\s*[-–]\s*(\d{1,2}:\d{2}:\d{2}))?$")
-CITE_UPDATE = re.compile(r"^updated (\d{4}-\d{2}-\d{2})$")  # a change the user made after sharding
-CUE_TIME = re.compile(r"^\[(\d{1,2}:\d{2}:\d{2})\]")
-UNIT_NUMBER = re.compile(
-    r"\$\s?(\d[\d,]*(?:\.\d+)?)"
-    r"|(\d[\d,]*(?:\.\d+)?)\s?%"
-    r"|(\d[\d,]*(?:\.\d+)?)\s?(?:mm|cm|kg|kPa|bar|psi|N·m|Nm|°C|°F|kW|V|A|L|ms|minutes?|hours?|days?|weeks?|months?|years?)\b"
-)
 
 
 def emit(obj: dict, code: int = 0) -> int:
@@ -301,124 +282,6 @@ def cmd_outline(args) -> int:
     return emit(out)
 
 
-def fmt_time(seconds: float) -> str:
-    s = int(seconds)
-    return f"{s // 3600:02d}:{s % 3600 // 60:02d}:{s % 60:02d}"
-
-
-def convert_cues(text: str) -> list[str]:
-    out, stamp, buf, speaker = [], None, [], None
-    time_line = re.compile(r"^(\d{1,2}:)?(\d{2}):(\d{2})[.,]\d{3}\s*-->")
-    lines = [x.strip() for x in text.splitlines()]
-
-    def flush():
-        if stamp is not None and buf:
-            body = " ".join(buf).strip()
-            out.append(f"[{stamp}] {speaker}: {body}" if speaker else f"[{stamp}] {body}")
-
-    for i, line in enumerate(lines):
-        m = time_line.match(line)
-        if m:
-            flush()
-            h = int((m.group(1) or "0:")[:-1])
-            stamp, buf, speaker = fmt_time(h * 3600 + int(m.group(2)) * 60 + int(m.group(3))), [], None
-            continue
-        # An SRT cue number sits on the line before its time line.
-        if stamp is None or not line or (line.isdigit() and i + 1 < len(lines) and time_line.match(lines[i + 1])):
-            continue
-        v = re.match(r"<v\s+([^>]+)>(.*?)(</v>)?$", line)
-        if v:
-            speaker = v.group(1).strip()
-            line = v.group(2)
-        buf.append(re.sub(r"<[^>]+>", "", line))
-    flush()
-    return out
-
-
-def convert_slack(folder: Path) -> list[str]:
-    from datetime import UTC, datetime
-
-    users = {}
-    if (folder / "users.json").exists():
-        for u in json.loads((folder / "users.json").read_text(encoding="utf-8")):
-            prof = u.get("profile") or {}
-            users[u["id"]] = prof.get("real_name") or u.get("real_name") or u.get("name") or u["id"]
-
-    def who(msg):
-        return users.get(
-            msg.get("user", ""), msg.get("user_profile", {}).get("real_name") or msg.get("user", "unknown")
-        )
-
-    def clean(text):
-        return re.sub(r"<@([A-Z0-9]+)>", lambda m: "@" + users.get(m.group(1), m.group(1)), text or "").replace(
-            "\n", " "
-        )
-
-    out = []
-    for chan in sorted(p for p in folder.iterdir() if p.is_dir()):
-        days = sorted(chan.glob("*.json"))
-        if not days:
-            continue
-        out += [f"# #{chan.name}", ""]
-        for day in days:
-            msgs = json.loads(day.read_text(encoding="utf-8"))
-            replies: dict[str, list] = {}
-            for m in msgs:
-                if m.get("thread_ts") and m.get("thread_ts") != m.get("ts"):
-                    replies.setdefault(m["thread_ts"], []).append(m)
-            out += [f"## {day.stem}", ""]
-            for m in msgs:
-                if m.get("thread_ts") and m.get("thread_ts") != m.get("ts"):
-                    continue
-                t = datetime.fromtimestamp(float(m["ts"]), UTC).strftime("%H:%M")
-                out.append(f"- [{t}] {who(m)}: {clean(m.get('text'))}")
-                for r in replies.get(m.get("ts"), []):
-                    rt = datetime.fromtimestamp(float(r["ts"]), UTC).strftime("%Y-%m-%d %H:%M")
-                    out.append(f"  - [{rt}] {who(r)}: {clean(r.get('text'))}")
-            out.append("")
-    return out
-
-
-def cmd_convert(args) -> int:
-    src, dest = Path(args.input).resolve(), Path(args.out).resolve()
-    if src.is_dir():
-        if any(src.glob("*/*.json")) and ((src / "users.json").exists() or (src / "channels.json").exists()):
-            lines = convert_slack(src)
-        else:
-            files = sorted(p for p in src.rglob("*") if p.suffix in (".md", ".txt") and p.is_file())
-            if not files:
-                return fail(f"no .md or .txt files in {src}")
-            lines = []
-            for p in files:
-                lines += [f"<!-- file: {p.relative_to(src)} -->"] + read_lines(p) + [""]
-    elif src.suffix.lower() in (".vtt", ".srt"):
-        lines = convert_cues(src.read_text(encoding="utf-8"))
-    elif src.suffix.lower() == ".docx":
-        if not shutil.which("pandoc"):
-            return fail("pandoc is not installed; install it (https://pandoc.org) or save the document as markdown")
-        res = subprocess.run(["pandoc", str(src), "-t", "gfm", "--wrap=none"], capture_output=True, text=True)
-        if res.returncode:
-            return fail(res.stderr.strip())
-        lines = res.stdout.splitlines()
-    elif src.suffix.lower() == ".pdf":
-        try:
-            from pypdf import PdfReader
-        except ImportError:
-            return fail(
-                f"pypdf is missing; run: uv run --with pypdf {Path(__file__).resolve()} convert {src} --out {dest}"
-            )
-        lines = []
-        for i, page in enumerate(PdfReader(str(src)).pages, 1):
-            lines += [f"<!-- page {i} -->"] + (page.extract_text() or "").splitlines() + [""]
-    elif src.suffix.lower() in (".md", ".txt", ".markdown"):
-        return fail("markdown and text need no conversion; plan against the file itself")
-    else:
-        return fail(f"unsupported input: {src.suffix or src}")
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return emit({"ok": True, "out": str(dest), "lines": len(lines)})
-
-
 def all_shards(plan: dict) -> list[dict]:
     return [s for g in plan["groups"] for s in g["shards"]]
 
@@ -428,7 +291,7 @@ def slug(text: str) -> str:
 
 
 def map_entry(s: dict) -> str:
-    return f"- [{s['title']}](./{s['file']}){' (derived)' if s.get('derived') else ''} — {s['summary']}"
+    return f"- [{s['title']}](./{s['file']}) — {s['summary']}"
 
 
 def main_text(plan: dict, front: list[str], folder: Path, has_lookup: bool) -> tuple[str, dict[str, str]]:
@@ -453,7 +316,7 @@ def main_text(plan: dict, front: list[str], folder: Path, has_lookup: bool) -> t
 
 def validate_plan(plan: dict, lines: list[str]) -> str | None:
     n_lines = len(lines)
-    for key in ("source", "folder", "title", "kind", "groups"):
+    for key in ("source", "folder", "title", "groups"):
         if key not in plan:
             return f"plan is missing '{key}'"
     if plan.get("lookup"):
@@ -470,25 +333,24 @@ def validate_plan(plan: dict, lines: list[str]) -> str | None:
             return f"each group needs a heading and a shards list: {str(g)[:80]}"
     seen, expect = set(), None
     for s in all_shards(plan):
-        for key in ("file", "title", "summary"):
+        for key in ("file", "title", "summary", "start", "end"):
             if key not in s:
                 return f"shard {s.get('file', '?')} is missing '{key}'"
         if s["file"] in seen:
             return f"duplicate shard file {s['file']}"
         seen.add(s["file"])
-        if "start" in s:
-            if not isinstance(s["start"], int) or not isinstance(s.get("end"), int):
-                return f"{s['file']} needs whole-number start and end lines"
-            expect = expect or s["start"]
-            if s["start"] != expect:
-                return f"{s['file']} starts at line {s['start']}; expected {expect} (gap or overlap)"
-            if s["end"] < s["start"]:
-                return f"{s['file']} ends before it starts"
-            if s["start"] in inside:
-                a, b, kind = inside[s["start"]]
-                return f"{s['file']} starts at line {s['start']}, inside the {kind} block at lines {a}-{b}"
-            expect = s["end"] + 1
-    if plan["kind"] == "faithful" and expect is not None and expect != n_lines + 1:
+        if not isinstance(s["start"], int) or not isinstance(s["end"], int):
+            return f"{s['file']} needs whole-number start and end lines"
+        expect = expect or s["start"]
+        if s["start"] != expect:
+            return f"{s['file']} starts at line {s['start']}; expected {expect} (gap or overlap)"
+        if s["end"] < s["start"]:
+            return f"{s['file']} ends before it starts"
+        if s["start"] in inside:
+            a, b, kind = inside[s["start"]]
+            return f"{s['file']} starts at line {s['start']}, inside the {kind} block at lines {a}-{b}"
+        expect = s["end"] + 1
+    if expect is not None and expect != n_lines + 1:
         return f"faithful ranges end at line {expect - 1}; the source has {n_lines}"
     return None
 
@@ -523,14 +385,8 @@ def cmd_build(args) -> int:
     front = lines[:fm]
     if src.resolve() != (store / src.name).resolve():
         shutil.copy2(src, store / src.name)
-    if plan.get("original"):
-        orig = Path(plan["original"])
-        if orig.exists() and orig.resolve() != (store / orig.name).resolve():
-            (shutil.copytree if orig.is_dir() else shutil.copy2)(orig, store / orig.name)
     written = []
     for s in all_shards(plan):
-        if "start" not in s:
-            continue
         a = max(s["start"], fm + 1)
         header = [f"# {s['title']}", "", f"Part of [{plan['title']}](./{folder.name}.md).", ""]
         body = lines[a - 1 : s["end"]]
@@ -547,11 +403,9 @@ def cmd_build(args) -> int:
     plan["frontmatter_lines"] = fm
     plan["sub_maps"] = sorted(subs)
     (folder / MANIFEST).write_text(json.dumps(plan, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
-    for moved in [src] + ([Path(plan["original"])] if plan.get("original") else []):
-        if moved.exists() and moved.resolve() != main.resolve() and moved.resolve().parent != store.resolve():
-            shutil.rmtree(moved) if moved.is_dir() else moved.unlink()
+    if src.exists() and src.resolve() != main.resolve() and src.resolve().parent != store.resolve():
+        src.unlink()
     lookup = write_lookup(folder, plan) if has_lookup else None
-    pending = [s["file"] for s in all_shards(plan) if "start" not in s and not (folder / s["file"]).exists()]
     return emit(
         {
             "ok": True,
@@ -559,7 +413,6 @@ def cmd_build(args) -> int:
             "shards_cut": written,
             "sub_maps": sorted(subs),
             "lookup": lookup,
-            "to_write": pending,
         }
     )
 
@@ -835,147 +688,6 @@ def check_toc(path: Path) -> tuple[list, list]:
     return fails, warns
 
 
-def cue_index(source: list[str], stamp: str, last: bool) -> int | None:
-    hits = [i for i, ln in enumerate(source) if (m := CUE_TIME.match(ln)) and m.group(1).zfill(8) == stamp.zfill(8)]
-    return (hits[-1] if last else hits[0]) if hits else None
-
-
-def cited_text(source: list[str], cites: list[tuple[str, str | None]], kind: str) -> str | None:
-    """Text of the source lines a statement cites; None when a citation points nowhere."""
-    parts = []
-    for a, b in cites:
-        if kind == "lines":
-            x, y = int(a), int(b or a)
-            if not (1 <= x <= y <= len(source)):
-                return None
-        else:
-            x, y = cue_index(source, a, False), cue_index(source, b or a, True)
-            if x is None or y is None or y < x:
-                return None
-            x, y = x + 1, y + 1
-        parts += source[x - 1 : y]
-    return "\n".join(parts)
-
-
-def norm_num(s: str) -> str:
-    return s.replace(",", "")
-
-
-def citations(group: str) -> list[tuple[str, str, str | None]] | None:
-    """The references in one parenthesised group, or None when the group is not a citation."""
-    refs = []
-    for item in re.split(r"[,;]", group):
-        item = item.strip()
-        if m := CITE_LINES.match(item):
-            refs.append(("lines", m.group(1), m.group(2)))
-        elif m := CITE_TIME.match(item):
-            refs.append(("times", m.group(1), m.group(2)))
-        elif m := CITE_UPDATE.match(item):
-            refs.append(("update", m.group(1), None))
-        else:
-            return None
-    return refs
-
-
-def uncited(lines: list[str], has_ref) -> list[int]:
-    """Start lines of paragraphs, list groups and table rows that carry no reference."""
-    out, i, n = [], 0, len(lines)
-    while i < n:
-        line = lines[i]
-        if FENCE.match(line):
-            i += 1
-            while i < n and not FENCE.match(lines[i]):
-                i += 1
-            i += 1
-            continue
-        if not line.strip() or HEADING.match(line) or line.startswith("Part of ["):
-            i += 1
-            continue
-        if line.lstrip().startswith("|"):
-            j = i
-            while j < n and lines[j].lstrip().startswith("|"):
-                j += 1
-            for k in range(i + 2, j):  # the header row and the separator carry no statement
-                if not has_ref(lines[k]):
-                    out.append(k + 1)
-            i = j
-            continue
-        listy = re.match(r"^\s*([-*+]|\d+[.)])\s", line)
-        j = i + 1
-        while j < n and lines[j].strip() and not HEADING.match(lines[j]) and not lines[j].lstrip().startswith("|"):
-            if bool(re.match(r"^\s*([-*+]|\d+[.)])\s", lines[j]) or lines[j].startswith((" ", "\t"))) != bool(listy):
-                break
-            j += 1
-        label = (
-            j == i + 1 and not listy and (re.fullmatch(r"\*\*[^*]+\*\*:?", line.strip()) or line.rstrip().endswith(":"))
-        )
-        if label and j < n and re.match(r"^\s*([-*+]|\d+[.)])\s", lines[j]):
-            i = j  # a label or lead-in such as **Conflict:** is checked with the list it introduces
-            continue
-        if not any(has_ref(x) for x in lines[i:j]):
-            out.append(i + 1)
-        i = j
-    return out
-
-
-def has_citation(line: str) -> bool:
-    return any(citations(m.group(1)) for m in PAREN.finditer(line))
-
-
-def check_rewritten(folder: Path, s: dict, source: list[str], fails: list, warns: list) -> None:
-    """Each citation must point at real source text, and the numbers stated just before it must be in that text."""
-    text = read_lines(folder / s["file"])
-    src_text = "\n".join(source)
-    in_fence, fence_buf = False, []
-    for i, line in enumerate(text, 1):
-        if FENCE.match(line):
-            if in_fence and fence_buf and "\n".join(fence_buf) not in src_text:
-                fails.append(
-                    {"check": "block", "file": s["file"], "line": i, "text": "fenced block differs from the source"}
-                )
-            in_fence, fence_buf = not in_fence, []
-            continue
-        if in_fence:
-            fence_buf.append(line)
-            continue
-        prev = 0
-        for m in PAREN.finditer(line):
-            refs = citations(m.group(1))
-            if not refs:
-                continue
-            segment, prev = line[prev : m.start()], m.end()
-            texts = []
-            if any(kind == "update" for kind, _, _ in refs):
-                continue
-            for kind, a, b in refs:
-                cited = cited_text(source, [(a, b)], kind)
-                if cited is None:
-                    fails.append(
-                        {
-                            "check": "citation",
-                            "file": s["file"],
-                            "line": i,
-                            "text": f"({m.group(1)}) cites {a}{'-' + b if b else ''}, which is not in the source",
-                        }
-                    )
-                else:
-                    texts.append(cited)
-            if not texts or any(kind == "times" for kind, _, _ in refs):
-                continue  # speakers say numbers as words, so a transcript would only give false alarms
-            cited_all = norm_num("\n".join(texts))
-            for n in UNIT_NUMBER.finditer(norm_num(PAREN.sub("", segment))):
-                num = next(g for g in n.groups() if g)
-                if num not in cited_all:
-                    warns.append(
-                        {
-                            "check": "number",
-                            "file": s["file"],
-                            "line": i,
-                            "text": f"{n.group(0).strip()} is not in the cited source lines",
-                        }
-                    )
-
-
 def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
     fails, warns = [], []
     main = folder / f"{folder.name}.md"
@@ -1051,7 +763,7 @@ def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
         fm = plan.get("frontmatter_lines", 0)
         joined = source[:fm]
         for s in shards:
-            if "start" in s and (folder / s["file"]).exists():
+            if (folder / s["file"]).exists():
                 joined += read_lines(folder / s["file"])[s.get("header_lines", 2) :]
         if joined != source:
             first = next(
@@ -1066,18 +778,6 @@ def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
                     "text": "the shards do not join back into the source",
                 }
             )
-    if source is not None:
-        for s in shards:
-            if "sources" in s and (folder / s["file"]).exists():
-                check_rewritten(folder, s, source, fails, warns)
-    for s in shards:
-        p = folder / s["file"]
-        if not p.exists() or not ("sources" in s or s.get("derived")):
-            continue
-        has_ref = (lambda x: bool(LINK.search(x)) or has_citation(x)) if s.get("derived") else has_citation
-        what = "a link to the shard it comes from" if s.get("derived") else "a citation"
-        for line in uncited(read_lines(p), has_ref):
-            fails.append({"check": "uncited", "file": s["file"], "line": line, "text": f"statement without {what}"})
     for s in shards:
         p = folder / s["file"]
         if p.exists() and (size := len(p.read_text(encoding="utf-8"))) > MAX_CHARS:
@@ -1093,7 +793,7 @@ def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
         homes: dict[str, set] = {}
         for s in shards:
             p = folder / s["file"]
-            if p.exists() and not s.get("derived"):
+            if p.exists():
                 for line in body_lines(p):
                     if defines(line):
                         for ident in identifiers(pattern, line):
@@ -1130,9 +830,6 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--from", dest="from_line", type=int, help="list every heading from this line")
     p.add_argument("--to", dest="to_line", type=int, help="list every heading up to this line")
     p.add_argument("--ids", action="store_true", help="include each identifier defined in a heading and its line")
-    p = sub.add_parser("convert", help="turn non-markdown input into text")
-    p.add_argument("input")
-    p.add_argument("--out", required=True)
     p = sub.add_parser(
         "build",
         help="build the sharded folder from a plan",
@@ -1163,7 +860,6 @@ def main(argv: list[str] | None = None) -> int:
     try:
         return {
             "outline": cmd_outline,
-            "convert": cmd_convert,
             "build": cmd_build,
             "map": cmd_map,
             "lookup": cmd_lookup,

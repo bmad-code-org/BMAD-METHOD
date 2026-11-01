@@ -12,9 +12,6 @@ Before applying a change, find where the document already speaks to it, using th
 - **New content with no home, or a shard grown past about 14 KB:** split it or add a new shard. Name the new shard from its content, never starting with the document type's prefix.
 - **Record each new, renamed or re-summarised shard in `.shards.json`:** file, title and a one-line summary, placed in its map group. Then run `map` to rewrite the main file and its sub-maps.
 - **Identifiers:** when the document has an identifier lookup, run `lookup` after any change that adds, moves or removes one.
-- **Derived shards:** when a change affects a derived shard (current state, decisions, action items), update it too.
-
-In a rewritten or derived shard, cite what the user added or changed as `(updated YYYY-MM-DD)`, since it has no source line.
 
 Run `check` without `--rebuild`, since the shards have moved on from the original and no longer join back into it, and fix every failure.
 

@@ -1,0 +1,44 @@
+{
+  "cases": [
+    {
+      "id": "kestrel-manual",
+      "input": "Run headless. Our agents need to work from this compressor service manual but it's too long and the headings are just numbers: kestrel-k200-manual.md. Sort it out so they can find things. I won't be around, so don't wait for me.",
+      "files": [
+        "/Users/brianmadison/bmad-code/oss/.worktrees/bmad-os-sample-data/shardtest/shardtest/kestrel-k200-manual/kestrel-k200-manual.md"
+      ],
+      "rubric": [
+        "Every line of the original manual is still present word for word in the workspace output (either the original file kept intact somewhere, or files whose contents together contain every original line), checked by sampling the text of paragraphs 2-6a, 3-4a, 5-5 and Table C-3",
+        "An entry file exists whose first 200 lines let a reader locate the oil level check procedure (paragraph 3-4a, the one saying to wait 10 minutes) and Table C-3 wear limits without reading anything else first: either a contents list with line ranges, or a map linking to the files that hold them",
+        "If the output is split into several files, no file is named by a bare identifier alone (such as 3-4.md, 5.md or c-2.md); each name says what it covers",
+        "The output does not point readers to 5-6 for oil separator element replacement or to Table C-2 for rotor and coupling wear limits (the manual's index is wrong on both; the body has 5-5 and Table C-3)",
+        "The final reply to the user reports at least one of the two index errors (separator element listed at 5-6 but found at 5-5; wear limits listed at Table C-2 but found in Table C-3)",
+        "No statement in the output files gives a value, limit or part number that differs from the manual (check the 10 minute wait, 3 liters between marks, 19.0 mm coupling minimum, part 60-1140)"
+      ]
+    },
+    {
+      "id": "meridian-proposal",
+      "input": "Run headless. Agents keep reading our client proposal, meridian-proposal.md. Should it be sharded for them? Do whatever is right and tell me what you did; I'm not around to answer questions.",
+      "files": [
+        "/Users/brianmadison/bmad-code/oss/.worktrees/bmad-os-sample-data/shardtest/shardtest/meridian-proposal/meridian-proposal.md"
+      ],
+      "rubric": [
+        "The final reply recommends against splitting the proposal into multiple files, giving its short length (about 3,000 words) or its whole-document purpose as the reason",
+        "No shard files were created: the workspace holds no new folder of split section files derived from the proposal",
+        "meridian-proposal.md either is byte-identical to the fixture or differs only by an added contents list near the top; no wording of the proposal itself was changed"
+      ]
+    },
+    {
+      "id": "tidewater-prd",
+      "input": "Run headless. Our agents have to work from this huge PRD, tidewater-prd.md (about 134k words). Make it navigable for them. I'm away, so decide yourself and tell me what you did.",
+      "files": [
+        "/Users/brianmadison/bmad-code/oss/.worktrees/bmad-os-sample-data/shardtest/shardtest/tidewater-prd/tidewater-prd.md"
+      ],
+      "rubric": [
+        "Every line of the original PRD is still present word for word in the workspace output (the original kept intact somewhere, or files whose contents together contain every original line), checked by sampling FR-WO-015, NFR-RET-004, Appendix A and the section 5.3 plan table",
+        "An entry file exists whose first 200 lines let a reader locate where FR-WO-015 and the Appendix A traceability matrix are, without reading anything else first",
+        "The final reply or a conflicts list in the output reports that the Professional price is stated as both $27 and $29, and that raw telematics retention is stated as both 18 and 25 months, without asserting only one value",
+        "No output file other than a copy of the original rewrites PRD content in new words: requirement text in the output matches the source verbatim"
+      ]
+    }
+  ]
+}

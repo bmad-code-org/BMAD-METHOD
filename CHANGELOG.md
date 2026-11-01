@@ -18,7 +18,7 @@
 
 ### ✨ Features
 
-* `bmad-shard-pro` makes a long document cheap for an agent to navigate. It assesses the document and recommends leaving it, adding a contents list with line ranges, splitting it word for word into a map and shards, or rewriting a transcript, chat export or folder of notes into cited subject shards. A script checks that nothing was lost, the original is kept frozen in `.source/`, and later changes go through the skill. It replaces the `bmad-shard-doc` skill retired in v6.11.
+* `bmad-shard-pro` makes a long document cheap for an agent to navigate. It assesses the document and recommends leaving it, adding a contents list with line ranges, or splitting it word for word into a map and shards; it never rewrites content. A script checks that nothing was lost, the original is kept frozen in `.source/`, and later changes go through the skill. It replaces the `bmad-shard-doc` skill retired in v6.11.
 * Toolsmith asks no setup questions. A new skill goes where the user's other skills are, named with the user's own prefix rather than `bmad-`, and the read-back says how it registers with `bmad`: its own module record, a member of an installed module, or a plain skill outside the registry.
 * Memory agents built by Toolsmith keep memory as small dated files by subject, with a write-once raw layer for material the owner hands over and distillations that link back to it. Waking loads the agent's self and a generated map, not the memory; the agent tends its memory when session notes build up, without a schedule; and First Breath opens by asking what to call the owner.
 * Review mode gives its findings in chat and in a markdown file; the HTML report is gone.
