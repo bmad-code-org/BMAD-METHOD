@@ -4,6 +4,7 @@ template: agent-spec
 version: 1.0.0
 description: "One feature handed to a coding agent, with tests and acceptance."
 not_for: "Work a story or epic ticket already specifies; several features or a product (`prd`)."
+rubric: rubric-planning
 status: draft
 created: ""
 updated: ""

@@ -4,6 +4,7 @@ template: launch
 version: 1.0.0
 description: "Coordinating a built feature's release across teams."
 not_for: "Deciding what to build (`brief` or `prd`); a launch talk or slides (`pitch-deck`)."
+rubric: rubric-planning
 status: draft
 created: ""
 updated: ""

@@ -4,6 +4,7 @@ template: pitch
 version: 1.0.0
 description: "A shaped, time-boxed proposal for teams that bet fixed cycles."
 not_for: "Open-ended requirements (`prd`); funding by estimate (`business-case`); one feature handed to a coding agent (`agent-spec`)."
+rubric: rubric-planning
 status: draft
 created: ""
 updated: ""

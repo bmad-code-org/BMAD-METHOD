@@ -4,6 +4,7 @@ template: charter
 version: 1.0.0
 description: "One mandate, benefits, scope and governance across several initiatives."
 not_for: "A single initiative (`brief` or `prd`); funding one piece of work (`business-case`); choosing a strategy (`narrative`)."
+rubric: rubric-planning
 status: draft
 created: ""
 updated: ""

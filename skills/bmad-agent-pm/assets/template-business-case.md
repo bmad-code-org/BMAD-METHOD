@@ -4,6 +4,7 @@ template: business-case
 version: 1.0.0
 description: "Funding approval: cost, expected return, go or no-go."
 not_for: "Whether the problem is worth pursuing (`opportunity`); one mandate over several initiatives (`charter`); requirements to build from (`prd`)."
+rubric: rubric-planning
 status: draft
 created: ""
 updated: ""
