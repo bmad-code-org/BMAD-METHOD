@@ -58,7 +58,7 @@ The first template with an id wins, and installed modules' templates are searche
 
 ## Use more than one library
 
-`template_libraries` lists where templates live, in search order. An override appends to the list, and a folder that is missing or empty adds nothing.
+`template_libraries` lists where templates live, in search order. It starts with your project's `_bmad/custom/doc-coach-templates/`, then `~/.bmad/doc-coach-templates/` for personal templates you want in every project. An override appends to the list, and a folder that is missing or empty adds nothing.
 
 ```toml
 # _bmad/custom/bmad-doc-coach.toml
@@ -69,7 +69,7 @@ template_libraries = ["https://github.com/fernhollow/doc-templates@v1.2.0"]
 
 | Entry | Example |
 | --- | --- |
-| A folder or one template file | `{project-root}/docs/templates` |
+| A folder or one template file | `{project-root}/docs/templates` or `~/templates` |
 | A GitHub repo, folder or file, read through `gh` | `https://github.com/fernhollow/doc-templates/tree/v1.2.0/planning` |
 | A URL to one `.md` file | `https://example.com/templates/runbook.md` |
 | A sentence naming the tool that reaches it | `Search corp:confluence_search in the DOCS space for templates` |
