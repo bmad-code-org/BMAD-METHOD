@@ -54,5 +54,5 @@ template_libraries = [
 # A CSS file applied to every rendered view, after the default styles; empty uses the default.
 style = ""
 
-# "offer", "always" or "never"; a `view: slides` template renders unless "never".
+# "offer", "always" or "never"; a template that sets `view` renders unless "never".
 html_view = "offer"

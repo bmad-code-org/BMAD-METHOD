@@ -4,6 +4,7 @@ template: decision-record
 version: 1.0.0
 description: "Recording any decision: context, options, choice and consequences."
 not_for: "Asking someone to approve the choice (`proposal`)."
+rubric: rubric-planning
 status: draft
 created: ""
 updated: ""

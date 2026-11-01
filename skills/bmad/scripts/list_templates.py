@@ -12,7 +12,8 @@ folder; the --folder folder (default `doc-templates`) of every module record in 
 after the sources. A file is a template when its frontmatter has `template:`, the template's id.
 A file with `extends:` adds to the template of that id wherever it sits, and an earlier
 extension's values win over a later one's and the template's. A missing local path adds nothing
-and is listed. `rubric`, `methods` and `style` are relative to their file and come back resolved.
+and is listed. `rubric`, `methods` and `style` are relative to their file and come back resolved; a bare name
+with no extension comes back as it is.
 
 Prints JSON:
   templates     id, version, description, not_for, category, rubric, methods, output, style, file, source,
@@ -99,8 +100,8 @@ def read_source(source: str) -> list[tuple[str, str]]:
 
 
 def beside(file: str, value: str) -> str:
-    """`value`, a path relative to `file`, made usable from anywhere."""
-    if not value or "://" in value or value.startswith("{") or Path(value).is_absolute():
+    """`value`, a path relative to `file`, made usable from anywhere. A bare name stays a name."""
+    if not value or "://" in value or value.startswith("{") or Path(value).is_absolute() or not Path(value).suffix:
         return value
     return urljoin(file, value) if "://" in file else str(Path(file).parent / value)
 

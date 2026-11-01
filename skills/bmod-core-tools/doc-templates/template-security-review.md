@@ -4,6 +4,7 @@ template: security-review
 version: 1.0.0
 description: "Reviewing a system against a standard such as the OWASP Top 10 or STRIDE."
 not_for: "An incident that has happened (`postmortem`)."
+rubric: rubric-planning
 methods: methods-security.csv
 status: draft
 created: ""

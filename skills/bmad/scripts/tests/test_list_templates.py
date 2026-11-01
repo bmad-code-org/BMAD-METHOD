@@ -316,3 +316,10 @@ def test_an_extension_with_no_template_is_reported(tmp_path):
 def test_no_sources_exits_2(capsys):
     assert list_templates.main([]) == 2
     assert "usage" in capsys.readouterr().err
+
+
+def test_rubric_path_resolves_and_a_bare_name_stays_a_name(tmp_path):
+    (tmp_path / "template-a.md").write_text(template("a", extra="rubric: rubric-a.md\n"))
+    (tmp_path / "template-b.md").write_text(template("b", extra="rubric: rubric-planning\n"))
+    found = {t["id"]: t["rubric"] for t in list_templates.scan([str(tmp_path)])["templates"]}
+    assert found == {"a": str(tmp_path / "rubric-a.md"), "b": "rubric-planning"}

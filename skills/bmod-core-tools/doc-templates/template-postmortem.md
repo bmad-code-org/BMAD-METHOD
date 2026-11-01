@@ -4,6 +4,7 @@ template: postmortem
 version: 1.0.0
 description: "Causes and actions after something went wrong, written blamelessly."
 not_for: "Judging a person's performance."
+rubric: rubric-planning
 status: draft
 created: ""
 updated: ""
