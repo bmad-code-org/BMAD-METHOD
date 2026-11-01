@@ -4,7 +4,7 @@ template: prd-light
 version: 1.0.0
 description: "A short PRD with enough technical detail for a very simple project."
 not_for: "Work with real stakes or several people building from it (`prd`); learning fast before committing (`prototype-plan`); one feature for a coding agent (`agent-spec`)."
-rubric: rubric-prd.md
+rubric: rubric-planning
 status: draft
 created: ""
 updated: ""
@@ -16,7 +16,7 @@ updated: ""
 
 <!-- inputs: What it is, who it is for and what is out; where it will be built and the platform if the sources do not say. -->
 
-<!-- writing: About two pages. FR ids are global. Unlike a full PRD, technical decisions belong here. -->
+<!-- writing: About 1,000 words; a project that needs more is a `prd`. FR ids are global. Unlike a full PRD, technical decisions expensive to reverse belong here. -->
 
 <!-- done when: Every FR can be checked, the scope edges are explicit, and a builder could start from this file alone. -->
 
@@ -39,7 +39,7 @@ updated: ""
 <!-- required. What this will not do, with a one-line reason where it matters. -->
 
 ## Technical approach
-<!-- required. Where it is built, platform, stack and any starter project, data and storage, integrations, hosting, and any decision expensive to reverse. Enough to start, not an architecture. -->
+<!-- required. Where it is built, platform, stack and any starter project, then data and storage, integrations, hosting and any other decision expensive to reverse. Flag the rest for the builder instead of choosing. Enough to start, not an architecture. -->
 
 ## Success
 <!-- optional. One sentence on how the user will know it worked. -->
