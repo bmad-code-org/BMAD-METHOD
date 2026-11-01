@@ -148,6 +148,7 @@ Above the first heading, give each of these keys its own comment, a line or two.
 | `companions` | Other files to write beside the document, when, and what each holds. A file for a different reader belongs here, not overflow from the document. |
 | `done when` | The test that ends the questioning. |
 | `view` | The brief for an HTML page written for each document. See [Give a template its own view](#give-a-template-its-own-view). |
+| `next` | What to offer or do once the document is done, such as handing it to a build. |
 
 Add `view: slides` to the frontmatter for a slide view, or name an HTML view file; without it the HTML view is one page. In the document body, `{title}` is the only placeholder.
 

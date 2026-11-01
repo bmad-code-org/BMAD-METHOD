@@ -8,6 +8,14 @@
     "should_trigger": true
   },
   {
+    "query": "John, I just want to prototype a habit tracker for myself this weekend, what do you need from me?",
+    "should_trigger": true
+  },
+  {
+    "query": "help me plan a prototype so we can try the look and feel of the app before committing to anything",
+    "should_trigger": true
+  },
+  {
     "query": "create a PRD. I have a product brief and three customer interview transcripts in docs/research",
     "should_trigger": true
   },

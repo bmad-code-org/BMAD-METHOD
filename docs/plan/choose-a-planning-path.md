@@ -82,7 +82,7 @@ Every skill in this chapter writes a document you can hand on. The table runs fr
 | `bmad-architecture`             | Make the technical decisions that keep separately built parts consistent                                                                       | `architecture-<slug>.md` by default                                                 |
 | `bmad-agent-po` | Sofia, the Product Owner: write a ticket's requirements from any input, then [plan and track entries](./break-work-into-stories-and-track-it.md) | Requirements and Constraints in the initiative, epic, or story file, `.memlog.md` beside it, ordered `tickets.toml`, and optional leaf files |
 
-John (`bmad-agent-pm`) creates, updates, and validates ten planning documents;
+John (`bmad-agent-pm`) creates, updates, and validates twelve planning documents;
 the work's altitude picks which, and he names close alternatives. A brief feeds
 the PRD, which John reads during discovery, but neither requires the other.
 
