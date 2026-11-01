@@ -1,7 +1,9 @@
 ---
 title: ""
 template: decision-record
-description: "Any decision worth recording, from picking a supplier to an architecture decision: context, options, choice, consequences. Not for asking someone to approve the choice (proposal)."
+version: 1.0.0
+description: "Recording any decision: context, options, choice and consequences."
+not_for: "Asking someone to approve the choice (`proposal`)."
 status: draft
 created: ""
 updated: ""

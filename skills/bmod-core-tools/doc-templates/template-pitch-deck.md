@@ -1,7 +1,9 @@
 ---
 title: ""
 template: pitch-deck
-description: "A talk or pitch that needs a story and slides, given by a presenter: an investor pitch, a conference or internal talk. An ask read without a presenter is a proposal."
+version: 1.0.0
+description: "A talk or pitch with a story and slides, given by a presenter."
+not_for: "An ask read without a presenter (`proposal`)."
 rubric: rubric-proposal.md
 status: draft
 created: ""

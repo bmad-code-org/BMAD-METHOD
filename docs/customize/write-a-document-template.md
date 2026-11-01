@@ -26,7 +26,8 @@ Save the template in `_bmad/custom/doc-coach-templates/`, with any rubric or met
 ---
 title: ""
 template: runbook
-description: "An operator needs step-by-step instructions for one alert or recurring task."
+version: 1.0.0
+description: "Step-by-step instructions for one alert or recurring task."
 rubric: rubric-runbook.md
 status: draft
 created: ""
@@ -37,13 +38,16 @@ updated: ""
 | Field | What it holds |
 | --- | --- |
 | `template` | Kebab-case id. It names the run folder, and a later update uses it to find the template. |
-| `description` | When to offer the template; the only text read when choosing. Quote it, because a colon breaks unquoted YAML. |
+| `version` | Optional version of the template. It is copied into each document, so a later update can say the template has moved on. |
+| `description` | One short line saying what the template is for. Help lists it for every template on every run, so keep it under about 80 characters. Quote it, because a colon breaks unquoted YAML. |
+| `not_for` | Optional short line naming what the template is not for, and the template to use instead. Read with `description` when choosing one, and not listed in help. |
+| `agents` | Optional list of the skills that run this template, such as `[bmad-agent-pm]`. The `bmad` skill uses it to say who offers the template. A template in an agent's `assets/` folder counts as that agent's without it. |
 | `rubric` | Optional path to a rubric for the review, relative to the template. Empty uses the shipped planning rubric. |
 | `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
 | `output` | Optional run folder for this template. It may use `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
 | `style` | Optional CSS file for this template's rendered view, relative to the template. |
 
-These fields, other than `template`, stay out of the finished document.
+`template` and `version` stay in the finished document; the other fields stay out.
 
 A method catalog has the header `category,method,name,description,key_questions`, with the key questions separated by `|`. The shipped `security-review` template uses one for the OWASP Top 10 and STRIDE:
 
@@ -94,7 +98,8 @@ A template is a markdown file in three parts: the document's frontmatter, commen
 ---
 title: ""
 template: runbook
-description: "An operator needs step-by-step instructions for one alert or recurring task."
+version: 1.0.0
+description: "Step-by-step instructions for one alert or recurring task."
 status: draft
 created: ""
 updated: ""
@@ -160,7 +165,8 @@ A file with no comments is followed as written: every heading is required, in or
 ---
 title: ""
 template: design-note
-description: "A team wants to record the design of a change before building it."
+version: 1.0.0
+description: "Recording the design of a change before building it."
 status: draft
 ---
 
@@ -201,7 +207,7 @@ An extension can hold anything a template can:
 | --- | --- |
 | A section | Added where its comment says. If the heading it names is gone, the skill places it by judgment. |
 | `stance`, `inputs`, `writing` or `done when` comments | Added to the template's. A policy to load goes in `inputs`; a review rule goes in `done when`. |
-| `description`, `rubric`, `methods`, `output` or `style` frontmatter | Replaces the template's value. |
+| `description`, `not_for`, `rubric`, `methods`, `output` or `style` frontmatter | Replaces the template's value. |
 
 When extensions conflict, the first in search order wins. Use a copy instead when you want to change what a template already says.
 

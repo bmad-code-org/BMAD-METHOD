@@ -1,7 +1,9 @@
 ---
 title: ""
 template: proposal
-description: "Asking someone for money, time or approval: a grant, a bid, an internal request. Not for recording a decision already made (decision-record) or a talk with slides (pitch-deck)."
+version: 1.0.0
+description: "Asking someone for money, time or approval, such as a grant or bid."
+not_for: "A decision already made (`decision-record`); a talk with slides (`pitch-deck`)."
 rubric: rubric-proposal.md
 status: draft
 created: ""
