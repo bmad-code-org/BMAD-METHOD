@@ -95,7 +95,7 @@ goes to the PRFAQ.
 
 ## Other Planning Documents
 
-Besides the brief and the PRD, John writes a prototype plan, a light PRD for a very simple project, a spec for a coding agent, an opportunity assessment, a business case, a program charter, a strategy narrative, a Shape Up pitch, a requirements specification, and a launch plan. The work's altitude picks the document: a program takes a charter or a strategy narrative, an epic a PRD or a pitch, and a feature outside the ticket tree a spec for a coding agent. He says why he chose it and names any close alternative, so you can switch. Each works like the PRD: fast or coaching path; create, update, or validate.
+Besides the brief and the PRD, John writes a prototype plan, an experiment card, a light PRD for a very simple project, a spec for a coding agent, an opportunity assessment, a business case, a program charter, a strategy narrative, a Shape Up pitch, a business requirements document, a requirements specification, and a launch plan. The work's altitude picks the document: a program takes a charter or a strategy narrative, an epic a PRD or a pitch, and a feature outside the ticket tree a spec for a coding agent. He says why he chose it and names any close alternative, so you can switch. Each works like the PRD: fast or coaching path; create, update, or validate.
 
 Your team can add its own planning documents, or replace or extend John's, with a file in `_bmad/custom/doc-coach-templates/`. Doc standards, reviewers, output, style, and the HTML view are set on `bmad-doc-coach`, the skill that runs John's documents. See [Write a Document Template](../customize/write-a-document-template.md).
 
