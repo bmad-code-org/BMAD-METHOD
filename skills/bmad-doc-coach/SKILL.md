@@ -69,12 +69,12 @@ Lead with a one-sentence verdict and the three fixes that matter most, walk crit
 
 ## Finalize
 
-Run every step in order, on the fast path too. At hobby stakes, skip step 2 unless the user wants it.
+Tell the user the sequence in one sentence, then run every step in order, on the fast path too. At hobby stakes, skip step 2 unless the user wants it.
 
 1. Memlog audit: each meaningful entry lands in the document or a companion, or is set aside; each logged assumption is tagged where it lands. Then run `uv run {skill-root}/scripts/check_ids.py {run}/{id}-{slug}.md` (adding each companion) and fix every `undefined`, `duplicate` and `withdrawn` hit.
-2. Reconciliation: one subagent per user-supplied input returns what the document dropped, above all tone and feel.
+2. Reconciliation: one subagent per user-supplied input returns what the document dropped, above all tone and feel; surface those gaps to the user.
 3. The review, its reviewers named to the user first above hobby stakes.
-4. Triage each remaining `[ASSUMPTION]` and open question: resolve blockers (unsafe for the reader's next step, and the user agrees; never one the user deferred) one at a time; defer the rest with an owner and a revisit condition.
+4. Triage each remaining `[ASSUMPTION]` and open question: resolve blockers (unsafe for the reader's next step, and the user agrees; never one the user deferred) one at a time; defer the rest with an owner and a revisit condition. Many blockers is itself a finding: say so.
 5. Polish the triaged text: apply `{workflow.doc_standards}`, structure before prose; cut what overflows for the stakes. Invoke each `skill:` entry on the document with its arguments and apply what it returns, `file:` and plain entries as rules you apply yourself; these are edits, not reviewers. Polish adds no claim the memlog does not hold. Log each pass only once its edits are in.
 6. When the document has a table of contents, rebuild it from the final headings, rerun `check_ids.py` and fix every `toc` hit.
 7. Unless headless, tell the user what the memlog audit set aside and what polish changed, then wait for their read. Apply and log their changes, repeating step 6 if headings moved.
@@ -83,7 +83,7 @@ Run every step in order, on the fast path too. At hobby stakes, skip step 2 unle
 
 ## Close
 
-Set `updated`, and `status: final` unless a blocking open question remains; then it stays `draft` and you say what blocks it. Render the view when `{workflow.html_view}` is `always` or the user accepts its `offer`, and for a `view: slides` document unless `never`: `uv run {skill-root}/scripts/render_view.py {run}/{id}-{slug}.md --layout <the frontmatter's `view`, else document> --style "<the template's `style` or {workflow.style}>"`. Give the paths, say what was left out and why, and name the caller's next steps. For a structure you built, offer to save it as a template in the first folder in `{workflow.template_libraries}`, with `template` and `description` in its frontmatter.
+Set `updated`, and `status: final`, logged as an `event`, unless a blocking open question remains; then it stays `draft` and you say what blocks it. Render the view when `{workflow.html_view}` is `always` or the user accepts its `offer`, and for a `view: slides` document unless `never`: `uv run {skill-root}/scripts/render_view.py {run}/{id}-{slug}.md --layout <the frontmatter's `view`, else document> --style "<the template's `style` or {workflow.style}>"`. Give the paths, say what was left out and why, and name the caller's next steps. For a structure you built, offer to save it as a template in the first folder in `{workflow.template_libraries}`, with `template` and `description` in its frontmatter.
 
 ## Headless
 
