@@ -5,19 +5,19 @@ The subagent prompts `modes/cut.md` and `ship.md` use, one role per heading. Fil
 ## Cutter
 
 ```text
-Rewrite <file>, one file of the skill at {target}, into the leanest prose that steers the model as far as the old text did. The bar is `{skill-root}/canon.md` and `{skill-root}/lenses/lens-leanness.md`; read both. Work at every scale: a sentence the model does not need, the words inside a sentence that carry nothing, a passage that a few load-bearing words can replace. There is no token target; leave a lean file as it is.
+Rewrite <file>, one file of the skill at {target}, into the leanest prose that steers the model as far as the old text did. The bar is `{skill-root}/canon.md` and `{skill-root}/lenses/lens-leanness.md`; read both. Start each passage from the one sentence that steers the model (canon test 2) and add back only what prevents a wrong action you can name, listing each in `added_back`. Then split what still holds several topics (canon test 9). There is no token target; leave a lean file as it is.
 
 Keep, in the fewest words that fix it:
 - Every convention the model cannot know: file and folder names, id formats, frontmatter keys, which step writes which section, what the scripts read, state and status words.
-- Every rule and every disambiguation.
+- Every rule and every disambiguation. A list of examples the model could produce itself is neither.
 - Every Jinja expression and tag, character for character; every {skill-root} and {project-root}; every command line.
 - Every heading, and every name another file of the skill refers to.
 - Every cross-file reference.
 - These passages, word for word: <protected>. These decisions; nothing you write may contradict them: <decisions>.
 
-Plain declarative sentences; a Markdown paragraph is one line; a TOML comment keeps its comment form; no new terms; add nothing that is not a compression of what was there; keep the section order. Edit <file> in place, touch no other file, commit nothing.
+Plain declarative sentences; a Markdown paragraph is one line; a TOML comment keeps its comment form; no new terms; add nothing that is not a compression of what was there, apart from a heading a split needs; keep the section order. Edit <file> in place, touch no other file, commit nothing.
 
-Return JSON: { "file": path, "rewrites": [one line per passage removed or recast, beyond trimming a why-clause], "doubts": [anything you were not sure was explanation rather than rule, with your choice] }
+Return JSON: { "file": path, "rewrites": [one line per passage removed or recast, beyond trimming a why-clause], "added_back": [{ "clause", "wrong_action" }], "doubts": [anything you were not sure was explanation rather than rule, with your choice] }
 ```
 
 ## Checker
@@ -27,7 +27,7 @@ Return JSON: { "file": path, "rewrites": [one line per passage removed or recast
 
 Walk the old file sentence by sentence. List a sentence under "lost" only when the new file no longer states it in any wording and you can name the different action a model would take without it; write that action in "action". A why-clause, a definition of general knowledge, a restatement or an illustration is not a loss. A protected passage not kept word for word is a loss whatever the action. When "lost" has more than five entries, check each again against the action test and drop those that fail.
 
-Separately list where the new wording changes what a rule says or contradicts a decision ("changed_meaning"), and up to five passages that fewer words would still say as well, each with its shorter wording ("remaining_fat"). Edit nothing.
+Separately list where the new wording changes what a rule says, contradicts a decision, or moves a rule so it no longer covers what it covered ("changed_meaning"), and up to five passages that fewer words would still say as well, each with its shorter wording ("remaining_fat"). Edit nothing.
 
 Return JSON: { "file": path, "lost": [{ "old_text", "action" }], "changed_meaning": [{ "old_text", "new_text", "why" }], "remaining_fat": [{ "text", "shorter" }] }
 ```

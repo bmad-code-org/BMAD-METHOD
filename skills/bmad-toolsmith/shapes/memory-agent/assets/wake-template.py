@@ -12,7 +12,8 @@ dated files, how many raw files are still undistilled, when the memory was last
 tended (memory/.tended) with the session notes written since, and
 memory/pending.md when it has content. The memory files themselves are not printed; the agent
 reads the ones a conversation reaches. In --pulse mode it also appends
-PULSE.md. When the sanctum is missing or incomplete, it prints a directive to
+PULSE.md. It says when the name in PERSONA.md has gone from the SKILL.md
+description. When the sanctum is missing or incomplete, it prints a directive to
 run First Breath, whose script finishes an incomplete sanctum.
 
 This loads runtime memory only. It never reads or writes config or customize.toml.
@@ -42,6 +43,7 @@ IDENTITY_FILES = [
 RECENT_COUNT = 8
 DATED_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})")
 STATUS_RAW_RE = re.compile(r"^status:\s*raw\s*$", re.MULTILINE)
+PERSONA_NAME_RE = re.compile(r"^- \*\*Name:\*\* ([^{*\s][^{*\n]*)$", re.MULTILINE)
 
 
 def emit(path: Path) -> None:
@@ -119,6 +121,25 @@ def emit_map(sanctum: Path) -> None:
         emit(pending)
 
 
+def emit_lost_name(sanctum: Path, project_root: Path) -> None:
+    """Skills updates replace SKILL.md, which drops the name First Breath wrote into its description."""
+    skill_md = Path(__file__).resolve().parent.parent / "SKILL.md"
+    # A global install serves every project, so one project's name does not belong in it.
+    if not skill_md.is_file() or not skill_md.is_relative_to(project_root):
+        return
+    named = PERSONA_NAME_RE.search((sanctum / "PERSONA.md").read_text(encoding="utf-8"))
+    if not named:
+        return
+    called = named[1].strip()
+    lines = skill_md.read_text(encoding="utf-8").splitlines()
+    if not any(line.startswith("description:") and called in line for line in lines):
+        print("\n===== description =====")
+        print(
+            f"Your name, {called}, is missing from the description in {skill_md}. Put it back so `Use when` opens "
+            "with your owner asking to talk to you by that name, and change nothing else in that file."
+        )
+
+
 def main() -> int:
     args = sys.argv[1:]
     pulse = "--pulse" in args
@@ -147,6 +168,7 @@ def main() -> int:
     if pulse and (sanctum / "PULSE.md").is_file():
         emit(sanctum / "PULSE.md")
     emit_map(sanctum)
+    emit_lost_name(sanctum, project_root)
     return 0
 
 
