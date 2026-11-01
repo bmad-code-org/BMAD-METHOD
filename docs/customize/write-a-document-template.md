@@ -9,7 +9,7 @@ Use the `bmad-doc-coach` template library to make the skill coach your team thro
 
 ## When to use this
 
-- Your team has a document type the five shipped templates do not cover.
+- Your team has a document type the shipped templates do not cover.
 - Your organization has its own format for a postmortem, a proposal, or a decision record.
 - A shipped template is right, but your team has rules to add: a policy to cite, a section it must contain, a check for the review.
 - Rendered views should carry your team's look.
@@ -42,12 +42,13 @@ updated: ""
 | `description` | One short line saying what the template is for. Help lists it for every template on every run, so keep it under about 80 characters. Quote it, because a colon breaks unquoted YAML. |
 | `not_for` | Optional short line naming what the template is not for, and the template to use instead. Read with `description` when choosing one, and not listed in help. |
 | `agents` | Optional list of the skills that run this template, such as `[bmad-agent-pm]`. The `bmad` skill uses it to say who offers the template. A template in an agent's `assets/` folder counts as that agent's without it. |
-| `rubric` | Optional path to a rubric for the review, relative to the template. Empty uses the shipped planning rubric. |
+| `rubric` | Optional path to a rubric for the review, relative to the template, or the bare name `rubric-planning` for the shipped planning rubric. Empty uses the shipped general rubric, which suits any document. |
 | `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
 | `output` | Optional run folder for this template. It may use `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
 | `style` | Optional CSS file for this template's rendered view, relative to the template. |
+| `view` | Optional layout for the rendered view: `document`, `slides`, or an HTML view file relative to the template. See [Give a template its own view](#give-a-template-its-own-view). |
 
-`template` and `version` stay in the finished document; the other fields stay out.
+`template`, `version` and `view` stay in the finished document, as does any field you add for a view to show. The other fields stay out.
 
 A method catalog has the header `category,method,name,description,key_questions`, with the key questions separated by `|`. The shipped `security-review` template uses one for the OWASP Top 10 and STRIDE:
 
@@ -147,7 +148,7 @@ Above the first heading, give each of these keys its own comment, a line or two.
 | `companions` | Other files to write beside the document, when, and what each holds. A file for a different reader belongs here, not overflow from the document. |
 | `done when` | The test that ends the questioning. |
 
-Add `view: slides` to the frontmatter for a slide view; without it the HTML view is one page. In the document body, `{title}` is the only placeholder.
+Add `view: slides` to the frontmatter for a slide view, or name an HTML view file; without it the HTML view is one page. In the document body, `{title}` is the only placeholder.
 
 Each section has one comment: `required`, `optional`, or `include when:` with a condition, then a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A heading with no comment is required. A required section is always filled, in one line at hobby stakes. An include-when section goes in only when the condition holds.
 
@@ -223,7 +224,32 @@ style = "{project-root}/_bmad/style/brand.css"
 html_view = "always"
 ```
 
-`style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or a template's `writing` comment instead. A template's `style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template with `view: slides` renders unless `html_view` is `never`.
+`style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or a template's `writing` comment instead. A template's `style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template that sets `view` renders unless `html_view` is `never`.
+
+## Give a template its own view
+
+A template stays markdown, and so does the document the skill writes, because the skill grows it section by section, reviews it and diffs it. The look of the result lives in a separate HTML file beside the template, so all the coaching stays in the template's comments and the view holds none of it. Name the file in the frontmatter:
+
+```yaml
+view: character-sheet.html
+```
+
+The view file is ordinary HTML with its CSS inline. Attributes mark where the document's content goes:
+
+| Attribute | Filled with |
+| --- | --- |
+| `data-section="Heading"` | That `##` section, rendered. Matching ignores case. |
+| `data-body` | Inside a `data-section` element, the place the section goes, so a label can sit beside it. Without one, the section replaces the element's contents. |
+| `data-field="key"` | That frontmatter value, as text. `title` falls back to the document's first heading. |
+| `data-rest` | Every section no slot names, with its heading. |
+
+```html
+<h1 data-field="title"></h1>
+<section data-section="Secrets"><h2>Secrets</h2><div data-body></div></section>
+<section data-rest></section>
+```
+
+A slot with nothing to show is removed along with its element, so a declined section leaves no empty card. Without a `data-rest` slot, a section the view does not name stays out of the page, and the render says which. The `style` setting still applies after the view's own CSS. The shipped `character` template and its `character-sheet.html` are a worked example.
 
 :::tip[Templates for an agent]
 An agent's own templates ship in its `assets/` folder, and its `customize.toml` lists that folder in `template_libraries`. The agent passes the list when it runs `bmad-doc-coach`, and it is searched after yours, so your copy with the same id wins. The settings in `bmad-doc-coach.toml` (style, views, review and polish) still apply.

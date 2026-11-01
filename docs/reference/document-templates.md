@@ -18,6 +18,7 @@ To use one as a starting point, copy it into `_bmad/custom/doc-coach-templates/`
 | `proposal` | Asking for money, time or approval |
 | `security-review` | Checking a system against the OWASP Top 10 or STRIDE |
 | `pitch-deck` | A talk or pitch with slides |
+| `character` | A fictional character for a story, game or campaign, on a one-page sheet |
 
 ## What a template can do
 
@@ -33,6 +34,8 @@ To use one as a starting point, copy it into `_bmad/custom/doc-coach-templates/`
 | Draw a diagram | `postmortem`, Timeline | A `diagram:` kind in the section comment |
 | Add a table of contents | `proposal` | A bare `## Table of Contents` heading after the title |
 | Render as slides | `pitch-deck` | `view: slides` in the frontmatter |
+| Render into its own HTML layout | `character`, `character-sheet.html` | `view` names an HTML file with slots for sections and frontmatter fields |
+| Propose rather than only ask | `character`, `stance` | The comment invites proposals; one the user accepts is theirs |
 | Write several files | `postmortem`, `companions` | The comment says when to write the customer notice and what it holds |
 
 No shipped template adds to another. [Extend a template](../customize/write-a-document-template.md#extend-a-template) shows how.

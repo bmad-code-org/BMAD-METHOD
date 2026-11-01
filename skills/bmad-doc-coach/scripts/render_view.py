@@ -14,6 +14,12 @@ no network the page still shows the raw markdown in <pre> blocks.
                       trailing blockquote becomes speaker notes, kept out of the slide DOM:
                       `n` shows them under the slide, `p` opens them in a presenter window.
                       A `## Table of Contents` section gets no slide.
+  --layout <file>     an .html view file, its markup and inline CSS kept as written. Slots are
+                      attributes: `data-section="Heading"` takes that `## ` section (inside its
+                      `data-body` child when it has one, so a label can sit beside the content),
+                      `data-field="key"` takes a frontmatter value, and `data-rest` takes every
+                      section no slot names. A slot with nothing to show is removed with its
+                      element. With no `data-rest`, a section with no slot is named on stderr.
 
 Frontmatter and <!-- comments --> are stripped. `--style` inlines a .css file after the
 default CSS; any other file is ignored with a warning. Prints the output path on success;
@@ -27,6 +33,7 @@ import html
 import json
 import re
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 MARKED = "https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"
@@ -35,11 +42,16 @@ MERMAID = "https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"
 FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
 FRONTMATTER = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*(?:\n|\Z)", re.DOTALL)
-TITLE_KEY = re.compile(r"^title:[ \t]*(.*?)[ \t]*$", re.MULTILINE)
 H1 = re.compile(r"^# +(.+?)[ \t#]*$")
 H2 = re.compile(r"^## +(.+?)[ \t#]*$")
 QUOTE = re.compile(r"^ {0,3}> ?")
 BOLD_LINE = re.compile(r"^(\*\*|__)(.+)\1[ \t]*$")
+
+LAYOUTS = ("document", "slides")
+SLOT_ATTRS = {"data-section", "data-field", "data-rest", "data-body"}
+VOID_TAGS = {
+    "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr",
+}  # fmt: skip
 
 
 def code_mask(lines: list[str]) -> list[bool]:
@@ -83,8 +95,8 @@ def split_frontmatter(text: str) -> tuple[str, str]:
     return m.group(1), text[m.end() :]
 
 
-def frontmatter_title(frontmatter: str) -> str:
-    m = TITLE_KEY.search(frontmatter)
+def frontmatter_value(frontmatter: str, key: str) -> str:
+    m = re.search(rf"^{re.escape(key)}:[ \t]*(.*?)[ \t]*$", frontmatter, re.MULTILINE)
     if not m:
         return ""
     value = m.group(1)
@@ -95,11 +107,20 @@ def frontmatter_title(frontmatter: str) -> str:
     return value
 
 
+def frontmatter_title(frontmatter: str) -> str:
+    return frontmatter_value(frontmatter, "title")
+
+
+def clean(text: str) -> tuple[str, str]:
+    """Strip comments. Returns (frontmatter block, markdown body)."""
+    frontmatter, body = split_frontmatter(strip_comments(text.replace("\r\n", "\n")).lstrip())
+    return frontmatter, body.strip("\n") + "\n"
+
+
 def prepare(text: str) -> tuple[str, str]:
     """Strip comments and frontmatter. Returns (title from frontmatter, markdown body)."""
-    text = strip_comments(text.replace("\r\n", "\n")).lstrip()
-    frontmatter, body = split_frontmatter(text)
-    return frontmatter_title(frontmatter), body.strip("\n") + "\n"
+    frontmatter, body = clean(text)
+    return frontmatter_title(frontmatter), body
 
 
 def first_h1(body: str) -> str:
@@ -144,8 +165,8 @@ def make_slide(heading: str, lines: list[str], *, title_slide: bool = False) -> 
     }
 
 
-def split_slides(body: str, fallback_title: str = "") -> list[dict]:
-    """One slide for the part before the first `## ` (the `# ` title), then one per `## ` section."""
+def h2_groups(body: str) -> list[tuple[str | None, list[str]]]:
+    """The lines before the first `## ` under None, then each `## ` heading with its lines."""
     lines = body.split("\n")
     groups: list[tuple[str | None, list[str]]] = [(None, [])]
     for line, in_code in zip(lines, code_mask(lines), strict=True):
@@ -154,7 +175,12 @@ def split_slides(body: str, fallback_title: str = "") -> list[dict]:
             groups.append((m.group(1), []))
         else:
             groups[-1][1].append(line)
+    return groups
 
+
+def split_slides(body: str, fallback_title: str = "") -> list[dict]:
+    """One slide for the part before the first `## ` (the `# ` title), then one per `## ` section."""
+    groups = h2_groups(body)
     slides = []
     _, preamble = groups[0]
     if any(line.strip() for line in preamble):
@@ -169,6 +195,110 @@ def split_slides(body: str, fallback_title: str = "") -> list[dict]:
         slides.append(make_slide(heading, preamble, title_slide=True))
     slides.extend(make_slide(heading, group) for heading, group in groups[1:] if heading.lower() != "table of contents")
     return slides
+
+
+class SlotElements(HTMLParser):
+    """Finds each element with a slot attribute: `start` and `end` around it, `inner` and `close` around its contents."""
+
+    def __init__(self, page: str):
+        super().__init__(convert_charrefs=False)
+        self.page = page
+        self.line_starts = [0] + [m.end() for m in re.finditer("\n", page)]
+        self.stack: list[dict] = []
+        self.found: list[dict] = []
+        self.feed(page)
+        self.close()
+
+    def position(self) -> int:
+        line, column = self.getpos()
+        return self.line_starts[line - 1] + column
+
+    def handle_starttag(self, tag, attrs):
+        if tag not in VOID_TAGS:
+            start = self.position()
+            self.stack.append(
+                {"tag": tag, "attrs": dict(attrs), "start": start, "inner": start + len(self.get_starttag_text())}
+            )
+
+    def handle_startendtag(self, tag, attrs):
+        pass
+
+    def handle_endtag(self, tag):
+        for i in range(len(self.stack) - 1, -1, -1):
+            if self.stack[i]["tag"] == tag:
+                element = self.stack[i]
+                del self.stack[i:]
+                if SLOT_ATTRS & element["attrs"].keys():
+                    close = self.position()
+                    self.found.append({**element, "close": close, "end": self.page.index(">", close) + 1})
+                return
+
+
+def fill_view(view: str, markdown_text: str) -> tuple[str, list[str], list[str]]:
+    """Fill a view's slots. Returns (page, markdown for the browser to render, sections with no slot)."""
+    frontmatter, body = clean(markdown_text)
+    sections = {
+        heading.lower(): (heading, "\n".join(lines).strip())
+        for heading, lines in h2_groups(body)[1:]
+        if heading.lower() != "table of contents"
+    }
+    elements = SlotElements(view).found
+    pieces: list[str] = []
+    edits: list[tuple[int, int, str]] = []
+
+    def fill(element: dict, text: str) -> None:
+        if text:
+            pieces.append(text)
+            slot = f'<div data-md="{len(pieces) - 1}">{fallback(text)}</div>'
+            edits.append((element["inner"], element["close"], slot))
+        else:
+            edits.append((element["start"], element["end"], ""))
+
+    claimed = set()
+    for element in elements:
+        key = element["attrs"].get("data-section")
+        if key is None:
+            continue
+        claimed.add(key.strip().lower())
+        text = sections.get(key.strip().lower(), ("", ""))[1]
+        inside = (
+            e
+            for e in elements
+            if "data-body" in e["attrs"] and element["start"] < e["start"] and e["end"] < element["end"]
+        )
+        fill(next(inside, element) if text else element, text)
+
+    for element in elements:
+        key = element["attrs"].get("data-field")
+        if key is None:
+            continue
+        value = frontmatter_value(frontmatter, key.strip()) or (first_h1(body) if key.strip() == "title" else "")
+        if value:
+            edits.append((element["inner"], element["close"], html.escape(value)))
+        else:
+            edits.append((element["start"], element["end"], ""))
+
+    left = [(heading, text) for key, (heading, text) in sections.items() if key not in claimed and text]
+    rest = [element for element in elements if "data-rest" in element["attrs"]]
+    for element in rest[:1]:
+        fill(element, "\n\n".join(f"## {heading}\n\n{text}" for heading, text in left))
+
+    # An edit inside one that replaces or removes its surroundings has nothing left to change.
+    edits.sort(key=lambda edit: (edit[0], -edit[1]))
+    kept, reach = [], 0
+    for edit in edits:
+        if edit[0] >= reach:
+            kept.append(edit)
+            reach = edit[1]
+    for start, end, text in reversed(kept):
+        view = view[:start] + text + view[end:]
+    return view, pieces, [] if rest else [heading for heading, _ in left]
+
+
+def insert_before(page: str, closing_tag: str, text: str) -> str:
+    """`text` before the last `closing_tag`, or at the end of a page without one."""
+    at = page.lower().rfind(closing_tag)
+    return page + text if at < 0 else page[:at] + text + page[at:]
 
 
 def load_style(path: str | None) -> str:
@@ -193,6 +323,18 @@ def script_json(value) -> str:
 
 def fallback(text: str) -> str:
     return f'<pre class="fallback">{html.escape(text)}</pre>' if text else ""
+
+
+def scripts(payload: dict) -> str:
+    return SCRIPTS.format(payload=script_json(payload), marked=MARKED, mermaid=MERMAID, js=JS)
+
+
+def render_into_view(markdown_text: str, view: str, style_css: str = "", view_name: str = "the view") -> str:
+    page, pieces, unplaced = fill_view(view, markdown_text)
+    if unplaced:
+        print(f"render_view: no slot in {view_name} for: {', '.join(unplaced)}", file=sys.stderr)
+    page = insert_before(page, "</head>", f"<style>\n{VIEW_CSS}\n{style_css}\n</style>\n")
+    return insert_before(page, "</body>", scripts({"layout": "view", "slots": pieces}))
 
 
 def render(markdown_text: str, layout: str, style_css: str = "", name: str = "document") -> str:
@@ -220,17 +362,14 @@ def render(markdown_text: str, layout: str, style_css: str = "", name: str = "do
         css=CSS,
         custom=custom,
         main=main,
-        payload=script_json(payload),
-        marked=MARKED,
-        mermaid=MERMAID,
-        js=JS,
+        scripts=scripts(payload),
     )
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Render a markdown document as a self-contained HTML view.")
     ap.add_argument("document", help="the markdown document")
-    ap.add_argument("--layout", choices=["document", "slides"], default="document")
+    ap.add_argument("--layout", default="document", help="document, slides, or an .html view file")
     ap.add_argument("--style", help="a .css file to inline; any other file is ignored")
     ap.add_argument("--out", help="output path (default: the document path with .html)")
     args = ap.parse_args(argv)
@@ -240,7 +379,15 @@ def main(argv: list[str] | None = None) -> int:
         print(f"render_view: {doc} not found", file=sys.stderr)
         return 2
     out = Path(args.out) if args.out else doc.with_suffix(".html")
-    page = render(doc.read_text(encoding="utf-8-sig"), args.layout, load_style(args.style), doc.stem)
+    text = doc.read_text(encoding="utf-8-sig")
+    if args.layout in LAYOUTS:
+        page = render(text, args.layout, load_style(args.style), doc.stem)
+    else:
+        view = Path(args.layout)
+        if view.suffix.lower() != ".html" or not view.is_file():
+            print(f"render_view: --layout {view}: not a layout or an .html view file", file=sys.stderr)
+            return 2
+        page = render_into_view(text, view.read_text(encoding="utf-8-sig"), load_style(args.style), view.name)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(page, encoding="utf-8")
     print(out)
@@ -318,6 +465,8 @@ body.slides { overflow: hidden; }
   #counter, #notes-panel { display: none !important; }
 }
 """
+
+VIEW_CSS = "pre.fallback { white-space: pre-wrap; word-wrap: break-word; }"
 
 JS = r"""
 (function () {
@@ -481,8 +630,17 @@ JS = r"""
     show(start === null ? 0 : start);
   }
 
+  function renderSlots() {
+    document.querySelectorAll('[data-md]').forEach(function (el) {
+      var h = md(data.slots[+el.getAttribute('data-md')]);
+      if (h !== null) el.innerHTML = h;
+    });
+  }
+
   function renderAll() {
-    if (data.layout === 'slides') renderSlides(); else renderDocument();
+    if (data.layout === 'slides') renderSlides();
+    else if (data.layout === 'view') renderSlots();
+    else renderDocument();
     if (hasMarked) drawDiagrams();
   }
 
@@ -514,15 +672,17 @@ PAGE = """<!doctype html>
 {custom}</head>
 <body class="layout-{layout}">
 {main}
-<script type="application/json" id="view-data">{payload}</script>
+{scripts}</body>
+</html>
+"""
+
+SCRIPTS = """<script type="application/json" id="view-data">{payload}</script>
 <script>
 var MARKED_SRC = "{marked}";
 var MERMAID_SRC = "{mermaid}";
 var PRESENTER_HTML = {presenter};
 {js}
 </script>
-</body>
-</html>
 """.replace("{presenter}", script_json(PRESENTER).replace("{", "{{").replace("}", "}}"))
 
 
