@@ -29,6 +29,31 @@ def rules(data):
 
 
 class ScanPathsTest(unittest.TestCase):
+    def test_absolute_fixture_path_in_eval_cases_fires(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                {
+                    "SKILL.md": "---\nname: bmad-demo\ndescription: 'Demo. Use when testing.'\n---\n\nBody.\n",
+                    "evals/cases.json": json.dumps(
+                        {
+                            "cases": [
+                                {
+                                    "files": [
+                                        "/Users/me/data/a.md",
+                                        "fixtures/b.md",
+                                        "https://github.com/o/r/blob/abc/c.md",
+                                    ]
+                                }
+                            ]
+                        }
+                    ),
+                },
+            )
+            code, data = scan(skill)
+            self.assertEqual(code, 1)
+            self.assertEqual(rules(data), [("evals/cases.json", "absolute-path")])
+
     def test_python_call_fires_and_uv_run_does_not(self):
         with tempfile.TemporaryDirectory() as tmp:
             skill = make_skill(

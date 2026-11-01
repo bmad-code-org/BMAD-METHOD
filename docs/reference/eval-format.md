@@ -43,7 +43,7 @@ Use this page for the exact formats `bmad-eval` reads and writes. For when to ru
 | `state_prefix` | Optional bracketed text that places the skill mid-workflow. Null or absent starts cold |
 | `files` | Optional fixtures staged into the clean working directory |
 
-A bare filename in `files` lands at the workspace root, and a nested path keeps its folders, so the input can name it as written. Sources resolve against `--project-root`, then the cases file's folder. An absolute path fails the case.
+Each entry in `files` is a path relative to `--project-root` or the cases file's folder, or a GitHub file URL pinned to a commit or tag, `https://github.com/<owner>/<repo>/blob/<ref>/<path>`, for data kept in another repo. A relative path keeps its folders, so the input can name it as written; a GitHub file lands at the workspace root under its file name. Absolute and `~` paths are refused so the cases run on anyone's machine, and a missing fixture stops the run before any case starts.
 
 ## `state_prefix`
 

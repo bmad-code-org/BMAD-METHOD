@@ -4,7 +4,9 @@
 # ///
 """Run eval cases through the recorded harness.
 
-A case is `input + rubric + optional state_prefix + optional files`. For each case and
+A case is `input + rubric + optional state_prefix + optional files`. Each file is a path relative
+to the project root or the cases file, or a GitHub file URL pinned to a ref; absolute paths are
+refused and a missing fixture stops the run before it starts. For each case and
 config the runner makes a clean room outside the project, copies the skill under test into
 the folder the harness reads skills from, stages the fixtures, runs the harness command once
 from the workspace, and records what it printed with timing and token usage. Grading happens
@@ -44,10 +46,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
+import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from urllib.parse import quote, unquote
 
 from eval_common import (
     DEFAULT_SKILL_DIR,
@@ -79,26 +84,61 @@ def stage_skill(skill_path: Path, cwd: Path, skills_subdir: str) -> Path:
     return dest
 
 
-def resolve_fixtures(files: list, project_root: Path, cases_dir: Path) -> list[tuple[Path, str]]:
+GITHUB_FILE = re.compile(r"^https://github\.com/(?P<owner>[^/]+)/(?P<repo>[^/]+)/blob/(?P<ref>[^/]+)/(?P<path>.+)$")
+
+
+def fixture_problems(files: list, project_root: Path, cases_dir: Path) -> list[str]:
+    """Why each `files` entry cannot be staged on any machine, checked before anything runs.
+
+    An entry is a path relative to the project root or the cases file's folder, or a GitHub
+    file URL. An absolute or home path is refused: it names one person's machine.
+    """
+    problems = []
+    for entry in map(str, files or []):
+        if GITHUB_FILE.match(entry):
+            continue
+        if "://" in entry:
+            problems.append(
+                f"{entry}: a URL fixture must be a GitHub file URL, https://github.com/<owner>/<repo>/blob/<ref>/<path>"
+            )
+        elif entry.startswith("~") or Path(entry).is_absolute():
+            problems.append(
+                f"{entry}: absolute paths break on other machines; use a path relative to the project root "
+                "or the cases file, or a GitHub file URL pinned to a commit"
+            )
+        elif not any((root / entry).resolve().is_file() for root in (project_root, cases_dir)):
+            problems.append(f"{entry}: not found under {project_root} or {cases_dir}")
+    return problems
+
+
+def fetch_github(m: re.Match, into: Path) -> Path:
+    """Download one GitHub file at its ref through `gh`, so private repos work too."""
+    path = unquote(m["path"])
+    api = f"repos/{m['owner']}/{m['repo']}/contents/{quote(path)}?ref={quote(unquote(m['ref']), safe='')}"
+    data = subprocess.run(
+        ["gh", "api", "-H", "Accept: application/vnd.github.raw", api], capture_output=True, check=True, timeout=60
+    ).stdout
+    dest = into / m["owner"] / m["repo"] / unquote(m["ref"]) / path
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(data)
+    return dest
+
+
+def resolve_fixtures(files: list, project_root: Path, cases_dir: Path, fetch_dir: Path) -> list[tuple[Path, str]]:
     """Map each `files` entry to (source, dest-relative-path).
 
-    The entry's own relative path is preserved inside the workspace, so a bare filename lands
-    at its root and a nested path keeps its directory structure, matching the path the case
-    input references.
+    A relative entry keeps its own path inside the workspace, so a bare filename lands at its
+    root and a nested path keeps its directory structure, matching the path the case input
+    references. A GitHub file lands at the workspace root under its file name.
     """
     out: list[tuple[Path, str]] = []
-    for entry in files or []:
-        entry = str(entry)
-        for candidate in (
-            (project_root / entry).resolve(),
-            (cases_dir / entry).resolve(),
-            Path(entry).resolve(),
-        ):
-            if candidate.is_file():
-                out.append((candidate, entry))
-                break
-        else:
-            print(f"Warning: fixture not found: {entry}", file=sys.stderr)
+    for entry in map(str, files or []):
+        m = GITHUB_FILE.match(entry)
+        if m:
+            out.append((fetch_github(m, fetch_dir), Path(unquote(m["path"])).name))
+            continue
+        src = next((root / entry).resolve() for root in (project_root, cases_dir) if (root / entry).resolve().is_file())
+        out.append((src, entry))
     return out
 
 
@@ -272,6 +312,15 @@ def main(argv: list[str] | None = None) -> int:
         print(f"harness invalid: {e}", file=sys.stderr)
         return 2
 
+    problems = [
+        f"case {c.get('id')}: {x}"
+        for c in cases
+        for x in fixture_problems(c.get("files", []), fixture_root, cases_file.parent)
+    ]
+    if problems:
+        print("fixtures cannot be staged:\n  " + "\n  ".join(problems), file=sys.stderr)
+        return 2
+
     run_id, run_dir = make_run_dir(args.output_dir, safe_name(args.label))
     write_json(
         run_dir / "run.json",
@@ -301,6 +350,17 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
 
+    fixtures: dict[int, list[tuple[Path, str]]] = {}
+    try:
+        for c in cases:
+            fixtures[id(c)] = resolve_fixtures(
+                c.get("files", []), fixture_root, cases_file.parent, run_dir / "fixtures"
+            )
+    except (subprocess.SubprocessError, OSError) as e:
+        detail = getattr(e, "stderr", b"") or b""
+        print(f"could not fetch a GitHub fixture: {e} {detail.decode(errors='replace').strip()}", file=sys.stderr)
+        return 2
+
     jobs: list[tuple[str, dict, Path, Path | None]] = []
     for config_name, config_skill in configs:
         for c in cases:
@@ -321,7 +381,7 @@ def main(argv: list[str] | None = None) -> int:
                 int(c.get("timeout", args.timeout)),
                 config_name,
                 config_skill,
-                resolve_fixtures(c.get("files", []), fixture_root, cases_file.parent),
+                fixtures[id(c)],
             ): c
             for config_name, c, case_dir, config_skill in jobs
         }
