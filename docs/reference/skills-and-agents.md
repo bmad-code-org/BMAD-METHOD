@@ -66,7 +66,7 @@ Each agent is an identity plus a customizable layer. See [Customize BMad](../cus
 
 ## Core Skills
 
-Every installation includes the core module: nine skills that work in any project, any module, any phase. No agent session is required.
+Every installation includes the core module: ten skills that work in any project, any module, any phase. No agent session is required.
 
 ### bmad
 
@@ -154,6 +154,12 @@ Puts your installed agents, or custom personas, in one conversation, in characte
 Makes a long document, such as a large PRD, architecture or manual, cheap for an agent to navigate. It assesses the document first and recommends one of three outcomes: leave it as it is, add a detailed contents list with line ranges, or split it word for word into a map and shards. It never rewrites content: a script does the cutting and checks that nothing was lost. Later changes go through the same skill, which keeps the map and the checks in step. Transcripts, chat exports and meeting notes go to `bmad-ingest` instead.
 
 **Input:** a markdown or text document; convert other formats first. **Output:** in the document's own folder, a main file named after the folder holding a note and the map, the shards, the frozen original in `.source/`, and an entry in its `.memlog.md`; or, for a contents list, the same file with the list added.
+
+### bmad-ingest
+
+Turns raw input, such as a meeting transcript, a chat or email thread, a voice memo or a long document, into a note that an agent or person reads instead of the raw. It picks a note template from the template's description: core tools ship `meeting`, `thread`, `voice-memo`, `document` and `one-on-one`, the BMad Method adds `standup`, `retrospective`, `sprint-review`, `discovery-workshop` and `user-interview`, and you can add your own in the project's `_bmad/custom/ingest-templates/`, in `~/.bmad/ingest-templates/` for every project, from a GitHub URL, or in any module's `ingest-templates/` folder. A project's template wins over a personal one with the same id. Every item in the note points back to where it sits in the raw, and nothing is added that the raw does not say. Another skill, such as a PRD you are writing, can pass it an input and link the note it gets back.
+
+**Output:** the original, kept unchanged, in `{output_folder}/raw/` unless it is already in the project, and the note in the folder the calling skill names, else `{output_folder}/notes/`. Change either with `bmad-customize`.
 
 ## BMad Method Skills
 
