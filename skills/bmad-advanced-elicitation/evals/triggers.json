@@ -1,0 +1,134 @@
+[
+  {
+    "query": "run advanced elicitation on that section",
+    "should_trigger": true
+  },
+  {
+    "query": "advanced elicitation on the plan you just wrote",
+    "should_trigger": true
+  },
+  {
+    "query": "use bmad-advanced-elicitation on this draft",
+    "should_trigger": true
+  },
+  {
+    "query": "bmad-advanced-elicitation: steelman the other option before we commit",
+    "should_trigger": true
+  },
+  {
+    "query": "let's do some advanced elicitation on the pricing section before we move on",
+    "should_trigger": true
+  },
+  {
+    "query": "can you run an advanced elicitation round with a pre-mortem on this rollout plan",
+    "should_trigger": true
+  },
+  {
+    "query": "Advanced Elicitation please, this PRD section feels thin",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to try the advanced elicitation skill on my cover letter",
+    "should_trigger": true
+  },
+  {
+    "query": "push this harder",
+    "should_trigger": false
+  },
+  {
+    "query": "challenge this draft, I think it's too safe",
+    "should_trigger": false
+  },
+  {
+    "query": "poke holes in the plan you just wrote",
+    "should_trigger": false
+  },
+  {
+    "query": "do a pre-mortem on this rollout plan",
+    "should_trigger": false
+  },
+  {
+    "query": "steelman the other option before we commit",
+    "should_trigger": false
+  },
+  {
+    "query": "ok the outline is decent but make it stronger, first principles it",
+    "should_trigger": false
+  },
+  {
+    "query": "red team the pricing section",
+    "should_trigger": false
+  },
+  {
+    "query": "can you socratic this decision memo I pasted",
+    "should_trigger": false
+  },
+  {
+    "query": "tear this apart",
+    "should_trigger": false
+  },
+  {
+    "query": "critique this draft before I send it",
+    "should_trigger": false
+  },
+  {
+    "query": "devil's advocate this plan",
+    "should_trigger": false
+  },
+  {
+    "query": "run six thinking hats on this spec",
+    "should_trigger": false
+  },
+  {
+    "query": "assumption audit on the proposal please",
+    "should_trigger": false
+  },
+  {
+    "query": "pre-mortem my startup idea",
+    "should_trigger": false
+  },
+  {
+    "query": "get a few experts to weigh in on this design",
+    "should_trigger": false
+  },
+  {
+    "query": "use SCAMPER to generate feature ideas",
+    "should_trigger": false
+  },
+  {
+    "query": "elicit the requirements for the login feature from me",
+    "should_trigger": false
+  },
+  {
+    "query": "review this PR",
+    "should_trigger": false
+  },
+  {
+    "query": "review the architecture doc and report what you find",
+    "should_trigger": false
+  },
+  {
+    "query": "I have a half-formed idea for a side business, pressure-test it with me",
+    "should_trigger": false
+  },
+  {
+    "query": "help me brainstorm names for the product",
+    "should_trigger": false
+  },
+  {
+    "query": "party mode, get the architect and the PM in here",
+    "should_trigger": false
+  },
+  {
+    "query": "rewrite this paragraph to be shorter",
+    "should_trigger": false
+  },
+  {
+    "query": "what does first principles thinking mean?",
+    "should_trigger": false
+  },
+  {
+    "query": "push this branch to origin",
+    "should_trigger": false
+  }
+]

@@ -118,11 +118,11 @@ bet you could test with a plain email and no model at all.
 
 ## Improve a Draft
 
-Point `bmad-advanced-elicitation` at a recent piece of output (a section, a
-plan, a draft, a decision) and it offers a short menu of critique methods,
-such as pre-mortem, first principles, or red team, runs the ones you pick, and
-shows proposed changes for you to apply or reject. The brief, PRD, and UX
-skills offer it at their own pauses. See
+Point `bmad-advanced-elicitation` at a draft (a section, a plan, a decision,
+something you wrote) and it names where the draft is weak, runs critique
+methods such as pre-mortem, first principles, or steelman as independent
+readers, and shows one proposed revision for you to apply or reject. The
+brief, PRD, and UX skills remind you it is there at their own pauses. See
 [`bmad-advanced-elicitation`](../reference/skills-and-agents.md#bmad-advanced-elicitation).
 
 ## What Comes Next

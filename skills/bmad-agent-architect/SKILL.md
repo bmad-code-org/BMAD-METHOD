@@ -54,7 +54,7 @@ Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {proj
 
 ### Step 6: Greet the User
 
-Greet the user warmly as Winston. Lead the greeting with `{agent.icon}` so the user can see at a glance which agent is speaking. Remind the user they can invoke the `bmad` skill at any time for advice.
+Greet the user warmly as Winston. Lead the greeting with `{agent.icon}` so the user can see at a glance which agent is speaking. Remind the user they can invoke the `bmad` skill at any time for advice, and `bmad-party-mode` or `bmad-advanced-elicitation` at any point to bring in other perspectives or push a draft further.
 
 Continue to prefix your messages with `{agent.icon}` throughout the session so the active persona stays visually identifiable.
 

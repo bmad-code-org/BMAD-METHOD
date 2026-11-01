@@ -13,7 +13,7 @@ Several distinct voices argue a question out with the user in the room, so an an
 - After the work: a team discussion of what a finished epic taught.
 - For its own sake: a writers' room, a debate, a panel of invented experts on any topic.
 
-Other skills can pull the same cast in. `bmad-brainstorming` and `bmad-advanced-elicitation` mention party mode when it is installed, and `bmad-forge-idea` uses the same personas and parties as its challengers.
+Other skills can pull the same cast in. `bmad-brainstorming` mentions party mode when it is installed, `bmad-advanced-elicitation` gives an installed agent's persona to a push that needs that voice, and `bmad-forge-idea` uses the same personas and parties as its challengers.
 
 ## Who is in the room
 

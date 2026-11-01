@@ -12,43 +12,62 @@
 #   scalars: override wins • plain arrays: append
 #   arrays of tables keyed by `code`: matching key replaces, new keys append
 
-# The elicitation method catalog served by scripts/pick_methods.py
-# (columns: num,category,method_name,description,output_pattern). Swap the path
-# in team/user TOML to ship a different catalog. Kept `{skill-root}`-anchored so
-# it resolves regardless of the working directory (pick_methods.py is always
-# invoked with `--file {workflow.methods_file}`).
+# The method catalog served by `uv run {skill-root}/scripts/pick_methods.py`. Columns:
+# num, direction, method_name, description, form, tier, aliases.
+#   direction: wrong | missing | premise | simplify | future | other-side
+#     (find what is wrong, find what is missing, challenge the premise,
+#     simplify or re-pitch, stress against the future, argue the other side)
+#   form: one line saying what the method's output looks like; quoted into the brief
+#   tier: core (recommended) | more (kept so a method asked for by name resolves)
+#   aliases: earlier names of the method, separated by semicolons; optional
+# Swap the path in team/user TOML to ship a different catalog. Use `{skill-root}`,
+# `{project-root}` or an absolute path; a relative path resolves from the
+# working directory.
 methods_file = "{skill-root}/assets/methods.csv"
 
-# Persistent preferences the refiner honors for every session — methods to
-# favor or avoid, how pushback should land, house rules for applying changes.
-# Literal sentences; append-merges, so team and personal preferences both apply.
+# Session output. The staged target, each push's return and the report land in
+# `{output_dir}/{output_folder_name}/`; `{topic_slug}` is a kebab-case name for
+# the target, filled at run time. The report is `{output_folder_name}.md`.
+output_dir = "{output_folder}/{active_initiative}"
+output_folder_name = "elicitation-{topic_slug}"
+
+# Methods to run when the call names none, by method_name, shipped or from
+# additional_methods, for example ["Pre-mortem Analysis", "Red Team"]. Empty: the
+# skill chooses two or three against where the target looks weak. Team and user
+# lists append, so both sets run.
+default_methods = []
+
+# Steps run before and after the shipped activation steps. Literal instructions;
+# append-merges.
+activation_steps_prepend = []
+activation_steps_append = []
+
+# Facts held for every session: methods or directions to favor or avoid, how
+# pushback should land, house rules for applying changes. Literal sentences, or
+# `file:` followed by a path or glob under {project-root} to read. Append-merges,
+# so team and personal entries both apply.
 #
 # Examples (set in team/user override TOML):
-#   preferences = [
-#     "Lead with a risk-category method for anything touching production systems.",
-#     "Never offer roleplay or persona methods.",
+#   persistent_facts = [
+#     "Lead with a stress-against-the-future method for anything touching production.",
+#     "Never offer methods with several voices.",
 #   ]
-preferences = []
+persistent_facts = []
 
-# Extra methods — and whole new categories — merged into the catalog without
-# editing the shipped CSV. Passed to pick_methods.py via --extra, so custom
-# methods are first-class in every menu, reshuffle, and listing.
-#
-# Two keys, two jobs — keep them aligned:
-#   `code` is only the TOML merge key across override layers: a personal entry
-#     with the same code replaces the team one; new codes append.
-#   `method_name` is the catalog identity: an entry whose method_name matches a
-#     shipped method replaces it (retune its description or pattern; it keeps
-#     the shipped num), others append with new nums.
-#   To override another layer's entry, reuse its `code`. Two entries with
-#     different codes but the same method_name both survive the TOML merge, and
-#     only the later one reaches the catalog.
+# Instructions run once the accepted version has been handed back.
+on_complete = []
+
+# Extra methods merged into the catalog without editing the shipped CSV. Add one
+# when the team has a critique method of its own, or to retune a shipped one by
+# reusing its method_name. Every entry needs a `code`, the merge key across
+# override layers; `direction` takes one of the six keys above. The merge rules are in
+# `uv run {skill-root}/scripts/pick_methods.py --help`.
 #
 # Example (set in team/user override TOML):
 #   [[workflow.additional_methods]]
 #   code = "regulatory-inversion"
-#   category = "domain-specific"
+#   direction = "premise"
 #   method_name = "Regulatory Inversion"
-#   description = "Start from the compliance constraint and ask what becomes possible only because of it - turns the rule into a generative frame"
-#   output_pattern = "constraint → possibilities → design"
+#   description = "Start from the compliance constraint and ask what it makes possible"
+#   form = "The constraint, the possibilities only it allows, and the design that uses them"
 additional_methods = []
