@@ -149,7 +149,7 @@ Six named experts, each owning a phase and staying in the conversation across tu
 
 | Agent | Phase | Work with them to |
 |---|---|---|
-| Mary, analyst — `bmad-agent-analyst` | Analysis | Brainstorm, research a market, domain, technology, or competitor, then shape a brief or a PRFAQ. |
+| Mary, analyst — `bmad-agent-analyst` | Analysis | Brainstorm, research a market, domain, technology, or competitor, then shape a brief or a PRFAQ, or write a business requirements document. |
 | John, product manager — `bmad-agent-pm` | Planning | Turn a vision into a brief, a PRD or another planning document, and check readiness. |
 | Sofia, product owner — `bmad-agent-po` | Planning | Write a ticket's requirements from whatever exists, slice it into epics and stories, run the board, and replan a change mid-flight. No menu: say what you want. |
 | Sally, UX designer — `bmad-agent-ux-designer` | Planning | Work out how the product looks and behaves. |
