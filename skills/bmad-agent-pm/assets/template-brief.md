@@ -9,7 +9,7 @@ updated: ""
 
 <!-- purpose: Decide whether and why to build something, or pitch it. -->
 
-<!-- stance: Push hardest on the problem and on what makes it different, where briefs most often overclaim. -->
+<!-- stance: Push hardest on the problem and on what makes it different, where briefs most often overclaim. The brief serves the product's story: required here means the default, so drop a section that does not earn its place, add what the product needs, and reorder freely. -->
 
 <!-- inputs: Only the user knows who it is for and why now. -->
 
@@ -22,10 +22,10 @@ updated: ""
 ## Table of Contents
 
 ## Executive summary
-<!-- required. What this is, the problem it solves, why it matters and why now. -->
+<!-- required. Two or three paragraphs of narrative, compelling enough to stand alone: what this is, the problem it solves, why it matters and why now. -->
 
 ## Problem
-<!-- required. Who feels the pain, how they cope today, and what the status quo costs them. -->
+<!-- required. Who feels the pain, how they cope today, and what the status quo costs them, with real scenarios, real frustrations and real consequences. -->
 
 ## Solution
 <!-- required. What gets built, the form it takes (app, web tool, service), and how it solves the problem, as experience and outcome rather than implementation. -->
@@ -34,16 +34,16 @@ updated: ""
 <!-- required. Why this over the alternatives, including doing nothing; the real advantage, even when it is only speed or focus. -->
 
 ## Who it serves
-<!-- required. Primary users and what success looks like for them; secondary users when they matter. -->
+<!-- required. Primary users, vivid but brief: who they are, what they need and what success looks like for them; secondary users when they matter. -->
 
 ## Success criteria
 <!-- required. Measurable signs it is working, for users and for the business. -->
 
 ## Scope
-<!-- required. What the first version includes and what it leaves out. -->
+<!-- required. What the first version includes and what it leaves out: a tight boundary, not a feature list. -->
 
 ## The ask
 <!-- include when: the brief pitches a sponsor. What the money or time buys, what is still unknown, the running cost, and when the sponsor can stop. -->
 
 ## Vision
-<!-- optional. Where this goes in two or three years if it works. -->
+<!-- optional. Where this goes in two or three years if it works, inspiring but grounded. -->
