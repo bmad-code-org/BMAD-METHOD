@@ -80,28 +80,28 @@ The BMad hub. Ask it a question and it answers from the installed modules and re
 
 ### bmad-advanced-elicitation
 
-A structured second pass over what the model just produced. Instead of "try again," you pick a named reasoning method and the model re-examines its own output through that lens. A named method forces a particular angle of attack and surfaces what a generic retry misses.
+A push on a draft you have in front of you. A first draft is the model's most likely answer; this skill moves it off center in chosen directions, through independent readers who hold none of the author's reasons, and proposes a revision you accept or reject. The draft can be the model's or yours: a section, a plan, a decision, a pasted document.
 
 **Use it when:**
 
-- Output seems fine but you suspect there is more depth
-- You want to stress-test assumptions or find weaknesses
-- The content is high-stakes and rethinking is worth the time
+- Output seems fine but you suspect there is more
+- You want assumptions stressed, the premise questioned, or the other side argued
+- The work matters enough to spend a few minutes pushing it
+
+**Skip it when:**
+
+- It is one quick choice you want reconsidered: asking the model to push harder and consider alternatives is often as good, and much faster
 
 **How it works:**
 
-1. It suggests five methods that fit the target (the most recent output, unless you point it elsewhere)
-2. You pick one or more, or reshuffle for different options
-3. It applies the method and shows the proposed improvements
-4. You accept or discard, then repeat or continue
+1. It names the target and where it is probably weak, and starts three pushes right away, each from a different direction (what is wrong, what is missing, the premise, simplicity, the future, the other side): the method that best fits the weak spot, a wildcard chosen to take the work somewhere unexpected, and, for a single choice, an open push to reconsider it with everything the conversation holds, or for a document, a second method
+2. Methods you name when you call it run instead, and a team or person can set default methods with `bmad-customize`. Ask it to list the methods to see what else is there
+3. Each method runs as its own independent reader, all at once, in the method's own form: a pre-mortem is written from after the failure, a stakeholder speaks in their own voice
+4. You get one proposed revision as a numbered list of changes, each tagged with the push that drove it, with the full revised passages and every push's findings in a report beside it. Accept all, some by number, reject, or rerun a push with direction, then take another round or finish
 
-Dozens of methods are available. Examples: pre-mortem analysis, first principles thinking, inversion, red team vs. blue team, Socratic questioning, constraint removal, stakeholder mapping, and analogical reasoning.
+Methods include pre-mortem, first principles, inversion, red team, steelman, Socratic questioning, assumption audit, stakeholder lens, subtraction, and more; teams add their own.
 
-The brief, PRD, and UX skills offer it at their own pauses; you can also run it directly on anything recent in the conversation.
-
-:::tip[Start with a pre-mortem]
-Pre-mortem analysis is a good first pick for any spec or plan. It consistently finds gaps that a standard review misses.
-:::
+The brief, PRD, UX and architecture skills and the agent personas remind you it is there; you can also start it yourself by saying "advanced elicitation". With nothing named, it pushes what you were just discussing, at its own size: a choice is pushed as a choice, not as the plan around it. Name a target ("advanced elicitation on section 4") or methods ("with pre-mortem and red team") to aim it.
 
 ### bmad-review
 
