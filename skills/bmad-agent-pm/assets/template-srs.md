@@ -3,7 +3,8 @@ title: ""
 template: srs
 version: 1.0.0
 description: "Traceable, verifiable requirements for regulated or contracted work."
-not_for: "Product work with no external check (`prd`); one feature for a coding agent (`agent-spec`)."
+not_for: "Product work with no external check (`prd`); what the business requires, before system behavior (`brd`); one feature for a coding agent (`agent-spec`)."
+rubric: rubric-planning
 status: draft
 created: ""
 updated: ""

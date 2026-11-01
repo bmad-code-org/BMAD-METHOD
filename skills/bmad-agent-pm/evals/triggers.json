@@ -126,5 +126,17 @@
   {
     "query": "create a spec for the checkout epic so it's ready for stories",
     "should_trigger": false
+  },
+  {
+    "query": "our client needs a business requirements document signed before the vendor starts, can you write the BRD?",
+    "should_trigger": true
+  },
+  {
+    "query": "plan an experiment to see whether a shorter signup form lifts activation",
+    "should_trigger": true
+  },
+  {
+    "query": "analyze the results of last week's A/B test export in this csv",
+    "should_trigger": false
   }
 ]

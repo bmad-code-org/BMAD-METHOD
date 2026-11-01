@@ -82,9 +82,11 @@ Every skill in this chapter writes a document you can hand on. The table runs fr
 | `bmad-architecture`             | Make the technical decisions that keep separately built parts consistent                                                                       | `architecture-<slug>.md` by default                                                 |
 | `bmad-agent-po` | Sofia, the Product Owner: write a ticket's requirements from any input, then [plan and track entries](./break-work-into-stories-and-track-it.md) | Requirements and Constraints in the initiative, epic, or story file, `.memlog.md` beside it, ordered `tickets.toml`, and optional leaf files |
 
-John (`bmad-agent-pm`) creates, updates, and validates twelve planning documents;
+John (`bmad-agent-pm`) creates, updates, and validates fourteen planning documents;
 the work's altitude picks which, and he names close alternatives. A brief feeds
 the PRD, which John reads during discovery, but neither requires the other.
+
+A business requirements document (`brd`) fits only when the people who want the system and the people who build it are separate parties, such as a client and a vendor, or when a regulator or contract expects a signed baseline. The sponsor signs it, and the PRD or SRS picks up its ids. Product work inside one organization skips it.
 
 ![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, PRFAQ), planning (John for a brief, PRD or other planning document, and UX), and solutioning (architecture and Sofia, the Product Owner), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
 
