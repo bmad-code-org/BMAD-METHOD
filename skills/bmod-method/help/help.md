@@ -8,6 +8,8 @@ The method turns an intent of any size into working software. Recommend the smal
 
 **The ticket is the spec.** The initiative, epic or story file is the spec at its level. Every skill that works on a ticket reads it first and in full and trusts it; its `sources:` are re-read only by Sofia when she updates it, and a `companions:` file only where the ticket points. Talk to Sofia the Product Owner (`bmad-agent-po`) to fill its Requirements from whatever the user has (a PRD, a brief, notes, a transcript), keep it in step with its sources, and slice from it.
 
+A transcript, a chat or email thread, or a voice memo goes through `bmad-ingest` first when it is installed, and the note it returns is the input. A sharded document is given to any skill as its main file, named after its folder, which links to every shard. The method adds note templates for `standup`, `retrospective` (the meeting, not `bmad-retrospective`'s epic review), `sprint-review`, `discovery-workshop` and `user-interview`.
+
 The four phases are analysis (ideation, research, is it worth building), planning (what exactly, and in what slices), implementation (build it), and validation (is it right). They describe what kind of help a skill gives. They are not a mandatory sequence to complete.
 
 Project size decides how many build sessions the work needs. Stakes decide how heavy the planning gets. A large hobby project keeps planning light; a small change to a regulated system may not.

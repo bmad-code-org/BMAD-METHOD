@@ -175,6 +175,49 @@ class RunEvalsTest(unittest.TestCase):
             self.assertEqual(summary["skipped"], 2)
             self.assertIn("BMad is not set up", summary["harness"])
 
+    def test_absolute_or_missing_fixture_stops_before_any_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill, cases, harness = make_project(root)
+            absolute = str(root / "fixtures" / "notes.md")
+            two = ["https://github.com/o/r/blob/abc/before/notes.md", "https://github.com/o/r/blob/abc/after/notes.md"]
+            for files, said in (
+                ([absolute], "absolute paths"),
+                (["~/notes.md"], "absolute paths"),
+                (["gone.md"], "not found"),
+                (two, "one would replace the other"),
+                (["https://github.com/o/r/blob/abc/../../../escape.md"], "cannot contain '..'"),
+            ):
+                write(cases, json.dumps([{"id": "f", "input": "hello", "rubric": ["x"], "files": files}]))
+                res = run(
+                    "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(root / "out"),
+                    "--project-root", str(root), "--harness", str(harness), "--quiet",
+                )  # fmt: skip
+                self.assertEqual(res.returncode, 2, files)
+                self.assertIn(said, res.stderr)
+                self.assertFalse((root / "out").exists())
+
+    @unittest.skipIf(os.name == "nt", "the fake gh is a shell script")
+    def test_github_fixture_is_fetched_at_its_ref_and_staged_by_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill, cases, harness = make_project(root)
+            bin_dir = root / "bin"
+            write(bin_dir / "gh", '#!/bin/sh\necho "$@" > "$(dirname "$0")/args"\necho fetched\n')
+            (bin_dir / "gh").chmod(0o755)
+            url = "https://github.com/o/r/blob/abc123/shardtest/my%20doc.md"
+            write(cases, json.dumps([{"id": "g", "input": "hello", "rubric": ["x"], "files": [url]}]))
+            env = {**os.environ, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
+            res = subprocess.run(
+                [sys.executable, str(RUNNER), "--cases", str(cases), "--skill-path", str(skill),
+                 "--output-dir", str(root / "out"), "--project-root", str(root), "--harness", str(harness), "--quiet"],
+                capture_output=True, text=True, env=env,
+            )  # fmt: skip
+            self.assertEqual(res.returncode, 0, res.stderr)
+            self.assertIn("repos/o/r/contents/shardtest/my%20doc.md?ref=abc123", (bin_dir / "args").read_text())
+            run_dir = Path(json.loads(res.stdout)["run_dir"])
+            self.assertEqual((run_dir / "skill" / "g" / "cwd" / "my doc.md").read_text(), "fetched\n")
+
     def test_invalid_harness_is_a_usage_error(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

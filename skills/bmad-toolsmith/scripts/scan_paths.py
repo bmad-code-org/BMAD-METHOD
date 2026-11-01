@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""scan_paths: lint a skill's Markdown files for path conventions.
+"""scan_paths: lint a skill's Markdown files, and its eval JSON for absolute paths, for path conventions.
 
 Rules, each a `rule` value in the findings:
   bare-script-call   `uv run scripts/x.py` or `uv run ./scripts/x.py`; a skill's own scripts run as
@@ -38,7 +38,7 @@ import argparse
 import json
 import re
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", "venv"}
 EXAMPLE_DIR = "assets"
@@ -46,7 +46,8 @@ EXAMPLE_PREFIX = "sample-"
 
 BARE_SCRIPT_RE = re.compile(r"\buv\s+run\b[^`\n]*?\s(?:\./)?scripts/\S+")
 INSTALLED_PATH_RE = re.compile(r"\{installed_path\}|\binstalled_path\s*[:=]")
-ABS_PATH_RE = re.compile(r"(?:/Users/|/home/|\b[A-Za-z]:[\\/]|(?<![\w.])~/)\S*")
+# `~/.bmad/` is BMad's own per-user folder, the same path on every machine.
+ABS_PATH_RE = re.compile(r"(?:/Users/|/home/|\b[A-Za-z]:[\\/]|(?<![\w.])~/(?!\.bmad/))\S*")
 OLD_FORMAT_RE = re.compile(r"\bmodule\.yaml\b|\bmodule-help\.csv\b")
 PYTHON_CALL_RE = re.compile(r"(?<![\w/.-])(?:python3?|pip3?)\s+(?:-m\s+\S+|\S+\.py\b|install\b)")
 BACKTICK_REF_RE = re.compile(r"`([^`\s]+/[^`\s]+\.(?:md|yaml|yml|toml|json|csv|txt|xml|py|html))`")
@@ -156,6 +157,31 @@ def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
         content = path.read_text(encoding="utf-8", errors="replace")
         findings.extend(scan_regex_rules(content, rel.as_posix()))
         findings.extend(scan_references(content, rel, skill_root))
+    # Eval cases name fixtures; an absolute path there breaks the run for everyone else.
+    for path in sorted((skill_root / "evals").glob("*.json")):
+        count += 1
+        content = path.read_text(encoding="utf-8", errors="replace")
+        try:
+            data = json.loads(content)
+        except json.JSONDecodeError:
+            continue
+        cases = data.get("cases", []) if isinstance(data, dict) else data
+        entries = [str(f) for c in cases if isinstance(c, dict) for f in c.get("files") or []]
+        for entry in entries:
+            # The same test the eval runner applies: any absolute or home path is refused there.
+            if "://" in entry or not (
+                entry.startswith("~") or PurePosixPath(entry).is_absolute() or PureWindowsPath(entry).is_absolute()
+            ):
+                continue
+            findings.append(
+                finding(
+                    path.relative_to(skill_root).as_posix(),
+                    line_of(content, max(content.find(json.dumps(entry)), 0)),
+                    "absolute-path",
+                    entry,
+                    "use a path relative to the cases file or the project root, or a GitHub file URL pinned to a commit",
+                )
+            )
     findings = [f for f in findings if f["rule"] not in allow]
     findings.sort(key=lambda f: (f["path"], f["line"], f["rule"]))
     return {"skill": skill_root.name, "files_scanned": count, "findings": findings}

@@ -19,6 +19,11 @@ An initiative is one body of work of any kind: a product, a feature, a book, a s
   - It was just produced in this conversation and they want it pushed further, or they name a critique method → `bmad-advanced-elicitation`.
   - They ask for a review of a diff, a file, or a document → `bmad-review`.
   - They want several points of view arguing it out, a roundtable, or a focus group of their customers → `bmad-party-mode`.
+- Has large or raw input:
+  - A transcript, a chat or email thread, a voice memo, or a long document they want what matters from (decisions, action items, key points) → `bmad-ingest`.
+  - A long document the team will keep and agents will work from (a large PRD, architecture or manual), or one already sharded that they want to change → `bmad-shard-pro`.
+  - About to start a PRD, brief, architecture or tickets with large inputs: suggest preparing them first, raw inputs through `bmad-ingest` and long documents through `bmad-shard-pro`, so the planning skill reads short notes and only the parts it needs.
+  - A sharded document is the input to another skill: give that skill the folder's main file, named after the folder, which links to every shard.
 - BMad itself needs attention:
   - Something was installed or updated, or a skill reports that BMad is not set up or a BMad script was not found → `bmad setup`.
   - "What do I have, and is it current?" → `bmad status`.
@@ -36,6 +41,8 @@ An initiative is one body of work of any kind: a product, a feature, a book, a s
 | `bmad-advanced-elicitation` | Pushes the most recent output to be reconsidered and improved. | It offers critique methods such as socratic questioning, first principles, pre-mortem, and red team. Nothing changes unless the user accepts. Other skills call it at their pauses. | Nothing. It improves the work in place. |
 | `bmad-review` | Independent review lenses over any diff or document: adversarial, edge cases, verification gaps, structure, prose. | It runs only when the user asks and says "review". Acting on earlier findings is a change, not a review. No severity ranking. | The report in chat, or a file when the project sets a report path. |
 | `bmad-party-mode` | A group conversation between agents or personas, with the user in the room. | It works alone or beside any skill. Custom parties, a default party, and memory are all configurable, and a module can ship a cast. It debates and does not verify. | On request, a keepsake `{output_folder}/{active_initiative}/party-<slug>/party-<slug>.html`, or under `{output_folder}/` for loose work. Memory under `{output_folder}/party-mode/memories/`. |
+| `bmad-shard-pro` | Makes a long markdown or text document cheap for an agent to navigate: leaves it, adds a contents list, or splits it word for word into shards. | It may recommend not splitting, and never rewrites content. Later changes go through the skill. | In the document's own folder: a main file named after the folder that links to every shard, the shards, and the frozen original in `.source/`. |
+| `bmad-ingest` | Turns raw input into a cited note an agent or person acts on instead of the raw: decisions, action items, open questions, key points. | The note's shape comes from a template; teams and modules add their own. Every item points back to the raw, and a review pass checks it. Other skills can call it on their inputs. | The original, unchanged, in `{output_folder}/raw/`; the note in the calling skill's folder, such as a PRD's `sources/`, else `{output_folder}/notes/`. |
 | `bmad-customize` | Changes how an installed skill or agent behaves without editing it: persona, standing facts, templates, output paths, steps on completion. | Team overrides are committed and shared; personal ones are not. It offers only what the target skill exposes. Central config is edited by hand. | `{project-root}/_bmad/custom/{skill-name}.toml` for the team, `{skill-name}.user.toml` for one person. |
 
 ## `bmad`: setup, status, and help
@@ -56,6 +63,8 @@ This document should be enough to route the user and say what to do next. Each t
 | `help/research.md` | Getting the most from `bmad-deep-recon` and which of its services to use. |
 | `help/customization.md` | How overrides work: team or personal file, how they merge, central config, an override that is not applied, resetting. |
 | `help/team-adoption.md` | Making a whole team's BMad follow shared rules, tools, templates, and publishing steps. |
+| `help/ingest.md` | Processing transcripts, threads, recordings or long reports, ingest's templates and adding them, where the original and the note go, ingest inside a PRD or other work, sensitive recordings. |
+| `help/shard-pro.md` | Whether to shard a document, contents list or split, how a sharded document works, `.source/`, changing one, handing one to another skill. |
 | `help/modules.md` | What a BMad module is, each file in one, a single-skill module, a module that only ships personas and parties, building one. |
 
 ## When this document is not enough

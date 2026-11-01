@@ -9,8 +9,10 @@ skills = [
   "bmad-customize",
   "bmad-deep-recon",
   "bmad-forge-idea",
+  "bmad-ingest",
   "bmad-party-mode",
   "bmad-review",
+  "bmad-shard-pro",
 ]
 required_skills = ["bmad"]
 pre_install_message = '''
