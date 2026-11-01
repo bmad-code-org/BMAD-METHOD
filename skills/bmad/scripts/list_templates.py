@@ -35,6 +35,7 @@ import sys
 import tomllib
 from pathlib import Path
 from urllib.parse import quote, urljoin, urlsplit
+from urllib.parse import unquote as url_unquote
 from urllib.request import Request, urlopen
 
 FRONTMATTER = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*(?:\n|\Z)", re.DOTALL)
@@ -74,7 +75,7 @@ def github_files(m: re.Match) -> list[tuple[str, str]]:
     ref = m.group("ref") or m.group("tree_ref")
     query = f"?ref={quote(ref, safe='')}" if ref else ""
     repo = f"repos/{m.group('owner')}/{m.group('repo')}/contents"
-    listing = json.loads(run_gh([f"{repo}/{quote(m.group('path') or '')}{query}"]))
+    listing = json.loads(run_gh([f"{repo}/{quote(url_unquote(m.group('path') or ''))}{query}"]))
     entries = listing if isinstance(listing, list) else [listing]
     return [
         (e["html_url"], run_gh(["-H", "Accept: application/vnd.github.raw", f"{repo}/{quote(e['path'])}{query}"]))

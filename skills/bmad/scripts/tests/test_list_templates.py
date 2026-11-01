@@ -86,6 +86,7 @@ def test_a_missing_path_with_a_space_is_missing_not_a_sentence(tmp_path):
 
 def test_a_home_path_is_expanded(tmp_path, monkeypatch):
     monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))
     library = tmp_path / ".bmad" / "ingest-templates"
     library.mkdir(parents=True)
     (library / "t.md").write_text(template("mine"))
@@ -96,6 +97,7 @@ def test_a_home_path_is_expanded(tmp_path, monkeypatch):
 
 def test_a_home_root_is_expanded(tmp_path, monkeypatch):
     monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))
     module(tmp_path / "skills", "bmod-x", ("t.md", template("a")))
     assert len(list_templates.module_libraries(["~/skills"])) == 1
 
@@ -143,6 +145,13 @@ def test_github_folder_at_a_ref(monkeypatch):
     assert found[0]["rubric"] == "https://github.com/o/r/blob/v1/t/rubric-a.md"
     assert calls[0] == ["repos/o/r/contents/t?ref=v1"]
     assert len(calls) == 3
+
+
+def test_github_path_with_an_encoded_space_is_encoded_once(monkeypatch):
+    calls = []
+    monkeypatch.setattr(list_templates, "run_gh", fake_gh(calls, ("t/a.md", template("a"))))
+    list_templates.scan(["https://github.com/o/r/tree/v1/my%20templates"])
+    assert calls[0] == ["repos/o/r/contents/my%20templates?ref=v1"]
 
 
 def test_github_repo_with_at_ref(monkeypatch):

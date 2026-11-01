@@ -380,3 +380,100 @@ def test_plan_missing_a_group_heading_fails_before_writing(tmp_path):
     (tmp_path / "p.json").write_text(json.dumps(plan))
     code, out = run("build", str(tmp_path / "p.json"))
     assert code == 2 and "heading" in out["error"] and not (tmp_path / "d").exists()
+
+
+def test_rebuild_in_place_reads_the_frozen_copy_not_the_map(tmp_path):
+    folder = tmp_path / "doc-sample"
+    folder.mkdir()
+    src = folder / "doc-sample.md"
+    src.write_text(doc())
+    n = len(src.read_text().splitlines())
+    plan = faithful_plan(tmp_path, src, n, [60])
+    assert run("build", str(plan))[0] == 0
+    code, out = run("build", str(plan))
+    assert code == 0, out
+    assert run("check", str(folder), "--rebuild")[0] == 0
+
+
+def test_build_never_overwrites_a_file_it_did_not_write(tmp_path):
+    folder = tmp_path / "doc-sample"
+    folder.mkdir()
+    (folder / "part-2.md").write_text("someone else's notes\n")
+    src = tmp_path / "sample.md"
+    src.write_text(doc())
+    code, out = run("build", str(faithful_plan(tmp_path, src, len(doc().splitlines()), [60])))
+    assert code == 2 and "part-2.md already exists" in out["error"]
+    assert (folder / "part-2.md").read_text() == "someone else's notes\n" and src.exists()
+
+
+def test_a_shard_cannot_take_a_name_build_writes_itself(tmp_path):
+    src = tmp_path / "sample.md"
+    src.write_text(doc())
+    plan = json.loads(faithful_plan(tmp_path, src, len(doc().splitlines()), [60], {"lookup": "FR"}).read_text())
+    plan["groups"][0]["shards"][1]["file"] = "identifier-lookup.md"
+    (tmp_path / "plan.json").write_text(json.dumps(plan))
+    code, out = run("build", str(tmp_path / "plan.json"))
+    assert code == 2 and "collide" in out["error"]
+
+
+def test_plan_must_start_at_the_top_and_hold_shards(tmp_path):
+    src = tmp_path / "s.md"
+    src.write_text(doc())
+    n = len(doc().splitlines())
+    plan = json.loads(faithful_plan(tmp_path, src, n, [60]).read_text())
+    plan["groups"][0]["shards"] = plan["groups"][0]["shards"][1:]
+    (tmp_path / "plan.json").write_text(json.dumps(plan))
+    code, out = run("build", str(tmp_path / "plan.json"))
+    assert code == 2 and "first shard starts at line 1" in out["error"]
+    plan["groups"][0]["shards"] = []
+    (tmp_path / "plan.json").write_text(json.dumps(plan))
+    code, out = run("build", str(tmp_path / "plan.json"))
+    assert code == 2 and "no shards" in out["error"]
+
+
+def test_a_group_too_big_for_one_map_page_is_refused(tmp_path):
+    src = tmp_path / "s.md"
+    src.write_text("\n".join(f"line {i}" for i in range(1, 301)) + "\n")
+    plan = faithful_plan(tmp_path, src, 300, list(range(2, 201)))
+    code, out = run("build", str(plan))
+    assert code == 2 and "map page holds" in out["error"]
+
+
+def test_check_warns_about_links_the_split_moved(tmp_path):
+    (tmp_path / "guide.md").write_text("# Guide\n")
+    src = tmp_path / "sample.md"
+    text = doc().replace("Line 1.0 with", "See [guide](guide.md) and [the end](#section-6-fr-ab-006). Line 1.0 with")
+    src.write_text(text)
+    lines = text.splitlines()
+    heads = [i for i, x in enumerate(lines, 1) if x.startswith("## Section")]
+    assert run("build", str(faithful_plan(tmp_path, src, len(lines), heads[1:])))[0] == 0
+    code, out = run("check", str(tmp_path / "doc-sample"), "--rebuild")
+    assert code == 0
+    moved = [w["text"] for w in out["warnings"] if w["check"] == "link"]
+    assert any("guide.md" in t for t in moved) and any("#section-6" in t for t in moved)
+
+
+def test_toc_refresh_refuses_to_guess_between_two_matching_sections(tmp_path):
+    f = tmp_path / "doc.md"
+    f.write_text(doc())
+    _, outline = run("outline", str(f))
+    starts = [h["line"] for h in outline["headings"] if h["level"] == 2]
+    plan = {"groups": [{"heading": "All", "shards": [{"start": s, "title": f"T{k}"} for k, s in enumerate(starts)]}]}
+    (tmp_path / "toc.json").write_text(json.dumps(plan))
+    run("toc", str(f), "--plan", str(tmp_path / "toc.json"))
+    lines = f.read_text().splitlines()
+    lines.insert(lines.index("## Section 2: FR-AB-002"), "## Section 5: FR-AB-005")
+    f.write_text("\n".join(lines) + "\n")
+    before = f.read_text()
+    code, out = run("toc", str(f))
+    assert code == 1 and out["ambiguous"][0]["first_line"] == "## Section 5: FR-AB-005"
+    assert f.read_text() == before
+    assert run("check", str(f))[0] == 1
+
+
+def test_a_longer_fence_holds_a_shorter_one(tmp_path):
+    lines = ["# T", "", "````markdown", "```", "## not a heading", "```", "````", "", "## Real"]
+    spans = shard_tool.block_spans(lines)
+    assert spans[0] == (3, 7, "markdown")
+    heads = shard_tool.headings(lines, spans)
+    assert [h["text"] for h in heads] == ["T", "Real"]

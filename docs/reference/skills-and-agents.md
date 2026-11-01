@@ -157,7 +157,12 @@ Makes a long document, such as a large PRD, architecture or manual, cheap for an
 
 ### bmad-ingest
 
-Turns raw input, such as a meeting transcript, a chat or email thread, a voice memo or a long document, into a note that an agent or person reads instead of the raw. It picks a note template from the template's description: core tools ship `meeting`, `thread`, `voice-memo`, `document` and `one-on-one`, the BMad Method adds `standup`, `retrospective`, `sprint-review`, `discovery-workshop` and `user-interview`, and you can add your own in the project's `_bmad/custom/ingest-templates/`, in `~/.bmad/ingest-templates/` for every project, from a GitHub URL, or in any module's `ingest-templates/` folder. A project's template wins over a personal one with the same id. Every item in the note points back to where it sits in the raw, and nothing is added that the raw does not say. Another skill, such as a PRD you are writing, can pass it an input and link the note it gets back.
+Turns raw input, such as a meeting transcript, a chat or email thread, a voice memo or a long document, into a note that an agent or person reads instead of the raw. It picks a note template by the template's description.
+
+- Core tools ship `meeting`, `thread`, `voice-memo`, `document` and `one-on-one`.
+- The BMad Method adds `standup`, `retrospective`, `sprint-review`, `discovery-workshop` and `user-interview`.
+- You add your own in the project's `_bmad/custom/ingest-templates/`, in `~/.bmad/ingest-templates/` for every project, from a GitHub URL, or in any module's `ingest-templates/` folder. A project's template wins over a personal one with the same id.
+ Every item in the note points back to where it sits in the raw, and nothing is added that the raw does not say. Another skill, such as a PRD you are writing, can pass it an input and link the note it gets back.
 
 **Output:** the original, kept unchanged, in `{output_folder}/raw/` unless it is already in the project, and the note in the folder the calling skill names, else `{output_folder}/notes/`. Change either with `bmad-customize`.
 

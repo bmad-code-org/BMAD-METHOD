@@ -66,6 +66,7 @@ Run `check` on the result, with `--rebuild` after a faithful split, and fix ever
 Report to the user:
 - the outcome, and where the main file is;
 - for a split, that the input now sits in `.source/`;
-- what you found in the source: conflicts with both values and where each sits, index errors, suspected errors.
+- what you found in the source: conflicts with both values and where each sits, index errors, suspected errors;
+- links `check` warns no longer resolve after the split. Shards keep the source's words, so the user decides whether to fix them.
 
 Findings go in the report and the memlog, never into shards. A shard says what the source says, and a reader cannot tell your judgement from the author's.

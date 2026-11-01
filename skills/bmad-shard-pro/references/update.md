@@ -18,7 +18,7 @@ Run `check` without `--rebuild`, since the shards have moved on from the origina
 ## A file with a contents list
 
 - **New section:** run `toc <file> --add <line> --title <title>`, where `<line>` is the section's first line as the file reads now; add `--group` when it belongs to a different group than the section before it.
-- **Otherwise:** run `toc <file>` to refresh the line ranges. When it reports a lost section (its first line was renamed or removed), re-add it with `--add`, or leave it out if the section is gone.
+- **Otherwise:** run `toc <file>` to refresh the line ranges. When it reports a lost section (its first line was renamed or removed), re-add it with `--add`, or leave it out if the section is gone. When it reports an ambiguous one (its first line now appears in more places), plan the list again with `--plan`.
 
 Then run `check <file>` and fix every failure.
 

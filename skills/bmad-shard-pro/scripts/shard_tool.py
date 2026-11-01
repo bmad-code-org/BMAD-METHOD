@@ -40,6 +40,7 @@ import json
 import re
 import shutil
 import sys
+from collections import Counter
 from pathlib import Path
 
 PLAN_HELP = """Plan JSON:
@@ -70,11 +71,12 @@ TOC_START = "<!-- shard-pro:contents -->"
 TOC_END = "<!-- /shard-pro:contents -->"
 
 HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$")
-FENCE = re.compile(r"^\s*(```|~~~)")
+FENCE = re.compile(r"^\s{0,3}(`{3,}|~{3,})(.*)$")
 NUMBERED = re.compile(r"^\s{0,3}\d+[.)]\s")
 BARE_ID = re.compile(r"^[A-Z]?\d+(?:[-.]\d+)*[a-z]?$|^[A-Z](?:-\d+[a-z]?)*$")
 IDENT = re.compile(r"\b[A-Z][A-Z0-9]{0,5}(?:-[A-Z0-9]{1,6})*-\d{1,4}[a-z]?\b")
 LINK = re.compile(r"\]\(\./([^)#\s]+)")
+ANY_LINK = re.compile(r"\]\(([^)\s]+)\)")
 
 
 def emit(obj: dict, code: int = 0) -> int:
@@ -106,9 +108,10 @@ def block_spans(lines: list[str]) -> list[tuple[int, int, str]]:
     while i < n:
         m = FENCE.match(lines[i])
         if m:
-            lang = lines[i].strip()[3:].strip() or "code"
+            lang = m.group(2).strip() or "code"
+            close = re.compile(rf"^\s{{0,3}}{re.escape(m.group(1)[0])}{{{len(m.group(1))},}}\s*$")
             j = i + 1
-            while j < n and not lines[j].strip().startswith(m.group(1)):
+            while j < n and not close.match(lines[j]):
                 j += 1
             spans.append((i + 1, min(j, n - 1) + 1, lang))
             i = j + 1
@@ -306,7 +309,9 @@ def main_text(plan: dict, front: list[str], folder: Path, has_lookup: bool) -> t
         return "\n".join(head + body).rstrip() + "\n", {}
     subs, short = {}, list(lookup)
     for g in plan["groups"]:
-        name = f"map-{slug(g['heading'])}.md"
+        name, k = f"map-{slug(g['heading'])}.md", 2
+        while name in subs:
+            name, k = f"map-{slug(g['heading'])}-{k}.md", k + 1
         about = g.get("summary") or "; ".join(s["title"] for s in g["shards"][:3])
         short.append(f"- [{g['heading']}](./{name}) — {len(g['shards'])} shards: {about}")
         lines = [f"# {plan['title']}: {g['heading']}", "", f"Part of [{plan['title']}](./{folder.name}.md).", ""]
@@ -331,6 +336,13 @@ def validate_plan(plan: dict, lines: list[str]) -> str | None:
     for g in plan["groups"]:
         if "heading" not in g or not isinstance(g.get("shards"), list):
             return f"each group needs a heading and a shards list: {str(g)[:80]}"
+        if len(g["shards"]) > WINDOW - 4:
+            return f"group '{g['heading']}' has {len(g['shards'])} shards; a map page holds {WINDOW - 4}, so split the group"
+    if len(plan["groups"]) > WINDOW - 10:
+        return f"{len(plan['groups'])} groups will not fit one map page; merge some"
+    if not all_shards(plan):
+        return "the plan has no shards"
+    fm = frontmatter_end(lines)
     seen, expect = set(), None
     for s in all_shards(plan):
         for key in ("file", "title", "summary", "start", "end"):
@@ -338,10 +350,15 @@ def validate_plan(plan: dict, lines: list[str]) -> str | None:
                 return f"shard {s.get('file', '?')} is missing '{key}'"
         if s["file"] in seen:
             return f"duplicate shard file {s['file']}"
+        if Path(s["file"]).name != s["file"] or not s["file"].endswith(".md"):
+            return f"shard file {s['file']} must be a plain .md file name, with no folder"
         seen.add(s["file"])
         if not isinstance(s["start"], int) or not isinstance(s["end"], int):
             return f"{s['file']} needs whole-number start and end lines"
-        expect = expect or s["start"]
+        if expect is None:
+            if s["start"] not in (1, fm + 1):
+                return f"{s['file']} starts at line {s['start']}; the first shard starts at line {fm + 1}"
+            expect = s["start"]
         if s["start"] != expect:
             return f"{s['file']} starts at line {s['start']}; expected {expect} (gap or overlap)"
         if s["end"] < s["start"]:
@@ -355,13 +372,36 @@ def validate_plan(plan: dict, lines: list[str]) -> str | None:
     return None
 
 
+def clashes(plan: dict, folder: Path, src: Path) -> str | None:
+    """Why build would overwrite a file it did not write, or write two outputs to one path."""
+    main = f"{folder.name}.md"
+    _, subs = main_text(plan, [], folder, bool(plan.get("lookup")))
+    reserved = {main, MANIFEST} | set(subs) | ({LOOKUP_FILE} if plan.get("lookup") else set())
+    for s in all_shards(plan):
+        if s["file"] in reserved:
+            return f"shard file {s['file']} would collide with a file shard-pro writes; rename it"
+    old = load_manifest(folder) or {"groups": []}
+    ours = {x["file"] for x in all_shards(old)} | set(old.get("sub_maps", [])) | {LOOKUP_FILE, MANIFEST}
+    for name in sorted({s["file"] for s in all_shards(plan)} | reserved):
+        p = folder / name
+        if not p.exists() or name in ours:
+            continue
+        if name == main and (p.resolve() == src.resolve() or any(NOTE_MARK in x for x in read_lines(p)[:WINDOW])):
+            continue
+        return (
+            f"{name} already exists in {folder.name}/ and shard-pro did not write it; rename the shard or move the file"
+        )
+    return None
+
+
 def cmd_build(args) -> int:
     plan_path = Path(args.plan).resolve()
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     src = Path(plan.get("source", ""))
     folder = Path(plan.get("folder", "")).resolve()
-    if not src.is_file() and (folder / ".source" / src.name).is_file():
-        src = folder / ".source" / src.name  # a rebuild: the source was already moved in
+    if (folder / ".source" / src.name).is_file():
+        # A rebuild: the frozen copy is the source, even where the main file now sits at the old path.
+        src = folder / ".source" / src.name
     if not src.is_file():
         return fail(f"source not found: {src}")
     lines = read_lines(src)
@@ -369,7 +409,7 @@ def cmd_build(args) -> int:
         return fail(
             f"{src.name} carries a shard-pro contents list; remove it with `toc {src} --remove`, then outline and plan again"
         )
-    err = validate_plan(plan, lines)
+    err = validate_plan(plan, lines) or clashes(plan, folder, src)
     if err:
         return fail(err)
     folder.mkdir(parents=True, exist_ok=True)
@@ -546,6 +586,15 @@ def to_body(raw: list[str], line: int) -> int:
     return line - (span[1] - span[0]) if span and line > span[1] else line
 
 
+def ambiguous_anchors(stored: list[dict], body: list[str]) -> list[dict]:
+    """Sections whose first line now appears more often than the list has sections starting with it."""
+    want = Counter(x["anchor"] for x in stored)
+    have = Counter(body)
+    return [
+        {"first_line": a, "at_lines": [i for i, x in enumerate(body, 1) if x == a]} for a in want if have[a] > want[a]
+    ]
+
+
 def sidecar(path: Path) -> Path:
     return path.with_name(f".{path.stem}.contents.json")
 
@@ -579,8 +628,12 @@ def cmd_toc(args) -> int:
         if not sidecar(path).exists():
             return fail("no shard-pro contents list for this file; pass --plan to create one")
         # Each section is re-found by the text of its first line, which survives edits elsewhere.
+        stored = json.loads(sidecar(path).read_text(encoding="utf-8"))
+        twice = ambiguous_anchors(stored, body)
+        if twice:
+            return emit({"ok": False, "file": str(path), "ambiguous": twice}, 1)
         items, pos, lost = [], 0, []
-        for item in json.loads(sidecar(path).read_text(encoding="utf-8")):
+        for item in stored:
             idx = next((i for i in range(pos, len(body)) if body[i] == item["anchor"]), None)
             if idx is None:
                 lost.append(item)
@@ -666,6 +719,14 @@ def check_toc(path: Path) -> tuple[list, list]:
                 }
             )
         prev = b
+    for item in ambiguous_anchors(stored, strip_toc(lines)):
+        fails.append(
+            {
+                "check": "contents",
+                "file": path.name,
+                "text": f"'{item['first_line']}' starts several sections; re-plan the list with toc --plan",
+            }
+        )
     listed = [a for a, _ in ranges]
     for a, item in zip(listed, stored, strict=False):
         if a > len(lines) or lines[a - 1] != item["anchor"]:
@@ -686,6 +747,28 @@ def check_toc(path: Path) -> tuple[list, list]:
             }
         )
     return fails, warns
+
+
+def anchor_slug(text: str) -> str:
+    return re.sub(r"[^\w\- ]", "", text.strip().lower()).replace(" ", "-")
+
+
+def broken_links(shard: Path) -> list[dict]:
+    """Relative links and #anchors in a shard that no longer reach their target after the split."""
+    lines = read_lines(shard)
+    own = {anchor_slug(m.group(2)) for m in map(HEADING.match, lines) if m}
+    out = []
+    for i, line in enumerate(lines, 1):
+        for target in ANY_LINK.findall(line):
+            if "://" in target or target.startswith(("mailto:", "/", "<")):
+                continue
+            path, _, anchor = target.partition("#")
+            gone = not (shard.parent / path).exists() if path else anchor_slug(anchor) not in own
+            if gone:
+                out.append(
+                    {"check": "link", "file": shard.name, "line": i, "text": f"link to {target} no longer resolves"}
+                )
+    return out
 
 
 def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
@@ -737,6 +820,7 @@ def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
         if not p.exists():
             fails.append({"check": "missing", "file": s["file"], "text": "shard in the plan has no file"})
             continue
+        warns += broken_links(p)
         if prefix and s["file"].startswith(prefix):
             fails.append(
                 {

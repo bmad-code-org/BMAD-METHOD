@@ -39,7 +39,7 @@ The note's folder is the first of these that applies:
 3. The template's `output`.
 4. `{workflow.notes_folder}`, a path or an instruction to follow.
 
-Write one note per raw unless the caller or user asks for one combined note. Name it `<raw name>.md`. Its frontmatter holds `title`, `description` (one line a later reader uses to decide whether to open it), `template`, `ingested` (today) and `source` (the raw's path relative to the note, or its URL).
+Write one note per raw unless the caller or user asks for one combined note. Name it `<raw name>.md`; when a note for a different raw already has that name, add `-2`, `-3` and so on. Its frontmatter holds `title`, `description` (one line a later reader uses to decide whether to open it), `template`, `ingested` (today) and `source` (the raw's path relative to the note, or its URL).
 
 - Point each item to where it sits in the raw: a timestamp, a section, a message's date and speaker, or a short quote.
 - Owners, dates, figures and conditions ("once X is done", "only if") appear only as the raw states them, each on the item it belongs to.
