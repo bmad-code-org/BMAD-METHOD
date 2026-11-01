@@ -16,7 +16,7 @@ Run headless when the caller says so or no person is present: ask nothing.
 
 ## Keep the raw
 
-`{workflow.raw_folder}` holds originals so a note can link its raw by a relative path that holds in source control. Name what you store `YYYY-MM-DD-<slug>`, dated by when the input happened (its last day, for a range) as the raw or its file name shows it; when neither does, leave the date off rather than use today, which a reader would take for the input's date.
+`{workflow.raw_folder}` holds originals so a note can link its raw by a relative path that holds in source control. Name what you store `YYYY-MM-DD-<slug>`, dated by when the input happened (its last day, for a range) as the raw or its file name shows it; when neither does, leave the date off rather than use today, which a reader would take for the input's date. When a different original already has that name, add `-2`, `-3` and so on.
 
 - An original outside the project: copy it to `{workflow.raw_folder}`. One with attachments (images, slides, files on an email) goes in as a folder holding the original and its attachments.
 - An original already inside the project: leave it where it is.
@@ -24,7 +24,7 @@ Run headless when the caller says so or no person is present: ask nothing.
 
 ## Choose the template
 
-Use a template the caller or user named by path or URL. Otherwise list them: `uv run {project-root}/_bmad/scripts/list_templates.py {workflow.template_libraries} <libraries the caller passed> --folder ingest-templates --root <folder>`, with one `--root` for the project's skills folder, then one for each user-level skills folder your host loads. Script not found: the project was set up by an older BMad; run the `bmad` skill's setup, then list again. Follow each `tool_sources` sentence to reach that library's templates too. Name any `unreachable` source, `missing` path other than `{project-root}/_bmad/custom/ingest-templates` or `~/.bmad/ingest-templates`, or `orphaned` extension, and go on without it. Read any GitHub file through `gh`.
+Use a template the caller or user named by path or URL. Otherwise list them: `uv run {project-root}/_bmad/scripts/list_templates.py {workflow.template_libraries} <libraries the caller passed> --folder ingest-templates --root <folder>`, with one `--root` for the project's skills folder, then one for each user-level skills folder your host loads. Script not found: the BMad install predates it; ask the `bmad` skill to update, which refreshes the shared scripts, then list again. Follow each `tool_sources` sentence to reach that library's templates too. Name any `unreachable` source, `missing` path other than `{project-root}/_bmad/custom/ingest-templates` or `~/.bmad/ingest-templates`, or `orphaned` extension, and go on without it. Read any GitHub file through `gh`.
 
 Use a template named by id; otherwise pick from the descriptions alone, say why in one line, and name close alternatives. Nothing fits: `meeting` for a conversation, `document` for anything else. Load the chosen template and each of its `extensions`, the first listed winning a conflict.
 
@@ -39,7 +39,7 @@ The note's folder is the first of these that applies:
 3. The template's `output`.
 4. `{workflow.notes_folder}`, a path or an instruction to follow.
 
-Write one note per raw unless the caller or user asks for one combined note. Name it `<raw name>.md`; when a note for a different raw already has that name, add `-2`, `-3` and so on. Its frontmatter holds `title`, `description` (one line a later reader uses to decide whether to open it), `template`, `ingested` (today) and `source` (the raw's path relative to the note, or its URL).
+Write one note per raw unless the caller or user asks for one combined note. Name it `<raw name>.md`; when anything other than this raw's own earlier note already has that name, add `-2`, `-3` and so on. Its frontmatter holds `title`, `description` (one line a later reader uses to decide whether to open it), `template`, `ingested` (today) and `source` (the raw's path relative to the note, or its URL).
 
 - Point each item to where it sits in the raw: a timestamp, a section, a message's date and speaker, or a short quote.
 - Owners, dates, figures and conditions ("once X is done", "only if") appear only as the raw states them, each on the item it belongs to.

@@ -186,6 +186,7 @@ class RunEvalsTest(unittest.TestCase):
                 (["~/notes.md"], "absolute paths"),
                 (["gone.md"], "not found"),
                 (two, "one would replace the other"),
+                (["https://github.com/o/r/blob/abc/../../../escape.md"], "cannot contain '..'"),
             ):
                 write(cases, json.dumps([{"id": "f", "input": "hello", "rubric": ["x"], "files": files}]))
                 res = run(

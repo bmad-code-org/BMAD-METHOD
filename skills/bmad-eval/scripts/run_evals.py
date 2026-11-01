@@ -101,6 +101,8 @@ def fixture_problems(files: list, project_root: Path, cases_dir: Path) -> list[s
             problems.append(f"{entry}: lands at {dest}, as {dests[dest]} does; one would replace the other")
         dests.setdefault(dest, entry)
         if m:
+            if ".." in Path(unquote(m["path"])).parts or ".." in unquote(m["ref"]):
+                problems.append(f"{entry}: a GitHub fixture path cannot contain '..'")
             continue
         if "://" in entry:
             problems.append(
@@ -123,7 +125,7 @@ def fetch_github(m: re.Match, into: Path) -> Path:
     data = subprocess.run(
         ["gh", "api", "-H", "Accept: application/vnd.github.raw", api], capture_output=True, check=True, timeout=60
     ).stdout
-    dest = into / m["owner"] / m["repo"] / unquote(m["ref"]) / path
+    dest = contained(into, f"{m['owner']}/{m['repo']}/{unquote(m['ref'])}/{path}")
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_bytes(data)
     return dest
