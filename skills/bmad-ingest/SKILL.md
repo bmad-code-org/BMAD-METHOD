@@ -24,7 +24,7 @@ Run headless when the caller says so or no person is present: ask nothing.
 
 ## Choose the template
 
-Use a template the caller or user named by path or URL. Otherwise list them: `uv run {project-root}/_bmad/scripts/list_templates.py {workflow.template_libraries} <libraries the caller passed> --folder ingest-templates --root <folder>`, with one `--root` for the project's skills folder, then one for each user-level skills folder your host loads. Follow each `tool_sources` sentence to reach that library's templates too. Name any `unreachable` source, `missing` path other than `{project-root}/_bmad/custom/ingest-templates` or `~/.bmad/ingest-templates`, or `orphaned` extension, and go on without it. Read any GitHub file through `gh`.
+Use a template the caller or user named by path or URL. Otherwise list them: `uv run {project-root}/_bmad/scripts/list_templates.py {workflow.template_libraries} <libraries the caller passed> --folder ingest-templates --root <folder>`, with one `--root` for the project's skills folder, then one for each user-level skills folder your host loads. Script not found: the project was set up by an older BMad; run the `bmad` skill's setup, then list again. Follow each `tool_sources` sentence to reach that library's templates too. Name any `unreachable` source, `missing` path other than `{project-root}/_bmad/custom/ingest-templates` or `~/.bmad/ingest-templates`, or `orphaned` extension, and go on without it. Read any GitHub file through `gh`.
 
 Use a template named by id; otherwise pick from the descriptions alone, say why in one line, and name close alternatives. Nothing fits: `meeting` for a conversation, `document` for anything else. Load the chosen template and each of its `extensions`, the first listed winning a conflict.
 
