@@ -4,6 +4,7 @@ template: brief
 version: 1.0.0
 description: "Deciding whether and why to build, or pitching an idea in a page or two."
 not_for: "Committed work that needs requirements (`prd`); a formal funding decision on cost and return (`business-case`); testing a problem before any solution exists (`opportunity`)."
+rubric: rubric-planning
 status: draft
 created: ""
 updated: ""
@@ -11,7 +12,7 @@ updated: ""
 
 <!-- purpose: Decide whether and why to build something, or pitch it. -->
 
-<!-- stance: Push hardest on the problem and on what makes it different, where briefs most often overclaim. The brief serves the product's story: required here means the default, so drop a section that does not earn its place, add what the product needs, and reorder freely. -->
+<!-- stance: Push hardest on the problem and on what makes it different, where briefs most often overclaim. Ask for the strongest evidence that someone actually wants this, and the smallest version someone would pay for. Take a position on each answer and say what evidence would change it. Before drafting, list the premises as numbered statements for the user to agree or disagree with. The brief serves the product's story: required here means the default, so drop a section that does not earn its place, add what the product needs, and reorder freely. -->
 
 <!-- inputs: Only the user knows who it is for and why now. -->
 

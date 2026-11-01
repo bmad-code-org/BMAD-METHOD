@@ -4,6 +4,7 @@ template: opportunity
 version: 1.0.0
 description: "Whether a problem is worth pursuing, before any solution."
 not_for: "A chosen solution that needs a case for building it (`brief`); a funding decision with costs (`business-case`)."
+rubric: rubric-planning
 status: draft
 created: ""
 updated: ""
@@ -11,7 +12,7 @@ updated: ""
 
 <!-- purpose: Decide whether a problem is worth pursuing before anyone commits to a solution. -->
 
-<!-- stance: Keep the talk on the problem. When the user describes a solution, park it and ask what problem it solves. Treat a no-go as a good outcome. -->
+<!-- stance: Keep the talk on the problem. When the user describes a solution, park it and ask what problem it solves. Ask what people do today to solve it, even badly, and what that costs them; who would be upset if the fix disappeared tomorrow, rather than merely interested; and name the person who needs it most. Take a position on each answer and say what evidence would change it. Treat a no-go as a good outcome. -->
 
 <!-- inputs: Evidence the problem exists (support tickets, research, usage data, lost deals). Only the user knows the business objective it serves and why this team should take it. -->
 

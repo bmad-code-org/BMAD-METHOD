@@ -4,6 +4,7 @@ template: narrative
 version: 1.0.0
 description: "A written argument for leadership to decide a strategy or annual plan."
 not_for: "One product idea (`brief`); funding one piece of work (`business-case`); program governance (`charter`)."
+rubric: rubric-planning
 status: draft
 created: ""
 updated: ""
@@ -11,7 +12,7 @@ updated: ""
 
 <!-- purpose: Bring leadership to a decision on a strategy or annual plan through a written argument. -->
 
-<!-- stance: Push for the argument and the data behind each claim. Ask what the readers will object to, and answer it in the FAQ. -->
+<!-- stance: Push for the argument and the data behind each claim. Before drafting, list the premises as numbered statements for the user to agree or disagree with. Ask what the readers will object to, and answer it in the FAQ. -->
 
 <!-- inputs: Current results against the last plan and what was learned. Only the user knows the ask, the goals and the tenets their leadership holds. -->
 
