@@ -1,7 +1,9 @@
 ---
 title: ""
 template: opportunity
-description: "Before any solution: is this problem worth pursuing at all? Not for a chosen solution that needs a case for building it (`brief`); a funding decision with costs (`business-case`)."
+version: 1.0.0
+description: "Whether a problem is worth pursuing, before any solution."
+not_for: "A chosen solution that needs a case for building it (`brief`); a funding decision with costs (`business-case`)."
 status: draft
 created: ""
 updated: ""

@@ -1,7 +1,9 @@
 ---
 title: ""
 template: prd
-description: "Committed work that needs requirements to build from, at any altitude. Not for deciding whether to build (`brief`, `opportunity`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`)."
+version: 1.0.0
+description: "Requirements a team builds from, at any altitude."
+not_for: "Deciding whether to build (`brief`, `opportunity`); a very simple project (`prd-light`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`)."
 rubric: rubric-prd.md
 status: draft
 created: ""

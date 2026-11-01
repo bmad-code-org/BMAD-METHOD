@@ -1,7 +1,9 @@
 ---
 title: ""
 template: brief
-description: "Deciding whether and why to build, or pitching an idea in a page or two. Not for committed work that needs requirements (`prd`); a formal funding decision on cost and return (`business-case`); testing a problem before any solution exists (`opportunity`)."
+version: 1.0.0
+description: "Deciding whether and why to build, or pitching an idea in a page or two."
+not_for: "Committed work that needs requirements (`prd`); a formal funding decision on cost and return (`business-case`); testing a problem before any solution exists (`opportunity`)."
 status: draft
 created: ""
 updated: ""

@@ -1,7 +1,9 @@
 ---
 title: ""
 template: srs
-description: "Regulated, audited or contracted work needing traceable, verifiable requirements. Not for product work with no external check (`prd`); one feature for a coding agent (`agent-spec`)."
+version: 1.0.0
+description: "Traceable, verifiable requirements for regulated or contracted work."
+not_for: "Product work with no external check (`prd`); one feature for a coding agent (`agent-spec`)."
 status: draft
 created: ""
 updated: ""

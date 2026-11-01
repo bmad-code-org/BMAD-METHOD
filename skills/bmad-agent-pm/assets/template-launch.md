@@ -1,7 +1,9 @@
 ---
 title: ""
 template: launch
-description: "A built feature needs a coordinated release across teams. Not for deciding what to build (`brief` or `prd`); a launch talk or slides (`pitch-deck`)."
+version: 1.0.0
+description: "Coordinating a built feature's release across teams."
+not_for: "Deciding what to build (`brief` or `prd`); a launch talk or slides (`pitch-deck`)."
 status: draft
 created: ""
 updated: ""

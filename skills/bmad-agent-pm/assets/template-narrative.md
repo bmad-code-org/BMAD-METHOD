@@ -1,7 +1,9 @@
 ---
 title: ""
 template: narrative
-description: "Leadership must decide a strategy or annual plan from a written argument. Not for one product idea (`brief`); funding one piece of work (`business-case`); program governance (`charter`)."
+version: 1.0.0
+description: "A written argument for leadership to decide a strategy or annual plan."
+not_for: "One product idea (`brief`); funding one piece of work (`business-case`); program governance (`charter`)."
 status: draft
 created: ""
 updated: ""

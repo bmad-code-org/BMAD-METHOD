@@ -1,7 +1,9 @@
 ---
 title: ""
 template: pitch
-description: "The team bets fixed cycles and needs a shaped, time-boxed proposal. Not for open-ended requirements (`prd`); funding by estimate (`business-case`); one feature handed to a coding agent (`agent-spec`)."
+version: 1.0.0
+description: "A shaped, time-boxed proposal for teams that bet fixed cycles."
+not_for: "Open-ended requirements (`prd`); funding by estimate (`business-case`); one feature handed to a coding agent (`agent-spec`)."
 status: draft
 created: ""
 updated: ""

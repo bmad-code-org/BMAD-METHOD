@@ -1,7 +1,9 @@
 ---
 title: ""
 template: charter
-description: "Several related initiatives need one mandate, benefits, scope and governance. Not for a single initiative (`brief` or `prd`); funding one piece of work (`business-case`); choosing a strategy (`narrative`)."
+version: 1.0.0
+description: "One mandate, benefits, scope and governance across several initiatives."
+not_for: "A single initiative (`brief` or `prd`); funding one piece of work (`business-case`); choosing a strategy (`narrative`)."
 status: draft
 created: ""
 updated: ""

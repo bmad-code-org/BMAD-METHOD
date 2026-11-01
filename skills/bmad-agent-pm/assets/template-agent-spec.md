@@ -1,7 +1,9 @@
 ---
 title: ""
 template: agent-spec
-description: "One feature handed to a coding agent: stories with independent tests, acceptance, edge cases. Not for work a story or epic ticket already specifies. Several features or a product (`prd`)."
+version: 1.0.0
+description: "One feature handed to a coding agent, with tests and acceptance."
+not_for: "Work a story or epic ticket already specifies; several features or a product (`prd`)."
 status: draft
 created: ""
 updated: ""
