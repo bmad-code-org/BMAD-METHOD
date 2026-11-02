@@ -16,7 +16,7 @@ updated: ""
 
 <!-- inputs: What it is, who it is for and what is out; where it will be built and the platform if the sources do not say. -->
 
-<!-- writing: About 1,000 words; a project that needs more is a `prd`. FR ids are global. Unlike a full PRD, technical decisions expensive to reverse belong here. -->
+<!-- writing: About 1,250 words; a project that needs more is a `prd`. FR ids are global. Unlike a full PRD, technical decisions expensive to reverse belong here. -->
 
 <!-- done when: Every FR can be checked, the scope edges are explicit, and a builder could start from this file alone. -->
 
