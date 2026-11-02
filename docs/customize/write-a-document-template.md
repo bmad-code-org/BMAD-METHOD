@@ -46,7 +46,7 @@ updated: ""
 | `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
 | `output` | Optional run folder for this template. It may use `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
 | `style` | Optional CSS file for this template's rendered view, relative to the template. |
-| `view` | Optional layout for the rendered view: `document`, `slides`, or an HTML view file relative to the template. See [Give a template its own view](#give-a-template-its-own-view). |
+| `view` | Optional layout for the rendered view: `document`, `slides`, or an HTML file relative to the template. See [Give a template its own view](#give-a-template-its-own-view). |
 
 `template`, `version` and `view` stay in the finished document, as does any field you add for a view to show. The other fields stay out.
 
@@ -147,6 +147,7 @@ Above the first heading, give each of these keys its own comment, a line or two.
 | `writing` | Rules specific to this document. |
 | `companions` | Other files to write beside the document, when, and what each holds. A file for a different reader belongs here, not overflow from the document. |
 | `done when` | The test that ends the questioning. |
+| `view` | The brief for an HTML page written for each document. See [Give a template its own view](#give-a-template-its-own-view). |
 
 Add `view: slides` to the frontmatter for a slide view, or name an HTML view file; without it the HTML view is one page. In the document body, `{title}` is the only placeholder.
 
@@ -228,11 +229,23 @@ html_view = "always"
 
 ## Give a template its own view
 
-A template stays markdown, and so does the document the skill writes, because the skill grows it section by section, reviews it and diffs it. The look of the result lives in a separate HTML file beside the template, so all the coaching stays in the template's comments and the view holds none of it. Name the file in the frontmatter:
+A template stays markdown, and so does the document the skill writes, because the skill grows it section by section, reviews it and diffs it. An HTML result is a separate step at close, and all its instructions stay in the template. Choose how much freedom the page gets:
 
-```yaml
-view: character-sheet.html
+| You want | In the template | What happens |
+| --- | --- | --- |
+| The same layout every time, such as a form headed for PDF | `view: invoice.html` | A script fills the file's slots. Nothing is interpreted. |
+| A shared structure that adapts to each document | `view: character-sheet.html` and a `view` comment | A subagent uses the file as a starter and follows the comment. |
+| A page invented for each document, with no template | A `view` comment alone | A subagent writes it from the comment. |
+
+The `view` comment sits above the first heading with the other comments, and says what the page should do:
+
+```markdown
+<!-- view: The sheet is the deliverable. `character-sheet.html` is a starter: keep to one printable page, and let this character's world set the look. -->
 ```
+
+A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless the comment calls it the deliverable. Use the script for anything regulated or signed, where the page must not vary. `html_view = "never"` stops all three.
+
+### Slots for a filled view
 
 The view file is ordinary HTML with its CSS inline. Attributes mark where the document's content goes:
 
@@ -249,7 +262,7 @@ The view file is ordinary HTML with its CSS inline. Attributes mark where the do
 <section data-rest></section>
 ```
 
-A slot with nothing to show is removed along with its element, so a declined section leaves no empty card. Without a `data-rest` slot, a section the view does not name stays out of the page, and the render says which. The `style` setting still applies after the view's own CSS. The shipped `character` template and its `character-sheet.html` are a worked example.
+A slot with nothing to show is removed along with its element, so a declined section leaves no empty card. Without a `data-rest` slot, a section the view does not name stays out of the page, and the render says which. The `style` setting still applies after the view's own CSS.
 
 :::tip[Templates for an agent]
 An agent's own templates ship in its `assets/` folder, and its `customize.toml` lists that folder in `template_libraries`. The agent passes the list when it runs `bmad-doc-coach`, and it is searched after yours, so your copy with the same id wins. The settings in `bmad-doc-coach.toml` (style, views, review and polish) still apply.

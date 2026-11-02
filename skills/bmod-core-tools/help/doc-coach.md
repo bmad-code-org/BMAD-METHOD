@@ -21,7 +21,7 @@ It coaches the user through one document from a template, and later updates or v
 | `proposal` | Asking for money, time or approval: a grant, a bid, an internal request. The reader's own guidelines replace its headings. |
 | `security-review` | Reviewing a system against the OWASP Top 10 or STRIDE. The standard's items drive the questions; another standard needs its rows added to the catalog first. |
 | `pitch-deck` | A talk or pitch that needs a story and slides. It always renders as an HTML slide view unless the team turned views off. |
-| `character` | A fictional character for a story, game or campaign. The coach proposes options, and it renders as a one-page HTML sheet unless the team turned views off. |
+| `character` | A fictional character for a story, game or campaign. The coach proposes options, and each character gets its own one-page HTML sheet unless the team turned views off. |
 
 ## Listing what it can coach
 
@@ -46,6 +46,6 @@ Templates are files in `_bmad/custom/doc-coach-templates/`. For settings, recomm
 - Use a shared library: add a folder or a pinned GitHub URL to `template_libraries`, in the `.user.toml` when it is private. Only sources the team controls, because a template overrides the skill.
 - Add to a template without copying it: a file with `extends: <id>` in its frontmatter, holding the extra sections and comments. It applies on every run of that template, and updates to the original still arrive. For example, an `extends: proposal` file at Fernhollow Bank, a fictional company, adds a required Approval Track with three fixed choices and an empty Review Comments section.
 - An organization can keep templates and extensions in its own modules, one per program if it likes, such as `bmod-fernhollow-cards`. A module adds new ids or extends existing ones; only a project's folder or a library replaces an id.
-- `style` sets the look of every rendered view; `html_view` is `offer`, `always` or `never`. A template's `view` can name an HTML layout file beside it, with slots the document fills; the coaching stays in the markdown template.
+- `style` sets the look of every rendered view; `html_view` is `offer`, `always` or `never`. A template's `view` can name an HTML file beside it, filled the same way every time, and a `view` comment instead has a page written for each document, from that file as a starter or from the brief alone. The coaching stays in the markdown template.
 
 The file format and worked examples are at `https://docs.bmad-method.org/customize/write-a-document-template/`.

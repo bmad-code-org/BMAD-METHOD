@@ -34,7 +34,7 @@ To use one as a starting point, copy it into `_bmad/custom/doc-coach-templates/`
 | Draw a diagram | `postmortem`, Timeline | A `diagram:` kind in the section comment |
 | Add a table of contents | `proposal` | A bare `## Table of Contents` heading after the title |
 | Render as slides | `pitch-deck` | `view: slides` in the frontmatter |
-| Render into its own HTML layout | `character`, `character-sheet.html` | `view` names an HTML file with slots for sections and frontmatter fields |
+| Have a page written for each document | `character`, `character-sheet.html` | `view` names a starter, and a `view` comment gives the brief |
 | Propose rather than only ask | `character`, `stance` | The comment invites proposals; one the user accepts is theirs |
 | Write several files | `postmortem`, `companions` | The comment says when to write the customer notice and what it holds |
 

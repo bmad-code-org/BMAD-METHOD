@@ -22,6 +22,8 @@ updated: ""
 
 <!-- done when: A stranger could write or play this character from the sheet, the character wants something hard to get, and the user would change nothing in it. -->
 
+<!-- view: The sheet is the deliverable. `character-sheet.html` is a starter: keep to one printable page with every section shown, and let this character's world set the colors, type and layout, so a harbor smuggler and a Victorian detective look nothing alike. -->
+
 # {title}
 
 ## Concept
