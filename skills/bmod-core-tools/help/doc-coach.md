@@ -33,7 +33,7 @@ When the user asks what it can coach them through or which templates exist, list
 
 ## Calling it directly
 
-The user says what they want in plain words: the topic, a template (an id, a file path or a URL), an output folder, the stakes, and whether to run without questions. For example: "bmad-doc-coach coach me through a security review covering the OWASP Top 10, output to docs/owasp". It infers what is missing. "Update" or "validate" with a document's path revises it or reviews it without changes.
+The user says what they want in plain words: the topic, a template (an id, a file path or a URL), an output folder, the stakes, and whether to run without questions. For example: "bmad-doc-coach coach me through a security review covering the OWASP Top 10, output to docs/owasp". It infers what is missing. "Update" or "validate" with a document's path revises it or reviews it without changes. A document written without a template works too: it finds the closest template and uses that as the bar, then offers suggestions or a reshape.
 
 ## A team's own templates
 
