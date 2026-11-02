@@ -17,7 +17,7 @@ updated: ""
 
 <!-- inputs: The sponsor, the process being changed, and any business case, charter, contract or policy behind it. Only the user knows who signs, which rules are binding and what is out. -->
 
-<!-- writing: Requirements are outcomes the business needs, not system behavior. Ids (BR-N, RULE-N) are global and never reused. A rule is stated once, in Business rules, and cited everywhere else. Objectives and cost point at the business case or charter where one exists instead of repeating it. -->
+<!-- writing: About 3,000 words. Requirements are outcomes the business needs, not system behavior. Ids (BR-N, RULE-N) are global and never reused. A rule is stated once, in Business rules, and cited everywhere else. Objectives and cost point at the business case or charter where one exists instead of repeating it. -->
 
 <!-- done when: Every BR-N has an owner, a source, a priority and a way to verify it; every rule has an id and an owner; nothing in the document names a screen, a field or an API; and the approval block names who signs. -->
 
@@ -43,7 +43,7 @@ updated: ""
 <!-- required. How the work runs today and how it should run after, in business terms. diagram: flowchart -->
 
 ## Business requirements
-<!-- required. A table: BR-N, the requirement as an outcome, owner, source, priority, how it will be verified. -->
+<!-- required. A table: BR-N, the requirement as an outcome, owner, source, priority, how it will be verified. When everything comes back as a must, ask what the business would give up first, and rank from that answer. -->
 
 ## Business rules
 <!-- required. RULE-N, kept apart from requirements: each rule states what must hold or how a term is defined, with its owner and source. Use a decision table where the logic is dense. -->

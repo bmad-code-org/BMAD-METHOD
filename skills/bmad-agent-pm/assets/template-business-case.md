@@ -34,7 +34,7 @@ updated: ""
 <!-- required. The measurable results expected if the hypothesis holds. -->
 
 ## Leading indicators
-<!-- required. Early signals of whether the outcomes are on track. -->
+<!-- required. Early signals of whether the outcomes are on track. Ask what reading would make the sponsor stop funding it, and write that down. -->
 
 ## Background
 <!-- optional. Context and analysis the decision rests on. -->
@@ -46,7 +46,7 @@ updated: ""
 <!-- include when: performance, security, compliance or similar constraints change the cost or the risk. -->
 
 ## MVP and what follows
-<!-- required. The smallest version that tests the hypothesis, and the features it may lead to. -->
+<!-- required. The smallest version that tests the hypothesis, and the features it may lead to. When the plan spends more than the hypothesis needs before anyone learns whether it holds, say so, name what could wait, and make the case for funding the test first. The user decides. -->
 
 ## Cost
 <!-- required. MVP cost and total cost, each with its basis, and whether the work is built in house or bought. -->

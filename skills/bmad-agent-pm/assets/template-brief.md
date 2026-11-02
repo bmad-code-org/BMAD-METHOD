@@ -43,7 +43,7 @@ updated: ""
 <!-- required. Measurable signs it is working, for users and for the business. -->
 
 ## Scope
-<!-- required. What the first version includes and what it leaves out: a tight boundary, not a feature list. -->
+<!-- required. What the first version includes and what it leaves out: a tight boundary, not a feature list. When the list outruns what a first version needs, say so, suggest what could wait and why, and let the user decide. -->
 
 ## The ask
 <!-- include when: the brief pitches a sponsor. What the money or time buys, what is still unknown, the running cost, and when the sponsor can stop. -->

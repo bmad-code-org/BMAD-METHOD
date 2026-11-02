@@ -49,7 +49,7 @@ updated: ""
 <!-- include when: the launch changes what customers pay or which plan includes it. -->
 
 ## Channels and activities
-<!-- required. Each activity with its channel, owner and date. diagram: gantt -->
+<!-- required. Each activity with its channel, owner and date. Once they are listed, weigh them against what is shipping: a small change may need only a note and a support brief. Say which could go and let the user decide. diagram: gantt -->
 
 ## Readiness
 <!-- required. Support, documentation, sales enablement and rollback, each with an owner. -->

@@ -12,11 +12,11 @@ updated: ""
 
 <!-- purpose: A requirements baseline an auditor, regulator or contracting party can verify delivery against. -->
 
-<!-- stance: Stakes are regulated or contracted; push for a source on every requirement. -->
+<!-- stance: Stakes are regulated or contracted; push for a source on every requirement. One with no source is cut or becomes an open question, because a baseline can only hold what someone can answer for. -->
 
 <!-- inputs: The governing regulations, standards and contract clauses, stakeholders and their needs, external interfaces, prior baselines. Only the user knows which obligations apply and who approves the baseline. -->
 
-<!-- writing: Requirement sections are tables: id, one "shall" statement, source (a stakeholder need, regulation clause or contract item), verification method (inspection, analysis, demonstration or test). Ids are never reused. Defined terms are used exactly as defined. -->
+<!-- writing: Requirement sections are tables: id, one "shall" statement, source (a stakeholder need, BR-N, RULE-N, regulation clause or contract item), verification method (inspection, analysis, demonstration or test). Ids are never reused. Defined terms are used exactly as defined. -->
 
 <!-- done when: Every requirement has an id, a source and a verification method; every cited regulation, clause and threshold comes from the user or a supplied document; every term is defined. -->
 
