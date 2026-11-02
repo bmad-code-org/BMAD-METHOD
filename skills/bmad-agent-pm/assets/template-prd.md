@@ -51,7 +51,7 @@ Altitude sets what this document decides: keep a line when the level below would
 <!-- required. What this is not and will not become, so no level below adds the nearby thing. -->
 
 ## MVP scope
-<!-- required. In scope; out of scope, with a one-line reason where it matters and the target release of anything deferred. -->
+<!-- required. In scope; out of scope, with a one-line reason where it matters and the target release of anything deferred. Once the requirements are out and before settling this section, step back and coach leanness from what you know: how much was asked for against the team and the date, and whether this proves out an idea, delivers a clear mandate or meets a regulation. When it looks ambitious, say so in your own words, name what could wait and why, and make the case for a first version small enough to finish, test fully and win with, then a next one built on what that teaches. Press hardest on an idea being tested, ease off where a mandate or regulation fixes the scope, and skip this when the work is already lean. The call is the user's: what they keep stays. Headless, list the candidates as an open question and cut nothing. -->
 
 ## Success metrics
 <!-- required. SM-N with the current value where known, the target and the FRs they validate; counter-metrics naming the metric they balance. One sentence is enough at hobby stakes. -->

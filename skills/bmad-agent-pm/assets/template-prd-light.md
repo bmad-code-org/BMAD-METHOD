@@ -36,7 +36,7 @@ updated: ""
 <!-- required. By feature, nested FR-N: "[Actor] can [capability] [under conditions]", each with one checkable result. -->
 
 ## Non-goals
-<!-- required. What this will not do, with a one-line reason where it matters. -->
+<!-- required. What this will not do, with a one-line reason where it matters. Once the features are out, if the list is more than a first version needs, say so, suggest what could wait for a later version and why, and let the user decide. -->
 
 ## Technical approach
 <!-- required. Where it is built, platform, stack and any starter project, then data and storage, integrations, hosting and any other decision expensive to reverse. Flag the rest for the builder instead of choosing. Enough to start, not an architecture. -->
