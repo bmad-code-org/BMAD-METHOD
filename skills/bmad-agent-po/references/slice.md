@@ -64,9 +64,9 @@ An epic with `refined: false` has its scope agreed, not its detail; refine it on
 
 - What the epic, the initiative and their companions already settle for its stories.
 - Each thing its stories would have to agree on that is still open, with your pick: settle it with the user now, plan a spike first when only code can answer it, or leave it to the stories.
-- A reminder that the user can flesh the epic out further: more intent, as their own notes or a `bmad-prd` run on the epic; more design, as `bmad-ux` or `bmad-architecture` on the epic; or research with `bmad-deep-recon`.
+- A reminder that the user can flesh the epic out further: more intent, as their own notes or a document from John (`bmad-agent-pm`) on the epic; more design, as `bmad-ux` or `bmad-architecture` on the epic; or research with `bmad-deep-recon`.
 
-A UX, architecture or PRD run the user chooses lands in the epic's folder, and SPEC adopts what it produces as a companion. Fill the epic in from the initiative's lines alone only when the user says to, or when it needs nothing more. Then write its Requirements per `spec.md`, re-read Outcome and Done when, set `refined: true`, and commit (on a tracker, publish) per `board.md`.
+A UX, architecture or John run the user chooses lands in the epic's folder, and SPEC adopts what it produces as a companion. Fill the epic in from the initiative's lines alone only when the user says to, or when it needs nothing more. Then write its Requirements per `spec.md`, re-read Outcome and Done when, set `refined: true`, and commit (on a tracker, publish) per `board.md`.
 
 ## Epic into stories
 

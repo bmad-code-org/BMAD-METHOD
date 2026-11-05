@@ -12,10 +12,11 @@ folder; the --folder folder (default `doc-templates`) of every module record in 
 after the sources. A file is a template when its frontmatter has `template:`, the template's id.
 A file with `extends:` adds to the template of that id wherever it sits, and an earlier
 extension's values win over a later one's and the template's. A missing local path adds nothing
-and is listed. `rubric`, `methods` and `style` are relative to their file and come back resolved.
+and is listed. `rubric`, `methods` and `style` are relative to their file and come back resolved; a bare name
+with no extension comes back as it is.
 
 Prints JSON:
-  templates     id, description, category, rubric, methods, output, style, file, source,
+  templates     id, version, description, not_for, category, rubric, methods, output, style, file, source,
                 extensions, in search order
   shadowed      id, file, source, kept: templates hidden by an earlier one with the same id
   orphaned      extends, file, source: extensions whose template was not found
@@ -45,7 +46,7 @@ GITHUB = re.compile(
     r"(?:/(?:tree|blob)/(?P<tree_ref>[^/@]+)(?:/(?P<path>[^@]*?))?)?/?(?:@(?P<ref>[^/]+))?/?$"
 )
 MODULE_FOLDER = "doc-templates"
-FIELDS = ("description", "category", "rubric", "methods", "output", "style")
+FIELDS = ("version", "description", "not_for", "category", "rubric", "methods", "output", "style")
 TIMEOUT = 30
 
 
@@ -99,8 +100,8 @@ def read_source(source: str) -> list[tuple[str, str]]:
 
 
 def beside(file: str, value: str) -> str:
-    """`value`, a path relative to `file`, made usable from anywhere."""
-    if not value or "://" in value or value.startswith("{") or Path(value).is_absolute():
+    """`value`, a path relative to `file`, made usable from anywhere. A bare name stays a name."""
+    if not value or "://" in value or value.startswith("{") or Path(value).is_absolute() or not Path(value).suffix:
         return value
     return urljoin(file, value) if "://" in file else str(Path(file).parent / value)
 
@@ -122,7 +123,9 @@ def module_libraries(roots: list[str], folder_name: str = MODULE_FOLDER) -> list
 def fields(file: str, meta: dict[str, str]) -> dict[str, str]:
     """What a template or extension sets, with its paths resolved."""
     return {
+        "version": meta.get("version", ""),
         "description": meta.get("description", ""),
+        "not_for": meta.get("not_for", ""),
         "category": meta.get("category", ""),
         "rubric": beside(file, meta.get("rubric", "")),
         "methods": beside(file, meta.get("methods", "")),

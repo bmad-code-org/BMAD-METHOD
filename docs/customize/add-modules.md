@@ -17,6 +17,7 @@ v6.12 adds modules through `npx bmad-method install`, with `--custom-source` for
 | --- | --- | --- |
 | Test Architect (TEA), code `tea` | Test strategy, automation, test review, traceability, and release-gate decisions through an agent and eight workflows | [bmad-method-test-architecture-enterprise](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise) |
 | Creative Intelligence Suite, code `cis` | Brainstorming, design thinking, and problem-solving agents | [bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite) |
+| Founder, code `founder` | Business document templates, a proposal and a pitch deck, that `bmad-facilitate` coaches you through | This repository: `npx skills add bmad-code-org/BMAD-METHOD --skill bmod-founder` |
 | Game Dev Studio, code `gds` | Game design documents and game-aware planning for Unity, Unreal, Godot, and custom engines | [bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio) |
 
 Each repository's README says which BMad version it supports. TEA's `bmad-tea-automate` generates heavier test coverage than the built-in `bmad-qa-generate-e2e-tests`; [Test Completed Work](../build/test-completed-work.md) helps you choose between them.

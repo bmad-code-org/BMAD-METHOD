@@ -1,6 +1,6 @@
 # Help
 
-The output of `knowledge.py` is your source for every answer. Its `documents` hold the help of each installed module: what its skills are for, how they fit together, and what comes next. Follow every module's document, not only the one the question seems to concern, since another module may change the answer.
+The output of `knowledge.py` is your source for every answer. Its `documents` hold the help of each installed module: what its skills are for, how they fit together, and what comes next. Follow every module's document, not only the one the question seems to concern, since another module may change the answer. Its `templates` name every document template the installed modules ship: use them to answer what a module can do. `agents` names the skills that run a template; with none, the user reaches it through `bmad-facilitate`.
 
 ## 1. See where the project stands
 

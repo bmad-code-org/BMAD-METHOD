@@ -106,7 +106,7 @@ Inside the initiative, each v6 document moves as a unit: its run folder with eve
 
 | v6 | Main file | Skill |
 |---|---|---|
-| `prds/prd-<name>-<date>/`, or flat `prd*.md` | `prd.md` | `bmad-prd` |
+| `prds/prd-<name>-<date>/`, or flat `prd*.md` | `prd.md` | `bmad-agent-pm` |
 | `briefs/brief-<name>-<date>/`, or flat `*brief*.md` | `brief.md` | `bmad-product-brief` |
 | `architecture/architecture-<name>-<date>/`, or flat `architecture*.md` | `ARCHITECTURE-SPINE.md` | `bmad-architecture` |
 | `ux-designs/ux-<name>-<date>/`, or flat `ux*.md` | router beside `DESIGN.md` and `EXPERIENCE.md` | `bmad-ux` |

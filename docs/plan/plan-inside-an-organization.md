@@ -31,10 +31,12 @@ Reach for the full path when one of these is true:
 
 ## The PRD Is What the Organization Owns
 
-The PRD is the document the organization owns. It is written by `bmad-prd`,
-validated by it, and updated through it; nothing else in the chain claims to
+The PRD is the document the organization owns. It is written by John, the
+Product Manager (`bmad-agent-pm`), validated by him, and updated through him; nothing else in the chain claims to
 say what the product is. Brainstorming, Forge Idea, Deep Recon, a product
-brief, and a PRFAQ exist to get the PRD written well. Everything after the PRD
+brief, and a PRFAQ exist to get the PRD written well. When the organization
+asks for a business case, a program charter, a business requirements document, or a requirements specification
+for audited or contracted work, John writes those too. Everything after the PRD
 is derived from it:
 
 - `bmad-ux` writes `DESIGN.md` and `EXPERIENCE.md` in its own `ux-<slug>/` folder, as input beside the PRD.
@@ -57,14 +59,14 @@ Nothing here asks you to replace the planning system you already run. An
 organization arrives with a PRD in Confluence or Notion, a backlog in Jira or
 Linear, and a review cadence, and all of it stays.
 
-- **Your PRD is the input.** `bmad-prd` opens with a brain dump and reads any
-  files you point it at, so the first run is "here is our PRD". Ask it to
+- **Your PRD is the input.** John opens with a brain dump and reads any
+  files you point him at, so the first run is "here is our PRD". Ask him to
   **validate** and you get a findings report on the document as it stands,
-  with nothing changed. Ask it to **create** from that input and you get the
+  with nothing changed. Ask him to **create** from that input and you get the
   same requirements in the shape the later skills read, with `[ASSUMPTION]`
   tags on anything it had to fill in. After that, the copy your reviewers
-  already edit is the source. When it changes, re-run `bmad-prd` in
-  **Update** mode pointing at it and let the skill bring the PRD in line;
+  already edit is the source. When it changes, ask John to
+  **update** the PRD from it and let him bring it in line;
   never edit the PRD by hand to catch up.
 - **The same holds for design and architecture.** A design system, an
   existing architecture document, or a live codebase is what `bmad-ux` and
@@ -86,7 +88,7 @@ document can be regenerated from it.
 
 | Role                     | Runs                                                                                              | Owns                                                                      |
 | ------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Product manager          | Brainstorming, Forge Idea, Deep Recon, then `bmad-product-brief` or `bmad-prfaq`, then `bmad-prd` | The PRD and its update cycle; the one-pager the steering committee reads  |
+| Product manager          | Brainstorming, Forge Idea, Deep Recon, then `bmad-prfaq` or a brief from John, then John (`bmad-agent-pm`) for the PRD | The PRD and its update cycle; the one-pager the steering committee reads  |
 | Designer                 | `bmad-ux`                                                                                         | `DESIGN.md`, `EXPERIENCE.md`                                              |
 | Tech lead or architect   | `bmad-architecture`                                                                               | The architecture spine                                                    |
 | One engineer, per epic   | Sofia (`bmad-agent-po`), Build per story, `bmad-retrospective`                                    | That epic: its file, its `tickets.toml`, its verdict                      |
@@ -140,7 +142,7 @@ shows what goes wrong without the spine.
 
 Sofia cuts epics by outcome, deployment, and slice size, not by who builds them. If your organization cuts epics by its own rule, tell her and she offers to save it to `_bmad/custom/bmad-agent-po.toml`.
 
-Each epic starts thin, with its scope agreed and its detail left open. Ask Sofia to refine each epic before its stories are planned. She says what is already settled and names each open point with her pick: settle it now, spike it, or leave it to the stories. On a large initiative you can flesh an epic out further with a `bmad-prd`, `bmad-ux` or `bmad-architecture` run on the epic, or research with `bmad-deep-recon`. Those runs land in the epic's folder and become its companions, so whoever takes the epic finds them beside its file.
+Each epic starts thin, with its scope agreed and its detail left open. Ask Sofia to refine each epic before its stories are planned. She says what is already settled and names each open point with her pick: settle it now, spike it, or leave it to the stories. On a large initiative you can flesh an epic out further with a PRD from John, or a `bmad-ux` or `bmad-architecture` run on the epic, or research with `bmad-deep-recon`. Those runs land in the epic's folder and become its companions, so whoever takes the epic finds them beside its file.
 
 ## More Than One Initiative
 
@@ -150,7 +152,7 @@ When the work is more than one initiative's worth, such as a program of several 
 
 They will. The path for a change is the same as the path for the original:
 
-1. Run `bmad-prd` in **Update** mode with the change signal. It surfaces
+1. Ask John to update the PRD with the change signal. He surfaces
    conflicts with earlier decisions before applying anything.
 2. Tell Sofia what changed. She updates the affected tickets' requirements in
    place and keeps requirement ids stable, so stories that are unaffected

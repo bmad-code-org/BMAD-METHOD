@@ -45,12 +45,12 @@ Open your skills directory to see every installed skill with its description. Ru
 
 ## Agents
 
-The BMad Method module installs six named agents. Load one with its skill ID, then type a code from its menu. Codes are scoped to the agent that shows them: `CR` is a competitive teardown for the Analyst and a code review for the Developer.
+The BMad Method module installs six named agents. Load one with its skill ID, then say what you want or type a code from its menu. Agents show the menu only when you ask what they can do. Codes are scoped to the agent that shows them: `CR` is a competitive teardown for the Analyst and a code review for the Developer.
 
 | Agent                  | Skill ID                 | Codes                                                              | Menu                                                                                                                                                                 |
 | ---------------------- | ------------------------ | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Analyst (Mary)         | `bmad-agent-analyst`     | `BP`, `MR`, `DR`, `TR`, `TS`, `CR`, `UV`, `CB`, `WB`, `PC`         | Brainstorm; market, domain, and technical research; technology selection; competitive teardown; user-voice research; product brief; PRFAQ challenge; project context |
-| Product Manager (John) | `bmad-agent-pm`          | `PRD`                                                              | Create, update, or validate a PRD                                                                                                                                    |
+| Product Manager (John) | `bmad-agent-pm`          | `CREATE`, `VALIDATE`                                               | Create or update a brief, PRD, or one of ten more planning documents; validate one into review findings                                                            |
 | Product Owner (Sofia)  | `bmad-agent-po`          | `SPEC`, `TICKETS`, `REFINE`, `BOARD`, `VALIDATE`, `REPLAN`, `STORE` | Requirements from a PRD, brief, or notes into a ticket; slice an initiative or epic; refine a ticket; the board; validation; replan a mid-flight change; tracker setup |
 | Architect (Winston)    | `bmad-agent-architect`   | `CA`                                                               | Architecture spine                                                                                                                                                   |
 | Developer (Amelia)     | `bmad-agent-dev`         | `BD`, `QA`, `CR`, `ER`                                             | Build; QA test generation; code review; epic retrospective                                                                                                           |
@@ -66,7 +66,7 @@ Each agent is an identity plus a customizable layer. See [Customize BMad](../cus
 
 ## Core Skills
 
-Every installation includes the core module: ten skills that work in any project, any module, any phase. No agent session is required.
+Every installation includes the core module: eleven skills that work in any project, any module, any phase. No agent session is required.
 
 ### bmad
 
@@ -145,6 +145,16 @@ Pressure-tests a half-formed idea in a questioning conversation, one question at
 
 **Output:** a `forge-report.html` keepsake every run, plus a `forge-<slug>.md` brief when the idea hardens. See [Explore and Validate an Idea](../plan/explore-and-validate-an-idea.md#pressure-test-an-idea-with-forge-idea).
 
+### bmad-facilitate
+
+Coaches you through one document from a template library, then updates or validates it. It reads your inputs, asks only what you alone know, reviews the draft against a rubric, and polishes it. Rigor follows the stakes you state. It ships no templates itself; modules do. The BMad Method adds `decision-record`, `postmortem` and `security-review`, the Founder module adds `proposal` and `pitch-deck`, and the Creative Intelligence Suite adds `character` from its 0.4.0 release. Your team can add its own, replace a shipped one, or add rules to one; see [Write a Document Template](../customize/write-a-document-template.md). Planning documents such as PRDs and product briefs belong to John (`bmad-agent-pm`).
+
+**Output:** `<id>-<slug>.md` with a `.memlog.md` and review files in its own folder, any companion files the template asks for, and an optional HTML view, which a pitch deck renders as slides.
+
+:::note[Example]
+`bmad-facilitate coach me through a security review covering the OWASP Top 10, output to docs/owasp`
+:::
+
 ### bmad-party-mode
 
 Puts your installed agents, or custom personas, in one conversation, in character, with you steering. A mode setting decides whether one model voices everyone or separate agents think independently, and you can save custom parties for reuse. See [Run Multi-Agent Discussions](../customize/run-multi-agent-discussions.md).
@@ -172,9 +182,10 @@ The BMad Method module adds the six agents above and these workflow skills. The 
 
 | Skill                           | Purpose                                                                                           | See                                                                                                    |
 | ------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `bmad-product-brief`            | Create, update, or validate a product brief                                                       | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
+| `bmad-product-brief`            | Create, update, or validate a product brief; kept for comparison with John and will be retired     | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
 | `bmad-prfaq`                    | Stress-test a product concept with the Working Backwards PRFAQ method                             | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
-| `bmad-prd`                      | Create, update, or validate a PRD                                                                 | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
+| `bmad-prd`                      | Create, update, or validate a PRD; kept for comparison with John and will be retired              | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
+| `bmad-agent-pm`                 | John, the Product Manager: create, update, or validate a brief, PRD, or another planning document | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
 | `bmad-ux`                       | Capture the UX vision as `DESIGN.md` and `EXPERIENCE.md`                                          | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
 | `bmad-architecture`             | Record the architecture decisions that keep separately built parts consistent                     | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
 | `bmad-project-context`          | Set up, refresh, or audit the repository's agent instructions                                     | [Set and Maintain Project Context](../existing-codebases/set-and-maintain-project-context.md)          |
@@ -200,7 +211,7 @@ Earlier skill IDs, such as `bmad-create-prd`, `bmad-edit-prd`, `bmad-market-rese
 
 ## Naming and Modules
 
-Every skill shipped by the bmad-code-org uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-dev`, `bmad-prd`, `bmad-build`. A custom module uses its own code as the prefix; see [Add Modules](../customize/add-modules.md) and [Modules and Registration](../toolsmith/modules.md).
+Every skill shipped by the bmad-code-org uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-dev`, `bmad-ux`, `bmad-build`. A custom module uses its own code as the prefix; see [Add Modules](../customize/add-modules.md) and [Modules and Registration](../toolsmith/modules.md).
 
 ## Troubleshooting
 

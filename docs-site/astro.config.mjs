@@ -263,6 +263,10 @@ export default defineConfig({
               label: 'Run Multi-Agent Discussions',
               slug: 'customize/run-multi-agent-discussions',
             },
+            {
+              label: 'Write a Document Template',
+              slug: 'customize/write-a-document-template',
+            },
           ],
         },
         {

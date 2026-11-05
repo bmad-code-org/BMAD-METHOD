@@ -24,6 +24,7 @@ Both work. In an existing codebase, a prototype on a branch shows how a change s
 |---|---|---|
 | Something running fast, expected to be thrown away | Prompt it directly, no skill | For a throwaway, the smallest path is no path. |
 | A fast first version with a plan to approve, a review, and a commit | `bmad-build` with a one-line prompt | It accepts free text however brief. In an existing codebase it investigates the code first, so the prototype fits what is there. |
+| A short plan that records the goal and the result that would drop the idea, then a build that runs on its own | John the Product Manager (`bmad-agent-pm`) with a prototype plan | He asks only what the prototype needs, then hands the plan to `bmad-build-auto` once the user agrees. The plan's Outcome section records what the run taught. |
 | To see the screens and flows before any code | `bmad-ux` | It can produce HTML mocks of key screens and Excalidraw wireframes alongside its two design files. |
 | A technical unknown answered from outside sources, or from the existing code and its history, instead of by building | `bmad-deep-recon` (core tools), if installed | Some feasibility questions are research, not code. |
 
@@ -31,7 +32,7 @@ Both work. In an existing codebase, a prototype on a branch shows how a change s
 
 Ask the user to decide this on purpose. The outcome to avoid is a prototype that becomes the real product with nobody deciding it should, and with no spec.
 
-- **Throw it away.** The prototype was research. Have the user note what it taught them: what worked, what surprised them, what users said, what they would do differently. Talk to Sofia the Product Owner to write the initiative from those notes, and the prototype itself if useful, or run `bmad-product-brief` first when the picture is still loose. Then build cleanly, one story at a time. This is the usual choice in an enterprise codebase and whenever a non-engineer built the prototype.
+- **Throw it away.** The prototype was research. Have the user note what it taught them: what worked, what surprised them, what users said, what they would do differently. Talk to Sofia the Product Owner to write the initiative from those notes, and the prototype itself if useful, or ask John the Product Manager for a brief first when the picture is still loose. Then build cleanly, one story at a time. This is the usual choice in an enterprise codebase and whenever a non-engineer built the prototype.
 - **Keep it.** Treat it as an existing codebase (see `help/existing-codebase.md`): `bmad-project-context` to record the rules agents must follow, talk to Sofia the Product Owner to write the initiative from the prototype, then `bmad-architecture` to ratify the decisions worth keeping and name what is still open, adopted into the initiative before she slices the rest of the work.
 - **Drop the idea.** The prototype showed it is not worth doing. Nothing more is needed.
 

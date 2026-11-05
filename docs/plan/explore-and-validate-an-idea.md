@@ -49,7 +49,7 @@ deciding. Sessions can be paused and resumed.
 
 You get an HTML record of the session, and a short `brainstorm-<topic>.md`
 holding only the chosen discoveries, shaped to feed Sofia, the Product Owner
-(`bmad-agent-po`), `bmad-product-brief`, or `bmad-prd`.
+(`bmad-agent-po`), or John, the Product Manager (`bmad-agent-pm`), for a brief or a PRD.
 
 ## Pressure-Test an Idea with Forge Idea
 
@@ -98,7 +98,7 @@ and each is a valid result:
 | **Killed**   | The idea does not hold up. The report records why.                                                                                           |
 | **Clearer**  | You understand the idea better, but there is nothing to hand off. The session log is the record.                                             |
 
-`forge-<slug>.md` should be short enough to feed Sofia, `bmad-prd`, or
+`forge-<slug>.md` should be short enough to feed Sofia, John, or
 `bmad-prfaq`. If it reads like a document, it is too long.
 
 :::note[Example]

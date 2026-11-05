@@ -1,6 +1,6 @@
 ---
 name: bmad-product-brief
-description: Create, update, or validate a product brief. Use when the user wants help producing, editing, or validating a brief
+description: 'The earlier product brief workflow, kept for comparison with John the Product Manager (bmad-agent-pm), who now coaches product briefs. Use when the user names bmad-product-brief; otherwise use John.'
 ---
 
 # Overview

@@ -25,6 +25,15 @@ module's migrations are listed, checked and run. One is listed only when its
 table in a file with any other name, and two files of one module with the
 same number, are problems. `bmad migrate` reads the file.
 
+A module's document templates are the markdown files with a `template:` or
+`extends:` frontmatter key in the record's `doc-templates/` folder and in the
+`assets/` folder of each of its skills. Each is listed by id, version and
+short description, never its text, with `agents` when it has any: the skills
+that run it, from its `agents:` frontmatter list and the skill whose assets
+hold it. No agents means anyone reaches it through `bmad-facilitate`. Templates
+a project or user added outside a module are not listed; `list_templates.py`
+reads those.
+
 A file this script cannot use becomes an entry in `problems`, never an
 exception.
 
@@ -45,9 +54,13 @@ from typing import NamedTuple
 
 sys.dont_write_bytecode = True
 
+from list_templates import MODULE_FOLDER as TEMPLATES_DIR  # noqa: E402
+from list_templates import frontmatter, unquote  # noqa: E402
+
 MANIFEST_NAME = "bmod.toml"
 TOPICS_DIR = "help"
 HELP_NAME = f"{TOPICS_DIR}/help.md"
+ASSETS_DIR = "assets"
 ROSTER_NAME = "roster.toml"
 RETIRED_NAME = "retired.toml"
 MIGRATION_TABLE = "migration"
@@ -104,12 +117,14 @@ def collect(roots: list[Path], *, include_content: bool = False) -> dict[str, ob
     ]
 
     migrations = [migration for module in found.modules for migration in module_migrations(module, problems)]
+    templates = [template for module in found.modules for template in module_templates(module, found.folders, problems)]
 
     return {
         "roots": [str(root) for root in roots],
         "skills": sorted(found.skills, key=lambda item: str(item["skill"])),
         "documents": sorted(documents.values(), key=lambda item: (str(item["module"]), str(item["path"]))),
         "topics": sorted(topics, key=lambda item: (str(item["module"]), str(item["path"]))),
+        "templates": templates,
         "migrations": sorted(migrations, key=lambda item: (str(item["module"]), migration_number(str(item["path"])))),
         "problems": problems,
     }
@@ -353,6 +368,43 @@ def module_topics(module: Module, problems: list[dict[str, object]]) -> list[dic
             {"module": module.code, "topic": path.stem, "path": f"{TOPICS_DIR}/{path.name}", "file": str(path)}
         )
     return topics
+
+
+def module_templates(
+    module: Module, folders: dict[str, Path], problems: list[dict[str, object]]
+) -> list[dict[str, object]]:
+    """The document templates a module ships, from its record and its skills' assets."""
+    places = [(module.folder / TEMPLATES_DIR, module.folder, None)]
+    places += [(folders[name] / ASSETS_DIR, folders[name], name) for name in module.skills if name in folders]
+    templates: list[dict[str, object]] = []
+    for place, owner, skill in places:
+        try:
+            found = sorted(place.glob("*.md"))
+        except OSError:
+            continue
+        for path in found:
+            try:
+                meta = frontmatter(read_document(path, owner).decode("utf-8"))
+            except (OSError, ValueError) as error:
+                problems.append(
+                    {"kind": "document", "skill": owner.name, "document": str(path), "problem": f"{path}: {error}"}
+                )
+                continue
+            extends, template = meta.get("extends"), meta.get("template")
+            if not extends and not template:
+                continue
+            listed = [unquote(name.strip()) for name in meta.get("agents", "").strip("[]").split(",") if name.strip()]
+            agents = list(dict.fromkeys([*([skill] if skill else []), *listed]))
+            templates.append(
+                {
+                    "module": module.code,
+                    **({"extends": extends} if extends else {"id": template}),
+                    **({"version": meta["version"]} if meta.get("version") else {}),
+                    "description": meta.get("description", ""),
+                    **({"agents": agents} if agents else {}),
+                }
+            )
+    return sorted(templates, key=lambda item: str(item.get("id") or item.get("extends")))
 
 
 def module_migrations(module: Module, problems: list[dict[str, object]]) -> list[dict[str, object]]:

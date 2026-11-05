@@ -1,6 +1,6 @@
 ---
 name: bmad-prd
-description: Create, update, or validate a PRD. Use when the user wants help producing, editing, or validating a PRD
+description: 'The earlier PRD workflow, kept for comparison with John the Product Manager (bmad-agent-pm), who now coaches PRDs. Use when the user names bmad-prd; otherwise use John.'
 ---
 # BMad PRD
 

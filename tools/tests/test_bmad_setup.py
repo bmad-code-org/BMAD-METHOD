@@ -384,6 +384,21 @@ class BmadSetupTests(unittest.TestCase):
             symlink.assert_not_called()
             self._assert_scripts_identity(project / "_bmad" / "scripts", skill / "scripts")
 
+    def test_setup_leaves_the_skill_tests_out_of_project_scripts(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            write(skill / "scripts" / "tests" / "test_memlog.py")
+            write(project / "_bmad" / "scripts" / "tests" / "test_memlog.py")
+
+            result = run_setup(project, skill)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+
+            self.assertFalse((project / "_bmad" / "scripts" / "tests").exists())
+            self._assert_scripts_identity(project / "_bmad" / "scripts", skill / "scripts")
+            self.assertEqual(status_report(self, project, skill)["shared_scripts"], "current")
+
     def test_already_present_paths_are_left_alone(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

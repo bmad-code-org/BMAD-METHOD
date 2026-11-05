@@ -1,0 +1,142 @@
+[
+  {
+    "query": "hey John, let's write the PRD for the booking app",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to talk to the product manager about requirements for our new onboarding flow",
+    "should_trigger": true
+  },
+  {
+    "query": "John, I just want to prototype a habit tracker for myself this weekend, what do you need from me?",
+    "should_trigger": true
+  },
+  {
+    "query": "help me plan a prototype so we can try the look and feel of the app before committing to anything",
+    "should_trigger": true
+  },
+  {
+    "query": "create a PRD. I have a product brief and three customer interview transcripts in docs/research",
+    "should_trigger": true
+  },
+  {
+    "query": "the pricing model changed since we wrote the PRD last month, the PRD needs to change to match",
+    "should_trigger": true
+  },
+  {
+    "query": "validate this PRD before I hand it to the architects: _bmad-output/initiative-checkout/prd-checkout/prd-checkout.md",
+    "should_trigger": true
+  },
+  {
+    "query": "can you review my PRD and tell me if it's ready for engineering",
+    "should_trigger": true
+  },
+  {
+    "query": "we're building an internal tool for the finance team to reconcile invoices. draft the product requirements, I'll answer questions as we go",
+    "should_trigger": true
+  },
+  {
+    "query": "ask the PM to update the PRD so the mobile journey covers offline mode",
+    "should_trigger": true
+  },
+  {
+    "query": "I need a product requirements document for a CLI that developers will install, enterprise launch, compliance matters",
+    "should_trigger": true
+  },
+  {
+    "query": "John, is this problem even worth pursuing? Support keeps flagging slow refunds and I want a go or no-go before anyone designs a fix",
+    "should_trigger": true
+  },
+  {
+    "query": "finance won't fund the data platform migration until they see the cost and the expected return; help me make the case",
+    "should_trigger": true
+  },
+  {
+    "query": "spec this CSV export feature so I can hand it to a coding agent",
+    "should_trigger": true
+  },
+  {
+    "query": "we run six-week cycles; get the new search ready for the betting table",
+    "should_trigger": true
+  },
+  {
+    "query": "marketing, sales and support all need to be ready for the mobile app release in March; who does what and when",
+    "should_trigger": true
+  },
+  {
+    "query": "our three payments initiatives need one mandate, a sponsor and governance before the next planning round",
+    "should_trigger": true
+  },
+  {
+    "query": "we're a medical device company and need a requirements specification the auditors can trace",
+    "should_trigger": true
+  },
+  {
+    "query": "distill this PRD into the initiative's requirements",
+    "should_trigger": false
+  },
+  {
+    "query": "slice the PRD's epics into stories we can start building",
+    "should_trigger": false
+  },
+  {
+    "query": "write a one-page product brief for the booking app, I don't need a full PRD",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm not sure this product should exist at all, help me pressure-test it with a press release first",
+    "should_trigger": false
+  },
+  {
+    "query": "create the architecture from the initiative file",
+    "should_trigger": false
+  },
+  {
+    "query": "the PRD says we need SSO; build the SSO login story",
+    "should_trigger": false
+  },
+  {
+    "query": "help me brainstorm names and positioning for the product",
+    "should_trigger": false
+  },
+  {
+    "query": "design the UX for the checkout flow, I want DESIGN.md and EXPERIENCE.md",
+    "should_trigger": false
+  },
+  {
+    "query": "what does PRD stand for and how is it different from a spec?",
+    "should_trigger": false
+  },
+  {
+    "query": "write a blameless postmortem for last night's outage",
+    "should_trigger": false
+  },
+  {
+    "query": "record this decision as an ADR: we're moving from REST to gRPC",
+    "should_trigger": false
+  },
+  {
+    "query": "make a pitch deck for our seed round",
+    "should_trigger": false
+  },
+  {
+    "query": "write a grant proposal for the city arts fund",
+    "should_trigger": false
+  },
+  {
+    "query": "create a spec for the checkout epic so it's ready for stories",
+    "should_trigger": false
+  },
+  {
+    "query": "our client needs a business requirements document signed before the vendor starts, can you write the BRD?",
+    "should_trigger": true
+  },
+  {
+    "query": "plan an experiment to see whether a shorter signup form lifts activation",
+    "should_trigger": true
+  },
+  {
+    "query": "analyze the results of last week's A/B test export in this csv",
+    "should_trigger": false
+  }
+]
