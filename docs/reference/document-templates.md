@@ -5,20 +5,22 @@ sidebar:
   order: 2
 ---
 
-Use this page to find a shipped template to copy, or to see how a template does something you want. The shipped templates are in the `doc-templates/` folder of the `bmod-core-tools` record in your skills folder.
+Use this page to find a shipped template to copy, or to see how a template does something you want. Modules ship them, each in the `doc-templates/` folder of its record in your skills folder: `bmod-method`, `bmod-founder` or `bmod-cis`.
 
 To use one as a starting point, copy it into `_bmad/custom/facilitate-templates/`, keep or change its `template:` id, and edit the copy. [Write a Document Template](../customize/write-a-document-template.md) covers the file format.
 
 ## Shipped templates
 
-| Template | Use it for |
-| --- | --- |
-| `decision-record` | Recording a choice, the alternatives and what it costs |
-| `postmortem` | Learning from something that went wrong, without blame |
-| `proposal` | Asking for money, time or approval |
-| `security-review` | Checking a system against the OWASP Top 10 or STRIDE |
-| `pitch-deck` | A talk or pitch with slides |
-| `character` | A fictional character for a story, game or campaign, on a one-page sheet |
+| Template | Module | Use it for |
+| --- | --- | --- |
+| `decision-record` | BMad Method | Recording a choice, the alternatives and what it costs |
+| `postmortem` | BMad Method | Learning from something that went wrong, without blame |
+| `security-review` | BMad Method | Checking a system against the OWASP Top 10 or STRIDE |
+| `proposal` | Founder | Asking for money, time or approval |
+| `pitch-deck` | Founder | A talk or pitch with slides |
+| `character` | Creative Intelligence Suite | A fictional character for a story, game or campaign, on a one-page sheet |
+
+The BMad Method also ships John's planning templates and `brd`; see [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md).
 
 ## What a template can do
 

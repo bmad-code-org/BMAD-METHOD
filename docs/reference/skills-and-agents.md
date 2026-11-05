@@ -147,7 +147,7 @@ Pressure-tests a half-formed idea in a questioning conversation, one question at
 
 ### bmad-facilitate
 
-Coaches you through one document from a template library, then updates or validates it. It reads your inputs, asks only what you alone know, reviews the draft against a rubric, and polishes it. Rigor follows the stakes you state. Five general templates ship: `decision-record`, `postmortem`, `proposal`, `security-review`, and `pitch-deck`. Your team can add its own, replace a shipped one, or add rules to one; see [Write a Document Template](../customize/write-a-document-template.md). Planning documents such as PRDs and product briefs belong to John (`bmad-agent-pm`).
+Coaches you through one document from a template library, then updates or validates it. It reads your inputs, asks only what you alone know, reviews the draft against a rubric, and polishes it. Rigor follows the stakes you state. It ships no templates itself; modules do. The BMad Method adds `decision-record`, `postmortem` and `security-review`, the Founder module adds `proposal` and `pitch-deck`, and the Creative Intelligence Suite adds `character`. Your team can add its own, replace a shipped one, or add rules to one; see [Write a Document Template](../customize/write-a-document-template.md). Planning documents such as PRDs and product briefs belong to John (`bmad-agent-pm`).
 
 **Output:** `<id>-<slug>.md` with a `.memlog.md` and review files in its own folder, any companion files the template asks for, and an optional HTML view, which a pitch deck renders as slides.
 

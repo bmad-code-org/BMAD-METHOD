@@ -87,7 +87,7 @@ A template overrides the skill, so a remote library can direct an agent that has
 
 ## Ship templates in a module
 
-A module adds templates by putting them in `doc-templates/` in its record folder, the folder holding its `bmod.toml`, with any rubric or catalog beside them. They are offered once the module is installed, with no setting, and they update with the module. The shipped examples live this way in `bmod-core-tools`.
+A module adds templates by putting them in `doc-templates/` in its record folder, the folder holding its `bmod.toml`, with any rubric or catalog beside them. They are offered once the module is installed, with no setting, and they update with the module. The shipped templates live this way in `bmod-method`, `bmod-founder` and `bmod-cis`.
 
 An organization can keep its templates in its own modules, one per program if it likes, such as `bmod-fernhollow-cards`. A module should add new ids or extend existing ones, because an extension applies wherever it sits. To replace an id outright, use a project's folder, which is searched first.
 

@@ -12,16 +12,20 @@ It coaches the user through one document from a template, and later updates or v
 - Unfinished runs resume.
 - With no fitting template it builds a structure for the document type, says so, and at close offers to save it as a template.
 
-## Shipped templates
+## Templates the modules ship
 
-| id | Recommend when |
-|---|---|
-| `decision-record` | Any decision worth recording: context, options, choice, consequences. |
-| `postmortem` | Something went wrong and the team needs causes and actions, blamelessly. The timeline is drawn as a diagram, and it also writes a customer notice when customers were told. |
-| `proposal` | Asking for money, time or approval: a grant, a bid, an internal request. The reader's own guidelines replace its headings. |
-| `security-review` | Reviewing a system against the OWASP Top 10 or STRIDE. The standard's items drive the questions; another standard needs its rows added to the catalog first. |
-| `pitch-deck` | A talk or pitch that needs a story and slides. It always renders as an HTML slide view unless the team turned views off. |
-| `character` | A fictional character for a story, game or campaign. The coach proposes options, and each character gets its own one-page HTML sheet unless the team turned views off. |
+Core tools ships no templates. Each module's templates are in `templates` in `knowledge.py`'s output once it is installed, so recommend a module when the user wants one it holds:
+
+| id | Module | Recommend when |
+|---|---|---|
+| `decision-record` | Method | Any decision worth recording: context, options, choice, consequences. |
+| `postmortem` | Method | Something went wrong and the team needs causes and actions, blamelessly. The timeline is drawn as a diagram, and it also writes a customer notice when customers were told. |
+| `security-review` | Method | Reviewing a system against the OWASP Top 10 or STRIDE. The standard's items drive the questions; another standard needs its rows added to the catalog first. |
+| `proposal` | Founder | Asking for money, time or approval: a grant, a bid, an internal request. The reader's own guidelines replace its headings. |
+| `pitch-deck` | Founder | A talk or pitch that needs a story and slides. It always renders as an HTML slide view unless the team turned views off. |
+| `character` | Creative Intelligence Suite | A fictional character for a story, game or campaign. The coach proposes options, and each character gets its own one-page HTML sheet unless the team turned views off. |
+
+Method also ships John's planning templates and `brd`, which Method's own help covers.
 
 ## Listing what it can coach
 
@@ -40,7 +44,7 @@ The user says what they want in plain words: the topic, a template (an id, a fil
 Templates are files in `_bmad/custom/facilitate-templates/`. For settings, recommend `bmad-customize` on `bmad-facilitate`; the team file `_bmad/custom/bmad-facilitate.toml` is committed so everyone gets it.
 
 - Add a template: a file in that folder with `template` and `description` in its frontmatter, and any rubric beside it. A `companions` comment asks for more files beside the document. A plain markdown file of headings works; each heading becomes a required section. A bare `## Table of Contents` heading after the title makes the skill fill and check one.
-- Replace or edit a shipped template: copy it from `doc-templates/` in the `bmod-core-tools` record into that folder and keep its `template` id. The project's copy wins.
+- Replace or edit a shipped template: copy it from `doc-templates/` in the record of the module that ships it into that folder and keep its `template` id. The project's copy wins.
 - A module adds templates through `doc-templates/` in its record folder; no setting is needed. An `agents:` frontmatter list names the skills that run one, so help can say who offers it.
 - Keep personal templates for every project in `~/.bmad/facilitate-templates/`. The project's folder is searched first.
 - Use a shared library: add a folder or a pinned GitHub URL to `template_libraries`, in the `.user.toml` when it is private. Only sources the team controls, because a template overrides the skill.
