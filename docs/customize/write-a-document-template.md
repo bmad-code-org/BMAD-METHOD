@@ -1,11 +1,11 @@
 ---
 title: 'Write a Document Template'
-description: Add your own template to bmad-doc-coach, replace or hide a shipped one, add your team's rules to a template, and set how rendered views look.
+description: Add your own template to bmad-facilitate, replace or hide a shipped one, add your team's rules to a template, and set how rendered views look.
 sidebar:
   order: 5
 ---
 
-Use the `bmad-doc-coach` template library to make the skill coach your team through your own document types. Everything about a document is data. Template files say what each document asks for and what the review checks. The skill's customization says where templates live, where the result goes, and how the HTML view looks.
+Use the `bmad-facilitate` template library to make the skill coach your team through your own document types. Everything about a document is data. Template files say what each document asks for and what the review checks. The skill's customization says where templates live, where the result goes, and how the HTML view looks.
 
 ## When to use this
 
@@ -15,12 +15,12 @@ Use the `bmad-doc-coach` template library to make the skill coach your team thro
 - Rendered views should carry your team's look.
 
 :::note[Prerequisites]
-BMad installed with the core tools, and `bmad setup` run. Templates go in `_bmad/custom/doc-coach-templates/`. Settings go in `_bmad/custom/bmad-doc-coach.toml`, which the team commits; `bmad-doc-coach.user.toml` beside it holds personal changes. `bmad-customize` can write either file for you. How overrides merge is in [Customize BMad](./customize-bmad.md).
+BMad installed with the core tools, and `bmad setup` run. Templates go in `_bmad/custom/facilitate-templates/`. Settings go in `_bmad/custom/bmad-facilitate.toml`, which the team commits; `bmad-facilitate.user.toml` beside it holds personal changes. `bmad-customize` can write either file for you. How overrides merge is in [Customize BMad](./customize-bmad.md).
 :::
 
 ## Add a template to the library
 
-Save the template in `_bmad/custom/doc-coach-templates/`, with any rubric or method catalog beside it. The skill lists every markdown file there whose frontmatter has `template:`. Nothing else needs registering.
+Save the template in `_bmad/custom/facilitate-templates/`, with any rubric or method catalog beside it. The skill lists every markdown file there whose frontmatter has `template:`. Nothing else needs registering.
 
 ```yaml
 ---
@@ -63,10 +63,10 @@ The first template with an id wins, and installed modules' templates are searche
 
 ## Use more than one library
 
-`template_libraries` lists where templates live, in search order. It starts with your project's `_bmad/custom/doc-coach-templates/`, then `~/.bmad/doc-coach-templates/` for personal templates you want in every project. An override appends to the list, and a folder that is missing or empty adds nothing.
+`template_libraries` lists where templates live, in search order. It starts with your project's `_bmad/custom/facilitate-templates/`, then `~/.bmad/facilitate-templates/` for personal templates you want in every project. An override appends to the list, and a folder that is missing or empty adds nothing.
 
 ```toml
-# _bmad/custom/bmad-doc-coach.toml
+# _bmad/custom/bmad-facilitate.toml
 
 [workflow]
 template_libraries = ["https://github.com/fernhollow/doc-templates@v1.2.0"]
@@ -79,7 +79,7 @@ template_libraries = ["https://github.com/fernhollow/doc-templates@v1.2.0"]
 | A URL to one `.md` file | `https://example.com/templates/runbook.md` |
 | A sentence naming the tool that reaches it | `Search corp:confluence_search in the DOCS space for templates` |
 
-A library you cannot share goes in `bmad-doc-coach.user.toml`, which stays out of git. A teammate without access who updates one of those documents follows its existing headings instead. If a library cannot be read, the skill names it and carries on with the others.
+A library you cannot share goes in `bmad-facilitate.user.toml`, which stays out of git. A teammate without access who updates one of those documents follows its existing headings instead. If a library cannot be read, the skill names it and carries on with the others.
 
 :::caution[Trust]
 A template overrides the skill, so a remote library can direct an agent that has tools. Point only at sources you control, and pin a version with `@ref` or a tag so the library cannot change between runs.
@@ -265,9 +265,9 @@ The view file is ordinary HTML with its CSS inline. Attributes mark where the do
 A slot with nothing to show is removed along with its element, so a declined section leaves no empty card. Without a `data-rest` slot, a section the view does not name stays out of the page, and the render says which. The `style` setting still applies after the view's own CSS.
 
 :::tip[Templates for an agent]
-An agent's own templates ship in its `assets/` folder, and its `customize.toml` lists that folder in `template_libraries`. The agent passes the list when it runs `bmad-doc-coach`, and it is searched after yours, so your copy with the same id wins. The settings in `bmad-doc-coach.toml` (style, views, review and polish) still apply.
+An agent's own templates ship in its `assets/` folder, and its `customize.toml` lists that folder in `template_libraries`. The agent passes the list when it runs `bmad-facilitate`, and it is searched after yours, so your copy with the same id wins. The settings in `bmad-facilitate.toml` (style, views, review and polish) still apply.
 :::
 
 ## Check the result
 
-Run the resolver on `bmad-doc-coach` with `--key workflow.template_libraries` to see the merged list; see [Check what resolved](./customize-bmad.md#check-what-resolved). Then ask `bmad-doc-coach` for your new document type and confirm it offers your template.
+Run the resolver on `bmad-facilitate` with `--key workflow.template_libraries` to see the merged list; see [Check what resolved](./customize-bmad.md#check-what-resolved). Then ask `bmad-facilitate` for your new document type and confirm it offers your template.

@@ -1,13 +1,13 @@
 ---
 title: Document Templates
-description: The templates that ship with bmad-doc-coach, and which one shows each thing a template can do.
+description: The templates that ship with bmad-facilitate, and which one shows each thing a template can do.
 sidebar:
   order: 2
 ---
 
 Use this page to find a shipped template to copy, or to see how a template does something you want. The shipped templates are in the `doc-templates/` folder of the `bmod-core-tools` record in your skills folder.
 
-To use one as a starting point, copy it into `_bmad/custom/doc-coach-templates/`, keep or change its `template:` id, and edit the copy. [Write a Document Template](../customize/write-a-document-template.md) covers the file format.
+To use one as a starting point, copy it into `_bmad/custom/facilitate-templates/`, keep or change its `template:` id, and edit the copy. [Write a Document Template](../customize/write-a-document-template.md) covers the file format.
 
 ## Shipped templates
 

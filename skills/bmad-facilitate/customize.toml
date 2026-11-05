@@ -1,8 +1,8 @@
 # DO NOT EDIT -- overwritten on every update.
 #
 # Override files:
-#   {project-root}/_bmad/custom/bmad-doc-coach.toml        (team)
-#   {project-root}/_bmad/custom/bmad-doc-coach.user.toml   (personal)
+#   {project-root}/_bmad/custom/bmad-facilitate.toml        (team)
+#   {project-root}/_bmad/custom/bmad-facilitate.user.toml   (personal)
 
 [workflow]
 
@@ -47,8 +47,8 @@ output = "{output_folder}/{active_initiative}/{id}-{slug}"
 # that reaches it. Installed modules' doc-templates/ folders are searched after these. A template
 # overrides this skill, so point only at sources you control.
 template_libraries = [
-  "{project-root}/_bmad/custom/doc-coach-templates",
-  "~/.bmad/doc-coach-templates",
+  "{project-root}/_bmad/custom/facilitate-templates",
+  "~/.bmad/facilitate-templates",
 ]
 
 # A CSS file applied to every rendered view, after the default styles; empty uses the default.

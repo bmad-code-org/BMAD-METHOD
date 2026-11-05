@@ -150,7 +150,7 @@ headings, frontmatter) so the agent adapts to what it finds. When several
 teams share one repository, each can point at its own template from
 `.user.toml` without touching the committed file.
 
-`bmad-doc-coach` reads template libraries instead of one template key: add a file to `_bmad/custom/doc-coach-templates/`, replace a shipped template, or add your rules to one. See [Write a Document Template](./write-a-document-template.md).
+`bmad-facilitate` reads template libraries instead of one template key: add a file to `_bmad/custom/facilitate-templates/`, replace a shipped template, or add your rules to one. See [Write a Document Template](./write-a-document-template.md).
 
 ## Recipe 5: Customize the agent roster
 

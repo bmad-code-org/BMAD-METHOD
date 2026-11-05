@@ -30,7 +30,7 @@ A module's document templates are the markdown files with a `template:` or
 `assets/` folder of each of its skills. Each is listed by id, version and
 short description, never its text, with `agents` when it has any: the skills
 that run it, from its `agents:` frontmatter list and the skill whose assets
-hold it. No agents means anyone reaches it through `bmad-doc-coach`. Templates
+hold it. No agents means anyone reaches it through `bmad-facilitate`. Templates
 a project or user added outside a module are not listed; `list_templates.py`
 reads those.
 
