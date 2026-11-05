@@ -256,13 +256,13 @@ Keep the IDE file short. The model reads it every turn.
 
 ## Recipe 6: Advanced fields
 
-**File and keys:** `_bmad/custom/bmad-doc-coach.toml`, `[workflow] external_sources`,
+**File and keys:** `_bmad/custom/bmad-facilitate.toml`, `[workflow] external_sources`,
 `external_handoffs`, and `doc_standards`; template files in
-`_bmad/custom/doc-coach-templates/`.
+`_bmad/custom/facilitate-templates/`.
 
 Some workflows expose more fields than recipes 1 through 5 use. Check a
 workflow's `customize.toml` to see which of these it has; the examples use
-`bmad-doc-coach`, which runs every document John (`bmad-agent-pm`) writes, so
+`bmad-facilitate`, which runs every document John (`bmad-agent-pm`) writes, so
 its settings apply to his documents too. The same pattern applies wherever a
 field appears.
 
@@ -273,7 +273,7 @@ competitive databases, or compliance references. The agent consults them
 only when the conversation surfaces a matching need, never preemptively.
 
 ```toml
-# _bmad/custom/bmad-doc-coach.toml
+# _bmad/custom/bmad-facilitate.toml
 
 [workflow]
 external_sources = [
@@ -293,7 +293,7 @@ the workflow finalizes. Unlike `on_complete` (recipe 3), it is an append
 array: team entries stack, and each handoff fires independently.
 
 ```toml
-# _bmad/custom/bmad-doc-coach.toml
+# _bmad/custom/bmad-facilitate.toml
 
 [workflow]
 external_handoffs = [
@@ -316,7 +316,7 @@ stack on the workflow's shipped default
 before narrow prose passes.
 
 ```toml
-# _bmad/custom/bmad-doc-coach.toml
+# _bmad/custom/bmad-facilitate.toml
 
 [workflow]
 doc_standards = [
@@ -328,8 +328,8 @@ doc_standards = [
 
 ### Template libraries and extensions
 
-John and `bmad-doc-coach` change templates the same way: put a file in
-`_bmad/custom/doc-coach-templates/`. A new `template:` id adds a template, and a
+John and `bmad-facilitate` change templates the same way: put a file in
+`_bmad/custom/facilitate-templates/`. A new `template:` id adds a template, and a
 shipped id replaces it. To swap in a regulated-industry PRD, save it there with
 `template: prd` and a `rubric:` beside it. A file with `extends:` adds your
 rules without copying the template, so updates to the original still reach you:

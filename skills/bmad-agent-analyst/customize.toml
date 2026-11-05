@@ -100,7 +100,7 @@ skill = "bmad-prfaq"
 [[agent.menu]]
 code = "BD"
 description = "Write, update or validate a business requirements document for work a separate party builds"
-prompt = "Invoke the `bmad-doc-coach` skill with your persona, the intent the user asked for, the template `brd`, and as the next step John (`bmad-agent-pm`) for the `prd` or `srs` that picks up its ids."
+prompt = "Invoke the `bmad-facilitate` skill with your persona, the intent the user asked for, the template `brd`, and as the next step John (`bmad-agent-pm`) for the `prd` or `srs` that picks up its ids."
 
 [[agent.menu]]
 code = "PC"
