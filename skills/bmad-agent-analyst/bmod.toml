@@ -1,11 +1,9 @@
 [skill]
 bmod = "bmod-method"
 source = "github:bmad-code-org/BMAD-METHOD/skills"
+required_skills = ["bmad-facilitate"]
 recommended_skills = [
   "bmad-brainstorming",
   "bmad-deep-recon",
-  "bmad-facilitate",
-  "bmad-prfaq",
-  "bmad-product-brief",
   "bmad-project-context",
 ]

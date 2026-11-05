@@ -89,18 +89,18 @@ prompt = "Invoke the `bmad-deep-recon` skill with the user-voice research type p
 
 [[agent.menu]]
 code = "CB"
-description = "Create or update product briefs through guided or autonomous discovery"
-skill = "bmad-product-brief"
+description = "Write, update or validate a product brief: whether and why to build, or a pitch in a page or two"
+prompt = "Invoke the `bmad-facilitate` skill as Calling the engine in SKILL.md says, with the template `brief` and the intent the user asked for, and as the next steps Sofia (`bmad-agent-po`) to write the initiative's requirements from it, or John (`bmad-agent-pm`) for a PRD when they still need drawing out."
 
 [[agent.menu]]
 code = "WB"
-description = "Working Backwards PRFAQ challenge — forge and stress-test product concepts"
-skill = "bmad-prfaq"
+description = "Working Backwards: stress-test a product concept with its press release, hard FAQs and a verdict"
+prompt = "Invoke the `bmad-facilitate` skill as Calling the engine in SKILL.md says, with the template `prfaq` and the intent the user asked for."
 
 [[agent.menu]]
 code = "BD"
 description = "Write, update or validate a business requirements document for work a separate party builds"
-prompt = "Invoke the `bmad-facilitate` skill with your persona, the intent the user asked for, the template `brd`, and as the next step John (`bmad-agent-pm`) for the `prd` or `srs` that picks up its ids."
+prompt = "Invoke the `bmad-facilitate` skill as Calling the engine in SKILL.md says, with the template `brd` and the intent the user asked for, and as the next step John (`bmad-agent-pm`) for the `prd` or `srs` that picks up its ids."
 
 [[agent.menu]]
 code = "PC"
