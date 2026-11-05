@@ -8,7 +8,8 @@ An id is a token like FR-3, UJ-12 or CAP-4. It is defined where it opens a headi
 row's first cell, or a table cell, list item or line in bold. An unbolded list item or line
 defines it only when punctuation follows (`- FR-3: ...`, `FR-3 (withdrawn)`). An id that opens
 a list of ids (`FR-1, FR-2`, `FR-1 to FR-8`) is not a definition. Every other occurrence is a
-reference, and a range such as `FR-1 to FR-8` references each id in it. Fenced code blocks
+reference, and a range such as `FR-1 to FR-8` references each id in it. A table most of whose
+defining ids were already defined above it, such as a traceability table, only references its ids. Fenced code blocks
 and HTML comments are skipped. Definitions in any listed file count for references in all of
 them, so one file can cite another's.
 
@@ -92,6 +93,11 @@ def opening_id(text: str, *, bold_only: bool = False, needs_separator: bool = Fa
     return m
 
 
+def is_table_row(line: str) -> bool:
+    quote = QUOTE.match(line)
+    return line[quote.end() if quote else 0 :].lstrip().startswith("|")
+
+
 def definition(line: str) -> tuple[int, str, str] | None:
     """(column, id, text after it) for the id a line defines, or None."""
     quote = QUOTE.match(line)
@@ -165,16 +171,35 @@ def scan(files: list[tuple[str, str]]) -> dict:
     referenced: dict[str, list[str]] = defaultdict(list)
     withdrawn: set[str] = set()
     toc: dict = {"missing": {}, "stale": {}, "out_of_order": []}
+    table: list[tuple[str, str, str]] = []
+
+    def close_table() -> None:
+        # A table most of whose ids were defined above it is a reference table, such as traceability.
+        cites = 2 * sum(token in defined for _, token, _ in table) > len(table)
+        for where, token, rest in table:
+            if cites:
+                referenced[token].append(where)
+                continue
+            defined[token].append(where)
+            if WITHDRAWN.match(rest):
+                withdrawn.add(token)
+        table.clear()
+
     for name, text in files:
         check_toc(name, text, toc)
         for number, line in enumerate(prose_lines(text), 1):
             where = f"{name}:{number}"
+            if table and not is_table_row(line):
+                close_table()
             found = definition(line)
             if found:
                 column, token, rest = found
-                defined[token].append(where)
-                if WITHDRAWN.match(rest):
-                    withdrawn.add(token)
+                if is_table_row(line):
+                    table.append((where, token, rest))
+                else:
+                    defined[token].append(where)
+                    if WITHDRAWN.match(rest):
+                        withdrawn.add(token)
             for m in TOKEN.finditer(line):
                 if not (found and m.start() == found[0]):
                     referenced[m.group(0)].append(where)
@@ -183,6 +208,7 @@ def scan(files: list[tuple[str, str]]) -> dict:
                 if prefix == other and 0 < high - low <= MAX_RANGE:
                     for n in range(low + 1, high):
                         referenced[f"{prefix}-{n}"].append(where)
+        close_table()
 
     prefixes = {split_id(token)[0] for token in defined}
     undefined, unknown = {}, {}

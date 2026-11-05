@@ -119,6 +119,21 @@ def test_duplicate_definitions_across_files():
     assert result["duplicate"] == {"FR-1": ["doc0.md:1", "doc1.md:1"]}
 
 
+def test_traceability_table_references_ids_defined_above_it():
+    text = (
+        "## Business requirements\n\n| Id | Requirement |\n|---|---|\n| BR-1 | a |\n| BR-2 | b |\n\n"
+        "## Traceability\n\n| Id | PRD line | Test |\n|---|---|---|\n| BR-1 | | |\n| BR-2 | | |\n| BR-3 | | |\n"
+    )
+    result = report(text)
+    assert result["duplicate"] == {}
+    assert result["undefined"] == {"BR-3": ["doc0.md:14"]}
+
+
+def test_duplicate_row_in_a_defining_table_still_found():
+    text = "| Id | Requirement |\n|---|---|\n| BR-1 | a |\n| BR-2 | b |\n\n| Id | Again |\n|---|---|\n| BR-2 | c |\n| BR-4 | d |\n"
+    assert report(text)["duplicate"] == {"BR-2": ["doc0.md:4", "doc0.md:8"]}
+
+
 def test_references_to_withdrawn_items():
     text = "- **OQ-7.** Withdrawn: met by FR-1.\n- **OQ-8.** Open.\n- **FR-1**: a (OQ-7, OQ-8)\n"
     assert report(text)["withdrawn"] == {"OQ-7": ["doc0.md:3"]}
