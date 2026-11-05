@@ -49,7 +49,7 @@ The BMad Method module installs six named agents. Load one with its skill ID, th
 
 | Agent                  | Skill ID                 | Codes                                                              | Menu                                                                                                                                                                 |
 | ---------------------- | ------------------------ | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Analyst (Mary)         | `bmad-agent-analyst`     | `BP`, `MR`, `DR`, `TR`, `TS`, `CR`, `UV`, `CB`, `WB`, `PC`         | Brainstorm; market, domain, and technical research; technology selection; competitive teardown; user-voice research; product brief; PRFAQ challenge; project context |
+| Analyst (Mary)         | `bmad-agent-analyst`     | `BP`, `MR`, `DR`, `TR`, `TS`, `CR`, `UV`, `CB`, `WB`, `BD`, `PC`   | Brainstorm; market, domain, and technical research; technology selection; competitive teardown; user-voice research; product brief; PRFAQ challenge; business requirements document; project context |
 | Product Manager (John) | `bmad-agent-pm`          | `CREATE`, `VALIDATE`                                               | Create or update a brief, PRD, or one of ten more planning documents; validate one into review findings                                                            |
 | Product Owner (Sofia)  | `bmad-agent-po`          | `SPEC`, `TICKETS`, `REFINE`, `BOARD`, `VALIDATE`, `REPLAN`, `STORE` | Requirements from a PRD, brief, or notes into a ticket; slice an initiative or epic; refine a ticket; the board; validation; replan a mid-flight change; tracker setup |
 | Architect (Winston)    | `bmad-agent-architect`   | `CA`                                                               | Architecture spine                                                                                                                                                   |
@@ -120,7 +120,7 @@ The two editorial lenses hold content sacrosanct: they critique only how a docum
 **Input:** the content (a diff, branch, uncommitted changes, file, or document) and optionally the lenses to run. **Output:** findings grouped by lens, as JSON, markdown, or both.
 
 :::note[Who runs it]
-`bmad-retrospective` runs the code lenses over a completed epic's diff. The product brief, PRD, UX, and architecture skills run the editorial lenses at their finalize step. `bmad-build` and `bmad-code-review` use their own reviewer layers; see [Review a Change](../build/review-a-change.md).
+`bmad-retrospective` runs the code lenses over a completed epic's diff. `bmad-facilitate`, which runs John's and Mary's documents, and the UX and architecture skills run the editorial lenses at their finalize step. `bmad-build` and `bmad-code-review` use their own reviewer layers; see [Review a Change](../build/review-a-change.md).
 :::
 
 ### bmad-customize
@@ -147,7 +147,7 @@ Pressure-tests a half-formed idea in a questioning conversation, one question at
 
 ### bmad-facilitate
 
-Coaches you through one document from a template library, then updates or validates it. It reads your inputs, asks only what you alone know, reviews the draft against a rubric, and polishes it. Rigor follows the stakes you state. It ships no templates itself; modules do. The BMad Method adds `decision-record`, `postmortem` and `security-review`, the Founder module adds `proposal` and `pitch-deck`, and the Creative Intelligence Suite adds `character` from its 0.4.0 release. Your team can add its own, replace a shipped one, or add rules to one; see [Write a Document Template](../customize/write-a-document-template.md). Planning documents such as PRDs and product briefs belong to John (`bmad-agent-pm`).
+Coaches you through one document from a template library, then updates or validates it. It reads your inputs, asks only what you alone know, reviews the draft against a rubric, and polishes it. Rigor follows the stakes you state. It ships no templates itself; modules do. The BMad Method adds `decision-record`, `postmortem` and `security-review`, the Founder module adds `proposal` and `pitch-deck`, and the Creative Intelligence Suite adds `character` from its 0.4.0 release. Your team can add its own, replace a shipped one, or add rules to one; see [Write a Document Template](../customize/write-a-document-template.md). Planning documents such as PRDs and product briefs belong to John (`bmad-agent-pm`), and the PRFAQ to Mary (`bmad-agent-analyst`).
 
 **Output:** `<id>-<slug>.md` with a `.memlog.md` and review files in its own folder, any companion files the template asks for, and an optional HTML view, which a pitch deck renders as slides.
 
@@ -182,9 +182,6 @@ The BMad Method module adds the six agents above and these workflow skills. The 
 
 | Skill                           | Purpose                                                                                           | See                                                                                                    |
 | ------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `bmad-product-brief`            | Create, update, or validate a product brief; kept for comparison with John and will be retired     | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
-| `bmad-prfaq`                    | Stress-test a product concept with the Working Backwards PRFAQ method                             | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
-| `bmad-prd`                      | Create, update, or validate a PRD; kept for comparison with John and will be retired              | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
 | `bmad-agent-pm`                 | John, the Product Manager: create, update, or validate a brief, PRD, or another planning document | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
 | `bmad-ux`                       | Capture the UX vision as `DESIGN.md` and `EXPERIENCE.md`                                          | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
 | `bmad-architecture`             | Record the architecture decisions that keep separately built parts consistent                     | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |

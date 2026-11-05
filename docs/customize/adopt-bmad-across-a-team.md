@@ -22,8 +22,8 @@ mechanics; it shows what to write.
 
 :::tip[Applying these recipes]
 Run the `bmad-customize` skill and describe the intent; it writes the
-override file for recipes 1 through 4 and 6 and verifies the merge. Recipe
-5, the agent roster in central config, is hand-authored.
+override file for recipes 1 through 3 and 6 and verifies the merge. Recipe
+4 is a template file you copy and edit; recipe 5, the agent roster in central config, is hand-authored.
 :::
 
 Every per-skill recipe has a team form and a personal form. `bmad-agent-dev.toml`
@@ -55,34 +55,40 @@ persistent_facts = [
 
 ## Recipe 2: Enforce conventions inside one workflow
 
-**File and key:** `_bmad/custom/bmad-product-brief.toml`, `[workflow] persistent_facts`.
+**File and key:** `_bmad/custom/bmad-facilitate.toml`, `[workflow] persistent_facts`; for one document type, a file in `_bmad/custom/facilitate-templates/` that extends its template.
 
-Use this when the rule shapes the content of one workflow's output — for
-compliance, audit, or a downstream consumer — and should not follow the
-agent into other work. A `file:` entry loads a conventions document you
-already maintain.
+Use this when the rule shapes the content of a workflow's output — for compliance, audit, or a downstream consumer — and should not follow the agent into other work. `bmad-facilitate` runs every document John (`bmad-agent-pm`) and Mary (`bmad-agent-analyst`) write, so a fact on it reaches all of them; a `file:` entry loads a conventions document you already maintain.
 
-**Example:** every product brief carries compliance fields and follows the
-organization's publishing conventions.
+**Example:** every planning document follows the organization's publishing conventions.
 
 ```toml
-# _bmad/custom/bmad-product-brief.toml
+# _bmad/custom/bmad-facilitate.toml
 
 [workflow]
 
 persistent_facts = [
-  "Every brief must include an 'Owner' field, a 'Target Release' field, and a 'Security Review Status' field.",
-  "Non-commercial briefs (internal tools, research projects) must still include a user-value section, but can omit market differentiation.",
-  "file:{project-root}/docs/enterprise/brief-publishing-conventions.md",
+  "file:{project-root}/docs/enterprise/publishing-conventions.md",
 ]
 ```
 
-The facts load before the workflow drafts, so the required fields are
-known in time.
+The facts load before the engine drafts, so the conventions are known in time.
+
+A rule for one document type goes in an extension of its template, so it does not reach the others. Every product brief carries compliance fields:
+
+```markdown
+---
+extends: brief
+---
+
+<!-- inputs: The owner, the target release and the security review status; only the user knows them. -->
+
+## Compliance
+<!-- required, after Scope. Owner, target release and security review status. -->
+```
 
 ## Recipe 3: Publish completed output to external systems
 
-**File and key:** `_bmad/custom/bmad-product-brief.toml`, `[workflow] on_complete`.
+**File and key:** `_bmad/custom/bmad-facilitate.toml`, `[workflow] on_complete`.
 
 Use this to send finished output to an external system (Confluence, Notion,
 SharePoint) and open follow-up work (Jira, Linear, Asana). `on_complete` is
@@ -90,34 +96,34 @@ the right hook because it runs exactly once, after the workflow's output is
 written; `activation_steps_append` runs on every activation, before the
 work starts.
 
-**Example:** briefs publish to Confluence and offer an optional Jira epic.
+**Example:** planning documents publish to Confluence and offer an optional Jira epic.
 
 ```toml
-# _bmad/custom/bmad-product-brief.toml
+# _bmad/custom/bmad-facilitate.toml
 
 [workflow]
 
 on_complete = """
 Publish and offer follow-up:
 
-1. Read the finalized brief file path from the prior step.
+1. Read the finalized document's file path from the prior step.
 2. Call `mcp__atlassian__confluence_create_page` with:
    - space: "PRODUCT"
-   - parent: "Product Briefs"
-   - title: the brief's title
-   - body: the brief's markdown contents
+   - parent: "Planning"
+   - title: the document's title
+   - body: the document's markdown contents
    Capture the returned page URL.
-3. Tell the user: "Brief published to Confluence: <url>".
-4. Ask: "Want me to open a Jira epic for this brief now?"
+3. Tell the user: "Published to Confluence: <url>".
+4. Ask: "Want me to open a Jira epic for this now?"
 5. If yes, call `mcp__atlassian__jira_create_issue` with:
    - type: "Epic"
    - project: "PROD"
-   - summary: the brief's title
+   - summary: the document's title
    - description: a short summary plus a link back to the Confluence page.
    Report the epic key and URL.
 6. If no, exit cleanly.
 
-If either MCP tool fails, report the failure, print the brief path,
+If either MCP tool fails, report the failure, print the document's path,
 and ask the user to publish manually.
 """
 ```
@@ -129,28 +135,25 @@ the output.
 
 ## Recipe 4: Swap in your own output template
 
-**File and key:** `_bmad/custom/bmad-product-brief.toml`, `[workflow] brief_template`.
+**File:** a template in `_bmad/custom/facilitate-templates/` with the shipped template's id.
 
-Use this when the shipped structure does not match the format your
-organization expects. The workflow ships `brief_template = "assets/brief-template.md"`,
-a path relative to the skill; your override points at a file under
-`{project-root}`, and the agent reads yours instead.
+Use this when the shipped structure does not match the format your organization expects. `bmad-facilitate` searches that folder first and the installed modules last, so a file there with the same `template:` id replaces the shipped one for John, Mary and anyone who calls the engine directly.
 
-```toml
-# _bmad/custom/bmad-product-brief.toml
+Copy the shipped brief from `bmod-method/doc-templates/template-brief.md` in your skills folder, keep `template: brief`, and edit the copy:
 
-[workflow]
-brief_template = "{project-root}/docs/enterprise/brief-template.md"
+```markdown
+---
+title: ""
+template: brief
+version: 1.0.0
+description: "Deciding whether and why to build, in the format the steering committee reads."
+status: draft
+created: ""
+updated: ""
+---
 ```
 
-Keep templates under `{project-root}/docs/` or
-`{project-root}/_bmad/custom/templates/` so they version alongside the
-override file, and keep the shipped template's conventions (section
-headings, frontmatter) so the agent adapts to what it finds. When several
-teams share one repository, each can point at its own template from
-`.user.toml` without touching the committed file.
-
-John (`bmad-agent-pm`), who now writes briefs, and `bmad-facilitate` read template libraries instead of one template key: add a file to `_bmad/custom/facilitate-templates/`, replace a shipped template, or extend one. See recipe 6 and [Write a Document Template](./write-a-document-template.md).
+The folder versions alongside the override files. When several teams share one repository, each can add its own folder to `template_libraries` from `bmad-facilitate.user.toml` without touching the committed file. To add rules without copying the template, extend it instead (recipe 2). See [Write a Document Template](./write-a-document-template.md).
 
 ## Recipe 5: Customize the agent roster
 
@@ -351,30 +354,29 @@ The template file format and extensions are in
 ## Combining recipes
 
 All six recipes compose. One workflow file can set `persistent_facts`
-(recipe 2), `on_complete` (recipe 3), and `brief_template` (recipe 4); the
+(recipe 2) and `on_complete` (recipe 3), with your template beside it in `facilitate-templates/` (recipe 4); the
 agent-wide rule (recipe 1) lives in a separate file under the agent's
 name; central config (recipe 5) pins the roster and shared paths; advanced
 fields (recipe 6) add sources and handoffs. Every layer applies.
 
 ```toml
-# _bmad/custom/bmad-product-brief.toml (workflow)
+# _bmad/custom/bmad-facilitate.toml (workflow)
 
 [workflow]
 persistent_facts = ["..."]
-brief_template = "{project-root}/docs/enterprise/brief-template.md"
 on_complete = """ ... """
 ```
 
 ```toml
-# _bmad/custom/bmad-agent-analyst.toml (agent — Mary dispatches product-brief)
+# _bmad/custom/bmad-agent-analyst.toml (agent — Mary dispatches the brief)
 
 [agent]
 persistent_facts = ["Always include a 'Regulatory Review' section when the domain involves healthcare, finance, or children's data."]
 ```
 
 Mary loads the regulatory-review rule when she activates. When the user
-picks the product-brief menu item, the workflow adds its own conventions,
-writes to the enterprise template, and publishes to Confluence on
+asks her for a brief, the engine adds your conventions,
+writes to your template, and publishes to Confluence on
 completion. For planning with several people or teams, see
 [Plan Inside an Organization](../plan/plan-inside-an-organization.md).
 

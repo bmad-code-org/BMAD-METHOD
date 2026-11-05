@@ -20,7 +20,7 @@ To use one as a starting point, copy it into `_bmad/custom/facilitate-templates/
 | `pitch-deck` | Founder | A talk or pitch with slides |
 | `character` | Creative Intelligence Suite 0.4.0 and later | A fictional character for a story, game or campaign, on a one-page sheet |
 
-The BMad Method also ships John's planning templates and `brd`; see [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md).
+The BMad Method also ships the planning templates John (`bmad-agent-pm`) and Mary (`bmad-agent-analyst`) run, `brief`, `prfaq` and `brd` among them; see [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md).
 
 ## What a template can do
 

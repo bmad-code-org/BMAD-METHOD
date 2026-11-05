@@ -99,7 +99,7 @@ and each is a valid result:
 | **Clearer**  | You understand the idea better, but there is nothing to hand off. The session log is the record.                                             |
 
 `forge-<slug>.md` should be short enough to feed Sofia, John, or
-`bmad-prfaq`. If it reads like a document, it is too long.
+Mary's PRFAQ. If it reads like a document, it is too long.
 
 :::note[Example]
 **You:** "I want AI-generated weekly summaries in the app. Users get a digest email every Monday."

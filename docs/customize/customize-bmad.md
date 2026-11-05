@@ -194,7 +194,7 @@ persistent_facts = [
 ## Customize a workflow
 
 Workflows — skills that drive a multi-step process, such as
-`bmad-product-brief` — use the same files and rules. Their surface lives
+`bmad-facilitate` — use the same files and rules. Their surface lives
 under `[workflow]`. The baseline fields every customizable workflow
 exposes are the same hooks and facts as agents plus `on_complete`. For
 workflows, a `persistent_facts` entry is a literal sentence, a `file:`
@@ -203,7 +203,7 @@ knowledge. `on_complete` is a string, or an array of instructions run in
 order, that runs once the workflow finishes its main output:
 
 ```toml
-# _bmad/custom/bmad-product-brief.toml
+# _bmad/custom/bmad-facilitate.toml
 
 [workflow]
 activation_steps_prepend = [
@@ -211,11 +211,11 @@ activation_steps_prepend = [
 ]
 
 persistent_facts = [
-  "All briefs must include an explicit regulatory-risk section.",
-  "file:{project-root}/docs/compliance/product-brief-checklist.md",
+  "Every planning document names its regulatory risks.",
+  "file:{project-root}/docs/compliance/document-checklist.md",
 ]
 
-on_complete = "Summarize the brief in three bullets and offer to email it via the gws-gmail-send skill."
+on_complete = "Summarize the document in three bullets and offer to email it via the gws-gmail-send skill."
 ```
 
 Individual workflows add fields on top — output paths, templates, toggles —
