@@ -280,6 +280,23 @@ covers = ["R2", "R3"]
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("# Café ✓ menu", (tk(self.epic) / "story-cafe-menu.md").read_text(encoding="utf-8"))
 
+    def test_titles_in_other_scripts_are_transliterated_into_the_file_name(self):
+        titles = ["Скан камерой Android", "Ελληνικά άλφα", "Straße Łódź", "Їжак щукою", "日本語"]
+        self.breakdown_epic(
+            "".join(f'[[entry]]\nid = {n}\ntype = "story"\ntitle = "{t}"\n\n' for n, t in enumerate(titles, 1))
+        )
+        files = [json.loads(run("pull", str(self.epic), str(n)).stdout)["file"] for n in range(1, len(titles) + 1)]
+        self.assertEqual(
+            files,
+            [
+                "story-skan-kameroy-android.md",
+                "story-ellinika-alfa.md",
+                "story-strasse-lodz.md",
+                "story-yizhak-shchukoyu.md",
+                "story-untitled.md",
+            ],
+        )
+
     def test_titles_that_slug_alike_get_their_own_file_and_plan(self):
         self.breakdown_epic(
             '[[entry]]\nid = 1\ntype = "story"\ntitle = "Café menu"\n\n'
