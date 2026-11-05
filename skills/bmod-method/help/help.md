@@ -20,7 +20,7 @@ This document should be enough to route the user and say what to do next. Each t
 
 | Topic file | Read when the user asks about |
 |---|---|
-| `help/analysis-skills.md` | `bmad-product-brief` or `bmad-prfaq` in depth: what each gives, when to pick it, when not to, how they relate. |
+| `help/analysis-skills.md` | The brief or the PRFAQ from Mary (`bmad-agent-analyst`) in depth: what each gives, when to pick it, when not to, how they relate. |
 | `help/planning-skills.md` | `bmad-agent-po` (Sofia), `bmad-agent-pm` (John) and his planning documents, `bmad-ux`, `bmad-architecture` in depth, and customizing John's templates. |
 | `help/implementation-skills.md` | `bmad-build` or `bmad-build-auto` in depth. |
 | `help/validation-skills.md` | `bmad-code-review`, `bmad-walkthrough`, `bmad-qa-generate-e2e-tests`, or `bmad-retrospective` in depth. |
@@ -50,7 +50,7 @@ flowchart TD
     C -->|no| D{"Work the idea out before it becomes the spec?<br/>the user wants to, or cannot yet say what it is"}
     D -->|no| S1["Talk to Sofia the Product Owner to write the initiative from what exists: a PRD, UX, a brief, notes, an idea explained<br/>sources (what the Requirements derive from) and companions (what downstream reads beside the ticket) go in the frontmatter"]
     D -->|cannot name a customer or problem| E1["bmad-forge-idea, bmad-brainstorming"]
-    D -->|unsure it is worth building| E2["bmad-prfaq, or a prototype"]
+    D -->|unsure it is worth building| E2["A PRFAQ from Mary the Business Analyst, or a prototype"]
     D -->|wants it written down, shareable| E3["Talk to John the Product Manager for a brief"]
     D -->|needs real detail, stakeholders, compliance, integrations| E4["Talk to John the Product Manager to create the PRD"]
     D -->|thinks in screens and flows| E5["bmad-ux"]
@@ -99,6 +99,7 @@ Situations the diagram does not settle.
 |---|---|---|
 | "Create a spec", "write the initiative", "distill this PRD", "slice this", "tickets", "what's ready", "where are we", "this changed, what now", "ask Sofia", "the product owner" | Talk to Sofia the Product Owner (`bmad-agent-po`) to do what the phrase says | Each phrase dispatches to one of her capabilities (SPEC, TICKETS, REFINE, BOARD, VALIDATE, REPLAN, STORE); no menu is shown. |
 | "Create a PRD", "write the PRD", "update the PRD", "validate this PRD", "review my PRD", "write a product brief", "write the business case", "draft the program charter", "shape a pitch", "plan the launch", "ask John", "the PM", "the product manager" | Talk to John the Product Manager (`bmad-agent-pm`) to do what the phrase says | Each phrase dispatches to one of his capabilities (CREATE, VALIDATE); he picks the document from the altitude. |
+| "Create a PRFAQ", "work backwards", "run the PRFAQ challenge", "stress-test this concept", "write the BRD", "market research", "competitive analysis", "ask Mary", "the analyst" | Talk to Mary the Business Analyst (`bmad-agent-analyst`) to do what the phrase says | Each phrase dispatches to one of her capabilities (brainstorm, research, brief, PRFAQ, BRD); the brief and the BRD she shares with John. |
 | One bug or story to track, with no epic to hold it | Talk to Sofia the Product Owner to write it as a `backlog/` ticket, or an entry in the epic the user names | Standalone leaves live in `backlog/`, are refined first, and build like any entry. |
 | The work is more than one initiative's worth | Talk to Sofia the Product Owner to propose a parent initiative | The parent is an ordinary initiative whose breakdown lists child initiatives in build order; each child keeps initiative, epic and story. Set the active initiative to the child being worked, or to the parent to see the whole. |
 | Work spans several repositories | Install BMad at a workspace root that holds them all, with planning kept there | One session then reaches the plan and every project (`help/monorepo-and-polyrepo.md`). |
@@ -116,11 +117,10 @@ One line per skill: what it is for and what it writes. Paths are in the active i
 | Skill | For | Writes |
 |---|---|---|
 | **Analysis** (`help/analysis-skills.md`) | | |
-| `bmad-product-brief` | A 1-2 page brief of a product the user believes in. Lighter than a PRD, sharper than a hand-written intent file. It does not judge the idea. Kept for comparison with John's brief and will be retired. | `brief-<slug>/brief-<slug>.md` |
-| `bmad-prfaq` | Tests whether a concept survives scrutiny: press release, hard FAQs, researched claims, a verdict. | `prfaq-<slug>/prfaq-<slug>.md`, plus `-distillate.md` beside it |
+| `bmad-agent-analyst` | Mary the Business Analyst brainstorms and researches with the user, then coaches a brief (a 1-2 page account of a product the user believes in; it does not judge the idea), a PRFAQ (tests whether a concept survives scrutiny: press release, hard FAQs, researched claims, a verdict) or a business requirements document out of them. | `brief-<slug>/brief-<slug>.md`, `prfaq-<slug>/prfaq-<slug>.md`, `brd-<slug>/brd-<slug>.md` |
 | **Planning** (`help/planning-skills.md`) | | |
 | `bmad-agent-po` | Sofia the Product Owner. Writes a ticket's Requirements and Constraints from any input, with a stable `R<n>` id per line naming its source, naming the gaps and walking them with the user, or recording each as an Open question line, when the input is sparse, and updates them when the input changes. Slices initiatives into thin epics and epics into stories, refines an epic or a story, runs the board (start, block, close, drop), validates, replans a change mid-flight, and connects a tracker. Stories are entries in `tickets.toml`; a file is written only when one is reviewed, refined, or published. A bug is a `backlog/` file or an entry in its epic. | The ticket file, with `.memlog.md` and companions beside it; the ticket tree under `{output_folder}/{active_initiative}/`, plus `{output_folder}/backlog/` |
-| `bmad-agent-pm` | John the Product Manager coaches a planning document out of the user, picked by altitude and sized to the stakes: a brief, PRD, light PRD, prototype plan, experiment card, spec for a coding agent, opportunity assessment, business case, program charter, strategy narrative, Shape Up pitch, business requirements document, requirements specification or launch plan. He also updates and validates them. `bmad-prd` is kept for comparison with him and will be retired. | `<id>-<slug>/<id>-<slug>.md`, such as `prd-<slug>/prd-<slug>.md` |
+| `bmad-agent-pm` | John the Product Manager coaches a planning document out of the user, picked by altitude and sized to the stakes: a brief, PRD, light PRD, prototype plan, experiment card, spec for a coding agent, opportunity assessment, business case, program charter, strategy narrative, Shape Up pitch, business requirements document, requirements specification or launch plan. He also updates and validates them. | `<id>-<slug>/<id>-<slug>.md`, such as `prd-<slug>/prd-<slug>.md` |
 | `bmad-ux` | How the product looks and works. May lead, follow, or stand alone. Can produce mocks and wireframes. | `ux-<slug>/` with `DESIGN.md`, `EXPERIENCE.md`, and `ux-<slug>.md` naming them |
 | `bmad-architecture` | Settles only the decisions that keep separately built parts consistent. Coaches a user with no architecture knowledge, recommends a current starter, and covers hosting and deployment. | `architecture-<slug>/architecture-<slug>.md` |
 | **Implementation** (`help/implementation-skills.md`) | | |

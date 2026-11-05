@@ -42,4 +42,4 @@ A first version is rarely where a project goes wrong. Trouble starts several ses
 
 ## A prototype and the analysis skills
 
-A prototype answers questions by building. `bmad-prfaq` answers them by arguing the concept and researching the market claims. They complement each other: a prototype shows whether people want the thing and whether it can be built, and the PRFAQ tests whether the business case holds. When the stakes are high, the prototype's findings make the PRFAQ, the brief, or the PRD sharper.
+A prototype answers questions by building. A PRFAQ from Mary (`bmad-agent-analyst`) answers them by arguing the concept and researching the market claims. They complement each other: a prototype shows whether people want the thing and whether it can be built, and the PRFAQ tests whether the business case holds. When the stakes are high, the prototype's findings make the PRFAQ, the brief, or the PRD sharper.

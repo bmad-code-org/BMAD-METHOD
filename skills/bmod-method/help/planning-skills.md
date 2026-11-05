@@ -13,7 +13,6 @@ Read this when the question is about Sofia (`bmad-agent-po`), John (`bmad-agent-
 - Pick when: the user would rather work the idea out before it becomes the spec; a consumer or multi-stakeholder product; compliance, integration, or SLA concerns; funding approval or a launch needs a document; an existing planning document needs editing or critique.
 - Not when: scope is one or two stories → `bmad-build`. A lighter document will do → a brief from John, then talk to Sofia the Product Owner to write the initiative from it. A brief is an optional input, never a prerequisite.
 - Customizing: a team adds, replaces or extends his templates with a file in `_bmad/custom/facilitate-templates/`. Doc standards, reviewers, output, style and the HTML view are set on `bmad-facilitate`, which runs his documents. `bmad-customize` writes those settings.
-- `bmad-prd` and `bmad-product-brief` are kept for comparison with John and will be retired; recommend John.
 - Writes: `{output_folder}/{active_initiative}/<id>-<slug>/<id>-<slug>.md`, `<id>` the template (`prd`, `brief`, `business-case`, and so on). Run on an epic, the folder goes in the epic's folder, `<slug>` the epic's without `epic-`.
 
 **`bmad-ux`** — captures how the product looks and how it works. It may lead, follow, or stand alone.

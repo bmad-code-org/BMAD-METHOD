@@ -47,13 +47,13 @@ Each moment produces a written result an approval can attach to. Advise placing 
 
 | Moment | What it holds back |
 |---|---|
-| `bmad-prfaq` verdict | Writing the PRD |
+| Mary's PRFAQ verdict | Writing the PRD |
 | John's PRD validation | Design and architecture work |
 | Architecture spine review | Writing each epic's Requirements |
 | `bmad-agent-po` planning approval | Accepting the breakdown and its dependencies |
 | `bmad-retrospective` verdict | Starting the next epic |
 
-`bmad-prfaq` and `bmad-retrospective` accept `-H` to run without a conversation.
+Mary's PRFAQ runs headless when told so, and `bmad-retrospective` accepts `-H`, to run without a conversation.
 
 ## When requirements change
 
