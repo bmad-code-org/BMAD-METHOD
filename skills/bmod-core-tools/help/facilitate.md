@@ -23,7 +23,7 @@ Core tools ships no templates. Each module's templates are in `templates` in `kn
 | `security-review` | Method | Reviewing a system against the OWASP Top 10 or STRIDE. The standard's items drive the questions; another standard needs its rows added to the catalog first. |
 | `proposal` | Founder | Asking for money, time or approval: a grant, a bid, an internal request. The reader's own guidelines replace its headings. |
 | `pitch-deck` | Founder | A talk or pitch that needs a story and slides. It always renders as an HTML slide view unless the team turned views off. |
-| `character` | Creative Intelligence Suite | A fictional character for a story, game or campaign. The coach proposes options, and each character gets its own one-page HTML sheet unless the team turned views off. |
+| `character` | Creative Intelligence Suite 0.4.0 and later | A fictional character for a story, game or campaign. The coach proposes options, and each character gets its own one-page HTML sheet unless the team turned views off. |
 
 Method also ships John's planning templates and `brd`, which Method's own help covers.
 

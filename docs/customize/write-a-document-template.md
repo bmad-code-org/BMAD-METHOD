@@ -82,7 +82,7 @@ template_libraries = ["https://github.com/fernhollow/doc-templates@v1.2.0"]
 A library you cannot share goes in `bmad-facilitate.user.toml`, which stays out of git. A teammate without access who updates one of those documents follows its existing headings instead. If a library cannot be read, the skill names it and carries on with the others.
 
 :::caution[Trust]
-A template overrides the skill, so a remote library can direct an agent that has tools. Point only at sources you control, and pin a version with `@ref` or a tag so the library cannot change between runs.
+A template overrides the skill, so a remote library can direct an agent that has tools. Point only at sources you control. A branch or tag can move, so pin a commit SHA with `@ref` when the library must not change between runs.
 :::
 
 ## Ship templates in a module
@@ -218,7 +218,7 @@ Rules for every document, whatever the template, go in `persistent_facts`, `doc_
 
 ## Set the look of rendered views
 
-At close the skill can render a self-contained HTML view of the document, diagrams included.
+At close the skill can render the document as one HTML file, diagrams included. The page loads its Markdown and diagram renderers from jsDelivr when opened, so a reader with no network sees the plain text instead. Raw HTML in the document shows as text, and script links are dropped.
 
 ```toml
 [workflow]
