@@ -6,7 +6,8 @@
 
 The markdown travels in the page as JSON and is rendered in the browser by marked, with
 mermaid drawing every mermaid code block; both load from jsDelivr at pinned versions. With
-no network the page still shows the raw markdown in <pre> blocks.
+no network the page still shows the raw markdown in <pre> blocks. Raw HTML in the markdown
+is shown as text and javascript:, vbscript: and non-image data: links are dropped.
 
   --layout document   the whole document as one readable page (default)
   --layout slides     the `# ` title is slide 1, then one slide per `## ` section. A bold
@@ -645,7 +646,23 @@ JS = r"""
   }
 
   if (data.layout === 'slides') startDeck();
-  load(MARKED_SRC).then(function () { hasMarked = !!window.marked; }, function () {}).then(renderAll);
+  // A document can carry text from outside sources, so raw HTML shows as text and script URLs are dropped.
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function unsafeUrl(href) {
+    var h = String(href || '').replace(/[\s\u0000-\u001f]/g, '').toLowerCase();
+    return /^(javascript|vbscript):/.test(h) || (/^data:/.test(h) && !/^data:image\/(png|gif|jpe?g|webp);/.test(h));
+  }
+  function harden() {
+    window.marked.use({ renderer: {
+      html: function (h) { return escapeHtml(h); },
+      link: function (href, title, text) { return unsafeUrl(href) ? text : false; },
+      image: function (href, title, text) { return unsafeUrl(href) ? escapeHtml(text) : false; }
+    } });
+  }
+
+  load(MARKED_SRC).then(function () { hasMarked = !!window.marked; if (hasMarked) harden(); }, function () {}).then(renderAll);
 })();
 """
 
