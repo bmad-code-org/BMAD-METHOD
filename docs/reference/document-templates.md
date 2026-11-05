@@ -2,7 +2,7 @@
 title: Document Templates
 description: The templates that ship with bmad-facilitate, and which one shows each thing a template can do.
 sidebar:
-  order: 2
+  order: 4
 ---
 
 Use this page to find a shipped template to copy, or to see how a template does something you want. Modules ship them, each in the `doc-templates/` folder of its record in your skills folder: `bmod-method`, `bmod-founder` or `bmod-cis`.
