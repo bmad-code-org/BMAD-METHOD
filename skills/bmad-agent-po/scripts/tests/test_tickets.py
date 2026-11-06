@@ -1,3 +1,4 @@
+import importlib.util
 import json
 import shutil
 import subprocess
@@ -872,7 +873,7 @@ covers = ["R2", "R3"]
         self.seed()
         cases = (
             (ticket("todo", 1), "epic-pricing/tickets/story-contract.md"),
-            (ticket("draft", 1).replace("after: []", "after:\n  - 1"), "must be inline"),
+            (ticket("draft", 1).replace("after: []", "after: [1"), "story-contract.md: frontmatter is not valid YAML"),
             (ticket("draft", 1).replace("---\n\n# x", "\n# x"), "does not close"),
         )
         for text, message in cases:
@@ -2047,6 +2048,72 @@ class ActiveInitiativeTests(TreeCase):
         self.configure("initiative-gone")
         self.configure("initiative-checkout", layer="config.user.toml")
         self.assertEqual(self.ok(run("next", cwd=self.root))["folder"], "initiative-checkout")
+
+
+def load_tickets():
+    spec = importlib.util.spec_from_file_location("tickets_under_test", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class FrontmatterTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.t = load_tickets()
+
+    def parse(self, block):
+        return self.t.parse_frontmatter(f"---\n{block}\n---\n", "x.md")
+
+    def test_values_read_as_yaml_reads_them(self):
+        for block, expected in (
+            ("status: done # merged in #42", {"status": "done"}),
+            ("status: 'built' # draft | built | done", {"status": "built"}),
+            ("after:   # no prerequisites", {"after": ""}),
+            ('title: "Fix #42"', {"title": "Fix #42"}),
+            ("link: https://example.com/#anchor", {"link": "https://example.com/#anchor"}),
+            ('after: ["a, b", c] # gates', {"after": ["a, b", "c"]}),
+            ("id: 6\nhitl: true", {"id": 6, "hitl": True}),
+            ("after: [1.10, 010, -2]", {"after": ["1.10", "010", -2]}),
+            ("blocked_at: 2026-02-30\nrefined: yes", {"blocked_at": "2026-02-30", "refined": "yes"}),
+            ("after:\n  - 1\n  - x", {"after": [1, "x"]}),
+            ("notes: |\n  a\n  - b", {"notes": "a\n- b\n"}),
+        ):
+            with self.subTest(block=block):
+                self.assertEqual(self.parse(block), expected)
+
+    def test_invalid_yaml_names_the_file(self):
+        with self.assertRaisesRegex(
+            self.t.TicketError, r"^x\.md: frontmatter is not valid YAML at line 2: mapping values"
+        ):
+            self.parse("title: Fix: login")
+
+    def test_an_edit_changes_only_its_line(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "plan.md"
+            path.write_text("---\nstatus: 'blocked' # was\nblocked_reason: x\nnotes: keep # me\n---\n")
+            self.t.edit_frontmatter(path, {"status": "done", "blocked_reason": "", "assignee": '"a"'})
+            self.assertEqual(path.read_text(), '---\nstatus: done\nnotes: keep # me\nassignee: "a"\n---\n')
+
+    def test_an_edit_it_cannot_make_cleanly_is_refused_unwritten(self):
+        for block, values in (
+            ("status: blocked\nblocked_reason: |\n  first\n\n  second", {"status": "done", "blocked_reason": ""}),
+            ('status: blocked\n"blocked_reason": x', {"blocked_reason": ""}),
+            ("assignee: &owner alex\nblocked_reason: *owner", {"assignee": ""}),
+            ("after:\n- 1\n- 2", {"after": "[3]"}),
+            ("status: x", {"status": "a: b"}),
+        ):
+            with self.subTest(block=block), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "plan.md"
+                path.write_text(f"---\n{block}\n---\n")
+                with self.assertRaisesRegex(self.t.TicketError, "by hand"):
+                    self.t.edit_frontmatter(path, values)
+                self.assertEqual(path.read_text(), f"---\n{block}\n---\n")
+
+    def test_a_quoted_value_reads_back_exactly(self):
+        for value in ("a   # b", "line\x85break\u2028and\u2029more", "del\x7f c1\x9f", 'it\'s "x" \\ y'):
+            with self.subTest(value=value):
+                self.assertEqual(self.parse(f"reason: {self.t.quoted(value)}"), {"reason": value})
 
 
 if __name__ == "__main__":
