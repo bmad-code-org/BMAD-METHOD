@@ -121,6 +121,7 @@ Out of the box, tickets are markdown files in the store, and there is nothing to
 | Jira          | Tickets publish as Jira issues.                                                      |
 | Linear        | Tickets publish as Linear issues.                                                    |
 | Notion        | Tickets publish as rows in a Notion database.                                        |
+| Shortcut      | Tickets publish as Shortcut stories, with epics and objectives above them.           |
 | Trello        | Tickets publish as cards.                                                            |
 
 With a tracker, the markdown files remain the working copy and the tracker is where the team sees them. Setup offers to connect the tool, create the labels or fields it needs, and prove the connection with a test ticket. Say "reconfigure the ticket store" to change it later.
