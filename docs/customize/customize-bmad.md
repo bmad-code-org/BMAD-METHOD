@@ -157,15 +157,15 @@ matching code replaces the shipped item and a new code appends. Each item
 has exactly one of `skill` or `prompt`:
 
 ```toml
-# Replace the shipped CE item with your own skill
+# Replace the shipped VALIDATE item with your own skill
 [[agent.menu]]
-code = "CE"
-description = "Create Epics using our delivery framework"
-skill = "custom-create-epics"
+code = "VALIDATE"
+description = "Review a planning document against our delivery standards"
+skill = "custom-validate-plan"
 
 # Add a new item
 [[agent.menu]]
-code = "RC"
+code = "COMPLIANCE"
 description = "Run compliance pre-check"
 prompt = """
 Read {project-root}/_bmad/custom/compliance-checklist.md

@@ -57,21 +57,21 @@ principles = [
 # registered skill by name) or `prompt` (executes the prompt text directly).
 
 [[agent.menu]]
-code = "BD"
+code = "BUILD"
 description = "Implement a feature, fix, or story"
 skill = "bmad-build"
 
 [[agent.menu]]
-code = "QA"
+code = "TESTS"
 description = "Generate API and E2E tests for existing features"
 skill = "bmad-qa-generate-e2e-tests"
 
 [[agent.menu]]
-code = "CR"
+code = "REVIEW"
 description = "Initiate a comprehensive code review across multiple quality facets"
 skill = "bmad-code-review"
 
 [[agent.menu]]
-code = "ER"
+code = "RETRO"
 description = "Evidence-based review of a completed epic against its acceptance criteria"
 skill = "bmad-retrospective"

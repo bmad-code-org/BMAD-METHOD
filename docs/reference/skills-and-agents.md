@@ -17,10 +17,10 @@ A skill does one of three things: loads an agent persona, runs a multi-step work
 
 BMad offers two ways to start work.
 
-| Mechanism              | How you invoke it                                       | What happens                                                      |
-| ---------------------- | ------------------------------------------------------- | ----------------------------------------------------------------- |
-| **Skill**              | Type the skill name (e.g. `bmad`) in your AI tool  | Directly loads an agent, runs a workflow, or runs a task          |
-| **Agent menu trigger** | Load an agent first, then type a short code (e.g. `BD`) | The agent starts the matching workflow while staying in character |
+| Mechanism              | How you invoke it                                     | What happens                                                      |
+| ---------------------- | ----------------------------------------------------- | ----------------------------------------------------------------- |
+| **Skill**              | Type the skill name (e.g. `bmad`) in your AI tool     | Directly loads an agent, runs a workflow, or runs a task          |
+| **Agent menu trigger** | Load an agent first, then type a code (e.g. `CREATE`) | The agent starts the matching workflow while staying in character |
 
 Use a skill when you know which workflow you want. Use a trigger when you are already working with an agent and want to switch tasks without leaving the conversation.
 
@@ -45,22 +45,22 @@ Open your skills directory to see every installed skill with its description. Ru
 
 ## Agents
 
-The BMad Method module installs six named agents. Load one with its skill ID, then say what you want or type a code from its menu. Agents show the menu only when you ask what they can do. Codes are scoped to the agent that shows them: `CR` is a competitive teardown for the Analyst and a code review for the Developer.
+The BMad Method module installs six named agents. Load one with its skill ID, then say what you want or type a code from its menu. Agents show the menu only when you ask what they can do. Codes are scoped to the agent that shows them: `VALIDATE` reviews a document for John and Mary and checks the ticket tree for Sofia. Asked what they can do, John and Mary also list the documents they write, including any your team added.
 
-| Agent                  | Skill ID                 | Codes                                                              | Menu                                                                                                                                                                 |
-| ---------------------- | ------------------------ | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Analyst (Mary)         | `bmad-agent-analyst`     | `BP`, `MR`, `DR`, `TR`, `TS`, `CR`, `UV`, `CB`, `WB`, `BD`, `PC`   | Brainstorm; market, domain, and technical research; technology selection; competitive teardown; user-voice research; product brief; PRFAQ challenge; business requirements document; project context |
-| Product Manager (John) | `bmad-agent-pm`          | `CREATE`, `VALIDATE`                                               | Create or update a brief, PRD, or one of ten more planning documents; validate one into review findings                                                            |
-| Product Owner (Sofia)  | `bmad-agent-po`          | `SPEC`, `TICKETS`, `REFINE`, `BOARD`, `VALIDATE`, `REPLAN`, `STORE` | Requirements from a PRD, brief, or notes into a ticket; slice an initiative or epic; refine a ticket; the board; validation; replan a mid-flight change; tracker setup |
-| Architect (Winston)    | `bmad-agent-architect`   | `CA`                                                               | Architecture spine                                                                                                                                                   |
-| Developer (Amelia)     | `bmad-agent-dev`         | `BD`, `QA`, `CR`, `ER`                                             | Build; QA test generation; code review; epic retrospective                                                                                                           |
-| UX Designer (Sally)    | `bmad-agent-ux-designer` | `CU`                                                               | UX design                                                                                                                                                            |
+| Agent                  | Skill ID                 | Codes                                                               | Menu                                                                                                                                                                                              |
+| ---------------------- | ------------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Analyst (Mary)         | `bmad-agent-analyst`     | `BRAINSTORM`, `RESEARCH`, `CREATE`, `UPDATE`, `VALIDATE`, `CONTEXT` | Brainstorm; research a market, domain, technology, competitors or users, or choose between options; create, update or validate a brief, PRFAQ, BRD or a document your team added; project context |
+| Product Manager (John) | `bmad-agent-pm`          | `CREATE`, `UPDATE`, `VALIDATE`                                      | Create or update a brief, PRD, or one of ten more planning documents; validate one into review findings                                                                                           |
+| Product Owner (Sofia)  | `bmad-agent-po`          | `SPEC`, `TICKETS`, `REFINE`, `BOARD`, `VALIDATE`, `REPLAN`, `STORE` | Requirements from a PRD, brief, or notes into a ticket; slice an initiative or epic; refine a ticket; the board; validation; replan a mid-flight change; tracker setup                            |
+| Architect (Winston)    | `bmad-agent-architect`   | `ARCHITECTURE`                                                      | Architecture spine                                                                                                                                                                                |
+| Developer (Amelia)     | `bmad-agent-dev`         | `BUILD`, `TESTS`, `REVIEW`, `RETRO`                                 | Build; QA test generation; code review; epic retrospective                                                                                                                                        |
+| UX Designer (Sally)    | `bmad-agent-ux-designer` | `DESIGN`                                                            | UX design                                                                                                                                                                                         |
 
 :::note[Where is Paige?]
-The Technical Writer (Paige) is on hiatus. Project context lives on: use the Analyst's `PC` code or invoke `bmad-project-context` directly.
+The Technical Writer (Paige) is on hiatus. Project context lives on: use the Analyst's `CONTEXT` code or invoke `bmad-project-context` directly.
 :::
 
-The Developer's `QA` code runs `bmad-qa-generate-e2e-tests`; the full Test Architect is a separate module. See [Test Completed Work](../build/test-completed-work.md).
+The Developer's `TESTS` code runs `bmad-qa-generate-e2e-tests`; the full Test Architect is a separate module. See [Test Completed Work](../build/test-completed-work.md).
 
 Each agent is an identity plus a customizable layer. See [Customize BMad](../customize/customize-bmad.md) for how that model works and how to change an agent.
 

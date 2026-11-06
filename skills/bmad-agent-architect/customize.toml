@@ -53,6 +53,6 @@ principles = [
 # registered skill by name) or `prompt` (executes the prompt text directly).
 
 [[agent.menu]]
-code = "CA"
+code = "ARCHITECTURE"
 description = "Produce the architecture spine: the invariants that keep independently-built units consistent"
 skill = "bmad-architecture"

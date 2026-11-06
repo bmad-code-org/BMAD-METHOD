@@ -323,3 +323,20 @@ def test_rubric_path_resolves_and_a_bare_name_stays_a_name(tmp_path):
     (tmp_path / "template-b.md").write_text(template("b", extra="rubric: rubric-planning\n"))
     found = {t["id"]: t["rubric"] for t in list_templates.scan([str(tmp_path)])["templates"]}
     assert found == {"a": str(tmp_path / "rubric-a.md"), "b": "rubric-planning"}
+
+
+def test_agents_come_back_as_a_list(tmp_path):
+    (tmp_path / "t.md").write_text(template("a", extra="agents: [bmad-agent-pm, 'bmad-agent-analyst']\n"))
+    assert list_templates.scan([str(tmp_path)])["templates"][0]["agents"] == ["bmad-agent-pm", "bmad-agent-analyst"]
+
+
+def test_agent_keeps_templates_naming_it_and_its_own_unnamed_ones(tmp_path, capsys):
+    own, shared = tmp_path / "bmad-agent-analyst" / "assets", tmp_path / "shared"
+    own.mkdir(parents=True)
+    shared.mkdir()
+    (own / "a.md").write_text(template("mine"))
+    (shared / "b.md").write_text(template("named", extra="agents: [bmad-agent-analyst]\n"))
+    (shared / "c.md").write_text(template("anyone"))
+    (shared / "d.md").write_text(template("other", extra="agents: [bmad-agent-pm]\n"))
+    assert list_templates.main([str(own), str(shared), "--agent", "bmad-agent-analyst"]) == 0
+    assert [t["id"] for t in json.loads(capsys.readouterr().out)["templates"]] == ["mine", "named"]

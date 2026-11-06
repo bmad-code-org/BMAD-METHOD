@@ -12,12 +12,13 @@ folder; the --folder folder (default `doc-templates`) of every module record in 
 after the sources. A file is a template when its frontmatter has `template:`, the template's id.
 A file with `extends:` adds to the template of that id wherever it sits, and an earlier
 extension's values win over a later one's and the template's. A missing local path adds nothing
-and is listed. `rubric`, `methods` and `style` are relative to their file and come back resolved; a bare name
+and is listed. `--agent <skill>` keeps only that agent's templates: those whose `agents:` list names
+it, and those with no list in that skill's own folder. `rubric`, `methods` and `style` are relative to their file and come back resolved; a bare name
 with no extension comes back as it is.
 
 Prints JSON:
-  templates     id, version, description, not_for, category, rubric, methods, output, style, file, source,
-                extensions, in search order
+  templates     id, version, description, not_for, category, agents, rubric, methods, output, style, file,
+                source, extensions, in search order
   shadowed      id, file, source, kept: templates hidden by an earlier one with the same id
   orphaned      extends, file, source: extensions whose template was not found
   unreachable   source, reason: sources that could not be read
@@ -46,7 +47,7 @@ GITHUB = re.compile(
     r"(?:/(?:tree|blob)/(?P<tree_ref>[^/@]+)(?:/(?P<path>[^@]*?))?)?/?(?:@(?P<ref>[^/]+))?/?$"
 )
 MODULE_FOLDER = "doc-templates"
-FIELDS = ("version", "description", "not_for", "category", "rubric", "methods", "output", "style")
+FIELDS = ("version", "description", "not_for", "category", "agents", "rubric", "methods", "output", "style")
 TIMEOUT = 30
 
 
@@ -120,13 +121,14 @@ def module_libraries(roots: list[str], folder_name: str = MODULE_FOLDER) -> list
     return list(libraries.values())
 
 
-def fields(file: str, meta: dict[str, str]) -> dict[str, str]:
+def fields(file: str, meta: dict[str, str]) -> dict[str, object]:
     """What a template or extension sets, with its paths resolved."""
     return {
         "version": meta.get("version", ""),
         "description": meta.get("description", ""),
         "not_for": meta.get("not_for", ""),
         "category": meta.get("category", ""),
+        "agents": [unquote(name.strip()) for name in meta.get("agents", "").strip("[]").split(",") if name.strip()],
         "rubric": beside(file, meta.get("rubric", "")),
         "methods": beside(file, meta.get("methods", "")),
         "output": meta.get("output", ""),
@@ -192,16 +194,27 @@ def scan(sources: list[str]) -> dict:
     }
 
 
+def owned_by(template: dict, agent: str) -> bool:
+    """Whether `agent` offers the template: it names the agent, or it names none and sits in the agent's skill."""
+    if template["agents"]:
+        return agent in template["agents"]
+    return "://" not in template["file"] and Path(template["file"]).resolve().parent.parent.name == agent
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="List the templates in a set of libraries.")
     parser.add_argument("sources", nargs="*")
     parser.add_argument("--root", action="append", default=[], help="a skills folder to search for module templates")
     parser.add_argument("--folder", default=MODULE_FOLDER, help="the templates folder in each module record")
+    parser.add_argument("--agent", help="keep only the templates this agent skill offers")
     args = parser.parse_args(argv)
     if not args.sources and not args.root:
         parser.print_usage(sys.stderr)
         return 2
-    print(json.dumps(scan(args.sources + module_libraries(args.root, args.folder)), indent=2))
+    result = scan(args.sources + module_libraries(args.root, args.folder))
+    if args.agent:
+        result["templates"] = [t for t in result["templates"] if owned_by(t, args.agent)]
+    print(json.dumps(result, indent=2))
     return 0
 
 
