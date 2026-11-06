@@ -16,11 +16,11 @@
 Change `{plan_file}` status to `in-review` in the frontmatter before continuing.
 
 {% if workflow.review == "none" %}
-Write `review: 'none'`, `review_source: 'pinned'`, and `lenses_ran: []` to `{plan_file}` frontmatter.
+Write `review: none`, `review_source: pinned`, and `lenses_ran: []` to `{plan_file}` frontmatter.
 {% elif workflow.review == "auto" %}
-Write `review: 'thorough'` and `review_source: 'auto'` to `{plan_file}` frontmatter.
+Write `review: thorough` and `review_source: auto` to `{plan_file}` frontmatter.
 {% else %}
-Write `review: '{{ workflow.review }}'` and `review_source: 'pinned'` to `{plan_file}` frontmatter.
+Write `review: {{ workflow.review }}` and `review_source: pinned` to `{plan_file}` frontmatter.
 {% endif %}
 {% if review != "none" %}
 

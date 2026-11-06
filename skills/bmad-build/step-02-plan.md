@@ -17,20 +17,20 @@
    Then score the change's `risk` for `{plan_file}` frontmatter: `low`, `medium`, or `high`, the business impact if this change is wrong. For a ticket from the tree, start from `risk` in `tickets.py find`'s output and raise it when the investigation shows more; go below it only when the user says so. Write `risk` wherever this step writes `{plan_file}`.
 {% if workflow.route == "oneshot" %}
 3. Read `{{ rendered("plan-template.md") }}` fully and write `{plan_file}`.
-   Set `route: 'oneshot'`, `route_source: 'pinned'`, and `status: 'in-progress'`, resolving `date` to the current system date.
+   Set `route: oneshot`, `route_source: pinned`, and `status: in-progress`, resolving `date` to the current system date.
    If `preserved_intent` is non-empty, use it as the frozen block.
    **EARLY EXIT** → `{{ rendered("step-oneshot.md") }}`.
 {% elif workflow.route == "full" %}
-3. Set `route: 'full'` and `route_source: 'pinned'`, then continue.
+3. Set `route: full` and `route_source: pinned`, then continue.
 {% else %}
 3. {{ workflow.route_selection }}
 
    For oneshot: read `{{ rendered("plan-template.md") }}` fully and write `{plan_file}`.
-   Set `route: 'oneshot'`, `route_source: 'auto'`, and `status: 'in-progress'`, resolving `date` to the current system date.
+   Set `route: oneshot`, `route_source: auto`, and `status: in-progress`, resolving `date` to the current system date.
    If `preserved_intent` is non-empty, use it as the frozen block.
    **EARLY EXIT** → `{{ rendered("step-oneshot.md") }}`.
 
-   For full, set `route: 'full'` and `route_source: 'auto'`, then continue.
+   For full, set `route: full` and `route_source: auto`, then continue.
 {% endif %}
 {% if workflow.route != "oneshot" %}
 4. Read `{{ rendered("plan-template.md") }}` fully. Fill it out from the intent and investigation, resolving the template's `date` field to the current system date. Put the investigation into `## Code Map`: paths, symbols or lines, what to reuse, and what not to change. Implementation should work from the plan without being told the investigation again. If there are intent gaps, add a `## Open Questions` section with one entry per gap: the choice, the options, and what each option means. Never write an intent gap into the frozen block as an assumption. If `preserved_intent` is non-empty, replace the `<frozen-after-approval>` block with it before writing. Write the result to `{plan_file}`.

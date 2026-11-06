@@ -30,17 +30,17 @@ When you are done, run the commands in `{plan_file}`'s `## Verification` section
 {% if workflow.route == "oneshot" %}
 **When to stop.** Stop coding if the request left out something the user would notice in the result. Write the gap in `## Implementation Notes`, then ask the human — do not guess.
 {% else %}
-**When to stop and replan.** Stop coding if the request left out something the user would notice in the result. Write the gap in `## Implementation Notes`. Then update `{plan_file}`: add back `## Code Map` (filled in from what you learned while implementing) and `## Open Questions` (one question per gap), set `route: 'full'` and `status: 'draft'`. Go back to `{{ rendered("step-02-plan.md") }}` step 6.
+**When to stop and replan.** Stop coding if the request left out something the user would notice in the result. Write the gap in `## Implementation Notes`. Then update `{plan_file}`: add back `## Code Map` (filled in from what you learned while implementing) and `## Open Questions` (one question per gap), set `route: full` and `status: draft`. Go back to `{{ rendered("step-02-plan.md") }}` step 6.
 {% endif %}
 
 ### Review
 
 {% if workflow.review == "none" %}
-Write `review: 'none'`, `review_source: 'pinned'`, and `lenses_ran: []` to `{plan_file}` frontmatter.
+Write `review: none`, `review_source: pinned`, and `lenses_ran: []` to `{plan_file}` frontmatter.
 {% elif workflow.review == "auto" %}
-Write `review: 'quick'` and `review_source: 'auto'` to `{plan_file}` frontmatter.
+Write `review: quick` and `review_source: auto` to `{plan_file}` frontmatter.
 {% else %}
-Write `review: '{{ workflow.review }}'` and `review_source: 'pinned'` to `{plan_file}` frontmatter.
+Write `review: {{ workflow.review }}` and `review_source: pinned` to `{plan_file}` frontmatter.
 {% endif %}
 {% if review != "none" %}
 
@@ -100,7 +100,7 @@ For each group:
 
 Update `{plan_file}`:
 
-1. Set `status: 'built'` in the frontmatter.
+1. Set `status: built` in the frontmatter.
 2. If review found anything, add `## Review Triage Log` with one line per finding: verdict and evidence. For `false`, the disproof. For `maybe-false`, what would settle it. For rejected `low`, why it was not worth fixing.
 
 ### Commit

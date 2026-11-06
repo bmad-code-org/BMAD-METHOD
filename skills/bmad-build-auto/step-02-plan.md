@@ -20,8 +20,8 @@
    `route_source` is `auto`.
 {% endif %}
 4. Read `{{ rendered("plan-template.md") }}` fully, preserving all frontmatter fields and resolving `date` to the current system date.
-   - **Oneshot:** set `route: 'oneshot'`.
-   - **Full:** set `route: 'full'`. Put what you learned into `## Code Map`: paths, symbols or lines, what to reuse, and what not to change. The subagent should be able to work from the plan without being told any of it again.
+   - **Oneshot:** set `route: oneshot`.
+   - **Full:** set `route: full`. Put what you learned into `## Code Map`: paths, symbols or lines, what to reuse, and what not to change. The subagent should be able to work from the plan without being told any of it again.
 
    Set `route_source` from step 3 and `risk` from step 2.
 

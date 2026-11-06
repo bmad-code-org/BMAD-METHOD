@@ -17,15 +17,15 @@
 Change `{plan_file}` status to `in-review` in the frontmatter before continuing.
 
 {% if workflow.review == "none" %}
-Write `review: 'none'`, `review_source: 'pinned'`, and `lenses_ran: []` to `{plan_file}` frontmatter.
+Write `review: none`, `review_source: pinned`, and `lenses_ran: []` to `{plan_file}` frontmatter.
 {% elif workflow.review == "quick" or workflow.review == "thorough" %}
-Write `review: '{{ workflow.review }}'` and `review_source: 'pinned'` to `{plan_file}` frontmatter.
+Write `review: {{ workflow.review }}` and `review_source: pinned` to `{plan_file}` frontmatter.
 {% elif workflow.route == "oneshot" %}
-Write `review: 'quick'` and `review_source: 'auto'` to `{plan_file}` frontmatter.
+Write `review: quick` and `review_source: auto` to `{plan_file}` frontmatter.
 {% elif workflow.route == "full" %}
-Write `review: 'thorough'` and `review_source: 'auto'` to `{plan_file}` frontmatter.
+Write `review: thorough` and `review_source: auto` to `{plan_file}` frontmatter.
 {% else %}
-Write `review` to `{plan_file}` frontmatter from its `route`: `quick` when `route` is `oneshot`, `thorough` when `full`; `review_source: 'auto'`.
+Write `review` to `{plan_file}` frontmatter from its `route`: `quick` when `route` is `oneshot`, `thorough` when `full`; `review_source: auto`.
 {% endif %}
 {% if review != "none" %}
 
