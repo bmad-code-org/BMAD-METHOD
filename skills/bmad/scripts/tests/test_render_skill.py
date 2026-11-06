@@ -808,7 +808,7 @@ class RenderSkillTests(unittest.TestCase):
                 skill = self._skill(ws, name)
                 snap = rs.render(ws.project, skill).parent
                 markdown = _markdown(snap)
-                self.assertIn("Write `review: 'quick'` and `review_source: 'pinned'`", markdown)
+                self.assertIn("Write `review: quick` and `review_source: pinned`", markdown)
                 self.assertIn("Quick (`quick`)", markdown)
                 self.assertNotIn((snap / "review-prompts" / "edge-case-hunter.md").as_posix(), markdown)
 

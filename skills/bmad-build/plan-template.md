@@ -1,9 +1,9 @@
 ---
 title: '{title}'
-type: 'feature' # feature | bugfix | refactor | chore
+type: feature # feature | bugfix | refactor | chore
 ticket: '' # the entry id from the ticket tree, or the story file's stem when the entry has no id; empty outside it
 created: '{date}'
-status: 'draft' # draft | ready-for-dev | in-progress | in-review | built | done | blocked | dropped
+status: draft # draft | ready-for-dev | in-progress | in-review | built | done | blocked | dropped
 baseline_revision: '' # the commit the work starts from, set before any code change
 route: '' # oneshot | full — set by step-02
 route_source: '' # pinned | auto — set with route by step-02
