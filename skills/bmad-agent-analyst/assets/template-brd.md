@@ -4,7 +4,6 @@ template: brd
 version: 1.0.0
 description: "What the business requires and signs for, when the builder is a separate party."
 not_for: "Product work inside one organization (`opportunity`, `prd`); a funding decision (`business-case`); what the system shall do, line by line (`srs`)."
-agents: [bmad-agent-pm, bmad-agent-analyst]
 rubric: rubric-planning
 status: draft
 created: ""

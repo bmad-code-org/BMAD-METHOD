@@ -75,19 +75,19 @@ Every skill in this chapter writes a document you can hand on. The table runs fr
 | `bmad-brainstorming`            | Generate ideas with a facilitated session ([Explore and Validate an Idea](./explore-and-validate-an-idea.md))                                  | `brainstorm.html` keepsake plus an optional `brainstorm-<topic>.md`                 |
 | `bmad-forge-idea`               | Pressure-test an idea until it hardens, proves out, or dies cheaply                                                                            | `forge-report.html` every run; `forge-<slug>.md` when the idea hardens              |
 | `bmad-deep-recon`               | Research a subject to support a decision ([Research a Decision](./research-a-decision.md))                                                     | Cited `research-<topic>.md` plus an optional HTML briefing                          |
-| `bmad-agent-analyst`            | Mary, the Business Analyst: write a brief when the concept is clear, or stress-test it customer-first with a PRFAQ ([Define Requirements and a Specification](./define-requirements-and-a-specification.md)) | `brief-<slug>.md` or `prfaq-<slug>.md`, `.memlog.md`                                |
-| `bmad-agent-pm`                 | John, the Product Manager: create, update, or validate a brief, PRD, or another planning document                                                                         | Create/update: `<id>-<slug>.md` (such as `prd-<slug>.md`), `.memlog.md`, optional HTML view; validate: `review-*.md` findings |
+| `bmad-agent-analyst`            | Mary, the Business Analyst: write a brief when the concept is clear, stress-test it customer-first with a PRFAQ, or write a BRD ([Define Requirements and a Specification](./define-requirements-and-a-specification.md)) | `brief-<slug>.md`, `prfaq-<slug>.md` or `brd-<slug>.md`, `.memlog.md`              |
+| `bmad-agent-pm`                 | John, the Product Manager: create, update, or validate a PRD or another planning document                                                                                 | Create/update: `<id>-<slug>.md` (such as `prd-<slug>.md`), `.memlog.md`, optional HTML view; validate: `review-*.md` findings |
 | `bmad-ux`                       | Record how the product looks and behaves ([Design UX and Architecture](./design-ux-and-architecture.md))                                       | `DESIGN.md`, `EXPERIENCE.md`, `ux-<slug>.md`, `.memlog.md`                          |
 | `bmad-architecture`             | Make the technical decisions that keep separately built parts consistent                                                                       | `architecture-<slug>.md` by default                                                 |
 | `bmad-agent-po` | Sofia, the Product Owner: write a ticket's requirements from any input, then [plan and track entries](./break-work-into-stories-and-track-it.md) | Requirements and Constraints in the initiative, epic, or story file, `.memlog.md` beside it, ordered `tickets.toml`, and optional leaf files |
 
-John (`bmad-agent-pm`) creates, updates, and validates fourteen planning documents;
-the work's altitude picks which, and he names close alternatives. A brief feeds
-the PRD, which John reads during discovery, but neither requires the other.
+John (`bmad-agent-pm`) creates, updates, and validates twelve planning documents;
+the work's altitude picks which, and he names close alternatives. A brief from
+Mary feeds the PRD, which John reads during discovery, but neither requires the other.
 
-A business requirements document (`brd`) fits only when the people who want the system and the people who build it are separate parties, such as a client and a vendor, or when a regulator or contract expects a signed baseline. The sponsor signs it, and the PRD or SRS picks up its ids. Product work inside one organization skips it.
+A business requirements document (`brd`) fits only when the people who want the system and the people who build it are separate parties, such as a client and a vendor, or when a regulator or contract expects a signed baseline. Mary writes it, the sponsor signs it, and John's PRD or SRS picks up its ids. Product work inside one organization skips it.
 
-![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, and Mary for a brief or PRFAQ), planning (John for a brief, PRD or other planning document, and UX), and solutioning (architecture and Sofia, the Product Owner), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
+![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, and Mary for a brief, PRFAQ or BRD), planning (John for a PRD or other planning document, and UX), and solutioning (architecture and Sofia, the Product Owner), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
 
 ## Size Follows the Intent
 

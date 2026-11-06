@@ -4,7 +4,7 @@ Open this when the user asks what `bmad-facilitate` can write, how to call it wi
 
 ## What it is for
 
-It coaches the user through one document from a template, and later updates or validates it. Any document works, software or not. The user supplies what only they know; the skill reads their inputs, finds facts, reviews the draft and polishes it. Rigor follows the stakes the user states, from a hobby project to regulated or contracted work. A PRD or product brief goes to John (`bmad-agent-pm`).
+It coaches the user through one document from a template, and later updates or validates it. Any document works, software or not. The user supplies what only they know; the skill reads their inputs, finds facts, reviews the draft and polishes it. Rigor follows the stakes the user states, from a hobby project to regulated or contracted work. A PRD goes to John (`bmad-agent-pm`); a product brief, PRFAQ or BRD to Mary (`bmad-agent-analyst`).
 
 - Coaching is the default: a conversation that steers back to the sections still unfilled.
 - The fast path asks what the template requires plus up to three high-impact questions, drafts with the rest tagged as assumptions, then offers to walk the user through those.
@@ -25,7 +25,7 @@ Core tools ships no templates. Each module's templates are in `templates` in `kn
 | `pitch-deck` | Founder | A talk or pitch that needs a story and slides. It always renders as an HTML slide view unless the team turned views off. |
 | `character` | Creative Intelligence Suite 0.4.0 and later | A fictional character for a story, game or campaign. The coach proposes options, and each character gets its own one-page HTML sheet unless the team turned views off. |
 
-Method also ships John's planning templates and `brd`, which Method's own help covers.
+Method also ships John's planning templates and Mary's analysis templates, which Method's own help covers.
 
 ## Listing what it can coach
 

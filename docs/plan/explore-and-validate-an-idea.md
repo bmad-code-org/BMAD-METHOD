@@ -49,7 +49,7 @@ deciding. Sessions can be paused and resumed.
 
 You get an HTML record of the session, and a short `brainstorm-<topic>.md`
 holding only the chosen discoveries, shaped to feed Sofia, the Product Owner
-(`bmad-agent-po`), or John, the Product Manager (`bmad-agent-pm`), for a brief or a PRD.
+(`bmad-agent-po`), Mary, the Business Analyst (`bmad-agent-analyst`), for a brief, or John, the Product Manager (`bmad-agent-pm`), for a PRD.
 
 ## Pressure-Test an Idea with Forge Idea
 

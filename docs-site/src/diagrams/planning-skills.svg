@@ -1,6 +1,6 @@
 <svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img" aria-labelledby="title description">
   <title id="title">Planning skills and what they produce</title>
-  <desc id="description">Three columns of skills and their artifacts. Analysis: bmad-brainstorming, bmad-forge-idea, bmad-deep-recon, and bmad-agent-analyst, Mary the Business Analyst, who writes a PRFAQ or a brief. Planning: bmad-agent-pm, John the Product Manager, who writes a brief, PRD or one of eight other planning documents, and bmad-ux. Solutioning: bmad-architecture and bmad-agent-po, Sofia the Product Owner. The columns flow left to right and hand off to bmad-build, one session per unit. Build finishes at built; the user marks done and retains the plan.</desc>
+  <desc id="description">Three columns of skills and their artifacts. Analysis: bmad-brainstorming, bmad-forge-idea, bmad-deep-recon, and bmad-agent-analyst, Mary the Business Analyst, who writes a brief, a PRFAQ or a BRD. Planning: bmad-agent-pm, John the Product Manager, who writes a PRD or one of eleven other planning documents, and bmad-ux. Solutioning: bmad-architecture and bmad-agent-po, Sofia the Product Owner. The columns flow left to right and hand off to bmad-build, one session per unit. Build finishes at built; the user marks done and retains the plan.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path class="head" d="M 0 0 L 10 5 L 0 10 z"/>
@@ -36,7 +36,7 @@
         <rect class="node" width="240" height="74" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono">bmad-agent-analyst</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)">Mary, the Business Analyst</text>
-        <text x="12" y="62" font-size="12" fill="var(--dg-ink)">prfaq-&lt;slug&gt;/, brief-&lt;slug&gt;/</text>
+        <text x="12" y="62" font-size="12" fill="var(--dg-ink)">brief, prfaq or brd-&lt;slug&gt;/</text>
       </g>
     </g>
 
@@ -49,8 +49,8 @@
       <g transform="translate(15 66)">
         <rect class="node" width="240" height="74" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono">bmad-agent-pm</text>
-        <text x="12" y="45" font-size="12" fill="var(--dg-ink)">brief-&lt;slug&gt;/, prd-&lt;slug&gt;/</text>
-        <text x="12" y="62" font-size="12" fill="var(--dg-ink)">+ 8 other planning documents</text>
+        <text x="12" y="45" font-size="12" fill="var(--dg-ink)">prd-&lt;slug&gt;/</text>
+        <text x="12" y="62" font-size="12" fill="var(--dg-ink)">+ 11 other planning documents</text>
       </g>
       <g transform="translate(15 150)">
         <rect class="node" width="240" height="58" rx="2"/>

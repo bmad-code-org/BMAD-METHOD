@@ -15,7 +15,7 @@ An initiative is one body of work of any kind: a product, a feature, a book, a s
 - No idea yet, or wants more and better ideas on a topic → `bmad-brainstorming`.
 - Has an idea and is not sure it holds up → `bmad-forge-idea`.
 - Needs facts from outside before deciding (a market, a technology, competitors, what users say), has a research report to make usable, or wants their own code researched (how something works, why it is built that way, the code a ticket depends on) → `bmad-deep-recon`.
-- Needs to write a document: a decision record or ADR, a postmortem, a proposal or grant application, a security review or threat model, a pitch deck or talk, or any document from the team's own template → `bmad-facilitate`. A PRD or product brief goes to John (`bmad-agent-pm`).
+- Needs to write a document: a decision record or ADR, a postmortem, a proposal or grant application, a security review or threat model, a pitch deck or talk, or any document from the team's own template → `bmad-facilitate`. A PRD goes to John (`bmad-agent-pm`); a product brief, PRFAQ or BRD to Mary (`bmad-agent-analyst`).
 - Has a piece of work and wants it better:
   - They have a draft in front of them (theirs or the model's) and want it pushed further, or want a critique method run on it → `bmad-advanced-elicitation`. It starts only by name: tell them to say "advanced elicitation", with the method if they have one in mind.
   - They ask for a review of a diff, a file, or a document → `bmad-review`.

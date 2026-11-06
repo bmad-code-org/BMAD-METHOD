@@ -32,10 +32,10 @@ back where an answer is thin. Sessions can be paused and resumed.
 
 ## Product Brief: Capture Conviction
 
-Ask John, the Product Manager (`bmad-agent-pm`), or Mary, the Business Analyst (`bmad-agent-analyst`), to create, update, or validate a brief ("write a product brief"): a one- to
+Ask Mary, the Business Analyst (`bmad-agent-analyst`), to create, update, or validate a brief ("write a product brief"): a one- to
 two-page account of the product concept, right-sized to its purpose. A passion
-project does not get investor-grade rigor; a pitch input does. They read
-the stakes early and calibrate how hard they push.
+project does not get investor-grade rigor; a pitch input does. She reads
+the stakes early and calibrates how hard she pushes.
 
 Use it when your concept is relatively clear and you want it written down
 before a PRD. It produces `brief-<slug>.md`, which John reads when he writes the PRD. For
@@ -73,12 +73,12 @@ It answers "what should we build and why." It does not say how; that is
 [Design UX and Architecture](./design-ux-and-architecture.md). It does not
 divide work into stories; that is
 [Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md).
-If you open with a one-pager in mind, John offers the brief; an idea to vet
-goes to the PRFAQ.
+If you open with a one-pager in mind, John points you to Mary for the brief; an idea to vet
+goes to her PRFAQ.
 
 ## Other Planning Documents
 
-Besides the brief and the PRD, John writes a prototype plan, an experiment card, a light PRD for a very simple project, a spec for a coding agent, an opportunity assessment, a business case, a program charter, a strategy narrative, a Shape Up pitch, a business requirements document, a requirements specification, and a launch plan. The work's altitude picks the document: a program takes a charter or a strategy narrative, an epic a PRD or a pitch, and a feature outside the ticket tree a spec for a coding agent. He says why he chose it and names any close alternative, so you can switch. Each works like the PRD: fast or coaching path; create, update, or validate.
+Besides the PRD, John writes a prototype plan, an experiment card, a light PRD for a very simple project, a spec for a coding agent, an opportunity assessment, a business case, a program charter, a strategy narrative, a Shape Up pitch, a requirements specification, and a launch plan. Mary writes the business requirements document that a PRD or requirements specification picks up when a separate party builds the work. The work's altitude picks the document: a program takes a charter or a strategy narrative, an epic a PRD or a pitch, and a feature outside the ticket tree a spec for a coding agent. He says why he chose it and names any close alternative, so you can switch. Each works like the PRD: fast or coaching path; create, update, or validate.
 
 Your team can add its own planning documents, or replace or extend John's, with a file in `_bmad/custom/facilitate-templates/`. Doc standards, reviewers, output, style, and the HTML view are set on `bmad-facilitate`, the skill that runs John's documents. See [Write a Document Template](../customize/write-a-document-template.md).
 
@@ -124,9 +124,9 @@ To run the planned stories unattended, explicitly dispatch each ticket to
 one run per ticket. No leaf file needs to be pulled first.
 
 :::note[What each skill produces]
-John (`bmad-agent-pm`): `<id>-<slug>.md`, such as `brief-<slug>.md` or
-`prd-<slug>.md`, or `review-*.md` findings.
-Mary (`bmad-agent-analyst`): `prfaq-<slug>.md`, or a brief or BRD the same way. Each document
+John (`bmad-agent-pm`): `<id>-<slug>.md`, such as `prd-<slug>.md` or
+`business-case-<slug>.md`, or `review-*.md` findings.
+Mary (`bmad-agent-analyst`): `brief-<slug>.md`, `prfaq-<slug>.md` or `brd-<slug>.md`. Each document
 lands in its own `<type>-<slug>/` folder in the active initiative's folder,
 or in the output folder when no initiative is active. Sofia writes the
 Requirements and Constraints sections of the initiative, epic, or story file,
