@@ -36,6 +36,7 @@
 * `bmad setup` and `bmad status` name the skills of each module you did not install and give one command that installs them.
 * `bmad setup` and `bmad status` cover every skills folder your tool loads, so a module installed in the project is set up while `bmad` is global, and a skill installed twice is reported with an offer to delete the extra copy.
 * `bmad setup` is one flow that also updates and migrates: when a module has a newer version it runs `npx skills update`, and it ends by checking whether any migration applies and asking whether to run it. Asking for status runs only the check.
+* Sofia the Product Owner (`bmad-agent-po`) can publish to Shortcut. Say "set up the ticket store" and pick Shortcut: tickets go out through Shortcut's REST API with curl and an API token in `SHORTCUT_API_TOKEN`, the initiative as an objective, epics as epics, and stories with their type, workflow state, labels for spike, `hitl` and risk, and blocked-by story links.
 
 ### 🐛 Fixes
 
