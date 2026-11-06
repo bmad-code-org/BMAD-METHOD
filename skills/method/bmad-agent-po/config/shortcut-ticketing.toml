@@ -1,0 +1,96 @@
+# Store starter: Shortcut. `scripts/read_store.py` reads this file as the base layer; the project's
+# _bmad/custom/ticketing-store-config.toml names the store, fills the empty fields below, and replaces
+# any other key here, key by key.
+# It updates with the skill and holds only what is specific to this store: the rules every store shares
+# are in references/board.md. Comments and `description` are never loaded; `description` is for choosing a store.
+#
+# One tool: curl against Shortcut's REST API v3; Shortcut ships no CLI, and its MCP server is not used here.
+# Objectives carry initiatives, epics carry epics, story types and labels carry type, workflow states carry
+# status, story links carry blocking. Using the defaults below: the team's workflow needs the states in
+# [tickets.status]; `setup` checks them. Labels are created on first use.
+
+description = "Shortcut through its REST API with curl: objectives, epics, story types, workflow states, story links. For product teams on Shortcut."
+
+[tickets]
+store = "shortcut"
+key = ""    # ids are Shortcut's own numbers, shared by stories, epics, and objectives; leave empty
+team = ""   # the team's mention name, e.g. "dev"; empty = the workspace's only team. A container's own `key`, set to a mention name, overrides it for everything under it
+access = """
+Use curl against https://api.app.shortcut.com/api/v3 with the headers `Shortcut-Token: $SHORTCUT_API_TOKEN`
+and `Content-Type: application/json`; send a body from a file with `--data @<file>`. Never print the
+token. Requests take ids, not names: the team from `GET /groups` (its `id` and `workflow_ids`),
+workflow states from `GET /workflows`, epic states from `GET /epic-workflow`, people from
+`GET /members`, custom field values from `GET /custom-fields`.
+"""
+
+fields = """
+severity is Shortcut's Priority field, set through `custom_fields` ({field_id, value_id}): P0 = Highest,
+P1 = High, P2 = Medium, P3 = Low. While Priority is disabled in the workspace, severity is a label P0-P3.
+risk is a label risk:<value>. estimate is the story's `estimate`; a label est:<value> on an epic.
+Empty field: no priority, no label.
+"""
+
+reference = """
+Also add the url to the story's `external_links` so it shows on the story; a PUT replaces that list,
+so send the existing links with it.
+"""
+
+[verbs]
+setup = """
+Connect, unless `curl -sf -H "Shortcut-Token: $SHORTCUT_API_TOKEN" https://api.app.shortcut.com/api/v3/member`
+already answers: the user creates a token with Read and Write access at https://app.shortcut.com/settings/account/api-tokens and
+exports SHORTCUT_API_TOKEN in the environment the agent tool starts from. Never write the token into the
+store config or any file in the project.
+When `team` is empty and `GET /groups` lists more than one team, ask which and put its mention name in
+`team` in the project's store config.
+Workflow states cannot be created through the API: compare the team's workflow from `GET /workflows`
+with [tickets.status], and tell the user what to add under Settings, Workflows, or which map entry to
+set in the project's store config. Then `GET /custom-fields`: when Priority is disabled, offer that the
+user enable it under Settings, Fields.
+"""
+
+write = """
+The team is the ticket's own `key`, else that of the nearest container above it, else `team` here.
+tracker_id is the story's, epic's, or objective's id and remote its `app_url`.
+A story: `POST /stories` with name, description, story_type per [tickets.types], group_id,
+workflow_state_id for [tickets.status].<state> in the team's workflow, epic_id, labels as [{name}] (spike
+on a spike, hitl, risk:<r>), owner_ids, estimate, custom_fields, external_id set to the ticket file's path under the output folder,
+and story_links with {verb: "blocks", subject_id: <blocker>} for each after. Mirror tracker_id and remote
+from the response before anything else. A create that fails with no response may still have made the
+story: `POST /stories/search` with {external_id: <path>} finds it before creating again.
+Changes: `PUT /stories/<id>` with any of those fields, `labels` being the whole set the story keeps; a new
+after is `POST /story-links` {subject_id: <blocker>, object_id: <id>, verb: "blocks"}, a removed one
+`DELETE /story-links/<link id>`. A standalone ticket: no epic_id.
+An epic: `POST /epics` with name, description, labels, group_ids, objective_ids, and epic_state_id from
+`GET /epic-workflow`: backlog = "to do", in-progress and review = "in progress", done = "done".
+Changes: `PUT /epics/<id>`. Shortcut has no blocking between epics; an epic's after stays in the files.
+An initiative is an objective: `POST /objectives` with name, description, and state, which takes the
+names mapped above for an epic; its epics carry its id in objective_ids. Changes: `PUT /objectives/<id>`.
+dropped is `archived: true` on a story, epic, or objective.
+"""
+
+query = """
+One story: `GET /stories/<id>` — name, story_type, workflow_state_id, owner_ids, epic_id, labels,
+story_links, estimate, custom_fields, archived, external_id, description. after is the story_links with
+verb "blocks" and type "object", by subject_id; archived is dropped; the description's covers holds the
+source requirement ids. An epic: `GET /epics/<id>`, its stories `GET /epics/<id>/stories`, which leaves
+out descriptions. An objective: `GET /objectives/<id>`, its epics `GET /objectives/<id>/epics`. Words:
+`GET /search/stories` with `query` (operators such as type:bug, label:<name>, state:"<name>"; archived
+stories show only with is:archived), paging on `next`; `GET /search/epics` the same way.
+"""
+
+# BMad type -> this store's type.
+[tickets.types]
+initiative = "objective"
+epic = "epic"
+story = "feature"
+spike = "chore"   # plus label spike
+bug = "bug"
+
+# BMad state -> this store's status (workflow state names; `setup` compares them with the team's workflow).
+[tickets.status]
+backlog = "Backlog"   # or "To Do" — the team's choice
+in-progress = "In Progress"   # Shortcut workflows vary by workspace; set these to the team's state names
+review = "In Review"   # with no review state, set it to the in-progress one
+done = "Done"
+dropped = "archived"   # archived, not a workflow state
