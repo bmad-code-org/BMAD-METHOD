@@ -84,6 +84,7 @@ Look for:
 - "System handles X gracefully," "reasonable performance," "user-friendly" — flag every one.
 - Acceptance criteria implied or explicit. Sometimes the FR's consequences carry this; sometimes the PRD genuinely needs an Acceptance section.
 - For non-functional sections (UX, performance, security): bounds, not adjectives.
+- Where a feature crosses a trust boundary (input the product does not control, who may do or see what, secrets, another tenant's data), what must never happen is an FR with a testable consequence, not a line in a security NFR.
 
 This is the dimension downstream story creation will lean on hardest. Be unforgiving here.
 
