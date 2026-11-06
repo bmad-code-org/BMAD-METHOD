@@ -1093,9 +1093,29 @@ Verify: {verify}
 {references}{notes}"""
 
 
+# Letters NFKD leaves whole or would reduce to the wrong base letter: Cyrillic, Greek, a few Latin. `x=` drops x.
+_TRANSLIT = dict(
+    pair.split("=")
+    for pair in (
+        "а=a б=b в=v г=g д=d е=e ё=yo ж=zh з=z и=i й=y к=k л=l м=m н=n о=o п=p р=r с=s т=t у=u ф=f х=kh ц=ts ч=ch "
+        "ш=sh щ=shch ъ= ы=y ь= э=e ю=yu я=ya є=ye і=i ї=yi ґ=g ў=u ђ=dj ј=j љ=lj њ=nj ћ=c џ=dz ѓ=g ќ=k ѕ=dz "
+        "α=a β=v γ=g δ=d ε=e ζ=z η=i θ=th ι=i κ=k λ=l μ=m ν=n ξ=x ο=o π=p ρ=r σ=s ς=s τ=t υ=y φ=f χ=ch ψ=ps ω=o "
+        "ß=ss æ=ae œ=oe ø=o đ=d ð=d þ=th ł=l ı=i"
+    ).split()
+)
+
+
 def title_slug(title: str) -> str:
-    title = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
-    return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:60].rstrip("-") or "untitled"
+    """ASCII slug of a title. Cyrillic, Greek and accented Latin letters are transliterated; a script with no
+    table here (CJK, Arabic, ...) is dropped, so a title made only of it is `untitled`."""
+    letters = []
+    for c in title.lower():
+        if c in _TRANSLIT:
+            letters.append(_TRANSLIT[c])
+        else:  # accents come off through NFKD; a base letter it exposes may still need the table (Greek tonos)
+            letters.extend(_TRANSLIT.get(d, d) for d in unicodedata.normalize("NFKD", c))
+    ascii_title = "".join(letters).encode("ascii", "ignore").decode("ascii")
+    return re.sub(r"[^a-z0-9]+", "-", ascii_title).strip("-")[:60].rstrip("-") or "untitled"
 
 
 def resolve_ticket(tree: dict, text: str) -> dict:
