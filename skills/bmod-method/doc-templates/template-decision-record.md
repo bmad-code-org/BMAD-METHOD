@@ -1,9 +1,12 @@
 ---
 title: ""
 template: decision-record
-version: 1.0.0
+version: 1.1.0
 description: "Recording any decision: context, options, choice and consequences."
 not_for: "Asking someone to approve the choice (`proposal`)."
+paced: true
+facilitation_order: [context, decision-drivers?, options-considered, decision, consequences, confirmation?, links?, status]
+guidance: guidance-planning
 rubric: rubric-planning
 status: draft
 created: ""
@@ -27,22 +30,22 @@ updated: ""
 # {title}
 
 ## Status
-<!-- required. The user must pick exactly one of: proposed, accepted, rejected, deprecated, superseded. Superseded names the record that replaces this one. Then who decided and when. -->
+<!-- The user must pick exactly one of: proposed, accepted, rejected, deprecated, superseded. Superseded names the record that replaces this one. Then who decided and when. -->
 
 ## Context
-<!-- required. The situation and the forces that make a decision necessary now. -->
+<!-- The situation and the forces that make a decision necessary now. Keep the chosen option out of it; when the user argues for it here, note it for the Decision and ask what forces would be true whatever was chosen. Done when a reader could see why a decision was needed without guessing the outcome. -->
 
 ## Decision drivers
 <!-- optional. The criteria that separated the options, most important first. -->
 
 ## Options considered
-<!-- required. Each real option, including doing nothing, with its main pros and cons against the drivers. If only one option is named, ask what else was considered and what tipped it. -->
+<!-- Each real option, including doing nothing, with its main pros and cons against the drivers. You are the advocate for every option not chosen: make the best case for each before the user rules it out. If only one option is named, ask what else was considered and what tipped it. Done when each option is stated as fairly as its supporters would. -->
 
 ## Decision
-<!-- required. The chosen option and the reason it won. -->
+<!-- The chosen option and the reason it won. -->
 
 ## Consequences
-<!-- required. What becomes easier, what becomes harder, what it costs, and the follow-up work it creates. If only upsides come back, ask what the team gives up. -->
+<!-- What becomes easier, what becomes harder, what it costs, and the follow-up work it creates. You are the person who inherits this decision in a year: ask what they will wish had been written down. If only upsides come back, ask what the team gives up. Done when the costs are as specific as the benefits. -->
 
 ## Confirmation
 <!-- include when: the decision can be checked later. The review, test, metric or date that shows whether it held. -->

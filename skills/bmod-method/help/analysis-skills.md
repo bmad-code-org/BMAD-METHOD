@@ -1,6 +1,6 @@
 # Analysis documents in detail
 
-Read this when the question is about the brief or the PRFAQ Mary (`bmad-agent-analyst`) coaches: what each gives, when to pick it, when not to, and how the two relate. Both exist to give Sofia (`bmad-agent-po`) better input for a ticket's requirements. Mary runs them through `bmad-facilitate`, so the fast path, coaching path, review and polish are the engine's, and a team adds rules to either with a file in `_bmad/custom/facilitate-templates/`.
+Read this when the question is about the brief or the PRFAQ Mary (`bmad-agent-analyst`) coaches: what each gives, when to pick it, when not to, and how the two relate. Both exist to give Sofia (`bmad-agent-po`) better input for a ticket's requirements. Mary runs them through `bmad-facilitate`, so the fast path, coaching path, review and polish are the engine's; both are paced, walked one section at a time in order with the map shown first, and a team adds rules to either with a file in `_bmad/custom/facilitate-templates/`.
 
 **The brief** (`brief`) — describes a product the user already believes in, or pitches it. The light way to give Sofia good input: more than a hand-written intent file, much less than a full PRD.
 - Gives: a 1-2 page brief (executive summary, problem, solution, what makes it different, who it serves, success criteria, scope, an optional ask and vision) that is the user's own.

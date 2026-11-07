@@ -1,9 +1,11 @@
 ---
 title: ""
 template: security-review
-version: 1.0.0
+version: 1.1.0
 description: "Reviewing a system against a standard such as the OWASP Top 10 or STRIDE."
 not_for: "An incident that has happened (`postmortem`)."
+facilitation_order: [scope-and-system, architecture-and-data-flows, key-request-flows?, findings, risk-decisions?, remediation-plan, open-questions]
+guidance: guidance-planning
 rubric: rubric-planning
 methods: methods-security.csv
 status: draft
@@ -26,22 +28,22 @@ updated: ""
 ## Table of Contents
 
 ## Scope and system
-<!-- required. What is reviewed and what is not, the standard and rows covered, what the system does, who uses it and the data it holds. The user must pick the standard from the method catalog's `category` values; a standard not listed needs its rows added to the catalog first. -->
+<!-- What is reviewed and what is not, the standard and rows covered, what the system does, who uses it and the data it holds. The user must pick the standard from the method catalog's `category` values; a standard not listed needs its rows added to the catalog first. -->
 
 ## Architecture and data flows
-<!-- required. Components, where data enters, moves and rests, and the trust boundaries it crosses. diagram: flowchart -->
+<!-- Components, where data enters, moves and rests, and the trust boundaries it crosses. diagram: flowchart -->
 
 ## Key request flows
 <!-- include when: authentication, payment or a multi-party exchange carries the risk. The steps across components and boundaries. diagram: sequence -->
 
 ## Findings
-<!-- required. A subsection per category reviewed; per row: item, status, evidence, severity for gaps. Status must be exactly one of: pass, gap, unverified (nobody knows yet; the check to run is the action), not applicable. Severity must be exactly one of: critical, high, medium, low. -->
+<!-- A subsection per category reviewed; per row: item, status, evidence, severity for gaps. Status must be exactly one of: pass, gap, unverified (nobody knows yet; the check to run is the action), not applicable. Severity must be exactly one of: critical, high, medium, low. -->
 
 ## Risk decisions
 <!-- include when: a gap will not be fixed now. The risk, who accepted it, why, and when it is revisited. -->
 
 ## Remediation plan
-<!-- required. Each gap to fix: action, owner, priority, target date or milestone. -->
+<!-- Each gap to fix: action, owner, priority, target date or milestone. -->
 
 ## Open questions
-<!-- required. What could not be checked, and who can answer. -->
+<!-- What could not be checked, and who can answer. -->

@@ -43,10 +43,13 @@ def test_description_keeps_its_colon(tmp_path):
     assert list_templates.scan([str(tmp_path)])["templates"][0]["description"] == "Asking for money: a grant or a bid."
 
 
-def test_rubric_and_methods_resolve_beside_the_template(tmp_path):
-    (tmp_path / "t.md").write_text(template("a", extra="rubric: rubric-a.md\nmethods: methods-a.csv\n"))
+def test_rubric_methods_and_guidance_resolve_beside_the_template(tmp_path):
+    (tmp_path / "t.md").write_text(
+        template("a", extra="rubric: rubric-a.md\nmethods: methods-a.csv\nguidance: guidance-a.md\n")
+    )
     found = list_templates.scan([str(tmp_path)])["templates"][0]
     assert found["rubric"] == str(tmp_path / "rubric-a.md")
+    assert found["guidance"] == str(tmp_path / "guidance-a.md")
     assert found["methods"] == str(tmp_path / "methods-a.csv")
 
 
@@ -340,3 +343,67 @@ def test_agent_keeps_templates_naming_it_and_its_own_unnamed_ones(tmp_path, caps
     (shared / "d.md").write_text(template("other", extra="agents: [bmad-agent-pm]\n"))
     assert list_templates.main([str(own), str(shared), "--agent", "bmad-agent-analyst"]) == 0
     assert [t["id"] for t in json.loads(capsys.readouterr().out)["templates"]] == ["mine", "named"]
+
+
+ORDERED = """---
+template: t
+description: "Use it."
+facilitation_order: [problem, what-makes-it-different, vision?, summary]
+---
+
+# {title}
+
+## Table of Contents
+
+## Summary
+<!-- The whole thing. -->
+
+## Problem
+
+## What makes it different?
+
+## Vision
+<!-- optional. Where it goes. -->
+"""
+
+
+def test_facilitation_order_comes_back_as_a_list_with_no_problems(tmp_path):
+    (tmp_path / "t.md").write_text(ORDERED)
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert found["facilitation_order"] == ["problem", "what-makes-it-different", "vision?", "summary"]
+    assert found["order_problems"] == []
+
+
+def test_order_problems_name_unknown_repeated_and_unlisted_sections(tmp_path):
+    broken = ORDERED.replace(
+        "[problem, what-makes-it-different, vision?, summary]", "[problem, problem, scope, vision?]"
+    )
+    (tmp_path / "t.md").write_text(broken)
+    problems = list_templates.scan([str(tmp_path)])["templates"][0]["order_problems"]
+    assert problems == [
+        "`problem` is listed twice",
+        "`scope` names no heading",
+        "heading `summary` is not listed",
+        "heading `what-makes-it-different` is not listed",
+    ]
+
+
+def test_an_extension_without_an_order_adds_sections_outside_it(tmp_path):
+    (tmp_path / "t.md").write_text(ORDERED)
+    (tmp_path / "e.md").write_text("---\nextends: t\n---\n\n## Security sign-off\n<!-- After Problem. -->\n")
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert found["facilitation_order"][0] == "problem"
+    assert found["order_problems"] == []
+
+
+def test_an_extension_order_replaces_the_template_order_and_must_cover_both(tmp_path):
+    (tmp_path / "t.md").write_text(ORDERED)
+    (tmp_path / "e.md").write_text(
+        "---\nextends: t\nfacilitation_order: [problem, security-sign-off, summary]\n---\n\n## Security sign-off\n"
+    )
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert found["facilitation_order"] == ["problem", "security-sign-off", "summary"]
+    assert found["order_problems"] == [
+        "heading `what-makes-it-different` is not listed",
+        "heading `vision` is not listed",
+    ]

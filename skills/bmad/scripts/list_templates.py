@@ -13,12 +13,18 @@ after the sources. A file is a template when its frontmatter has `template:`, th
 A file with `extends:` adds to the template of that id wherever it sits, and an earlier
 extension's values win over a later one's and the template's. A missing local path adds nothing
 and is listed. `--agent <skill>` keeps only that agent's templates: those whose `agents:` list names
-it, and those with no list in that skill's own folder. `rubric`, `methods` and `style` are relative to their file and come back resolved; a bare name
+it, and those with no list in that skill's own folder.
+
+`facilitation_order` lists a template's `##` sections by id, each heading lowercased with its
+spaces as hyphens, `?` marking one that is not required. An extension's list replaces the
+template's. Each listed id must name a heading, no id may repeat, and every heading of the
+template, and of its extensions when one of them set the list, must be listed; what breaks this
+comes back in `order_problems`. `guidance`, `rubric`, `methods` and `style` are relative to their file and come back resolved; a bare name
 with no extension comes back as it is.
 
 Prints JSON:
-  templates     id, version, description, not_for, category, agents, rubric, methods, output, style, file,
-                source, extensions, in search order
+  templates     id, version, description, not_for, category, agents, facilitation_order, guidance, rubric,
+                methods, output, style, file, source, extensions, order_problems, in search order
   shadowed      id, file, source, kept: templates hidden by an earlier one with the same id
   orphaned      extends, file, source: extensions whose template was not found
   unreachable   source, reason: sources that could not be read
@@ -47,7 +53,11 @@ GITHUB = re.compile(
     r"(?:/(?:tree|blob)/(?P<tree_ref>[^/@]+)(?:/(?P<path>[^@]*?))?)?/?(?:@(?P<ref>[^/]+))?/?$"
 )
 MODULE_FOLDER = "doc-templates"
-FIELDS = ("version", "description", "not_for", "category", "agents", "rubric", "methods", "output", "style")
+FIELDS = (
+    "version", "description", "not_for", "category", "agents", "facilitation_order", "guidance", "rubric", "methods", "output", "style",
+)  # fmt: skip
+SECTION = re.compile(r"^##[ \t]+(.+?)[ \t#]*$")
+FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 TIMEOUT = 30
 
 
@@ -121,6 +131,39 @@ def module_libraries(roots: list[str], folder_name: str = MODULE_FOLDER) -> list
     return list(libraries.values())
 
 
+def listed(value: str) -> list[str]:
+    """A one-line YAML list, `[a, 'b']`, as its items."""
+    return [unquote(name.strip()) for name in value.strip("[]").split(",") if name.strip()]
+
+
+def section_id(heading: str) -> str:
+    """A heading's id: lowercase, punctuation dropped, spaces as hyphens, as its anchor is built."""
+    return re.sub(r"[^\w\- ]", "", heading.strip().lower()).replace(" ", "-")
+
+
+def section_ids(text: str) -> list[str]:
+    """The ids of a file's `##` headings outside code fences, the table of contents left out."""
+    ids, fence = [], None
+    for line in text.replace("\r\n", "\n").split("\n"):
+        m = FENCE.match(line)
+        if m:
+            fence = None if fence and m.group(1)[0] == fence else (fence or m.group(1)[0])
+            continue
+        heading = SECTION.match(line) if fence is None else None
+        if heading and section_id(heading.group(1)) != "table-of-contents":
+            ids.append(section_id(heading.group(1)))
+    return ids
+
+
+def order_problems(order: list[str], required_headings: list[str], known: list[str]) -> list[str]:
+    """What is wrong with a facilitation order against the headings it must cover."""
+    ids = [entry.rstrip("?") for entry in order]
+    problems = [f"`{i}` is listed twice" for i in sorted({i for i in ids if ids.count(i) > 1})]
+    problems += [f"`{i}` names no heading" for i in dict.fromkeys(ids) if i not in known]
+    problems += [f"heading `{h}` is not listed" for h in dict.fromkeys(required_headings) if h not in ids]
+    return problems
+
+
 def fields(file: str, meta: dict[str, str]) -> dict[str, object]:
     """What a template or extension sets, with its paths resolved."""
     return {
@@ -128,7 +171,9 @@ def fields(file: str, meta: dict[str, str]) -> dict[str, object]:
         "description": meta.get("description", ""),
         "not_for": meta.get("not_for", ""),
         "category": meta.get("category", ""),
-        "agents": [unquote(name.strip()) for name in meta.get("agents", "").strip("[]").split(",") if name.strip()],
+        "agents": listed(meta.get("agents", "")),
+        "facilitation_order": listed(meta.get("facilitation_order", "")),
+        "guidance": beside(file, meta.get("guidance", "")),
         "rubric": beside(file, meta.get("rubric", "")),
         "methods": beside(file, meta.get("methods", "")),
         "output": meta.get("output", ""),
@@ -159,7 +204,7 @@ def scan(sources: list[str]) -> dict:
             meta = frontmatter(text)
             if meta.get("extends"):
                 extensions.setdefault(meta["extends"], []).append(
-                    {"file": file, "source": source, **fields(file, meta)}
+                    {"file": file, "source": source, "_headings": section_ids(text), **fields(file, meta)}
                 )
                 continue
             template_id = meta.get("template")
@@ -175,6 +220,8 @@ def scan(sources: list[str]) -> dict:
                 "file": file,
                 "source": source,
                 "extensions": [],
+                "order_problems": [],
+                "_headings": section_ids(text),
             }
     for base, adding in extensions.items():
         template = found.get(base)
@@ -184,6 +231,14 @@ def scan(sources: list[str]) -> dict:
         template["extensions"] = [e["file"] for e in adding]
         for key in FIELDS:
             template[key] = next((e[key] for e in adding if e[key]), template[key])
+        template["_extension_headings"] = [h for e in adding for h in e["_headings"]]
+        template["_order_from_extension"] = any(e["facilitation_order"] for e in adding)
+    for template in found.values():
+        own, added = template.pop("_headings"), template.pop("_extension_headings", [])
+        if template["facilitation_order"]:
+            must = own + added if template.pop("_order_from_extension", False) else own
+            template["order_problems"] = order_problems(template["facilitation_order"], must, own + added)
+        template.pop("_order_from_extension", None)
     return {
         "templates": list(found.values()),
         "shadowed": shadowed,
