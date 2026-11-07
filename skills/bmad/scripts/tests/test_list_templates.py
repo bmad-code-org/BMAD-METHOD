@@ -467,17 +467,74 @@ def test_a_bare_view_name_stays_a_name(tmp_path):
     assert list_templates.scan([str(tmp_path)])["templates"][0]["view"] == "slides"
 
 
-def test_an_extension_order_replaces_the_template_order_and_must_cover_both(tmp_path):
+def test_a_template_section_an_extension_order_leaves_out_is_removed(tmp_path):
     (tmp_path / "t.md").write_text(ORDERED)
     (tmp_path / "e.md").write_text(
         "---\nextends: t\nfacilitation_order: [problem, security-sign-off, summary]\n---\n\n## Security sign-off\n"
     )
     found = list_templates.scan([str(tmp_path)])["templates"][0]
     assert found["facilitation_order"] == ["problem", "security-sign-off", "summary"]
-    assert found["order_problems"] == [
-        "heading `what-makes-it-different` is not listed",
-        "heading `vision` is not listed",
-    ]
+    assert found["removed"] == ["what-makes-it-different", "vision"]
+    assert found["order_problems"] == []
+
+
+def test_an_extension_order_must_list_the_extensions_own_sections(tmp_path):
+    (tmp_path / "t.md").write_text(ORDERED)
+    (tmp_path / "e.md").write_text(
+        "---\nextends: t\nfacilitation_order: [problem, what-makes-it-different, vision?, summary]\n---\n\n## Security sign-off\n"
+    )
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert found["order_problems"] == ["heading `security-sign-off` is not listed"]
+    assert found["removed"] == []
+
+
+def test_brief_keeps_only_what_choosing_needs(tmp_path, capsys):
+    (tmp_path / "t.md").write_text(template("a", extra="rubric: r.md\nfacilitation_order: [x]\n"))
+    list_templates.main([str(tmp_path), "--brief"])
+    found = json.loads(capsys.readouterr().out)["templates"]
+    assert found == [{"id": "a", "description": "Use it.", "not_for": "", "category": "", "output": ""}]
+
+
+def test_template_keeps_one_and_an_unknown_id_exits_1(tmp_path, capsys):
+    (tmp_path / "a.md").write_text(template("a"))
+    (tmp_path / "b.md").write_text(template("b"))
+    assert list_templates.main([str(tmp_path), "--template", "b"]) == 0
+    assert ids(json.loads(capsys.readouterr().out)) == ["b"]
+    assert list_templates.main([str(tmp_path), "--template", "c"]) == 1
+    assert "no template" in json.loads(capsys.readouterr().out)["error"]
+
+
+def test_merge_writes_one_file_with_the_customizations_first(tmp_path, capsys):
+    lib, custom, run = tmp_path / "lib", tmp_path / "custom", tmp_path / "run"
+    lib.mkdir()
+    custom.mkdir()
+    (lib / "t.md").write_text(ORDERED.replace("description:", "rubric: r.md\ndescription:"))
+    (custom / "e.md").write_text(
+        "---\nextends: t\nhtml_view: always\nfacilitation_order: [codename, problem, summary]\n---\n\n"
+        "<!-- inputs: Ask for a codename first. -->\n\n## Codename\n<!-- First. -->\n"
+    )
+    list_templates.main([str(custom), str(lib), "--template", "t", "--merge", str(run / ".template.md")])
+    result = json.loads(capsys.readouterr().out)
+    text = (run / ".template.md").read_text()
+    assert result["merged"] == str(run / ".template.md")
+    assert "_text" not in result["templates"][0]
+    front = text.split("---")[1]
+    assert 'html_view: "always"' in front
+    assert "facilitation_order: [codename, problem, summary]" in front
+    assert f'rubric: "{(lib / "r.md").resolve()}"' in front
+    assert "extends" not in front
+    assert (
+        text.index("Ask for a codename first.")
+        < text.index(f"The template, from {lib / 't.md'}")
+        < text.index("## Problem")
+    )
+    assert "## Vision" not in text and "## What makes it different?" not in text
+    assert "## Summary" in text
+
+
+def test_merge_keeps_a_heading_inside_a_fence_and_the_title(tmp_path):
+    text = "# {title}\n\n## Keep\n\n```\n## Drop\n```\n\n## Drop\nGone.\n\n## After\n"
+    assert list_templates.drop_sections(text, ["drop"]) == "# {title}\n\n## Keep\n\n```\n## Drop\n```\n\n## After\n"
 
 
 def test_a_heading_inside_a_code_fence_is_not_a_section():
@@ -497,3 +554,39 @@ def test_an_order_that_is_not_a_one_line_list_is_reported(tmp_path):
     found = list_templates.scan([str(tmp_path)])["templates"][0]
     assert found["facilitation_order"] == []
     assert found["order_problems"] == ["`facilitation_order` must be a one-line list, such as `[problem, scope?]`"]
+
+
+def test_project_root_fills_the_placeholder_in_each_source(tmp_path, capsys):
+    folder = tmp_path / "_bmad" / "custom" / "facilitate-templates"
+    folder.mkdir(parents=True)
+    (folder / "t.md").write_text(template("mine"))
+    list_templates.main(["{project-root}/_bmad/custom/facilitate-templates", "--project-root", str(tmp_path)])
+    result = json.loads(capsys.readouterr().out)
+    assert ids(result) == ["mine"]
+    assert result["missing"] == []
+
+
+def test_merge_works_for_a_template_with_no_extensions(tmp_path, capsys):
+    (tmp_path / "t.md").write_text(ORDERED)
+    assert (
+        list_templates.main([str(tmp_path), "--template", "t", "--merge", str(tmp_path / "run" / ".template.md")]) == 0
+    )
+    text = (tmp_path / "run" / ".template.md").read_text()
+    assert "Customization from" not in text and "## Problem" in text
+
+
+def test_libraries_of_reads_a_skills_template_libraries_and_its_overrides(tmp_path, capsys):
+    skill = tmp_path / "skills" / "bmad-facilitate"
+    skill.mkdir(parents=True)
+    (skill / "customize.toml").write_text(
+        '[workflow]\ntemplate_libraries = ["{project-root}/_bmad/custom/facilitate-templates", "{skill-root}/assets"]\n'
+    )
+    (skill / "assets").mkdir()
+    (skill / "assets" / "t.md").write_text(template("shipped"))
+    custom = tmp_path / "_bmad" / "custom" / "facilitate-templates"
+    custom.mkdir(parents=True)
+    (custom / "e.md").write_text(extension("shipped"))
+    list_templates.main(["--libraries-of", str(skill), "--project-root", str(tmp_path)])
+    found = json.loads(capsys.readouterr().out)["templates"]
+    assert ids({"templates": found}) == ["shipped"]
+    assert found[0]["extensions"] == [str(custom / "e.md")]

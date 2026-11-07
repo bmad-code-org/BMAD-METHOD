@@ -11,7 +11,8 @@ follow; a source with a space and no path separator is a sentence. Each --root i
 folder; the --folder folder (default `doc-templates`) of every module record in it is searched
 after the sources. A file is a template when its frontmatter has `template:`, the template's id.
 A file with `extends:` adds to the template of that id wherever it sits, and an earlier
-extension's values win over a later one's and the template's. A missing local path adds nothing
+extension's values win over a later one's and the template's. `--libraries-of <skill folder>` reads that skill's `workflow.template_libraries`, through its
+customization layers, as the first sources. `--project-root` fills `{project-root}` in each source. A missing local path adds nothing
 and is listed. `--agent <skill>` keeps only that agent's templates: those whose `agents:` list names
 it, those with no list in that skill's own folder, and those with no list that replace one of these.
 
@@ -20,20 +21,27 @@ punctuation dropped and spaces as hyphens, `?` marking one that is not required.
 list replaces the template's. A section an extension adds without a list of its own is appended
 to the order, with `?` when its comment starts `optional` or `include when`. Each listed id must
 name a heading, no id may repeat, and every heading of the template, and of the extensions that
-set a list, must be listed; what breaks this comes back in `order_problems`. `guidance`,
+set a list, must be listed; what breaks this comes back in `order_problems`. An extension's list
+may leave out a heading of the template: that section is removed and named in `removed`. `guidance`,
 `rubric`, `methods`, `style` and `view` are relative to their file and come back resolved; a bare
 name with no extension, such as `slides`, comes back as it is.
+
+`--brief` keeps only each template's id, description, not_for, category and output, for choosing one.
+`--template <id>` keeps only that template; `--merge <path>` then writes it as one file to read
+whole: the merged frontmatter, each extension's body in search order, then the template's body
+without its removed sections, with every path made absolute.
 
 Prints JSON:
   templates     id, version, description, not_for, category, agents, facilitation_order, guidance, rubric,
                 methods, output, style, view, html_view, file, source, extensions, order_problems,
-                in search order
+                removed, in search order
   shadowed      id, file, source, kept, agents: templates hidden by an earlier one with the same id
   orphaned      extends, file, source: extensions whose template was not found
   unreachable   source, reason: sources that could not be read
   missing       local paths that do not exist
   tool_sources  sentences for the agent to follow
-Exits 0, or 2 with no sources and no roots.
+  merged        the path written, with --merge
+Exits 0, 1 when --template names no template, or 2 with no sources and no roots.
 """
 
 from __future__ import annotations
@@ -237,6 +245,7 @@ def scan(sources: list[str]) -> dict:
                         "file": file,
                         "source": source,
                         "_sections": sections(text),
+                        "_text": text,
                         "_bad_order": unreadable_order(meta),
                         **fields(file, meta),
                     }
@@ -256,8 +265,11 @@ def scan(sources: list[str]) -> dict:
                 "file": file,
                 "source": source,
                 "extensions": [],
+                "_extension_texts": [],
                 "order_problems": [],
                 "_headings": section_ids(text),
+                "_text": text,
+                "_own": fields(file, meta),
                 "_bad_order": unreadable_order(meta),
             }
     for base, adding in extensions.items():
@@ -266,6 +278,7 @@ def scan(sources: list[str]) -> dict:
             orphaned.extend({"extends": base, "file": e["file"], "source": e["source"]} for e in adding)
             continue
         template["extensions"] = [e["file"] for e in adding]
+        template["_extension_texts"] = [(e["file"], e["_text"]) for e in adding]
         for key in FIELDS:
             template[key] = next((e[key] for e in adding if e[key]), template[key])
         own, order = template["_headings"], list(template["facilitation_order"])
@@ -281,10 +294,15 @@ def scan(sources: list[str]) -> dict:
                         listed_ids.add(section)
         template["_extension_headings"] = [s for e in adding for s, _ in e["_sections"]]
         template["_must_list"] = [s for e in adding if e["facilitation_order"] for s, _ in e["_sections"]]
+        template["_order_from_extension"] = any(e["facilitation_order"] for e in adding)
         template["_bad_order"] = template["_bad_order"] or any(e["_bad_order"] for e in adding)
     for template in found.values():
         own, added = template.pop("_headings"), template.pop("_extension_headings", [])
-        must = own + template.pop("_must_list", [])
+        must, template["removed"] = own + template.pop("_must_list", []), []
+        if template.pop("_order_from_extension", False):
+            listed_ids = {entry.rstrip("?") for entry in template["facilitation_order"]}
+            template["removed"] = [h for h in dict.fromkeys(own) if h not in listed_ids]
+            must = [h for h in must if h not in template["removed"]]
         if template["facilitation_order"]:
             template["order_problems"] = order_problems(template["facilitation_order"], must, own + added)
         if template.pop("_bad_order") and not template["facilitation_order"]:
@@ -297,6 +315,102 @@ def scan(sources: list[str]) -> dict:
         "missing": missing,
         "tool_sources": tool_sources,
     }
+
+
+PATH_KEYS = ("guidance", "rubric", "methods", "style", "view")
+BRIEF = ("id", "description", "not_for", "category", "output")
+
+
+def body(text: str) -> str:
+    """A file's text after its frontmatter."""
+    text = text.replace("\r\n", "\n")
+    m = FRONTMATTER.match(text)
+    return text[m.end() :].strip("\n") if m else text.strip("\n")
+
+
+def drop_sections(text: str, ids: list[str]) -> str:
+    """`text` without the `##` sections whose ids are listed, each to the next `##` heading."""
+    kept, fence, dropping = [], None, False
+    for line in text.split("\n"):
+        m = FENCE.match(line)
+        if m:
+            marker = m.group(1)
+            if fence is None:
+                fence = (marker[0], len(marker))
+            elif marker[0] == fence[0] and len(marker) >= fence[1] and line.strip() == marker:
+                fence = None
+        elif fence is None and (heading := SECTION.match(line)):
+            dropping = section_id(heading.group(1)) in ids
+        elif fence is None and line.startswith("# "):
+            dropping = False
+        if not dropping:
+            kept.append(line)
+    return "\n".join(kept)
+
+
+def absolute(value: str) -> str:
+    """A local relative path made absolute, so it still resolves from the run folder."""
+    if not value or "://" in value or value.startswith("{") or not Path(value).suffix:
+        return value
+    return str(Path(value).expanduser().resolve())
+
+
+def yaml_value(value: object) -> str:
+    if isinstance(value, list):
+        return "[" + ", ".join(value) + "]"
+    return json.dumps(value, ensure_ascii=False)
+
+
+def merged_frontmatter(template: dict) -> str:
+    """The template's frontmatter with every value its extensions changed, paths made absolute."""
+    m = FRONTMATTER.match(template["_text"].replace("\r\n", "\n"))
+    entries: list[list[str]] = []
+    for line in m.group(1).split("\n") if m else []:
+        if KEY.match(line) or not entries:
+            entries.append([line])
+        else:
+            entries[-1].append(line)
+    own = template["_own"]
+    values = {key: template[key] for key in FIELDS if template[key] != own[key]}
+    raw = frontmatter(template["_text"])
+    values.update({key: absolute(template[key]) for key in PATH_KEYS if absolute(template[key]) != raw.get(key, "")})
+    lines, written = [], set()
+    for entry in entries:
+        key = KEY.match(entry[0]).group(1) if KEY.match(entry[0]) else None
+        if key in values:
+            lines.append(f"{key}: {yaml_value(values[key])}")
+            written.add(key)
+        else:
+            lines.extend(entry)
+    lines += [f"{key}: {yaml_value(values[key])}" for key in FIELDS if key in values and key not in written]
+    return "---\n" + "\n".join(lines) + "\n---"
+
+
+def merged(template: dict) -> str:
+    """The template and its extensions as one file, the extensions first."""
+    parts = [merged_frontmatter(template)]
+    for file, text in template["_extension_texts"]:
+        parts.append(
+            f"<!-- Customization from {file}. It changes the template below and wins where they conflict:"
+            " each of its sections goes where its comment says, and a comment saying it replaces or removes"
+            " part of the template is followed. -->"
+        )
+        if body(text):
+            parts.append(body(text))
+    parts.append(f"<!-- The template, from {template['file']}. -->")
+    parts.append(drop_sections(body(template["_text"]), template["removed"]))
+    return "\n\n".join(parts) + "\n"
+
+
+def libraries_of(skill: str, project_root: str | None) -> list[str]:
+    """A skill's `workflow.template_libraries` after its customization layers, `{skill-root}` filled."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from config_utils import load_customization
+
+    skill_dir = Path(skill).expanduser().resolve()
+    root = Path(project_root).resolve() if project_root else None
+    libraries = load_customization(root, skill_dir).get("workflow", {}).get("template_libraries", [])
+    return [str(lib).replace("{skill-root}", str(skill_dir)) for lib in libraries]
 
 
 def offers(agents: list[str], file: str, agent: str) -> bool:
@@ -321,13 +435,49 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--root", action="append", default=[], help="a skills folder to search for module templates")
     parser.add_argument("--folder", default=MODULE_FOLDER, help="the templates folder in each module record")
     parser.add_argument("--agent", help="keep only the templates this agent skill offers")
+    parser.add_argument("--project-root", help="the folder that fills `{project-root}` in each source")
+    parser.add_argument(
+        "--libraries-of", action="append", default=[], help="a skill whose template_libraries come first (repeatable)"
+    )
+    parser.add_argument("--brief", action="store_true", help="keep only what choosing a template needs")
+    parser.add_argument("--template", help="keep only the template with this id")
+    parser.add_argument("--merge", help="with --template, write the template and its extensions as one file here")
     args = parser.parse_args(argv)
-    if not args.sources and not args.root:
+    if not args.sources and not args.root and not args.libraries_of:
         parser.print_usage(sys.stderr)
         return 2
-    result = scan(args.sources + module_libraries(args.root, args.folder))
+    try:
+        sources = [lib for skill in args.libraries_of for lib in libraries_of(skill, args.project_root)] + args.sources
+    except Exception as e:  # a broken customization file names itself; the listing cannot go on without it
+        print(json.dumps({"error": f"could not read the template libraries: {e}"}, indent=2))
+        return 1
+    sources = [s.replace("{project-root}", args.project_root) if args.project_root else s for s in sources]
+    result = scan(sources + module_libraries(args.root, args.folder))
     if args.agent:
         result["templates"] = [t for t in result["templates"] if owned_by(t, args.agent, result["shadowed"])]
+    if args.template:
+        result["templates"] = [t for t in result["templates"] if t["id"] == args.template]
+        if not result["templates"]:
+            print(
+                json.dumps(
+                    {
+                        "error": f"no template `{args.template}`",
+                        **{k: v for k, v in result.items() if k != "templates"},
+                    },
+                    indent=2,
+                )
+            )
+            return 1
+        if args.merge:
+            out = Path(args.merge).expanduser()
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(merged(result["templates"][0]), encoding="utf-8")
+            result["merged"] = str(out)
+    for template in result["templates"]:
+        for key in [k for k in template if k.startswith("_")]:
+            del template[key]
+    if args.brief:
+        result["templates"] = [{key: t[key] for key in BRIEF} for t in result["templates"]]
     print(json.dumps(result, indent=2))
     return 0
 

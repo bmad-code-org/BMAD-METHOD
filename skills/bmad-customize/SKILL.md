@@ -77,16 +77,16 @@ Overrides are sparse: only the fields being changed. Never copy the whole `custo
 
 Every document `bmad-facilitate` writes, John's (`bmad-agent-pm`) and Mary's (`bmad-agent-analyst`) included, comes from a markdown template, not from TOML. The format is at `https://docs.bmad-method.org/customize/write-a-document-template/`.
 
-1. Find the template. Resolve `template_libraries` under `[workflow]` for `bmad-facilitate` and for each installed agent whose `customize.toml` sets it, with `resolve_customization.py`, fill `{project-root}` and `{skill-root}`, then run `uv run {project-root}/_bmad/scripts/list_templates.py <entries> --root <folder>`, `bmad-facilitate`'s entries first, one `--root` per skills folder. Match the user's words to a template id; when more than one fits, such as `prd` and `prd-light`, ask which, or both.
+1. Find the template: `uv run {project-root}/_bmad/scripts/list_templates.py --libraries-of <bmad-facilitate's folder> --libraries-of <each installed agent whose customize.toml sets template_libraries> --project-root {project-root} --root <folder> --brief`, one `--root` per skills folder. Match the user's words to a template id; when more than one fits, such as `prd` and `prd-light`, ask which, or both.
 2. Sort each change. About this document type → a template file: a section to add, one made required or optional, the order, an input to ask for, a writing or review rule, its rubric, its view, or whether its HTML view is made (`html_view`). For every document → `bmad-facilitate.toml` through Steps 4–6: `html_view` for all, `style`, `doc_standards`, reviewers, output. When it could be either, ask, offering this document type first.
 3. Extend by default: `{project-root}/_bmad/custom/facilitate-templates/<id>-<purpose>.md`, or the user's existing extension of that id, updated. Read the template first, then write only the change under `extends: <id>` frontmatter:
-   - A `##` section with a comment saying where it goes and what to ask. It is required unless the comment starts `optional` or `include when`.
+   - A `##` section with a comment saying where it goes and what to ask. It is required unless the comment starts `optional` or `include when`. To replace a template section, use its heading and say so in the comment.
    - `stance`, `inputs`, `writing` or `done when` comments, added to the template's.
    - `description`, `not_for`, `guidance`, `rubric`, `methods`, `output`, `style`, `view` or `html_view` frontmatter, replacing the template's.
-   - `facilitation_order` only to reorder the template's own sections; it replaces the whole order, so list every section.
-4. Copy only to change what the template already says, such as rewording or removing a section: copy it into that folder with its `template` id kept, and say the copy no longer receives updates to the original.
+   - `facilitation_order` only to reorder or remove the template's own sections; it replaces the whole order, and a template section it leaves out is removed.
+4. Copy only when the user wants to rebuild the template: copy it into that folder with its `template` id kept, and say the copy no longer receives updates to the original.
 5. Placement: the project folder is the team's, committed. A personal template for every project goes in `~/.bmad/facilitate-templates/`.
-6. Show the file, wait for an explicit yes, and write it. Verify by running the listing again: show the template's `extensions`, merged `facilitation_order`, `view` and `html_view`, and fix any `order_problems` before finishing.
+6. Show the file, wait for an explicit yes, and write it. Verify by running the listing again with `--template <id>` in place of `--brief`: show the template's `extensions`, merged `facilitation_order`, `removed`, `view` and `html_view`, and fix any `order_problems` before finishing.
 
 ## Step 5: Team or user placement
 

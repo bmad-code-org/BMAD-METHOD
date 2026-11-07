@@ -209,7 +209,7 @@ Add the comments when you want the coaching, the optional sections, or the diagr
 
 ## Extend a template
 
-An extension adds to a template without copying it, so updates to the original still reach you. Save a file with `extends:` and the template's id in any library or module, and every run of that template includes it. Fernhollow Bank, a fictional company, uses the `proposal` template as it is, but every proposal must name an approval track from a fixed list and leave room for reviewers:
+An extension changes a template without copying it, so updates to the original still reach you. On every run the skill merges the template and its extensions into one file, the extensions first, and works from that file. It saves that file as `.template.md` in the run folder, so you can see exactly what the skill read. Save a file with `extends:` and the template's id in any library or module, and every run of that template includes it. Fernhollow Bank, a fictional company, uses the `proposal` template as it is, but every proposal must name an approval track from a fixed list and leave room for reviewers:
 
 ```markdown
 ---
@@ -229,9 +229,9 @@ An extension can hold anything a template can:
 
 | In the extension | Effect |
 | --- | --- |
-| A section | Added where its comment says, and taken up at that point in the conversation. If the heading it names is gone, the skill places it by judgment. It is required unless its comment starts `optional` or `include when`, the same rule as a template's sections. |
-| `facilitation_order` frontmatter | Replaces the template's whole order, so list the template's sections and your own. Set it only to reorder the template's sections; the template list reports any it leaves out. |
-| `stance`, `inputs`, `writing` or `done when` comments | Added to the template's. A policy to load goes in `inputs`; a review rule goes in `done when`. |
+| A section | Added where its comment says, and taken up at that point in the conversation. If the heading it names is gone, the skill places it by judgment. It is required unless its comment starts `optional` or `include when`, the same rule as a template's sections. With the same heading as a template section, it replaces that section or adds to it, as its comment says. |
+| `facilitation_order` frontmatter | Replaces the template's whole order. A template section it leaves out is removed from the document, and the template list names it under `removed`. Set it only to reorder or remove the template's sections. |
+| `stance`, `inputs`, `writing` or `done when` comments | Added to the template's, and they win where they disagree with it. A policy to load goes in `inputs`; a review rule goes in `done when`. |
 | `description`, `not_for`, `guidance`, `rubric`, `methods`, `output`, `style`, `view` or `html_view` frontmatter | Replaces the template's value. |
 
 This extension opens every PRD with a quote and always makes its HTML view, while John's updates to the PRD still arrive:
@@ -246,7 +246,7 @@ html_view: always
 <!-- First, right under the title. Ask the user for a quote unique to this product before anything else. -->
 ```
 
-When extensions conflict, the first in search order wins. Use a copy instead when you want to change what a template already says.
+When extensions conflict, the first in search order wins. Use a copy only to rebuild a template.
 
 Rules for every document, whatever the template, go in `persistent_facts`, `doc_standards` and `finalize_reviewers` under `[workflow]` instead.
 
