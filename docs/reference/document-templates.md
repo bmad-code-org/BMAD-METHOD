@@ -20,7 +20,7 @@ To use one as a starting point, copy it into `_bmad/custom/facilitate-templates/
 | `pitch-deck` | Founder | A talk or pitch with slides |
 | `character` | Creative Intelligence Suite 0.4.0 and later | A fictional character for a story, game or campaign, on a one-page sheet |
 
-The BMad Method also ships John's planning templates and `brd`; see [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md).
+The BMad Method also ships the planning templates John (`bmad-agent-pm`) and Mary (`bmad-agent-analyst`) run, `brief`, `prfaq` and `brd` among them; see [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md).
 
 ## What a template can do
 
@@ -30,12 +30,16 @@ The BMad Method also ships John's planning templates and `brd`; see [Define Requ
 | Make the user pick from a list | `decision-record`, Status | The section comment names the allowed values |
 | Make the user pick from a source | `security-review`, Scope and system | The section comment points at the method catalog |
 | Drive questions from a catalog | `security-review`, `methods-security.csv` | The `methods` frontmatter names a CSV of key questions |
+| Walk the sections in order, each with its own voice | `prfaq` in `bmad-agent-analyst/assets/` | `paced: true` in the frontmatter, and each section comment is the brief for that part |
 | Change how a path runs | `security-review`, `stance` | The comment says what the fast path does for this document |
+| Use the shared planning rules | Any shipped template | `guidance: guidance-planning` adds stakes levels, `[ASSUMPTION]` tags in the body, ids and testable requirements |
 | Review against its own rubric | `proposal`, `rubric-proposal.md` | The `rubric` frontmatter names the file |
-| Include a section only when it applies | `proposal`, Alternatives | An `include when:` section comment |
+| Set the order and what is required | Any shipped template | `facilitation_order` lists the sections by id, `?` on those not required |
+| Include a section only when it applies | `proposal`, Alternatives | `alternatives?` in the order and an `include when:` section comment |
 | Draw a diagram | `postmortem`, Timeline | A `diagram:` kind in the section comment |
 | Add a table of contents | `proposal` | A bare `## Table of Contents` heading after the title |
 | Render as slides | `pitch-deck` | `view: slides` in the frontmatter |
+| Render the same layout every time | `prfaq` in `bmad-agent-analyst/assets/`, `prfaq-view.html`; also `brief` and John's `pitch` | `view` names an HTML file whose slots a script fills at close |
 | Have a page written for each document | `character`, `character-sheet.html` | `view` names a starter, and a `view` comment gives the brief |
 | Propose rather than only ask | `character`, `stance` | The comment invites proposals; one the user accepts is theirs |
 | Write several files | `postmortem`, `companions` | The comment says when to write the customer notice and what it holds |

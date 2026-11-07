@@ -14,7 +14,7 @@ implementation reads.
 
 [Choose a Planning Path](./choose-a-planning-path.md) decides the size. Most
 work goes straight to Sofia from whatever defined the intent: a forged idea,
-a PRFAQ summary, a brainstorm intent, an issue. A PRD becomes necessary when
+a PRFAQ, a brainstorm intent, an issue. A PRD becomes necessary when
 several people must agree on what the product is or several epics must stay
 aligned; [Plan Inside an Organization](./plan-inside-an-organization.md)
 covers that setting. This page covers what each document is for and which
@@ -32,42 +32,25 @@ back where an answer is thin. Sessions can be paused and resumed.
 
 ## Product Brief: Capture Conviction
 
-Ask John, the Product Manager (`bmad-agent-pm`), to create, update, or validate a brief ("write a product brief"): a one- to
+Ask Mary, the Business Analyst (`bmad-agent-analyst`), to create, update, or validate a brief ("write a product brief"): a one- to
 two-page account of the product concept, right-sized to its purpose. A passion
-project does not get investor-grade rigor; a pitch input does. He reads
-the stakes early and calibrates how hard he pushes.
+project does not get investor-grade rigor; a pitch input does. She reads
+the stakes early and calibrates how hard she pushes.
 
 Use it when your concept is relatively clear and you want it written down
 before a PRD. It produces `brief-<slug>.md`, which John reads when he writes the PRD. For
 serious market sizing or competitor teardowns, use
-[Deep Recon](./research-a-decision.md). `bmad-product-brief` still writes a brief the older way; it is kept for comparison with John and will be retired.
+[Deep Recon](./research-a-decision.md).
 
 ## PRFAQ: Working Backwards
 
-Run `bmad-prfaq` for Amazon's Working Backwards method as a challenge. You
-write the press release announcing the finished product before anything is
-built, then answer the hardest questions customers and stakeholders would
-ask. Solution-first and technology-first openings get redirected to the
-customer's problem. Vague answers get challenged. When you are stuck it offers
-concrete reframings rather than repeating the question.
+Ask Mary, the Business Analyst (`bmad-agent-analyst`), for Amazon's Working Backwards method as a challenge ("create a PRFAQ", "work backwards"). You write the press release announcing the finished product before anything is built, then answer the hardest questions customers and stakeholders would ask. Solution-first and technology-first openings get redirected to the customer's problem. Vague answers get challenged. When you are stuck she offers concrete alternatives rather than repeating the question.
 
-A run moves through five stages: customer, problem, stakes, and concept; the
-press release; the customer FAQ; the internal FAQ on feasibility and
-trade-offs; and a verdict on the concept's strength. Claims about the market
-and competitors are checked against current research, not assumed. If after a
-few exchanges you cannot name a customer or a problem, it sends you back to
-brainstorming or Forge Idea instead of forcing it.
+The document has four parts: the press release; the customer FAQ; the internal FAQ on feasibility and trade-offs; and a verdict on the concept's strength, written last. Mary shows you the four parts first and takes them in order, finishing each before the next, and her role changes with the part: an editor for the press release, a skeptical customer for the customer FAQ, the stakeholder panel for the internal FAQ. Claims about the market and competitors are checked against current research, not assumed. If after a few exchanges you cannot name a customer or a problem, she sends you back to brainstorming or Forge Idea instead of forcing it.
 
-Use it when you want the concept stress-tested before committing resources.
-If you cannot write a compelling press release, the product is not ready. It
-produces the PRFAQ document plus a short summary a PRD or Sofia can read, and
-it accepts `-H` for an unattended first draft when you supply the customer,
-problem, stakes, and concept up front.
+Use it when you want the concept stress-tested before committing resources. If you cannot write a compelling press release, the product is not ready. It produces `prfaq-<slug>.md` and, beside it, the same document laid out as a press release page in HTML, and it runs headless for an unattended first draft when you say so and supply the customer, problem, stakes, and concept up front.
 
-Brief and PRFAQ both feed a PRD, and the PRFAQ summary can feed Sofia
-directly when no PRD is needed. Choose by how much challenge you want: the
-brief is collaborative discovery, the PRFAQ is the harder path. Neither is
-required; John starts a PRD from a brain dump on his own.
+Brief and PRFAQ both feed a PRD, and the PRFAQ can feed Sofia directly when no PRD is needed. Choose by how much challenge you want: the brief is collaborative discovery, the PRFAQ is the harder path. Neither is required; John starts a PRD from a brain dump on his own.
 
 ## PRD: Agree on What and Why
 
@@ -90,12 +73,12 @@ It answers "what should we build and why." It does not say how; that is
 [Design UX and Architecture](./design-ux-and-architecture.md). It does not
 divide work into stories; that is
 [Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md).
-If you open with a one-pager in mind, John offers the brief; an idea to vet
-goes to the PRFAQ.
+If you open with a one-pager in mind, John points you to Mary for the brief; an idea to vet
+goes to her PRFAQ.
 
 ## Other Planning Documents
 
-Besides the brief and the PRD, John writes a prototype plan, an experiment card, a light PRD for a very simple project, a spec for a coding agent, an opportunity assessment, a business case, a program charter, a strategy narrative, a Shape Up pitch, a business requirements document, a requirements specification, and a launch plan. The work's altitude picks the document: a program takes a charter or a strategy narrative, an epic a PRD or a pitch, and a feature outside the ticket tree a spec for a coding agent. He says why he chose it and names any close alternative, so you can switch. Each works like the PRD: fast or coaching path; create, update, or validate.
+Besides the PRD, John writes a prototype plan, an experiment card, a light PRD for a very simple project, a spec for a coding agent, an opportunity assessment, a business case, a program charter, a strategy narrative, a Shape Up pitch, a requirements specification, and a launch plan. Mary writes the business requirements document that a PRD or requirements specification picks up when a separate party builds the work. The work's altitude picks the document: a program takes a charter or a strategy narrative, an epic a PRD or a pitch, and a feature outside the ticket tree a spec for a coding agent. He says why he chose it and names any close alternative, so you can switch. Each works like the PRD: fast or coaching path; create, update, or validate. The experiment card, opportunity assessment and pitch take their sections in order instead, because each step depends on the one before: a pitch fixes its appetite before the solution, and an experiment its thresholds before it runs. A pitch also gets a one-page HTML view for the betting table.
 
 Your team can add its own planning documents, or replace or extend John's, with a file in `_bmad/custom/facilitate-templates/`. Doc standards, reviewers, output, style, and the HTML view are set on `bmad-facilitate`, the skill that runs John's documents. See [Write a Document Template](../customize/write-a-document-template.md).
 
@@ -141,9 +124,9 @@ To run the planned stories unattended, explicitly dispatch each ticket to
 one run per ticket. No leaf file needs to be pulled first.
 
 :::note[What each skill produces]
-John (`bmad-agent-pm`): `<id>-<slug>.md`, such as `brief-<slug>.md` or
-`prd-<slug>.md`, or `review-*.md` findings.
-`bmad-prfaq`: a PRFAQ document with a short summary for the PRD or for Sofia. Each document
+John (`bmad-agent-pm`): `<id>-<slug>.md`, such as `prd-<slug>.md` or
+`business-case-<slug>.md`, or `review-*.md` findings.
+Mary (`bmad-agent-analyst`): `brief-<slug>.md`, `prfaq-<slug>.md` or `brd-<slug>.md`. Each document
 lands in its own `<type>-<slug>/` folder in the active initiative's folder,
 or in the output folder when no initiative is active. Sofia writes the
 Requirements and Constraints sections of the initiative, epic, or story file,

@@ -1,9 +1,11 @@
 ---
 title: ""
 template: prd
-version: 1.0.0
+version: 1.1.0
 description: "Requirements a team builds from, at any altitude."
-not_for: "Deciding whether to build (`brief`, `opportunity`); a very simple project (`prd-light`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`); what a business signs for when the builder is a separate party (`brd`)."
+not_for: "Deciding whether to build (`opportunity`) or writing down why (`brief`); a very simple project (`prd-light`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`); what a business signs for when the builder is a separate party (`brd`)."
+facilitation_order: [document-purpose, vision, users-and-journeys, glossary, features-and-requirements, rules?, non-goals, mvp-scope, success-metrics, quality-and-constraints?, change-boundary?, ai-behavior-and-evaluation?, experience-and-platform?, stakeholders-risks-and-rollout?, integrations-and-operations?, data-and-compliance?, api-contract-and-versioning?, slos-and-performance-budgets?, consumer-migration?, developer-experience?, hardware-and-deployment?, stories?, decisions?, open-questions]
+guidance: guidance-planning
 rubric: rubric-planning
 status: draft
 created: ""
@@ -29,32 +31,32 @@ Altitude sets what this document decides: keep a line when the level below would
 ## Table of Contents
 
 ## Document purpose
-<!-- required. Who reads it, and the inputs it builds on (ticket, brief, UX work) with where they live, instead of repeating them. -->
+<!-- Who reads it, and the inputs it builds on (ticket, brief, UX work) with where they live, instead of repeating them. -->
 
 ## Vision
-<!-- required. Two or three paragraphs, compelling enough to stand alone: what this is, for whom, why it matters, and why now when timing matters. -->
+<!-- Two or three paragraphs, compelling enough to stand alone: what this is, for whom, why it matters, and why now when timing matters. -->
 
 ## Users and journeys
-<!-- required. Who it serves and their jobs (emotional, social, functional, contextual, whichever apply); non-users when the audience boundary is not obvious; UJ-N journeys: a named protagonist with persona inline, entry state, three to five beats, the climax where value lands, the resolution, optionally one failure, ending with the FRs that realize it. Each beat forces specificity the team would otherwise leave implicit: auth assumptions, screen order, what tells the user value landed. One sentence each at low stakes; add a flow and edge cases when it feeds UX or architecture. -->
+<!-- Who it serves and their jobs (emotional, social, functional, contextual, whichever apply); non-users when the audience boundary is not obvious; UJ-N journeys: a named protagonist with persona inline, entry state, three to five beats, the climax where value lands, the resolution, optionally one failure, ending with the FRs that realize it. Each beat forces specificity the team would otherwise leave implicit: auth assumptions, screen order, what tells the user value landed. One sentence each at low stakes; add a flow and edge cases when it feeds UX or architecture. -->
 <!-- example: UJ-3. Priya checks the trip damage before she's even home. Priya, budgeting on a single income with a new baby, finishes a grocery run and gets in the car. Already authenticated via biometric on a previous session, she opens the app, taps the camera and scans the receipt. The app reads the total and shows a single-screen overlay: this trip $84.20, weekly cap $250, $172.10 remaining, three days left in the week. She closes the app and drives home. Edge case: if she scanned a receipt earlier today, the app asks whether this replaces or adds to that trip before counting it against the cap. -->
 
 ## Glossary
-<!-- required. Each domain noun defined once, with its relationships to other terms and its cardinality where relevant. A new noun in Features joins the glossary in the same pass. -->
+<!-- Each domain noun defined once, with its relationships to other terms and its cardinality where relevant. A new noun in Features joins the glossary in the same pass. -->
 
 ## Features and requirements
-<!-- required. By feature: its behavior and the journeys it realizes, then nested FR-N: "[Actor] can [capability] [under conditions]" and out-of-scope bounds. At epic altitude each FR adds testable consequences; above it, one checkable result per capability, the edge cases left to the epics. At initiative altitude each feature is a likely epic: name it so the name lasts, and order features by dependency. Add a feature's own NFRs when they apply only to it. -->
+<!-- By feature: its behavior and the journeys it realizes, then nested FR-N: "[Actor] can [capability] [under conditions]" and out-of-scope bounds. At epic altitude each FR adds testable consequences; above it, one checkable result per capability, the edge cases left to the epics. At initiative altitude each feature is a likely epic: name it so the name lasts, and order features by dependency. Add a feature's own NFRs when they apply only to it. -->
 
 ## Rules
 <!-- include when: program or initiative altitude, where it is required; below that, when a rule spans the FRs and no parent states it. RULE-N, one line each: what everything below must obey, whichever feature it touches. A rule from a `brd` or a parent document keeps its id. -->
 
 ## Non-goals
-<!-- required. What this is not and will not become, so no level below adds the nearby thing. -->
+<!-- What this is not and will not become, so no level below adds the nearby thing. -->
 
 ## MVP scope
-<!-- required. In scope; out of scope, with a one-line reason where it matters. Anything deferred names its target release, or says a later version when what the first one teaches will decide. Once the requirements are out and before settling this section, step back and coach leanness from what you know: how much was asked for against the team and the date, and whether this proves out an idea, delivers a clear mandate or meets a regulation. When it looks ambitious, say so in your own words, name what could wait and why, and make the case for a first version small enough to finish, test fully and win with, then a next one built on what that teaches. Press hardest on an idea being tested, ease off where a mandate or regulation fixes the scope, and skip this when the work is already lean. The call is the user's: what they keep stays. Headless, list the candidates as an open question and cut nothing. -->
+<!-- In scope; out of scope, with a one-line reason where it matters. Anything deferred names its target release, or says a later version when what the first one teaches will decide. Once the requirements are out and before settling this section, step back and coach leanness from what you know: how much was asked for against the team and the date, and whether this proves out an idea, delivers a clear mandate or meets a regulation. When it looks ambitious, say so in your own words, name what could wait and why, and make the case for a first version small enough to finish, test fully and win with, then a next one built on what that teaches. Press hardest on an idea being tested, ease off where a mandate or regulation fixes the scope, and skip this when the work is already lean. The call is the user's: what they keep stays. Headless, list the candidates as an open question and cut nothing. -->
 
 ## Success metrics
-<!-- required. SM-N with the current value where known, the target and the FRs they validate; counter-metrics naming the metric they balance. One sentence is enough at hobby stakes. -->
+<!-- SM-N with the current value where known, the target and the FRs they validate; counter-metrics naming the metric they balance. One sentence is enough at hobby stakes. -->
 
 ## Quality and constraints
 <!-- include when: performance, security, reliability, privacy or cost matter product-wide. RULE-N under the same id, each with a threshold and the user outcome it protects; no generic non-functional list. -->
@@ -99,4 +101,4 @@ Altitude sets what this document decides: keep a line when the level below would
 <!-- optional. One line per decision: what was chosen, why, and the alternative it beat. A decision deferred on purpose names what would trigger making it. There is no addendum: detail stays in the memlog, a decision worth its own record goes to `decision-record`, a technical one to `bmad-architecture`, an edge case to the epic that meets it. -->
 
 ## Open questions
-<!-- required. OQ-N, each with an owner, when it is needed and the FRs or gates it blocks. Each becomes a ticket or research. -->
+<!-- OQ-N, each with an owner, when it is needed and the FRs or gates it blocks. Each becomes a ticket or research. -->

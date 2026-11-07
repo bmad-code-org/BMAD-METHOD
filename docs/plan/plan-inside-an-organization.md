@@ -14,7 +14,7 @@ the skills second.
 ## The Scaled-Down Version First
 
 A single builder, or a small team that already agrees, does not need most of
-what follows. A forged idea, a PRFAQ summary, a brainstorm intent, or a
+what follows. A forged idea, a PRFAQ, a brainstorm intent, or a
 well-written issue goes straight to Sofia, the Product Owner
 (`bmad-agent-po`), who writes the requirements into the ticket and slices it.
 [Choose a Planning Path](./choose-a-planning-path.md) covers that route.
@@ -35,8 +35,8 @@ The PRD is the document the organization owns. It is written by John, the
 Product Manager (`bmad-agent-pm`), validated by him, and updated through him; nothing else in the chain claims to
 say what the product is. Brainstorming, Forge Idea, Deep Recon, a product
 brief, and a PRFAQ exist to get the PRD written well. When the organization
-asks for a business case, a program charter, a business requirements document, or a requirements specification
-for audited or contracted work, John writes those too. Everything after the PRD
+asks for a business case, a program charter, or a requirements specification
+for audited or contracted work, John writes those too; Mary (`bmad-agent-analyst`) writes a business requirements document. Everything after the PRD
 is derived from it:
 
 - `bmad-ux` writes `DESIGN.md` and `EXPERIENCE.md` in its own `ux-<slug>/` folder, as input beside the PRD.
@@ -88,7 +88,7 @@ document can be regenerated from it.
 
 | Role                     | Runs                                                                                              | Owns                                                                      |
 | ------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Product manager          | Brainstorming, Forge Idea, Deep Recon, then `bmad-prfaq` or a brief from John, then John (`bmad-agent-pm`) for the PRD | The PRD and its update cycle; the one-pager the steering committee reads  |
+| Product manager          | Brainstorming, Forge Idea, Deep Recon, then a PRFAQ or a brief from Mary (`bmad-agent-analyst`), then John (`bmad-agent-pm`) for the PRD | The PRD and its update cycle; the one-pager the steering committee reads  |
 | Designer                 | `bmad-ux`                                                                                         | `DESIGN.md`, `EXPERIENCE.md`                                              |
 | Tech lead or architect   | `bmad-architecture`                                                                               | The architecture spine                                                    |
 | One engineer, per epic   | Sofia (`bmad-agent-po`), Build per story, `bmad-retrospective`                                    | That epic: its file, its `tickets.toml`, its verdict                      |
@@ -116,7 +116,7 @@ gates.
 
 Every one of these produces a written result, so the approval has something to
 attach to. In regulated or enterprise settings those documents are the audit
-trail. PRFAQ and Retrospective can run unattended (`-H`) when you want the
+trail. The PRFAQ runs unattended when you tell Mary so, and Retrospective takes `-H`, when you want the
 same check without a conversation.
 
 :::note[Reviewers read copies; change the source]

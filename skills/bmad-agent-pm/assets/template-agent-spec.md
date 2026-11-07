@@ -1,9 +1,11 @@
 ---
 title: ""
 template: agent-spec
-version: 1.0.0
+version: 1.1.0
 description: "One feature handed to a coding agent, with tests and acceptance."
 not_for: "Work a story or epic ticket already specifies; several features or a product (`prd`)."
+facilitation_order: [problem, user-stories, edge-cases, requirements, key-entities?, success-criteria, out-of-scope, assumptions, implementation-context?, open-questions?]
+guidance: guidance-planning
 rubric: rubric-planning
 status: draft
 created: ""
@@ -25,28 +27,28 @@ updated: ""
 ## Table of Contents
 
 ## Problem
-<!-- required. Who is affected and what they cannot do now. -->
+<!-- Who is affected and what they cannot do now. -->
 
 ## User stories
-<!-- required. Ordered by priority, P1 first. Each: the story, why this priority, an independent test showing it delivers value alone, and Given/When/Then acceptance scenarios. -->
+<!-- Ordered by priority, P1 first. Each: the story, why this priority, an independent test showing it delivers value alone, and Given/When/Then acceptance scenarios. -->
 
 ## Edge cases
-<!-- required. The boundaries, invalid input and failures where a wrong guess would build the wrong thing, and what the system does in each. Leave out what the codebase's conventions already settle. -->
+<!-- The boundaries, invalid input and failures where a wrong guess would build the wrong thing, and what the system does in each. Leave out what the codebase's conventions already settle. -->
 
 ## Requirements
-<!-- required. FR-N, each "The system MUST ..." or "Users MUST be able to ...". -->
+<!-- FR-N, each "The system MUST ..." or "Users MUST be able to ...". -->
 
 ## Key entities
 <!-- include when: the feature stores or moves data. What each represents and how they relate, without schema detail. diagram: er -->
 
 ## Success criteria
-<!-- required. SC-N measurable outcomes. -->
+<!-- SC-N measurable outcomes. -->
 
 ## Out of scope
-<!-- required. What the agent must not build or change. -->
+<!-- What the agent must not build or change. -->
 
 ## Assumptions
-<!-- required. Defaults chosen where the input was silent, and existing systems the feature depends on. -->
+<!-- Defaults chosen where the input was silent, and existing systems the feature depends on. -->
 
 ## Implementation context
 <!-- optional. Decisions already made, modules and interfaces touched, and the highest seam where the tests run. -->

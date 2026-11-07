@@ -53,4 +53,7 @@ removed = [
   "bmad-correct-course",
   "bmad-spec",
   "bmad-preview-ticketing",
+  "bmad-prfaq",
+  "bmad-product-brief",
+  "bmad-prd",
 ]

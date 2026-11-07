@@ -1,9 +1,11 @@
 ---
 title: ""
 template: prd-light
-version: 1.0.0
+version: 1.1.0
 description: "A short PRD with enough technical detail for a very simple project."
 not_for: "Work with real stakes or several people building from it (`prd`); learning fast before committing (`prototype-plan`); one feature for a coding agent (`agent-spec`)."
+facilitation_order: [vision, users-and-journeys, features-and-requirements, non-goals, technical-approach, success?, open-questions]
+guidance: guidance-planning
 rubric: rubric-planning
 status: draft
 created: ""
@@ -27,22 +29,22 @@ updated: ""
 ## Table of Contents
 
 ## Vision
-<!-- required. A short paragraph: what this is, who it is for and why it is worth building. -->
+<!-- A short paragraph: what this is, who it is for and why it is worth building. -->
 
 ## Users and journeys
-<!-- required. Who uses it, and a sentence for each journey that matters. -->
+<!-- Who uses it, and a sentence for each journey that matters. -->
 
 ## Features and requirements
-<!-- required. By feature, nested FR-N: "[Actor] can [capability] [under conditions]", each with one checkable result. -->
+<!-- By feature, nested FR-N: "[Actor] can [capability] [under conditions]", each with one checkable result. -->
 
 ## Non-goals
-<!-- required. What this will not do, with a one-line reason where it matters. Once the features are out, if the list is more than a first version needs, say so, suggest what could wait for a later version and why, and let the user decide. -->
+<!-- What this will not do, with a one-line reason where it matters. Once the features are out, if the list is more than a first version needs, say so, suggest what could wait for a later version and why, and let the user decide. -->
 
 ## Technical approach
-<!-- required. Where it is built, platform, stack and any starter project, then data and storage, integrations, hosting and any other decision expensive to reverse. Flag the rest for the builder instead of choosing. Enough to start, not an architecture. -->
+<!-- Where it is built, platform, stack and any starter project, then data and storage, integrations, hosting and any other decision expensive to reverse. Flag the rest for the builder instead of choosing. Enough to start, not an architecture. -->
 
 ## Success
 <!-- optional. One sentence on how the user will know it worked. -->
 
 ## Open questions
-<!-- required. Each with who answers it. -->
+<!-- Each with who answers it. -->
