@@ -33,4 +33,6 @@ Nothing is rewritten. A script does the cutting and checks that the shards join 
 
 Any agent can change a sharded document without `bmad-shard-pro`: the note at the top of the main file says how. New content goes in the shard a reader would look in first; when a shard's coverage changes, its summary changes in its frontmatter and in its map line; a new shard is a new file with the same frontmatter and a line in the map. Running `bmad-shard-pro` afterwards is optional: it rebuilds the map from the shards' frontmatter, keeping its order and any shard added by hand, and reruns the checks. A contents list is edited the same way, with a line added to the list for a new section; the skill refreshes the line ranges and keeps lines added by hand.
 
+Nothing checks a document between runs of the skill, so a map can drift from its shards unnoticed. A project that wants it caught can run the skill's script as `shard_tool.py check <folder> --all` in a pre-commit hook or CI: it checks every sharded folder and contents list under the folder and fails when a shard is missing from its map or its frontmatter does not parse.
+
 After a split, links in the source that pointed at nearby files or at headings now in another shard may no longer resolve. Shard pro reports them and leaves them for the user, since it keeps the source's words exactly.

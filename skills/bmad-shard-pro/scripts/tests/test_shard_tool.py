@@ -253,7 +253,17 @@ def test_check_rejects_frontmatter_that_does_not_parse(built):
     code, out = run("check", str(built))
     assert code == 1 and any(f["check"] == "frontmatter" and f["file"] == "bad.md" for f in out["failures"])
     code, out = run("map", str(built))
-    assert code == 2 and "bad.md" in out["error"]
+    assert code == 1 and [u["file"] for u in out["unparsed"]] == ["bad.md"]
+
+
+def test_map_keeps_the_line_of_a_shard_whose_frontmatter_breaks_and_maps_the_rest(built):
+    p = built / "part-2.md"
+    p.write_text(p.read_text().replace("title: Part 2", "title: Part 2: broken", 1))
+    (built / "extra.md").write_text(shard("Extra", "Added later", "text"))
+    code, out = run("map", str(built))
+    main = (built / "doc-sample.md").read_text()
+    assert code == 1 and out["added"] == ["extra.md"] and out["dropped"] == []
+    assert "](./part-2.md)" in main and "](./extra.md)" in main
 
 
 def test_lookup_lists_each_identifier_home(built):
@@ -301,6 +311,58 @@ def test_build_again_with_a_new_plan_replaces_old_shards(built):
     assert not (built / "part-1.md").exists() and (built / "merged.md").exists()
     code, out = run("check", str(built), "--rebuild")
     assert code == 0, out
+
+
+def rebuild_plan(built: Path) -> Path:
+    plan = json.loads((built / ".shards.json").read_text())
+    plan["source"] = "sample.md"
+    path = built.parent / "again.json"
+    path.write_text(json.dumps(plan))
+    return path
+
+
+@pytest.mark.parametrize(
+    "edit",
+    [
+        lambda d: (d / "part-2.md").write_text((d / "part-2.md").read_text() + "New text.\n"),
+        lambda d: (d / "part-2.md").write_text((d / "part-2.md").read_text().replace("summary: Lines", "summary: Now")),
+        lambda d: (d / "extra.md").write_text(shard("Extra", "Added later", "text")),
+    ],
+    ids=["body", "frontmatter", "new-shard"],
+)
+def test_build_refuses_to_discard_edits_made_since_build(built, edit):
+    edit(built)
+    before = {p.name: p.read_text() for p in built.glob("*.md")}
+    code, out = run("build", str(rebuild_plan(built)))
+    assert code == 2 and "--force" in out["error"]
+    assert {p.name: p.read_text() for p in built.glob("*.md")} == before
+    assert run("build", str(rebuild_plan(built)), "--force")[0] == 0
+
+
+def test_a_link_broken_many_times_is_one_warning(tmp_path):
+    src = tmp_path / "sample.md"
+    text = doc().replace("Line 1.", "See [the end](#section-6-fr-ab-006). Line 1.")
+    src.write_text(text)
+    lines = text.splitlines()
+    heads = [i for i, x in enumerate(lines, 1) if x.startswith("## Section")]
+    assert run("build", str(faithful_plan(tmp_path, src, len(lines), heads[1:])))[0] == 0
+    _, out = run("check", str(tmp_path / "doc-sample"))
+    links = [w for w in out["warnings"] if w["check"] == "link"]
+    assert len(links) == 1 and "(40 times)" in links[0]["text"]
+
+
+def test_check_all_finds_every_prepared_document_under_a_folder(built, tmp_path):
+    f = tmp_path / "notes" / "doc.md"
+    f.parent.mkdir()
+    f.write_text("# Doc\n\n## A\n\ntext a\n")
+    plan = {"groups": [{"heading": "G", "shards": [{"start": 3, "title": "A"}]}]}
+    (tmp_path / "toc.json").write_text(json.dumps(plan))
+    run("toc", str(f), "--plan", str(tmp_path / "toc.json"))
+    code, out = run("check", str(tmp_path), "--all")
+    assert code == 0 and out["checked"] == ["doc-sample", "notes/doc.md"], out
+    (built / "extra.md").write_text(shard("Extra", "Added later", "text"))
+    code, out = run("check", str(tmp_path), "--all")
+    assert code == 1 and {(x["target"], x["check"]) for x in out["failures"]} == {("doc-sample", "orphan")}
 
 
 def test_identifier_in_a_title_is_not_a_definition(tmp_path):

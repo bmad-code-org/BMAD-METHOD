@@ -56,7 +56,7 @@ Write the plan as JSON in the shape `build --help` shows.
 
 ## Build
 
-Run `build`, or `toc` with the plan for a contents list. To change the plan before anyone edits the shards, edit it and run `build` again; it reads the source from `.source/` and replaces the old shards.
+Run `build`, or `toc` with the plan for a contents list. To change the plan before anyone edits the shards, edit it and run `build` again; it reads the source from `.source/` and replaces the old shards. Once the shards have been edited, `build` refuses; make the change as `references/update.md` says instead.
 
 Then record the outcome and each change or decision the user made in `{doc_folder}/.memlog.md`, keeping any memlog already there: `memlog.py init --workspace {doc_folder}` when none exists, then `append --type decision|change|event`.
 

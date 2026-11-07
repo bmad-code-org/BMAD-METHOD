@@ -13,10 +13,11 @@ Subcommands:
       Size, headings, bare-identifier headings, tables and fenced blocks, frontmatter,
       an existing contents list, identifier prefixes, and a proposed cut along headings
       sized by characters that never splits a table or fenced block.
-  build PLAN
+  build PLAN [--force]
       Build the sharded folder from a plan: cut faithful shards word for word, write the main
       file (note + map, sub-maps when the map would pass line 200), move the source into
-      `.source/`, save the plan as `.shards.json`, and write the identifier lookup.
+      `.source/`, save the plan as `.shards.json`, and write the identifier lookup. Building
+      again over shards edited since build is refused unless --force.
   map FOLDER
       Rewrite the main file's map (and sub-maps) from each shard's frontmatter, keeping the
       map's order: shards missing from it are added to their group, lines whose file is gone
@@ -26,9 +27,10 @@ Subcommands:
   toc FILE [--plan PLAN]
       Insert a contents list after the title, or with no plan refresh the line ranges of the
       one already there.
-  check TARGET [--rebuild]
+  check TARGET [--rebuild | --all]
       Check a sharded folder or a file with a contents list. --rebuild also checks that the
-      faithful shards join back into the source exactly (only true before any update).
+      faithful shards join back into the source exactly (only true before any update). --all
+      checks every one under the TARGET folder, for a pre-commit hook or CI.
 
 A shard is any .md file in the folder whose frontmatter `part_of` points at the main file. Its
 frontmatter holds its map entry (`title`, `summary`, `group`, optional `related`), so an agent
@@ -515,8 +517,10 @@ def cmd_build(args) -> int:
     err = validate_plan(plan, lines) or clashes(plan, folder, src)
     if err:
         return fail(err)
-    folder.mkdir(parents=True, exist_ok=True)
     old = load_manifest(folder)
+    if old and not args.force and (edited := edits_since_build(folder, old)):
+        return fail(f"{edited}; building again would discard those edits, and --force discards them")
+    folder.mkdir(parents=True, exist_ok=True)
     if old:
         keep = {x["file"] for x in all_shards(plan)}
         for name in [x["file"] for x in all_shards(old)] + old.get("sub_maps", []) + [LOOKUP_FILE]:
@@ -622,14 +626,15 @@ def cmd_map(args) -> int:
     if not main.exists():
         return fail(f"no main file {main.name} in {folder}")
     shards, broken = shards_in(folder, main)
-    if broken:
-        return fail("; ".join(f"{b['file']}: {b['text']}" for b in broken))
     plan = load_manifest(folder) or {}
     current = read_lines(main)
     fm = frontmatter_end(current)
     title = next((x[2:].strip() for x in current[fm:] if x.startswith("# ")), plan.get("title") or folder.name)
     entries, pages = read_map(folder, main)
     by_file = {s["file"]: s for s in shards}
+    # A shard whose frontmatter does not parse keeps the map line it already has until it is fixed.
+    unread = {b["file"] for b in broken}
+    by_file |= {e["file"]: e | {"group": None} for e in entries if e["file"] in unread}
     groups: dict[str, list[dict]] = {}
     placed: set[str] = set()
     last = None
@@ -658,15 +663,53 @@ def cmd_map(args) -> int:
     if plan:
         plan["sub_maps"] = sorted(subs)
         (folder / MANIFEST).write_text(json.dumps(plan, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
-    return emit(
-        {
-            "ok": True,
-            "main": str(main),
-            "sub_maps": sorted(subs),
-            "added": [s["file"] for s in added],
-            "dropped": [e["file"] for e in entries if e["file"] not in by_file],
-        }
+    out = {
+        "ok": not broken,
+        "main": str(main),
+        "sub_maps": sorted(subs),
+        "added": [s["file"] for s in added],
+        "dropped": [e["file"] for e in entries if e["file"] not in by_file],
+    }
+    if broken:
+        out["unparsed"] = [{"file": b["file"], "text": b["text"]} for b in broken]
+    return emit(out, 1 if broken else 0)
+
+
+def join_difference(folder: Path, plan: dict, source: list[str]) -> int | None:
+    """First source line the built shards no longer reproduce, or None when they join back exactly."""
+    joined = source[: plan.get("frontmatter_lines", 0)]
+    for s in all_shards(plan):
+        if (folder / s["file"]).exists():
+            joined += body_lines(folder / s["file"])
+    if joined == source:
+        return None
+    return next(
+        (i for i, (x, y) in enumerate(zip(joined, source, strict=False), 1) if x != y),
+        min(len(joined), len(source)) + 1,
     )
+
+
+def edits_since_build(folder: Path, plan: dict) -> str | None:
+    """Why the shards are no longer what build cut, or None when they are."""
+    source = folder / plan["source"]
+    if not source.exists():
+        return None
+    first = join_difference(folder, plan, read_lines(source))
+    if first is not None:
+        return f"the shards were edited after build (they differ from the source at line {first})"
+    cut = {
+        s["file"]: (s["title"], s["summary"], g["heading"], [plain_name(str(r)) for r in s.get("related", [])])
+        for g in plan["groups"]
+        for s in g["shards"]
+    }
+    shards, _ = shards_in(folder, folder / f"{folder.name}.md")
+    extra = sorted(s["file"] for s in shards if s["file"] not in cut)
+    if extra:
+        return f"shards were added after build: {', '.join(extra)}"
+    changed = sorted(
+        s["file"] for s in shards if cut[s["file"]] != (s["title"], s["summary"], s["group"], s["related"])
+    )
+    return f"shard frontmatter was edited after build: {', '.join(changed)}" if changed else None
 
 
 def load_manifest(folder: Path) -> dict | None:
@@ -918,7 +961,7 @@ def broken_links(shard: Path) -> list[dict]:
     """Relative links and #anchors in a shard that no longer reach their target after the split."""
     lines = read_lines(shard)
     own = {anchor_slug(m.group(2)) for m in map(HEADING.match, lines) if m}
-    out = []
+    at: dict[str, list[int]] = {}
     for i, line in enumerate(lines, 1):
         for target in ANY_LINK.findall(line):
             if "://" in target or target.startswith(("mailto:", "/", "<")):
@@ -926,10 +969,16 @@ def broken_links(shard: Path) -> list[dict]:
             path, _, anchor = target.partition("#")
             gone = not (shard.parent / path).exists() if path else anchor_slug(anchor) not in own
             if gone:
-                out.append(
-                    {"check": "link", "file": shard.name, "line": i, "text": f"link to {target} no longer resolves"}
-                )
-    return out
+                at.setdefault(target, []).append(i)
+    return [
+        {
+            "check": "link",
+            "file": shard.name,
+            "line": ls[0],
+            "text": f"link to {t} no longer resolves" + (f" ({len(ls)} times)" if len(ls) > 1 else ""),
+        }
+        for t, ls in at.items()
+    ]
 
 
 def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
@@ -1021,15 +1070,8 @@ def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
     if source is None:
         fails.append({"check": "source", "file": plan["source"], "text": "the frozen original is missing"})
     if rebuild and source is not None:
-        joined = source[: plan.get("frontmatter_lines", 0)]
-        for s in all_shards(plan):
-            if (folder / s["file"]).exists():
-                joined += body_lines(folder / s["file"])
-        if joined != source:
-            first = next(
-                (i for i, (x, y) in enumerate(zip(joined, source, strict=False), 1) if x != y),
-                min(len(joined), len(source)) + 1,
-            )
+        first = join_difference(folder, plan, source)
+        if first is not None:
             fails.append(
                 {
                     "check": "rebuild",
@@ -1058,8 +1100,33 @@ def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
     return fails, warns
 
 
+def prepared_under(root: Path) -> list[Path]:
+    """Every sharded folder and every file with a shard-pro contents list under root, skipping hidden folders."""
+    found = []
+    for p in sorted(root.rglob("*.md")):
+        rel = p.relative_to(root).parts
+        if any(x.startswith(".") or x == "node_modules" for x in rel[:-1]):
+            continue
+        if p.stem == p.parent.name and any(NOTE_MARK in x for x in read_lines(p)[:WINDOW]):
+            found.append(p.parent)
+        elif sidecar(p).exists():
+            found.append(p)
+    return found
+
+
 def cmd_check(args) -> int:
     target = Path(args.target).resolve()
+    if args.all:
+        if not target.is_dir():
+            return fail(f"--all needs a folder: {target}")
+        fails, warns, checked = [], [], []
+        for t in prepared_under(target):
+            f, w = check_folder(t, False) if t.is_dir() else check_toc(t)
+            where = str(t.relative_to(target))
+            fails += [x | {"target": where} for x in f]
+            warns += [x | {"target": where} for x in w]
+            checked.append(where)
+        return emit({"ok": not fails, "checked": checked, "failures": fails, "warnings": warns}, 0 if not fails else 1)
     if target.is_dir():
         fails, warns = check_folder(target, args.rebuild)
     elif target.is_file():
@@ -1085,6 +1152,7 @@ def main(argv: list[str] | None = None) -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     p.add_argument("plan")
+    p.add_argument("--force", action="store_true", help="build again even though the shards were edited since build")
     p = sub.add_parser("map", help="rewrite the main file's map from the shards' frontmatter")
     p.add_argument("folder")
     p = sub.add_parser("lookup", help="regenerate the identifier lookup")
@@ -1104,6 +1172,9 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("check", help="check a sharded folder or a file with a contents list")
     p.add_argument("target")
     p.add_argument("--rebuild", action="store_true", help="also check the faithful shards join back into the source")
+    p.add_argument(
+        "--all", action="store_true", help="check every sharded folder and contents list under the target folder"
+    )
     args = ap.parse_args(argv)
     try:
         return {
