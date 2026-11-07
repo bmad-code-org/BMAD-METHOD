@@ -49,7 +49,8 @@ updated: ""
 | `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
 | `output` | Optional run folder for this template. It may use `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
 | `style` | Optional CSS file for this template's rendered view, relative to the template. |
-| `view` | Optional layout for the rendered view: `document`, `slides`, or an HTML file relative to the template. See [Give a template its own view](#give-a-template-its-own-view). |
+| `view` | Optional layout for the rendered view: `document`, `slides`, or an HTML file relative to the template. It says what the view looks like, not whether it is made. See [Give a template its own view](#give-a-template-its-own-view). |
+| `html_view` | Optional. Whether this template's view is made: `always`, `offer` or `never`, replacing the team's setting for this template. Set `always` when the view is the deliverable, as `pitch-deck` does for its slides. A team's `never` still stops it. |
 
 `template`, `version` and `view` stay in the finished document, as does any field you add for a view to show. The other fields stay out.
 
@@ -213,7 +214,6 @@ An extension adds to a template without copying it, so updates to the original s
 ```markdown
 ---
 extends: proposal
-facilitation_order: [need, goals-and-outcomes, approach, alternatives?, team-and-track-record?, evaluation?, budget, approval-track, risks, sustainability?, deliverables-and-terms?, summary, review-comments]
 ---
 
 ## Approval Track
@@ -229,10 +229,22 @@ An extension can hold anything a template can:
 
 | In the extension | Effect |
 | --- | --- |
-| A section | Added where its comment says. If the heading it names is gone, the skill places it by judgment. It is not required unless the extension sets `facilitation_order`. |
-| `facilitation_order` frontmatter | Replaces the template's whole order, so list the template's sections too. The template list reports any it leaves out. Fernhollow sets one above so both its sections are required. |
+| A section | Added where its comment says, and taken up at that point in the conversation. If the heading it names is gone, the skill places it by judgment. It is required unless its comment starts `optional` or `include when`, the same rule as a template's sections. |
+| `facilitation_order` frontmatter | Replaces the template's whole order, so list the template's sections and your own. Set it only to reorder the template's sections; the template list reports any it leaves out. |
 | `stance`, `inputs`, `writing` or `done when` comments | Added to the template's. A policy to load goes in `inputs`; a review rule goes in `done when`. |
-| `description`, `not_for`, `guidance`, `rubric`, `methods`, `output` or `style` frontmatter | Replaces the template's value. |
+| `description`, `not_for`, `guidance`, `rubric`, `methods`, `output`, `style`, `view` or `html_view` frontmatter | Replaces the template's value. |
+
+This extension opens every PRD with a quote and always makes its HTML view, while John's updates to the PRD still arrive:
+
+```markdown
+---
+extends: prd
+html_view: always
+---
+
+## Quote
+<!-- First, right under the title. Ask the user for a quote unique to this product before anything else. -->
+```
 
 When extensions conflict, the first in search order wins. Use a copy instead when you want to change what a template already says.
 
@@ -248,7 +260,7 @@ style = "{project-root}/_bmad/style/brand.css"
 html_view = "always"
 ```
 
-`style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or a template's `writing` comment instead. A template's `style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template that sets `view` renders unless `html_view` is `never`.
+`style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or a template's `writing` comment instead. A template's `style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template's own `html_view` replaces it for that template, except that `never` here stops every view.
 
 ## Give a template its own view
 
@@ -266,7 +278,7 @@ The `view` comment sits above the first heading with the other comments, and say
 <!-- view: The sheet is the deliverable. `character-sheet.html` is a starter: keep to one printable page, and let this character's world set the look. -->
 ```
 
-A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless the comment calls it the deliverable. Use the script for anything regulated or signed, where the page must not vary. `html_view = "never"` stops all three.
+A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless the template sets `html_view: always` or the comment calls it the deliverable. Use the script for anything regulated or signed, where the page must not vary. `html_view = "never"` stops all three.
 
 ### Slots for a filled view
 

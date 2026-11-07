@@ -11,6 +11,7 @@ status: draft
 created: ""
 updated: ""
 view: slides
+html_view: always
 ---
 
 <!-- purpose: A story in slides that moves an audience to one decision: invest, adopt, change how they work. -->

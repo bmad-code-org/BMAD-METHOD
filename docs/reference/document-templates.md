@@ -39,6 +39,7 @@ The BMad Method also ships the planning templates John (`bmad-agent-pm`) and Mar
 | Draw a diagram | `postmortem`, Timeline | A `diagram:` kind in the section comment |
 | Add a table of contents | `proposal` | A bare `## Table of Contents` heading after the title |
 | Render as slides | `pitch-deck` | `view: slides` in the frontmatter |
+| Always make the view | `pitch-deck` | `html_view: always` in the frontmatter, because the slides are the deliverable |
 | Render the same layout every time | `prfaq` in `bmad-agent-analyst/assets/`, `prfaq-view.html`; also `brief` and John's `pitch` | `view` names an HTML file whose slots a script fills at close |
 | Have a page written for each document | `character`, `character-sheet.html` | `view` names a starter, and a `view` comment gives the brief |
 | Propose rather than only ask | `character`, `stance` | The comment invites proposals; one the user accepts is theirs |

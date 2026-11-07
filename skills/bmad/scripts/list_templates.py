@@ -16,15 +16,18 @@ and is listed. `--agent <skill>` keeps only that agent's templates: those whose 
 it, those with no list in that skill's own folder, and those with no list that replace one of these.
 
 `facilitation_order` lists a template's `##` sections by id, each heading lowercased with its
-spaces as hyphens, `?` marking one that is not required. An extension's list replaces the
-template's. Each listed id must name a heading, no id may repeat, and every heading of the
-template, and of its extensions when one of them set the list, must be listed; what breaks this
-comes back in `order_problems`. `guidance`, `rubric`, `methods` and `style` are relative to their file and come back resolved; a bare name
-with no extension comes back as it is.
+punctuation dropped and spaces as hyphens, `?` marking one that is not required. An extension's
+list replaces the template's. A section an extension adds without a list of its own is appended
+to the order, with `?` when its comment starts `optional` or `include when`. Each listed id must
+name a heading, no id may repeat, and every heading of the template, and of the extensions that
+set a list, must be listed; what breaks this comes back in `order_problems`. `guidance`,
+`rubric`, `methods`, `style` and `view` are relative to their file and come back resolved; a bare
+name with no extension, such as `slides`, comes back as it is.
 
 Prints JSON:
   templates     id, version, description, not_for, category, agents, facilitation_order, guidance, rubric,
-                methods, output, style, file, source, extensions, order_problems, in search order
+                methods, output, style, view, html_view, file, source, extensions, order_problems,
+                in search order
   shadowed      id, file, source, kept, agents: templates hidden by an earlier one with the same id
   orphaned      extends, file, source: extensions whose template was not found
   unreachable   source, reason: sources that could not be read
@@ -55,9 +58,11 @@ GITHUB = re.compile(
 MODULE_FOLDER = "doc-templates"
 FIELDS = (
     "version", "description", "not_for", "category", "agents", "facilitation_order", "guidance", "rubric", "methods", "output", "style",
+    "view", "html_view",
 )  # fmt: skip
 SECTION = re.compile(r"^##[ \t]+(.+?)[ \t#]*$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
+NOT_REQUIRED = re.compile(r"^\s*<!--\s*(optional|include when)\b", re.IGNORECASE)
 TIMEOUT = 30
 
 
@@ -146,9 +151,10 @@ def section_id(heading: str) -> str:
     return re.sub(r"[^\w\- ]", "", heading.strip().lower()).replace(" ", "-")
 
 
-def section_ids(text: str) -> list[str]:
-    """The ids of a file's `##` headings outside code fences, the table of contents left out."""
-    ids, fence = [], None
+def sections(text: str) -> list[tuple[str, bool]]:
+    """Each `##` heading outside code fences, the table of contents left out, as its id and
+    whether its first comment marks it not required."""
+    found, fence, open_comment = [], None, False
     for line in text.replace("\r\n", "\n").split("\n"):
         m = FENCE.match(line)
         if m:
@@ -158,10 +164,22 @@ def section_ids(text: str) -> list[str]:
             elif marker[0] == fence[0] and len(marker) >= fence[1] and line.strip() == marker:
                 fence = None
             continue
-        heading = SECTION.match(line) if fence is None else None
-        if heading and section_id(heading.group(1)) != "table-of-contents":
-            ids.append(section_id(heading.group(1)))
-    return ids
+        if fence is not None:
+            continue
+        heading = SECTION.match(line)
+        if heading:
+            open_comment = section_id(heading.group(1)) != "table-of-contents"
+            if open_comment:
+                found.append((section_id(heading.group(1)), False))
+        elif open_comment and "<!--" in line:
+            found[-1] = (found[-1][0], bool(NOT_REQUIRED.match(line)))
+            open_comment = False
+    return found
+
+
+def section_ids(text: str) -> list[str]:
+    """The ids of a file's `##` headings outside code fences, the table of contents left out."""
+    return [i for i, _ in sections(text)]
 
 
 def order_problems(order: list[str], required_headings: list[str], known: list[str]) -> list[str]:
@@ -187,6 +205,8 @@ def fields(file: str, meta: dict[str, str]) -> dict[str, object]:
         "methods": beside(file, meta.get("methods", "")),
         "output": meta.get("output", ""),
         "style": beside(file, meta.get("style", "")),
+        "view": beside(file, meta.get("view", "")),
+        "html_view": meta.get("html_view", ""),
     }
 
 
@@ -216,7 +236,7 @@ def scan(sources: list[str]) -> dict:
                     {
                         "file": file,
                         "source": source,
-                        "_headings": section_ids(text),
+                        "_sections": sections(text),
                         "_bad_order": unreadable_order(meta),
                         **fields(file, meta),
                     }
@@ -248,15 +268,25 @@ def scan(sources: list[str]) -> dict:
         template["extensions"] = [e["file"] for e in adding]
         for key in FIELDS:
             template[key] = next((e[key] for e in adding if e[key]), template[key])
-        template["_extension_headings"] = [h for e in adding for h in e["_headings"]]
-        template["_order_from_extension"] = any(e["facilitation_order"] for e in adding)
+        own, order = template["_headings"], list(template["facilitation_order"])
+        template["facilitation_order"] = order
+        if order:
+            listed_ids = {entry.rstrip("?") for entry in order}
+            for e in adding:
+                if e["facilitation_order"]:
+                    continue
+                for section, not_required in e["_sections"]:
+                    if section not in listed_ids and section not in own:
+                        order.append(section + "?" * not_required)
+                        listed_ids.add(section)
+        template["_extension_headings"] = [s for e in adding for s, _ in e["_sections"]]
+        template["_must_list"] = [s for e in adding if e["facilitation_order"] for s, _ in e["_sections"]]
         template["_bad_order"] = template["_bad_order"] or any(e["_bad_order"] for e in adding)
     for template in found.values():
         own, added = template.pop("_headings"), template.pop("_extension_headings", [])
+        must = own + template.pop("_must_list", [])
         if template["facilitation_order"]:
-            must = own + added if template.pop("_order_from_extension", False) else own
             template["order_problems"] = order_problems(template["facilitation_order"], must, own + added)
-        template.pop("_order_from_extension", None)
         if template.pop("_bad_order") and not template["facilitation_order"]:
             template["order_problems"] = ["`facilitation_order` must be a one-line list, such as `[problem, scope?]`"]
     return {

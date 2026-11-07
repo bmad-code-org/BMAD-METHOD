@@ -9,6 +9,7 @@ facilitation_order: [press-release, customer-faq, internal-faq, verdict]
 guidance: guidance-planning
 rubric: rubric-prfaq.md
 view: prfaq-view.html
+html_view: always
 status: draft
 created: ""
 updated: ""

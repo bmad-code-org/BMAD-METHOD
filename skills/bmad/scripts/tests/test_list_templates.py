@@ -410,12 +410,61 @@ def test_order_problems_name_unknown_repeated_and_unlisted_sections(tmp_path):
     ]
 
 
-def test_an_extension_without_an_order_adds_sections_outside_it(tmp_path):
+def test_a_section_an_extension_adds_joins_the_order_as_required(tmp_path):
     (tmp_path / "t.md").write_text(ORDERED)
     (tmp_path / "e.md").write_text("---\nextends: t\n---\n\n## Security sign-off\n<!-- After Problem. -->\n")
     found = list_templates.scan([str(tmp_path)])["templates"][0]
-    assert found["facilitation_order"][0] == "problem"
+    assert found["facilitation_order"] == [
+        "problem",
+        "what-makes-it-different",
+        "vision?",
+        "summary",
+        "security-sign-off",
+    ]
     assert found["order_problems"] == []
+
+
+def test_an_added_section_its_comment_makes_optional_is_not_required(tmp_path):
+    (tmp_path / "t.md").write_text(ORDERED)
+    (tmp_path / "e.md").write_text(
+        "---\nextends: t\n---\n\n## Quote\n<!-- optional. First. -->\n\n## Risks\n<!-- include when: a launch. -->\n"
+    )
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert found["facilitation_order"][-2:] == ["quote?", "risks?"]
+
+
+def test_an_extension_heading_the_template_has_is_not_added_twice(tmp_path):
+    (tmp_path / "t.md").write_text(ORDERED)
+    (tmp_path / "e.md").write_text("---\nextends: t\n---\n\n## Problem\n<!-- Cite the incident log. -->\n")
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert found["facilitation_order"] == ["problem", "what-makes-it-different", "vision?", "summary"]
+
+
+def test_sections_of_a_later_extension_join_an_earlier_extensions_order(tmp_path):
+    local, shared = tmp_path / "local", tmp_path / "shared"
+    local.mkdir()
+    shared.mkdir()
+    (shared / "t.md").write_text(ORDERED)
+    (local / "a.md").write_text(
+        "---\nextends: t\nfacilitation_order: [summary, problem, what-makes-it-different, vision?, sign-off]\n---\n\n## Sign-off\n"
+    )
+    (shared / "b.md").write_text("---\nextends: t\n---\n\n## Budget owner\n")
+    found = list_templates.scan([str(local), str(shared)])["templates"][0]
+    assert found["facilitation_order"][-2:] == ["sign-off", "budget-owner"]
+    assert found["order_problems"] == []
+
+
+def test_an_extension_sets_the_view_and_whether_it_renders(tmp_path):
+    (tmp_path / "t.md").write_text(template("t", extra="view: slides\n"))
+    (tmp_path / "e.md").write_text(extension("t", "view: page.html\nhtml_view: always\n"))
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert found["view"] == str(tmp_path / "page.html")
+    assert found["html_view"] == "always"
+
+
+def test_a_bare_view_name_stays_a_name(tmp_path):
+    (tmp_path / "t.md").write_text(template("t", extra="view: slides\n"))
+    assert list_templates.scan([str(tmp_path)])["templates"][0]["view"] == "slides"
 
 
 def test_an_extension_order_replaces_the_template_order_and_must_cover_both(tmp_path):

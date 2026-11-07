@@ -73,12 +73,11 @@ persistent_facts = [
 
 The facts load before the engine drafts, so the conventions are known in time.
 
-A rule for one document type goes in an extension of its template, so it does not reach the others. Every product brief carries compliance fields. A section an extension adds is required only when the extension sets `facilitation_order`, which replaces the brief's, so it lists the brief's sections too:
+A rule for one document type goes in an extension of its template, so it does not reach the others. Every product brief carries compliance fields. A section an extension adds is required unless its comment says optional, and its comment says where it goes:
 
 ```markdown
 ---
 extends: brief
-facilitation_order: [problem, solution, what-makes-it-different, who-it-serves, success-criteria, scope, compliance, the-ask?, vision?, executive-summary]
 ---
 
 <!-- inputs: The owner, the target release and the security review status; only the user knows them. -->

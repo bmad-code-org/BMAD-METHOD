@@ -9,6 +9,7 @@ facilitation_order: [problem, solution, what-makes-it-different, who-it-serves, 
 guidance: guidance-planning
 rubric: rubric-planning
 view: brief-view.html
+html_view: always
 status: draft
 created: ""
 updated: ""
