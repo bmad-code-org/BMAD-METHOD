@@ -11,6 +11,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 import pytest
+import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -44,6 +45,16 @@ def doc(sections: int = 6, para: int = 40) -> str:
             ]
         lines.append("")
     return "\n".join(lines) + "\n"
+
+
+def front(path: Path) -> dict:
+    lines = path.read_text().splitlines()
+    return yaml.safe_load("\n".join(lines[1 : shard_tool.frontmatter_end(lines) - 1]))
+
+
+def shard(title: str, summary: str, body: str, group: str = "All") -> str:
+    """A shard as an agent would write one by hand."""
+    return f"---\npart_of: ./doc-sample.md\ntitle: {title}\nsummary: {summary}\ngroup: {group}\n---\n\n{body}\n"
 
 
 def faithful_plan(tmp: Path, src: Path, lines: int, cut: list[int], extra: dict | None = None) -> Path:
@@ -162,17 +173,87 @@ def test_check_catches_broken_links_orphans_names_and_edits(built):
     assert any(f["check"] == "name" for f in out["failures"])
 
 
-def test_map_rewrites_after_a_new_shard(built):
-    (built / "extra.md").write_text("# Extra\n\nNew content.\n")
-    plan = json.loads((built / ".shards.json").read_text())
-    plan["groups"][0]["shards"].append({"file": "extra.md", "title": "Extra", "summary": "Added later"})
-    (built / ".shards.json").write_text(json.dumps(plan))
+def test_shards_carry_frontmatter_that_names_the_main_file(tmp_path):
+    src = tmp_path / "sample.md"
+    src.write_text(doc())
+    plan = json.loads(faithful_plan(tmp_path, src, len(doc().splitlines()), [60]).read_text())
+    plan["groups"][0]["shards"][0]["related"] = ["part-2.md"]
+    (tmp_path / "plan.json").write_text(json.dumps(plan))
+    assert run("build", str(tmp_path / "plan.json"))[0] == 0
+    folder = tmp_path / "doc-sample"
+    assert front(folder / "part-1.md") == {
+        "part_of": "./doc-sample.md",
+        "title": "Part 1",
+        "summary": "Lines 1 to 59",
+        "group": "All",
+        "related": ["./part-2.md"],
+    }
+    assert "related" not in front(folder / "part-2.md")
+
+
+def test_related_must_name_a_shard_in_the_plan(tmp_path):
+    src = tmp_path / "sample.md"
+    src.write_text(doc())
+    plan = json.loads(faithful_plan(tmp_path, src, len(doc().splitlines()), [60]).read_text())
+    plan["groups"][0]["shards"][0]["related"] = ["nowhere.md"]
+    (tmp_path / "plan.json").write_text(json.dumps(plan))
+    code, out = run("build", str(tmp_path / "plan.json"))
+    assert code == 2 and "nowhere.md" in out["error"] and src.exists()
+
+
+def test_a_shard_added_by_hand_is_found_by_check_map_and_lookup(built):
+    (built / "extra.md").write_text(shard("Extra", "Added later", "## FR-AB-099 New\n\nNew content."))
     _, out = run("check", str(built))
-    assert any(f["check"] == "orphan" for f in out["failures"])
-    code, _ = run("map", str(built))
-    assert code == 0 and "](./extra.md)" in (built / "doc-sample.md").read_text()
+    assert any(f["check"] == "orphan" and f["file"] == "extra.md" for f in out["failures"])
+    code, out = run("map", str(built))
+    assert code == 0 and out["added"] == ["extra.md"]
+    assert "- [Extra](./extra.md) — Added later" in (built / "doc-sample.md").read_text()
     code, out = run("check", str(built))
     assert code == 0, out
+    run("lookup", str(built))
+    assert "| FR-AB-099 | [extra](./extra.md) |" in (built / "identifier-lookup.md").read_text()
+
+
+def test_map_keeps_the_maps_order_and_drops_lines_for_deleted_shards(built):
+    main = built / "doc-sample.md"
+    lines = main.read_text().splitlines()
+    two = next(i for i, x in enumerate(lines) if "](./part-2.md)" in x)
+    lines[two], lines[two + 1] = lines[two + 1], lines[two]
+    main.write_text("\n".join(lines).replace("# Sample", "# Sample, renamed", 1) + "\n")
+    (built / "part-4.md").unlink()
+    code, out = run("map", str(built))
+    assert code == 0 and out["dropped"] == ["part-4.md"]
+    text = main.read_text()
+    assert text.index("](./part-3.md)") < text.index("](./part-2.md)") and "part-4.md" not in text
+    assert "# Sample, renamed" in text
+
+
+def test_a_summary_edited_in_frontmatter_is_flagged_until_the_map_matches(built):
+    p = built / "part-2.md"
+    p.write_text(p.read_text().replace("summary: Lines", "summary: Now covers lines", 1))
+    code, out = run("check", str(built), "--rebuild")
+    assert code == 0 and any(w["check"] == "map" and w["file"] == "part-2.md" for w in out["warnings"])
+    run("map", str(built))
+    assert "— Now covers lines" in (built / "doc-sample.md").read_text()
+    _, out = run("check", str(built))
+    assert not any(w["check"] == "map" for w in out["warnings"])
+
+
+def test_check_needs_no_build_record_except_to_rebuild(built):
+    (built / ".shards.json").unlink()
+    code, out = run("check", str(built))
+    assert code == 0, out
+    code, out = run("check", str(built), "--rebuild")
+    assert code == 1 and out["failures"][0]["check"] == "manifest"
+    assert run("map", str(built))[0] == 0
+
+
+def test_check_rejects_frontmatter_that_does_not_parse(built):
+    (built / "bad.md").write_text("---\npart_of: [unclosed\n---\n\ntext\n")
+    code, out = run("check", str(built))
+    assert code == 1 and any(f["check"] == "frontmatter" and f["file"] == "bad.md" for f in out["failures"])
+    code, out = run("map", str(built))
+    assert code == 2 and "bad.md" in out["error"]
 
 
 def test_lookup_lists_each_identifier_home(built):
@@ -295,7 +376,7 @@ def test_toc_rejects_a_bad_plan_and_adds_a_section(tmp_path):
 
 
 def test_oversized_shard_warns(built):
-    (built / "part-2.md").write_text("# Part 2\n\n" + "x" * (shard_tool.MAX_CHARS + 10) + "\n")
+    (built / "part-2.md").write_text(shard("Part 2", "Big", "x" * (shard_tool.MAX_CHARS + 10)))
     _, out = run("check", str(built))
     assert any(w["check"] == "size" and w["file"] == "part-2.md" for w in out["warnings"])
 
@@ -477,3 +558,22 @@ def test_a_longer_fence_holds_a_shorter_one(tmp_path):
     assert spans[0] == (3, 7, "markdown")
     heads = shard_tool.headings(lines, spans)
     assert [h["text"] for h in heads] == ["T", "Real"]
+
+
+def test_toc_refresh_keeps_a_line_added_to_the_list_by_hand(tmp_path):
+    f = tmp_path / "doc.md"
+    f.write_text("# Doc\n\n## A\n\ntext a\n\n## B\n\ntext b\n")
+    plan = {"groups": [{"heading": "G", "shards": [{"start": 3, "title": "A"}]}]}
+    (tmp_path / "p.json").write_text(json.dumps(plan))
+    run("toc", str(f), "--plan", str(tmp_path / "p.json"))
+    lines = f.read_text().splitlines()
+    b = lines.index("## B") + 1
+    lines.insert(lines.index(shard_tool.TOC_END), f"- L{b} B")
+    f.write_text("\n".join(lines) + "\n")
+    assert run("check", str(f))[0] == 1
+    code, out = run("toc", str(f))
+    assert code == 0 and out["added_from_list"] == ["B"] and out["entries"] == 2
+    lines = f.read_text().splitlines()
+    entry = next(x for x in lines if x.endswith(" B"))
+    assert lines[int(entry.split()[1][1:].split("-")[0]) - 1] == "## B"
+    assert run("check", str(f))[0] == 0

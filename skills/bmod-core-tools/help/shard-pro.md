@@ -25,12 +25,12 @@ Nothing is rewritten. A script does the cutting and checks that the shards join 
 ## A sharded document
 
 - The folder always has one main file, named after the folder, such as `prd-billing/prd-billing.md`. It opens with a short note saying the document is sharded, then a map linking to every shard with a one-line summary. A very long map moves into a few map pages linked from the main file.
-- The shards are now the document. They are what gets read and kept up to date.
+- The shards are now the document. They are what gets read and kept up to date. Each shard's frontmatter names the main file and holds the shard's title, one-line summary, map group and related shards, so an agent that lands on a shard knows where the map is.
 - `.source/` holds the original as it was before the split. It is frozen and out of date: never load it and never edit it. Keep it, because the checks compare against it.
 - When a skill asks for inputs, such as a PRD, an architecture or Sofia's tickets, give it the main file. The agent reads the map and opens only the shards it needs. Do not hand over every shard or `.source/`.
 
 ## Changing it
 
-Changes go through `bmad-shard-pro` again: it adds content to the right shard, splits one that grows too big, rewrites the map and reruns the checks. Edits made by hand to a shard are kept, but the map does not learn about new sections until the skill runs. A contents list is refreshed the same way.
+Any agent can change a sharded document without `bmad-shard-pro`: the note at the top of the main file says how. New content goes in the shard a reader would look in first; when a shard's coverage changes, its summary changes in its frontmatter and in its map line; a new shard is a new file with the same frontmatter and a line in the map. Running `bmad-shard-pro` afterwards is optional: it rebuilds the map from the shards' frontmatter, keeping its order and any shard added by hand, and reruns the checks. A contents list is edited the same way, with a line added to the list for a new section; the skill refreshes the line ranges and keeps lines added by hand.
 
 After a split, links in the source that pointed at nearby files or at headings now in another shard may no longer resolve. Shard pro reports them and leaves them for the user, since it keeps the source's words exactly.

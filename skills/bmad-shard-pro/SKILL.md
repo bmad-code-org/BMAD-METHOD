@@ -44,6 +44,7 @@ Plan from the outline and read only the ranges you need. Holding a long document
 - Keep an aggregate view (a matrix, a register, a glossary) whole, because a reader counting rows needs it in one place. Small ones may share a shard.
 - Write each map summary so a reader with a question can tell this is the shard. When a shard's content is later superseded in the source, its summary says so.
 - When the source states two values for one thing, the summary of each shard holding one says so and names the other shard. Never pick one, even where the source declares a precedence rule.
+- Set `related` on a shard to the shards a change to it would also touch: the other shard of a conflict, and shards its text points to or that point to it. Leave it out when none do.
 - Set a lookup pattern only when readers arrive with identifiers the map titles do not already resolve, such as hundreds of requirement IDs.
 
 Write the plan as JSON in the shape `build --help` shows.
@@ -55,7 +56,7 @@ Write the plan as JSON in the shape `build --help` shows.
 
 ## Build
 
-Run `build`, or `toc` with the plan for a contents list. To change the plan afterwards, edit it and run `build` again; it reads the source from `.source/` and replaces the old shards.
+Run `build`, or `toc` with the plan for a contents list. To change the plan before anyone edits the shards, edit it and run `build` again; it reads the source from `.source/` and replaces the old shards.
 
 Then record the outcome and each change or decision the user made in `{doc_folder}/.memlog.md`, keeping any memlog already there: `memlog.py init --workspace {doc_folder}` when none exists, then `append --type decision|change|event`.
 

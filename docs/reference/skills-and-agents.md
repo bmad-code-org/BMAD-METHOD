@@ -161,7 +161,7 @@ Puts your installed agents, or custom personas, in one conversation, in characte
 
 ### bmad-shard-pro
 
-Makes a long document, such as a large PRD, architecture or manual, cheap for an agent to navigate. It assesses the document first and recommends one of three outcomes: leave it as it is, add a detailed contents list with line ranges, or split it word for word into a map and shards. It never rewrites content: a script does the cutting and checks that nothing was lost. Later changes go through the same skill, which keeps the map and the checks in step. Transcripts, chat exports and meeting notes go to `bmad-ingest` instead.
+Makes a long document, such as a large PRD, architecture or manual, cheap for an agent to navigate. It assesses the document first and recommends one of three outcomes: leave it as it is, add a detailed contents list with line ranges, or split it word for word into a map and shards. It never rewrites content: a script does the cutting and checks that nothing was lost. Each shard's frontmatter links back to the main file and holds its map entry, so any agent can change the document by following the note in the main file; running the skill again rebuilds the map from the shards and rechecks them. Transcripts, chat exports and meeting notes go to `bmad-ingest` instead.
 
 **Input:** a markdown or text document; convert other formats first. **Output:** in the document's own folder, a main file named after the folder holding a note and the map, the shards, the frozen original in `.source/`, and an entry in its `.memlog.md`; or, for a contents list, the same file with the list added.
 
