@@ -20,6 +20,8 @@ that the merged result contains your change. Use it for any per-skill
 change. The rest of this page describes what each surface exposes and how
 the pieces combine.
 
+It also changes the documents agents write, such as a section every PRD must have or HTML by default, by writing an extension of that document's template; you do not need to know which skill writes it. See [Write a Document Template](./write-a-document-template.md#extend-a-template).
+
 There are two surfaces:
 
 | Surface | File | Shapes |

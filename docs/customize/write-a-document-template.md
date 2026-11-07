@@ -15,7 +15,7 @@ Use the `bmad-facilitate` template library to make the skill coach your team thr
 - Rendered views should carry your team's look.
 
 :::note[Prerequisites]
-BMad installed with the core tools, and `bmad setup` run. Templates go in `_bmad/custom/facilitate-templates/`. Settings go in `_bmad/custom/bmad-facilitate.toml`, which the team commits; `bmad-facilitate.user.toml` beside it holds personal changes. `bmad-customize` can write either file for you. How overrides merge is in [Customize BMad](./customize-bmad.md).
+BMad installed with the core tools, and `bmad setup` run. Templates go in `_bmad/custom/facilitate-templates/`. Settings go in `_bmad/custom/bmad-facilitate.toml`, which the team commits; `bmad-facilitate.user.toml` beside it holds personal changes. `bmad-customize` writes any of these for you, an extension of a shipped template included: tell it what to change, such as "every PRD opens with a quote". How overrides merge is in [Customize BMad](./customize-bmad.md).
 :::
 
 ## Add a template to the library
