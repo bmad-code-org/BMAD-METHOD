@@ -11,8 +11,9 @@ markdown headings (# through ######); heading markers inside fenced code
 blocks are ignored (fences pair CommonMark-style: a fence closes only on a
 run of the same character at least as long, so ```` fences may embed ```
 examples). A word is any whitespace-separated token, plus one word per
-Chinese or Japanese character since those scripts do not space-delimit words.
-Korean spaces its words, so Hangul counts per token. For non-markdown
+Chinese or Japanese character since those scripts do not space-delimit words;
+their punctuation (。、！，「」 and the ideographic space) separates words and is
+not counted. Korean spaces its words, so Hangul counts per token. For non-markdown
 input the result is a single section holding the full text.
 """
 
@@ -20,14 +21,27 @@ import argparse
 import json
 import re
 import sys
+import unicodedata
 from pathlib import Path
 
 HEADING = re.compile(r"^(#{1,6})\s+(\S.*)$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 CJK = re.compile(r"[぀-ヿ㐀-䶿一-鿿豈-﫿ｦ-ﾟ]")
+# CJK punctuation and the ideographic space, from the CJK Symbols and Punctuation
+# and Halfwidth and Fullwidth Forms blocks: they separate words, like ASCII
+# punctuation next to a space, so they become spaces before counting. Marks those
+# blocks hold that are part of a word (々, 〇) and fullwidth letters and digits are
+# not punctuation, so they stay.
+CJK_SEPARATORS = {
+    cp: " "
+    for block in (range(0x3000, 0x3040), range(0xFF00, 0xFFF0))
+    for cp in block
+    if unicodedata.category(chr(cp))[0] in "PZ"
+}
 
 
 def word_count(text: str) -> int:
+    text = text.translate(CJK_SEPARATORS)
     cjk = len(CJK.findall(text))
     return cjk + len(CJK.sub(" ", text).split())
 
