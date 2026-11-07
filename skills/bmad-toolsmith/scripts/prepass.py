@@ -11,8 +11,9 @@ what each script prints on its own.
 
 shape_hint is inferred, first match wins:
   memory-agent         `_bmad/memory` in SKILL.md, or scripts/wake.py or scripts/init-sanctum.py present
-  agent                customize.toml has an [agent] table
+  rendered-agent       SKILL.md calls render_skill.py and customize.toml has an [agent] table
   rendered-skill       SKILL.md calls render_skill.py
+  agent                customize.toml has an [agent] table
   single-skill-module  bmod.toml has both [bmod] and [skill]
   multi-skill-module   bmod.toml has [bmod] only (a module record)
   script-utility       scripts/ exists and SKILL.md is under 60 lines
@@ -24,10 +25,13 @@ Usage:
 Output, one JSON object on stdout:
   {"skill", "shape_hint", "files": [{"path", "tokens", "kind"}], "skill_md_tokens", "total_tokens",
    "has_customize", "has_scripts", "scripts": [{"path", "has_pep723", "has_test"}],
-   "description_chars", "has_use_when", "frontmatter_ok", "bmod_kind", "path_findings": [...], "script_findings": [...]}
+   "description_chars", "has_use_when", "frontmatter_ok", "bmod_kind", "path_findings": [...], "script_findings": [...],
+   "long_paragraphs": [{"path", "line", "words", "longest_sentence"}]}
   kind is one of entry, prompt, script, test, asset, config, other.
   bmod_kind is none (no bmod.toml), skill (a module member), record (a record folder), record+skill (a
   single-skill module) or invalid (a file with neither table, or one that does not parse).
+  long_paragraphs lists the lines of entry and prompt files past 150 words or holding a sentence past 60, a
+  Markdown paragraph being one line; headings, tables, code fences and frontmatter are skipped.
 """
 
 from __future__ import annotations
@@ -48,6 +52,10 @@ from scan_scripts import scan_scripts  # noqa: E402
 
 MEMORY_RE = re.compile(r"_bmad/memory")
 SCRIPT_UTILITY_MAX_LINES = 60
+LONG_PARAGRAPH_WORDS = 150
+LONG_SENTENCE_WORDS = 60
+SENTENCE_END_RE = re.compile(r"(?<=[.?!])\s+")
+FENCE_RE = re.compile(r"^(`{3,}|~{3,})")
 
 
 def kind_of(rel: Path) -> str:
@@ -76,10 +84,11 @@ def shape_hint(root: Path, skill_text: str | None) -> str:
     scripts = root / "scripts"
     if MEMORY_RE.search(skill_text) or (scripts / "wake.py").is_file() or (scripts / "init-sanctum.py").is_file():
         return "memory-agent"
-    if "agent" in load_toml(root / "customize.toml"):
-        return "agent"
+    is_agent = "agent" in load_toml(root / "customize.toml")
     if "render_skill.py" in skill_text:
-        return "rendered-skill"
+        return "rendered-agent" if is_agent else "rendered-skill"
+    if is_agent:
+        return "agent"
     bmod = load_toml(root / "bmod.toml")
     if "bmod" in bmod:
         return "single-skill-module" if "skill" in bmod else "multi-skill-module"
@@ -104,16 +113,47 @@ def bmod_kind(root: Path) -> str:
     return "invalid"
 
 
+def long_paragraphs(text: str) -> list[dict]:
+    lines = text.splitlines()
+    start = 0
+    if lines and lines[0].strip() == "---":
+        start = next((i for i, line in enumerate(lines[1:], 2) if line.strip() == "---"), 0)
+    found = []
+    fence = ""
+    for number, line in enumerate(lines[start:], start + 1):
+        stripped = line.strip()
+        marker = FENCE_RE.match(stripped)
+        if fence:
+            if marker and stripped == marker[1] and stripped[0] == fence[0] and len(stripped) >= len(fence):
+                fence = ""
+            continue
+        if marker:
+            fence = marker[1]
+            continue
+        if stripped.startswith(("#", "|")):
+            continue
+        words = len(stripped.split())
+        longest = max(len(s.split()) for s in SENTENCE_END_RE.split(stripped))
+        if words > LONG_PARAGRAPH_WORDS or longest > LONG_SENTENCE_WORDS:
+            found.append({"line": number, "words": words, "longest_sentence": longest})
+    return found
+
+
 def build(root: Path) -> dict:
     skill_path = root / "SKILL.md"
     skill_text = read_text(skill_path) if skill_path.is_file() else None
 
     files = []
+    long_lines = []
     skill_md_tokens = 0
     for path in iter_text_files(root):
         rel = path.relative_to(root)
-        tokens, _ = count_tokens(read_text(path))
-        files.append({"path": rel.as_posix(), "tokens": tokens, "kind": kind_of(rel)})
+        text = read_text(path)
+        tokens, _ = count_tokens(text)
+        kind = kind_of(rel)
+        files.append({"path": rel.as_posix(), "tokens": tokens, "kind": kind})
+        if kind in ("entry", "prompt"):
+            long_lines.extend({"path": rel.as_posix(), **found} for found in long_paragraphs(text))
         if path == skill_path:
             skill_md_tokens = tokens
 
@@ -142,6 +182,7 @@ def build(root: Path) -> dict:
         "bmod_kind": bmod_kind(root),
         "path_findings": scan_skill(root)["findings"],
         "script_findings": scripts_result["findings"],
+        "long_paragraphs": long_lines,
     }
 
 

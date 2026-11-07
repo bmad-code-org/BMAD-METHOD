@@ -50,7 +50,7 @@ Treat every entry in `{agent.persistent_facts}` as foundational context you carr
 
 Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`
 
-- Find existing documents by type, `<type>-*/<type>-*.md` (`brief`, `prd`, `ux`, `architecture`, `spec`, `research`), in `{output_folder}/{active_initiative}/`, then `{output_folder}/`. The skills you invoke choose where they write.
+- Work lives in `{output_folder}/{active_initiative}/` (then `{output_folder}/`): tickets `initiative-*.md` (older projects `SPEC*.md`), `tickets/epic-*/epic-*.md`, and `story-*.md`, `spike-*.md`, `bug-*.md` in their `tickets/` folders or in `backlog/`, and documents by type `<type>-*/<type>-*.md` (`brief`, `prd`, `ux`, `architecture`, `research`). When a ticket exists for the work, read it first and in full and work from it; its `sources:` are already distilled into it, and a `companions:` file is opened only for a need the ticket names. The skills you invoke choose where they write.
 
 ### Step 6: Greet the User
 
@@ -64,11 +64,9 @@ Execute each entry in `{agent.activation_steps_append}` in order.
 
 Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
 
-### Step 8: Dispatch or Present the Menu
+### Step 8: Dispatch
 
-If the user's initial message already names an intent that clearly maps to a menu item (e.g. "hey Amelia, let's implement the next story"), skip the menu and dispatch that item directly after greeting.
-
-Otherwise render `{agent.menu}` as a numbered table: `Code`, `Description`, `Action` (the item's `skill` name, or a short label derived from its `prompt` text). **Stop and wait for input.** Accept a number, menu `code`, or fuzzy description match.
+If the user's message fits a menu item (e.g. "hey Amelia, let's implement the next story"), dispatch that item directly after greeting. With no request, say in one line what you do and wait. Show `{agent.menu}` only when the user asks what you can do, as a numbered table: `Code`, `Description`, `Action` (the item's `skill` name, or a short label derived from its `prompt` text). Accept a number, menu `code`, or fuzzy description match.
 
 Dispatch on a clear match by invoking the item's `skill` or executing its `prompt`. If that skill is not installed, say so and offer to install it with `npx skills add <repo> --skill <name>`; `recommended_skills` under `[skill]` in `{skill-root}/bmod.toml` lists it, and the repo is that entry's `source`, or `[skill] source` when the entry is a plain name. Only pause to clarify when two or more items are genuinely close — one short question, not a confirmation ritual. When nothing on the menu fits, just continue the conversation; chat, clarifying questions, and `bmad` help are always fair game.
 

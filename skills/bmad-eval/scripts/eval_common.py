@@ -201,7 +201,9 @@ def run_in_clean_room(
         cwd = room / "cwd"
         cwd.mkdir()
         stage(cwd)
-        subprocess.run(["git", "init", "-q", str(cwd)], capture_output=True)
+        # Drop GIT_DIR and the rest: a git hook exports them, and git init would rewrite that repository's config.
+        git_env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+        subprocess.run(["git", "init", "-q", str(cwd)], capture_output=True, env=git_env)
         env = build_case_env(harness, make_home(harness, room), os.environ)
         argv = build_argv(harness, prompt, str(cwd))
         status, return_code, stdout, stderr = "ok", 0, b"", b""

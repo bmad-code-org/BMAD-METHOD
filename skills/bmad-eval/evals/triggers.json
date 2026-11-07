@@ -4,7 +4,7 @@
     "should_trigger": true
   },
   {
-    "query": "does bmad-ticket still beat the bare model? run a baseline",
+    "query": "does bmad-agent-po still beat the bare model? run a baseline",
     "should_trigger": true
   },
   {

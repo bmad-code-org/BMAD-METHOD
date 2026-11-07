@@ -4,7 +4,7 @@ Critique an existing spine pair (`DESIGN.md` + `EXPERIENCE.md`) or any format of
 
 ## Orient
 
-Subagent-extract from `.memlog.md`, sources in frontmatter, `imports/`, `mockups/`, `wireframes/`, `DESIGN.md`, `EXPERIENCE.md`. Parent assembles from extracts.
+Read the ticket in full when one exists, else the sources in frontmatter. Subagent-extract from `.memlog.md`, `imports/`, `mockups/`, `wireframes/`, `DESIGN.md`, `EXPERIENCE.md`. Parent assembles from extracts.
 
 ## Reviewer Gate
 
@@ -18,7 +18,7 @@ Rubric walker prompt:
 >
 > **Pass 1 — mechanical coverage.** Per category: extract, then list misses with location citations. No misses = **strong**.
 >
-> 1. **Flow coverage** (EXPERIENCE.md). Sources frontmatter → extract every UJ / requirement name. Verify each has a Key Flow with named protagonist, numbered steps, a climax beat, and a failure path where applicable.
+> 1. **Flow coverage** (EXPERIENCE.md). The ticket's Requirements when one exists, else the sources frontmatter → extract every journey / requirement name. Verify each has a Key Flow with named protagonist, numbered steps, a climax beat, and a failure path where applicable.
 >
 > 2. **Token completeness** (DESIGN.md). Extract every token in the YAML frontmatter and every `{path.to.token}` reference in the prose. Verify each defined (see `references/design-md-spec.md` for type rules). **Color tokens missing hex (or light/dark pairs where applicable) are critical** — downstream code mirrors the spine. Platform conventions (native dynamic type, 8pt grid) may stay semantic. Contrast targets stated for load-bearing combinations.
 >
@@ -30,9 +30,9 @@ Rubric walker prompt:
 >
 > **Pass 2 — judgment.** Verdict per category (*strong / adequate / thin / broken*); findings only where they add information.
 >
-> 6. **Bloat & overspecification.** Pixel specs where tokens cover it; source restatement (personas, FRs, scope); prose where a table works; sections no downstream consumer would read; decorative narrative untied to a decision. DESIGN.md prose may carry editorial voice; EXPERIENCE.md prose should not.
+> 6. **Bloat & overspecification.** Pixel specs where tokens cover it; ticket or source restatement (Requirements, personas, scope); prose where a table works; sections no downstream consumer would read; decorative narrative untied to a decision. DESIGN.md prose may carry editorial voice; EXPERIENCE.md prose should not.
 >
-> 7. **Inheritance discipline.** `sources` frontmatter resolves. UJ / requirement names verbatim from sources. Glossary identical across spines and sources. Component names identical across all sections in both files. EXPERIENCE.md token references resolve to DESIGN.md tokens by name.
+> 7. **Inheritance discipline.** `sources` frontmatter resolves. Journey / requirement names verbatim from the ticket's Requirements when one exists, else the sources frontmatter. Glossary identical across spines, ticket, and sources. Component names identical across all sections in both files. EXPERIENCE.md token references resolve to DESIGN.md tokens by name.
 >
 > 8. **Shape fit.** DESIGN.md sections in canonical order (Brand & Style → Colors → Typography → Layout & Spacing → Elevation & Depth → Shapes → Components → Do's and Don'ts; omittable but order-locked when present). EXPERIENCE.md required defaults present (Foundation, IA, Voice and Tone, Component Patterns, State Patterns, Interaction Primitives, Accessibility Floor, Key Flows). Dropped defaults defensible. Required-when-applicable present where triggered (Inspiration when sources / memlog show reference products or rejects; Responsive when multi-surface or breakpoints). Invented sections earn their place.
 >

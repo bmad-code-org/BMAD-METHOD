@@ -20,4 +20,4 @@ An agent that joins a module gets a `[[members]]` entry in the module's `roster.
 
 ## Description
 
-The description names the persona and its jobs: "<Name> the <Title> does X, Y and Z. Use when the user asks to talk to <Name> or wants ...". The same length target applies as to any skill (`help/craft-description.md`).
+The description names the persona, a short summary, then every way a user reaches it: "<Name> the <Title> does X, Y and Z. Use when the user asks to talk to <Name> or says ...". The description is the only trigger a capability inside the agent has, so each one contributes its phrases and concepts, and the list is as long as those capabilities need. A menu item that runs an installed skill adds none; that skill triggers itself. See `help/craft-description.md`.

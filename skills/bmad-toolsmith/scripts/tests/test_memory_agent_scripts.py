@@ -141,6 +141,34 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         res = run(self.wake, self.project, "--pulse")
         self.assertIn("===== PULSE.md =====", res.stdout)
 
+    def name_the_agent(self) -> None:
+        run(self.init, self.project, self.skill)
+        persona = self.sanctum / "PERSONA.md"
+        text = persona.read_text(encoding="utf-8").replace("- **Name:** {awaiting First Breath}", "- **Name:** Bubbles")
+        persona.write_text(text, encoding="utf-8")
+
+    def test_waking_says_when_an_update_removed_the_name_from_the_description(self):
+        self.name_the_agent()
+        skill_md = self.skill / "SKILL.md"
+        skill_md.write_text(
+            "---\nname: acme-agent-sage\ndescription: 'A companion.'\n---\n# Bubbles\n", encoding="utf-8"
+        )
+        self.assertIn("Your name, Bubbles, is missing", run(self.wake, self.project).stdout)
+        skill_md.write_text(
+            "---\nname: acme-agent-sage\ndescription: 'Use when the user asks to talk to Bubbles.'\n---\n",
+            encoding="utf-8",
+        )
+        self.assertNotIn("===== description =====", run(self.wake, self.project).stdout)
+
+    def test_waking_leaves_an_unnamed_agent_and_a_global_install_alone(self):
+        run(self.init, self.project, self.skill)
+        (self.skill / "SKILL.md").write_text("---\ndescription: 'A companion.'\n---\n", encoding="utf-8")
+        self.assertNotIn("===== description =====", run(self.wake, self.project).stdout)
+        self.name_the_agent()
+        installed = self.project.parent / "global" / self.skill.name
+        shutil.copytree(self.skill, installed)
+        self.assertNotIn("===== description =====", run(installed / "scripts" / "wake.py", self.project).stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -98,6 +98,11 @@ description = "Working Backwards PRFAQ challenge — forge and stress-test produ
 skill = "bmad-prfaq"
 
 [[agent.menu]]
+code = "BD"
+description = "Write, update or validate a business requirements document for work a separate party builds"
+prompt = "Invoke the `bmad-facilitate` skill with your persona, the intent the user asked for, the template `brd`, and as the next step John (`bmad-agent-pm`) for the `prd` or `srs` that picks up its ids."
+
+[[agent.menu]]
 code = "PC"
 description = "Set up or refresh this repo's agent instructions — verified commands, policy, conventions, pitfalls (setup, refresh, record, audit)"
 skill = "bmad-project-context"

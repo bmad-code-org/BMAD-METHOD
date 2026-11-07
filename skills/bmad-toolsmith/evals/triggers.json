@@ -40,6 +40,22 @@
     "should_trigger": true
   },
   {
+    "query": "I found this code-review skill on GitHub and copied it into .claude/skills/code-review. Can you make this skill BMad compliant and optimize it?",
+    "should_trigger": true
+  },
+  {
+    "query": "a teammate shared their standup-notes skill with me but it's like 4000 tokens of rambling, cut this skill down to what actually matters",
+    "should_trigger": true
+  },
+  {
+    "query": "grabbed a pdf-summary skill off some marketplace, optimize this skill before I start using it on our project",
+    "should_trigger": true
+  },
+  {
+    "query": "optimize this SQL query, it takes 12 seconds on the orders table and I think it's the join",
+    "should_trigger": false
+  },
+  {
     "query": "run the evals for skills/decision-record and show me the benchmark",
     "should_trigger": false
   },

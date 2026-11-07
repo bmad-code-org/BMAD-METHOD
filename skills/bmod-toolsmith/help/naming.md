@@ -8,7 +8,7 @@ Name skills after the org or module they belong to: `acme-release-notes`, `acme-
 
 ## What `bmad-` means
 
-`bmad-` marks a skill shipped by the bmad-code-org. Its modules name skills `bmad-<code>-<skill>` and agents `bmad-<code>-agent-<name>`, with the code left off for core (`bmad-prd`, `bmad-agent-dev`). A custom skill named `bmad-` reads as official, collides with a future core skill, and hides in listings among the ones you did not write. Use your own prefix instead.
+`bmad-` marks a skill shipped by the bmad-code-org. Its modules name skills `bmad-<code>-<skill>` and agents `bmad-<code>-agent-<name>`, with the code left off for core (`bmad-ux`, `bmad-agent-dev`). A custom skill named `bmad-` reads as official, collides with a future core skill, and hides in listings among the ones you did not write. Use your own prefix instead.
 
 ## Modules
 

@@ -1,6 +1,12 @@
 {% if workflow.review not in ("quick", "thorough") %}
   {{ halt("workflow.review must be quick or thorough, not " ~ workflow.review) }}
 {% endif %}
+{% if workflow.interactive is not boolean %}
+  {{ halt("workflow.interactive must be true or false, not " ~ workflow.interactive) }}
+{% endif %}
+{% if workflow.fixes not in ("apply", "handoff") %}
+  {{ halt("workflow.fixes must be apply or handoff, not " ~ workflow.fixes) }}
+{% endif %}
 
 # Code Review Workflow
 
@@ -12,6 +18,12 @@ Subagents are an important part of this workflow. Use them wherever a step calls
 
 - When a step directs you to another file, read it fully and follow it. Load one step at a time, when it is reached.
 - A step that shows a menu or checkpoint halts there and waits for the user.
+{% if workflow.fixes == "handoff" %}
+
+## No-code review
+
+Review by inspection only. Do not modify code, run builds or tests, or invoke quality gates.
+{% endif %}
 
 ## On activation
 

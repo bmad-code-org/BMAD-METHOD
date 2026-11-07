@@ -384,6 +384,21 @@ class BmadSetupTests(unittest.TestCase):
             symlink.assert_not_called()
             self._assert_scripts_identity(project / "_bmad" / "scripts", skill / "scripts")
 
+    def test_setup_leaves_the_skill_tests_out_of_project_scripts(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            write(skill / "scripts" / "tests" / "test_memlog.py")
+            write(project / "_bmad" / "scripts" / "tests" / "test_memlog.py")
+
+            result = run_setup(project, skill)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+
+            self.assertFalse((project / "_bmad" / "scripts" / "tests").exists())
+            self._assert_scripts_identity(project / "_bmad" / "scripts", skill / "scripts")
+            self.assertEqual(status_report(self, project, skill)["shared_scripts"], "current")
+
     def test_already_present_paths_are_left_alone(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -2852,6 +2867,39 @@ class BmadConfigScopeTests(unittest.TestCase):
             self.assertEqual((custom / ".gitignore").read_text(encoding="utf-8"), "*.user.toml\n")
             self.assertEqual((custom / "keep.txt").read_text(encoding="utf-8"), "keep\n")
 
+    def test_the_render_folder_is_ignored_by_git_and_its_gitignore_is_never_edited(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, skill = self.fixture(Path(temp_dir))
+            self.answer_all(project, skill)
+            render = project / "_bmad" / "render"
+            self.assertEqual((render / ".gitignore").read_text(encoding="utf-8"), "*\n!.gitignore\n")
+
+            # A project that set up before this rule existed is owed a setup, which adds it.
+            (render / ".gitignore").unlink()
+            write(render / "bmad-build" / "snapshot.md", "rendered\n")
+            self.assertEqual(status_report(self, project, skill)["next"], "bmad setup")
+            self.assertTrue(setup_report(self, project, skill)["changed"])
+            self.assertEqual((render / ".gitignore").read_text(encoding="utf-8"), "*\n!.gitignore\n")
+            self.assertEqual((render / "bmad-build" / "snapshot.md").read_text(encoding="utf-8"), "rendered\n")
+            if shutil.which("git"):
+                env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+                subprocess.run(["git", "init", "-q"], cwd=project, env=env, check=True)
+
+                def check_ignore(path: str) -> subprocess.CompletedProcess:
+                    command = ["git", "check-ignore", "-v", "--no-index", path]
+                    return subprocess.run(command, cwd=project, env=env, capture_output=True, text=True)
+
+                self.assertTrue(
+                    check_ignore("_bmad/render/bmad-build/snapshot.md").stdout.startswith("_bmad/render/.gitignore:1:*")
+                )
+                self.assertTrue(
+                    check_ignore("_bmad/render/.gitignore").stdout.startswith("_bmad/render/.gitignore:2:!.gitignore")
+                )
+
+            (render / ".gitignore").write_text("# ours now\n", encoding="utf-8")
+            self.assertFalse(setup_report(self, project, skill)["changed"])
+            self.assertEqual((render / ".gitignore").read_text(encoding="utf-8"), "# ours now\n")
+
 
 class BmadStatusTests(unittest.TestCase):
     def test_status_changes_nothing_on_disk(self):
@@ -3033,6 +3081,156 @@ class BmadStatusTests(unittest.TestCase):
             )
             self.assertEqual([item["state"] for item in reports], ["current", "current"])
             self.assertEqual([item["source_version"] for item in reports], ["1.2.3", "1.2.3"])
+
+    def test_a_module_installed_at_a_tag_is_pinned_not_newer_available(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "github-skill", "githubmod", update_source=BMAD_SOURCE, version="3.5.0")
+            (module,) = [m for m in setup.discover_installation(skill).modules if m.module == "githubmod"]
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = b'[bmod]\nversion = "3.6.0"\n'
+            response.__exit__.return_value = False
+
+            def update() -> dict:
+                with mock.patch.object(setup.urllib.request, "urlopen", return_value=response):
+                    return setup.module_update_report(project, module)
+
+            self.assertEqual(update()["state"], "newer-available")
+            for entry in ({"source": "bmad-code-org/BMAD-METHOD"}, {"ref": ""}):
+                write(project / "skills-lock.json", json.dumps({"version": 1, "skills": {"bmod-githubmod": entry}}))
+                self.assertEqual(update()["state"], "newer-available")
+
+            write(
+                project / "skills-lock.json",
+                json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": "v3.5.0"}}}),
+            )
+            report = update()
+            self.assertEqual(report["state"], "pinned")
+            self.assertEqual(report["pinned_ref"], "v3.5.0")
+            self.assertEqual(report["source_version"], "3.6.0")
+            self.assertEqual(
+                report["install"],
+                "npx skills add bmad-code-org/BMAD-METHOD#v3.6.0 --skill bmod-githubmod github-skill",
+            )
+            self.assertIn(report["install"], report["instruction"])
+
+            for branch in ("main", "next", "0123456789abcdef0123456789abcdef01234567", "V6.12"):
+                write(
+                    project / "skills-lock.json",
+                    json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": branch}}}),
+                )
+                self.assertEqual(update()["state"], "newer-available")
+
+            write(
+                project / "skills-lock.json",
+                json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": "v3.5.0", "source": "acme/other"}}}),
+            )
+            self.assertEqual(update()["state"], "newer-available")
+            for source in ("bmad-code-org/BMAD-METHOD", "https://github.com/bmad-code-org/bmad-method.git"):
+                write(
+                    project / "skills-lock.json",
+                    json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": "v3.5.0", "source": source}}}),
+                )
+                self.assertEqual(update()["state"], "pinned")
+
+            response.__enter__.return_value.read.return_value = b'[bmod]\nversion = "3.6.0-next"\n'
+            write(
+                project / "skills-lock.json",
+                json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": "v3.5.0"}}}),
+            )
+            report = update()
+            self.assertEqual(report["state"], "pinned")
+            self.assertNotIn("install", report)
+            self.assertIn("not tagged yet", report["instruction"])
+            response.__enter__.return_value.read.return_value = b'[bmod]\nversion = "3.6.0"\n'
+
+            write(project / "skills-lock.json", "not json")
+            self.assertEqual(update()["state"], "newer-available")
+
+    def test_a_pinned_module_from_a_local_source_has_no_command_but_a_release(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "alpha-skill", "alpha", update_source="file:sources", version="3.5.0")
+            write_bmod(root / "sources", "bmod-alpha", "alpha", version="3.6.0")
+            write(root / "skills-lock.json", json.dumps({"version": 1, "skills": {"bmod-alpha": {"ref": "v3.5.0"}}}))
+            (module,) = [m for m in setup.discover_installation(skill).modules if m.module == "alpha"]
+            report = setup.module_update_report(root, module)
+            self.assertEqual(report["state"], "pinned")
+            self.assertNotIn("install", report)
+            self.assertIn("from the module's source", report["instruction"])
+
+    def test_a_pinned_module_that_is_current_stays_current(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "github-skill", "githubmod", update_source=BMAD_SOURCE, version="3.5.0")
+            (module,) = [m for m in setup.discover_installation(skill).modules if m.module == "githubmod"]
+            write(
+                project / "skills-lock.json",
+                json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": "v3.5.0"}}}),
+            )
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = b'[bmod]\nversion = "3.5.0"\n'
+            response.__exit__.return_value = False
+            with mock.patch.object(setup.urllib.request, "urlopen", return_value=response):
+                self.assertEqual(setup.module_update_report(project, module)["state"], "current")
+
+    def test_a_globally_installed_module_reads_the_global_lock(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            state = root / "state"
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "github-skill", "githubmod", update_source=BMAD_SOURCE, version="3.5.0")
+            (module,) = [m for m in setup.discover_installation(skill).modules if m.module == "githubmod"]
+            write(
+                state / "skills" / ".skill-lock.json",
+                json.dumps({"version": 1, "skills": {"bmod-githubmod": {"ref": "v3.5.0"}}}),
+            )
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = b'[bmod]\nversion = "3.6.0"\n'
+            response.__exit__.return_value = False
+            with (
+                mock.patch.dict(os.environ, {"XDG_STATE_HOME": str(state)}),
+                mock.patch.object(setup.urllib.request, "urlopen", return_value=response),
+            ):
+                report = setup.module_update_report(project, module)
+            self.assertEqual(report["state"], "pinned")
+            self.assertTrue(report["install"].endswith(" -g"))
+
+    def test_a_pinned_module_is_settled_in_the_status_report(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root
+            skill = write_dest_bmad(root)
+            write_core(root, update_source="file:sources")
+            write_module_skill(root, "alpha-skill", "alpha", update_source="file:sources", version="3.5.0")
+            write_bmod(project / "sources", "bmod-alpha", "alpha", version="3.6.0")
+            write(
+                project / "skills-lock.json",
+                json.dumps(
+                    {"version": 1, "skills": {"bmod-alpha": {"ref": "v3.5.0"}, "bmod-core-tools": {"ref": "v1.2.3"}}}
+                ),
+            )
+            write(project / "sources" / "bmod-core-tools" / "bmod.toml", '[bmod]\nversion = "1.2.3"\n')
+            setup_report(self, project, skill)
+
+            report = status_report(self, project, skill)
+
+            alpha = next(item for item in report["modules"] if item["module"] == "alpha")
+            self.assertEqual(alpha["update"]["state"], "pinned")
+            self.assertEqual(alpha["update"]["pinned_ref"], "v3.5.0")
+            self.assertTrue(report["current"], report)
+            self.assertIsNone(report["next"])
 
     def test_a_github_source_with_no_path_reads_the_file_at_the_repo_root(self):
         setup = load_setup()
@@ -3314,7 +3512,7 @@ class BmadRetiredSkillTests(unittest.TestCase):
         self.tool_skills = self.project / ".claude" / "skills"
 
     def method(
-        self, *, renamed=(), removed=(), skills=("bmad-ticket", "bmad-code-review"), update_source=BMAD_SOURCE
+        self, *, renamed=(), removed=(), skills=("bmad-new", "bmad-code-review"), update_source=BMAD_SOURCE
     ) -> None:
         write_bmod(self.installed, "bmod-method", "method", skills=skills, update_source=update_source)
         write(self.installed / "bmod-method" / "retired.toml", retired_toml(renamed, removed))
@@ -3324,7 +3522,7 @@ class BmadRetiredSkillTests(unittest.TestCase):
         return self.tool_skills / name
 
     def test_a_renamed_skill_is_offered_for_removal_and_its_customization_moves(self):
-        self.method(renamed=(("bmad-preview-ticketing", "bmad-ticket"),))
+        self.method(renamed=(("bmad-preview-ticketing", "bmad-new"),))
         self.tool_skill("bmad-preview-ticketing")
         custom = self.project / "_bmad" / "custom"
         write(custom / "bmad-preview-ticketing.toml", "[workflow]\nkeep = true\n")
@@ -3340,7 +3538,7 @@ class BmadRetiredSkillTests(unittest.TestCase):
                 {
                     "skill": "bmad-preview-ticketing",
                     "module": "method",
-                    "renamed_to": "bmad-ticket",
+                    "renamed_to": "bmad-new",
                     "paths": [".claude/skills/bmad-preview-ticketing"],
                     "global": False,
                 }
@@ -3348,18 +3546,18 @@ class BmadRetiredSkillTests(unittest.TestCase):
         )
         self.assertEqual(
             report["custom_renames"],
-            [{"from": "_bmad/custom/bmad-preview-ticketing.toml", "to": "_bmad/custom/bmad-ticket.toml"}],
+            [{"from": "_bmad/custom/bmad-preview-ticketing.toml", "to": "_bmad/custom/bmad-new.toml"}],
         )
-        self.assertEqual((custom / "bmad-ticket.toml").read_text(), "[workflow]\nkeep = true\n")
+        self.assertEqual((custom / "bmad-new.toml").read_text(), "[workflow]\nkeep = true\n")
         self.assertFalse((custom / "bmad-preview-ticketing.toml").exists())
         self.assertEqual(
             report["install_offers"],
             [
                 {
-                    "skill": "bmad-ticket",
+                    "skill": "bmad-new",
                     "replaces": "bmad-preview-ticketing",
                     "module": "method",
-                    "install": "npx skills add bmad-code-org/BMAD-METHOD --skill bmad-ticket",
+                    "install": "npx skills add bmad-code-org/BMAD-METHOD --skill bmad-new",
                 }
             ],
         )
@@ -3411,22 +3609,22 @@ class BmadRetiredSkillTests(unittest.TestCase):
         self.assertTrue((custom / "bmad-gone.toml").is_file())
 
     def test_an_existing_new_customization_is_never_overwritten(self):
-        self.method(renamed=(("bmad-old", "bmad-ticket"),))
+        self.method(renamed=(("bmad-old", "bmad-new"),))
         custom = self.project / "_bmad" / "custom"
         write(custom / "bmad-old.user.toml", "old = 1\n")
-        write(custom / "bmad-ticket.user.toml", "new = 1\n")
+        write(custom / "bmad-new.user.toml", "new = 1\n")
 
         report = setup_report(self, self.project, self.skill)
         self.assertEqual(report["custom_renames"], [])
         self.assertEqual(
             report["custom_not_renamed"],
-            [{"from": "_bmad/custom/bmad-old.user.toml", "to": "_bmad/custom/bmad-ticket.user.toml"}],
+            [{"from": "_bmad/custom/bmad-old.user.toml", "to": "_bmad/custom/bmad-new.user.toml"}],
         )
         self.assertEqual((custom / "bmad-old.user.toml").read_text(), "old = 1\n")
-        self.assertEqual((custom / "bmad-ticket.user.toml").read_text(), "new = 1\n")
+        self.assertEqual((custom / "bmad-new.user.toml").read_text(), "new = 1\n")
 
     def test_two_renames_to_one_name_never_overwrite_a_customization(self):
-        self.method(renamed=(("bmad-a", "bmad-ticket"), ("bmad-b", "bmad-ticket")))
+        self.method(renamed=(("bmad-a", "bmad-new"), ("bmad-b", "bmad-new")))
         custom = self.project / "_bmad" / "custom"
         write(custom / "bmad-a.user.toml", "a = 1\n")
         write(custom / "bmad-b.user.toml", "b = 1\n")
@@ -3434,19 +3632,19 @@ class BmadRetiredSkillTests(unittest.TestCase):
         report = setup_report(self, self.project, self.skill)
         self.assertEqual(
             report["custom_renames"],
-            [{"from": "_bmad/custom/bmad-a.user.toml", "to": "_bmad/custom/bmad-ticket.user.toml"}],
+            [{"from": "_bmad/custom/bmad-a.user.toml", "to": "_bmad/custom/bmad-new.user.toml"}],
         )
         self.assertEqual(
             report["custom_not_renamed"],
-            [{"from": "_bmad/custom/bmad-b.user.toml", "to": "_bmad/custom/bmad-ticket.user.toml"}],
+            [{"from": "_bmad/custom/bmad-b.user.toml", "to": "_bmad/custom/bmad-new.user.toml"}],
         )
-        self.assertEqual((custom / "bmad-ticket.user.toml").read_text(), "a = 1\n")
+        self.assertEqual((custom / "bmad-new.user.toml").read_text(), "a = 1\n")
         self.assertEqual((custom / "bmad-b.user.toml").read_text(), "b = 1\n")
 
     def test_no_install_is_offered_when_the_new_name_is_in_another_active_root(self):
-        self.method(renamed=(("bmad-old", "bmad-ticket"),))
+        self.method(renamed=(("bmad-old", "bmad-new"),))
         self.tool_skill("bmad-old")
-        self.tool_skill("bmad-ticket")
+        self.tool_skill("bmad-new")
         report = setup_report(self, self.project, self.skill, "--root", str(self.tool_skills))
         self.assertEqual(report["install_offers"], [])
 
@@ -3458,7 +3656,7 @@ class BmadRetiredSkillTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 2)
 
     def test_status_reports_the_same_and_changes_nothing(self):
-        self.method(renamed=(("bmad-old", "bmad-ticket"),), update_source="file:skills")
+        self.method(renamed=(("bmad-old", "bmad-new"),), update_source="file:skills")
         self.tool_skill("bmad-old")
         write(self.project / "_bmad" / "custom" / "bmad-old.toml", "x = 1\n")
         before = snapshot(self.project)
@@ -3526,10 +3724,10 @@ class BmadRetiredSkillTests(unittest.TestCase):
             installed,
             "bmod-method",
             "method",
-            skills=("bmad-ticket",),
+            skills=("bmad-new",),
             update_source=BMAD_SOURCE,
         )
-        write(installed / "bmod-method" / "retired.toml", retired_toml((("bmad-old", "bmad-ticket"),), ()))
+        write(installed / "bmod-method" / "retired.toml", retired_toml((("bmad-old", "bmad-new"),), ()))
         write(installed / "bmad-old" / "SKILL.md", "x\n")
         lock = home / ".agents" / ".skill-lock.json"
         write(lock, json.dumps({"version": 3, "skills": {"bmad-old": {}, "bmad": {}}}, indent=2))
@@ -3551,7 +3749,7 @@ class BmadRetiredSkillTests(unittest.TestCase):
         self.assertEqual(entry["paths"], ["~/.claude/skills/bmad-old"])
         self.assertTrue(entry["global"])
         (offer,) = report["install_offers"]
-        self.assertEqual(offer["install"], "npx skills add bmad-code-org/BMAD-METHOD --skill bmad-ticket -g")
+        self.assertEqual(offer["install"], "npx skills add bmad-code-org/BMAD-METHOD --skill bmad-new -g")
 
         removal = run("--remove-retired", "bmad-old")
         self.assertEqual(removal["removed"], ["~/.claude/skills/bmad-old"])
@@ -3561,7 +3759,7 @@ class BmadRetiredSkillTests(unittest.TestCase):
         self.assertFalse((installed / "bmad-old").exists())
 
     def test_only_retired_names_can_be_removed(self):
-        self.method(removed=("bmad-old",), skills=("bmad-ticket", "bmad-code-review"))
+        self.method(removed=("bmad-old",), skills=("bmad-new", "bmad-code-review"))
         self.tool_skill("bmad-code-review")
         self.tool_skill("bmad-old")
         write(self.project / "skills-lock.json", "{ not json")

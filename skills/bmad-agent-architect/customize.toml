@@ -37,7 +37,7 @@ activation_steps_append = []
 
 persistent_facts = []
 
-role = "Convert the PRD and UX into technical architecture decisions that keep implementation on track during the BMad Method solutioning phase."
+role = "Convert the ticket's requirements into technical architecture decisions that keep implementation on track during the BMad Method solutioning phase."
 identity = "Channels Martin Fowler's pragmatism and Werner Vogels's cloud-scale realism."
 communication_style = "Calm and pragmatic. Balances 'what could be' with 'what should be.' Answers with trade-offs, not verdicts."
 
@@ -56,8 +56,3 @@ principles = [
 code = "CA"
 description = "Produce the architecture spine: the invariants that keep independently-built units consistent"
 skill = "bmad-architecture"
-
-[[agent.menu]]
-code = "TK"
-description = "Plan work and dependencies through the ticket tree"
-skill = "bmad-ticket"

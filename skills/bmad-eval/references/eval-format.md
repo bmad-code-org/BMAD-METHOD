@@ -24,7 +24,7 @@ Field semantics:
 - `input`: the realistic, messy user request. Use real file paths, company names, typos, and casual speech, because a polished input tests a situation the skill rarely meets. The runner sends this verbatim to the invocation, after prepending any `state_prefix`.
 - `rubric`: a list of named expectations, each gradeable to `{text, passed, evidence}` by the grader. The strong-versus-weak taxonomy below decides whether each one is worth keeping.
 - `state_prefix`: optional bracketed prime that places the skill mid-workflow (see below). Null or absent means the skill starts cold.
-- `files`: optional fixture paths staged into the case's clean working directory before the run. A bare filename lands at the workspace root; a nested path keeps its directory structure, so the input can reference it verbatim. Sources resolve against `--project-root`, then the cases file's directory, then as absolute paths.
+- `files`: optional fixtures staged into the case's clean working directory before the run. Each is a path relative to `--project-root` or the cases file's directory, or a GitHub file URL (`https://github.com/<owner>/<repo>/blob/<ref>/<path>`, pinned to a commit or tag) for data kept in another repo. A relative path keeps its directory structure, so the input can reference it verbatim; a GitHub file lands at the workspace root under its file name. Absolute and `~` paths are refused, because cases must run on anyone's machine, and a missing fixture stops the run before it starts.
 
 For trigger cases the shape is lighter: a `query` and a `should_trigger` boolean, because there is no artifact to grade, only whether the skill fired.
 

@@ -1,102 +1,90 @@
 # Verification Gap Review
 
-**Goal:** Find changed behavior that could break without reliable verification catching it. Ask one question — "if the behavior this change is supposed to produce broke where it's actually used, would verification fail?" Do not hunt for correctness bugs, but report genuine problems you notice while tracing verification.
+**Goal:** Find behavior this change altered that could break later without any test failing. Do not hunt for bugs; report the ones you run into while tracing.
 
-The main verification gap shapes are:
+A gap finding is a request to add or change one test. File it only when you can name a specific regression that test would catch. If no such test is worth writing, there is nothing to file.
 
-1. **Regression gap:** the changed code regresses where it's used, and no test covering that use would fail.
-2. **Missing-adoption gap:** a place that should now use the new behavior doesn't; it handles the same case its own way, or not at all, and no test would flag the omission.
-3. **Broken-verification gap:** a test appears to cover the changed behavior, but would not actually protect it because it is skipped, flaky, not run in the normal verification path, or too weak to observe the regression.
+Gap shapes:
 
-## Evidence Rules
+1. **Regression gap:** the changed code could regress where it is used, and no test would fail.
+2. **Missing-adoption gap:** a site that should use the new behavior still handles the case its own way, and no test would catch that.
+3. **Broken-verification gap:** a test looks like it covers the change but does not: it is skipped, flaky, not run normally, or too weak to see the regression.
+4. **Stale-verification gap:** a test this change made wrong or moot. It may still pass.
 
-- Read a test before claiming what it covers, runs, asserts, or misses.
-- Before claiming no test exists, search the whole repo by the symbol under test and by import references; expected file locations are not enough.
-- Never assert what you did not verify. If a finding cannot be grounded, drop it.
-- In a finding, say what you actually checked — "none of the tests I read cover this" — and show how far you looked. Say a test doesn't exist anywhere only when the symbol/import-reference search actually shows that.
+## Evidence rules
+
+- Read a test before saying what it covers or misses.
+- Before saying no test exists, search the repo for the symbol under test and its imports. Expected file locations are not enough.
+- Say what you checked and how far you looked. Drop any finding you cannot ground.
 - Do not assign severity, confidence, priority, or ranking.
 
-## Review Sequence
+## Sequence
 
-### Step 1: Screen for behavioral change
+### Step 1: Screen
 
-Screen each part of the change separately. If a part is non-behavioral, skip it. Call a part non-behavioral only when the changed code does not alter return values, thrown errors, caller-visible side effects, or observable state (including iteration order and emitted messages). Once a part meets that test, move on; do not inspect callers or tests for extra confirmation.
+Take each part of the change separately. Skip a part that changes no behavior: no change to return values, thrown errors, side effects callers can see, or observable state (including iteration order and emitted messages). Formatting, comments, renames, trivial getters and pass-throughs, and type-only changes are examples. Once a part is skipped, do not look at its callers or tests.
 
-Common non-behavioral examples: formatting, comments, whitespace; pure renames; trivial getters/setters and pass-throughs; type-only or compiler-enforced changes with no runtime effect; etc.
+Also skip parts that are not worth a test: static text such as prompts, skills, and documents; LLM output; and build, toolchain, dependency, and configuration changes that the build or CI run itself checks.
 
-Only outcomes produced by deterministic code are worth automatically testing; tests are useless on static source text and brittle on LLM output. Skip those parts.
+Do not skip test-only parts. A deleted or weakened test is checked in Step 4; every touched test is read in Step 5.
 
-If every part is skipped, output the clean result (see Output Format).
+If every part is skipped, output the clean result.
 
-### Step 2: Find the behavior that changed
+### Step 2: Name the changed behavior
 
-Identify what behavior changed compared to the previous version: output, side effect, branch, error path, schema/event shape, config default, validation/authorization rule, external contract, etc. If the change affects more than one behavior, handle each separately.
+For each remaining part, say what behavior differs from before: output, side effect, branch, error path, schema or event shape, default, validation rule, external contract. Handle each behavior separately.
 
-Treat broad-impact changes as behavioral even when no single changed line looks important: dependency, toolchain, build/config, data-file, etc.
+### Step 3: Find where it is used
 
-### Step 3: Trace where that behavior is used
+Trace each changed behavior to the code that observes it: direct callers, registered entry points (routes, commands, DI), and contract consumers (schemas, events, APIs, database readers).
 
-Trace the changed behavior to the places that observe it. Start with direct callers and registered entry points (routes, commands, DI), contract consumers (schemas, events, APIs, database readers), and reverse-dependency info if already available.
+Stop a path when a test there would catch a regression, when the consumer does not observe the change, or when the next hop is a guess (dynamic dispatch, reflection, code outside the repo). One to three hops is usually enough. With more than five similar consumers, check representative ones and expand only when a consumer uses the behavior differently.
 
-Follow a path only while the changed behavior is reachable and unverified. Stop when a test at that boundary would fail, the consumer does not observe the changed behavior, or the next hop is guesswork (dynamic dispatch, reflection, outside-repo consumers, etc.). Prefer the nearest observable boundary, often one to three hops away, especially across contract, integration, or service edges. If there are more than five similar consumers, group obvious repeats and check representative paths; expand only when a consumer observes the behavior differently.
+### Step 4: Name the regression, then check the test
 
-### Step 4: Qualify the consumer, then check its test
+For each consumer, name the smallest realistic regression it would see: the branch inverted, the default dropped, the field omitted, the old error code returned, the integration call skipped. This is the Demonstration. It describes what goes wrong for the consumer. "This line could be removed without a test failing" is not a regression. If there is no regression (the state is unreachable, the branch is defensive, the code repeats what another line already guarantees), drop the path. There is no finding and nowhere else to file it.
 
-For each consumer, name the smallest realistic regression this consumer would observe: invert the branch, drop the default, omit the field, return the old error code, skip the integration call, etc. This is the Demonstration. If no such regression exists, drop the path; untested downstream code is not a finding.
+A missing-adoption gap needs two things: evidence the change means the new behavior to replace the local one (PR intent, naming or docs, a replaced sibling site, deleted duplicate logic, a test defining the new rule), and the same observable contract at both sites. Without both, it is a refactor suggestion, not a finding. With both, missing coverage of the non-adoption is the gap.
 
-A `Missing-adoption gap` qualifies not by the adoption failure alone but by a supersession signal: the change gives clear evidence the new behavior is meant to replace the local one — PR intent, naming or docs, a replaced sibling site, deleted duplicate logic, or a test defining the new rule — and the local site shares the same observable contract. Without a supersession signal and a shared observable contract, it is a refactor suggestion, not a verification-gap finding. Once both hold, check whether any test for that site would flag the non-adoption; missing coverage of the non-adoption is the gap itself, not a disqualifier.
+Read the relevant test. Would the Demonstration make an assertion fail?
 
-Find and read the relevant test. Ask whether the Demonstration would make an assertion fail.
+- Yes: the behavior is verified. No finding.
+- No test runs the path, or the test is skipped, flaky, or not run normally, or it runs the code without checking the changed result: report a regression gap or broken-verification gap.
+- No test asserts the site adopts the new behavior: report a missing-adoption gap.
 
-- If yes, the behavior is verified. No finding.
-- For a regression-style Demonstration: if no test runs the path, the test is skipped/flaky/not run normally, or the test runs the code without checking the changed result, report a `Regression gap` or `Broken-verification gap`.
-- For a qualifying Missing-adoption case: if none of the site tests you found assert it adopts the new behavior, report a `Missing-adoption gap`.
+A test counts only when it runs normally and an assertion observes the changed output, branch, or contract. These do not count: assertions on source text; success, no-throw, or snapshot-only checks; mock or log-call checks; manual checks; tests that mock away the integration; end-to-end tests that pass through without checking the changed output; stale assertions or fixtures. For example, `expect(x ?? DEFAULT).toBe(DEFAULT)` passes when `x` is missing.
 
-A test counts only if it runs normally and an assertion observes the changed output, branch, or contract. These do not count: no execution; source-text assertions that match a file's wording instead of running it; success/no-throw/snapshot-only checks; mock/log-call checks; human-only checks; tests that mock away the integration; e2e tests that pass through without checking the changed output; stale assertions or fixtures.
+Common patterns: a helper test covers the branch but caller values skip it; a payload or schema change is not checked at the consumer; migration tests only create new-format rows; a handled partial-failure path has no test; a deleted or weakened test leaves behavior unpinned (deleting a source-text assertion is not this).
 
-For example, `expect(x ?? DEFAULT).toBe(DEFAULT)` passes when `x` is missing.
+### Step 5: Check the touched tests
 
-Common patterns:
+A test is wrong when what it asserts is not what the code should do after this change. A test or test comment is moot when it no longer exercises or describes anything. Report either as a stale-verification gap, saying what the test should assert instead, or that it should go.
 
-- **Caller-path gap** — helper test covers the branch, but caller values skip it.
-- **Contract drift** — payload/schema/event changes must be verified at the consumer.
-- **Migration compatibility** — tests only create new-format rows or fresh schemas.
-- **Phantom exception** — handled partial-failure path has no test.
-- **Missing-adoption gap** — sibling site should use the new rule/helper and does not.
-- **Removed verification** — deleted test or weakened assertion leaves behavior unpinned; removing a source-text assertion is not this, since it never counted.
+### Step 6: Confirm
 
-### Step 5: Confirm each finding is real
+Before writing a finding, re-open the tests or search results it relies on. Check that the Demonstration names a regression and no test you read would catch it, or that the stale assertion pins the outcome you say it does. Explain why the test misses the regression from what it sets up and checks.
 
-Before writing a finding, re-open the specific tests or search results the finding relies on. Verify the Demonstration would not make any test you checked fail, or that the absence claim is backed by the symbol/import-reference search. Do not claim more than you verified; drop any finding you cannot ground.
+Do not report: cases the compiler or type checker enforces; behavior an integration, contract, or end-to-end test already verifies; low coverage or a missing test file by itself; untested code the change did not touch.
 
-Explain why the test misses the bug using what the test sets up and checks.
+Defects you ran into while tracing go under `Other findings`. Do not go looking for more.
 
-Do not report: compiler/type-checker-enforced cases; behavior already verified by an integration, contract, or e2e test; implementation-detail or mock-only tests; low coverage or a missing test file by itself; legacy untested code the change did not affect.
+## Output format
 
-Report genuine problems you noticed while tracing verification, even if they are not verification gaps. Put them under `Other findings` in the output. This permits reporting what you already reached, not extra hunting. A claim that code misbehaves is a defect, not a gap — it goes under `Other findings` for standard triage, however you found it.
-
-## OUTPUT FORMAT
-
-Emit each verification-gap finding as one block. No general advice, no severity or confidence. Triage trusts a gap finding as filed and does not re-verify it, so each block must stand on its own evidence.
+One block per gap. No general advice, no severity or confidence. Triage trusts a gap finding as filed and does not re-verify it, so each block must stand on its own evidence.
 
 ```markdown
 ### <one-line title naming the gap>
 
-- **Changed surface:** the exact behavior or contract that changed — `file:line`.
-- **Impacted consumer or site:** named concretely with `file:line` (e.g. "the `createInvoice` mutation used by the billing dashboard at `billing/dashboard.ts:88`," not "callers of this function").
-- **Existing test evidence:**
-  - `Regression gap`: what the relevant test actually asserts, with `file:line`; or, if none, the symbol/import-reference searches run and their result.
-  - `Missing-adoption gap`: tests for the impacted site, and whether any assert it adopts the new behavior.
-  - `Broken-verification gap`: the apparent test or verification path, and why it does not count.
-- **Missing verification:** the precise assertion or check that's absent.
-- **Demonstration:**
-  - `Regression gap` / `Broken-verification gap`: the concrete regression that would ship undetected, and why the tests you checked would not fail.
-  - `Missing-adoption gap`: the case the site mishandles by not adopting the new behavior, and that none of the tests you read assert adoption.
-- **Consequence:** the concrete thing that ships wrong — a regression the checked evidence would not catch, or a site that should use the new behavior and doesn't.
-- **Disposition:** `patch` — name the test to add, fit to the repo's own way of verifying (don't impose a generic test pyramid) — or `defer` when the gap is real but not worth closing as part of this change, with one sentence of why.
+- **Changed surface:** the behavior or contract that changed, `file:line`.
+- **Impacted consumer or site:** named concretely with `file:line`, not "callers of this function".
+- **Existing test evidence:** what the relevant test asserts, with `file:line`; or the searches run and their result. For a broken-verification gap, why the apparent test does not count. For a stale-verification gap, the assertion that is wrong or moot.
+- **Missing verification:** the assertion or check that is absent, or how the stale assertion should read.
+- **Demonstration:** the regression, and why the tests you read would not fail. For a missing-adoption gap, the case the site mishandles. For a stale-verification gap, what the code should do, and why the test does not say so.
+- **Consequence:** what ships wrong.
+- **Disposition:** the test to add or change, fit to how this repo already tests.
 ```
 
-If you noticed genuine non-gap problems while tracing verification, append:
+If you noticed non-gap problems while tracing, append:
 
 ```markdown
 ## Other findings
@@ -104,10 +92,10 @@ If you noticed genuine non-gap problems while tracing verification, append:
 - <description only; no severity, confidence, priority, or ranking>
 ```
 
-When you find no verification gaps and no other findings, output exactly this single line, not an empty response:
+When there are no gaps and no other findings, output exactly this single line:
 
 `No verification gaps found.`
 
-## CONTENT SOURCE
+## Content source
 
 "Review content:" in the message that launched you gives the content itself or a path to read it from. Read the file when it is a path; either way that is the content under review, and this instruction file never is. If no content is supplied, or it is empty or unreadable, stop with exactly: `No verification gaps found.`

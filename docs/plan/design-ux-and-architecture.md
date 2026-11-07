@@ -48,29 +48,24 @@ shape are starting points; the code owns them once they exist.
 One test decides what belongs. If two units built this independently, could
 they choose incompatibly? A decision goes in the spine only when the answer
 is yes, the call is non-obvious, and it is a real trade-off. Everything else
-is left to the code. Each decision gets a stable ID so specs and stories can
+is left to the code. Each decision gets a stable ID so tickets and stories can
 cite it.
 
-The skill works from whatever you have: a spec, a raw idea, a long
-architecture document to shorten, or an existing codebase, where it reads the
-real code and records the conventions already there. Coaching is the default:
+The skill works from the ticket's requirements, with whatever else you have beside
+them: a long architecture document to shorten, or an existing codebase, where it
+reads the real code and records the conventions already there. Coaching is the default:
 the important calls are shown with the alternatives weighed, then you choose.
 A Fast path drafts the whole spine with `[ASSUMPTION]` tags instead. For a
 new project it recommends a current, well-known starter, because a good one
 already decides a lot of the architecture.
 
-Point it at the whole system or at one epic; an epic spine inherits the
-parent's decisions and records only what the parent left open. When it
-finishes, it offers to attach itself to the spec, which is how Build and the
-readiness gate find it. Seed
-[project context](../existing-codebases/set-and-maintain-project-context.md) from it so every later skill
-reads the same rules.
+Point it at the whole system or at one epic; an epic spine inherits the parent's decisions, records only what the parent left open, and is written in the epic's folder. When Sofia refines an epic, she reminds you that an epic run is one way to flesh it out. When the architecture skill finishes, it offers to add the spine to the ticket's References through Sofia, the Product Owner (`bmad-agent-po`), which is how Build and the readiness gate find it. Seed [project context](../existing-codebases/set-and-maintain-project-context.md) from it so every later skill reads the same rules.
 
 :::caution[Common mistakes]
 Deciding the API style "as we go", documenting every minor choice, and a spine
 written once and never updated are the three ways this step fails. Document
 decisions that cross epic boundaries, keep the spine current as you learn, and
-run `bmad-correct-course` for a significant mid-implementation change.
+tell Sofia when a significant mid-implementation change arrives.
 :::
 
 ## UX Design
@@ -81,19 +76,14 @@ spacing, components) and `EXPERIENCE.md` for how it works (information
 architecture, behavior and states, accessibility, key user flows). Both win
 over any mock or wireframe on conflict.
 
-The facilitator records your vision; it never volunteers colors, patterns, or
-directions. Three working modes: a Fast path that drafts both documents with
-`[ASSUMPTION]` tags, a Coaching path that walks the decisions with creative
-tools (color themes, design directions, wireframes, key-screen mocks), or a
-design handoff that builds a prompt for an external design tool and folds its
-output back in. UX can lead the PRD, follow it, or stand alone.
+The facilitator records your vision; it never volunteers colors, patterns, or directions. Three working modes: a Fast path that drafts both documents with `[ASSUMPTION]` tags, a Coaching path that walks the decisions with creative tools (color themes, design directions, wireframes, key-screen mocks), or a design handoff that builds a prompt for an external design tool and folds its output back in. UX can lead the PRD, follow it, or stand alone. Run on one epic, when the initiative's UX does not cover its screens, it writes in the epic's folder.
 
 Skip it for back-end work, internal tooling with no real interface, and
 changes to an existing UI that already has established patterns.
 
 ## What Comes Next
 
-The spine and the UX documents become input to the spec and to
+The spine and the UX documents become References of the ticket and input to
 [Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md),
 where the readiness gate checks that stories do not depend on decisions
 nothing records.

@@ -1,13 +1,13 @@
 ---
 title: 'Getting Deeper'
-description: Use Build and BMad Spec to extend a command in a specific Django version
+description: Use Build and Sofia, the Product Owner, to extend a command in a specific Django version
 sidebar:
   order: 3
 ---
 
 You already know Build from small projects. Here, you will use it in a specific
 version of Django: first for one bounded command change, then for three related
-stories defined by one BMad Spec. The two exercises demonstrate the
+stories under one epic. The two exercises demonstrate the
 [one-session and epic-sized planning paths](../plan/choose-a-planning-path.md).
 
 :::note[Prerequisites]
@@ -140,14 +140,14 @@ codebase.
 The next change needs three Build runs. `/bmad-forge-idea` can help you decide
 what to build. `/bmad-advanced-elicitation` can help you improve a draft. You do
 not need either here because the requirements are already clear. Send them
-straight to BMad Spec:
+straight to Sofia, the Product Owner:
 
 ```text
-/bmad-spec Create a spec named diffsettings-audit and break it into
+/bmad-agent-po Create an epic named diffsettings-audit and break it into
 exactly three stories in this order: filters, redaction, then CI status.
 
 Read the current diffsettings implementation, focused tests, and command
-documentation before writing the spec. Keep every existing output format
+documentation before writing the requirements. Keep every existing output format
 and the JSON design already approved. Add repeatable --include and --exclude
 shell-glob filters. Include patterns are OR, and exclusions always win. Add
 repeatable --redact shell-glob masks that replace current and default values
@@ -155,10 +155,10 @@ with [REDACTED] without changing whether a difference exists. Add
 --fail-on-difference, which exits 1 when differences remain after filtering and
 0 otherwise. Each story adds focused tests and updates the existing command
 documentation. Do not add another Django documentation file or an external
-service. Use diffsettings-audit as the spec folder slug.
+service. Use diffsettings-audit as the epic's slug.
 ```
 
-BMad Spec first has you pick or create an initiative, then writes `_bmad-output/initiative-<slug>/spec-diffsettings-audit/spec-diffsettings-audit.md`. Hand it to `bmad-ticket` to create `epic-diffsettings-audit` and its three ordered entries in `tickets.toml`. Read the spec and entries and answer any questions. Continue when they match the requirements above; note the epic folder the skill creates.
+Sofia first has you pick or create an initiative, then writes `_bmad-output/initiative-<slug>/tickets/epic-diffsettings-audit/epic-diffsettings-audit.md` with its Requirements, and its three ordered entries in the epic's `tickets/tickets.toml`. Read the epic file and entries and answer any questions. Continue when they match the requirements above; note the epic folder she creates.
 
 ## 9. Build the Three Stories
 

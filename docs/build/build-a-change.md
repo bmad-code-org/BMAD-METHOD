@@ -190,20 +190,20 @@ decisions may set patterns for later work. Once those patterns are stable,
 
 ## Implementation Skills
 
-| Skill                 | Purpose                                                                                                                                                       | Produces                                         |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `bmad-build`          | Implement and review one direct intent or ticket with human checkpoints (this page)                                                                           | Plan + code                                      |
-| `bmad-build-auto`     | Implement and review one ticket unattended for a caller or orchestrator ([Autonomous Development Loops](./autonomous-development-loops.md))                   | Plan + code + terminal status                    |
-| `bmad-code-review`    | Review any code change with several independent reviewers ([Review a Change](./review-a-change.md))                                                           | Findings + applied patches                       |
-| `bmad-correct-course` | Assess the impact of a significant mid-sprint change ([Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md#correct-course)) | Updated plan or re-routing                       |
-| `bmad-retrospective`  | Review a completed epic against the evidence it left behind ([Finish an Epic](./finish-an-epic.md))                                                           | Retro document, action items, acceptance verdict |
+| Skill                 | Purpose                                                                                                                                                       | Produces                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `bmad-build`          | Implement and review one direct intent or ticket with human checkpoints (this page)                                                                           | Plan + code                                                        |
+| `bmad-build-auto`     | Implement and review one ticket unattended for a caller or orchestrator ([Autonomous Development Loops](./autonomous-development-loops.md))                   | Plan + code + terminal status                                      |
+| `bmad-code-review`    | Review any code change with several independent reviewers ([Review a Change](./review-a-change.md))                                                           | Findings + applied patches                                         |
+| `bmad-agent-po`       | Replan after a significant mid-flight change: what it changes, what goes stale, what is re-sliced or dropped ([Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md)) | Updated requirements and tickets                 |
+| `bmad-retrospective`  | Review a completed epic against the evidence it left behind ([Finish an Epic](./finish-an-epic.md))                                                           | Retro document, action items, decision records, acceptance verdict |
 
 Clear one-session work enters `bmad-build` directly. Larger work is sliced
-into a ticket tree with `bmad-ticket`, from a spec or any other
-intent, and each build takes one ticket. `bmad-build-auto` does not orchestrate
-those tickets: an AI coding session or another orchestrator, such as bmad-loop,
-dispatches one worker per ticket. See
-[Autonomous Development Loops](./autonomous-development-loops.md) for the
+into a ticket tree by Sofia, the Product Owner (`bmad-agent-po`), from its
+requirements or any other intent, and each build takes one ticket.
+`bmad-build-auto` does not orchestrate those tickets: an AI coding session or
+another orchestrator, such as bmad-loop, dispatches one worker per ticket.
+See [Autonomous Development Loops](./autonomous-development-loops.md) for the
 worker and orchestration contracts.
 
 ## Why Does This Take So Long? I Could Plan Mode and Code It in Ten Minutes

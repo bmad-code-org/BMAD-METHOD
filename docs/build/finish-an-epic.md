@@ -8,8 +8,9 @@ sidebar:
 Run `bmad-retrospective` when every ticket of an epic is finished. It reads
 what the epic left in the ticket tree — the epic file, each ticket's plan,
 the diff, and the commits — and uses that evidence instead of anyone's
-recollection. It produces a written review, proposed action items, and a
-verdict on whether the epic met its acceptance criteria.
+recollection. It produces a written review, proposed action items and
+decision records, and a verdict on whether the epic met its acceptance
+criteria.
 
 ## Why Run It After an Epic
 
@@ -49,15 +50,15 @@ show. It won't invent a root cause or a pattern the code doesn't back up.
 ## What It Reads
 
 The retrospective works on one epic folder in the ticket tree that
-`bmad-ticket` keeps (see
+Sofia, the Product Owner (`bmad-agent-po`), keeps (see
 [Break Work into Stories](../plan/break-work-into-stories-and-track-it.md)):
 
-- **`tickets.toml`**: the epic's tickets, in build order.
+- **`tickets/tickets.toml`**: the epic's tickets, in build order.
 - **The epic file**: its Done when checks, the criteria the verdict judges.
 - **The initiative's requirements**: what each ticket's `covers` points at.
-- **Each ticket's plan and story file**: the plan's triage log,
-  verification, plan changes, and any `## Code Review` blocks; the story
-  file only when the ticket was refined.
+- **Each ticket's plan and story file**: the plan's frozen decisions,
+  triage log, verification, plan changes, and any `## Code Review` blocks;
+  the story file only when the ticket was refined.
 - **The git history**: each plan's diff and commits, from its
   `baseline_revision` to the next plan's.
 - **The previous epic's retrospective**: its action items, to check whether
@@ -71,8 +72,10 @@ the tickets still at `built` for you to close.
 
 - **A retrospective document**, `epic-<slug>-retrospective.md` in the epic
   folder, with the evidence inventory, findings grouped with their sources,
-  the verdict, and proposed action items. It is the only file the skill
-  writes. It does not mark the epic or any ticket done.
+  the verdict, and proposed action items. Apart from the decision records
+  you approve, which go beside the code they govern or in the decisions
+  folder when system-wide, it is the only file the skill writes. It does not
+  mark the epic or any ticket done.
 - **A verdict** of `accepted`, `accepted-with-open-items`, or `rejected`,
   recorded in the document's frontmatter, which tells you whether to start
   the next epic or hold and fix first. Unfinished tickets make the skill's
@@ -92,6 +95,8 @@ specs automatically.
 - **Spec reconciliations** arrive with the evidence attached, for you to apply
   to the project contract by hand. An uncertain interpretation never gets
   written into a spec on its own.
+- **Decision records** (ADRs) are written beside the code they govern only
+  when you approve each one, and committing them is up to you.
 - **The verdict** is the gate. A rejected epic, or one accepted with open
   items, tells the next planning step what to carry forward.
 

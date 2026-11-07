@@ -31,7 +31,7 @@ Find the feature to cover. Check in this order and stop at the first that identi
 - **Current git state.** If HEAD is not on the default branch, confirm that the feature is what this branch changed against the default branch. HALT for the answer.
 - **Ask.** HALT and ask the user what to cover, offering to list the features with no end-to-end coverage, ordered by how much a regression would hurt.
 
-Then list the scenarios the tests must cover, before touching the harness. For a ticket, they come from find's `description` and `verify`, the epic file, the story file when there is one, and the plan's I/O & Edge-Case Matrix when the plan exists. Never write to a ticket file, and never run `tickets.py pull` or `tickets.py mark`. Otherwise read the code behind the feature and list the user-visible scenarios: the main path and the failures a user can actually reach.
+Then list the scenarios the tests must cover, before touching the harness. For a ticket, read the epic file, and the story file when there is one, first and in full and trust them; the scenarios come from their Requirements and acceptance criteria, find's `description` and `verify`, and the plan's I/O & Edge-Case Matrix when the plan exists. Open a companion only where the ticket points at it. Never write to a ticket file, and never run `tickets.py pull` or `tickets.py mark`. Otherwise read the code behind the feature and list the user-visible scenarios: the main path and the failures a user can actually reach.
 
 Each scenario is one sentence a product person would recognize: who does what, and what they see. Mark the scenarios an existing test already covers. Present the list and HALT for the user's confirmation before writing tests.
 

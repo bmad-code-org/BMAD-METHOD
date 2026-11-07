@@ -155,6 +155,28 @@ external_handoffs = []
 # sequence. Empty = the run ends with the finalize summary.
 on_complete = ""
 
+# --- Codebase path ----------------------------------------------------------
+# Questions about this repository, answered from its code and git history.
+# Applies: subagents (empty means normal); subagent_models (locators and
+# verifiers take the fastest tier here, the exception to the rule above,
+# which is the list's last available entry; analyzers and historians take
+# its first); validation (normal verifies the load-bearing claims and any
+# question no analyzer took, high and max every claim, max one more call
+# edge); research_output_path; run_folder_pattern; output_format;
+# html_theme; doc_standards; external_handoffs; on_complete.
+# Does not apply: preset, max_sources_per_round, max_depth, red_team,
+# use_workflows (a workflow harness relays the ask to every researcher),
+# audience, research_template, the source lists, the research types.
+
+# Files one analyzer opens per question: a cap, not a quota. A question that
+# needs more ends with the next ask named in the document. Raise it where one
+# behavior spreads over many small files.
+codebase_file_budget = 15
+
+# Commits one historian follows per question, blaming only the cited lines: a
+# cap, not a quota. Raise it where the reasons sit far back in a long history.
+codebase_history_budget = 10
+
 # ---------------------------------------------------------------------------
 # Research types — subject lenses. Each type is a pack: a policy and craft
 # card (prioritized dimensions, non-obvious source craft, freshness bars,

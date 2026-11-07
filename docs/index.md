@@ -46,9 +46,9 @@ Consider running `bmad-project-context`, then build as usual. See
 [Set and Maintain Project Context](./existing-codebases/set-and-maintain-project-context.md).
 
 **You are building a larger feature or a whole product.**
-If you can give `bmad-spec` a complete intent, start there. If you need to
-go through the ideation/planning paces first, choose a path in
-[Choose a Planning Path](./plan/choose-a-planning-path.md).
+If you can give Sofia, the Product Owner (`bmad-agent-po`), a complete intent,
+start there. If you need to go through the ideation/planning paces first,
+choose a path in [Choose a Planning Path](./plan/choose-a-planning-path.md).
 
 **Your idea is still vague, or you are not sure it is a good one.**
 Generate options or [pressure-test the idea](./plan/explore-and-validate-an-idea.md),

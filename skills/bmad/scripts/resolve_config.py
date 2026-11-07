@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Resolve BMad's four central TOML layers to JSON."""
+"""Resolve BMad's three central TOML layers to JSON."""
 
 import argparse
 import json
@@ -43,7 +43,7 @@ def write_json_stdout(output) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Resolve BMad central config using four-layer TOML merge.")
+    parser = argparse.ArgumentParser(description="Resolve BMad central config using three-layer TOML merge.")
     parser.add_argument(
         "--project-root",
         "-p",

@@ -77,7 +77,7 @@ Critical warnings only — data loss, security issues
 | Skill        | Agent   | Purpose                              |
 | ------------ | ------- | ------------------------------------ |
 | `bmad-brainstorming` | Analyst | Brainstorm a new project             |
-| `bmad-prd`        | PM      | Create Product Requirements Document |
+| `bmad-agent-pm`   | PM      | Create, update, or validate a PRD or brief |
 ```
 
 ## Folder Structure Blocks
@@ -388,7 +388,7 @@ Only for work that benefits from architecture. Clear work can enter implementati
 
 ### Can I change my plan later?
 
-Yes. The `bmad-correct-course` workflow handles scope changes mid-implementation.
+Yes. Sofia, the Product Owner (`bmad-agent-po`), replans scope changes mid-implementation.
 
 **Have a question not answered here?** [Open an issue](...) or ask in [Discord](...).
 ```

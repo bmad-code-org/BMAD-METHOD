@@ -1,6 +1,6 @@
 # Progressive disclosure and size
 
-Read this when the user asks how long a skill should be, why Smithy split theirs into files, or what progressive disclosure means.
+Read this when the user asks how long a skill should be, why Smithy split theirs into files, how its prose should be written, or what progressive disclosure means.
 
 A skill is paid for every time it runs. The entry file, `SKILL.md`, is read on every invocation; a reference is read only when the branch that names it is reached. So the question is never "how big is the skill" but "how much does one run load". A plain skill's entry aims near 800 tokens, an agent's near 1,200. A complex workflow is the right size at any total when each branch sits in its own file and loads only when reached; the same workflow loaded whole is too big at half the size.
 
@@ -12,5 +12,7 @@ The rules Smithy follows and the review checks:
 - Every file a model reads is held to the same standard as the entry: each reference, each capability file, each template a model reads as text. A skill judged by its entry alone has most of its text unjudged.
 - The description is the only place "when to use" lives; the body never repeats it.
 - Cut what a capable model would do unasked. Instructions for exotic cases are paid on every run and the case is paid only when it occurs.
+- Start from one sentence. Write each passage as the one sentence that steers the model, then add a clause only when you can name the wrong action it prevents.
+- One topic to a paragraph. A paragraph or section is a rule's scope, so a paragraph of several topics leaves the model guessing how far each rule reaches.
 
-Smithy's review mode measures tokens per file and says what one run loads; its leanness lens proposes the smallest version and what it would change.
+Smithy's review mode measures tokens per file, flags long paragraphs and sentences, and says what one run loads; its leanness lens proposes the smallest version and what it would change. Cut mode applies this standard across a whole skill.

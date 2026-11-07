@@ -1,16 +1,16 @@
 # Using the method on an existing codebase
 
-The method works on an inherited or long-lived codebase with no up-front documentation pass. `bmad-build` investigates the repository on every run, writes down what to reuse and what not to change, and follows that. Too little planning costs one build run, so start small and add planning only when the work calls for it.
+The method works on an inherited or long-lived codebase with no up-front documentation pass. `bmad-build` reads its ticket in full when one exists, then investigates the repository on every run, writes down what to reuse and what not to change, and follows that. Too little planning costs one build run, so start small and add planning only when the work calls for it.
 
 BMad is installed per project. The existing repository needs its own install and its own `bmad setup`.
 
 ## Suggested order
 
 1. **`bmad-project-context`**, recommended. A good initial `AGENTS.md` is worth having: it records a small, verified set of rules for agents. Skipping it does not fail a build; the cost is the same mistake every session until someone writes the rule down. When the repo already has a maintained `AGENTS.md` or `CLAUDE.md`, it adopts that file instead of starting over. It does not produce a repo overview or a stack list, so it will not teach the user the app.
-2. **`bmad-walkthrough`**, when the user does not know the code. It guides them through a file, directory, commit, or PR at their own pace: intent first, then broad strokes, then detail.
-3. **`bmad-architecture`**, only when needed. It can start from the codebase and ratify the conventions worth keeping in a short decisions list. Skip it when the codebase is well documented or the changes are small.
+2. **`bmad-walkthrough`**, when the user does not know the code. It guides them through a file, directory, commit, or PR at their own pace: intent first, then broad strokes, then detail. `bmad-deep-recon` writes a cited account of how the code works and why, from the code and git history, and `bmad-build`'s plan step reads it as evidence; the walkthrough is for learning the code interactively.
+3. **`bmad-architecture`**, only when needed and once a ticket file exists for it to read. It ratifies the conventions the codebase already shows in a short decisions list, adopted into the ticket. Skip it when the codebase is well documented or the changes are small.
 4. **`bmad-build`** for the first change. Pick something one session can finish. A change that follows established patterns, such as a new route in a layered API, needs no planning skill: a short intent file or a few sentences is enough input.
-5. **`bmad-spec`**, then one `bmad-build` per story, when a change is bigger than one session.
+5. Talk to **Sofia the Product Owner** (`bmad-agent-po`) to write the ticket's requirements and slice the stories, then one `bmad-build` per story, when a change is bigger than one session.
 6. **`bmad-qa-generate-e2e-tests`**, when the inherited app has little test coverage. It generates API and end-to-end tests for features that already exist.
 
 If the codebase is inconsistent or has few tests, cleanup first pays back in every later session (`help/preparing-a-repo-for-agents.md`).

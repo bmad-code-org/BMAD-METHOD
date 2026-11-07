@@ -42,13 +42,32 @@ on_complete = ""
 
 review = "thorough"
 
+# Whether a human can answer during the run. Set false when nobody can (a
+# review bot, a CI job, another workflow): the review then never asks or
+# halts, and takes the default at every choice.
+
+interactive = true
+# What to do with patch findings: "apply" fixes them in this session;
+# "handoff" (a no-code review) hands them to a coding agent instead.
+
+fixes = "apply"
+
+# What a no-code review writes for the coding agent instead of fixing the
+# patch findings. Override wins; empty uses the text in step 5.
+
+handoff_format = ""
+
+# How that reaches the caller. Override wins; empty shows it in this chat.
+
+handoff_delivery = ""
+
 # Review lenses for the review step, in two sets the review selection picks
 # between. `instruction` is the lens's whole execution recipe — subagents by
 # default, but an override may run anything (e.g. an external reviewer via
-# bash). {diff_file}, {claims_file}, {plan_file}, and {verbatim_intent} are
-# substituted at run time; the first three are paths, and {diff_file} is the
-# unified diff file the lens reads. `when` (optional) gates a lens; empty
-# `instruction` disables it.
+# bash). {diff_file}, {claims_file}, {plan_file}, {ticket_file}, and
+# {verbatim_intent} are substituted at run time; the first four are paths,
+# and {diff_file} is the unified diff file the lens reads. `when` (optional)
+# gates a lens; empty `instruction` disables it.
 
 [[workflow.quick_lenses]]
 id = "quick"
@@ -56,11 +75,13 @@ name = "Quick"
 instruction = """
 Launch a context-free subagent with this prompt:
 
-Read `{plan_file}` — the plan holding the acceptance criteria and intent; it is empty when there is none — and the files its frontmatter `context:` lists. Read the agent instruction files (`AGENTS.md`, `CLAUDE.md`, or equivalents) at the repository root and in the directories the diff touches; those are the rules. Then read the unified diff at `{diff_file}` — it is the change under review.
+Read `{ticket_file}` in full — the ticket, or the epic of a story with no file; it is empty when there is none. The change must meet this intent, not the rest of an epic: {verbatim_intent}
+
+Then read `{plan_file}` — the plan holding the acceptance criteria and intent; empty when there is none — and the files its frontmatter `context:` lists. Read the agent instruction files (`AGENTS.md`, `CLAUDE.md`, or equivalents) at the repository root and in the directories the diff touches; those are the rules. Then read the unified diff at `{diff_file}` — it is the change under review.
 
 Report unmet acceptance criteria, broken rules, and bugs. Each finding: the location, what goes wrong, and evidence checked against the surrounding code. Output a Markdown list of findings only — no severity, priority, or ranking.
 
-Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
+Review by inspection only. Do not modify code, run builds or tests, or invoke quality gates. Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
@@ -79,7 +100,7 @@ If you have zero findings, re-check and keep thinking; do not stop with an empty
 
 CONTENT: the unified diff at `{diff_file}`. Read that file — it is the content under review.
 
-Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
+Review by inspection only. Do not modify code, run builds or tests, or invoke quality gates. Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
@@ -95,7 +116,7 @@ claims_file (leave unread until your instructions call for it): {claims_file}
 
 Review content: the unified diff at `{diff_file}`. Read that file — it is the content under review.
 
-Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
+Review by inspection only. Do not modify code, run builds or tests, or invoke quality gates. Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
@@ -109,14 +130,14 @@ Read `{skill-root}/review-prompts/verification-gap.md` completely and follow it 
 
 Review content: the unified diff at `{diff_file}`. Read that file — it is the content under review.
 
-Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
+Review by inspection only. Do not modify code, run builds or tests, or invoke quality gates. Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
 [[workflow.thorough_lenses]]
 id = "intent-alignment"
 name = "Intent Alignment Auditor"
-when = "an intent is available: the spec's intent section, or the user's or conversation's own words on what the change is for"
+when = "an intent is available: the ticket's Requirements, the plan's intent section, or the user's or conversation's own words on what the change is for"
 instruction = """
 Launch a subagent with this prompt:
 
@@ -128,6 +149,6 @@ The diff is the unified diff at `{diff_file}`. Read that file — it is the chan
 
 Your task is strictly descriptive — do not prescribe additional work. Report: (1) the defensible readings of the intent, enumerated; (2) which reading this diff implements; (3) where the readings and the diff diverge — specifically, which surface the intent's expectations live at versus which surface the diff's changes and its tests exercise.
 
-Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
+Review by inspection only. Do not modify code, run builds or tests, or invoke quality gates. Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """

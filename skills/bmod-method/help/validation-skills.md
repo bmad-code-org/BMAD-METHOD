@@ -9,7 +9,7 @@ Read this when the question is about `bmad-code-review`, `bmad-walkthrough`, `bm
 | `bmad-walkthrough` | The human, guided | A commit, PR, file, or directory | Nothing unless asked |
 | `bmad-retrospective` | Agents, across tickets | A whole epic folder | Nothing; proposes action items |
 
-**`bmad-code-review`** — agent review of any diff, with verified and triaged findings. With no argument it offers the tickets in review and diffs from the chosen plan's `baseline_revision`.
+**`bmad-code-review`** — agent review of any diff, with verified and triaged findings. With no argument it offers the tickets in review, reads the chosen ticket and its plan in full, and diffs from the plan's `baseline_revision`.
 - Pick when: the code did not come from `bmad-build`; a PR or branch needs review; after material fixes. For another pass on a `bmad-build` run, hand `bmad-build` its `built` plan; once the user has marked the plan `done`, hand it to `bmad-code-review`. After an unattended run that sets `followup_review_recommended`, dispatch `bmad-build-auto` on the same ticket again; it goes straight to a fresh review pass.
 - Not when: `bmad-build` just ran a thorough review on the same change. It is the same four lenses again. A run can take half an hour or more, and more than two rounds on one change usually points to a problem outside the change, such as weak planning or a messy codebase. A finished epic → `bmad-retrospective`, which runs the review lenses over the epic's diff.
 - Writes: a dated block in the plan's `## Code Review` section when it reviews a plan; otherwise findings stay in the chat. It never changes the ticket's `status`.
@@ -25,7 +25,7 @@ Read this when the question is about `bmad-code-review`, `bmad-walkthrough`, `bm
 - Writes: tests where the project keeps its end-to-end tests, and nothing else. The report is in chat.
 
 **`bmad-retrospective`** — judges a finished epic folder in the ticket tree as a whole against the epic's Done when and the initiative's requirements.
-- Gives: sourced findings no single session could see (architecture drift, duplication, spec versus built), owned action items, and a verdict: accepted, accepted with open items, or rejected.
+- Gives: sourced findings no single session could see (architecture drift, duplication, spec versus built), owned action items, proposed decision records, and a verdict: accepted, accepted with open items, or rejected.
 - Pick when: every ticket of the epic is `built`, `done`, or `dropped`, and especially after unattended runs. It reads `tickets.toml`, the epic file, and each ticket's plan. An unfinished ticket forces a rejected verdict; tickets still at `built` are listed for the user to mark done.
 - Not when: one ticket or one diff is in question → `bmad-code-review` or `bmad-walkthrough`.
-- Writes: `epic-<slug>-retrospective.md` in the epic folder, with the verdict in its frontmatter, and nothing else. It marks nothing done.
+- Writes: `epic-<slug>-retrospective.md` in the epic folder, with the verdict in its frontmatter, plus an `adr-<decision-slug>.md` beside the code it governs, or in the decisions folder when system-wide, for each decision record the user approves, and nothing else. It marks nothing done.

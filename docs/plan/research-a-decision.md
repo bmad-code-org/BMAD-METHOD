@@ -1,13 +1,13 @@
 ---
 title: 'Research a Decision'
-description: Decision-grade research with Deep Recon, three ways — draft a prompt for your own deep-research tool, process a finished report, or run the research in place.
+description: 'Decision-grade research with Deep Recon: draft a prompt for your own deep-research tool, process a finished report, run the research in place, or research your own codebase.'
 sidebar:
   order: 4
 ---
 
 Use `bmad-deep-recon` when a planning decision should rest on evidence rather
-than assumption. This page explains its three modes and how to pick between
-them.
+than assumption. This page explains its three modes, how to pick between
+them, and how it researches your own codebase.
 
 ## What Deep Recon Is
 
@@ -97,6 +97,42 @@ the original imports, the extracted notes, and `research-<topic>.md`. The report
 fastest. **Refresh** re-checks only those claims and records what changed.
 **Deepen** drills into one area without re-running the rest.
 
+## Research the Codebase
+
+Deep Recon also researches the repository you work in, from its code and git
+history. Use it on an existing codebase before a build that depends on code
+you do not know well, or when you need to know why something is built the way
+it is. Ask a question, name a ticket, or state a goal. It needs no decision
+and skips the mode choice.
+
+Your ask first becomes a short set of factual questions that state no intent:
+"how does a job run end?", not "where would cancellation go?". Deep Recon
+shows them with the commit it will read, and nothing runs until you approve
+them; you can edit them first. The researchers see only those questions, never
+your goal or the ticket, so they report what the code does rather than what it
+should do. An ask too broad for one short document, such as documenting the
+whole project, gets a list of narrower asks to run instead.
+
+The result is one short document. Each question gets an answer with every
+claim cited to a file and line at that commit, or to a commit in the history,
+and a note of what was looked for and not found. The claims the answers rest
+on are re-checked against the code before the document closes. It holds no
+summary, recommendation, or proposed change: those choices are yours.
+
+For a question that asks why, it also reads the git history: the commits and
+pull requests that brought the code in, and the reasons given there. When the
+history shows a decision that is hard to reverse, surprising without context,
+and the result of a real trade-off, and no existing decision record covers it,
+Deep Recon proposes a new decision record (ADR) and asks you about it. An
+approved one is written beside the code it governs, and you commit it.
+
+The document lands in the active initiative's folder like any other research,
+and research started from a ticket file adds it to that ticket's References.
+`bmad-build` reads it as evidence. Before a claim goes into its plan, the
+build re-checks it against the current code when the plan rests on it or its
+file changed since the research commit. The document describes that one
+commit; for a later state of the code, ask again.
+
 ## Starting It
 
 | Goal                         | Type this                                                                                          |
@@ -107,6 +143,9 @@ fastest. **Refresh** re-checks only those claims and records what changed.
 | Process a report             | "there's a research report at ~/Downloads/report.pdf, process it"                                  |
 | Choose between options       | "help me choose between Postgres and MySQL for this"                                               |
 | Refresh an existing report   | "refresh the market research"                                                                      |
+| Ask how your code works      | "research how session persistence works in this repo"                                                 |
+| Research code for a ticket   | "research the codebase for ticket 2.3"                                                             |
+| Ask why code is this way     | "why is eviction one-way here"                                                                     |
 | Customize defaults           | `/bmad-customize bmad-deep-recon`                                                                  |
 
 The v6 `bmad-market-research`, `bmad-domain-research`, and

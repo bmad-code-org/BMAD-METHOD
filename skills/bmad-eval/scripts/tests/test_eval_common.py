@@ -5,14 +5,18 @@ PATH, a fresh HOME, and the harness's `env` table, where a value is set as given
 the fresh HOME and an empty value forwards the host's only when the host has it. Nothing else.
 """
 
+import os
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-from eval_common import PLATFORM_ENV, build_case_env, validate_harness  # noqa: E402
+from eval_common import PLATFORM_ENV, build_case_env, run_in_clean_room, validate_harness  # noqa: E402
 
 HOST_ENV = {
     "PATH": "/usr/bin:/bin",
@@ -62,6 +66,22 @@ class EnvIsolationTest(unittest.TestCase):
         ):
             with self.assertRaises(ValueError, msg=bad):
                 validate_harness(bad)
+
+
+class CleanRoomGitTest(unittest.TestCase):
+    def test_git_init_leaves_a_hooks_repository_alone(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            clean_env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+            subprocess.run(["git", "init", "-q", str(root / "repo")], check=True, env=clean_env)
+            # A linked worktree's git dir: not named .git, so an inherited GIT_DIR reads as bare to git init.
+            git_dir = root / "hook-git-dir"
+            (root / "repo" / ".git").rename(git_dir)
+            before = (git_dir / "config").read_text(encoding="utf-8")
+            harness = {"command": ["no-such-harness-xyz", "{prompt}"]}
+            with mock.patch.dict(os.environ, {"GIT_DIR": str(git_dir)}):
+                run_in_clean_room(harness, root / "case", "prompt", 5, lambda cwd: None)
+            self.assertEqual((git_dir / "config").read_text(encoding="utf-8"), before)
 
 
 if __name__ == "__main__":

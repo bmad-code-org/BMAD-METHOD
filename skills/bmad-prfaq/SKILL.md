@@ -15,7 +15,7 @@ The PRFAQ forces customer-first clarity: write the press release announcing the 
 
 **Args:** Accepts `--headless` / `-H` for autonomous first-draft generation from provided context.
 
-**Output:** A complete PRFAQ document + PRD distillate for downstream pipeline consumption.
+**Output:** A complete PRFAQ document + a distillate for the initiative's requirements or a PRD.
 
 **Research-grounded.** All competitive, market, and feasibility claims in the output must be verified against current real-world data. Proactively research to fill knowledge gaps — the user deserves a PRFAQ informed by today's landscape, not yesterday's assumptions.
 
@@ -60,7 +60,7 @@ Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {proj
 
 ### Step 5: Greet the User
 
-Greet the user. Be warm but efficient — dream builder energy.
+Greet the user. Be warm but efficient — dream builder energy. Let the user know they can invoke `bmad-party-mode` for multi-agent perspectives or `bmad-advanced-elicitation` for deeper exploration at any point.
 
 ### Step 6: Execute Append Steps
 
@@ -73,7 +73,7 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 1. **Resume detection:** Check for an existing `prfaq-*/prfaq-*.md` in `{output_folder}/{active_initiative}/` or `{output_folder}/`. If one exists, read only the first 20 lines to extract the frontmatter `stage` field and offer to resume from the next stage. Do not read the full document. If the user confirms, route directly to that stage's reference file.
 
 2. **Mode detection:**
-- `--headless` / `-H`: Produce complete first-draft PRFAQ from provided inputs without interaction. Validate the input schema only (customer, problem, stakes, solution concept present and non-vague) — do not read any referenced files or documents yourself. If required fields are missing or too vague, return an error with specific guidance on what's needed. Fan out artifact analyzer and web researcher subagents in parallel (see Contextual Gathering below) to process all referenced materials, then create the output document at `{doc_workspace}/prfaq-{slug}.md` using `assets/prfaq-template.md` and route to `references/press-release.md`.
+- `--headless` / `-H`: Produce complete first-draft PRFAQ from provided inputs without interaction. Validate the input schema only (customer, problem, stakes, solution concept present and non-vague) — do not read any referenced files yourself, except a ticket file (`initiative-*.md`, `tickets/epic-*/epic-*.md`; older projects `SPEC*.md`), which you read first and in full and whose Requirements are settled. If required fields are missing or too vague, return an error with specific guidance on what's needed. Fan out artifact analyzer and web researcher subagents in parallel (see Contextual Gathering below) to process all referenced materials, then create the output document at `{doc_workspace}/prfaq-{slug}.md` using `assets/prfaq-template.md` and route to `references/press-release.md`.
 - Default: Full interactive coaching — the gauntlet.
 
 **Headless input schema:**
@@ -112,7 +112,7 @@ When the user gets stuck, offer concrete suggestions based on what they've share
 
 **Contextual Gathering:** Once you understand the concept, gather external context before drafting begins.
 
-1. **Ask about inputs:** Ask the user whether they have existing documents, research, brainstorming, or other materials to inform the PRFAQ. Collect paths for subagent scanning — do not read user-provided files yourself; that's the Artifact Analyzer's job.
+1. **Ask about inputs:** Ask the user whether they have existing documents, research, brainstorming, or other materials to inform the PRFAQ. Collect paths for subagent scanning. When a ticket exists for this concept (`initiative-*.md`, `tickets/epic-*/epic-*.md`; older projects `SPEC*.md`), read it yourself, first and in full, and treat its Requirements as settled; every other file is the Artifact Analyzer's job.
 2. **Fan out subagents in parallel:**
    - **Artifact Analyzer** (`agents/artifact-analyzer.md`) — Scans `{output_folder}/{active_initiative}/`, then `{output_folder}/`, for relevant documents, plus any user-provided paths. Receives the product intent summary so it knows what's relevant.
    - **Web Researcher** (`agents/web-researcher.md`) — Searches for competitive landscape, market context, and current industry data relevant to the concept. Receives the product intent summary.

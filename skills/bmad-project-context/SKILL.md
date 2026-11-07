@@ -98,7 +98,7 @@ The proposal states what remains of every file instructions were moved out of �
 
 ### Greenfield
 
-Seeded from a spec or planning document, or interview alone. Commands that do not exist yet are written as explicit TODOs naming the decided stack, never a guessed invocation stated as fact, and verified on the first refresh after code exists. A genuinely contested design decision — real tradeoffs, multiple viable shapes — goes to `bmad-architecture`.
+Seeded from the initiative ticket (initiative-<slug>.md, or an older SPEC*.md) read in full, from a planning document, or from interview alone. Commands that do not exist yet are written as explicit TODOs naming the decided stack, never a guessed invocation stated as fact, and verified on the first refresh after code exists. A genuinely contested design decision — real tradeoffs, multiple viable shapes — goes to `bmad-architecture`.
 
 ### Migration
 

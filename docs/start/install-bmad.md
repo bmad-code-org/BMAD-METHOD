@@ -1,9 +1,23 @@
 ---
 title: 'How to Install BMad'
-description: Install the current BMad skills, set up the project runtime, and verify or update it.
+description: Install the stable BMad release or the preview skills, set up the project runtime, and verify or update it.
 ---
 
-Install BMad through the Skills CLI or your coding tool's plugin marketplace, then run `bmad setup` in the project.
+Install BMad through the Skills CLI, then run `bmad setup` in the project.
+
+:::caution[V7 Preview Alpha]
+This page installs v7 of BMad, which is in preview alpha. Its skills, install path, and documentation change often, and updates can break an existing setup. It is recommended for solo or small teams that can pivot as things will change before beta. The v7 release ETA is mid-November 2026, and it might be sooner. If you need stability until v7 is finalized for release, install v6.12 instead.
+:::
+
+## Install the Stable Release
+
+The stable release is v6.12, frozen aside from bug fixes. With [Node.js](https://nodejs.org) 20.12+, [Python](https://www.python.org) 3.10+, and [uv](https://docs.astral.sh/uv/), run in your project:
+
+```bash
+npx bmad-method install
+```
+
+The rest of this page does not apply to v6.12. Its source and documentation live on the [V6.12 branch](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12).
 
 ## Prerequisites
 
@@ -14,20 +28,35 @@ You need an AI coding tool that supports skills and [uv](https://docs.astral.sh/
 From your project directory, run:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD
+npx skills add bmad-code-org/BMAD-METHOD --skill '*'
 ```
 
-Select your coding tool and skills. Include `bmad` for setup and help, and the module records `bmod-core-tools` and `bmod-method` for the modules you use. To install a small set by name:
+`--skill '*'` installs the full BMad Method and asks which coding tools to install to. To choose skills instead, run the command without `--skill '*'` and select your coding tool and skills. Include `bmad` for setup and help, and the module records `bmod-core-tools` and `bmod-method` for the modules you use. To install a small set by name:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build --skill bmad-ticket
+npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build --skill bmad-agent-po
 ```
 
 Add review, retrospective, or other skills as needed. Keep project and global installation scopes consistent.
 
+## Security Scan Warnings
+
+During install, the Skills CLI shows a Security Risk Assessments table from three scanners: Gen Agent Trust Hub, Socket, and Snyk. Some BMad skills get a Med Risk or High Risk rating. The scanners flag behavior the skills use on purpose:
+
+- Skills run Python scripts from the project's `_bmad/scripts/` folder with `uv run` to load configuration and customizations.
+- Customization files under `_bmad/custom/` can add activation steps that the skill runs.
+- Some skills read text written by other people, such as tickets, issues, and pull request diffs, which scanners treat as a prompt injection risk.
+- Some skills tell you to install a missing skill with `npx skills add`.
+
+Skills run with your coding tool's permissions, so add only customizations you trust. The full report for each skill is on [skills.sh](https://skills.sh/bmad-code-org/BMAD-METHOD).
+
 ## Install through a Plugin Marketplace
 
-As an alternative, add the marketplace inside Claude Code:
+:::caution[Not v7-ready yet]
+The `bmad-code-org/bmad-plugins` marketplace was last built before v7 and still carries the earlier skills. Install with the Skills CLI above until the marketplace is rebuilt from the v7 skills.
+:::
+
+Once it is rebuilt, add the marketplace inside Claude Code:
 
 ```text
 /plugin marketplace add bmad-code-org/bmad-plugins

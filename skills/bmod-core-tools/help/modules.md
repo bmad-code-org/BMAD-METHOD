@@ -4,7 +4,7 @@ Open this when the user asks what a BMad module is, what is in one, how to make 
 
 ## What a module is
 
-A module is a set of skills that belong together, plus one folder that tells `bmad` about them. There is no installer plugin, registry, or build step. A module is installed with `npx skills add <owner>/<repo>`, and `bmad` finds it on its next run. In return the module gets setup and config questions, help that `bmad` answers from, agents and parties in party mode, dependency prompts, and update checks.
+A module is a set of skills that belong together, plus one folder that tells `bmad` about them. There is no installer plugin, registry, or build step. A module is installed with `npx skills add <owner>/<repo>`, and `bmad` finds it on its next run. For example, add the Test Architect with `npx skills add bmad-code-org/bmad-method-test-architecture-enterprise`, then run `bmad setup tea`. In return the module gets setup and config questions, help that `bmad` answers from, agents and parties in party mode, dependency prompts, and update checks.
 
 ## The module folder
 

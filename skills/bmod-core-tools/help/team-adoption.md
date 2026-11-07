@@ -20,7 +20,7 @@ Team override files live under `_bmad/custom/` and are committed, so teammates g
 - **Required tools.** Name the exact tool and when to call it. Teammates need that tool connected.
 - **Publishing on completion.** Instructions that run once after a skill writes its output, such as posting the document to a wiki or opening a ticket. They should ask before any action teammates will see.
 - **Writing standards and knowledge sources**, on the skills that expose them.
-- **Templates.** Point a skill at the team's own template, kept in the repository. Start from a copy of the shipped one and keep its headings.
+- **Templates.** Point a skill at the team's own template, kept in the repository. Start from a copy of the shipped one and keep its headings. `bmad-facilitate` reads libraries instead: add or replace a file in `_bmad/custom/facilitate-templates/`, or add rules to a shipped template (`help/facilitate.md`).
 - **Output locations and shared paths**, pinned in central config. Pin only what the whole team must share.
 
 Not every skill exposes every one of these. `bmad-customize` lists what a given skill allows and never invents a field.

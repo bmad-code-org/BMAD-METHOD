@@ -45,10 +45,8 @@ spine_template = "assets/spine-template.md"
 # produces all land inside `{spine_output_path}/{run_folder_pattern}/`. Resume-check scans
 # `{spine_output_path}` for prior unfinished runs.
 #
-# The default pattern fits the common case (one spine per initiative, at the altitude above epics).
-# At EPIC altitude, override run_folder_pattern to carry the epic identity so per-epic runs don't
-# collide — e.g. set it (team/user TOML) to "architecture-epic-{epic_id}", binding
-# {epic_id} from the driving spec / the activating payload. Headless callers may instead pass an
+# When the ticket is an epic, the epic's folder takes the place of spine_output_path and {slug} is
+# the epic's slug without `epic-`. Headless callers may instead pass an
 # explicit doc_workspace and bypass the pattern entirely.
 spine_output_path = "{output_folder}/{active_initiative}"
 run_folder_pattern = "architecture-{slug}"

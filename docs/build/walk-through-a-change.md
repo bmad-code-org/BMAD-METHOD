@@ -39,9 +39,9 @@ Typical moments:
    link into the narrative and one to three moves that fit. Stay on the
    block until you say it is done.
 
-Moves you can pick: Thoughts, Second opinion, Formal review, Test, Drive,
+Moves you can pick: Second opinion, Formal review, Test, Drive, Demo, Draw,
 Wrap-up. Formal review prefers `bmad-code-review` when it is installed. You
-can also ask for something that was not suggested.
+can also ask for something that was not suggested, or just ask a question.
 
 ## What It Is Not
 

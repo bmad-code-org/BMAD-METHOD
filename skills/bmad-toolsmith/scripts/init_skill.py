@@ -8,8 +8,8 @@ Create:
   init_skill.py --name <kebab> --dest <folder> --shape <shape> [--dirs references,scripts,assets]
                 [--bmod <record-folder-name>] [--source <update_source>] [--description "..."]
 
-  Shapes: plain-skill, script-utility, rendered-skill, agent, memory-agent, single-skill-module,
-  multi-skill-module. Writes <dest>/<name>/SKILL.md (frontmatter `name` and `description`, the given
+  Shapes: plain-skill, script-utility, rendered-skill, rendered-agent, agent, memory-agent,
+  single-skill-module, multi-skill-module. Writes <dest>/<name>/SKILL.md (frontmatter `name` and `description`, the given
   description or a [TODO: ...] placeholder, and an empty body heading), the requested dirs, and bmod.toml
   when --bmod is given or the shape is a module:
     - with --bmod: a [skill] table carrying `bmod` and `source`
@@ -46,6 +46,7 @@ SHAPES = (
     "plain-skill",
     "script-utility",
     "rendered-skill",
+    "rendered-agent",
     "agent",
     "memory-agent",
     "single-skill-module",
@@ -59,7 +60,7 @@ RECORD_DESCRIPTION = "Required bmod metadata. Never invoke this skill."
 USE_WHEN_RE = re.compile(r"\buse\s+(?:when|if)\b", re.IGNORECASE)
 TODO_RE = re.compile(r"\[TODO:")
 TEXT_SUFFIXES = {".md", ".toml", ".py", ".json", ".yaml", ".yml", ".txt", ".html", ".csv"}
-DESCRIPTION_PLACEHOLDER = "[TODO: what the skill does, one sentence. Use when <the situation that should trigger it>.]"
+DESCRIPTION_PLACEHOLDER = "[TODO: five-to-eight-word summary. Use when the user says '<phrase>' or '<phrase>'.]"
 
 
 def yaml_single_quoted(value: str) -> str:

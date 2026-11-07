@@ -150,12 +150,14 @@ headings, frontmatter) so the agent adapts to what it finds. When several
 teams share one repository, each can point at its own template from
 `.user.toml` without touching the committed file.
 
+John (`bmad-agent-pm`), who now writes briefs, and `bmad-facilitate` read template libraries instead of one template key: add a file to `_bmad/custom/facilitate-templates/`, replace a shipped template, or extend one. See recipe 6 and [Write a Document Template](./write-a-document-template.md).
+
 ## Recipe 5: Customize the agent roster
 
 **File:** `_bmad/custom/config.toml` (team) or `_bmad/custom/config.user.toml` (personal).
 
 Use central config to change who roster-driven skills (`bmad-party-mode`,
-`bmad-retrospective`, `bmad-advanced-elicitation`) see, and to pin install
+`bmad-retrospective`, `bmad-advanced-elicitation`) see, and to pin setup
 answers the whole team shares. Per-skill files shape how one agent behaves
 when it activates; central config shapes what other skills see when they
 look at the roster. See
@@ -206,13 +208,13 @@ Ask party mode to "invite the Enterprise crew": it filters by
 `team = "startrek"` and includes Spock and McCoy. You can include real
 BMad agents in the same party.
 
-### 5c. Pin team install settings
+### 5c. Pin team settings
 
-**Keys:** `[core] output_folder` and `[core] document_output_language`.
+**Key:** `[core] output_folder`.
 
 When the team needs one answer for a setting such as where BMad writes its
-output, pin it here; it overrides whatever a developer has in their own
-config. `output_folder` holds every initiative folder, the ticket tree, and
+output, pin it here; it overrides `_bmad/config.toml`, and a developer's own
+`_bmad/custom/config.user.toml` still wins over it. `output_folder` holds every initiative folder, the ticket tree, and
 `backlog/`, so pinning it moves all of them together.
 
 ```toml
@@ -220,12 +222,10 @@ config. `output_folder` holds every initiative folder, the ticket tree, and
 
 [core]
 output_folder = "{project-root}/shared/bmad-output"
-document_output_language = "English"
 ```
 
-Personal settings such as `user_name`, `communication_language`, and
-`user_skill_level` stay in each developer's own `_bmad/config.user.toml`;
-the team file should not set them.
+Personal settings stay in each developer's own
+`_bmad/custom/config.user.toml`; the team file should not set them.
 
 ## Reinforce global rules in your IDE's session file
 
@@ -250,18 +250,20 @@ Each layer owns its own scope:
 | IDE session file (`CLAUDE.md` / `AGENTS.md`) | Every session, before any skill activates | Short, universal rules that should survive outside BMad |
 | BMad agent customization | Every workflow the agent dispatches | Agent-specific behavior |
 | BMad workflow customization | One workflow run | Output shape, publishing hooks, templates |
-| BMad central config | Agent roster and shared install settings | Who is on the roster and which paths the team shares |
+| BMad central config | Agent roster and shared settings | Who is on the roster and which paths the team shares |
 
 Keep the IDE file short. The model reads it every turn.
 
 ## Recipe 6: Advanced fields
 
-**File and keys:** `_bmad/custom/bmad-prd.toml`, `[workflow] external_sources`,
-`external_handoffs`, `doc_standards`, and template scalars.
+**File and keys:** `_bmad/custom/bmad-facilitate.toml`, `[workflow] external_sources`,
+`external_handoffs`, and `doc_standards`; template files in
+`_bmad/custom/facilitate-templates/`.
 
 Some workflows expose more fields than recipes 1 through 5 use. Check a
 workflow's `customize.toml` to see which of these it has; the examples use
-`bmad-prd`, which has all of them. The same pattern applies wherever a
+`bmad-facilitate`, which runs every document John (`bmad-agent-pm`) writes, so
+its settings apply to his documents too. The same pattern applies wherever a
 field appears.
 
 ### On-demand knowledge sources
@@ -271,7 +273,7 @@ competitive databases, or compliance references. The agent consults them
 only when the conversation surfaces a matching need, never preemptively.
 
 ```toml
-# _bmad/custom/bmad-prd.toml
+# _bmad/custom/bmad-facilitate.toml
 
 [workflow]
 external_sources = [
@@ -291,12 +293,12 @@ the workflow finalizes. Unlike `on_complete` (recipe 3), it is an append
 array: team entries stack, and each handoff fires independently.
 
 ```toml
-# _bmad/custom/bmad-prd.toml
+# _bmad/custom/bmad-facilitate.toml
 
 [workflow]
 external_handoffs = [
-  "After finalize, upload the PRD and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd', author={user_name}). Capture and surface the returned page URL.",
-  "Mirror to Notion via notion:create_page (database_id='abc123', title='PRD: ' + {project_name}).",
+  "After finalize, upload the document to Confluence via corp:confluence_upload (space_key='PROD', parent_page='Planning'). Capture and surface the returned page URL.",
+  "Mirror to Notion via notion:create_page (database_id='abc123', title=the document's title).",
 ]
 ```
 
@@ -314,7 +316,7 @@ stack on the workflow's shipped default
 before narrow prose passes.
 
 ```toml
-# _bmad/custom/bmad-prd.toml
+# _bmad/custom/bmad-facilitate.toml
 
 [workflow]
 doc_standards = [
@@ -324,22 +326,27 @@ doc_standards = [
 ]
 ```
 
-### Swappable templates and checklists
+### Template libraries and extensions
 
-Workflows that produce structured documents expose their template and
-checklist paths as scalars. Point them at files under `{project-root}`, as
-in recipe 4.
+John and `bmad-facilitate` change templates the same way: put a file in
+`_bmad/custom/facilitate-templates/`. A new `template:` id adds a template, and a
+shipped id replaces it. To swap in a regulated-industry PRD, save it there with
+`template: prd` and a `rubric:` beside it. A file with `extends:` adds your
+rules without copying the template, so updates to the original still reach you:
 
-```toml
-# _bmad/custom/bmad-prd.toml
+```markdown
+---
+extends: business-case
+---
 
-[workflow]
-# Regulated-industry PRD structure
-prd_template = "{project-root}/docs/enterprise/prd-template-hipaa.md"
+<!-- done when: Every cost line names its source. -->
 
-# Org-specific validation rubric
-validation_checklist_template = "{project-root}/docs/enterprise/prd-checklist-regulated.md"
+## Budget Owner
+<!-- required, after the cost section. The budget owner and cost center. -->
 ```
+
+The template file format and extensions are in
+[Write a Document Template](./write-a-document-template.md).
 
 ## Combining recipes
 

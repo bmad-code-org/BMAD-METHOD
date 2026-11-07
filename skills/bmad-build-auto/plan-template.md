@@ -1,9 +1,9 @@
 ---
 title: '{title}'
-type: 'feature' # feature | bugfix | refactor | chore
+type: feature # feature | bugfix | refactor | chore
 ticket: '' # the entry id from the ticket tree, or the story file's stem when the entry has no id; empty outside it
 created: '{date}'
-status: 'draft' # draft | ready-for-dev | in-progress | in-review | built | done | blocked | dropped
+status: draft # draft | ready-for-dev | in-progress | in-review | built | done | blocked | dropped
 baseline_revision: '' # the commit the work starts from, set before any code change
 route: '' # oneshot | full — set by step-02
 route_source: '' # pinned | auto — set with route by step-02
@@ -13,7 +13,7 @@ review_source: '' # pinned | auto — set with review by step-04
 lenses_ran: [] # ids of the lenses launched, set by step-04
 review_loop_iteration: 0 # incremented by step-04 before each review loopback
 followup_review_recommended: false # set by step-04 at Finalize — true if the LLM decided another review pass is worthwhile
-context: [] # optional: `{project-root}/`-prefixed paths to project-wide standards/docs the implementation agent should load. Keep short — only what isn't already distilled into the plan body.
+context: [] # optional: `{project-root}/`-prefixed paths the implementation agent should load: companions the ticket names that this work needs, and project-wide standards. Keep short — only what isn't already distilled into the plan body.
 warnings: [] # optional: machine-readable warnings for orchestration, e.g. oversized, multiple-goals
 deferred: [] # append-only machine-readable deferred review findings; each item carries summary/evidence and optional location/severity
 ---

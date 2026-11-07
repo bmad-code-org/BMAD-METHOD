@@ -1,0 +1,70 @@
+# A container's agreed children, in its tickets/ folder; tickets.py ignores unknown keys.
+# Table order is build order. `id` is permanent, never reused.
+# One kind of table per file: an initiative with no epics uses [[entry]] tables, a parent initiative [[initiative]] tables.
+# No status here: the plan carries `status`; `tickets.py mirror` writes `tracker_status` to the leaf.
+# next_id = 7 # written by `tickets.py move`; the folder's counter never goes below it
+
+# ---- In an epic's tickets/ folder: one table per planned story, spike, or bug ----
+
+[[entry]]
+id = 1 # leaf file's `id:`
+type = "story" # story | spike | bug
+title = "Cart service scaffold"
+description = "Stands up the cart service with one add-item path through UI, API, and store."
+verify = "A shopper adds one item on the deployed site and sees it in the cart."
+covers = ["R1"] # epic Requirements ids
+after = [] # prerequisites only, not sequence
+hitl = true # a person runs the starter
+risk = "low" # low | medium | high
+# estimate = 2 # only if the user gives one
+# unknown = "..." # one-sentence user question; `tickets.py next` blocks the entry until removed
+# references = ["architecture-checkout/architecture-checkout.md#ad-8"] # beyond the epic's References; pull copies to the ticket
+# notes = ["..."] # user's words only; pull copies to Notes
+# refine = true # refine to full acceptance criteria first
+# plan_checkpoint = true # a person reviews the ticket or plan first
+# done_checkpoint = true # pause after it until a person says continue
+
+[[entry]]
+id = 2
+type = "story"
+title = "Apply and refuse discount codes"
+description = "Adds code validation to the pricing call and shows the refusal reason."
+verify = "A valid code lowers the total; an expired one is refused with its reason."
+covers = ["R2", "R3"]
+after = [1, "1.3"] # sibling id; "<epic id>.<entry id>"; "epic-<slug>"
+hitl = false
+risk = "medium"
+
+# ---- In an initiative's tickets/ folder: one table per epic ----
+
+[[epic]]
+id = 1
+slug = "epic-pricing-rules" # the epic's folder, inside this tickets/ folder
+title = "Pricing rules"
+description = "Every price a shopper sees comes from one pricing function, deployed." # what is true when it is done; seeds the envelope's Outcome
+covers = ["R1", "R2"]
+
+[[epic]]
+id = 2
+slug = "epic-cart-rules"
+title = "Shoppers manage their cart"
+description = "A shopper adds, changes and removes items on the deployed site and the total follows."
+covers = ["R3", "R4", "R5"]
+after = [{ epic = 1, needs = "the one-function pricing contract" }] # entries carry their own `after`
+
+# ---- In a parent initiative's tickets/ folder: one table per child initiative ----
+
+[[initiative]]
+id = 1
+slug = "initiative-storefront" # the child's folder, beside the parent's
+title = "Shoppers buy online"
+description = "A shopper finds, prices and pays for an order on the live site."
+covers = ["R1", "R2"]
+
+[[initiative]]
+id = 2
+slug = "initiative-fulfillment"
+title = "Orders ship themselves"
+description = "A paid order is picked, packed and tracked without manual steps."
+covers = ["R3"]
+after = [{ initiative = 1, needs = "the order-paid event" }]

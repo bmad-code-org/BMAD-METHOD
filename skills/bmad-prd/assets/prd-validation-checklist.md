@@ -101,7 +101,7 @@ Open-items density: count Open Questions + `[ASSUMPTION]` + `[NOTE FOR PM]` call
 
 ### 6. Downstream usability
 
-If this PRD feeds UX, architecture, or story creation, can those workflows source-extract from it cleanly?
+If this PRD feeds UX, architecture, or the ticket's Requirements (Sofia cites FR ids as sources), can those workflows source-extract from it cleanly?
 
 Look for:
 - Glossary present; every domain noun used identically across FRs, UJs, SM definitions.
