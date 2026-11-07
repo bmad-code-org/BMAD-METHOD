@@ -3,7 +3,7 @@ title: ""
 template: prototype-plan
 version: 1.1.0
 description: "A quick build to test an idea, some options or a look and feel."
-not_for: "Committed work that needs requirements (`prd`, `prd-light`); measuring a change with real users (`experiment`); deciding whether and why to build (`brief`); one feature for a coding agent (`agent-spec`)."
+not_for: "Committed work that needs requirements (`prd`, `prd-light`); measuring a change with real users (`experiment`); writing down why to build (`brief`); one feature for a coding agent (`agent-spec`)."
 facilitation_order: [ask-and-goal, timebox?, where-to-build, platform-and-technology?, existing-ground-truth?, options-to-compare?, look-and-feel?, validation?, decisions?, build, outcome?]
 guidance: guidance-planning
 rubric: rubric-planning

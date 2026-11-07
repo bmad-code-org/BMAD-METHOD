@@ -73,17 +73,18 @@ persistent_facts = [
 
 The facts load before the engine drafts, so the conventions are known in time.
 
-A rule for one document type goes in an extension of its template, so it does not reach the others. Every product brief carries compliance fields:
+A rule for one document type goes in an extension of its template, so it does not reach the others. Every product brief carries compliance fields. A section an extension adds is required only when the extension sets `facilitation_order`, which replaces the brief's, so it lists the brief's sections too:
 
 ```markdown
 ---
 extends: brief
+facilitation_order: [problem, solution, what-makes-it-different, who-it-serves, success-criteria, scope, compliance, the-ask?, vision?, executive-summary]
 ---
 
 <!-- inputs: The owner, the target release and the security review status; only the user knows them. -->
 
 ## Compliance
-<!-- required, after Scope. Owner, target release and security review status. -->
+<!-- After Scope. Owner, target release and security review status. -->
 ```
 
 ## Recipe 3: Publish completed output to external systems
@@ -106,7 +107,7 @@ work starts.
 on_complete = """
 Publish and offer follow-up:
 
-1. Read the finalized document's file path from the prior step.
+1. Read the document's file path from the prior step. If its frontmatter `status` is not `final`, stop and tell the user which open question blocks publication.
 2. Call `mcp__atlassian__confluence_create_page` with:
    - space: "PRODUCT"
    - parent: "Planning"
@@ -139,14 +140,14 @@ the output.
 
 Use this when the shipped structure does not match the format your organization expects. `bmad-facilitate` searches that folder first and the installed modules last, so a file there with the same `template:` id replaces the shipped one for John, Mary and anyone who calls the engine directly.
 
-Copy the shipped brief from `bmad-agent-analyst/assets/template-brief.md` in your skills folder, keep `template: brief`, and edit the copy:
+Copy the shipped brief from `bmad-agent-analyst/assets/template-brief.md` in your skills folder, with `brief-view.html` beside it, which its `view` names. Keep `template: brief` and the other frontmatter keys, and edit the copy. Here the description changes:
 
 ```markdown
 ---
 title: ""
 template: brief
 version: 1.0.0
-description: "Deciding whether and why to build, in the format the steering committee reads."
+description: "Why to build it, in the format the steering committee reads."
 status: draft
 created: ""
 updated: ""

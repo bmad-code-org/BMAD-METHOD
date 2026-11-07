@@ -64,7 +64,7 @@ def test_first_library_wins_and_the_other_is_reported(tmp_path):
     assert ids(result) == ["a", "b"]
     assert result["templates"][0]["description"] == "Ours."
     assert result["shadowed"] == [
-        {"id": "a", "file": str(shared / "t.md"), "source": str(shared), "kept": str(local / "t.md")}
+        {"id": "a", "file": str(shared / "t.md"), "source": str(shared), "kept": str(local / "t.md"), "agents": []}
     ]
 
 
@@ -345,6 +345,28 @@ def test_agent_keeps_templates_naming_it_and_its_own_unnamed_ones(tmp_path, caps
     assert [t["id"] for t in json.loads(capsys.readouterr().out)["templates"]] == ["mine", "named"]
 
 
+def test_a_replacement_keeps_the_agent_of_the_template_it_hides(tmp_path, capsys):
+    custom, own = tmp_path / "custom", tmp_path / "bmad-agent-analyst" / "assets"
+    custom.mkdir()
+    own.mkdir(parents=True)
+    (custom / "brief.md").write_text(template("brief", "Ours."))
+    (own / "template-brief.md").write_text(template("brief", "Shipped."))
+    (own / "template-prfaq.md").write_text(template("prfaq"))
+    assert list_templates.main([str(custom), str(own), "--agent", "bmad-agent-analyst"]) == 0
+    found = json.loads(capsys.readouterr().out)["templates"]
+    assert [(t["id"], t["description"]) for t in found] == [("brief", "Ours."), ("prfaq", "Use it.")]
+
+
+def test_a_replacement_naming_other_agents_is_not_kept(tmp_path, capsys):
+    custom, own = tmp_path / "custom", tmp_path / "bmad-agent-analyst" / "assets"
+    custom.mkdir()
+    own.mkdir(parents=True)
+    (custom / "brief.md").write_text(template("brief", extra="agents: [bmad-agent-pm]\n"))
+    (own / "template-brief.md").write_text(template("brief"))
+    assert list_templates.main([str(custom), str(own), "--agent", "bmad-agent-analyst"]) == 0
+    assert json.loads(capsys.readouterr().out)["templates"] == []
+
+
 ORDERED = """---
 template: t
 description: "Use it."
@@ -407,3 +429,22 @@ def test_an_extension_order_replaces_the_template_order_and_must_cover_both(tmp_
         "heading `what-makes-it-different` is not listed",
         "heading `vision` is not listed",
     ]
+
+
+def test_a_heading_inside_a_code_fence_is_not_a_section():
+    text = "```\n## Not a section\n```\n\n## Problem\n"
+    assert list_templates.section_ids(text) == ["problem"]
+
+
+def test_a_shorter_fence_inside_a_longer_one_does_not_close_it():
+    text = "````\n```\n## Inside\n```\n## Still inside\n````\n## Problem\n"
+    assert list_templates.section_ids(text) == ["problem"]
+
+
+def test_an_order_that_is_not_a_one_line_list_is_reported(tmp_path):
+    (tmp_path / "t.md").write_text(
+        "---\ntemplate: t\ndescription: x\nfacilitation_order:\n  - problem\n---\n\n## Problem\n"
+    )
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert found["facilitation_order"] == []
+    assert found["order_problems"] == ["`facilitation_order` must be a one-line list, such as `[problem, scope?]`"]

@@ -2,7 +2,7 @@
 title: ""
 template: brief
 version: 1.1.0
-description: "Deciding whether and why to build, or pitching an idea in a page or two."
+description: "Why to build a product, or pitching it, in a page or two."
 not_for: "Committed work that needs requirements (`prd`); a formal funding decision on cost and return (`business-case`); testing a problem before any solution exists (`opportunity`)."
 paced: true
 facilitation_order: [problem, solution, what-makes-it-different, who-it-serves, success-criteria, scope, the-ask?, vision?, executive-summary]
@@ -14,7 +14,7 @@ created: ""
 updated: ""
 ---
 
-<!-- purpose: Decide whether and why to build something, or pitch it. -->
+<!-- purpose: Say why to build something and what it is, or pitch it. -->
 
 <!-- stance: Push hardest on the problem and on what makes it different, where briefs most often overclaim. Ask for the strongest evidence that someone actually wants this, and the smallest version someone would pay for. Take a position on each answer and say what evidence would change it. Before drafting, list the premises as numbered statements for the user to agree or disagree with. The brief serves the product's story: add a section the product needs. -->
 

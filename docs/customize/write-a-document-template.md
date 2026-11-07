@@ -160,7 +160,7 @@ Each section has one comment: a line on what goes in the section, then `diagram:
 
 ### Order the sections
 
-`facilitation_order` lists every `##` section by id: its heading in lowercase, with spaces as hyphens, so `What makes it different` is `what-makes-it-different`. It sets the order the skill takes the sections up in, not the document's order, so an executive summary can sit first in the document and come up last. A `?` after an id marks a section that is not required.
+`facilitation_order` lists every `##` section by id: its heading in lowercase, with punctuation dropped and spaces as hyphens, so `What makes it different` is `what-makes-it-different` and `What's next?` is `whats-next`. It sets the order the skill takes the sections up in, not the document's order, so an executive summary can sit first in the document and come up last. A `?` after an id marks a section that is not required.
 
 The skill settles every section before it finishes, on every path. A required section is always filled. An optional one is offered when the order reaches it, and the user decides. An include-when one is checked against its condition, and the skill says what it found. The fast path settles them too, so asking for speed never drops a section quietly. Sections left out are named at the end with the reason.
 

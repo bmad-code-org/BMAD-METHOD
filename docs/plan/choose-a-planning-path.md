@@ -85,7 +85,7 @@ John (`bmad-agent-pm`) creates, updates, and validates twelve planning documents
 the work's altitude picks which, and he names close alternatives. A brief from
 Mary feeds the PRD, which John reads during discovery, but neither requires the other.
 
-A business requirements document (`brd`) fits only when the people who want the system and the people who build it are separate parties, such as a client and a vendor, or when a regulator or contract expects a signed baseline. Mary writes it, the sponsor signs it, and John's PRD or SRS picks up its ids. Product work inside one organization skips it.
+A business requirements document (`brd`) fits only when the people who want the system and the people who build it are separate parties, such as a client and a vendor, or when a regulator or contract expects a signed baseline. Mary writes it, the sponsor signs it, and John's PRD or SRS picks up its ids. Other product work inside one organization skips it.
 
 ![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, and Mary for a brief, PRFAQ or BRD), planning (John for a PRD or other planning document, and UX), and solutioning (architecture and Sofia, the Product Owner), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
 

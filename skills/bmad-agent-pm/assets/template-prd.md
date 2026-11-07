@@ -3,7 +3,7 @@ title: ""
 template: prd
 version: 1.1.0
 description: "Requirements a team builds from, at any altitude."
-not_for: "Deciding whether to build (`brief`, `opportunity`); a very simple project (`prd-light`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`); what a business signs for when the builder is a separate party (`brd`)."
+not_for: "Deciding whether to build (`opportunity`) or writing down why (`brief`); a very simple project (`prd-light`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`); what a business signs for when the builder is a separate party (`brd`)."
 facilitation_order: [document-purpose, vision, users-and-journeys, glossary, features-and-requirements, rules?, non-goals, mvp-scope, success-metrics, quality-and-constraints?, change-boundary?, ai-behavior-and-evaluation?, experience-and-platform?, stakeholders-risks-and-rollout?, integrations-and-operations?, data-and-compliance?, api-contract-and-versioning?, slos-and-performance-budgets?, consumer-migration?, developer-experience?, hardware-and-deployment?, stories?, decisions?, open-questions]
 guidance: guidance-planning
 rubric: rubric-planning

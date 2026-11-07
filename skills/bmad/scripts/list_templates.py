@@ -13,7 +13,7 @@ after the sources. A file is a template when its frontmatter has `template:`, th
 A file with `extends:` adds to the template of that id wherever it sits, and an earlier
 extension's values win over a later one's and the template's. A missing local path adds nothing
 and is listed. `--agent <skill>` keeps only that agent's templates: those whose `agents:` list names
-it, and those with no list in that skill's own folder.
+it, those with no list in that skill's own folder, and those with no list that replace one of these.
 
 `facilitation_order` lists a template's `##` sections by id, each heading lowercased with its
 spaces as hyphens, `?` marking one that is not required. An extension's list replaces the
@@ -25,7 +25,7 @@ with no extension comes back as it is.
 Prints JSON:
   templates     id, version, description, not_for, category, agents, facilitation_order, guidance, rubric,
                 methods, output, style, file, source, extensions, order_problems, in search order
-  shadowed      id, file, source, kept: templates hidden by an earlier one with the same id
+  shadowed      id, file, source, kept, agents: templates hidden by an earlier one with the same id
   orphaned      extends, file, source: extensions whose template was not found
   unreachable   source, reason: sources that could not be read
   missing       local paths that do not exist
@@ -136,6 +136,11 @@ def listed(value: str) -> list[str]:
     return [unquote(name.strip()) for name in value.strip("[]").split(",") if name.strip()]
 
 
+def unreadable_order(meta: dict[str, str]) -> bool:
+    """Whether the file has a `facilitation_order` key that is not a one-line list."""
+    return "facilitation_order" in meta and not listed(meta["facilitation_order"])
+
+
 def section_id(heading: str) -> str:
     """A heading's id: lowercase, punctuation dropped, spaces as hyphens, as its anchor is built."""
     return re.sub(r"[^\w\- ]", "", heading.strip().lower()).replace(" ", "-")
@@ -147,7 +152,11 @@ def section_ids(text: str) -> list[str]:
     for line in text.replace("\r\n", "\n").split("\n"):
         m = FENCE.match(line)
         if m:
-            fence = None if fence and m.group(1)[0] == fence else (fence or m.group(1)[0])
+            marker = m.group(1)
+            if fence is None:
+                fence = (marker[0], len(marker))
+            elif marker[0] == fence[0] and len(marker) >= fence[1] and line.strip() == marker:
+                fence = None
             continue
         heading = SECTION.match(line) if fence is None else None
         if heading and section_id(heading.group(1)) != "table-of-contents":
@@ -204,7 +213,13 @@ def scan(sources: list[str]) -> dict:
             meta = frontmatter(text)
             if meta.get("extends"):
                 extensions.setdefault(meta["extends"], []).append(
-                    {"file": file, "source": source, "_headings": section_ids(text), **fields(file, meta)}
+                    {
+                        "file": file,
+                        "source": source,
+                        "_headings": section_ids(text),
+                        "_bad_order": unreadable_order(meta),
+                        **fields(file, meta),
+                    }
                 )
                 continue
             template_id = meta.get("template")
@@ -212,7 +227,8 @@ def scan(sources: list[str]) -> dict:
                 continue
             if template_id in found:
                 kept = found[template_id]["file"]
-                shadowed.append({"id": template_id, "file": file, "source": source, "kept": kept})
+                agents = listed(meta.get("agents", ""))
+                shadowed.append({"id": template_id, "file": file, "source": source, "kept": kept, "agents": agents})
                 continue
             found[template_id] = {
                 "id": template_id,
@@ -222,6 +238,7 @@ def scan(sources: list[str]) -> dict:
                 "extensions": [],
                 "order_problems": [],
                 "_headings": section_ids(text),
+                "_bad_order": unreadable_order(meta),
             }
     for base, adding in extensions.items():
         template = found.get(base)
@@ -233,12 +250,15 @@ def scan(sources: list[str]) -> dict:
             template[key] = next((e[key] for e in adding if e[key]), template[key])
         template["_extension_headings"] = [h for e in adding for h in e["_headings"]]
         template["_order_from_extension"] = any(e["facilitation_order"] for e in adding)
+        template["_bad_order"] = template["_bad_order"] or any(e["_bad_order"] for e in adding)
     for template in found.values():
         own, added = template.pop("_headings"), template.pop("_extension_headings", [])
         if template["facilitation_order"]:
             must = own + added if template.pop("_order_from_extension", False) else own
             template["order_problems"] = order_problems(template["facilitation_order"], must, own + added)
         template.pop("_order_from_extension", None)
+        if template.pop("_bad_order") and not template["facilitation_order"]:
+            template["order_problems"] = ["`facilitation_order` must be a one-line list, such as `[problem, scope?]`"]
     return {
         "templates": list(found.values()),
         "shadowed": shadowed,
@@ -249,11 +269,20 @@ def scan(sources: list[str]) -> dict:
     }
 
 
-def owned_by(template: dict, agent: str) -> bool:
-    """Whether `agent` offers the template: it names the agent, or it names none and sits in the agent's skill."""
-    if template["agents"]:
-        return agent in template["agents"]
-    return "://" not in template["file"] and Path(template["file"]).resolve().parent.parent.name == agent
+def offers(agents: list[str], file: str, agent: str) -> bool:
+    """Whether `agent` offers a file: it names the agent, or it names none and sits in the agent's skill."""
+    if agents:
+        return agent in agents
+    return "://" not in file and Path(file).resolve().parent.parent.name == agent
+
+
+def owned_by(template: dict, agent: str, shadowed: list[dict] = ()) -> bool:
+    """Whether `agent` offers the template, itself or through a template of the same id it replaces."""
+    if offers(template["agents"], template["file"], agent):
+        return True
+    return not template["agents"] and any(
+        offers(s["agents"], s["file"], agent) for s in shadowed if s["kept"] == template["file"]
+    )
 
 
 def main(argv: list[str]) -> int:
@@ -268,7 +297,7 @@ def main(argv: list[str]) -> int:
         return 2
     result = scan(args.sources + module_libraries(args.root, args.folder))
     if args.agent:
-        result["templates"] = [t for t in result["templates"] if owned_by(t, args.agent)]
+        result["templates"] = [t for t in result["templates"] if owned_by(t, args.agent, result["shadowed"])]
     print(json.dumps(result, indent=2))
     return 0
 
