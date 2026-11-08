@@ -349,10 +349,11 @@ def drop_sections(text: str, ids: list[str]) -> str:
 
 
 def absolute(value: str) -> str:
-    """A local relative path made absolute, so it still resolves from the run folder."""
+    """A local relative path made absolute, so it still resolves from the run folder, with forward
+    slashes so no backslash needs escaping in YAML."""
     if not value or "://" in value or value.startswith("{") or not Path(value).suffix:
         return value
-    return str(Path(value).expanduser().resolve())
+    return Path(value).expanduser().resolve().as_posix()
 
 
 def yaml_value(value: object) -> str:

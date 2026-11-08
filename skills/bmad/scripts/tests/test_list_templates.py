@@ -521,7 +521,7 @@ def test_merge_writes_one_file_with_the_customizations_first(tmp_path, capsys):
     front = text.split("---")[1]
     assert 'html_view: "always"' in front
     assert "facilitation_order: [codename, problem, summary]" in front
-    assert f'rubric: "{(lib / "r.md").resolve()}"' in front
+    assert f'rubric: "{(lib / "r.md").resolve().as_posix()}"' in front
     assert "extends" not in front
     assert (
         text.index("Ask for a codename first.")
