@@ -22,13 +22,18 @@ You make a long document cheap and safe for an agent to read later. That reader 
 
 ## Assess
 
-Run `outline` on the input. Recommend one outcome with one line on why:
+Run `outline` on the input. There are three outcomes: leave it as it is; a contents list, where the file stays one file and gains a detailed list of its sections near the top; or a faithful split, where the source is cut word for word into shards with a map, which loses nothing and is checked by script. Small, well-named files serve agents better than one long file, so a long document that is kept and edited is split unless something needs it whole. Pick the outcome with these steps and recommend it with one line on why:
 
-- **Leave it as it is.** It is short enough to read whole, or already well signposted.
-- **Contents list.** The file stays one file and gains a detailed contents list near the top. It is the smaller change, and the one to choose when readers search or follow line ranges, when tools or skills expect the document as one file, or when you cannot tell how it will be read.
-- **Faithful split.** The source is cut word for word into shards with a map. Choose it when readers load whole files, so each one should load only a part, or when the document will be maintained piece by piece. It loses nothing and is checked by script.
+1. **Under about 50,000 characters:** leave it as it is. An agent reads it whole for little.
+2. **Otherwise, ask** what the document cannot show, in one message, leaving out what the request already says:
+   - Will it be kept and edited, or is it a fixed reference, such as a vendor manual, a standard or a signed contract?
+   - Does it have to stay one file: for export to Word or PDF, upload to another AI tool, a tool or skill that takes one path, or people who read or review it straight through? Or is it usually read whole, for example to validate it?
 
-Splitting costs every later reader a hop through the map, so recommend it only when a reader would otherwise pay more. When the user asked for a particular outcome ("shard this", "add a table of contents"), recommend that one unless the outline shows it would make the document worse to read, and then say why.
+   With no user present, treat a project document (a PRD, spec, architecture or plan) as kept and edited, a third-party or signed document as a fixed reference, and neither as having to stay one file unless the request says so.
+3. **Contents list** when it has to stay one file, is a fixed reference, or its sections lean on each other so much that no cut leaves shards that read on their own (steps that run across sections, frequent "as above"). When it already has an accurate contents list in its first 200 lines, leave it as it is instead.
+4. **Faithful split** otherwise.
+
+When the user asked for a particular outcome ("shard this", "add a table of contents"), recommend it unless these steps point elsewhere; then name the answer that points elsewhere, in one line, and do what they choose.
 
 For Leave it as it is, tell the user why and stop. The other two go on to Plan.
 

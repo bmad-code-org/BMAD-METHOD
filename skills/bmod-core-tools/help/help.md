@@ -22,8 +22,8 @@ An initiative is one body of work of any kind: a product, a feature, a book, a s
   - They want several points of view arguing it out, a roundtable, or a focus group of their customers → `bmad-party-mode`.
 - Has large or raw input:
   - A transcript, a chat or email thread, a voice memo, or a long document they want what matters from (decisions, action items, key points) → `bmad-ingest`.
-  - A long document the team will keep and agents will work from (a large PRD, architecture or manual), or one already sharded that they want to change → `bmad-shard-pro`.
-  - About to start a PRD, brief, architecture or tickets with large inputs: suggest preparing them first, raw inputs through `bmad-ingest` and long documents through `bmad-shard-pro`, so the planning skill reads short notes and only the parts it needs.
+  - A document past about 50 KB that agents work from (an old spec, a vendor manual, a large PRD), or one already sharded that they want to change → `bmad-shard-pro`. A long document that is kept and edited is split; one that has to stay one file, or a fixed reference, gets a contents list (`help/shard-pro.md`). A document under about 50 KB needs nothing, including one a planning skill just wrote.
+  - About to start a PRD, brief, architecture or tickets with large inputs: suggest preparing them first, raw inputs through `bmad-ingest` and documents past about 50 KB through `bmad-shard-pro`, so the planning skill reads short notes and only the parts it needs.
   - A sharded document is the input to another skill: give that skill the folder's main file, named after the folder, which links to every shard.
 - BMad itself needs attention:
   - Something was installed or updated, or a skill reports that BMad is not set up or a BMad script was not found → `bmad setup`.
