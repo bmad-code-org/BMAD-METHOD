@@ -1122,7 +1122,7 @@ def cmd_check(args) -> int:
         fails, warns, checked = [], [], []
         for t in prepared_under(target):
             f, w = check_folder(t, False) if t.is_dir() else check_toc(t)
-            where = str(t.relative_to(target))
+            where = t.relative_to(target).as_posix()
             fails += [x | {"target": where} for x in f]
             warns += [x | {"target": where} for x in w]
             checked.append(where)
