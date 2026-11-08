@@ -2,10 +2,12 @@
 title: 'Write a Document Template'
 description: Add your own template to bmad-facilitate, replace or hide a shipped one, add your team's rules to a template, and set how rendered views look.
 sidebar:
-  order: 5
+  order: 7
 ---
 
 Use the `bmad-facilitate` template library to make the skill coach your team through your own document types. Everything about a document is data. Template files say what each document asks for and what the review checks. The skill's customization says where templates live, where the result goes, and how the HTML view looks.
+
+New to templates? [How Document Templates Work](./how-document-templates-work.md) explains the pieces, and [Customize a Document for Your Team](./customize-a-document-for-your-team.md) walks through changing a shipped one. This page is the full guide to the file format.
 
 ## When to use this
 
@@ -230,7 +232,7 @@ An extension can hold anything a template can:
 | In the extension | Effect |
 | --- | --- |
 | A section | Added where its comment says, and taken up at that point in the conversation. If the heading it names is gone, the skill places it by judgment. It is required unless its comment starts `optional` or `include when`, the same rule as a template's sections. With the same heading as a template section, it replaces that section or adds to it, as its comment says. |
-| `facilitation_order` frontmatter | Replaces the template's whole order. A template section it leaves out is removed from the document, and the template list names it under `removed`. Set it only to reorder or remove the template's sections. |
+| `facilitation_order` frontmatter | Replaces the template's whole order. A template section it leaves out is removed from the document, and the template list names it under `removed`. Set it only to reorder or remove the template's sections, never just to place a new one, because a section the template adds in a later update is also left out and removed. |
 | `stance`, `inputs`, `writing` or `done when` comments | Added to the template's, and they win where they disagree with it. A policy to load goes in `inputs`; a review rule goes in `done when`. |
 | `description`, `not_for`, `guidance`, `rubric`, `methods`, `output`, `style`, `view` or `html_view` frontmatter | Replaces the template's value. |
 
@@ -246,7 +248,7 @@ html_view: always
 <!-- First, right under the title. Ask the user for a quote unique to this product before anything else. -->
 ```
 
-When extensions conflict, the first in search order wins. Use a copy only to rebuild a template.
+When extensions conflict, the first in search order wins. Use a copy only to rebuild a template, or with a new id for a different document; [Customize a Document for Your Team](./customize-a-document-for-your-team.md#step-5-when-changes-outgrow-an-extension) shows when.
 
 Rules for every document, whatever the template, go in `persistent_facts`, `doc_standards` and `finalize_reviewers` under `[workflow]` instead.
 

@@ -7,7 +7,7 @@ sidebar:
 
 Use this page to find a shipped template to copy, or to see how a template does something you want. Modules ship them, each in the `doc-templates/` folder of its record in your skills folder: `bmod-method`, `bmod-founder` or `bmod-cis`.
 
-To use one as a starting point, copy it into `_bmad/custom/facilitate-templates/`, keep or change its `template:` id, and edit the copy. [Write a Document Template](../customize/write-a-document-template.md) covers the file format.
+To change one for your team, extend it instead of copying it, so its updates keep arriving; [Customize a Document for Your Team](../customize/customize-a-document-for-your-team.md) shows how. To start a different document from one, copy it into `_bmad/custom/facilitate-templates/` with a new `template:` id and edit the copy. [Write a Document Template](../customize/write-a-document-template.md) covers the file format.
 
 ## Shipped templates
 
