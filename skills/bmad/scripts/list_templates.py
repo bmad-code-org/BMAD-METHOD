@@ -295,7 +295,7 @@ def scan(sources: list[str]) -> dict:
         template["_extension_headings"] = [s for e in adding for s, _ in e["_sections"]]
         template["_must_list"] = [s for e in adding if e["facilitation_order"] for s, _ in e["_sections"]]
         template["_order_from_extension"] = any(e["facilitation_order"] for e in adding)
-        template["_bad_order"] = template["_bad_order"] or any(e["_bad_order"] for e in adding)
+        template["_bad_extension_orders"] = [e["file"] for e in adding if e["_bad_order"]]
     for template in found.values():
         own, added = template.pop("_headings"), template.pop("_extension_headings", [])
         must, template["removed"] = own + template.pop("_must_list", []), []
@@ -307,6 +307,10 @@ def scan(sources: list[str]) -> dict:
             template["order_problems"] = order_problems(template["facilitation_order"], must, own + added)
         if template.pop("_bad_order") and not template["facilitation_order"]:
             template["order_problems"] = ["`facilitation_order` must be a one-line list, such as `[problem, scope?]`"]
+        template["order_problems"] += [
+            f"`facilitation_order` in {file} is ignored: it must be a one-line list, such as `[problem, scope?]`"
+            for file in template.pop("_bad_extension_orders", [])
+        ]
     return {
         "templates": list(found.values()),
         "shadowed": shadowed,

@@ -46,10 +46,4 @@ When a run starts, the skill merges the template and every extension of it into 
 
 Settings that cover every document, such as doc standards, reviewers, where output goes and whether HTML views are made, live in `_bmad/custom/bmad-facilitate.toml` instead of a template.
 
-You do not need to know any of this to make a change. Tell `bmad-customize` what you want, such as "every PRD needs a support readiness section", and it decides between an extension, a copy and a setting, writes the file and shows you the merged result.
-
-## Next Steps
-
-- [Customize a Document for Your Team](./customize-a-document-for-your-team.md) walks through all three ways with a real example.
-- [Write a Document Template](./write-a-document-template.md) covers the file format, views and libraries in full.
-- [Document Templates](../reference/document-templates.md) lists the shipped templates and which one shows each feature.
+You do not need to know any of this to make a change. Tell `bmad-customize` what you want, such as "every PRD needs a support readiness section", and it decides between an extension, a copy and a setting, writes the file and shows you the merged result. [Customize a Document for Your Team](./customize-a-document-for-your-team.md) walks through all three ways with a real example, [Write a Document Template](./write-a-document-template.md) covers the file format in full, and [Document Templates](../reference/document-templates.md) lists the shipped templates.

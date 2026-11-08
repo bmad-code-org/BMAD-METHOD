@@ -19,7 +19,7 @@ When the target's `customize.toml` doesn't expose what the user wants, say so pl
 
 ## Activation
 
-Greet the user. If the user's invocation already names a target skill AND a specific change, jump to Step 3.
+Greet the user. A change to a document, even one naming its skill or agent, goes to Document templates. Otherwise, if the user's invocation already names a target skill AND a specific change, jump to Step 3.
 
 ## Step 1: Classify intent
 

@@ -590,3 +590,13 @@ def test_libraries_of_reads_a_skills_template_libraries_and_its_overrides(tmp_pa
     found = json.loads(capsys.readouterr().out)["templates"]
     assert ids({"templates": found}) == ["shipped"]
     assert found[0]["extensions"] == [str(custom / "e.md")]
+
+
+def test_an_extension_order_that_is_not_a_one_line_list_is_reported_beside_a_good_one(tmp_path):
+    (tmp_path / "t.md").write_text(ORDERED)
+    (tmp_path / "e.md").write_text("---\nextends: t\nfacilitation_order:\n  - problem\n---\n\n## Extra\n")
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert found["facilitation_order"][:4] == ["problem", "what-makes-it-different", "vision?", "summary"]
+    assert found["order_problems"] == [
+        f"`facilitation_order` in {tmp_path / 'e.md'} is ignored: it must be a one-line list, such as `[problem, scope?]`"
+    ]
