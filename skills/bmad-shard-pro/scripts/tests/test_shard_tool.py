@@ -163,10 +163,13 @@ def test_long_map_splits_into_sub_maps(tmp_path):
 
 
 def test_check_catches_broken_links_orphans_names_and_edits(built):
-    (built / "part-2.md").write_text((built / "part-2.md").read_text(encoding="utf-8") + "\nSee [gone](./gone.md).\n")
+    (built / "part-2.md").write_text(
+        (built / "part-2.md").read_text(encoding="utf-8") + "\nSee [gone](./gone.md).\n", encoding="utf-8"
+    )
     main = built / "doc-sample.md"
     main.write_text(
-        "".join(x for x in main.read_text(encoding="utf-8").splitlines(keepends=True) if "](./part-4.md)" not in x)
+        "".join(x for x in main.read_text(encoding="utf-8").splitlines(keepends=True) if "](./part-4.md)" not in x),
+        encoding="utf-8",
     )
     code, out = run("check", str(built), "--rebuild")
     kinds = {f["check"] for f in out["failures"]}
@@ -236,7 +239,9 @@ def test_map_keeps_the_maps_order_and_drops_lines_for_deleted_shards(built):
 
 def test_a_summary_edited_in_frontmatter_is_flagged_until_the_map_matches(built):
     p = built / "part-2.md"
-    p.write_text(p.read_text(encoding="utf-8").replace("summary: Lines", "summary: Now covers lines", 1))
+    p.write_text(
+        p.read_text(encoding="utf-8").replace("summary: Lines", "summary: Now covers lines", 1), encoding="utf-8"
+    )
     code, out = run("check", str(built), "--rebuild")
     assert code == 0 and any(w["check"] == "map" and w["file"] == "part-2.md" for w in out["warnings"])
     run("map", str(built))
@@ -264,7 +269,7 @@ def test_check_rejects_frontmatter_that_does_not_parse(built):
 
 def test_map_keeps_the_line_of_a_shard_whose_frontmatter_breaks_and_maps_the_rest(built):
     p = built / "part-2.md"
-    p.write_text(p.read_text(encoding="utf-8").replace("title: Part 2", "title: Part 2: broken", 1))
+    p.write_text(p.read_text(encoding="utf-8").replace("title: Part 2", "title: Part 2: broken", 1), encoding="utf-8")
     (built / "extra.md").write_text(shard("Extra", "Added later", "text"), encoding="utf-8")
     code, out = run("map", str(built))
     main = (built / "doc-sample.md").read_text(encoding="utf-8")
@@ -330,9 +335,11 @@ def rebuild_plan(built: Path) -> Path:
 @pytest.mark.parametrize(
     "edit",
     [
-        lambda d: (d / "part-2.md").write_text((d / "part-2.md").read_text(encoding="utf-8") + "New text.\n"),
         lambda d: (d / "part-2.md").write_text(
-            (d / "part-2.md").read_text(encoding="utf-8").replace("summary: Lines", "summary: Now")
+            (d / "part-2.md").read_text(encoding="utf-8") + "New text.\n", encoding="utf-8"
+        ),
+        lambda d: (d / "part-2.md").write_text(
+            (d / "part-2.md").read_text(encoding="utf-8").replace("summary: Lines", "summary: Now"), encoding="utf-8"
         ),
         lambda d: (d / "extra.md").write_text(shard("Extra", "Added later", "text"), encoding="utf-8"),
     ],
@@ -480,7 +487,7 @@ def test_toc_reports_a_renamed_section_and_keeps_the_rest(tmp_path):
     plan = {"groups": [{"heading": "G", "shards": [{"start": 3, "title": "A"}, {"start": 7, "title": "B"}]}]}
     (tmp_path / "p.json").write_text(json.dumps(plan), encoding="utf-8")
     run("toc", str(f), "--plan", str(tmp_path / "p.json"))
-    f.write_text(f.read_text(encoding="utf-8").replace("## B", "## B renamed"))
+    f.write_text(f.read_text(encoding="utf-8").replace("## B", "## B renamed"), encoding="utf-8")
     code, out = run("toc", str(f))
     assert code == 1 and out["lost"][0]["title"] == "B" and out["entries"] == 1
     now = f.read_text(encoding="utf-8").splitlines().index("## B renamed") + 1
@@ -494,7 +501,7 @@ def test_check_toc_catches_a_stale_last_range(tmp_path):
     plan = {"groups": [{"heading": "G", "shards": [{"start": 3, "title": "A"}]}]}
     (tmp_path / "p.json").write_text(json.dumps(plan), encoding="utf-8")
     run("toc", str(f), "--plan", str(tmp_path / "p.json"))
-    f.write_text(f.read_text(encoding="utf-8") + "more\nlines\n")
+    f.write_text(f.read_text(encoding="utf-8") + "more\nlines\n", encoding="utf-8")
     code, out = run("check", str(f))
     assert code == 1 and "end of the file" in out["failures"][0]["text"]
 
