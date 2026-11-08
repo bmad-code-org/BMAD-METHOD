@@ -1,11 +1,11 @@
 ---
 name: bmad-customize
-description: Authors and updates customization overrides for installed BMad skills. Use when the user says 'customize bmad', 'override a skill', 'change agent behavior', or 'customize a workflow'
+description: Authors and updates customization overrides for installed BMad skills, and changes to the document templates their agents write from. Use when the user says 'customize bmad', 'override a skill', 'change agent behavior', 'customize a workflow', or wants a document such as the PRD to ask for, contain or render something different
 ---
 
 # BMad Customize
 
-Translate the user's intent into a correctly-placed TOML override file under `{project-root}/_bmad/custom/` for a customizable agent or workflow skill. Discover, route, author, write, verify.
+Translate the user's intent into a correctly-placed TOML override file under `{project-root}/_bmad/custom/` for a customizable agent or workflow skill, or into a template file when the change is to a document. Discover, route, author, write, verify.
 
 Scope v1: per-skill `[agent]` overrides (`bmad-agent-<role>.toml` / `.user.toml`) and per-skill `[workflow]` overrides (`bmad-<workflow>.toml` / `.user.toml`). Central config (`{project-root}/_bmad/custom/config.toml`) is out of scope — point users at the [How to Customize BMad guide](https://docs.bmad-method.org/how-to/customize-bmad/).
 
@@ -19,7 +19,7 @@ When the target's `customize.toml` doesn't expose what the user wants, say so pl
 
 ## Activation
 
-Greet the user. If the user's invocation already names a target skill AND a specific change, jump to Step 3.
+Greet the user. A change to a document, even one naming its skill or agent, goes to Document templates. Otherwise, if the user's invocation already names a target skill AND a specific change, jump to Step 3.
 
 ## Step 1: Classify intent
 
@@ -27,6 +27,7 @@ Greet the user. If the user's invocation already names a target skill AND a spec
 - **Exploratory** — "what can I customize?" → Step 2.
 - **Audit/iterate** — wants to review or change something already customized → Step 2, lead with skills that have existing overrides; read the existing override in Step 3 before composing.
 - **Cross-cutting** — could live on multiple surfaces → Step 3, choose agent vs workflow explicitly with the user.
+- **Document** — names a document type (a PRD, a brief, a postmortem) or a change to what one asks for, contains or renders → Document templates. The user need not know which skill writes it.
 
 ## Step 2: Discovery
 
@@ -72,6 +73,21 @@ Overrides are sparse: only the fields being changed. Never copy the whole `custo
 
 **Template swap** (`*_template` scalar): offer to copy the default template to `{project-root}/_bmad/custom/{skill-name}-{purpose}-template.md`, point the override at the new path, offer to help edit it.
 
+## Document templates
+
+Every document `bmad-facilitate` writes, John's (`bmad-agent-pm`) and Mary's (`bmad-agent-analyst`) included, comes from a markdown template, not from TOML. The format is at `https://docs.bmad-method.org/customize/write-a-document-template/`.
+
+1. Find the template: `uv run {project-root}/_bmad/scripts/list_templates.py --libraries-of <bmad-facilitate's folder> --libraries-of <each installed agent whose customize.toml sets template_libraries> --project-root {project-root} --root <folder> --brief`, one `--root` per skills folder. Match the user's words to a template id; when more than one fits, such as `prd` and `prd-light`, ask which, or both.
+2. Sort each change. About this document type → a template file: a section to add, one made required or optional, the order, an input to ask for, a writing or review rule, its rubric, its view, or whether its HTML view is made (`html_view`). For every document → `bmad-facilitate.toml` through Steps 4–6: `html_view` for all, `style`, `doc_standards`, reviewers, output. When it could be either, ask, offering this document type first.
+3. Extend by default: `{project-root}/_bmad/custom/facilitate-templates/<id>-<purpose>.md`, or the user's existing extension of that id, updated. Read the template first, its `file` from the listing with `--template <id>`, then write only the change under `extends: <id>` frontmatter:
+   - A `##` section with a comment saying where it goes and what to ask. It is required unless the comment starts `optional` or `include when`. To replace a template section, use its heading and say so in the comment.
+   - `stance`, `inputs`, `writing` or `done when` comments, added to the template's.
+   - `description`, `not_for`, `guidance`, `rubric`, `methods`, `output`, `style`, `view` or `html_view` frontmatter, replacing the template's.
+   - `facilitation_order` only to reorder or remove the template's own sections; it replaces the whole order, and a template section it leaves out is removed, including one the template adds in a later update. Never set it just to place a new section: the section's comment places it.
+4. Copy only when the change outgrows an extension. To rebuild the document everywhere, copy it into that folder with its `template` id kept. For a different document beside it, such as a PRD for one team, give the copy a new id (`prd-billing`), its own `description` and `not_for`, and `agents:` naming the agent that should offer it; extensions of the original do not reach it. Either way, say the copy no longer receives updates to the original.
+5. Placement: the project folder is the team's, committed. A personal template for every project goes in `~/.bmad/facilitate-templates/`.
+6. Show the file, wait for an explicit yes, and write it. Verify by running the listing again with `--template <id>` in place of `--brief`: show the template's `extensions`, merged `facilitation_order`, `removed`, `view` and `html_view`, and fix any `order_problems` before finishing.
+
 ## Step 5: Team or user placement
 
 Under `{project-root}/_bmad/custom/`:
@@ -98,8 +114,8 @@ Default by character (policy → team, personal → user), confirm before writin
 
 ## Complete when
 
-- Override file written (or user explicitly aborted).
-- User has seen resolver output (or manual fallback merge summary).
+- Override or template file written (or user explicitly aborted).
+- User has seen resolver or listing output (or manual fallback merge summary).
 - User has acknowledged the summary.
 
 Otherwise the skill isn't done — finish or tell the user they're exiting incomplete.

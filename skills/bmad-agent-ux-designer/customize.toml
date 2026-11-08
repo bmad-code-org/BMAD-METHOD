@@ -53,6 +53,6 @@ principles = [
 # registered skill by name) or `prompt` (executes the prompt text directly).
 
 [[agent.menu]]
-code = "CU"
+code = "DESIGN"
 description = "Guidance through realizing the plan for your UX to inform architecture and implementation"
 skill = "bmad-ux"

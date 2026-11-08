@@ -25,7 +25,8 @@ Each document has one skill that writes it, so give it one owner. One person can
 
 | Role | Runs | Owns |
 |---|---|---|
-| Product manager | `bmad-agent-pm` | `prd-<slug>.md`, any brief, business case or charter, and their updates |
+| Analyst | `bmad-agent-analyst` | Any brief, PRFAQ or business requirements document, and their updates |
+| Product manager | `bmad-agent-pm` | `prd-<slug>.md`, any business case or charter, and their updates |
 | Designer | `bmad-ux` | `DESIGN.md`, `EXPERIENCE.md` |
 | Tech lead | `bmad-architecture` | The architecture spine |
 | One engineer per epic | `bmad-agent-po`, `bmad-build`, `bmad-retrospective` | That epic's requirements, stories, verdict |
@@ -47,13 +48,13 @@ Each moment produces a written result an approval can attach to. Advise placing 
 
 | Moment | What it holds back |
 |---|---|
-| `bmad-prfaq` verdict | Writing the PRD |
+| Mary's PRFAQ verdict | Writing the PRD |
 | John's PRD validation | Design and architecture work |
 | Architecture spine review | Writing each epic's Requirements |
 | `bmad-agent-po` planning approval | Accepting the breakdown and its dependencies |
 | `bmad-retrospective` verdict | Starting the next epic |
 
-`bmad-prfaq` and `bmad-retrospective` accept `-H` to run without a conversation.
+Mary's PRFAQ runs headless when told so, and `bmad-retrospective` accepts `-H`, to run without a conversation.
 
 ## When requirements change
 

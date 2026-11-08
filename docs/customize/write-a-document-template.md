@@ -2,10 +2,12 @@
 title: 'Write a Document Template'
 description: Add your own template to bmad-facilitate, replace or hide a shipped one, add your team's rules to a template, and set how rendered views look.
 sidebar:
-  order: 5
+  order: 7
 ---
 
 Use the `bmad-facilitate` template library to make the skill coach your team through your own document types. Everything about a document is data. Template files say what each document asks for and what the review checks. The skill's customization says where templates live, where the result goes, and how the HTML view looks.
+
+New to templates? [How Document Templates Work](./how-document-templates-work.md) explains the pieces, and [Customize a Document for Your Team](./customize-a-document-for-your-team.md) walks through changing a shipped one. This page is the full guide to the file format.
 
 ## When to use this
 
@@ -15,7 +17,7 @@ Use the `bmad-facilitate` template library to make the skill coach your team thr
 - Rendered views should carry your team's look.
 
 :::note[Prerequisites]
-BMad installed with the core tools, and `bmad setup` run. Templates go in `_bmad/custom/facilitate-templates/`. Settings go in `_bmad/custom/bmad-facilitate.toml`, which the team commits; `bmad-facilitate.user.toml` beside it holds personal changes. `bmad-customize` can write either file for you. How overrides merge is in [Customize BMad](./customize-bmad.md).
+BMad installed with the core tools, and `bmad setup` run. Templates go in `_bmad/custom/facilitate-templates/`. Settings go in `_bmad/custom/bmad-facilitate.toml`, which the team commits; `bmad-facilitate.user.toml` beside it holds personal changes. `bmad-customize` writes any of these for you, an extension of a shipped template included: tell it what to change, such as "every PRD opens with a quote". How overrides merge is in [Customize BMad](./customize-bmad.md).
 :::
 
 ## Add a template to the library
@@ -41,12 +43,16 @@ updated: ""
 | `version` | Optional version of the template. It is copied into each document, so a later update can say the template has moved on. |
 | `description` | One short line saying what the template is for. Help lists it for every template on every run, so keep it under about 80 characters. Quote it, because a colon breaks unquoted YAML. |
 | `not_for` | Optional short line naming what the template is not for, and the template to use instead. Read with `description` when choosing one, and not listed in help. |
+| `paced` | Optional. `true` walks the sections in order, one at a time, for a document whose conversation matters as much as the result. See [Walk the sections in order](#walk-the-sections-in-order). |
+| `facilitation_order` | The sections by id, in the order the skill takes them up, with `?` on each one that is not required. See [Order the sections](#order-the-sections). |
+| `guidance` | Optional rules shared by a family of templates and read as part of each, as a path relative to the template, or the bare name `guidance-planning` for the shipped planning rules: stakes from hobby to regulated, `[ASSUMPTION]` tags in the body, stable ids and testable requirements, and detail pushed to the level below. Every shipped template sets it. Without it the skill names no stakes levels and tags nothing in the body; a document such as fiction says what it needs in its own comments. |
 | `agents` | Optional list of the skills that run this template, such as `[bmad-agent-pm]`. The `bmad` skill uses it to say who offers the template. A template in an agent's `assets/` folder counts as that agent's without it. |
 | `rubric` | Optional path to a rubric for the review, relative to the template, or the bare name `rubric-planning` for the shipped planning rubric. Empty uses the shipped general rubric, which suits any document. |
 | `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
 | `output` | Optional run folder for this template. It may use `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
 | `style` | Optional CSS file for this template's rendered view, relative to the template. |
-| `view` | Optional layout for the rendered view: `document`, `slides`, or an HTML file relative to the template. See [Give a template its own view](#give-a-template-its-own-view). |
+| `view` | Optional layout for the rendered view: `document`, `slides`, or an HTML file relative to the template. It says what the view looks like, not whether it is made. See [Give a template its own view](#give-a-template-its-own-view). |
+| `html_view` | Optional. Whether this template's view is made: `always`, `offer` or `never`, replacing the team's setting for this template. Set `always` when the view is the deliverable, as `pitch-deck` does for its slides. A team's `never` still stops it. |
 
 `template`, `version` and `view` stay in the finished document, as does any field you add for a view to show. The other fields stay out.
 
@@ -101,6 +107,7 @@ title: ""
 template: runbook
 version: 1.0.0
 description: "Step-by-step instructions for one alert or recurring task."
+facilitation_order: [when-to-use, severity, steps, rollback?, escalation?]
 status: draft
 created: ""
 updated: ""
@@ -122,13 +129,13 @@ updated: ""
 # {title}
 
 ## When to use
-<!-- required. The alert, symptom or schedule that starts this runbook. -->
+<!-- The alert, symptom or schedule that starts this runbook. -->
 
 ## Severity
-<!-- required. The user must pick exactly one of: sev1, sev2, sev3. -->
+<!-- The user must pick exactly one of: sev1, sev2, sev3. -->
 
 ## Steps
-<!-- required. Numbered actions with expected results. When a step says "check the dashboard", ask which one and what a good reading is. diagram: flowchart -->
+<!-- Numbered actions with expected results. When a step says "check the dashboard", ask which one and what a good reading is. diagram: flowchart -->
 
 ## Rollback
 <!-- include when: a step changes production. How to undo each change. -->
@@ -152,11 +159,27 @@ Above the first heading, give each of these keys its own comment, a line or two.
 
 Add `view: slides` to the frontmatter for a slide view, or name an HTML view file; without it the HTML view is one page. In the document body, `{title}` is the only placeholder.
 
-Each section has one comment: `required`, `optional`, or `include when:` with a condition, then a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A heading with no comment is required. A required section is always filled, in one line at hobby stakes. An include-when section goes in only when the condition holds.
+Each section has one comment: a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A section that is not required starts its comment with `optional` or `include when:` and a condition.
+
+### Order the sections
+
+`facilitation_order` lists every `##` section by id: its heading in lowercase, with punctuation dropped and spaces as hyphens, so `What makes it different` is `what-makes-it-different` and `What's next?` is `whats-next`. It sets the order the skill takes the sections up in, not the document's order, so an executive summary can sit first in the document and come up last. A `?` after an id marks a section that is not required.
+
+The skill settles every section before it finishes, on every path. A required section is always filled. An optional one is offered when the order reaches it, and the user decides. An include-when one is checked against its condition, and the skill says what it found. The fast path settles them too, so asking for speed never drops a section quietly. Sections left out are named at the end with the reason.
+
+The template list reports an id that names no heading, an id listed twice, and a heading left off the list. Every shipped template sets the key. A template without it still works: a section whose comment does not start with `optional` or `include when:` is required, and the document's order is the order.
 
 Say what goes in each section, not how to write well. Leave out example content, which the model would copy.
 
 A section comment can also steer the conversation or limit the answer, in plain sentences. The `Steps` comment above tells the skill when to press, and `Severity` limits the user to a list. A list can live elsewhere: "The user must pick a team from `docs/teams.md`." The shipped `decision-record` and `security-review` templates show both, and [Document Templates](../reference/document-templates.md) lists where to see each capability.
+
+### Walk the sections in order
+
+Set `paced: true` when going through the sections is the point, as in a PRFAQ, where the user defends each part before moving on. The skill shows the sections in facilitation order before it starts, then takes them one at a time and finishes each before opening the next.
+
+In a paced template, each section comment is the brief for that part of the session. A voice, stance or method it sets, such as "you are now a skeptical customer", replaces the skill's coaching defaults until the section closes, so write it as instructions to the coach rather than only a description of the content. These shipped templates are paced: Mary's `prfaq` and `brief`, John's `experiment`, `opportunity` and `pitch`, and the module's `decision-record` and `postmortem`.
+
+Every run shows a progress line on the messages that ask something: `PRFAQ · Customer FAQ (2 of 4)` when paced, `PRD · 6 of 24 done` otherwise. The total is every section in the facilitation order, and a section counts once it is settled, so the total stays the same for the whole run.
 
 Put a bare `## Table of Contents` heading right after the title of any template whose documents run long. Agents often read only the top of a file to judge it, so the skill fills this with a linked entry per section and a short phrase of its key terms, then checks it against the final headings. It gets no slide in a slide view.
 
@@ -188,7 +211,7 @@ Add the comments when you want the coaching, the optional sections, or the diagr
 
 ## Extend a template
 
-An extension adds to a template without copying it, so updates to the original still reach you. Save a file with `extends:` and the template's id in any library or module, and every run of that template includes it. Fernhollow Bank, a fictional company, uses the `proposal` template as it is, but every proposal must name an approval track from a fixed list and leave room for reviewers:
+An extension changes a template without copying it, so updates to the original still reach you. On every run the skill merges the template and its extensions into one file, the extensions first, and works from that file. It saves that file as `.template.md` in the run folder, so you can see exactly what the skill read. Save a file with `extends:` and the template's id in any library or module, and every run of that template includes it. Fernhollow Bank, a fictional company, uses the `proposal` template as it is, but every proposal must name an approval track from a fixed list and leave room for reviewers:
 
 ```markdown
 ---
@@ -196,10 +219,10 @@ extends: proposal
 ---
 
 ## Approval Track
-<!-- required, after Budget. The user must pick exactly one of: fast-track, standard, regulated. -->
+<!-- After Budget. The user must pick exactly one of: fast-track, standard, regulated. -->
 
 ## Review Comments
-<!-- required, last. Keep the line below as it is; reviewers fill this in later. -->
+<!-- Last. Keep the line below as it is; reviewers fill this in later. -->
 
 _Reviewer comments go here._
 ```
@@ -208,11 +231,24 @@ An extension can hold anything a template can:
 
 | In the extension | Effect |
 | --- | --- |
-| A section | Added where its comment says. If the heading it names is gone, the skill places it by judgment. |
-| `stance`, `inputs`, `writing` or `done when` comments | Added to the template's. A policy to load goes in `inputs`; a review rule goes in `done when`. |
-| `description`, `not_for`, `rubric`, `methods`, `output` or `style` frontmatter | Replaces the template's value. |
+| A section | Added where its comment says, and taken up at that point in the conversation. If the heading it names is gone, the skill places it by judgment. It is required unless its comment starts `optional` or `include when`, the same rule as a template's sections. With the same heading as a template section, it replaces that section or adds to it, as its comment says. |
+| `facilitation_order` frontmatter | Replaces the template's whole order. A template section it leaves out is removed from the document, and the template list names it under `removed`. Set it only to reorder or remove the template's sections, never just to place a new one, because a section the template adds in a later update is also left out and removed. |
+| `stance`, `inputs`, `writing` or `done when` comments | Added to the template's, and they win where they disagree with it. A policy to load goes in `inputs`; a review rule goes in `done when`. |
+| `description`, `not_for`, `guidance`, `rubric`, `methods`, `output`, `style`, `view` or `html_view` frontmatter | Replaces the template's value. |
 
-When extensions conflict, the first in search order wins. Use a copy instead when you want to change what a template already says.
+This extension opens every PRD with a quote and always makes its HTML view, while John's updates to the PRD still arrive:
+
+```markdown
+---
+extends: prd
+html_view: always
+---
+
+## Quote
+<!-- First, right under the title. Ask the user for a quote unique to this product before anything else. -->
+```
+
+When extensions conflict, the first in search order wins. Use a copy only to rebuild a template, or with a new id for a different document; [Customize a Document for Your Team](./customize-a-document-for-your-team.md#step-5-when-changes-outgrow-an-extension) shows when.
 
 Rules for every document, whatever the template, go in `persistent_facts`, `doc_standards` and `finalize_reviewers` under `[workflow]` instead.
 
@@ -226,7 +262,7 @@ style = "{project-root}/_bmad/style/brand.css"
 html_view = "always"
 ```
 
-`style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or a template's `writing` comment instead. A template's `style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template that sets `view` renders unless `html_view` is `never`.
+`style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or a template's `writing` comment instead. A template's `style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template's own `html_view` replaces it for that template, except that `never` here stops every view.
 
 ## Give a template its own view
 
@@ -244,7 +280,7 @@ The `view` comment sits above the first heading with the other comments, and say
 <!-- view: The sheet is the deliverable. `character-sheet.html` is a starter: keep to one printable page, and let this character's world set the look. -->
 ```
 
-A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless the comment calls it the deliverable. Use the script for anything regulated or signed, where the page must not vary. `html_view = "never"` stops all three.
+A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless the template sets `html_view: always` or the comment calls it the deliverable. Use the script for anything regulated or signed, where the page must not vary. `html_view = "never"` stops all three.
 
 ### Slots for a filled view
 

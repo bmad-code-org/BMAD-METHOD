@@ -1,9 +1,11 @@
 ---
 title: ""
 template: proposal
-version: 1.0.0
+version: 1.1.0
 description: "Asking someone for money, time or approval, such as a grant or bid."
 not_for: "A decision already made (`decision-record`); a talk with slides (`pitch-deck`)."
+facilitation_order: [need, goals-and-outcomes, approach, alternatives?, team-and-track-record?, evaluation?, budget, risks, sustainability?, deliverables-and-terms?, summary]
+guidance: guidance-planning
 rubric: rubric-proposal.md
 status: draft
 created: ""
@@ -28,16 +30,16 @@ updated: ""
 ## Table of Contents
 
 ## Summary
-<!-- required. The ask, what it achieves, for whom, by when. -->
+<!-- The ask, what it achieves, for whom, by when. -->
 
 ## Need
-<!-- required. The problem or opportunity, who has it, the evidence, why now. -->
+<!-- The problem or opportunity, who has it, the evidence, why now. -->
 
 ## Goals and outcomes
-<!-- required. What changes if the answer is yes, stated so it can be measured. -->
+<!-- What changes if the answer is yes, stated so it can be measured. -->
 
 ## Approach
-<!-- required. The work plan and how it reaches the goals. diagram: gantt -->
+<!-- The work plan and how it reaches the goals. diagram: gantt -->
 
 ## Alternatives
 <!-- include when: an internal request. The options considered, including doing nothing, and why this one. -->
@@ -49,10 +51,10 @@ updated: ""
 <!-- include when: the reader expects reports on results. Measures and when they are reported. -->
 
 ## Budget
-<!-- required. Cost by line with justification, total, other funding; or the people and hours asked for. When a figure comes back round or unexplained, ask how it was built. -->
+<!-- Cost by line with justification, total, other funding; or the people and hours asked for. When a figure comes back round or unexplained, ask how it was built. -->
 
 ## Risks
-<!-- required. What could stop the work and how it is handled. -->
+<!-- What could stop the work and how it is handled. -->
 
 ## Sustainability
 <!-- include when: the work must outlast the funding. How it continues. -->

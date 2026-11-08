@@ -1,9 +1,11 @@
 ---
 title: ""
 template: charter
-version: 1.0.0
+version: 1.1.0
 description: "One mandate, benefits, scope and governance across several initiatives."
 not_for: "A single initiative (`brief` or `prd`); funding one piece of work (`business-case`); choosing a strategy (`narrative`)."
+facilitation_order: [justification, vision, strategic-alignment, benefits, scope, initiatives, rules?, stakeholders, governance, timeline, risks-and-issues]
+guidance: guidance-planning
 rubric: rubric-planning
 status: draft
 created: ""
@@ -25,34 +27,34 @@ updated: ""
 ## Table of Contents
 
 ## Justification
-<!-- required. Why the program exists and what happens without it. -->
+<!-- Why the program exists and what happens without it. -->
 
 ## Vision
-<!-- required. The end state the program delivers. -->
+<!-- The end state the program delivers. -->
 
 ## Strategic alignment
-<!-- required. The strategy or objectives it serves. -->
+<!-- The strategy or objectives it serves. -->
 
 ## Benefits
-<!-- required. SM-N measurable outcomes, each with an owner and an expected date. -->
+<!-- SM-N measurable outcomes, each with an owner and an expected date. -->
 
 ## Scope
-<!-- required. What the program covers and excludes. -->
+<!-- What the program covers and excludes. -->
 
 ## Initiatives
-<!-- required. Each initiative in one line, in dependency order, and their dependencies. Once they are listed, ask which must come first and which could wait until the first has reported. When the list outruns the people or the budget, say so and make the case for running fewer at once; the user decides. diagram: flowchart -->
+<!-- Each initiative in one line, in dependency order, and their dependencies. Once they are listed, ask which must come first and which could wait until the first has reported. When the list outruns the people or the budget, say so and make the case for running fewer at once; the user decides. diagram: flowchart -->
 
 ## Rules
 <!-- include when: something binds every initiative, whichever one it touches. RULE-N, one line each. A rule from a `brd` keeps its id. -->
 
 ## Stakeholders
-<!-- required. Who is affected and who must be involved. -->
+<!-- Who is affected and who must be involved. -->
 
 ## Governance
-<!-- required. Sponsor, decision rights, review cadence and escalation. -->
+<!-- Sponsor, decision rights, review cadence and escalation. -->
 
 ## Timeline
-<!-- required. Phases and milestones. diagram: gantt -->
+<!-- Phases and milestones. diagram: gantt -->
 
 ## Risks and issues
-<!-- required. Program-level risks and open issues, each with an owner. -->
+<!-- Program-level risks and open issues, each with an owner. -->
