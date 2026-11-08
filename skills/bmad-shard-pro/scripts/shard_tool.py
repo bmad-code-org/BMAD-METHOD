@@ -45,6 +45,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shutil
 import sys
@@ -89,7 +90,7 @@ BARE_ID = re.compile(r"^[A-Z]?\d+(?:[-.]\d+)*[a-z]?$|^[A-Z](?:-\d+[a-z]?)*$")
 IDENT = re.compile(r"\b[A-Z][A-Z0-9]{0,5}(?:-[A-Z0-9]{1,6})*-\d{1,4}[a-z]?\b")
 LINK = re.compile(r"\]\(\./([^)#\s]+)")
 MAP_LINE = re.compile(r"^- \[(.*)\]\(\./([^)#\s]+)\)(?: — (.*))?$")
-TOC_ENTRY = re.compile(r"^- L(\d+)(?:-\d+)? (.*)$")
+TOC_ENTRY = re.compile(r"^- L(\d+)(-\d+)? (.*)$")
 ANY_LINK = re.compile(r"\]\(([^)\s]+)\)")
 
 
@@ -384,7 +385,8 @@ def read_map(folder: Path, main: Path) -> tuple[list[dict], list[str]]:
                 continue
             title, target, summary = m.groups()
             page = folder / target
-            if top and target.startswith("map-") and page.exists() and not frontmatter_end(read_lines(page)):
+            plain = "/" not in target and "\\" not in target
+            if top and plain and target.startswith("map-") and page.exists() and not frontmatter_end(read_lines(page)):
                 pages.append(target)
                 walk(page, title, False)
                 continue
@@ -579,17 +581,27 @@ def identifiers(pattern: re.Pattern, line: str) -> list[str]:
     return [m.group(0) for m in pattern.finditer(line)]
 
 
-def write_lookup(folder: Path, plan: dict) -> dict:
-    pattern = re.compile(plan["lookup"])
+def lookup_homes(folder: Path, shards: list[dict], pattern: re.Pattern) -> dict[str, list[str]]:
+    """Each identifier a shard defines, and the shards that define it."""
     homes: dict[str, list[str]] = {}
-    shards, _ = shards_in(folder, folder / f"{folder.name}.md")
     for s in shards:
-        p = folder / s["file"]
-        for line in body_lines(p):
+        for line in body_lines(folder / s["file"]):
             if defines(line):
                 for ident in identifiers(pattern, line):
                     if s["file"] not in homes.setdefault(ident, []):
                         homes[ident].append(s["file"])
+    return homes
+
+
+def listed_homes(path: Path) -> dict[str, set[str]]:
+    """The identifier lookup as it reads now: identifier to the shards its row links."""
+    rows = (re.match(r"^\| (.+?) \| (.*) \|$", x) for x in read_lines(path)[6:])
+    return {m.group(1): set(re.findall(r"\]\(\./([^)]+)\)", m.group(2))) for m in rows if m}
+
+
+def write_lookup(folder: Path, plan: dict) -> dict:
+    shards, _ = shards_in(folder, folder / f"{folder.name}.md")
+    homes = lookup_homes(folder, shards, re.compile(plan["lookup"]))
     rows = [
         f"| {i} | {', '.join(f'[{Path(f).stem}](./{f})' for f in fs)} |"
         for i, fs in sorted(homes.items(), key=lambda kv: natural(kv[0]))
@@ -703,6 +715,10 @@ def edits_since_build(folder: Path, plan: dict) -> str | None:
         for s in g["shards"]
     }
     shards, _ = shards_in(folder, folder / f"{folder.name}.md")
+    found = {s["file"] for s in shards}
+    unreadable = sorted(f for f in cut if f not in found and (folder / f).exists())
+    if unreadable:
+        return f"the frontmatter of {', '.join(unreadable)} was edited after build and no longer reads as a shard"
     extra = sorted(s["file"] for s in shards if s["file"] not in cut)
     if extra:
         return f"shards were added after build: {', '.join(extra)}"
@@ -774,15 +790,16 @@ def ambiguous_anchors(stored: list[dict], body: list[str]) -> list[dict]:
     ]
 
 
-def listed_entries(raw: list[str]) -> list[tuple[int, str, str | None]]:
-    """Each line of the contents list as it reads now: start line, title, and the group above it."""
+def listed_entries(raw: list[str]) -> list[tuple[int, str, str | None, bool]]:
+    """Each line of the contents list as it reads now: start line, title, the group above it, and whether it
+    carries a range (the lines toc writes do; a line added by hand names only its first line)."""
     span = toc_lines(raw)
     out, group = [], None
     for line in raw[span[0] : span[1]] if span else []:
         if line.startswith("**") and line.rstrip().endswith("**"):
             group = line.strip().strip("*")
         elif m := TOC_ENTRY.match(line):
-            out.append((int(m.group(1)), m.group(2).strip(), group))
+            out.append((int(m.group(1)), m.group(3).strip(), group, bool(m.group(2))))
     return out
 
 
@@ -833,10 +850,13 @@ def cmd_toc(args) -> int:
             pos = idx + 1
         # Lines someone added to the list by hand join it at the line they name.
         known = Counter(x["title"] for x in stored)
-        for line, title, group in listed_entries(raw):
-            if known[title]:
-                known[title] -= 1
-                continue
+        rows = listed_entries(raw)
+        # When titles repeat, the lines toc wrote (with a range) are the recorded ones.
+        for row in sorted(rows, key=lambda r: not r[3]):
+            if known[row[1]]:
+                known[row[1]] -= 1
+                rows.remove(row)
+        for line, title, group, _ in rows:
             at = to_body(raw, line)
             if 1 <= at <= len(body) and all(e["start"] != at for e in items):
                 items.append({"start": at, "title": title, "group": group})
@@ -1044,7 +1064,7 @@ def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
                 warns.append({"check": "related", "file": s["file"], "text": f"related shard {r} is missing"})
         e = listed.get(s["file"])
         if e and (e["title"], e["summary"]) != (s["title"], s["summary"]):
-            warns.append(
+            fails.append(
                 {
                     "check": "map",
                     "file": s["file"],
@@ -1081,13 +1101,16 @@ def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
                 }
             )
     if plan.get("lookup"):
-        pattern = re.compile(plan["lookup"])
-        homes: dict[str, set] = {}
-        for s in shards:
-            for line in body_lines(folder / s["file"]):
-                if defines(line):
-                    for ident in identifiers(pattern, line):
-                        homes.setdefault(ident, set()).add(s["file"])
+        homes = lookup_homes(folder, shards, re.compile(plan["lookup"]))
+        listed = listed_homes(folder / LOOKUP_FILE) if (folder / LOOKUP_FILE).exists() else {}
+        if listed != {i: set(fs) for i, fs in homes.items()}:
+            fails.append(
+                {
+                    "check": "lookup",
+                    "file": LOOKUP_FILE,
+                    "text": "the identifier lookup does not match the shards; fix its rows or run lookup",
+                }
+            )
         for ident, fs in sorted(homes.items()):
             if len(fs) > 1:
                 warns.append(
@@ -1101,17 +1124,24 @@ def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
 
 
 def prepared_under(root: Path) -> list[Path]:
-    """Every sharded folder and every file with a shard-pro contents list under root, skipping hidden folders."""
-    found = []
-    for p in sorted(root.rglob("*.md")):
-        rel = p.relative_to(root).parts
-        if any(x.startswith(".") or x == "node_modules" for x in rel[:-1]):
-            continue
-        if p.stem == p.parent.name and any(NOTE_MARK in x for x in read_lines(p)[:WINDOW]):
-            found.append(p.parent)
-        elif sidecar(p).exists():
-            found.append(p)
-    return found
+    """Every sharded folder and every file with a shard-pro contents list under root, skipping hidden folders.
+    A document is found by any one of its marks, so a damaged one is checked rather than skipped."""
+    found: set[Path] = set()
+    for here, dirs, files in os.walk(root):
+        dirs[:] = [d for d in dirs if not d.startswith(".") and d != "node_modules"]
+        d = Path(here)
+        if MANIFEST in files:
+            found.add(d)
+        for name in files:
+            if not name.endswith(".md"):
+                continue
+            p = d / name
+            head = [x.strip() for x in read_lines(p)[:WINDOW]]
+            if p.stem == d.name and any(NOTE_MARK in x for x in head):
+                found.add(d)
+            elif sidecar(p).exists() or TOC_START in head:
+                found.add(p)
+    return sorted(found)
 
 
 def cmd_check(args) -> int:

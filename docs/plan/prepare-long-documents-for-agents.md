@@ -77,5 +77,5 @@ Any agent can change a sharded document without the skill, because the note at t
 Running the skill again is optional. It rebuilds the map from the shards' frontmatter and rechecks the folder. A contents list is changed the same way: add a line to the list for a new section, and the skill refreshes the line ranges later.
 
 :::tip[Catch drift in CI]
-Run `uv run .agents/skills/bmad-shard-pro/scripts/shard_tool.py check <folder> --all` in a pre-commit hook or CI (in Claude Code the skill is under `.claude/skills/`). It checks every sharded folder and contents list under the folder, and fails when a shard is missing from its map or its frontmatter does not parse.
+Run `uv run <skills-folder>/bmad-shard-pro/scripts/shard_tool.py check <folder> --all` in a pre-commit hook or CI, where `<skills-folder>` is where your tool installed the skill, such as `.agents/skills` or `.claude/skills`. It checks every sharded folder and contents list under the folder, and fails when the map or the identifier lookup no longer matches the shards, or a shard's frontmatter does not parse.
 :::

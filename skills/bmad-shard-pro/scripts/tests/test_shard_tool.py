@@ -217,10 +217,10 @@ def test_a_shard_added_by_hand_is_found_by_check_map_and_lookup(built):
     code, out = run("map", str(built))
     assert code == 0 and out["added"] == ["extra.md"]
     assert "- [Extra](./extra.md) — Added later" in (built / "doc-sample.md").read_text(encoding="utf-8")
-    code, out = run("check", str(built))
-    assert code == 0, out
     run("lookup", str(built))
     assert "| FR-AB-099 | [extra](./extra.md) |" in (built / "identifier-lookup.md").read_text(encoding="utf-8")
+    code, out = run("check", str(built))
+    assert code == 0, out
 
 
 def test_map_keeps_the_maps_order_and_drops_lines_for_deleted_shards(built):
@@ -243,11 +243,11 @@ def test_a_summary_edited_in_frontmatter_is_flagged_until_the_map_matches(built)
         p.read_text(encoding="utf-8").replace("summary: Lines", "summary: Now covers lines", 1), encoding="utf-8"
     )
     code, out = run("check", str(built), "--rebuild")
-    assert code == 0 and any(w["check"] == "map" and w["file"] == "part-2.md" for w in out["warnings"])
+    assert code == 1 and any(f["check"] == "map" and f["file"] == "part-2.md" for f in out["failures"])
     run("map", str(built))
     assert "— Now covers lines" in (built / "doc-sample.md").read_text(encoding="utf-8")
-    _, out = run("check", str(built))
-    assert not any(w["check"] == "map" for w in out["warnings"])
+    code, out = run("check", str(built))
+    assert code == 0, out
 
 
 def test_check_needs_no_build_record_except_to_rebuild(built):
@@ -342,8 +342,12 @@ def rebuild_plan(built: Path) -> Path:
             (d / "part-2.md").read_text(encoding="utf-8").replace("summary: Lines", "summary: Now"), encoding="utf-8"
         ),
         lambda d: (d / "extra.md").write_text(shard("Extra", "Added later", "text"), encoding="utf-8"),
+        lambda d: (d / "part-2.md").write_text(
+            (d / "part-2.md").read_text(encoding="utf-8").replace("title: Part 2", "title: Part 2: broken"),
+            encoding="utf-8",
+        ),
     ],
-    ids=["body", "frontmatter", "new-shard"],
+    ids=["body", "frontmatter", "new-shard", "frontmatter-that-does-not-parse"],
 )
 def test_build_refuses_to_discard_edits_made_since_build(built, edit):
     edit(built)
@@ -658,3 +662,54 @@ def test_toc_refresh_keeps_a_line_added_to_the_list_by_hand(tmp_path):
     entry = next(x for x in lines if x.endswith(" B"))
     assert lines[int(entry.split()[1][1:].split("-")[0]) - 1] == "## B"
     assert run("check", str(f))[0] == 0
+
+
+def test_map_never_follows_a_map_page_link_out_of_the_folder(built):
+    (built / "map-x").mkdir()
+    outside = built.parent / "keep.md"
+    outside.write_text("not part of the document\n", encoding="utf-8")
+    main = built / "doc-sample.md"
+    main.write_text(main.read_text(encoding="utf-8") + "- [X](./map-x/../../keep.md) — x\n", encoding="utf-8")
+    run("map", str(built))
+    assert outside.exists()
+
+
+def test_check_fails_when_the_identifier_lookup_is_stale(built):
+    assert run("check", str(built))[0] == 0
+    p = built / "part-2.md"
+    p.write_text(p.read_text(encoding="utf-8") + "\n## FR-AB-777 New\n", encoding="utf-8")
+    code, out = run("check", str(built))
+    assert code == 1 and any(f["check"] == "lookup" for f in out["failures"])
+    run("lookup", str(built))
+    assert run("check", str(built))[0] == 0
+
+
+def test_check_all_checks_a_damaged_document_instead_of_skipping_it(built, tmp_path):
+    main = built / "doc-sample.md"
+    main.write_text(main.read_text(encoding="utf-8").replace(shard_tool.NOTE_MARK, ""), encoding="utf-8")
+    f = tmp_path / "doc.md"
+    f.write_text("# Doc\n\n## A\n\ntext a\n", encoding="utf-8")
+    plan = {"groups": [{"heading": "G", "shards": [{"start": 3, "title": "A"}]}]}
+    (tmp_path / "toc.json").write_text(json.dumps(plan), encoding="utf-8")
+    run("toc", str(f), "--plan", str(tmp_path / "toc.json"))
+    shard_tool.sidecar(f).unlink()
+    code, out = run("check", str(tmp_path), "--all")
+    assert code == 1 and out["checked"] == ["doc-sample", "doc.md"]
+    assert {x["target"] for x in out["failures"]} == {"doc-sample", "doc.md"}
+
+
+def test_toc_refresh_keeps_a_hand_added_line_that_repeats_a_title(tmp_path):
+    f = tmp_path / "doc.md"
+    f.write_text("# Doc\n\n## Notes\n\nfirst\n\n## B\n\ntext b\n", encoding="utf-8")
+    plan = {"groups": [{"heading": "G", "shards": [{"start": 7, "title": "Notes"}]}]}
+    (tmp_path / "p.json").write_text(json.dumps(plan), encoding="utf-8")
+    run("toc", str(f), "--plan", str(tmp_path / "p.json"))
+    lines = f.read_text(encoding="utf-8").splitlines()
+    first = lines.index("## Notes") + 2
+    lines.insert(next(i for i, x in enumerate(lines) if x.startswith("- L")), f"- L{first} Notes")
+    f.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    code, out = run("toc", str(f))
+    assert code == 0 and out["entries"] == 2, out
+    lines = f.read_text(encoding="utf-8").splitlines()
+    starts = [int(x.split()[1][1:].split("-")[0]) for x in lines if x.startswith("- L")]
+    assert [lines[a - 1] for a in starts] == ["## Notes", "## B"]
