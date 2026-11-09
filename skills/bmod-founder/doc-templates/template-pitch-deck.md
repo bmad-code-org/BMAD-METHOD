@@ -1,14 +1,17 @@
 ---
 title: ""
 template: pitch-deck
-version: 1.0.0
+version: 1.1.0
 description: "A talk or pitch with a story and slides, given by a presenter."
 not_for: "An ask read without a presenter (`proposal`)."
+facilitation_order: [hook?, problem, why-now?, solution, how-it-works?, point?, traction?, market-and-model?, competition?, team?, ask]
+guidance: guidance-planning
 rubric: rubric-proposal.md
 status: draft
 created: ""
 updated: ""
 view: slides
+html_view: always
 ---
 
 <!-- purpose: A story in slides that moves an audience to one decision: invest, adopt, change how they work. -->
@@ -30,13 +33,13 @@ view: slides
 <!-- include when: a talk. A question, story or fact that puts the audience in the problem. -->
 
 ## Problem
-<!-- required. Whose pain, how it is handled today, and where that falls short. -->
+<!-- Whose pain, how it is handled today, and where that falls short. -->
 
 ## Why now
 <!-- include when: a pitch, or timing is part of the argument. What changed to make it possible or urgent. -->
 
 ## Solution
-<!-- required. The insight and what it does differently; for a talk, the one idea. -->
+<!-- The insight and what it does differently; for a talk, the one idea. -->
 
 ## How it works
 <!-- optional. A demo or the mechanism in one picture. diagram: flowchart -->
@@ -57,4 +60,4 @@ view: slides
 <!-- include when: a pitch. Why these people win. -->
 
 ## Ask
-<!-- required. For a pitch, the amount and the milestones it reaches; for a talk, the one thing to do or remember. -->
+<!-- For a pitch, the amount and the milestones it reaches; for a talk, the one thing to do or remember. -->

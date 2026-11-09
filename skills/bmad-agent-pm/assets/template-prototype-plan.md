@@ -1,9 +1,11 @@
 ---
 title: ""
 template: prototype-plan
-version: 1.0.0
+version: 1.1.0
 description: "A quick build to test an idea, some options or a look and feel."
-not_for: "Committed work that needs requirements (`prd`, `prd-light`); measuring a change with real users (`experiment`); deciding whether and why to build (`brief`); one feature for a coding agent (`agent-spec`)."
+not_for: "Committed work that needs requirements (`prd`, `prd-light`); measuring a change with real users (`experiment`); writing down why to build (`brief`); one feature for a coding agent (`agent-spec`)."
+facilitation_order: [ask-and-goal, timebox?, where-to-build, platform-and-technology?, existing-ground-truth?, options-to-compare?, look-and-feel?, validation?, decisions?, build, outcome?]
+guidance: guidance-planning
 rubric: rubric-planning
 status: draft
 created: ""
@@ -27,13 +29,13 @@ updated: ""
 ## Table of Contents
 
 ## Ask and goal
-<!-- required. What to build, in the user's words; the one question it must answer; and the result that would make the user drop the idea, written before anything is built, because a bar set after the results flatters them. -->
+<!-- What to build, in the user's words; the one question it must answer; and the result that would make the user drop the idea, written before anything is built, because a bar set after the results flatters them. -->
 
 ## Timebox
 <!-- optional. How much time this is worth, and what happens when it runs out. -->
 
 ## Where to build
-<!-- required. The folder or repo, new or existing, and the branch. -->
+<!-- The folder or repo, new or existing, and the branch. -->
 
 ## Platform and technology
 <!-- include when: not obvious from where it is built, or the work is net new. Platform, stack and any starter project. -->
@@ -54,7 +56,7 @@ updated: ""
 <!-- include when: the conversation settled something the sections above do not. One line per decision with its reason, not a transcript. -->
 
 ## Build
-<!-- required. Opens by saying this is a prototype, to build autonomously with `bmad-build-auto` once the user agrees, stopping as little as possible. Then what it may fake or skip, and the review depth: `none` for a throwaway, `quick` otherwise. -->
+<!-- Opens by saying this is a prototype, to build autonomously with `bmad-build-auto` once the user agrees, stopping as little as possible. Then what it may fake or skip, and the review depth: `none` for a throwaway, `quick` otherwise. -->
 
 ## Outcome
 <!-- include when: the prototype has run; written through an Update. The verdict first (proven, disproven or conditional), what it taught, what was faked, the decision to keep, throw away or drop, and a line that the prototype's effort is not an estimate of the real build. -->

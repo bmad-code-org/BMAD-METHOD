@@ -80,10 +80,6 @@
     "should_trigger": false
   },
   {
-    "query": "write a one-page product brief for the booking app, I don't need a full PRD",
-    "should_trigger": true
-  },
-  {
     "query": "I'm not sure this product should exist at all, help me pressure-test it with a press release first",
     "should_trigger": false
   },
@@ -126,10 +122,6 @@
   {
     "query": "create a spec for the checkout epic so it's ready for stories",
     "should_trigger": false
-  },
-  {
-    "query": "our client needs a business requirements document signed before the vendor starts, can you write the BRD?",
-    "should_trigger": true
   },
   {
     "query": "plan an experiment to see whether a shorter signup form lifts activation",

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-field="title">Pitch</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #eef0f2; --paper: #ffffff; --ink: #1b1f24; --muted: #5d6670; --rule: #d9dee3;
+  --accent: #1f5f8b; --badge: #fff4d6; --badge-rule: #e0b84a; --hole: #fdf0ef; --hole-rule: #c8564b; --nogo: #f2f4f6;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--page); }
+body { margin: 0; padding: 2rem 1rem 3rem; font: 16px/1.6 var(--sans); color: var(--ink); }
+main { max-width: 52rem; margin: 0 auto; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 0.25rem 1.5rem rgb(0 0 0 / 6%); padding: 2.25rem 2.5rem 2.5rem; }
+header { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: flex-start; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 2px solid var(--ink); }
+.kicker { margin: 0 0 0.3rem; font: 700 0.72rem/1.2 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+h1 { margin: 0; font: 700 2rem/1.15 var(--sans); letter-spacing: -0.01em; }
+.meta { margin: 0.4rem 0 0; font-size: 0.85rem; color: var(--muted); }
+.meta span + span::before { content: " · "; }
+.appetite { flex: 0 1 16rem; padding: 0.75rem 1rem; background: var(--badge); border: 1px solid var(--badge-rule); border-radius: 0.35rem; font-size: 0.9rem; }
+.appetite h2 { margin: 0 0 0.25rem; font: 700 0.7rem/1.2 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: #8a6510; }
+.appetite p { margin: 0 0 0.4rem; }
+.appetite p:first-child strong { display: block; font-size: 1.25rem; line-height: 1.3; }
+.appetite > div > :last-child > :last-child { margin-bottom: 0; }
+section { margin-top: 1.75rem; }
+section > h2 { margin: 0 0 0.6rem; font: 700 0.78rem/1.2 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.story { font: 1.08rem/1.6 var(--serif); }
+.story p { margin: 0 0 0.9rem; }
+.solution p, .solution ul, .solution ol { margin: 0 0 0.9rem; }
+.solution h3 { margin: 1.1rem 0 0.35rem; font-size: 1rem; }
+.mermaid, .solution svg { max-width: 100%; }
+.limits { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.75rem; }
+.limits section { margin: 0; padding: 1rem 1.15rem; border-radius: 0.35rem; }
+.holes { background: var(--hole); border-left: 4px solid var(--hole-rule); }
+.holes > h2 { color: #9b3a31; }
+.nogos { background: var(--nogo); border-left: 4px solid var(--muted); }
+.nogos > h2 { color: var(--muted); }
+.limits ul, .limits ol { margin: 0; padding-left: 1.2rem; }
+.limits li { margin-bottom: 0.5rem; }
+.limits li:last-child { margin-bottom: 0; }
+.limits p { margin: 0 0 0.6rem; }
+.rest { margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); font-size: 0.95rem; }
+.rest h2 { margin: 0 0 0.6rem; font: 700 0.78rem/1.2 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+table { width: 100%; border-collapse: collapse; margin: 0 0 1rem; font-size: 0.88rem; }
+th, td { padding: 0.35rem 0.5rem; border: 1px solid var(--rule); text-align: left; vertical-align: top; }
+pre { white-space: pre-wrap; font: 0.9rem/1.5 var(--sans); margin: 0; }
+a { color: var(--accent); }
+@media (max-width: 40rem) {
+  body { padding: 1rem 0.75rem 2rem; }
+  main { padding: 1.5rem 1.25rem; }
+  h1 { font-size: 1.6rem; }
+  .appetite { flex-basis: 100%; }
+  .limits { grid-template-columns: minmax(0, 1fr); }
+}
+@media print {
+  html { background: none; }
+  body { padding: 0; }
+  main { border: 0; box-shadow: none; padding: 0; max-width: none; }
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <p class="kicker">Pitch</p>
+      <h1 data-field="title"></h1>
+      <p class="meta"><span data-field="updated"></span><span data-field="status"></span></p>
+    </div>
+    <aside class="appetite" data-section="Appetite"><h2>Appetite</h2><div data-body></div></aside>
+  </header>
+  <section class="story" data-section="Problem"><h2>Problem</h2><div data-body></div></section>
+  <section class="solution" data-section="Solution"><h2>Solution</h2><div data-body></div></section>
+  <div class="limits">
+    <section class="holes" data-section="Rabbit holes"><h2>Rabbit holes</h2><div data-body></div></section>
+    <section class="nogos" data-section="No-gos"><h2>No-gos</h2><div data-body></div></section>
+  </div>
+  <section class="rest" data-rest></section>
+</main>
+</body>
+</html>

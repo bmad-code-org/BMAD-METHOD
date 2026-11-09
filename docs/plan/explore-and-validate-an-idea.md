@@ -49,7 +49,7 @@ deciding. Sessions can be paused and resumed.
 
 You get an HTML record of the session, and a short `brainstorm-<topic>.md`
 holding only the chosen discoveries, shaped to feed Sofia, the Product Owner
-(`bmad-agent-po`), or John, the Product Manager (`bmad-agent-pm`), for a brief or a PRD.
+(`bmad-agent-po`), Mary, the Business Analyst (`bmad-agent-analyst`), for a brief, or John, the Product Manager (`bmad-agent-pm`), for a PRD.
 
 ## Pressure-Test an Idea with Forge Idea
 
@@ -99,7 +99,7 @@ and each is a valid result:
 | **Clearer**  | You understand the idea better, but there is nothing to hand off. The session log is the record.                                             |
 
 `forge-<slug>.md` should be short enough to feed Sofia, John, or
-`bmad-prfaq`. If it reads like a document, it is too long.
+Mary's PRFAQ. If it reads like a document, it is too long.
 
 :::note[Example]
 **You:** "I want AI-generated weekly summaries in the app. Users get a digest email every Monday."

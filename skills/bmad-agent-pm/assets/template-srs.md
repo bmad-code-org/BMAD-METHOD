@@ -1,9 +1,11 @@
 ---
 title: ""
 template: srs
-version: 1.0.0
+version: 1.1.0
 description: "Traceable, verifiable requirements for regulated or contracted work."
 not_for: "Product work with no external check (`prd`); what the business requires, before system behavior (`brd`); one feature for a coding agent (`agent-spec`)."
+facilitation_order: [introduction, definitions, references, overall-description, functional-requirements, interface-requirements?, quality-requirements, compliance-requirements?, design-constraints?, verification, open-questions, revision-history]
+guidance: guidance-planning
 rubric: rubric-planning
 status: draft
 created: ""
@@ -25,25 +27,25 @@ updated: ""
 ## Table of Contents
 
 ## Introduction
-<!-- required. Purpose, scope (what the system does and does not do), intended readers. -->
+<!-- Purpose, scope (what the system does and does not do), intended readers. -->
 
 ## Definitions
-<!-- required. Terms, acronyms and abbreviations. -->
+<!-- Terms, acronyms and abbreviations. -->
 
 ## References
-<!-- required. Every regulation, standard, contract and document cited, with the version or date as supplied. -->
+<!-- Every regulation, standard, contract and document cited, with the version or date as supplied. -->
 
 ## Overall description
-<!-- required. Context and boundaries, functions in summary, user classes, constraints, assumptions and dependencies. diagram: flowchart -->
+<!-- Context and boundaries, functions in summary, user classes, constraints, assumptions and dependencies. diagram: flowchart -->
 
 ## Functional requirements
-<!-- required. What the system shall do. -->
+<!-- What the system shall do. -->
 
 ## Interface requirements
 <!-- include when: the system exchanges data with users, hardware, software or networks. -->
 
 ## Quality requirements
-<!-- required. Performance, reliability, security, safety, usability, each with a measurable bound from the user or a source. -->
+<!-- Performance, reliability, security, safety, usability, each with a measurable bound from the user or a source. -->
 
 ## Compliance requirements
 <!-- include when: a regulation, standard or contract clause applies. Each traced to its clause. -->
@@ -52,10 +54,10 @@ updated: ""
 <!-- include when: a standard, platform or prior decision limits the design. -->
 
 ## Verification
-<!-- required. How the baseline is verified: environments, evidence kept, who accepts it. -->
+<!-- How the baseline is verified: environments, evidence kept, who accepts it. -->
 
 ## Open questions
-<!-- required. Each with what would resolve it. -->
+<!-- Each with what would resolve it. -->
 
 ## Revision history
-<!-- required. Version, date, change, approver. -->
+<!-- Version, date, change, approver. -->

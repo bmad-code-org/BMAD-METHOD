@@ -32,7 +32,7 @@ Both work. In an existing codebase, a prototype on a branch shows how a change s
 
 Ask the user to decide this on purpose. The outcome to avoid is a prototype that becomes the real product with nobody deciding it should, and with no spec.
 
-- **Throw it away.** The prototype was research. Have the user note what it taught them: what worked, what surprised them, what users said, what they would do differently. Talk to Sofia the Product Owner to write the initiative from those notes, and the prototype itself if useful, or ask John the Product Manager for a brief first when the picture is still loose. Then build cleanly, one story at a time. This is the usual choice in an enterprise codebase and whenever a non-engineer built the prototype.
+- **Throw it away.** The prototype was research. Have the user note what it taught them: what worked, what surprised them, what users said, what they would do differently. Talk to Sofia the Product Owner to write the initiative from those notes, and the prototype itself if useful, or ask Mary the Business Analyst for a brief first when the picture is still loose. Then build cleanly, one story at a time. This is the usual choice in an enterprise codebase and whenever a non-engineer built the prototype.
 - **Keep it.** Treat it as an existing codebase (see `help/existing-codebase.md`): `bmad-project-context` to record the rules agents must follow, talk to Sofia the Product Owner to write the initiative from the prototype, then `bmad-architecture` to ratify the decisions worth keeping and name what is still open, adopted into the initiative before she slices the rest of the work.
 - **Drop the idea.** The prototype showed it is not worth doing. Nothing more is needed.
 
@@ -42,4 +42,4 @@ A first version is rarely where a project goes wrong. Trouble starts several ses
 
 ## A prototype and the analysis skills
 
-A prototype answers questions by building. `bmad-prfaq` answers them by arguing the concept and researching the market claims. They complement each other: a prototype shows whether people want the thing and whether it can be built, and the PRFAQ tests whether the business case holds. When the stakes are high, the prototype's findings make the PRFAQ, the brief, or the PRD sharper.
+A prototype answers questions by building. A PRFAQ from Mary (`bmad-agent-analyst`) answers them by arguing the concept and researching the market claims. They complement each other: a prototype shows whether people want the thing and whether it can be built, and the PRFAQ tests whether the business case holds. When the stakes are high, the prototype's findings make the PRFAQ, the brief, or the PRD sharper.

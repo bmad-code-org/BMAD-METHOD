@@ -1,9 +1,11 @@
 ---
 title: ""
 template: business-case
-version: 1.0.0
+version: 1.1.0
 description: "Funding approval: cost, expected return, go or no-go."
 not_for: "Whether the problem is worth pursuing (`opportunity`); one mandate over several initiatives (`charter`); requirements to build from (`prd`)."
+facilitation_order: [sponsors, hypothesis, business-outcomes, leading-indicators, background?, scope, nonfunctional-requirements?, mvp-and-what-follows, cost, return, recommendation]
+guidance: guidance-planning
 rubric: rubric-planning
 status: draft
 created: ""
@@ -25,34 +27,34 @@ updated: ""
 ## Table of Contents
 
 ## Sponsors
-<!-- required. Who funds the work and who owns it. -->
+<!-- Who funds the work and who owns it. -->
 
 ## Hypothesis
-<!-- required. For whom, what need, what this is, the benefit, and the alternative it beats. -->
+<!-- For whom, what need, what this is, the benefit, and the alternative it beats. -->
 
 ## Business outcomes
-<!-- required. The measurable results expected if the hypothesis holds. -->
+<!-- The measurable results expected if the hypothesis holds. -->
 
 ## Leading indicators
-<!-- required. Early signals of whether the outcomes are on track. Ask what reading would make the sponsor stop funding it, and write that down. -->
+<!-- Early signals of whether the outcomes are on track. Ask what reading would make the sponsor stop funding it, and write that down. -->
 
 ## Background
 <!-- optional. Context and analysis the decision rests on. -->
 
 ## Scope
-<!-- required. What is in and what is out. -->
+<!-- What is in and what is out. -->
 
 ## Nonfunctional requirements
 <!-- include when: performance, security, compliance or similar constraints change the cost or the risk. -->
 
 ## MVP and what follows
-<!-- required. The smallest version that tests the hypothesis, and the features it may lead to. When the plan spends more than the hypothesis needs before anyone learns whether it holds, say so, name what could wait, and make the case for funding the test first. The user decides. -->
+<!-- The smallest version that tests the hypothesis, and the features it may lead to. When the plan spends more than the hypothesis needs before anyone learns whether it holds, say so, name what could wait, and make the case for funding the test first. The user decides. -->
 
 ## Cost
-<!-- required. MVP cost and total cost, each with its basis, and whether the work is built in house or bought. -->
+<!-- MVP cost and total cost, each with its basis, and whether the work is built in house or bought. -->
 
 ## Return
-<!-- required. The kind of return and its expected size, with its basis. -->
+<!-- The kind of return and its expected size, with its basis. -->
 
 ## Recommendation
-<!-- required. Go or no-go, and the reason. -->
+<!-- Go or no-go, and the reason. -->

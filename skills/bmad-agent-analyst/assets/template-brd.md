@@ -1,10 +1,11 @@
 ---
 title: ""
 template: brd
-version: 1.0.0
+version: 1.1.0
 description: "What the business requires and signs for, when the builder is a separate party."
 not_for: "Product work inside one organization (`opportunity`, `prd`); a funding decision (`business-case`); what the system shall do, line by line (`srs`)."
-agents: [bmad-agent-pm, bmad-agent-analyst]
+facilitation_order: [objectives, stakeholders, scope, current-and-future-process, business-requirements, business-rules, constraints-and-assumptions?, cost-and-benefit?, traceability, open-questions, summary, approval]
+guidance: guidance-planning
 rubric: rubric-planning
 status: draft
 created: ""
@@ -28,25 +29,25 @@ updated: ""
 ## Table of Contents
 
 ## Summary
-<!-- required. What the business wants changed, for whom, and why now, in a short paragraph. -->
+<!-- What the business wants changed, for whom, and why now, in a short paragraph. -->
 
 ## Objectives
-<!-- required. The measurable outcomes this serves, short, citing the business case or charter when one exists. -->
+<!-- The measurable outcomes this serves, short, citing the business case or charter when one exists. -->
 
 ## Stakeholders
-<!-- required. Who asks, who owns the outcome, who approves, who is affected. -->
+<!-- Who asks, who owns the outcome, who approves, who is affected. -->
 
 ## Scope
-<!-- required. In and out, each explicit. -->
+<!-- In and out, each explicit. -->
 
 ## Current and future process
-<!-- required. How the work runs today and how it should run after, in business terms. diagram: flowchart -->
+<!-- How the work runs today and how it should run after, in business terms. diagram: flowchart -->
 
 ## Business requirements
-<!-- required. A table: BR-N, the requirement as an outcome, owner, source, priority, how it will be verified. When everything comes back as a must, ask what the business would give up first, and rank from that answer. -->
+<!-- A table: BR-N, the requirement as an outcome, owner, source, priority, how it will be verified. When everything comes back as a must, ask what the business would give up first, and rank from that answer. -->
 
 ## Business rules
-<!-- required. RULE-N, kept apart from requirements: each rule states what must hold or how a term is defined, with its owner and source. Use a decision table where the logic is dense. -->
+<!-- RULE-N, kept apart from requirements: each rule states what must hold or how a term is defined, with its owner and source. Use a decision table where the logic is dense. -->
 
 ## Constraints and assumptions
 <!-- optional. Limits the business sets on budget, dates, policy or suppliers, and what is assumed true. -->
@@ -55,10 +56,10 @@ updated: ""
 <!-- include when: no business case exists. Rough cost, expected benefit and who bears each. -->
 
 ## Traceability
-<!-- required. A table: BR-N, then empty columns for the `prd` or `srs` line, the test and the ticket, which later documents fill in. -->
+<!-- A table: BR-N, then empty columns for the `prd` or `srs` line, the test and the ticket, which later documents fill in. -->
 
 ## Open questions
-<!-- required. Each with an owner and what it blocks. -->
+<!-- Each with an owner and what it blocks. -->
 
 ## Approval
-<!-- required. A table of names, roles, decision and date. The user supplies each name; a blank row means not yet approved. -->
+<!-- A table of names, roles, decision and date. The user supplies each name; a blank row means not yet approved. -->
