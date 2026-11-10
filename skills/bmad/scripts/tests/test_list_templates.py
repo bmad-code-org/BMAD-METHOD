@@ -239,6 +239,11 @@ def test_only_module_records_count(tmp_path):
     assert list_templates.module_libraries([str(tmp_path)]) == [str(tmp_path / "bmod-x" / "doc-templates")]
 
 
+def test_a_module_grouped_in_its_own_folder_is_found(tmp_path):
+    module(tmp_path / "founder", "bmod-x", ("t.md", template("a")))
+    assert list_templates.module_libraries([str(tmp_path)]) == [str(tmp_path / "founder" / "bmod-x" / "doc-templates")]
+
+
 def test_a_module_in_two_linked_roots_is_read_once(tmp_path):
     real = tmp_path / "real"
     module(real, "bmod-x", ("t.md", template("a")))

@@ -6,13 +6,15 @@ One folder that is both a module record and the module's only skill. It is the d
 
 The execution plan names one skill and nothing else ships with it, whether or not it has anything to ask. Only a user who wants no record, or a project with no `_bmad/`, makes it a plain skill instead.
 
-A later second skill turns this into `shapes/multi-skill-module/shape.md`: the record moves to a `bmod-<code>/` folder and this `bmod.toml` keeps only `[skill]`.
+A later second skill turns this into `shapes/multi-skill-module/shape.md`: the record moves to a `bmod-<code>/` folder with `help/`, `roster.toml` and `doc-templates/`, and this `bmod.toml` keeps only `[skill]`.
 
 ## Files
 
 - `bmod.toml` from `assets/bmod-template.toml`: `[bmod]` and an empty `[skill]` in one file, both install messages empty when unused. A skill with nothing to ask drops the `[[bmod.config_questions]]` block.
 - `SKILL.md` and the rest of the skill from the skill shape the execution plan chose.
 - `help/help.md` from `assets/help-template.md`: what the skill gives the user, written for the `bmad` help agent.
+- `roster.toml` from `shapes/multi-skill-module/assets/roster-template.toml`, only when the skill is an agent.
+- `doc-templates/`, only when the skill ships document templates for `bmad-facilitate`.
 
 ## Rules
 

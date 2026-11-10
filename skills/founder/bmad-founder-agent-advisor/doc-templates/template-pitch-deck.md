@@ -7,10 +7,10 @@ not_for: "An ask read without a presenter (`proposal`)."
 facilitation_order: [hook?, problem, why-now?, solution, how-it-works?, point?, traction?, market-and-model?, competition?, team?, ask]
 guidance: guidance-planning
 rubric: rubric-proposal.md
+agents: [bmad-founder-agent-advisor]
 status: draft
 created: ""
 updated: ""
-view: slides
 html_view: always
 ---
 
@@ -23,6 +23,8 @@ html_view: always
 <!-- writing: Each `##` section after the table of contents is one slide unless its comment says it repeats: a bold headline stating its point as a sentence, a few short lines or one diagram, then speaker notes in a blockquote. One idea per slide. The headline is the slide's title on screen; section names never show. The notes fit the time slot. -->
 
 <!-- done when: The headlines read in order tell the whole story, the speaker notes fill the time slot, and the last slide says what the audience should do. -->
+
+<!-- view: The deck is the deliverable: a designed slide deck written for this talk or pitch, not text on cards. Give each slide the treatment that lands its point fastest: a hero number for traction, a chart from the slide's figures, a before and after for the problem, the bottom-up market as nested rings, faces or initials for the team, the amount and what it buys for the ask. Images where they carry the point. Arrow keys and click to move, each slide's blockquote as speaker notes on a key, one slide per page in print. The company's colours and fonts when the document names them; otherwise a look that fits its market. -->
 
 # {title}
 <!-- required. The title slide: speaker and the one idea in a sentence. -->
