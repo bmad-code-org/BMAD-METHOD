@@ -266,7 +266,7 @@ def _resolve_short_config(central: dict[str, Any], key: str, project_root: Path)
     matches = _find_config_values(central, key)
     if not matches:
         raise RenderError(f"missing config value `{key}`")
-    if len(matches) > 1:
+    if len({(type(value), value) for _, value in matches}) > 1:
         paths = ", ".join(path for path, _ in matches)
         raise RenderError(f"ambiguous config value `{key}` found at: {paths}")
     path, value = matches[0]
