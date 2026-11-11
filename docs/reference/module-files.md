@@ -76,7 +76,7 @@ A plain name is a skill from the same source. A table names a skill from elsewhe
 ```toml
 required_skills = [
   "acme-release-notes",
-  { skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills" },
+  { skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
 ]
 ```
 
@@ -92,7 +92,7 @@ code = "acme"
 version = "1.0.0"
 update_source = "github:acme/skills/skills"
 skills = ["acme-release-notes", "acme-agent-scout"]
-required_skills = [{ skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills" }]
+required_skills = [{ skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" }]
 pre_install_message = ""
 post_install_message = ""
 
@@ -117,7 +117,7 @@ A single-skill module:
 code = "acme"
 version = "0.1.0"
 update_source = "github:acme/acme-release-notes/skills"
-required_skills = [{ skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills" }]
+required_skills = [{ skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" }]
 pre_install_message = ""
 post_install_message = ""
 

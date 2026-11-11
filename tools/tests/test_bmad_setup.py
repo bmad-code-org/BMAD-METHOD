@@ -14,7 +14,7 @@ from unittest import mock
 from helpers import chmod
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SETUP_PY = REPO_ROOT / "skills" / "bmad" / "scripts" / "setup.py"
+SETUP_PY = REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts" / "setup.py"
 BMAD_SOURCE = "github:bmad-code-org/BMAD-METHOD/skills"
 SHARED_SCRIPTS = (
     "config_utils.py",
@@ -67,7 +67,7 @@ def write_dest_bmad(
     shutil.copy2(SETUP_PY, dest_setup)
     if scripts:
         for name in SHARED_SCRIPTS:
-            source = REPO_ROOT / "skills" / "bmad" / "scripts" / name
+            source = REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts" / name
             shutil.copy2(source, bmad_dir / "scripts" / name)
     if assets and config is not None:
         write(bmad_dir / "assets" / "config.template.toml", config)
@@ -333,7 +333,7 @@ class BmadSetupTests(unittest.TestCase):
             self.assertIn("not found", result.stderr.lower())
             self.assertIn("config.toml", result.stderr)
 
-            sys.path.insert(0, str(REPO_ROOT / "skills" / "bmad" / "scripts"))
+            sys.path.insert(0, str(REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts"))
             try:
                 from config_utils import ConfigError, load_central_config
             finally:

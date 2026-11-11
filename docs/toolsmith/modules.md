@@ -84,7 +84,7 @@ Use `required_skills` for a skill yours invokes, and `recommended_skills` for on
 
 Two different things are often called this.
 
-- **Contribute to the method.** Open a pull request to the BMAD-METHOD repository. The skill lives under `skills/`, takes a `bmad-` name, and its `bmod.toml` names `bmod-method`.
+- **Contribute to the method.** Open a pull request to the BMAD-METHOD repository. The skill lives under `skills/method/`, takes a `bmad-` name, and its `bmod.toml` names `bmod-method`.
 - **Extend the method in your project.** Make your own module with your own prefix, whose skills require or recommend the method skills they build on. Do not edit the installed method record, because the next update overwrites it.
 
 Build any change to an installed module in its source repository for the same reason.

@@ -1,0 +1,4 @@
+[skill]
+bmod = "bmod-core-tools"
+source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools"
+scripts = ["scripts/pick_methods.py"]

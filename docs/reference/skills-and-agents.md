@@ -216,6 +216,6 @@ Every skill shipped by the bmad-code-org uses the `bmad-` prefix followed by a d
 
 **Skills not appearing after install.** Some platforms require skills to be enabled in settings. Check your tool's documentation, then restart it or reload the window.
 
-**Expected skills are missing.** The skills CLI installs only the skills you named. Run `npx skills add bmad-code-org/BMAD-METHOD` again with the missing `--skill` entries, then `bmad setup`, and check that the skill directories exist.
+**Expected skills are missing.** The skills CLI installs only the skills you named. Run the module's install again, for example `npx skills add bmad-code-org/BMAD-METHOD/skills/method --skill '*'`, or add the missing ones by name with `--skill`, then `bmad setup`, and check that the skill directories exist.
 
 **Skills from a removed module still appear.** The installer does not delete old skill directories. Remove the stale directories, or delete the whole skills directory and re-run the installer for a clean set.

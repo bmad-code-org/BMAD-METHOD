@@ -14,7 +14,7 @@ A skill is a folder with a `SKILL.md` file. Your coding tool reads the descripti
 Toolsmith installs from the BMAD-METHOD repository. If you do not have BMad yet, start with [Install BMad](../start/install-bmad.md). Then add the module from your project folder:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD --skill bmad-toolsmith --skill bmad-eval --skill bmod-toolsmith
+npx skills add bmad-code-org/BMAD-METHOD/skills/toolsmith --skill '*'
 ```
 
 Ask the `bmad` skill to run `bmad setup toolsmith`. The module asks no setup questions.

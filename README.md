@@ -31,34 +31,29 @@ Open your project in your AI coding tool, invoke `bmad-build` with what you want
 
 Expect breaking changes between updates. You need an AI coding tool that supports skills.
 
-**Skills CLI** — with [Node.js and npm](https://nodejs.org) and Git, run in your project:
+With [Node.js and npm](https://nodejs.org) and Git, run in your project to install core tools and BMad Method:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD --skill '*'
+npx skills add bmad-code-org/BMAD-METHOD/skills/core-tools --skill '*'
+npx skills add bmad-code-org/BMAD-METHOD/skills/method --skill '*'
 ```
 
-`--skill '*'` installs the full BMad Method and asks which coding tools to install to. To pick skills instead, run the command without `--skill '*'` and include `bmad` for setup and help, plus the module record for each module you pick skills from: `bmod-method` and `bmod-core-tools`.
+Each command installs one module whole and asks which coding tools to install to. Core tools hold the `bmad` skill for setup and help, so every install needs them.
 
-**Claude Code plugin** — add the marketplace inside Claude Code:
+Optional modules install the same way:
 
-```text
-/plugin marketplace add bmad-code-org/bmad-plugins
-```
+| Module | What it adds | Install |
+| --- | --- | --- |
+| Toolsmith | Smithy builds, converts, reviews and packages skills, agents and modules; `bmad-eval` measures them | `npx skills add bmad-code-org/BMAD-METHOD/skills/toolsmith --skill '*'` |
+| Founder | Nadia the Founder Advisor coaches the business side of a startup, from idea and pricing to fundraising | `npx skills add bmad-code-org/BMAD-METHOD/skills/founder` |
 
-**Codex plugin** — add the marketplace from your terminal:
-
-```bash
-codex plugin marketplace add bmad-code-org/bmad-plugins
-```
-
-For either marketplace, install `bmad-method` for the delivery workflows and
-`bmad-core-tools` for standalone skills, including the `bmad` hub.
+To pick single skills instead, run `npx skills add bmad-code-org/BMAD-METHOD` and include `bmad` plus the record of each module you take skills from, such as `bmod-core-tools` and `bmod-method`.
 
 Open your coding tool in the project and ask the `bmad` skill to run
 `bmad setup`. Then invoke `bmad-build` with what you want to change. Ask
 `bmad` whenever you want guidance on what comes next or what is optional.
 
-Ask for `bmad status` to check versions and see what to run next. Ask for `bmad setup` to install updates: it runs `npx skills update`, then refreshes the project and cleans up renamed and removed skills. With a plugin marketplace, update there, then ask for `bmad setup`.
+Ask for `bmad status` to check versions and see what to run next. Ask for `bmad setup` to install updates: it runs `npx skills update`, then refreshes the project and cleans up renamed and removed skills.
 
 Report preview problems in [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) or on [Discord](https://discord.gg/gk8jAdXWmj).
 
