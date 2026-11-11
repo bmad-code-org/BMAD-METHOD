@@ -209,6 +209,13 @@ class ModuleFolderTests(ValidatorCase):
         write(self.skills / "founder" / "bmad-founder-agent-advisor" / "bmod.toml", SKILL.format(bmod="bmod-founder"))
         self.assertIn("skills/founder/bmad-founder-agent-advisor/bmod.toml: [skill] source", self.problems())
 
+    def test_a_grouped_record_without_skill_md_is_reported(self):
+        write(
+            self.skills / "founder" / "bmod-extra" / "bmod.toml",
+            f'[bmod]\ncode = "extra"\nversion = "6.11.0-next"\nupdate_source = "{SOURCE}"\n{MESSAGES}',
+        )
+        self.assertIn("skills/founder/bmod-extra: a module record folder must ship SKILL.md", self.problems())
+
     def test_two_skills_of_one_name_are_a_problem(self):
         write(self.skills / "founder" / "bmad-build" / "SKILL.md", "# skill\n")
         self.assertIn("skills/founder/bmad-build: skills/bmad-build ships a skill of the same name", self.problems())

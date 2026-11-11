@@ -94,6 +94,21 @@ def test_cost_growth_shortens_runway():
     assert growing["months_of_runway"] < flat["months_of_runway"]
 
 
+def test_profit_that_costs_outgrow_is_not_breakeven():
+    # Revenue equals costs in month 1, but costs grow 10% a month and revenue does not.
+    result = founder_numbers.runway(cash=100000, costs=10000, revenue=10000, cost_growth=10)
+    assert result["default_alive"] is False
+    assert result["breakeven_month_index"] is None
+    assert result["months_of_runway"] > 1
+    assert any("profit does not last" in a for a in result["assumptions"])
+
+
+def test_breakeven_with_matching_growth_is_default_alive():
+    result = founder_numbers.runway(cash=100000, costs=10000, revenue=10000, revenue_growth=5, cost_growth=5)
+    assert result["default_alive"] is True
+    assert result["breakeven_month_index"] == 1
+
+
 def test_scenarios_listed_with_base_first(capsys):
     result = run(
         capsys, "runway", "--cash", "120000", "--costs", "10000",

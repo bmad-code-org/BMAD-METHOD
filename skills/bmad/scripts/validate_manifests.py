@@ -69,12 +69,18 @@ def place(name: str) -> str:
 
 
 def skill_folders(skills_dir: Path) -> tuple[dict[str, Path], list[str]]:
-    """Each skill folder by name. A folder without SKILL.md whose subfolders have one groups a module's skills."""
+    """Each skill folder by name. A folder with neither SKILL.md nor bmod.toml groups the skill folders inside it."""
     folders: dict[str, Path] = {}
     problems: list[str] = []
     for top in sorted(path for path in skills_dir.glob("*") if path.is_dir()):
-        grouped = [] if (top / "SKILL.md").exists() else [path for path in sorted(top.glob("*/SKILL.md"))]
-        for folder in [path.parent for path in grouped] or [top]:
+        marked = (top / "SKILL.md").exists() or (top / "bmod.toml").exists()
+        # A child with either marker is a skill, so one missing SKILL.md is reported, not skipped.
+        grouped = (
+            []
+            if marked
+            else [p for p in sorted(top.iterdir()) if (p / "SKILL.md").exists() or (p / "bmod.toml").exists()]
+        )
+        for folder in grouped or [top]:
             if folder.name in folders:
                 first = folders[folder.name].relative_to(skills_dir).as_posix()
                 problems.append(

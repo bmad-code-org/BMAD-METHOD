@@ -18,7 +18,8 @@ Subcommands:
     revenue) and `--revenue` current monthly revenue (default 0); month 1 uses them as given and the growth rates
     (default 0) apply from month 2. Net burn = costs - revenue, taken from cash each month.
     `--max-months` defaults to 60. The simulation stops at zero cash, at breakeven (revenue
-    reaches costs) or at max-months, whichever comes first.
+    reaches costs while growing at least as fast, so the profit lasts) or at max-months,
+    whichever comes first. A month in profit while costs grow faster is not breakeven.
     Output: months_of_runway (fractional, interpolated within the month cash crosses zero;
     null when cash does not run out within max-months), zero_cash_month (YYYY-MM, needs
     --start), default_alive (true when breakeven comes before cash runs out, false when cash
@@ -225,6 +226,7 @@ def runway(
     rows: list[dict] = []
     balance = cash
     runway_months = zero_index = breakeven = cash_at_breakeven = None
+    passing_profit = False
     for i in range(1, max_months + 1):
         rev = revenue * (1 + rg) ** (i - 1)
         cost = costs * (1 + cg) ** (i - 1)
@@ -241,9 +243,11 @@ def runway(
             }
         )
         if net <= 0:
-            breakeven, cash_at_breakeven = i, end
-            break
-        if end <= 0:
+            if rg >= cg:
+                breakeven, cash_at_breakeven = i, end
+                break
+            passing_profit = True
+        elif end <= 0:
             runway_months, zero_index = (i - 1) + balance / net, i
             break
         balance = end
@@ -256,6 +260,8 @@ def runway(
         assumptions.append("Cash runs down evenly within a month, so the final month is counted as a fraction.")
     if breakeven is not None:
         assumptions.append("After breakeven the company is taken to stay profitable, so runway is not counted past it.")
+    if passing_profit:
+        assumptions.append("Revenue covers costs in some months, but costs grow faster, so that profit does not last.")
     if runway_months is None and breakeven is None:
         assumptions.append(f"Neither zero cash nor breakeven happens within {max_months} months.")
 
