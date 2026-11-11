@@ -19,7 +19,7 @@ from test_bmad_setup import (
     write_skill,
 )
 
-MIGRATE_V6_PY = REPO_ROOT / "skills" / "bmad" / "scripts" / "migrate_v6.py"
+MIGRATE_V6_PY = REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts" / "migrate_v6.py"
 
 
 class MigrateV6Tests(unittest.TestCase):

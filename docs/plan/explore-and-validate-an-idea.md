@@ -49,7 +49,7 @@ deciding. Sessions can be paused and resumed.
 
 You get an HTML record of the session, and a short `brainstorm-<topic>.md`
 holding only the chosen discoveries, shaped to feed Sofia, the Product Owner
-(`bmad-agent-po`), `bmad-product-brief`, or `bmad-prd`.
+(`bmad-agent-po`), Mary, the Business Analyst (`bmad-agent-analyst`), for a brief, or John, the Product Manager (`bmad-agent-pm`), for a PRD.
 
 ## Pressure-Test an Idea with Forge Idea
 
@@ -98,8 +98,8 @@ and each is a valid result:
 | **Killed**   | The idea does not hold up. The report records why.                                                                                           |
 | **Clearer**  | You understand the idea better, but there is nothing to hand off. The session log is the record.                                             |
 
-`forge-<slug>.md` should be short enough to feed Sofia, `bmad-prd`, or
-`bmad-prfaq`. If it reads like a document, it is too long.
+`forge-<slug>.md` should be short enough to feed Sofia, John, or
+Mary's PRFAQ. If it reads like a document, it is too long.
 
 :::note[Example]
 **You:** "I want AI-generated weekly summaries in the app. Users get a digest email every Monday."
@@ -118,11 +118,11 @@ bet you could test with a plain email and no model at all.
 
 ## Improve a Draft
 
-Point `bmad-advanced-elicitation` at a recent piece of output (a section, a
-plan, a draft, a decision) and it offers a short menu of critique methods,
-such as pre-mortem, first principles, or red team, runs the ones you pick, and
-shows proposed changes for you to apply or reject. The brief, PRD, and UX
-skills offer it at their own pauses. See
+Point `bmad-advanced-elicitation` at a draft (a section, a plan, a decision,
+something you wrote) and it names where the draft is weak, runs critique
+methods such as pre-mortem, first principles, or steelman as independent
+readers, and shows one proposed revision for you to apply or reject. The
+brief, PRD, and UX skills remind you it is there at their own pauses. See
 [`bmad-advanced-elicitation`](../reference/skills-and-agents.md#bmad-advanced-elicitation).
 
 ## What Comes Next

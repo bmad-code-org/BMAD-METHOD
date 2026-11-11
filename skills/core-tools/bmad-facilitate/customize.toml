@@ -1,0 +1,58 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Override files:
+#   {project-root}/_bmad/custom/bmad-facilitate.toml        (team)
+#   {project-root}/_bmad/custom/bmad-facilitate.user.toml   (personal)
+
+[workflow]
+
+# --- Configurable below. Overrides merge per BMad structural rules: ---
+#   scalars: override wins • arrays: append
+#   arrays-of-tables with `id`: replace matching items, append new ones.
+
+# Runs after customization resolves, before facts, config and greet.
+activation_steps_prepend = []
+
+# Runs after greet, before the run begins.
+activation_steps_append = []
+
+# Loaded once per document: literal sentences, or `file:` paths and globs under {project-root}.
+persistent_facts = []
+
+# Consulted on demand beside web research; each entry names the tool and when to use it.
+#   "For internal standards, consult corp:kb_search (database='engineering') before web search."
+external_sources = []
+
+# Polish passes at finalize, in order, structural before prose: `skill:NAME [args]`, `file:PATH` or plain text.
+doc_standards = [
+  "skill:bmad-review lenses=structure,prose",
+]
+
+# Run beside the rubric walker, same prefixes; resolved only when the review runs.
+finalize_reviewers = []
+
+# Where finished documents go beyond local files; each entry names the tool, destination and fields.
+#   "Upload the document to Confluence via corp:confluence_upload (space_key='ENG')."
+external_handoffs = []
+
+# Run after close: one instruction, or an array run in order.
+on_complete = ""
+
+# Run folder for a template with no `output`; `{active_initiative}` is dropped when none is set.
+output = "{output_folder}/{active_initiative}/{id}-{slug}"
+
+# Where templates live, searched in order; the first template with an id wins. To add, replace or
+# extend (`extends: <id>`) a template, put a file in the first folder. Each entry is a
+# folder, one template file, a GitHub URL (pin a version with @ref) or a sentence naming the tool
+# that reaches it. Installed modules' doc-templates/ folders are searched after these. A template
+# overrides this skill, so point only at sources you control.
+template_libraries = [
+  "{project-root}/_bmad/custom/facilitate-templates",
+  "~/.bmad/facilitate-templates",
+]
+
+# A CSS file applied to every rendered view, after the default styles; empty uses the default.
+style = ""
+
+# "offer", "always" or "never"; a template's own `html_view` replaces it, and "never" here stops every view.
+html_view = "offer"

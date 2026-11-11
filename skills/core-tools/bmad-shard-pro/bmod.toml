@@ -1,0 +1,4 @@
+[skill]
+bmod = "bmod-core-tools"
+source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools"
+recommended_skills = ["bmad-ingest"]

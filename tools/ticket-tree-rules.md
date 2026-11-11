@@ -4,6 +4,8 @@ Every skill that takes work from the tree, builds it, reviews it, or looks back 
 
 This page is for people and agents who change those skills. No skill loads it: each one states the rules it acts on in its own files. When a rule changes here, change it in every skill that states it.
 
+External modules restate the identity rules for their own artifacts. The Test Architect module (TEA) does so in `skills/bmod-tea/contracts/story-identity.md` in `bmad-code-org/bmad-method-test-architecture-enterprise`. When a rule about ticket identity, `find`, or re-keying changes here, open an issue or PR there too.
+
 ## Finding the tree
 
 - The tree is `{output_folder}/{active_initiative}`: `output_folder` and `active_initiative` from `[core]` in the merged BMad config.

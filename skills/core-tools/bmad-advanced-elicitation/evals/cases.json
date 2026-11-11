@@ -1,0 +1,85 @@
+[
+  {
+    "id": "settled-plan",
+    "state_prefix": "[Earlier in this session you and the user wrote files/rollout-plan.md together. Along the way the user settled three things and you agreed: migrating tenant by tenant is final, because a single big-bang cutover was considered and rejected as too risky; Keyring is the vendor, chosen after comparing three providers, and is not up for debate; the budget is two engineers for six weeks and cannot grow.]",
+    "input": "ok now run advanced elicitation on the rollout plan. go with the methods you'd pick, don't wait for me to choose. show me the proposed revision and stop there, don't apply anything yet",
+    "rubric": [
+      "The final message presents a proposed revision as changed passages, each change tagged with the method or push that drove it.",
+      "The findings or revision identify that deleting the legacy password hashes on cutover day leaves no way to roll a tenant back, and propose a rollback path or delaying the deletion.",
+      "The findings or revision identify that 40 enterprise tenants, each needing its own SAML setup, in one week does not fit two engineers, and propose a change within the fixed budget (spreading the phase, reordering, or cutting scope) rather than adding engineers.",
+      "The findings or revision identify at least one of: users get no notice before their sessions are invalidated; the success criterion ('goes smoothly and customers are happy') cannot be measured.",
+      "No change in the proposed revision replaces tenant-by-tenant migration with a big-bang cutover, replaces Keyring with another vendor, or adds engineers or weeks; any objection to those appears only as a decision for the user, not as a change.",
+      "No Write or Edit in the transcript targets files/rollout-plan.md, and its content is unchanged."
+    ],
+    "files": [
+      "files/rollout-plan.md",
+      "_bmad/config.toml",
+      "_bmad/scripts/resolve_customization.py",
+      "_bmad/scripts/resolve_config.py",
+      "_bmad/scripts/roster.py",
+      "_bmad/scripts/config_utils.py",
+      "_bmad/scripts/knowledge.py"
+    ]
+  },
+  {
+    "id": "user-onepager",
+    "input": "I wrote this one-pager myself for a pitch next week: files/pantry-pal.md. advanced elicitation please, pick whatever methods you think fit and run them without asking me. just show the proposed revision, I'll decide what to take",
+    "rubric": [
+      "The final message presents a proposed revision as changed passages, each change tagged with the method or push that drove it.",
+      "The findings or revision identify that the stated user (busy parents who want dinner fast) conflicts with the feature set (chef-curated world recipes, cuisine explorer, videos, wine pairings).",
+      "The findings or revision identify at least two of: the 30% first-month conversion has no basis and is far above typical freemium rates; 'nothing else like Pantry Pal' is false because meal-planning apps already exist; twelve MVP features do not fit six weeks with one developer.",
+      "At least three findings name the specific section or line of the one-pager they refer to.",
+      "No Write or Edit in the transcript targets files/pantry-pal.md, and its content is unchanged."
+    ],
+    "files": [
+      "files/pantry-pal.md",
+      "_bmad/config.toml",
+      "_bmad/scripts/resolve_customization.py",
+      "_bmad/scripts/resolve_config.py",
+      "_bmad/scripts/roster.py",
+      "_bmad/scripts/config_utils.py",
+      "_bmad/scripts/knowledge.py"
+    ]
+  },
+  {
+    "id": "long-prd",
+    "input": "run advanced elicitation on files/prd-notifications.md, section 4 of our PRD. your call on methods, go straight to it. show the proposed revision only, nothing applied",
+    "rubric": [
+      "The final message presents a proposed revision as changed passages, each change tagged with the method or push that drove it.",
+      "The findings or revision identify that NFR-1 (delivery within 1 second at p99) contradicts the architecture note that batches sends every 5 minutes, and propose resolving it.",
+      "The findings or revision identify that FR-6 evaluates quiet hours in UTC instead of each user's own time zone.",
+      "The findings or revision identify at least one of: FR-4 ('must feel timely') cannot be tested; users have no way to turn off a channel or unsubscribe from email although all three are on by default; at-least-once delivery (NFR-3) conflicts with no duplicate emails.",
+      "The revision keeps the section's existing structure (4.1 to 4.8 headings and FR/NFR numbering) rather than rewriting it into a new layout.",
+      "No Write or Edit in the transcript targets files/prd-notifications.md, and its content is unchanged."
+    ],
+    "files": [
+      "files/prd-notifications.md",
+      "_bmad/config.toml",
+      "_bmad/scripts/resolve_customization.py",
+      "_bmad/scripts/resolve_config.py",
+      "_bmad/scripts/roster.py",
+      "_bmad/scripts/config_utils.py",
+      "_bmad/scripts/knowledge.py"
+    ]
+  },
+  {
+    "id": "named-premortem",
+    "input": "advanced elicitation, pre-mortem files/rollout-plan.md. show me what you'd change but don't apply it",
+    "rubric": [
+      "The transcript shows no message asking the user to choose methods or directions before the pre-mortem runs.",
+      "The pre-mortem output is written from after a failure: it describes the rollout as having already failed and explains why.",
+      "The findings or revision identify at least two of: deleting password hashes on cutover day removes any rollback; 40 enterprise SAML setups in one week does not fit two engineers; users get no notice before sessions are invalidated; Keyring outage handling relies only on the vendor SLA.",
+      "The final message presents a proposed revision as changed passages tagged with the pre-mortem.",
+      "No Write or Edit in the transcript targets files/rollout-plan.md, and its content is unchanged."
+    ],
+    "files": [
+      "files/rollout-plan.md",
+      "_bmad/config.toml",
+      "_bmad/scripts/resolve_customization.py",
+      "_bmad/scripts/resolve_config.py",
+      "_bmad/scripts/roster.py",
+      "_bmad/scripts/config_utils.py",
+      "_bmad/scripts/knowledge.py"
+    ]
+  }
+]

@@ -3,10 +3,10 @@ title: 'How to Install BMad'
 description: Install the stable BMad release or the preview skills, set up the project runtime, and verify or update it.
 ---
 
-Install BMad through the Skills CLI or your coding tool's plugin marketplace, then run `bmad setup` in the project.
+Install BMad through the Skills CLI, then run `bmad setup` in the project.
 
 :::caution[V7 Preview Alpha]
-This page installs v7 of BMad, which is in preview alpha. Its skills, install path, and documentation change often, and updates can break an existing setup. It is recommended for solo or small teams that can pivot as things will change before beta. The v7 release ETA is October 16, 2026, and it might be sooner. If you need stability until v7 is finalized for release, install v6.12 instead.
+This page installs v7 of BMad, which is in preview alpha. Its skills, install path, and documentation change often, and updates can break an existing setup. It is recommended for solo or small teams that can pivot as things will change before beta. The v7 release ETA is mid-November 2026, and it might be sooner. If you need stability until v7 is finalized for release, install v6.12 instead.
 :::
 
 ## Install the Stable Release
@@ -28,10 +28,13 @@ You need an AI coding tool that supports skills and [uv](https://docs.astral.sh/
 From your project directory, run:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD --skill '*'
+npx skills add bmad-code-org/BMAD-METHOD/skills/core-tools --skill '*'
+npx skills add bmad-code-org/BMAD-METHOD/skills/method --skill '*'
 ```
 
-`--skill '*'` installs the full BMad Method and asks which coding tools to install to. To choose skills instead, run the command without `--skill '*'` and select your coding tool and skills. Include `bmad` for setup and help, and the module records `bmod-core-tools` and `bmod-method` for the modules you use. To install a small set by name:
+Each module sits in its own folder of the repository, and each command installs one module whole, its record included. `--skill '*'` takes every skill in the folder; the Skills CLI still asks which coding tools to install to. Core tools hold the `bmad` skill for setup and help, so every install needs them. Add Toolsmith (`skills/toolsmith`) or Founder (`skills/founder`) the same way.
+
+To choose skills instead, run `npx skills add bmad-code-org/BMAD-METHOD` and select your coding tool and skills. Include `bmad` for setup and help, and the module records `bmod-core-tools` and `bmod-method` for the modules you use. To install a small set by name:
 
 ```bash
 npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build --skill bmad-agent-po
@@ -50,22 +53,6 @@ During install, the Skills CLI shows a Security Risk Assessments table from thre
 
 Skills run with your coding tool's permissions, so add only customizations you trust. The full report for each skill is on [skills.sh](https://skills.sh/bmad-code-org/BMAD-METHOD).
 
-## Install through a Plugin Marketplace
-
-As an alternative, add the marketplace inside Claude Code:
-
-```text
-/plugin marketplace add bmad-code-org/bmad-plugins
-```
-
-Or add it from your terminal for Codex:
-
-```bash
-codex plugin marketplace add bmad-code-org/bmad-plugins
-```
-
-Install `bmad-method` for delivery workflows and `bmad-core-tools` for standalone skills, including the `bmad` hub. Use one installation method for a given skill to avoid duplicate commands.
-
 ## Set Up and Verify
 
 Open the coding tool from the project folder and ask the `bmad` skill to run `bmad setup`. Setup installs the shared runtime and module scripts under `_bmad/`. Ask for `bmad status` to verify the installation and versions. Documents and tickets go to `_bmad-output`, inside the active initiative's folder when one is set; ask `bmad` to create or switch one.
@@ -76,7 +63,7 @@ Invoke `bmad-build` with the change you want, or ask `bmad` for guidance. For wo
 
 Ask the `bmad` skill to run `bmad setup` again. It checks each module's version and runs `npx skills update` for you when there is a newer one. Then it asks any new config questions, moves your `_bmad/custom/` files when a skill was renamed, and offers to delete skills a module renamed or removed. Last, it checks whether a migration applies and asks whether to run it.
 
-If you update by hand with `npx skills update`, run `bmad setup` afterwards. For plugins, use your marketplace's update flow, then `bmad setup`. Restart your coding tool when its skill catalog needs refreshing.
+If you update by hand with `npx skills update`, run `bmad setup` afterwards. Restart your coding tool when its skill catalog needs refreshing.
 
 ## What You Get
 

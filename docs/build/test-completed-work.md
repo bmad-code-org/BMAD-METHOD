@@ -1,15 +1,15 @@
 ---
 title: 'Test Completed Work'
-description: Choose a generate skill after implementation — simple coverage with bmad-qa-generate-e2e-tests, or heavier coverage with bmad-testarch-automate.
+description: Choose a test-generation skill after implementation. Use bmad-qa-generate-e2e-tests for simple coverage or bmad-tea-automate for heavier coverage.
 sidebar:
   order: 4
 ---
 
 After a change is implemented, decide whether it needs more automated
-coverage and which generate skill should produce it. Both
-`bmad-qa-generate-e2e-tests` and `bmad-testarch-automate` generate tests
+coverage and which test-generation skill should produce it. Both
+`bmad-qa-generate-e2e-tests` and `bmad-tea-automate` generate tests
 from code that already exists. The built-in skill stays simple. Automate
-is the heavier generate: fixtures, more test levels, and knowledge-base
+is the heavier test generation: fixtures, more test levels, and knowledge-base
 patterns. See [how the built-in skill runs](#run-bmad-qa-generate-e2e-tests).
 
 This is generated coverage of finished work. It is not code review, and it
@@ -17,21 +17,22 @@ is not the manual observations in [Walk Through a Change](walk-through-a-change.
 
 ## Which Path?
 
-| Factor | `bmad-qa-generate-e2e-tests` | `bmad-testarch-automate` |
+| Factor | `bmad-qa-generate-e2e-tests` | `bmad-tea-automate` |
 | --- | --- | --- |
 | **Best for** | Simple coverage of implemented features | Heavier coverage of the same kind of work |
-| **Setup** | Included with BMM | Install the TEA module |
+| **Setup** | Install the `bmad-qa-generate-e2e-tests` skill | Install the TEA module |
 | **Approach** | Generate from the code that exists | Same, standalone; optional test design improves the run |
 | **What it covers** | API and E2E; the main path and the errors a user can see | API, E2E, fixtures, more patterns; optional component tests |
 
 :::tip[Start with built-in QA]
 Most projects should start with `bmad-qa-generate-e2e-tests`. Use
-`bmad-testarch-automate` when you want the heavier generate of the same
+`bmad-tea-automate` when you want heavier test generation of the same
 kind of work.
 :::
 
-Other TEA skills — test design, trace, ATDD, test review, NFRs, and gates —
-are available. They are not the default generate path.
+Other TEA skills (test design, trace, test review, NFRs, and gates) and
+Automate's red mode for acceptance test-driven development (ATDD) are
+available. They are not the default test-generation path.
 
 ## Run `bmad-qa-generate-e2e-tests`
 
@@ -87,24 +88,24 @@ or a reason to use Automate.
 
 ## When to Use TEA
 
-Install the TEA module when you want `bmad-testarch-automate` — heavier
-generate of the same kind of work. Automate still generates from existing
-code and can run standalone.
+Install the TEA module when you want `bmad-tea-automate` for heavier
+test generation of the same kind of work. Automate still generates from
+existing code and can run standalone.
 
-`bmad-testarch-test-design` is optional before Automate. It improves the
+`bmad-tea-test-design` is optional before Automate. It improves the
 run; it is not a prerequisite.
 
-`bmad-testarch-trace` is optional after generation, to check coverage. It
-is not part of generate.
+`bmad-tea-trace` is optional after generation, to check coverage. It
+is not part of test generation.
 
-ATDD is for features that do not exist yet. Test review, NFR assessment,
+ATDD, Automate's red mode, is for features that do not exist yet. Test review, NFR assessment,
 and release gates are available when you need them. They are not required
 to generate tests.
 
 TEA is a separate module. Its current workflows, commands, and setup live
 in the [TEA documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/).
-Install it with the rest of BMad; see [Add Modules](../customize/add-modules.md)
-for how modules are selected.
+Add it with `npx skills add bmad-code-org/bmad-method-test-architecture-enterprise`
+and run `bmad setup tea`; see [Add Modules](../customize/add-modules.md).
 
 ## Where It Fits
 

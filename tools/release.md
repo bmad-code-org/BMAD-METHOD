@@ -4,7 +4,7 @@
 
 This is a hand-run process. It does not publish to npm; npm maintenance stays on `V6.12`. Use Git, `uv`, and the Node version in `docs-site/.nvmrc`. Pause other pushes and merges into `dev` until the next placeholder is pushed. Do the release in one sitting. Stop on any failed command or unexpected diff.
 
-The version lives in one place per module: the `version` line in the `[bmod]` table of `skills/bmod-method/bmod.toml`, `skills/bmod-core-tools/bmod.toml`, and `skills/bmod-toolsmith/bmod.toml`. The skills of a module carry no version. Every module record in this repository carries the same version, and the stamper writes them together.
+The version lives in one place per module: the `version` line in the `[bmod]` table of `skills/method/bmod-method/bmod.toml`, `skills/core-tools/bmod-core-tools/bmod.toml`, `skills/toolsmith/bmod-toolsmith/bmod.toml`, and `skills/founder/bmad-founder-agent-advisor/bmod.toml`. The skills of a module carry no version. Every module record in this repository carries the same version, and the stamper writes them together.
 
 ## 1. Prepare
 
@@ -20,27 +20,27 @@ git merge-base --is-ancestor origin/main dev
 
 bmad_release_version=6.13.0
 bmad_next_version=6.13.1-next
-git show origin/main:skills/bmod-core-tools/bmod.toml
+git show origin/main:skills/core-tools/bmod-core-tools/bmod.toml
 git tag --list "v$bmad_release_version"
 ```
 
 Choose the versions explicitly. The release must differ from what `main` serves and must not reuse a tag. Use SemVer, optionally with a prerelease; no `-dev` or build metadata (`+...`). The next placeholder is the next patch with `-next`. The stamper enforces the version syntax, not release history.
 
-`main` has no `skills/bmod-core-tools/bmod.toml` until the first release that ships module records. For that release, take the version `main` serves from the newest tag: `git tag --list 'v*' --sort=-v:refname | head -1`.
+Until `main` has the module folders, its record sits at `skills/bmod-core-tools/bmod.toml`; read that path instead for the first release after the move.
 
 ## 2. Stamp and push dev
 
 ```bash
-uv run --python 3.11 skills/bmad/scripts/stamp_release.py "$bmad_release_version"
+uv run --python 3.11 skills/core-tools/bmad/scripts/stamp_release.py "$bmad_release_version"
 git diff
-git add skills/*/bmod.toml
+git add -u skills
 git commit -m "chore(release): v$bmad_release_version"
 bmad_release_commit=$(git rev-parse HEAD)
 uv sync --frozen && (cd docs-site && npm ci) && uv run --frozen tools/quality.py
 git push origin dev
 ```
 
-Before it writes, the stamper runs the repository checks in `skills/bmad/scripts/validate_manifests.py`, the same ones the commit hook runs, and writes nothing if any of them fails. Review before committing: only the `[bmod]` version line in the two module records should change. Run the quality gate on committed `HEAD` in this checkout before pushing; keep that tested commit checked out through promotion/tagging. Wait for its required GitHub status checks to pass before promoting it.
+Before it writes, the stamper runs the repository checks in `skills/core-tools/bmad/scripts/validate_manifests.py`, the same ones the commit hook runs, and writes nothing if any of them fails. Review before committing: only the `[bmod]` version line in the two module records should change. Run the quality gate on committed `HEAD` in this checkout before pushing; keep that tested commit checked out through promotion/tagging. Wait for its required GitHub status checks to pass before promoting it.
 
 ## 3. Fast-forward main and tag
 
@@ -63,9 +63,9 @@ The tag identifies the same stamped commit on `dev` and `main`. Never force a pu
 ```bash
 git fetch origin
 test "$(git rev-parse origin/dev)" = "$bmad_release_commit"
-uv run --python 3.11 skills/bmad/scripts/stamp_release.py "$bmad_next_version"
+uv run --python 3.11 skills/core-tools/bmad/scripts/stamp_release.py "$bmad_next_version"
 git diff
-git add skills/*/bmod.toml
+git add -u skills
 git commit -m "chore: bump placeholder version to $bmad_next_version"
 uv sync --frozen && (cd docs-site && npm ci) && uv run --frozen tools/quality.py
 git push origin dev
@@ -81,7 +81,7 @@ An installed module checks `main` through `raw.githubusercontent.com`, which cac
 
 ## Module repositories
 
-The stamper and validator ship with the `bmad` skill in `skills/bmad/scripts/`, so a module repository keeps no copy. Both take `--project-root` and default to the current directory.
+The stamper and validator ship with the `bmad` skill in `skills/core-tools/bmad/scripts/`, so a module repository keeps no copy. Both take `--project-root` and default to the current directory.
 
 A module repository validates its `skills/*/bmod.toml` in CI with the Action at the root of this repository, pinned to a full commit SHA:
 
@@ -97,7 +97,7 @@ jobs:
 To stamp a release, run the stamper from a BMAD-METHOD checkout at that same SHA against the module repository:
 
 ```bash
-uv run --python 3.11 <bmad-method>/skills/bmad/scripts/stamp_release.py "$version" --project-root .
+uv run --python 3.11 <bmad-method>/skills/core-tools/bmad/scripts/stamp_release.py "$version" --project-root .
 ```
 
 `--check` in place of a version runs the same checks and writes nothing.
