@@ -98,4 +98,4 @@ When there are no gaps and no other findings, output exactly this single line:
 
 ## Content source
 
-"Review content:" in the message that launched you gives the content itself or a path to read it from. Read the file when it is a path; either way that is the content under review, and this instruction file never is. If no content is supplied, or it is empty or unreadable, stop with exactly: `No verification gaps found.`
+"Review content:" in the message that launched you gives the content itself or a path to read it from. Read the file when it is a path; either way that is the content under review, and this instruction file never is. If no content is supplied, or the file it points to is missing, empty, or unreadable, say exactly that and stop — never report a clean review for content you could not read.
