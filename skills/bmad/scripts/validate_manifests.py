@@ -2,7 +2,10 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Check every skills/*/bmod.toml against the runtime that has to read it.
+"""Check every bmod.toml under skills/ against the runtime that has to read it.
+
+A skill folder sits in skills/ or one level down, in a folder that groups a module's skills
+(skills/founder/bmad-founder-agent-advisor). Either way it installs flat, under its own name.
 
 This file owns the repository checks: pre-commit and CI run it, and stamp_release.py beside it imports
 `check_repo` and `stamp_text` from it. Keys and tables the runtime does not know are left alone.
@@ -18,7 +21,9 @@ import argparse
 import copy
 import importlib.util
 import re
+import shutil
 import sys
+import tempfile
 import tomllib
 from pathlib import Path, PurePosixPath
 from typing import NamedTuple
@@ -55,37 +60,70 @@ class RepoReport(NamedTuple):
     problems: tuple[str, ...]
 
 
+# Each shipped skill's folder relative to skills/, for messages. check_repo fills it.
+PLACES: dict[str, str] = {}
+
+
+def place(name: str) -> str:
+    return f"skills/{PLACES.get(name, name)}"
+
+
+def skill_folders(skills_dir: Path) -> tuple[dict[str, Path], list[str]]:
+    """Each skill folder by name. A folder with neither SKILL.md nor bmod.toml groups the skill folders inside it."""
+    folders: dict[str, Path] = {}
+    problems: list[str] = []
+    for top in sorted(path for path in skills_dir.glob("*") if path.is_dir()):
+        marked = (top / "SKILL.md").exists() or (top / "bmod.toml").exists()
+        # A child with either marker is a skill, so one missing SKILL.md is reported, not skipped.
+        grouped = (
+            []
+            if marked
+            else [p for p in sorted(top.iterdir()) if (p / "SKILL.md").exists() or (p / "bmod.toml").exists()]
+        )
+        for folder in grouped or [top]:
+            if folder.name in folders:
+                first = folders[folder.name].relative_to(skills_dir).as_posix()
+                problems.append(
+                    f"skills/{folder.relative_to(skills_dir).as_posix()}: skills/{first} ships a skill of the same "
+                    "name, and both would install to one folder"
+                )
+                continue
+            folders[folder.name] = folder
+    return folders, problems
+
+
 def check_repo(project_root: Path) -> RepoReport:
     skills_dir = project_root / "skills"
-    folders = sorted(path for path in skills_dir.glob("*") if path.is_dir())
+    folders, problems = skill_folders(skills_dir)
     if not folders:
         problem = f"no skills/*/{setup.MANIFEST_NAME} found under {project_root}: pass the repository root with --project-root"
         return RepoReport((), 0, 0, (problem,))
+    PLACES.clear()
+    PLACES.update({name: folder.relative_to(skills_dir).as_posix() for name, folder in folders.items()})
 
-    problems: list[str] = []
     files: dict[str, setup.ParsedFile] = {}
-    for folder in folders:
+    for name, folder in folders.items():
         manifest = folder / setup.MANIFEST_NAME
         if not manifest.is_file():
-            problems.append(f"skills/{folder.name}: missing {setup.MANIFEST_NAME}")
+            problems.append(f"{place(name)}: missing {setup.MANIFEST_NAME}")
             continue
         try:
-            files[folder.name] = setup.parse_bmod_file(manifest, manifest.read_bytes())
+            files[name] = setup.parse_bmod_file(manifest, manifest.read_bytes())
         except Exception as error:
-            problems.append(f"{rel(folder.name)}: the runtime parser rejects this file: {error}")
+            problems.append(f"{rel(name)}: the runtime parser rejects this file: {error}")
 
-    shipped = {folder.name for folder in folders}
+    shipped = set(folders)
     records = {name: parsed.bmod for name, parsed in files.items() if parsed.bmod is not None}
     members = {name: member_names(name, files[name]) for name in records}
 
-    problems += record_problems(files, records, skills_dir)
+    problems += record_problems(files, records, folders)
     problems += membership_problems(files, records, members, shipped)
     retired: dict[str, setup.ParsedRetired] = {}
     for name in records:
         try:
-            retired[name] = setup.read_retired_file(skills_dir / name)
+            retired[name] = setup.read_retired_file(folders[name])
         except Exception as error:
-            problems.append(f"skills/{name}/{setup.RETIRED_NAME}: the runtime parser rejects this file: {error}")
+            problems.append(f"{retired_rel(name)}: the runtime parser rejects this file: {error}")
     problems += retired_problems(retired, shipped)
     for name, parsed in files.items():
         for table, source in (("bmod", parsed.bmod), ("skill", parsed.skill)):
@@ -93,18 +131,18 @@ def check_repo(project_root: Path) -> RepoReport:
                 problems += requirement_problems(name, table, source, shipped)
     documents = 0
     for name, record in records.items():
-        folder = skills_dir / name
+        folder = folders[name]
         documents += len(record.knowledge) + (folder / knowledge.HELP_NAME).is_file()
         problems += knowledge_problems(name, record, folder, members[name])
         problems += topic_problems(name, folder)
-        problems += roster_file_problems(name, record, folder, skills_dir)
+        problems += roster_file_problems(name, record, folder, folders)
         problems += stamp_problems(name, folder / setup.MANIFEST_NAME)
         problems += message_problems(name, folder / setup.MANIFEST_NAME)
 
     if not problems:
-        problems += runtime_problems(skills_dir)
+        problems += runtime_problems(skills_dir, folders)
 
-    record_files = tuple(skills_dir / name / setup.MANIFEST_NAME for name in sorted(records))
+    record_files = tuple(folders[name] / setup.MANIFEST_NAME for name in sorted(records))
     skill_count = sum(1 for parsed in files.values() if parsed.skill is not None)
     return RepoReport(record_files, skill_count, documents, tuple(problems))
 
@@ -180,7 +218,7 @@ def stamp_problems(name: str, manifest: Path) -> list[str]:
 
 
 def rel(folder: str) -> str:
-    return f"skills/{folder}/{setup.MANIFEST_NAME}"
+    return f"{place(folder)}/{setup.MANIFEST_NAME}"
 
 
 def member_names(folder: str, parsed: setup.ParsedFile) -> tuple[str, ...]:
@@ -190,7 +228,7 @@ def member_names(folder: str, parsed: setup.ParsedFile) -> tuple[str, ...]:
 
 
 def record_problems(
-    files: dict[str, setup.ParsedFile], records: dict[str, setup.ParsedBmod], skills_dir: Path
+    files: dict[str, setup.ParsedFile], records: dict[str, setup.ParsedBmod], folders: dict[str, Path]
 ) -> list[str]:
     problems: list[str] = []
     for name, parsed in files.items():
@@ -203,9 +241,9 @@ def record_problems(
         problem = version_problem(record.version)
         if problem is not None:
             problems.append(f"{rel(name)}: [bmod] {problem}")
-        skill_md = skills_dir / name / "SKILL.md"
+        skill_md = folders[name] / "SKILL.md"
         if skill_md.is_symlink() or not skill_md.is_file():
-            problems.append(f"skills/{name}: a module record folder must ship SKILL.md as a plain file")
+            problems.append(f"{place(name)}: a module record folder must ship SKILL.md as a plain file")
         if files[name].skill is None and name != RECORD_PREFIX + record.code:
             problems.append(
                 f"{rel(name)}: a module record folder is named {RECORD_PREFIX + record.code!r} "
@@ -276,7 +314,7 @@ def retired_problems(records: dict[str, setup.ParsedRetired], shipped: set[str])
         for old in retired:
             if old in shipped:
                 problems.append(
-                    f"{retired_rel(name)}: retires {old!r}, but skills/{old} still ships; a retired name is never reused"
+                    f"{retired_rel(name)}: retires {old!r}, but {place(old)} still ships; a retired name is never reused"
                 )
             first = retired_by.setdefault(old, name)
             if first != name:
@@ -296,7 +334,7 @@ def retired_problems(records: dict[str, setup.ParsedRetired], shipped: set[str])
 
 
 def retired_rel(folder: str) -> str:
-    return f"skills/{folder}/{setup.RETIRED_NAME}"
+    return f"{place(folder)}/{setup.RETIRED_NAME}"
 
 
 def requirement_problems(
@@ -324,7 +362,7 @@ def knowledge_problems(name: str, record: setup.ParsedBmod, folder: Path, member
     if name.startswith("bmod-") or help_path.exists() or help_path.is_symlink():
         problem = plain_file_problem(folder, PurePosixPath(knowledge.HELP_NAME))
         if problem is not None:
-            problems.append(f"skills/{name}/{knowledge.HELP_NAME}, which every bmod-* folder holds, {problem}")
+            problems.append(f"{place(name)}/{knowledge.HELP_NAME}, which every bmod-* folder holds, {problem}")
     for entry in record.knowledge:
         if entry.path.as_posix() == knowledge.HELP_NAME:
             problems.append(f"{rel(name)}: knowledge names {knowledge.HELP_NAME!r}, which is always read")
@@ -353,10 +391,10 @@ def topic_problems(name: str, folder: Path) -> list[str]:
     help_file = PurePosixPath(knowledge.HELP_NAME).name
     named = set(TOPIC_REFERENCE.findall(text)) - {help_file}
     shipped = {path.name for path in (folder / knowledge.TOPICS_DIR).glob("*.md")} - {help_file}
-    where = f"skills/{name}/{knowledge.TOPICS_DIR}"
+    where = f"{place(name)}/{knowledge.TOPICS_DIR}"
     problems = [f"{where}/{topic} is never named in {knowledge.HELP_NAME}" for topic in sorted(shipped - named)]
     problems += [
-        f"skills/{name}/{knowledge.HELP_NAME} names {where}/{topic}, which does not exist"
+        f"{place(name)}/{knowledge.HELP_NAME} names {where}/{topic}, which does not exist"
         for topic in sorted(named - shipped)
     ]
     for topic in sorted(shipped):
@@ -388,11 +426,11 @@ def plain_file_problem(folder: Path, relative: PurePosixPath) -> str | None:
     return None
 
 
-def roster_file_problems(name: str, record: setup.ParsedBmod, folder: Path, skills_dir: Path) -> list[str]:
+def roster_file_problems(name: str, record: setup.ParsedBmod, folder: Path, folders: dict[str, Path]) -> list[str]:
     path = folder / knowledge.ROSTER_NAME
     if not path.exists() and not path.is_symlink():
         return []
-    where = f"skills/{name}/{knowledge.ROSTER_NAME}"
+    where = f"{place(name)}/{knowledge.ROSTER_NAME}"
     problem = plain_file_problem(folder, PurePosixPath(knowledge.ROSTER_NAME))
     if problem is not None:
         return [f"{where} {problem}"]
@@ -400,10 +438,10 @@ def roster_file_problems(name: str, record: setup.ParsedBmod, folder: Path, skil
         party = tomllib.loads(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
         return [f"{where}: cannot read roster: {error}"]
-    return [f"{where}: {problem}" for problem in roster_problems(party, skills_dir)]
+    return [f"{where}: {problem}" for problem in roster_problems(party, folders)]
 
 
-def roster_problems(party: dict, skills_dir: Path) -> list[str]:
+def roster_problems(party: dict, folders: dict[str, Path]) -> list[str]:
     """A group naming a member nobody defines, or a member naming a skill this repo lacks, is a typo."""
     problems: list[str] = []
     members = [member for member in as_list(party.get("members")) if isinstance(member, dict)]
@@ -412,7 +450,9 @@ def roster_problems(party: dict, skills_dir: Path) -> list[str]:
     problems += [f"member code {code!r} is defined twice" for code in repeated]
     for member in members:
         skill = member.get("skill")
-        if skill is not None and not (isinstance(skill, str) and (skills_dir / skill / "SKILL.md").is_file()):
+        if skill is not None and not (
+            isinstance(skill, str) and skill in folders and (folders[skill] / "SKILL.md").is_file()
+        ):
             problems.append(f"member {member.get('code')!r} names skill {skill!r}, which this repository does not ship")
     for group in as_list(party.get("groups")):
         if not isinstance(group, dict):
@@ -427,8 +467,14 @@ def as_list(value: object) -> list:
     return value if isinstance(value, list) else []
 
 
-def runtime_problems(skills_dir: Path) -> list[str]:
+def runtime_problems(skills_dir: Path, folders: dict[str, Path]) -> list[str]:
     """The tree as `bmad` itself would discover it. Runs only on a tree the checks above accept."""
+    if any(folder.parent != skills_dir for folder in folders.values()):
+        # Installed skills sit side by side, so check a flat copy; copies, not links, because Windows CI may not link.
+        with tempfile.TemporaryDirectory() as flat:
+            for name, folder in folders.items():
+                shutil.copytree(folder, Path(flat) / name, symlinks=True)
+            return runtime_problems(Path(flat), {name: Path(flat) / name for name in folders})
     problems: list[str] = []
     try:
         installation = setup.discover_installation(skills_dir / "bmad")
@@ -445,7 +491,7 @@ def runtime_problems(skills_dir: Path) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Check every skills/*/bmod.toml in a repository.")
+    parser = argparse.ArgumentParser(description="Check every bmod.toml under skills/ in a repository.")
     parser.add_argument(
         "--project-root", type=Path, default=Path.cwd(), help="repository to check (default: the current directory)"
     )

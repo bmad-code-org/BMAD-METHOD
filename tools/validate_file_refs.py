@@ -296,6 +296,9 @@ def resolve_skill_relative(ref: Ref, skills_dir: str) -> str | None:
     rel_parts = rel.split(os.sep)
     if not rel.startswith("..") and len(rel_parts) > 1:
         skill_root = os.path.join(skills_dir, rel_parts[0])
+        # A folder without SKILL.md groups a module's skills; the skill is one level down.
+        if not os.path.exists(os.path.join(skill_root, "SKILL.md")) and len(rel_parts) > 2:
+            skill_root = os.path.join(skill_root, rel_parts[1])
         if skill_root not in roots:
             roots.append(skill_root)
 

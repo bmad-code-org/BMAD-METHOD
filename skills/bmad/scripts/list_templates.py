@@ -134,7 +134,9 @@ def module_libraries(roots: list[str], folder_name: str = MODULE_FOLDER) -> list
     """The `folder_name` folder of each module record, once each, roots in order."""
     libraries: dict[Path, str] = {}
     for root in roots:
-        for folder in sorted(Path(root).expanduser().glob(f"*/{folder_name}")):
+        base = Path(root).expanduser()
+        # A source checkout may group a module's skills in a folder of their own, such as `skills/founder/`.
+        for folder in sorted(base.glob(f"*/{folder_name}")) + sorted(base.glob(f"*/*/{folder_name}")):
             try:
                 record = tomllib.loads((folder.parent / "bmod.toml").read_text(encoding="utf-8"))
             except (OSError, ValueError):

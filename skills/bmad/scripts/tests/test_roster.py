@@ -79,6 +79,12 @@ class RosterTests(unittest.TestCase):
         self.assertEqual(set(report["members"]), {"demo-agent-ann", "demo-agent-bob", "guest"})
         self.assertNotIn("installed", report["members"]["guest"])
 
+    def test_a_module_grouped_in_its_own_folder_is_found(self):
+        write_module(self.skills / "demo", ("demo-agent-ann",))
+        report = roster.collect([self.skills])
+        self.assertEqual(list(report["agents"]), ["demo-agent-ann"])
+        self.assertEqual([group["id"] for group in report["groups"]], ["demo-room"])
+
     def test_an_absent_agent_keeps_its_persona_and_names_its_install_command(self):
         write_module(self.skills, ("demo-workflow",))
         bob = roster.collect([self.skills])["members"]["demo-agent-bob"]

@@ -36,7 +36,7 @@ Leave the record's version unchanged. The execution plan's files list shows thes
 
 ## From a single-skill module
 
-A single-skill module has no record folder yet, so build one before anything joins. Write `bmod-<code>/` as Files says, keeping `code`, `version`, `update_source`, dependencies and questions from its `[bmod]`, so installed answers still resolve, and move its `help/` there. Its `bmod.toml` becomes a member file.
+A single-skill module has no record folder yet, so build one before anything joins. Write `bmod-<code>/` as Files says, keeping `code`, `version`, `update_source`, dependencies and questions from its `[bmod]`, so installed answers still resolve, and move its `help/`, `roster.toml` and `doc-templates/` there. Its `bmod.toml` becomes a member file.
 
 ## Rules
 

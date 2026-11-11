@@ -130,6 +130,17 @@ def collect(roots: list[Path], *, include_content: bool = False) -> dict[str, ob
     }
 
 
+def is_skill(folder: Path) -> bool:
+    return (folder / "SKILL.md").exists() or (folder / MANIFEST_NAME).exists()
+
+
+def grouped(folder: Path) -> list[Path]:
+    """The folder itself, or the skills inside it when it only groups them."""
+    if is_skill(folder):
+        return [folder]
+    return sorted(inner for inner in folder.iterdir() if inner.is_dir() and is_skill(inner))
+
+
 def scan(roots: list[Path]) -> Scan:
     """Find every module record and every module skill in the roots."""
     folders: dict[str, Path] = {}
@@ -141,6 +152,8 @@ def scan(roots: list[Path]) -> Scan:
     for root in roots:
         try:
             found = sorted(path for path in root.iterdir() if path.is_dir())
+            # A source checkout groups a module's skills in a folder of their own, such as `skills/founder/`.
+            found = [inner for path in found for inner in grouped(path)]
         except OSError as error:
             problems.append({"kind": "root", "root": str(root), "problem": f"cannot read root {root}: {error}"})
             continue

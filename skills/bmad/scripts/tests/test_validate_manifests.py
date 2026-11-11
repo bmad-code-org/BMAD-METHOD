@@ -175,6 +175,52 @@ class CleanTreeTests(ValidatorCase):
         self.assertIn("skills/bmad-flow: missing bmod.toml", result.stderr)
 
 
+class ModuleFolderTests(ValidatorCase):
+    """A module's record and skills may sit one level down, in a folder that groups them."""
+
+    def setUp(self):
+        super().setUp()
+        group = self.skills / "founder"
+        source = f"{SOURCE}/founder"
+        write(
+            group / "bmod-founder" / "bmod.toml",
+            f'[bmod]\ncode = "founder"\nversion = "6.11.0-next"\nupdate_source = "{source}"\n'
+            f'skills = ["bmad-founder-agent-advisor"]\n{MESSAGES}',
+        )
+        write(group / "bmod-founder" / "help" / "help.md", "# help\n")
+        write(group / "bmod-founder" / "SKILL.md", "# record\n")
+        write(
+            group / "bmod-founder" / "roster.toml",
+            '[[members]]\ncode = "a"\nskill = "bmad-founder-agent-advisor"\nname = "A"\n',
+        )
+        write(
+            group / "bmad-founder-agent-advisor" / "bmod.toml", f'[skill]\nbmod = "bmod-founder"\nsource = "{source}"\n'
+        )
+        write(group / "bmad-founder-agent-advisor" / "SKILL.md", "# skill\n")
+
+    def test_grouped_module_is_valid_and_its_record_is_reported(self):
+        report = vm.check_repo(self.root)
+        self.assertEqual(report.problems, ())
+        self.assertIn(
+            "skills/founder/bmod-founder/bmod.toml", [p.relative_to(self.root).as_posix() for p in report.records]
+        )
+
+    def test_problems_name_the_grouped_path(self):
+        write(self.skills / "founder" / "bmad-founder-agent-advisor" / "bmod.toml", SKILL.format(bmod="bmod-founder"))
+        self.assertIn("skills/founder/bmad-founder-agent-advisor/bmod.toml: [skill] source", self.problems())
+
+    def test_a_grouped_record_without_skill_md_is_reported(self):
+        write(
+            self.skills / "founder" / "bmod-extra" / "bmod.toml",
+            f'[bmod]\ncode = "extra"\nversion = "6.11.0-next"\nupdate_source = "{SOURCE}"\n{MESSAGES}',
+        )
+        self.assertIn("skills/founder/bmod-extra: a module record folder must ship SKILL.md", self.problems())
+
+    def test_two_skills_of_one_name_are_a_problem(self):
+        write(self.skills / "founder" / "bmad-build" / "SKILL.md", "# skill\n")
+        self.assertIn("skills/founder/bmad-build: skills/bmad-build ships a skill of the same name", self.problems())
+
+
 class FileRuleTests(ValidatorCase):
     def test_skill_folder_without_a_bmod_file(self):
         write(self.skills / "bmad-orphan" / "SKILL.md", "# orphan\n")
