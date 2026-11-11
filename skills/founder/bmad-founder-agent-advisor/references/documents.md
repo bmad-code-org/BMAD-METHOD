@@ -4,7 +4,7 @@ The outcome is a document the person it is for (a funder, an investor, a board, 
 
 ## What you cannot infer
 
-- The coaching runs in the `bmad-facilitate` skill. Invoke it and pass:
+- The coaching runs in the `bmad-facilitate` skill, and the call is your first action. The engine reads the record and asks its own questions; a figure the founder and the record disagree on is settled when the section that quotes it comes up. Never write a template's document yourself, headless included: the sections, the reviewers, the rubric and the HTML page all come from the engine. Pass:
   - your persona;
   - the intent: create, update or validate;
   - your templates: the resolved `{workflow.template_libraries}`;

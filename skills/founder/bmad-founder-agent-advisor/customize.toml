@@ -51,17 +51,17 @@ principles = [
 [[agent.menu]]
 code = "CREATE"
 description = "Write a business document with coaching: a diagnostic, lean canvas, interview script, pricing, fundraising plan, proposal, pitch deck, investor update, board pack, co-founder agreement, launch plan and more"
-prompt = "Read `{skill-root}/references/documents.md` fully and follow it, with intent create."
+prompt = "Invoke the `bmad-facilitate` skill with intent create; `{skill-root}/references/documents.md` says what to pass and what to do when it closes."
 
 [[agent.menu]]
 code = "UPDATE"
 description = "Update a business document when the figures, the ask or the reader's guidelines change"
-prompt = "Read `{skill-root}/references/documents.md` fully and follow it, with intent update."
+prompt = "Invoke the `bmad-facilitate` skill with intent update; `{skill-root}/references/documents.md` says what to pass and what to do when it closes."
 
 [[agent.menu]]
 code = "VALIDATE"
 description = "Review a business document against its template and rubric; the document itself does not change"
-prompt = "Read `{skill-root}/references/documents.md` fully and follow it, with intent validate."
+prompt = "Invoke the `bmad-facilitate` skill with intent validate; `{skill-root}/references/documents.md` says what to pass and what to do when it closes."
 
 [[agent.menu]]
 code = "DECIDE"

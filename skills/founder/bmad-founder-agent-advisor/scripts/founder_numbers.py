@@ -12,10 +12,10 @@ used, and `assumptions`, the plain-words assumptions the result rests on.
 
 Subcommands:
 
-  runway --cash N --burn N [--revenue N] [--revenue-growth PCT] [--cost-growth PCT]
+  runway --cash N --costs N [--revenue N] [--revenue-growth PCT] [--cost-growth PCT]
          [--start YYYY-MM] [--max-months N] [--scenario 'name:key=value,...' ...]
-    Company runway, simulated month by month. `--burn` is monthly gross costs and `--revenue`
-    current monthly revenue (default 0); month 1 uses them as given and the growth rates
+    Company runway, simulated month by month. `--costs` is monthly gross costs (net burn plus
+    revenue) and `--revenue` current monthly revenue (default 0); month 1 uses them as given and the growth rates
     (default 0) apply from month 2. Net burn = costs - revenue, taken from cash each month.
     `--max-months` defaults to 60. The simulation stops at zero cash, at breakeven (revenue
     reaches costs) or at max-months, whichever comes first.
@@ -26,8 +26,8 @@ Subcommands:
     breakeven_month (YYYY-MM, needs --start), cash_at_breakeven (cash at the end of the
     breakeven month), and months: [{index, month, revenue, costs, net_burn, cash_end}].
     `--scenario` is repeatable. Its keys are the flag names above without dashes in front
-    (cash, burn, revenue, revenue-growth, cost-growth, start, max-months), each overriding the
-    base input, e.g. 'hire-now:burn=62000'. With any scenario, `scenarios` lists the base case
+    (cash, costs, revenue, revenue-growth, cost-growth, start, max-months), each overriding the
+    base input, e.g. 'hire-now:costs=62000'. With any scenario, `scenarios` lists the base case
     first, named `base`, then each scenario: {name, inputs, assumptions, and the summary
     fields above without months}.
 
@@ -51,12 +51,13 @@ Subcommands:
     Output: total, reachable, obtainable, each {accounts, value}, and formula in words.
     Account counts are rounded to whole numbers; values use the unrounded counts.
 
-  round --cap-table PATH [--pre-money N] [--new-money N] [--pool-target PCT]
+  round --cap-table PATH [--pre-money N] [--new-money N] [--pool-target PCT] [--safe SPEC ...]
     Cap table after a priced round in which YC post-money SAFEs convert. PATH is JSON shaped
     like CAP_TABLE_SCHEMA below, which `round --help` prints. `options_pool` and `safes` are
     optional; a SAFE's `cap` and `discount` are optional, and `pool_target_post` defaults to 0.
     `--pre-money`, `--new-money` and `--pool-target` supply or override the file's `round`
-    values, so the file can hold only the current cap table. Rules:
+    values, so the file can hold only the current cap table. `--safe 'name:amount[:cap[:discount]]'`
+    is repeatable and adds a SAFE to the file's, such as one on offer. Rules:
       - Company capitalization before the round = holders' shares + granted options +
         unallocated pool + every SAFE's conversion shares. The pool top-up made for this round
         is left out, as the YC post-money SAFE defines it.
@@ -84,6 +85,14 @@ Subcommands:
     percent_before, shares_after, percent_after}] covering holders, granted options, the
     unallocated pool, each SAFE and the new investors. Shares are rounded to whole numbers;
     percentages use the unrounded shares.
+
+  safes --cap-table PATH [--safe 'name:amount[:cap[:discount]]' ...]
+    Ownership once the YC post-money SAFEs convert at their caps, before any priced round: the
+    stake a SAFE offer costs on its own. Each capped SAFE owns amount / cap of the company
+    capitalization including every SAFE; the rest is shared pro rata as it is now. An uncapped
+    SAFE has no price until a priced round and is listed in `unpriced_safes`; a discount only
+    applies at a priced round. Output: safes: [{name, amount, cap, discount, shares, percent}],
+    unpriced_safes, fully_diluted_before, fully_diluted_after, and cap_table as in `round`.
 
   model --cash N --costs N --start YYYY-MM --out PATH.csv [--revenue N] [--revenue-growth PCT]
         [--months N] [--hire 'role:YYYY-MM:monthly_cost' ...] [--expense 'name:YYYY-MM:amount' ...]
@@ -124,6 +133,9 @@ CAP_TABLE_SCHEMA = """\
    "options_pool": {"granted": 0, "unallocated": 500000},
    "safes": [{"name": "Angel", "amount": 100000, "cap": 8000000, "discount": 20}],
    "round": {"pre_money": 12000000, "new_money": 3000000, "pool_target_post": 10}}"""
+
+
+SAFE_HELP = "repeatable 'name:amount[:cap[:discount]]', a SAFE added to the file's, such as one on offer"
 
 
 class InputError(Exception):
@@ -183,7 +195,7 @@ def growth(pct: float, name: str) -> float:
 
 RUNWAY_KEYS = {
     "cash": ("cash", float),
-    "burn": ("burn", float),
+    "costs": ("costs", float),
     "revenue": ("revenue", float),
     "revenue-growth": ("revenue_growth", float),
     "cost-growth": ("cost_growth", float),
@@ -194,7 +206,7 @@ RUNWAY_KEYS = {
 
 def runway(
     cash: float,
-    burn: float,
+    costs: float,
     revenue: float = 0.0,
     revenue_growth: float = 0.0,
     cost_growth: float = 0.0,
@@ -203,7 +215,7 @@ def runway(
 ) -> dict:
     """Runway summary with the month-by-month list."""
     require(cash >= 0, "cash must be 0 or more")
-    require(burn >= 0, "burn must be 0 or more")
+    require(costs >= 0, "costs must be 0 or more")
     require(revenue >= 0, "revenue must be 0 or more")
     require(1 <= max_months <= 1200, "max-months must be between 1 and 1200")
     if start is not None:
@@ -215,7 +227,7 @@ def runway(
     runway_months = zero_index = breakeven = cash_at_breakeven = None
     for i in range(1, max_months + 1):
         rev = revenue * (1 + rg) ** (i - 1)
-        cost = burn * (1 + cg) ** (i - 1)
+        cost = costs * (1 + cg) ** (i - 1)
         net = cost - rev
         end = balance - net
         rows.append(
@@ -250,7 +262,7 @@ def runway(
     return {
         "inputs": {
             "cash": cash,
-            "burn": burn,
+            "costs": costs,
             "revenue": revenue,
             "revenue_growth": revenue_growth,
             "cost_growth": cost_growth,
@@ -433,7 +445,8 @@ def load_cap_table(path: str) -> dict:
     return data
 
 
-def priced_round(data: dict) -> dict:
+def read_table(data: dict) -> tuple[list, float, float, list]:
+    """(holder rows, granted options, unallocated pool, SAFEs) from a cap table."""
     holders = data.get("holders")
     require(isinstance(holders, list) and holders, "cap table needs a non-empty `holders` list")
     rows = []
@@ -460,7 +473,101 @@ def priced_round(data: dict) -> dict:
                 "discount": discount,
             }
         )
+    return rows, granted, unallocated, safes
 
+
+def parse_safe(text: str) -> dict:
+    """'name:amount[:cap[:discount]]' -> a SAFE entry for the cap table."""
+    parts = [part.strip() for part in text.split(":")]
+    require(2 <= len(parts) <= 4 and parts[0], f"--safe must look like 'name:amount[:cap[:discount]]': {text!r}")
+    entry: dict = {"name": parts[0]}
+    for key, value in zip(("amount", "cap", "discount"), parts[1:], strict=False):
+        if value:
+            try:
+                entry[key] = float(value)
+            except ValueError:
+                raise InputError(f"--safe {parts[0]!r}: {key} must be a number: {value!r}") from None
+    return entry
+
+
+def with_flag_safes(data: dict, specs: list[str] | None) -> dict:
+    if specs:
+        existing = data.get("safes") or []
+        require(isinstance(existing, list), "`safes` must be a list")
+        data["safes"] = [*existing, *(parse_safe(spec) for spec in specs)]
+    return data
+
+
+TOO_MUCH = "the SAFEs together claim more than the whole company"
+
+
+def safes_at_cap(data: dict) -> dict:
+    rows, granted, unallocated, safes = read_table(data)
+    base = sum(shares for _, _, shares in rows) + granted + unallocated
+    capped = [s for s in safes if s["cap"] is not None]
+    claimed = sum(s["amount"] / s["cap"] for s in capped)
+    require(claimed < 1, TOO_MUCH)
+    total = base / (1 - claimed)
+    conversions = [(s, s["amount"] / s["cap"] * total) for s in capped]
+
+    table = [(name, cls, shares, shares) for name, cls, shares in rows]
+    if granted:
+        table.append(("Options granted", "options", granted, granted))
+    if unallocated:
+        table.append(("Unallocated option pool", "options", unallocated, unallocated))
+    table += [(s["name"], "safe", 0.0, shares) for s, shares in conversions]
+
+    assumptions = [
+        "Each SAFE is a YC post-money SAFE and owns amount / cap of the company once every SAFE has converted.",
+        "Before any priced round: its new money and any option pool top-up dilute everyone further.",
+        "Shares are rounded to whole numbers; percentages use unrounded shares.",
+    ]
+    if any(s["discount"] for s in capped):
+        assumptions.append("A discount applies only at a priced round, so it does not change these stakes.")
+    unpriced = [s["name"] for s in safes if s["cap"] is None]
+    if unpriced:
+        assumptions.append("An uncapped SAFE has no price until a priced round, so it is left out here.")
+
+    return {
+        "inputs": data,
+        "assumptions": assumptions,
+        "safes": [
+            {
+                "name": s["name"],
+                "amount": money(s["amount"]),
+                "cap": money(s["cap"]),
+                "discount": s["discount"],
+                "shares": round(shares),
+                "percent": pct_out(100 * shares / total),
+            }
+            for s, shares in conversions
+        ],
+        "unpriced_safes": unpriced,
+        "fully_diluted_before": round(base),
+        "fully_diluted_after": round(total),
+        "cap_table": [
+            {
+                "name": name,
+                "class": cls,
+                "shares_before": round(before),
+                "percent_before": pct_out(100 * before / base),
+                "shares_after": round(after),
+                "percent_after": pct_out(100 * after / total),
+            }
+            for name, cls, before, after in table
+        ],
+    }
+
+
+def run_safes(args: argparse.Namespace) -> dict:
+    data = with_flag_safes(load_cap_table(args.cap_table), args.safe)
+    result = safes_at_cap(data)
+    result["inputs"] = {"cap_table": args.cap_table, **result["inputs"]}
+    return result
+
+
+def priced_round(data: dict) -> dict:
+    rows, granted, unallocated, safes = read_table(data)
     terms = data.get("round")
     require(isinstance(terms, dict), "cap table needs a `round` object, or pass --pre-money and --new-money")
     pre = _number(terms.get("pre_money"), "round.pre_money", positive=True)
@@ -495,7 +602,7 @@ def priced_round(data: dict) -> dict:
             out.append((s["amount"] / price, price, basis))
         return out
 
-    too_much = "the SAFEs together claim more than the whole company"
+    too_much = TOO_MUCH
     safe_total = 0.0
     for _ in range(SAFE_MAX_ITERATIONS):
         updated = sum(shares for shares, _, _ in convert(safe_total, post_shares(safe_total)[0]))
@@ -573,7 +680,7 @@ def priced_round(data: dict) -> dict:
 
 
 def run_round(args: argparse.Namespace) -> dict:
-    data = load_cap_table(args.cap_table)
+    data = with_flag_safes(load_cap_table(args.cap_table), args.safe)
     flags = {"pre_money": args.pre_money, "new_money": args.new_money, "pool_target_post": args.pool_target}
     overrides = {key: value for key, value in flags.items() if value is not None}
     if overrides:
@@ -713,7 +820,7 @@ def build_parser() -> Parser:
 
     p = command("runway", "company runway and default alive, simulated month by month")
     p.add_argument("--cash", type=float, required=True, help="cash in the bank now")
-    p.add_argument("--burn", type=float, required=True, help="monthly gross costs")
+    p.add_argument("--costs", type=float, required=True, help="monthly gross costs: net burn plus revenue")
     p.add_argument("--revenue", type=float, default=0.0, help="current monthly revenue (default 0)")
     p.add_argument("--revenue-growth", type=float, default=0.0, help="monthly revenue growth in percent, 5 for 5%%")
     p.add_argument("--cost-growth", type=float, default=0.0, help="monthly cost growth in percent, 5 for 5%%")
@@ -722,7 +829,7 @@ def build_parser() -> Parser:
     p.add_argument(
         "--scenario",
         action="append",
-        help="repeatable 'name:key=value,...' overriding flags above without dashes, e.g. 'hire:burn=62000'",
+        help="repeatable 'name:key=value,...' overriding flags above without dashes, e.g. 'hire:costs=62000'",
     )
     p.set_defaults(func=run_runway)
 
@@ -765,7 +872,18 @@ def build_parser() -> Parser:
         type=float,
         help="unallocated pool after the round in percent of post-money, 10 for 10%%; overrides round.pool_target_post",
     )
+    p.add_argument("--safe", action="append", help=SAFE_HELP)
     p.set_defaults(func=run_round)
+
+    p = command(
+        "safes",
+        "ownership once post-money SAFEs convert at their caps, before any priced round",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="cap table JSON (options_pool, safes optional; round ignored):\n" + CAP_TABLE_SCHEMA,
+    )
+    p.add_argument("--cap-table", required=True, help="path to the cap table JSON")
+    p.add_argument("--safe", action="append", help=SAFE_HELP)
+    p.set_defaults(func=run_safes)
 
     p = command("model", "monthly operating model with dated hires and one-off costs, written to CSV")
     p.add_argument("--cash", type=float, required=True, help="cash in the bank now")

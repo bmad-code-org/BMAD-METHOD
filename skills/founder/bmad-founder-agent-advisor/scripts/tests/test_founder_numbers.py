@@ -5,7 +5,7 @@
 """Tests for founder_numbers.py. Run: uv run --with pytest pytest scripts/tests/test_founder_numbers.py
 
 Hand-computed cases for each subcommand: runway and default alive, scenarios, personal runway,
-unit economics, market size, SAFE conversion where the cap or the discount binds, the option
+unit economics, market size, SAFE conversion where the cap or the discount binds, SAFE stakes before a priced round, the option
 pool shuffle, the operating model's CSV, and the error exits.
 """
 
@@ -41,8 +41,8 @@ def fails(capsys, *argv: str, code: int = 1) -> str:
 # runway
 
 
-def test_runway_without_revenue_is_cash_over_burn():
-    result = founder_numbers.runway(cash=120000, burn=10000)
+def test_runway_without_revenue_is_cash_over_costs():
+    result = founder_numbers.runway(cash=120000, costs=10000)
     assert result["months_of_runway"] == 12.0
     assert result["default_alive"] is False
     assert result["breakeven_month_index"] is None
@@ -51,20 +51,20 @@ def test_runway_without_revenue_is_cash_over_burn():
 
 
 def test_runway_interpolates_the_last_month_and_labels_it():
-    result = founder_numbers.runway(cash=125000, burn=10000, start="2026-03")
+    result = founder_numbers.runway(cash=125000, costs=10000, start="2026-03")
     assert result["months_of_runway"] == 12.5
     assert result["zero_cash_month"] == "2027-03"
     assert result["months"][0]["month"] == "2026-03"
 
 
 def test_runway_net_of_flat_revenue():
-    result = founder_numbers.runway(cash=100000, burn=30000, revenue=10000)
+    result = founder_numbers.runway(cash=100000, costs=30000, revenue=10000)
     assert result["months_of_runway"] == 5.0
 
 
 def test_default_alive_when_revenue_reaches_costs_first():
     # Revenue 5000 doubling monthly reaches costs of 20000 in month 3; net burn 15000 + 10000 = 25000.
-    result = founder_numbers.runway(cash=50000, burn=20000, revenue=5000, revenue_growth=100, start="2026-01")
+    result = founder_numbers.runway(cash=50000, costs=20000, revenue=5000, revenue_growth=100, start="2026-01")
     assert result["default_alive"] is True
     assert result["breakeven_month_index"] == 3
     assert result["breakeven_month"] == "2026-03"
@@ -74,7 +74,7 @@ def test_default_alive_when_revenue_reaches_costs_first():
 
 
 def test_default_dead_when_cash_runs_out_first():
-    result = founder_numbers.runway(cash=20000, burn=20000, revenue=5000, revenue_growth=100)
+    result = founder_numbers.runway(cash=20000, costs=20000, revenue=5000, revenue_growth=100)
     assert result["default_alive"] is False
     assert result["breakeven_month_index"] is None
     # Month 1 net burn 15000 leaves 5000; month 2 net burn 10000 runs out halfway.
@@ -82,22 +82,22 @@ def test_default_dead_when_cash_runs_out_first():
 
 
 def test_runway_undecided_within_max_months():
-    result = founder_numbers.runway(cash=1_000_000, burn=10000, max_months=12)
+    result = founder_numbers.runway(cash=1_000_000, costs=10000, max_months=12)
     assert result["default_alive"] is None
     assert result["months_of_runway"] is None
     assert len(result["months"]) == 12
 
 
 def test_cost_growth_shortens_runway():
-    flat = founder_numbers.runway(cash=100000, burn=10000)
-    growing = founder_numbers.runway(cash=100000, burn=10000, cost_growth=5)
+    flat = founder_numbers.runway(cash=100000, costs=10000)
+    growing = founder_numbers.runway(cash=100000, costs=10000, cost_growth=5)
     assert growing["months_of_runway"] < flat["months_of_runway"]
 
 
 def test_scenarios_listed_with_base_first(capsys):
     result = run(
-        capsys, "runway", "--cash", "120000", "--burn", "10000",
-        "--scenario", "hire-now:burn=12000", "--scenario", "raise:cash=240000,max_months=30",
+        capsys, "runway", "--cash", "120000", "--costs", "10000",
+        "--scenario", "hire-now:costs=12000", "--scenario", "raise:cash=240000,max_months=30",
     )  # fmt: skip
     assert [s["name"] for s in result["scenarios"]] == ["base", "hire-now", "raise"]
     assert [s["months_of_runway"] for s in result["scenarios"]] == [12.0, 10.0, 24.0]
@@ -107,19 +107,19 @@ def test_scenarios_listed_with_base_first(capsys):
 
 
 def test_no_scenarios_key_without_scenarios(capsys):
-    assert "scenarios" not in run(capsys, "runway", "--cash", "1000", "--burn", "100")
+    assert "scenarios" not in run(capsys, "runway", "--cash", "1000", "--costs", "100")
 
 
 def test_scenario_parsing():
-    assert founder_numbers.parse_scenario("hire:burn=62000, revenue-growth=5,start=2026-04") == (
+    assert founder_numbers.parse_scenario("hire:costs=62000, revenue-growth=5,start=2026-04") == (
         "hire",
-        {"burn": 62000.0, "revenue_growth": 5.0, "start": "2026-04"},
+        {"costs": 62000.0, "revenue_growth": 5.0, "start": "2026-04"},
     )
 
 
-@pytest.mark.parametrize("scenario", ["hire:payroll=5", "no-colon", ":burn=5", "hire:burn", "hire:burn=lots"])
+@pytest.mark.parametrize("scenario", ["hire:payroll=5", "no-colon", ":costs=5", "hire:costs", "hire:costs=lots"])
 def test_bad_scenario_exits_1(capsys, scenario):
-    fails(capsys, "runway", "--cash", "1000", "--burn", "100", "--scenario", scenario)
+    fails(capsys, "runway", "--cash", "1000", "--costs", "100", "--scenario", scenario)
 
 
 # personal runway
@@ -175,9 +175,9 @@ def test_fraction_given_for_a_percent_is_flagged(capsys):
 
 
 def test_fraction_warning_reaches_subcommands_without_notes(capsys):
-    result = run(capsys, "runway", "--cash", "1000", "--burn", "100", "--revenue-growth", "0.5")
+    result = run(capsys, "runway", "--cash", "1000", "--costs", "100", "--revenue-growth", "0.5")
     assert result["notes"] == ["--revenue-growth 0.5 is read as 0.5%; for 50% pass 50."]
-    assert "notes" not in run(capsys, "runway", "--cash", "1000", "--burn", "100", "--revenue-growth", "1")
+    assert "notes" not in run(capsys, "runway", "--cash", "1000", "--costs", "100", "--revenue-growth", "1")
 
 
 def test_zero_churn_exits_1(capsys):
@@ -387,3 +387,80 @@ def test_bad_hire_exits_1(tmp_path, capsys, hire):
 
 def test_missing_required_flag_exits_1(capsys):
     fails(capsys, "runway", "--cash", "1000")
+
+
+# safes before a priced round
+
+
+def test_safe_offer_owns_amount_over_cap_before_a_round(tmp_path, capsys):
+    # 10M shares; two $500k SAFEs at a $7M cap claim 1/7 together, so the company is 10M / (6/7) shares.
+    path = tmp_path / "cap.json"
+    path.write_text(
+        json.dumps(
+            {
+                "holders": [{"name": "A", "shares": 5_000_000}, {"name": "B", "shares": 4_000_000}],
+                "options_pool": {"granted": 0, "unallocated": 1_000_000},
+            }
+        )
+    )
+    result = run(
+        capsys, "safes", "--cap-table", str(path), "--safe", "Lead:500000:7000000:20", "--safe", "Others:500000:7000000"
+    )
+    assert [s["percent"] for s in result["safes"]] == [7.14, 7.14]
+    assert result["fully_diluted_after"] == 11_666_667
+    rows = {r["name"]: r for r in result["cap_table"]}
+    assert rows["A"]["percent_before"] == 50.0
+    assert rows["A"]["percent_after"] == 42.86
+    assert sum(r["percent_after"] for r in result["cap_table"]) == pytest.approx(100, abs=0.02)
+    assert any("discount applies only at a priced round" in a for a in result["assumptions"])
+
+
+def test_uncapped_safe_is_listed_unpriced(tmp_path, capsys):
+    path = tmp_path / "cap.json"
+    path.write_text(
+        json.dumps({"holders": [{"name": "A", "shares": 1000}], "safes": [{"name": "Friend", "amount": 50000}]})
+    )
+    result = run(capsys, "safes", "--cap-table", str(path))
+    assert result["safes"] == []
+    assert result["unpriced_safes"] == ["Friend"]
+    assert result["cap_table"][0]["percent_after"] == 100.0
+
+
+def test_safes_claiming_the_whole_company_before_a_round_exit_1(tmp_path, capsys):
+    path = tmp_path / "cap.json"
+    path.write_text(json.dumps({"holders": [{"name": "A", "shares": 1000}]}))
+    fails(capsys, "safes", "--cap-table", str(path), "--safe", "Too much:1000000:1000000")
+
+
+def test_round_takes_an_offered_safe_as_a_flag(tmp_path, capsys):
+    path = tmp_path / "cap.json"
+    path.write_text(json.dumps({"holders": [{"name": "A", "shares": 1_000_000}]}))
+    flagged = run(
+        capsys,
+        "round",
+        "--cap-table",
+        str(path),
+        "--pre-money",
+        "8000000",
+        "--new-money",
+        "2000000",
+        "--safe",
+        "Lead:500000:7000000",
+    )
+    path.write_text(
+        json.dumps(
+            {
+                "holders": [{"name": "A", "shares": 1_000_000}],
+                "safes": [{"name": "Lead", "amount": 500000, "cap": 7000000}],
+            }
+        )
+    )
+    in_file = run(capsys, "round", "--cap-table", str(path), "--pre-money", "8000000", "--new-money", "2000000")
+    assert flagged["safes"] == in_file["safes"]
+
+
+@pytest.mark.parametrize("spec", ["no-amount", "x:lots", ":500"])
+def test_bad_safe_flag_exits_1(tmp_path, capsys, spec):
+    path = tmp_path / "cap.json"
+    path.write_text(json.dumps({"holders": [{"name": "A", "shares": 1000}]}))
+    fails(capsys, "safes", "--cap-table", str(path), "--safe", spec)
