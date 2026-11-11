@@ -10,6 +10,10 @@
 
 ## INSTRUCTIONS
 
+### Reconcile the Plan
+
+Before changing the status, read the plan's original `baseline_revision` and compare the complete diff since it with `## Tasks & Acceptance` and `## Implementation Notes`. If no diff is available, create one with untracked files included. Include added, modified, deleted, and renamed paths. Attribute changes to this build using the available history and implementation evidence; unrelated, concurrent, or unattributable changes cannot support a task check or note correction. Mark an execution task `[x]` only when this build's diff and applicable verification evidence support its action; leave incomplete or ambiguous tasks `[ ]` and name them in the closing summary. Do not change Acceptance Criteria. In `## Implementation Notes`, correct only explicit `Not edited` path claims contradicted by changes attributable to this build. Leave claims unchanged when attribution is uncertain. Do not change anything inside `<frozen-after-approval>`. If the baseline or diff is unavailable, state that limitation and do not infer path changes.
+
 ### Mark Plan Built
 
 Change `{plan_file}` status to `built` in the frontmatter.
@@ -26,6 +30,7 @@ Display a very short completion summary — one or two sentences — including:
 
 - What changed.
 - The verification and review result, including whether anything was deferred.
+- Any execution tasks left incomplete or ambiguous.
 - The commit hash, if one was created.
 
 Do not list changed files, repeat details from the plan, or narrate the process unless the user asks.
