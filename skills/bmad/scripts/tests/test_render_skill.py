@@ -1075,6 +1075,25 @@ class RenderSkillTests(unittest.TestCase):
         result = self._cli(ws.project, skill)
         self.assertIn("escapes skill directory", result.stdout)
 
+    def test_shorthand_defined_with_equal_values_in_several_modules_resolves(self):
+        config = _team_config(Path("project")) + '\n[modules.bmm]\noutput_folder = "{project-root}/_bmad-output"\n'
+        ws = self._workspace(config=config)
+        skill = self._skill(ws, "bmad-build")
+        workflow = self._entry(self._cli(ws.project, skill), ws.project, skill)
+        self.assertTrue(workflow.is_file())
+
+    def test_shorthand_resolution_treats_only_equal_values_as_one(self):
+        root = Path(tempfile.gettempdir())
+        equal = {"modules": {"bmm": {"k": "{project-root}/out"}, "gds": {"k": "{project-root}/out"}}}
+        self.assertEqual(rs._resolve_short_config(equal, "k", root), ("modules.bmm.k", f"{root}/out"))
+        for differing in (
+            {"modules": {"bmm": {"k": "a"}, "gds": {"k": "b"}}},
+            {"modules": {"bmm": {"k": "a"}, "gds": {"k": "a"}, "cis": {"k": "b"}}},
+            {"modules": {"bmm": {"k": 1}, "gds": {"k": True}}},
+        ):
+            with self.assertRaisesRegex(rs.RenderError, "ambiguous config value `k`"):
+                rs._resolve_short_config(differing, "k", root)
+
     def test_long_project_basename_is_bounded_in_the_snapshot_namespace(self):
         ws = self._workspace(name="project-" + ("x" * 220))
         skill = self._skill(ws, "bmad-build")
