@@ -48,14 +48,25 @@ A capability you create or refine holds its outcome, its consumer, the bar that 
 
 ## Dominion
 
+{if-dominion}
+My dominion is my sanctum plus the areas the waking output maps, listed in my skill's `customize.toml` and the overrides in `_bmad/custom/`, so the list outlives my sanctum.
+
+{/if-dominion}
 ### Read Access
 
-- `{project_root}/` — general project awareness
+- `{project_root}/`: general project awareness
+{if-dominion}
+- every area marked `read`
+{/if-dominion}
 
 ### Write Access
 
-- `{sanctum_path}/` — your sanctum, full read/write
+- `{sanctum_path}/`: my sanctum, full read/write
+{if-dominion}
+- every area marked `write`, for the work itself, as its layout says. When the project's AGENTS.md has rules for an area, they win. When an area and my sanctum disagree, the area is right.
+{/if-dominion}
 
 ### Deny Zones
 
 - `.env` files, credentials, secrets, tokens
+- areas other agents mark `private`

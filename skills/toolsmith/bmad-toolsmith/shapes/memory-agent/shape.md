@@ -15,6 +15,8 @@ Ask about the layers as questions, not a menu; each yes adds one:
 - be taught new things over time: learned capabilities
 - work on its own when nobody is at the keyboard: Pulse
 
+Then ask whether the agent owns or tends anything beyond its own memory: the work itself, which people or other agents rely on without it and which must outlive it. A vault agent may own a whole workspace or a section of it, a coach a client's training log, a journal companion a diary in a private space; a pure companion owns nothing. A yes sets the `dominion` condition, which brings in the dominion text and First Breath's question about areas. Ship an area in `customize.toml` only when its path is the same in every install, as `[[agent.dominion]]` entries in place of `dominion = []`, kept last in the file; areas whose paths are the owner's to choose are asked at First Breath, not now. The work itself never goes under `_bmad/memory/`.
+
 An agent that names itself ships `name = ""`; the name is born at First Breath.
 
 ## Files
@@ -22,21 +24,22 @@ An agent that names itself ships `name = ""`; the name is born at First Breath.
 | File | From | Holds |
 |---|---|---|
 | `SKILL.md` | `assets/SKILL-template-bootloader.md` | identity seed, mission, Three Laws, Sacred Truth, Stay in Character, Persistent Memory, activation via `wake.py` |
-| `customize.toml` | `assets/customize-template.toml` | `[agent]` without persona fields or menu: the sanctum is both |
+| `customize.toml` | `assets/customize-template.toml` | `[agent]` without persona fields or menu: the sanctum is both; `dominion` with the areas every install has, else empty |
 | `references/first-breath.md` | `assets/first-breath-template.md` (deep relationship) or `assets/first-breath-config-template.md` (focused) | the birth conversation, territories for this domain |
 | `references/<capability>.md` | the agent shape's capability template with frontmatter `name`, `description`, `code`; `assets/intake-capability-template.md` when the agent takes in material | built-in capabilities, one CAPABILITIES.md row each |
 | `assets/*-template.md` | `assets/PERSONA-template.md` and its CREED, BOND, HOW-I-REMEMBER, CAPABILITIES and PULSE (Pulse only) siblings | sanctum seeds; HOW-I-REMEMBER is the short guide to the memory layout, printed at every waking |
-| `wake.py`, `init-sanctum.py` in `scripts/` | `assets/wake-template.py`, `assets/init-sanctum-template.py` | unchanged; both read the skill name from their folder. Wake prints the identity files and a map of `memory/` and `raw/` with the last tending date and the session notes since |
+| `wake.py`, `init-sanctum.py` in `scripts/` | `assets/wake-template.py`, `assets/init-sanctum-template.py` | unchanged; both read the skill name from their folder. Wake prints the identity files, the capabilities table built from `references/` and the sanctum's `capabilities/`, a map of `memory/` and `raw/` with the last tending date and the session notes since, and a map of each dominion area. Init-sanctum writes the seeds and copies nothing from the skill |
 
 ## Rules
 
-- Emit each template with `uv run {skill-root}/scripts/process_template.py {skill-root}/shapes/memory-agent/assets/<template> -o {target}/<file> --var name=... --true pulse`: `{token}` is plain substitution, `{if-X}...{/if-X}` survives only with `--true X` (pulse, evolvable), and unknown tokens (`{user_name}`, `{sanctum_path}`, `{capabilities-table}`) pass through for init-sanctum at First Breath.
+- Emit each markdown template with `uv run {skill-root}/scripts/process_template.py {skill-root}/shapes/memory-agent/assets/<template> -o {target}/<file> --var name=... --true pulse`: `{token}` is plain substitution, `{if-X}...{/if-X}` survives only with `--true X` (`pulse`, `evolvable`, `dominion`), and unknown tokens (`{project_root}`, `{sanctum_path}`, `{birth_date}`) pass through for init-sanctum at First Breath. Copy `wake-template.py` and `init-sanctum-template.py` byte for byte; never process them, since their f-strings look like tokens.
 - The description follows the canon's rule for agents. An agent that names itself ships it without a name, and First Breath writes the name in unless the skill is installed outside the project. That is the one edit an agent makes to its own `SKILL.md`; `wake.py` asks for it again after an update replaces the file.
 - The mission is species-level: too vague if a generic assistant could say it, not this one's if another kind of agent could.
 - Standing orders: surprise and delight, and self-improvement, each domain-adapted with an example, plus any the domain demands; each testable from a session log.
-- First Breath territories are relationship questions, not feature questions: what this agent must learn about its owner that a generic assistant would not. Write two or more beyond the universal set, each naming the sanctum file its answers go to.
+- First Breath territories are relationship questions, not feature questions: what this agent must learn about its owner that a generic assistant would not. Write two or more beyond the universal set, each naming the sanctum file or dominion area its answers go to.
 - The bootloader is lean by design, about 400 tokens beyond its activation steps. Style, principles and menus belong in the sanctum; judge it by what leaked in, not its weight.
 - Nothing about the owner is read from config. First Breath opens by asking what to call them; the reply sets the name and the language, and the agent writes both to BOND.md.
+- The sanctum holds only what the agent learns. What the skill ships stays in the skill, so an update reaches an agent already born; the facts of the work live in dominion areas, each with a README giving its layout, so they read without the agent. When the project's AGENTS.md has rules for an area, they win; when an area and the sanctum disagree, the area wins.
 - Memory is small files in folders by kind of subject, standing subjects by slug and events by date and slug, with a write-once `raw/` layer for what the owner hands over and distillations that link back to it.
 - Wake generates the map, and the agent finds things with `ls` and `grep`. A single growing memory file, a token guardrail on memory, or an index the agent must maintain is a defect.
 - A standing file's sections are replaced, never appended; only a `## History` section takes dated lines, and only at turning points. A build that defines a kind of standing file says per section which it is, in the layout line it adds to `HOW-I-REMEMBER.md`.

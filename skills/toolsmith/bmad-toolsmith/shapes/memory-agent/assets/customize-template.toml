@@ -14,6 +14,7 @@ title = "{title}"
 
 # --- Configurable below. Overrides merge per BMad structural rules: ---
 #   scalars: override wins • arrays (persistent_facts, activation_steps_*): append
+#   dominion: entries merge by `id`; an override with the same id replaces it
 
 icon = "{icon}"
 
@@ -27,3 +28,20 @@ activation_steps_append = []
 # under {project-root}. Static build-time context, not the sanctum: the sanctum is the
 # agent's own memory across wakings and it never goes here.
 persistent_facts = []
+
+# The areas outside the sanctum this agent owns or tends: the facts of the work, kept where
+# people and other agents can read them and where they outlive the sanctum. Empty means the
+# agent keeps everything in its sanctum. Ship only areas whose path is the same in every
+# install; First Breath writes the owner's areas to the team override, or to the personal one
+# for an area that is the owner's alone. An override with an area's id replaces the whole entry;
+# retired = true drops it. Paths are relative to {project-root} unless absolute or `~`; "." is
+# the whole workspace. access: "write" (the agent maintains it) or "read" (it consults it).
+# private = true asks other agents to keep out.
+#
+# [[agent.dominion]]
+# id = "journal"
+# path = "journal/"
+# access = "write"
+# private = true
+# about = "The owner's diary"
+dominion = []

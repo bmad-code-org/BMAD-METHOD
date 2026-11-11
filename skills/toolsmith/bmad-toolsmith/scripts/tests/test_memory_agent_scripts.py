@@ -1,4 +1,4 @@
-"""Tests for the memory-agent shape's wake and init-sanctum templates: birth, resume after a cut-off birth, and the waking map."""
+"""Tests for the memory-agent shape's wake and init-sanctum templates: birth, resume after a cut-off birth, the waking map, capabilities and dominion."""
 
 import shutil
 import subprocess
@@ -8,6 +8,7 @@ import unittest
 from pathlib import Path
 
 ASSETS = Path(__file__).resolve().parents[2] / "shapes" / "memory-agent" / "assets"
+RESOLVER_SCRIPTS = Path(__file__).resolve().parents[3] / "bmad" / "scripts"
 TEMPLATES = [
     "PERSONA-template.md",
     "CREED-template.md",
@@ -32,8 +33,19 @@ def make_skill(root: Path) -> tuple[Path, Path]:
     (skill / "references" / "intake.md").write_text(
         "---\nname: Intake\ndescription: Keep and distill material\ncode: INTAKE\n---\n\nbody\n", encoding="utf-8"
     )
-    (project / "_bmad").mkdir()
+    shutil.copy(ASSETS / "customize-template.toml", skill / "customize.toml")
+    (project / "_bmad" / "custom").mkdir(parents=True)
+    (project / "_bmad" / "scripts").mkdir()
+    for name in ("resolve_customization.py", "config_utils.py"):
+        shutil.copy(RESOLVER_SCRIPTS / name, project / "_bmad" / "scripts" / name)
     return project, skill
+
+
+def capability(folder: Path, file: str, code: str, name: str, extra: str = "") -> None:
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / file).write_text(
+        f"---\nname: {name}\ndescription: {name} desc\ncode: {code}\n{extra}---\n\nbody\n", encoding="utf-8"
+    )
 
 
 def run(script: Path, *args: str) -> subprocess.CompletedProcess:
@@ -57,19 +69,18 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertIn("MODE: FIRST_BREATH", res.stdout)
         self.assertIn("NO SANCTUM", res.stdout)
 
-    def test_birth_writes_the_layout_without_config(self):
+    def test_birth_writes_the_layout_and_copies_nothing_from_the_skill(self):
         res = run(self.init, self.project, self.skill)
         self.assertEqual(res.returncode, 0, res.stderr)
         for name in ("PERSONA.md", "CREED.md", "BOND.md", "HOW-I-REMEMBER.md", "CAPABILITIES.md"):
             self.assertTrue((self.sanctum / name).is_file(), name)
-        for rel in ("memory/sessions", "raw", "capabilities", "references"):
+        for rel in ("memory/sessions", "raw", "capabilities"):
             self.assertTrue((self.sanctum / rel).is_dir(), rel)
-        self.assertFalse((self.sanctum / "INDEX.md").exists())
-        self.assertFalse((self.sanctum / "references" / "first-breath.md").exists())
+        for rel in ("INDEX.md", "references", "scripts"):
+            self.assertFalse((self.sanctum / rel).exists(), rel)
         bond = (self.sanctum / "BOND.md").read_text(encoding="utf-8")
         self.assertNotIn("friend", bond)
         self.assertIn("learned at First Breath", bond)
-        self.assertIn("| [INTAKE] | Intake |", (self.sanctum / "CAPABILITIES.md").read_text(encoding="utf-8"))
 
     def test_cut_off_birth_is_finished_by_the_next_run(self):
         self.sanctum.mkdir(parents=True)
@@ -168,6 +179,161 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         installed = self.project.parent / "global" / self.skill.name
         shutil.copytree(self.skill, installed)
         self.assertNotIn("===== description =====", run(installed / "scripts" / "wake.py", self.project).stdout)
+
+    def capabilities_section(self, out: str) -> str:
+        return out.split("===== capabilities =====")[1].split("=====")[0]
+
+    def test_capabilities_come_from_the_skill_and_the_sanctum_at_every_waking(self):
+        run(self.init, self.project, self.skill)
+        table = self.capabilities_section(run(self.wake, self.project).stdout)
+        self.assertIn("| [INTAKE] | Intake | Keep and distill material | built-in | `references/intake.md` |", table)
+        self.assertNotIn("first-breath", table)
+        capability(self.skill / "references", "plan.md", "PLAN", "Plan")
+        learned = self.sanctum / "capabilities"
+        capability(learned, "brief.md", "BRIEF", "Brief", "added: 2026-10-05\n")
+        (learned / "quoted.md").write_text(
+            "---\nname: 'Lee''s quiz'\ndescription: >\n  folded\n  text\ncode: QUIZ\n---\n", encoding="utf-8"
+        )
+        capability(learned, "intake.md", "INTAKE", "Intake, my way")
+        table = self.capabilities_section(run(self.wake, self.project).stdout)
+        self.assertIn("| [PLAN] | Plan |", table)
+        self.assertIn("| [BRIEF] | Brief | Brief desc | learned | `capabilities/brief.md` |", table)
+        self.assertIn("| [QUIZ] | Lee's quiz | folded text |", table)
+        self.assertIn("| [INTAKE] | Intake, my way | Intake, my way desc | learned, replaces built-in |", table)
+        self.assertNotIn("references/intake.md", table)
+        capability(learned, "plan.md", "PLAN", "Plan", "retired: true\n")
+        self.assertNotIn("[PLAN]", self.capabilities_section(run(self.wake, self.project).stdout))
+
+    def dominion(self, layer: str, body: str) -> None:
+        with (self.project / "_bmad" / "custom" / layer).open("a", encoding="utf-8") as f:
+            f.write(body)
+
+    def test_no_dominion_prints_no_section(self):
+        run(self.init, self.project, self.skill)
+        self.assertNotIn("===== dominion =====", run(self.wake, self.project).stdout)
+
+    def test_waking_maps_each_area_and_flags_what_is_wrong(self):
+        run(self.init, self.project, self.skill)
+        vault = self.project / "vault"
+        (vault / "people").mkdir(parents=True)
+        (vault / "decisions").mkdir()
+        (vault / ".obsidian").mkdir()
+        (vault / "README.md").write_text("# Vault\n", encoding="utf-8")
+        (vault / "people" / "ruben.md").write_text("AREA-BODY\n", encoding="utf-8")
+        (vault / "decisions" / "2026-10-01-pricing.md").write_text("x\n", encoding="utf-8")
+        (vault / "decisions" / "2026-10-04-hiring.md").write_text("x\n", encoding="utf-8")
+        (vault / ".obsidian" / "2026-12-01-cache.md").write_text("x\n", encoding="utf-8")
+        notes = self.project / "notes"
+        notes.mkdir()
+        (notes / "a.md").write_text("x\n", encoding="utf-8")
+        self.dominion(
+            "acme-agent-sage.toml",
+            '[[agent.dominion]]\nid = "vault"\npath = "vault"\naccess = "write"\nabout = "The business vault"\n\n'
+            '[[agent.dominion]]\nid = "notes"\npath = "notes"\naccess = "write"\n\n'
+            '[[agent.dominion]]\nid = "docs"\npath = "docs"\n',
+        )
+        journal = Path(self._tmp.name) / "safe" / "journal"
+        journal.mkdir(parents=True)
+        self.dominion(
+            "acme-agent-sage.user.toml",
+            f'[[agent.dominion]]\nid = "journal"\npath = "{journal.as_posix()}"\naccess = "write"\nprivate = true\n\n'
+            '[[agent.dominion]]\nid = "notes"\npath = "notes"\naccess = "read"\n',
+        )
+        res = run(self.wake, self.project)
+        self.assertEqual(res.returncode, 0, res.stderr)
+        out = res.stdout.split("===== dominion =====")[1]
+        self.assertIn(f"vault → {vault.resolve()} (write): The business vault", out)
+        self.assertIn("decisions/ (2 files)", out)
+        self.assertIn("people/ (1 files)", out)
+        self.assertNotIn(".obsidian", out)
+        self.assertLess(out.index("decisions/2026-10-04-hiring.md"), out.index("decisions/2026-10-01-pricing.md"))
+        self.assertNotIn("AREA-BODY", out)
+        self.assertIn(f"notes → {notes.resolve()} (read)", out)
+        self.assertIn(f"journal → {journal.resolve()} (write, private: other agents keep out)", out)
+        journal_block = out.split("journal →")[1]
+        self.assertIn("No README.md", journal_block)
+        self.assertIn("0 files; names not shown", journal_block)
+        docs_block = out.split("docs →")[1].split("journal →")[0]
+        self.assertIn("(read)", docs_block)
+        self.assertIn("MISSING", docs_block)
+        self.assertNotIn("No README.md", out.split("vault →")[1].split("notes →")[0])
+
+    def test_whole_workspace_area_skips_bmad_folders_and_needs_no_readme(self):
+        run(self.init, self.project, self.skill)
+        (self.sanctum / "memory" / "sessions" / "2026-10-09-chat.md").write_text("x\n", encoding="utf-8")
+        (self.project / "_bmad-output").mkdir()
+        self.dominion("acme-agent-sage.toml", '[[agent.dominion]]\nid = "all"\npath = "."\naccess = "write"\n')
+        out = run(self.wake, self.project).stdout.split("===== dominion =====")[1]
+        self.assertIn(f"all → {self.project.resolve()} (write)", out)
+        self.assertNotIn("_bmad", out)
+        self.assertNotIn("2026-10-09-chat.md", out)
+        self.assertNotIn("No README.md", out)
+
+    def test_private_area_shows_a_count_not_names(self):
+        run(self.init, self.project, self.skill)
+        diary = self.project / "diary" / "entries"
+        diary.mkdir(parents=True)
+        (diary / "2026-11-10-argued-with-sister.md").write_text("x\n", encoding="utf-8")
+        (diary.parent / "README.md").write_text("# Diary\n", encoding="utf-8")
+        self.dominion(
+            "acme-agent-sage.user.toml",
+            '[[agent.dominion]]\nid = "diary"\npath = "diary"\naccess = "write"\nprivate = true\n',
+        )
+        out = run(self.wake, self.project).stdout.split("===== dominion =====")[1]
+        self.assertIn("2 files; names not shown", out)
+        self.assertNotIn("sister", out)
+        self.assertNotIn("entries", out)
+
+    def test_retired_area_is_dropped_and_malformed_entries_are_named(self):
+        run(self.init, self.project, self.skill)
+        for folder in ("log", "notes"):
+            (self.project / folder).mkdir()
+        self.dominion(
+            "acme-agent-sage.toml",
+            '[[agent.dominion]]\nid = "log"\npath = "log"\naccess = "write"\n\n'
+            '[[agent.dominion]]\nid = "notes"\npath = "notes"\naccess = "rw"\n\n'
+            '[[agent.dominion]]\nid = "gone"\npath = "gone"\n',
+        )
+        self.dominion(
+            "acme-agent-sage.user.toml",
+            '[[agent.dominion]]\nid = "gone"\npath = "gone"\nretired = true\n\n'
+            '[[agent.dominion]]\nid = "log"\nabout = "only the about"\n',
+        )
+        out = run(self.wake, self.project).stdout.split("===== dominion =====")[1]
+        self.assertNotIn("gone", out)
+        self.assertIn("log: no path, skipped", out)
+        self.assertNotIn("log →", out)
+        self.assertIn("notes: access 'rw' is neither write nor read; treated as read", out)
+        self.assertIn(f"notes → {(self.project / 'notes').resolve()} (read)", out)
+
+    def test_entry_without_id_is_named(self):
+        run(self.init, self.project, self.skill)
+        (self.project / "notes").mkdir()
+        self.dominion("acme-agent-sage.toml", '[[agent.dominion]]\npath = "notes"\n')
+        out = run(self.wake, self.project).stdout.split("===== dominion =====")[1]
+        self.assertIn("notes: no id", out)
+        self.assertIn("notes → ", out)
+
+    def test_first_breath_shows_shipped_areas_and_capabilities(self):
+        with (self.skill / "customize.toml").open("r+", encoding="utf-8") as f:
+            text = f.read().replace(
+                "dominion = []", '[[agent.dominion]]\nid = "log"\npath = "training-log"\naccess = "write"'
+            )
+            f.seek(0)
+            f.write(text)
+            f.truncate()
+        out = run(self.wake, self.project).stdout
+        self.assertIn("MODE: FIRST_BREATH", out)
+        self.assertIn("[INTAKE]", out)
+        self.assertIn("log → ", out)
+        self.assertIn("MISSING", out)
+
+    def test_dominion_without_the_resolver_says_why(self):
+        run(self.init, self.project, self.skill)
+        (self.project / "_bmad" / "scripts" / "resolve_customization.py").unlink()
+        out = run(self.wake, self.project).stdout
+        self.assertIn("MODE: WAKING", out)
+        self.assertIn("Dominion not read:", out)
 
 
 if __name__ == "__main__":

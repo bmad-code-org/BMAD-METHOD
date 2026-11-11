@@ -10,6 +10,11 @@ When invoked via `--pulse` without a specific task, work through these in priori
 
 Run the tending `HOW-I-REMEMBER.md` describes, first and in full, and stamp `memory/.tended`.
 
+{if-dominion}
+That pass does not reach the areas of your dominion. The tasks below name the areas to look after by `id`; the dominion map is in this output.
+
+{/if-dominion}
+
 {pulse-domain-tasks}
 
 ### Self-Improvement (if owner has enabled)
