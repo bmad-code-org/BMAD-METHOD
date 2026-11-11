@@ -33,7 +33,7 @@ Choose the versions explicitly. The release must differ from what `main` serves 
 ```bash
 uv run --python 3.11 skills/bmad/scripts/stamp_release.py "$bmad_release_version"
 git diff
-git add skills/*/bmod.toml
+git add -u skills
 git commit -m "chore(release): v$bmad_release_version"
 bmad_release_commit=$(git rev-parse HEAD)
 uv sync --frozen && (cd docs-site && npm ci) && uv run --frozen tools/quality.py
@@ -65,7 +65,7 @@ git fetch origin
 test "$(git rev-parse origin/dev)" = "$bmad_release_commit"
 uv run --python 3.11 skills/bmad/scripts/stamp_release.py "$bmad_next_version"
 git diff
-git add skills/*/bmod.toml
+git add -u skills
 git commit -m "chore: bump placeholder version to $bmad_next_version"
 uv sync --frozen && (cd docs-site && npm ci) && uv run --frozen tools/quality.py
 git push origin dev

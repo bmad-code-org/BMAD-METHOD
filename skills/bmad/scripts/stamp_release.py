@@ -5,8 +5,8 @@
 """Release version stamper for module repositories.
 
 Writes a human-supplied SemVer version into every module record: the
-`version` line inside the `[bmod]` table of each skills/*/bmod.toml that has
-one. Member skills carry no version and are not written. Each module
+`version` line inside the `[bmod]` table of each bmod.toml under skills/ that
+has one, a module grouped in its own folder included. Member skills carry no version and are not written. Each module
 repository's release runbook uses it to stamp releases and the next
 placeholder on `dev`.
 

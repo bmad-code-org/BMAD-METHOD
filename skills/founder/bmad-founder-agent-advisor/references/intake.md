@@ -5,7 +5,7 @@ The outcome is the material kept as given in `{record_folder}/raw/`, and what it
 ## What you cannot infer
 
 - The names, frontmatter and links are the ones `{record_folder}/README.md` gives. A standing subject's file is updated in place, never duplicated.
-- A metrics export replaces the Metrics section of `{record_folder}/company.md`.
+- A metrics export updates each metric it holds in the Metrics section of `{record_folder}/company.md`, with its measurement date; a metric it does not hold, or one recorded at a later date, stays as it is.
 - Ask before filing only when the material's date, source or person is not in it. A recording is transcribed first, with the tool the founder has, and the transcript is the raw file.
 
 ## Hand back
