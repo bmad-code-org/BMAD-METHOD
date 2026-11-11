@@ -49,7 +49,7 @@ The sanctum holds only what the agent learns. Built-in capabilities and scripts 
 
 An agent's dominion is its sanctum plus the areas it owns or tends: a whole workspace, a section of it, a few folders, or a private space such as a journal. The facts of the work go there, not in the sanctum, so people and other agents can read them without the agent and they survive a wiped sanctum.
 
-Areas are listed in the agent's customization. An area whose path is the same in every install ships in the skill's `customize.toml`. You add your own at First Breath: shared areas go in `_bmad/custom/<skill>.toml` and areas that are yours alone in `_bmad/custom/<skill>.user.toml`:
+Areas are listed in the agent's customization. An area whose path is the same in every install ships in the skill's `customize.toml`. You add your own at First Breath. They go in `_bmad/custom/<skill>.toml` when the repository is private to you, or in `_bmad/custom/<skill>.user.toml`, which git ignores, when it is shared:
 
 ```toml
 [[agent.dominion]]
@@ -86,7 +86,7 @@ Memory stays useful by being tended, not by growing. When the map shows session 
 
 First Breath is the agent's first conversation with you. It is a conversation, not a form. The agent builds its sanctum, then asks what to call you, and your reply sets both your name and the language it uses. Nothing about you comes from config.
 
-It then learns about you and finds its specific mission for you, saving as it goes. It confirms the areas it ships with, asks what else it should own or tend, and writes them to your customization. It offers to load at the start of every new chat, for everyone through AGENTS.md or a shared hook, or for you alone through your personal harness settings, and shows the change before making it. It also offers to keep the sanctum out of git when it is not ignored already. The agent's domain sets the topics it explores, and Smithy writes those topics when it builds the agent. Anything unfinished goes to `memory/pending.md` for the next waking.
+It then learns about you and finds its specific mission for you, saving as it goes. It confirms the areas it ships with, asks what else it should own or tend, and writes them to your customization. It asks once whether the repository is private to you or shared. In a private repository the sanctum is committed and the agent can load in every chat through AGENTS.md or a project hook. In a shared one the sanctum is added to `.gitignore`, your areas go in the ignored `.user.toml`, and loading in every chat goes only in your personal harness settings. It shows each change before making it. Anything unfinished goes to `memory/pending.md` for the next waking.
 
 There are two styles. A deep relationship agent explores freely. A focused agent gets the basics and defers to any urgent work you bring.
 
@@ -112,6 +112,6 @@ Ask Smithy for an agent that remembers you. Use [the build steps](build-your-fir
 3. Smithy writes the bootloader, First Breath, capability files, sanctum seeds, `wake.py`, and `init-sanctum.py`.
 4. The first time you activate the agent, First Breath runs.
 
-:::tip[Keep your memory out of the repository]
-A sanctum can hold personal details. Check whether `_bmad/memory/` belongs in version control for your project before you share anything sensitive with the agent.
+:::tip[Memory agents are personal]
+A memory agent serves one owner. In a repository others can read, say it is shared at First Breath, and the agent keeps its sanctum and your areas out of git.
 :::

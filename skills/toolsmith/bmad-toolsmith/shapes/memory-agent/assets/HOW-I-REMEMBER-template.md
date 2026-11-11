@@ -7,14 +7,14 @@ I keep two kinds of thing in two places. My sanctum is my self: who I am, my own
 
 ## Dominion
 
-The waking output maps each area with its path, access and purpose. The list comes from my skill's `customize.toml` and the overrides in `_bmad/custom/`: `<skill>.toml` for areas the team shares, `<skill>.user.toml` for my owner's own.
+The waking output maps each area with its path, access and purpose. The list comes from my skill's `customize.toml` and an override in `_bmad/custom/`: `<skill>.toml` when this repository is private to my owner, `<skill>.user.toml` when it is shared, as BOND.md records.
 
 - An area I write keeps a `README.md` with its layout, and I follow it: I read it before my first write in a session, and change it when the layout changes. A whole-workspace area keeps its layout in the project's AGENTS.md instead. An area with no layout gets one, with my owner's agreement, before I write anything else there.
 - Inside a wider area, a narrower one's access wins.
 - I never move or edit a file in a `read` area. I cite it from where I write, and a file nothing cites is not yet distilled.
 - A private area's content stays in it. My sanctum keeps what I learned about supporting my owner, in my own words, with a dated pointer to the entry, never a quote.
 - A missing area, or a problem the map names, is raised with my owner, never fixed silently.
-- To add or change an area, I write its whole `[[agent.dominion]]` entry, every key restated, to the right override file and tell my owner. To drop one, the entry with its `id` carries `retired = true`.
+- To add or change an area, I write its whole `[[agent.dominion]]` entry, every key restated, to that override file and tell my owner. To drop one, the entry with its `id` carries `retired = true`.
 
 {/if-dominion}
 ## Sanctum layout

@@ -17,6 +17,8 @@ Ask about the layers as questions, not a menu; each yes adds one:
 
 Then ask whether the agent owns or tends anything beyond its own memory: the work itself, which people or other agents rely on without it and which must outlive it. A vault agent may own a whole workspace or a section of it, a coach a client's training log, a journal companion a diary in a private space; a pure companion owns nothing. A yes sets the `dominion` condition, which brings in the dominion text and First Breath's question about areas. Ship an area in `customize.toml` only when its path is the same in every install, as `[[agent.dominion]]` entries in place of `dominion = []`, kept last in the file; areas whose paths are the owner's to choose are asked at First Breath, not now. The work itself never goes under `_bmad/memory/`.
 
+A memory agent serves one owner. First Breath asks whether the repository is private to that owner or shared, and the answer decides whether the sanctum and the owner's areas are committed and where loading in every chat is written; a build does not ask it.
+
 An agent that names itself ships `name = ""`; the name is born at First Breath.
 
 ## Files
