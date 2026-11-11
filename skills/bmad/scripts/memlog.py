@@ -75,6 +75,7 @@ from __future__ import annotations  # keep type-hint syntax lazy so the script r
 import argparse
 import json
 import os
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -205,6 +206,17 @@ def ack(path: Path, body: str) -> None:
     )
 
 
+KEY_RE = re.compile(r"[A-Za-z0-9_-]+")
+
+
+def valid_key(key: str) -> bool:
+    """A frontmatter key is one `key: value` line; `split()` reads it back by the first
+    colon, so a key holding `:` reads back as a different key, and one holding a newline
+    and `---` closes the fence early and drops every later field into the body (#3145).
+    Callers are agents building commands from model output, so refuse rather than trust."""
+    return KEY_RE.fullmatch(key) is not None
+
+
 def cmd_init(args) -> int:
     path = resolve(args)
     if path.exists():
@@ -217,6 +229,9 @@ def cmd_init(args) -> int:
             print(f"error: --field expects key=value, got {pair!r}", file=sys.stderr)
             return 2
         k, v = pair.split("=", 1)
+        if not valid_key(k.strip()):
+            print(f"error: --field key must match [A-Za-z0-9_-]+, got {k.strip()!r}", file=sys.stderr)
+            return 2
         meta[k.strip()] = v.strip()
     touch(meta)
     write_atomic(path, render(meta, ""))
@@ -240,6 +255,9 @@ def cmd_append(args) -> int:
 
 
 def cmd_set(args) -> int:
+    if not valid_key(args.key):
+        print(f"error: --key must match [A-Za-z0-9_-]+, got {args.key!r}", file=sys.stderr)
+        return 2
     path = resolve(args)
     meta, body = split(path.read_text(encoding="utf-8"))
     meta[args.key] = args.value

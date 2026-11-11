@@ -294,6 +294,42 @@ def test_newline_in_field_is_neutralized(ws):
     assert "\n" not in meta["topic"]
 
 
+def test_set_rejects_key_with_colon(ws):
+    # #3145: `owner: alex` would be written as `owner: alex: x` and read back as key
+    # `owner`, value `alex: x`. Refuse it and leave the file untouched.
+    init(ws)
+    before = read(ws)
+    assert memlog.main(["set", "--workspace", ws, "--key", "owner: alex", "--value", "x"]) == 2
+    assert read(ws) == before
+
+
+def test_set_rejects_key_that_closes_the_fence(ws):
+    # #3145: a key carrying a newline and `---` ends the frontmatter early, so `updated`
+    # and every later field fall into the body on the next read.
+    init(ws)
+    append(ws, "first idea")
+    before = read(ws)
+    assert memlog.main(["set", "--workspace", ws, "--key", "a\n---\nb", "--value", "y"]) == 2
+    assert read(ws) == before
+    meta, body = memlog.split(read(ws))
+    assert list(meta)[-1] == "updated"
+    assert entries(ws) == ["- first idea"]
+
+
+def test_set_accepts_plain_keys(ws):
+    init(ws)
+    for key in ("owner", "run_mode", "last-step", "v2"):
+        assert memlog.main(["set", "--workspace", ws, "--key", key, "--value", "ok"]) == 0
+    meta = memlog.split(read(ws))[0]
+    assert all(meta[k] == "ok" for k in ("owner", "run_mode", "last-step", "v2"))
+
+
+def test_init_rejects_invalid_field_key(ws):
+    # The same key rules apply to `init --field`, which writes the same `key: value` line.
+    assert memlog.main(["init", "--workspace", ws, "--field", "owner: alex=x"]) == 2
+    assert not (Path(ws) / MEMLOG).exists()
+
+
 def test_append_emits_json_ack(ws, capsys):
     init(ws)
     append(ws, "x", entry_type="idea")
