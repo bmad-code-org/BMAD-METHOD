@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pytest>=8.0"]
+# dependencies = ["pytest>=8.0", "pyyaml>=6.0.2,<7"]
 # ///
 """Tests for memlog.py. Run: uv run --with pytest pytest scripts/tests/test_memlog.py
 
@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 SCRIPT = Path(__file__).resolve().parent.parent / "memlog.py"
 sys.path.insert(0, str(SCRIPT.parent))
@@ -363,3 +364,13 @@ def test_parallel_appends_all_land(ws):
     failures = [p.stderr.read().decode() for p in procs if p.wait() != 0]
     assert failures == []
     assert sorted(entries(ws)) == sorted(f"- entry {i}" for i in range(n))
+
+
+
+def test_fields_that_clash_with_yaml_round_trip_as_yaml(ws):
+    init(ws, topic="Fix #42: login", commit="0123456", flag="yes")
+    memlog.main(["set", "--workspace", ws, "--key", "owner: alex", "--value", "x"])
+    memlog.main(["set", "--workspace", ws, "--key", "a\n---\nb", "--value", "y"])
+    want = {"topic": "Fix #42: login", "commit": "0123456", "flag": "yes", "owner: alex": "x", "a --- b": "y"}
+    assert {k: v for k, v in memlog.split(read(ws))[0].items() if k != "updated"} == want
+    assert {k: v for k, v in yaml.safe_load(read(ws).split("---\n")[1]).items() if k != "updated"} == want

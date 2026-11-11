@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """memlog — an append-only memory log: LLM-optimal working memory for a skill.
 
@@ -31,6 +32,8 @@ Three invariants make it trustworthy:
      log would have to mutate. The chronology stays the single source of truth, and a
      resume learns the state by reading the last entries — the same way it learns
      everything else.
+
+The frontmatter is YAML whose values all read as text, one line per field.
 
 Atomicity: `init` and `set` write a temp file, flush and fsync it, then atomically rename
 it over the target. `append` never rewrites the file: it adds the entry at the end of file
@@ -79,6 +82,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import yaml
+
 MEMLOG = ".memlog.md"
 
 
@@ -91,30 +96,28 @@ def resolve(args) -> Path:
     return Path(args.path) if args.path else Path(args.workspace) / MEMLOG
 
 
-def split(text: str) -> tuple[dict, str]:
-    """Return (frontmatter dict in source order, body str). Frontmatter is plain key: value.
-
-    The closing fence is the first line that is *exactly* `---`, so a `---` inside a
-    field value (topic/goal are free user text) never truncates the frontmatter.
-    """
+def fence(text: str) -> tuple[str, str]:
+    """Return (frontmatter text, body). The closing fence is the first line that is exactly `---`."""
     lines = text.splitlines()
     if not lines or lines[0] != "---":
         raise ValueError(".memlog.md has no frontmatter")
     end = next((i for i in range(1, len(lines)) if lines[i] == "---"), None)
     if end is None:
         raise ValueError(".memlog.md frontmatter is not terminated")
-    meta: dict[str, str] = {}
-    for line in lines[1:end]:
-        if ":" in line:
-            k, v = line.split(":", 1)
-            meta[k.strip()] = v.strip()
-    return meta, "\n".join(lines[end + 1 :]).lstrip("\n")
+    return "\n".join(lines[1:end]), "\n".join(lines[end + 1 :]).lstrip("\n")
+
+
+def split(text: str) -> tuple[dict, str]:
+    """Return (frontmatter as a dict of text values in source order, body)."""
+    front, body = fence(text)
+    return yaml.load(front, Loader=yaml.BaseLoader) or {}, body
 
 
 def render(meta: dict, body: str) -> str:
-    # Neutralize newlines in values so a multi-line field can't break the fence on re-read.
-    fm = "\n".join(f"{k}: {' '.join(str(v).splitlines())}" for k, v in meta.items())
-    return "---\n" + fm + "\n---\n\n" + body.rstrip("\n") + "\n"
+    # Fold newlines so each field stays on one line.
+    meta = {" ".join(k.splitlines()): " ".join(str(v).splitlines()) for k, v in meta.items()}
+    fm = yaml.safe_dump(meta, sort_keys=False, allow_unicode=True, width=float("inf"))
+    return "---\n" + fm + "---\n\n" + body.rstrip("\n") + "\n"
 
 
 def touch(meta: dict) -> None:
@@ -227,7 +230,7 @@ def cmd_init(args) -> int:
 def cmd_append(args) -> int:
     path = resolve(args)
     raw = path.read_text(encoding="utf-8")
-    split(raw)  # a missing or malformed log fails here, before anything is written
+    fence(raw)  # a log without frontmatter fails here, before anything is written
     text = " ".join(args.text.split())  # collapse newlines/runs → one-line entry, no prose bloat
     label = args.type or ""
     if args.by:
@@ -235,7 +238,7 @@ def cmd_append(args) -> int:
     tag = f"({label}) " if label else ""
     entry = f"- {tag}{text}"
     append_line(path, ("" if raw.endswith("\n") else "\n") + entry + "\n")
-    ack(path, split(path.read_text(encoding="utf-8"))[1])
+    ack(path, fence(path.read_text(encoding="utf-8"))[1])
     return 0
 
 
