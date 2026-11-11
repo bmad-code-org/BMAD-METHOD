@@ -45,6 +45,16 @@ class WordMetricsTest(unittest.TestCase):
         self.assertEqual(word_count("我去学校"), 4)
         self.assertEqual(word_count("私は学校に行きます"), 9)
 
+    def test_cjk_punctuation_is_not_a_word(self):
+        self.assertEqual(word_count("我爱你。你好！"), 5)
+        self.assertEqual(word_count("我们，他们、「你们」"), 6)
+        self.assertEqual(word_count("これはテストです。"), 8)
+        self.assertEqual(word_count("一\u3000二"), 2)  # ideographic space
+
+    def test_cjk_word_marks_and_fullwidth_alphanumerics_still_count(self):
+        self.assertEqual(word_count("人々"), 2)  # iteration mark is part of the word
+        self.assertEqual(word_count("ＡＢＣ　１２３"), 2)  # fullwidth letters and digits
+
     def test_sections_split_on_headings(self):
         sections = section_metrics(DOC)
         headings = [s["heading"] for s in sections]
