@@ -189,6 +189,20 @@ def test_exclude_skips_named(lib):
     }
 
 
+def test_exclude_matches_num_and_alias_like_show(lib):
+    got = pick_methods.exclude(rows(lib), ["1", "5"])
+    assert "Pre-mortem Analysis" not in {r["method_name"] for r in got}
+    assert "SCAMPER Method" not in {r["method_name"] for r in got}
+    aliased = [dict(r, aliases="Premortem" if r["num"] == "1" else "") for r in rows(lib)]
+    assert "Pre-mortem Analysis" not in {r["method_name"] for r in pick_methods.exclude(aliased, ["premortem"])}
+
+
+def test_cli_random_never_draws_an_excluded_num(lib, capsys):
+    code, out, _ = run(["random", "-n", "99", "--exclude", "2", "--exclude", "4"], lib, capsys)
+    assert code == 0
+    assert "Assumption Audit" not in out and "Socratic Questioning" not in out
+
+
 # --- spread sampling ---------------------------------------------------------
 
 

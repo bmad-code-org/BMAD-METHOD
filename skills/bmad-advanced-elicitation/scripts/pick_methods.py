@@ -16,7 +16,7 @@ Commands:
   list [--direction D ...] [--tier T] [--all]
                                   num, direction, name and gist; --all for the whole catalog
   show NAME_OR_NUM [...]          full rows, form included, for a brief
-  random [-n N] [--direction D ...] [--tier T] [--exclude NAME ...] [--spread]
+  random [-n N] [--direction D ...] [--tier T] [--exclude NAME_OR_NUM ...] [--spread]
                                   a random draw; --spread takes at most one per direction
 
 `list` refuses to run with neither --direction, --tier nor --all so dumping the
@@ -227,10 +227,12 @@ def find(rows: list[dict], names: list[str]) -> tuple[list[dict], list[str]]:
 
 
 def exclude(rows: list[dict], names: list[str] | None) -> list[dict]:
+    """Drop the methods named, matched as `show` matches them: by name, alias or num."""
     if not names:
         return rows
-    skip = {n.strip().lower() for n in names}
-    return [r for r in rows if r["method_name"].lower() not in skip]
+    found, _ = find(rows, names)
+    skip = {id(r) for r in found}
+    return [r for r in rows if id(r) not in skip]
 
 
 def spread_sample(rows: list[dict], n: int, rng: random.Random | None = None) -> list[dict]:
@@ -310,7 +312,9 @@ def main(argv: list[str] | None = None) -> int:
         help="restrict to a direction (repeatable)",
     )
     pr.add_argument("--tier", choices=TIERS, help="restrict to core or more")
-    pr.add_argument("--exclude", action="append", help="method name to skip (repeatable), e.g. already offered")
+    pr.add_argument(
+        "--exclude", action="append", help="method name, alias or num to skip (repeatable), e.g. already offered"
+    )
     pr.add_argument("--spread", action="store_true", help="at most one per direction")
     args = p.parse_args(argv)
 
