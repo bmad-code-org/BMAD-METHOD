@@ -69,7 +69,8 @@ Install BMad Method with the skills CLI, then let the `bmad` skill set up the
 project:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD
+npx skills add bmad-code-org/BMAD-METHOD/skills/core-tools --skill '*'
+npx skills add bmad-code-org/BMAD-METHOD/skills/method --skill '*'
 ```
 
 Open Claude Code in this directory and ask the `bmad` skill to run `bmad setup`. Restart Claude Code once the skills are installed.

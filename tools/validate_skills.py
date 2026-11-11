@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Deterministic Skill Validator
 
-Validates 11 deterministic rules across skill directories.
+Validates 12 deterministic rules across skill directories.
 Acts as a fast first-pass complement to the inference-based skill validator.
 
 What it checks:
@@ -15,6 +16,7 @@ What it checks:
 - SKILL-05: name matches directory basename
 - SKILL-06: description quality (length, "Use when"/"Use if"; the fixed text for a module record)
 - SKILL-07: SKILL.md has body content after frontmatter
+- SKILL-08: SKILL.md frontmatter parses as a YAML mapping with string name and description
 - PATH-02: no installed_path variable
 - PATH-06: script calls use {skill-root}, not a bare scripts/ path
 - SEQ-02: no time estimates
@@ -35,6 +37,8 @@ import os
 import re
 import sys
 import tomllib
+
+import yaml
 
 sys.dont_write_bytecode = True
 
@@ -182,6 +186,33 @@ def parse_frontmatter_multiline(content: str) -> dict[str, str] | None:
     return result
 
 
+def frontmatter_yaml_error(content: str) -> tuple[str, int | None] | None:
+    """Parse the frontmatter as YAML, as the skills CLI and agents do. Return (detail, line) or None.
+
+    A file with no frontmatter block is left to SKILL-02 and SKILL-03."""
+    fm_block = _frontmatter_block(content)
+    if fm_block is None:
+        return None
+    try:
+        data = yaml.safe_load(fm_block)
+    except yaml.YAMLError as error:
+        mark = getattr(error, "problem_mark", None)
+        # _frontmatter_block strips the text around the block, so count the file lines before it.
+        first_line = content[: content.find(fm_block)].count("\n") + 1 if fm_block else 1
+        line = first_line + mark.line if mark is not None else None
+        problem = getattr(error, "problem", None) or str(error).splitlines()[0]
+        return f"Frontmatter is not valid YAML: {problem}.", line
+    except ValueError as error:  # PyYAML builds dates and times, e.g. an unquoted 2026-02-30
+        return f"Frontmatter is not valid YAML: {error}.", None
+    if not isinstance(data, dict):
+        return f"Frontmatter must be a YAML mapping, got {type(data).__name__}.", None
+    for key in ("name", "description"):
+        value = data.get(key)
+        if value is not None and not isinstance(value, str):
+            return f"Frontmatter `{key}` must be a string, got {type(value).__name__}.", None
+    return None
+
+
 # --- Safe File Reading ---
 
 
@@ -314,6 +345,20 @@ def validate_skill(skill_dir: str) -> list[dict]:
     if skill_content is None:
         return findings
     skill_fm = parse_frontmatter_multiline(skill_content)
+    yaml_error = frontmatter_yaml_error(skill_content)
+    if yaml_error is not None:
+        detail, line = yaml_error
+        findings.append(
+            _finding(
+                "SKILL-08",
+                "SKILL.md Frontmatter Must Be Valid YAML",
+                "CRITICAL",
+                "SKILL.md",
+                detail,
+                "Fix the frontmatter so a YAML parser reads it: in a single-quoted value, write an apostrophe as `''`.",
+                line,
+            )
+        )
 
     if not skill_fm or "name" not in skill_fm:
         findings.append(

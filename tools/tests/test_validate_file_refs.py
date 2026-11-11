@@ -213,6 +213,16 @@ class TestRunClassification(ProjectCase):
         self.assertIn("References checked: 1", out)
         self.assertIn("Broken references: 0", out)
 
+    def test_skill_root_resolution_in_a_module_folder(self):
+        skill = self.skill.parent / "founder" / "bmad-founder-agent-advisor"
+        write(skill / "SKILL.md", "---\nname: bmad-founder-agent-advisor\n---\n")
+        write(skill / "references" / "help.md", "target\n")
+        write(skill / "deep" / "doc.md", "Load `references/help.md`, then `references/gone.md`.\n")
+        code, out = self.run_validator(strict=True)
+        self.assertEqual(code, 1)
+        self.assertIn("[BROKEN] references/gone.md (line 1)", out)
+        self.assertIn("Broken references: 1", out)
+
     def test_prose_path_not_flagged(self):
         write(self.skill / "doc.md", "Outputs land in `no-such-dir/thing.md` later.\n")
         code, out = self.run_validator(strict=True)

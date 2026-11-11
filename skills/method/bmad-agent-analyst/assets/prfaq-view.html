@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-field="title">PRFAQ</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #e9e6df; --paper: #fffdf8; --ink: #1d1d1b; --muted: #66625a; --rule: #d7d1c4;
+  --accent: #9f1d20; --panel: #f6f2e9; --verdict: #fbf3e4; --verdict-rule: #c98a2b;
+  --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--page); }
+body { margin: 0; padding: 2rem 1rem 3rem; font: 17px/1.6 var(--serif); color: var(--ink); }
+main { max-width: 46rem; margin: 0 auto; }
+.wire { background: var(--paper); border: 1px solid var(--rule); padding: 2.25rem 2.5rem 2.5rem; box-shadow: 0 0.25rem 1.5rem rgb(0 0 0 / 8%); }
+.masthead { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; justify-content: space-between; align-items: baseline; padding-bottom: 0.6rem; border-bottom: 3px solid var(--ink); font: 700 0.72rem/1.2 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; }
+.masthead .release { color: var(--accent); }
+.masthead .meta { display: flex; gap: 0.75rem; color: var(--muted); font-weight: 600; }
+.status { padding: 0.1rem 0.45rem; border: 1px solid var(--rule); border-radius: 0.2rem; }
+.product { margin: 1.1rem 0 0; font: 600 0.85rem/1.3 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.release-body h3:first-child { margin: 0.35rem 0 0.6rem; font: 700 2.1rem/1.15 var(--serif); letter-spacing: -0.01em; }
+.release-body h3:first-child + p { margin: 0 0 1.4rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--rule); font-size: 1.15rem; line-height: 1.45; color: var(--muted); }
+.release-body h3:first-child + p strong { font-weight: 400; }
+.release-body p { margin: 0 0 1rem; }
+.release-body ol, .release-body ul { margin: 0 0 1rem; padding-left: 1.4rem; }
+.release-body blockquote { margin: 1.25rem 0; padding: 0 0 0 1rem; border-left: 3px solid var(--accent); font-style: italic; }
+.end { margin: 1.5rem 0 0; text-align: center; font: 700 0.8rem/1 var(--sans); letter-spacing: 0.3em; color: var(--muted); }
+.faq { margin-top: 2rem; padding: 1.75rem 2.5rem 1.5rem; background: var(--paper); border: 1px solid var(--rule); }
+.faq h2, .verdict h2, .rest h2 { margin: 0 0 1rem; font: 700 0.78rem/1.2 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.faq .who { margin: -0.6rem 0 1.25rem; padding: 0; border: 0; font: italic 0.95rem/1.4 var(--serif); color: var(--muted); }
+.faq p { margin: 0 0 1.1rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--panel); }
+.faq p:last-child { border-bottom: 0; padding-bottom: 0; }
+.faq p > strong:first-child { display: block; margin-bottom: 0.3rem; font: 700 1rem/1.4 var(--sans); }
+.faq h3 { margin: 1.25rem 0 0.4rem; font: 700 1rem/1.4 var(--sans); }
+.verdict { margin-top: 2rem; padding: 1.75rem 2.5rem; background: var(--verdict); border: 1px solid var(--rule); border-left: 6px solid var(--verdict-rule); }
+.verdict h2 { color: var(--ink); }
+.verdict h3 { margin: 1.1rem 0 0.35rem; font: 700 0.95rem/1.3 var(--sans); }
+.verdict p { margin: 0 0 0.9rem; }
+.rest { margin-top: 2rem; padding: 1.5rem 2.5rem; background: var(--panel); border: 1px solid var(--rule); font-size: 0.95rem; }
+table { width: 100%; border-collapse: collapse; margin: 0 0 1rem; font: 0.88rem/1.4 var(--sans); }
+th, td { padding: 0.35rem 0.5rem; border: 1px solid var(--rule); text-align: left; vertical-align: top; }
+th { background: var(--panel); }
+pre { white-space: pre-wrap; font: 0.9rem/1.5 var(--sans); margin: 0; }
+a { color: var(--accent); }
+@media (max-width: 40rem) {
+  body { padding: 1rem 0.75rem 2rem; font-size: 16px; }
+  .wire, .faq, .verdict, .rest { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .release-body h3:first-child { font-size: 1.6rem; }
+}
+@media print {
+  html { background: none; }
+  body { padding: 0; }
+  .wire, .faq, .verdict, .rest { box-shadow: none; break-inside: auto; }
+  .faq, .verdict { break-before: page; }
+}
+</style>
+</head>
+<body>
+<main>
+  <article class="wire">
+    <header class="masthead">
+      <span class="release">Press release</span>
+      <span class="meta"><span data-field="updated"></span><span class="status" data-field="status"></span></span>
+    </header>
+    <p class="product" data-field="title"></p>
+    <div class="release-body" data-section="Press release"></div>
+    <p class="end">###</p>
+  </article>
+  <section class="faq" data-section="Customer FAQ"><h2>Customer FAQ</h2><p class="who">The questions a skeptical customer asks after reading the release.</p><div data-body></div></section>
+  <section class="faq" data-section="Internal FAQ"><h2>Internal FAQ</h2><p class="who">The questions the people who would build and fund it ask.</p><div data-body></div></section>
+  <section class="verdict" data-section="Verdict"><h2>Verdict</h2><div data-body></div></section>
+  <section class="rest" data-rest></section>
+</main>
+</body>
+</html>

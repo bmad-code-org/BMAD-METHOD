@@ -31,14 +31,15 @@ cd bmad-first-project
 ```
 
 :::caution[V7 Preview Alpha]
-This tutorial uses v7 of BMad, which is in preview alpha and changes often. It suits solo or small teams that can pivot before beta; the v7 release ETA is October 16, 2026, and it might be sooner. If you need stability, run `npx bmad-method install` for the v6.12 release, frozen aside from bug fixes, and follow the [V6.12 documentation](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12/docs/start).
+This tutorial uses v7 of BMad, which is in preview alpha and changes often. It suits solo or small teams that can pivot before beta; the v7 release ETA is mid-November 2026, and it might be sooner. If you need stability, run `npx bmad-method install` for the v6.12 release, frozen aside from bug fixes, and follow the [V6.12 documentation](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12/docs/start).
 :::
 
 Install BMad Method with the skills CLI, then let the `bmad` skill set up the
 project:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD
+npx skills add bmad-code-org/BMAD-METHOD/skills/core-tools --skill '*'
+npx skills add bmad-code-org/BMAD-METHOD/skills/method --skill '*'
 ```
 
 Open your coding tool in this directory. For Claude Code, run:

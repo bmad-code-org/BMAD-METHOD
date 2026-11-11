@@ -1,0 +1,78 @@
+[
+  {
+    "query": "hey Mary, let's brainstorm names for the booking app",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to talk to the business analyst about the market for self-hosted analytics",
+    "should_trigger": true
+  },
+  {
+    "query": "ask the analyst for a competitive teardown of Linear, Jira and Shortcut",
+    "should_trigger": true
+  },
+  {
+    "query": "do the market research on meal-kit subscriptions for single households before we plan anything",
+    "should_trigger": true
+  },
+  {
+    "query": "write a product brief for the booking app, a page or two I can show the sponsor",
+    "should_trigger": true
+  },
+  {
+    "query": "Mary, update the brief: we dropped the iOS app and the pricing changed",
+    "should_trigger": true
+  },
+  {
+    "query": "create a PRFAQ for an AI-generated weekly digest feature",
+    "should_trigger": true
+  },
+  {
+    "query": "let's work backwards from the press release before anyone builds this",
+    "should_trigger": true
+  },
+  {
+    "query": "run the PRFAQ challenge on my idea for a shared grocery list app",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm not sure this product should exist at all, stress-test the concept with a press release first",
+    "should_trigger": true
+  },
+  {
+    "query": "our client needs a business requirements document signed before the vendor starts, write the BRD",
+    "should_trigger": true
+  },
+  {
+    "query": "hey John, let's write the PRD for the booking app",
+    "should_trigger": false
+  },
+  {
+    "query": "draft the product requirements for the finance reconciliation tool, I'll answer questions as we go",
+    "should_trigger": false
+  },
+  {
+    "query": "distill this PRD into the initiative's requirements",
+    "should_trigger": false
+  },
+  {
+    "query": "pressure-test my thinking on this idea, I'm not even sure what it is yet",
+    "should_trigger": false
+  },
+  {
+    "query": "create the architecture from the initiative file",
+    "should_trigger": false
+  },
+  {
+    "query": "write a blameless postmortem for last night's outage",
+    "should_trigger": false
+  },
+  {
+    "query": "design the UX for the checkout flow, I want DESIGN.md and EXPERIENCE.md",
+    "should_trigger": false
+  },
+  {
+    "query": "what does PRFAQ stand for?",
+    "should_trigger": false
+  }
+]

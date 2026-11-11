@@ -17,6 +17,7 @@ v6.12 adds modules through `npx bmad-method install`, with `--custom-source` for
 | --- | --- | --- |
 | Test Architect (TEA), code `tea` | Test strategy, automation, test review, traceability, and release-gate decisions through an agent and eight workflows | [bmad-method-test-architecture-enterprise](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise) |
 | Creative Intelligence Suite, code `cis` | Brainstorming, design thinking, and problem-solving agents | [bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite) |
+| Founder, code `founder` | Nadia the Founder Advisor, an experienced founder who coaches you from idea to raise: seventeen business documents from a startup diagnostic to a board pack, the money math by script, customer evidence, investor pipeline and meetings, term sheets, and an investor pitch room, with the company's facts kept in one record folder | This repository, with core tools installed: `npx skills add bmad-code-org/BMAD-METHOD/skills/founder` |
 | Game Dev Studio, code `gds` | Game design documents and game-aware planning for Unity, Unreal, Godot, and custom engines | [bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio) |
 
 Each repository's README says which BMad version it supports. TEA's `bmad-tea-automate` generates heavier test coverage than the built-in `bmad-qa-generate-e2e-tests`; [Test Completed Work](../build/test-completed-work.md) helps you choose between them.
@@ -45,7 +46,7 @@ When a newer version exists for a module installed from a tag, `bmad status` rep
 
 Ask Smithy, the `bmad-toolsmith` skill, to scaffold a module, add skills and agents to it, and validate it. [Toolsmith](../toolsmith/toolsmith.md) describes what it builds and how.
 
-A module needs a `bmod-<code>` record folder holding a `bmod.toml`, a stub `SKILL.md`, and a `help/help.md` that `bmad` reads to guide users. Each of its skills carries a small `bmod.toml` that names the record. A module of one skill needs no record folder: that skill's own `bmod.toml` holds both tables. Publish the repository and others add it with `npx skills add`. To test before publishing, add it from the local folder.
+A module needs a `bmod-<code>` record folder holding a `bmod.toml`, a stub `SKILL.md`, and a `help/help.md` that `bmad` reads to guide users. Each of its skills carries a small `bmod.toml` that names the record. A module of one skill needs no record folder: that skill's own `bmod.toml` holds both tables, and its `help/`, `doc-templates/` and `roster.toml` sit in the skill folder. Founder is built this way. A repository with several modules gives each one its own folder under `skills/`, so `npx skills add owner/repo/skills/<code>` installs one whole. Publish the repository and others add it with `npx skills add`. To test before publishing, add it from the local folder.
 
 ## Modules in v6.12
 
