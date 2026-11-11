@@ -56,7 +56,7 @@ your-repo/
 └── LICENSE
 ```
 
-A single-skill module is one folder under `skills/`, with its `help/` folder inside and no `bmod-<code>` folder. A repository can hold several modules, but `validate_manifests.py` requires all their records to share one version, and every folder under `skills/` to have a `bmod.toml`.
+A single-skill module is one folder under `skills/`, with its `help/` folder inside and no `bmod-<code>` folder. A repository can hold several modules. Give each one its own folder, `skills/<code>/`, and point its `update_source` at that folder; then `npx skills add owner/repo/skills/<code>` installs the whole module. `validate_manifests.py` requires all the records in a repository to share one version, and every skill folder to have a `bmod.toml`.
 
 ### 3. Validate
 

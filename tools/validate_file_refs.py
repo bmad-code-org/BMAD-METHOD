@@ -35,6 +35,7 @@ Use --strict when you want CI or pre-commit to enforce valid references.
 from __future__ import annotations
 
 import argparse
+import glob
 import os
 import re
 import sys
@@ -165,6 +166,15 @@ def strip_json_example_blocks(content: str) -> str:
 # --- Path Mapping ---
 
 
+def hub_skill_dir(skills_dir: str) -> str:
+    """The bmad hub skill: skills/bmad, or skills/<module>/bmad when skills are grouped by module."""
+    grouped = sorted(glob.glob(os.path.join(skills_dir, "*", "bmad", "SKILL.md")))
+    flat = os.path.join(skills_dir, "bmad")
+    if os.path.isfile(os.path.join(flat, "SKILL.md")) or not grouped:
+        return flat
+    return os.path.dirname(grouped[0])
+
+
 def map_installed_to_source(ref_path: str, skills_dir: str) -> str | None:
     # Strip {project-root}/_bmad/ or {_bmad}/ prefix
     cleaned = re.sub(r"^\{project-root\}/_bmad/", "", ref_path)
@@ -179,7 +189,7 @@ def map_installed_to_source(ref_path: str, skills_dir: str) -> str | None:
 
     # _bmad/scripts/ is installed from the bmad hub skill's scripts/
     if cleaned.startswith("scripts/"):
-        return os.path.join(skills_dir, "bmad", cleaned)
+        return os.path.join(hub_skill_dir(skills_dir), cleaned)
 
     # Fallback: map directly under skills/
     return os.path.join(skills_dir, cleaned)

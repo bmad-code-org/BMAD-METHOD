@@ -3,8 +3,8 @@ code = "founder"
 version = "6.13.0-next"
 update_source = "github:bmad-code-org/BMAD-METHOD/skills/founder"
 required_skills = [
-  { skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills" },
-  { skill = "bmad-facilitate", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills" },
+  { skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+  { skill = "bmad-facilitate", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
 ]
 pre_install_message = ""
 post_install_message = """Founder is installed.
@@ -18,8 +18,8 @@ default = "{project-root}/company"
 
 [skill]
 recommended_skills = [
-  { skill = "bmad-brainstorming", source = "github:bmad-code-org/BMAD-METHOD/skills" },
-  { skill = "bmad-deep-recon", source = "github:bmad-code-org/BMAD-METHOD/skills" },
-  { skill = "bmad-forge-idea", source = "github:bmad-code-org/BMAD-METHOD/skills" },
-  { skill = "bmad-party-mode", source = "github:bmad-code-org/BMAD-METHOD/skills" },
+  { skill = "bmad-brainstorming", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+  { skill = "bmad-deep-recon", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+  { skill = "bmad-forge-idea", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+  { skill = "bmad-party-mode", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
 ]
