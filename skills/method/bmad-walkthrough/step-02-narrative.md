@@ -20,6 +20,11 @@ unused before creating it.
 If you are running in a sidebar of VS Code, Cursor, or another
 editor, open the narrative file in the editor.
 
+## CHECKPOINT
+
+Is the narrative file on disk? Block 1 links into it. Do not load
+the next step until it is.
+
 ## NEXT
 
 Read fully and follow: `{{ rendered("step-03-walkthrough.md") }}`
