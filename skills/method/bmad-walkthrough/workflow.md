@@ -24,7 +24,8 @@ put it in the session.
 
 When subagents are available, spawn a cheap background one for
 writing log and narrative files. Doing that work in the main
-session distracts the user.
+session distracts the user. So does reporting on it: when the
+subagent says anything, stay silent unless it failed.
 
 # Write for a human
 
