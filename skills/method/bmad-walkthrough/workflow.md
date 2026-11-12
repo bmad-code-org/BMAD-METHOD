@@ -22,10 +22,10 @@ Show only what a human needs to see. Do not distract them. Write
 the log, edit the narrative, look things up, reason — but do not
 put it in the session.
 
-When subagents are available, spawn a cheap background one for
-writing log and narrative files. Doing that work in the main
-session distracts the user. So does reporting on it: when the
-subagent says anything, stay silent unless it failed.
+Write the log and the narrative by shell command, never with a
+file-editing tool: the host shows the user a diff for those. Do it
+after the text the user asked for, and say nothing about it unless
+it failed.
 
 # Write for a human
 
