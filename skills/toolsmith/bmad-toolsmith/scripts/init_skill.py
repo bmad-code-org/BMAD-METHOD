@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """init_skill: scaffold a new skill folder, or check an existing one.
 
@@ -42,6 +43,8 @@ import sys
 import tomllib
 from pathlib import Path
 
+import yaml
+
 SHAPES = (
     "plain-skill",
     "script-utility",
@@ -61,10 +64,6 @@ USE_WHEN_RE = re.compile(r"\buse\s+(?:when|if)\b", re.IGNORECASE)
 TODO_RE = re.compile(r"\[TODO:")
 TEXT_SUFFIXES = {".md", ".toml", ".py", ".json", ".yaml", ".yml", ".txt", ".html", ".csv"}
 DESCRIPTION_PLACEHOLDER = "[TODO: five-to-eight-word summary. Use when the user says '<phrase>' or '<phrase>'.]"
-
-
-def yaml_single_quoted(value: str) -> str:
-    return "'" + value.replace("'", "''") + "'"
 
 
 def toml_string(value: str) -> str:
@@ -88,40 +87,22 @@ def frontmatter_block(content: str) -> tuple[str | None, str]:
     return text[3:end].strip("\r\n"), after
 
 
-def parse_frontmatter(content: str) -> tuple[dict[str, str] | None, str]:
-    """Parse `key: value` frontmatter, folding indented continuation lines; return (dict or None, body)."""
+def parse_frontmatter(content: str) -> tuple[dict | None, str]:
+    """Return (frontmatter as a dict of text values, or None when missing or not a YAML mapping; body)."""
     block, body = frontmatter_block(content)
-    if block is None:
-        return None, body
-    result: dict[str, str] = {}
-    key: str | None = None
-    value = ""
-    for line in block.split("\n"):
-        colon = line.find(":")
-        if colon > 0 and line[:1] not in (" ", "\t"):
-            if key is not None:
-                result[key] = strip_quotes(value.strip())
-            key = line[:colon].strip()
-            value = line[colon + 1 :]
-        elif key is not None and not line.lstrip().startswith("#"):
-            value += "\n" + line
-    if key is not None:
-        result[key] = strip_quotes(value.strip())
-    return result, body
-
-
-def strip_quotes(value: str) -> str:
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
-        inner = value[1:-1]
-        return inner.replace("''", "'") if value[0] == "'" else inner
-    return value
+    try:
+        meta = (yaml.load(block, Loader=yaml.BaseLoader) or {}) if block is not None else None
+    except yaml.YAMLError:
+        meta = None
+    return (meta if isinstance(meta, dict) else None), body
 
 
 # --- create --------------------------------------------------------------------
 
 
 def skill_md(name: str, description: str) -> str:
-    return f"---\nname: {name}\ndescription: {yaml_single_quoted(description)}\n---\n\n# {name}\n"
+    meta = {"name": name, "description": description}
+    return f"---\n{yaml.safe_dump(meta, sort_keys=False, allow_unicode=True, width=float('inf'))}---\n\n# {name}\n"
 
 
 def bmod_toml(shape: str, name: str, bmod: str | None, source: str | None) -> str:

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Trigger evals: does a skill's description fire on each near-miss query?
 
@@ -44,6 +45,7 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import yaml
 from eval_common import (
     DEFAULT_SKILL_DIR,
     account_transcript,
@@ -59,35 +61,17 @@ from eval_common import (
 CANARY_PREFIX = "TRIGGER-LOADED-"
 
 
-def unquote_yaml(value: str) -> str:
-    """A YAML scalar's text: single quotes doubled inside, double quotes with backslash escapes."""
-    value = value.strip()
-    if len(value) >= 2 and value[0] == value[-1] == "'":
-        return value[1:-1].replace("''", "'")
-    if len(value) >= 2 and value[0] == value[-1] == '"':
-        return value[1:-1].replace('\\"', '"').replace("\\n", "\n").replace("\\\\", "\\")
-    return value
-
-
 def parse_skill_md(skill_path: Path) -> tuple[str, str]:
-    """Return (name, description) from SKILL.md frontmatter, quotes and block indicators removed."""
+    """Return (name, description) from SKILL.md frontmatter."""
     text = (skill_path / "SKILL.md").read_text(encoding="utf-8")
     m = re.match(r"^---\s*\n(.*?)\n---\s*\n", text, re.DOTALL)
     if not m:
         raise ValueError(f"SKILL.md at {skill_path} is missing frontmatter")
-    fields: dict[str, list[str]] = {}
-    current = None
-    for line in m.group(1).splitlines():
-        if line[:1] not in (" ", "\t") and ":" in line:
-            key, _, value = line.partition(":")
-            current = key.strip()
-            fields[current] = [] if value.strip() in ("|", ">", "|-", ">-") else [value.strip()]
-        elif current and line.strip():
-            fields[current].append(line.strip())
-    name = unquote_yaml(" ".join(fields.get("name", [])))
+    fields = yaml.load(m.group(1), Loader=yaml.BaseLoader) or {}
+    name = fields.get("name", "")
     if not name:
         raise ValueError(f"SKILL.md at {skill_path} has no name")
-    return name, unquote_yaml(" ".join(fields.get("description", [])))
+    return name, fields.get("description", "")
 
 
 # --- synthetic skill and detection -------------------------------------------

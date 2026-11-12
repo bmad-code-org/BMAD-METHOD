@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Enumerate customizable BMad skills installed alongside this one.
 
@@ -35,6 +36,8 @@ import sys
 import tomllib
 from pathlib import Path
 
+import yaml
+
 # Top-level TOML blocks that indicate a customization surface.
 SURFACE_KEYS = ("agent", "workflow")
 
@@ -66,15 +69,10 @@ def read_frontmatter_description(skill_md: Path) -> str:
     m = FRONTMATTER_RE.match(text)
     if not m:
         return ""
-    for line in m.group(1).splitlines():
-        stripped = line.strip()
-        if stripped.startswith("description:"):
-            value = stripped[len("description:") :].strip()
-            # Strip surrounding quotes if present.
-            if (value.startswith("'") and value.endswith("'")) or (value.startswith('"') and value.endswith('"')):
-                value = value[1:-1]
-            return value
-    return ""
+    try:
+        return (yaml.load(m.group(1), Loader=yaml.BaseLoader) or {}).get("description", "")
+    except yaml.YAMLError:
+        return ""
 
 
 def load_customize(toml_path: Path) -> dict | None:
