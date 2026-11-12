@@ -88,13 +88,14 @@ def frontmatter_block(content: str) -> tuple[str | None, str]:
 
 
 def parse_frontmatter(content: str) -> tuple[dict | None, str]:
-    """Return (frontmatter as a dict of text values, or None when missing or not a YAML mapping; body)."""
+    """Return (frontmatter as a dict, or None when missing, not a YAML mapping, or name or description is not text; body)."""
     block, body = frontmatter_block(content)
     try:
         meta = (yaml.load(block, Loader=yaml.BaseLoader) or {}) if block is not None else None
     except yaml.YAMLError:
         meta = None
-    return (meta if isinstance(meta, dict) else None), body
+    ok = isinstance(meta, dict) and all(isinstance(meta.get(k, ""), str) for k in ("name", "description"))
+    return (meta if ok else None), body
 
 
 # --- create --------------------------------------------------------------------

@@ -190,6 +190,8 @@ class PrepassTest(unittest.TestCase):
             self.assertFalse(data["frontmatter_ok"])
             self.assertFalse(data["has_use_when"])
             self.assertEqual(data["description_chars"], 1)
+            (skill / "SKILL.md").write_text("---\nname: s\ndescription: [Use when asked]\n---\n\nBody\n")
+            self.assertFalse(prepass(skill)["frontmatter_ok"])
 
 
 if __name__ == "__main__":
