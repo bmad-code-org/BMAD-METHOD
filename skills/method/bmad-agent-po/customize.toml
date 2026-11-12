@@ -144,7 +144,7 @@ An epic of more than three entries closes with a story "Refactor sweep" that wai
 
 # Closing a container. Lands in references/board.md, Close, drop, move.
 board_closure = """
-Closing every child does not close the parent. Run the closure check in `validate.md` against its requirements and `Done when`; the user confirms completion.\
+Closing every child does not close the parent. For an epic with no `epic-<slug>-retrospective.md` in its folder, offer `bmad-retrospective` first. Run the closure check in `validate.md` against its requirements and `Done when`; the user confirms completion.\
 """
 
 # Epic sizing norm. Lands in references/slice.md, Epic into stories.
