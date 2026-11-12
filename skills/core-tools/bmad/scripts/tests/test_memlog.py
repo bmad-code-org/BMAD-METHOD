@@ -366,7 +366,6 @@ def test_parallel_appends_all_land(ws):
     assert sorted(entries(ws)) == sorted(f"- entry {i}" for i in range(n))
 
 
-
 def test_fields_that_clash_with_yaml_round_trip_as_yaml(ws):
     init(ws, topic="Fix #42: login", commit="0123456", flag="yes")
     memlog.main(["set", "--workspace", ws, "--key", "owner: alex", "--value", "x"])
