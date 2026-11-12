@@ -47,7 +47,7 @@ class CreateTest(unittest.TestCase):
             self.assertEqual(data["created"], ["SKILL.md", "bmod.toml", "references/", "scripts/"])
             self.assertEqual(data["shape"], "plain-skill")
             text = (skill / "SKILL.md").read_text(encoding="utf-8")
-            self.assertTrue(text.startswith("---\nname: bmad-demo\ndescription: '"))
+            self.assertTrue(text.startswith("---\nname: bmad-demo\ndescription: "))
             self.assertIn("# bmad-demo", text)
             bmod = tomllib.loads((skill / "bmod.toml").read_text(encoding="utf-8"))
             self.assertEqual(bmod, {"skill": {"bmod": "bmod-example", "source": "github:acme/example/skills"}})

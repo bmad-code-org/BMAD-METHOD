@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Report or remove the v6 traces in `_bmad/` that v7 does not read, or fold pre-release spec folders.
 
@@ -29,6 +30,8 @@ import shutil
 import sys
 import tomllib
 from pathlib import Path, PurePosixPath
+
+import yaml
 
 sys.dont_write_bytecode = True
 
@@ -744,21 +747,9 @@ def split_frontmatter(text: str) -> tuple[list[str], str]:
 
 
 def frontmatter_list(meta: list[str], key: str) -> list[str]:
-    """`key: [a, b]`, or `key:` followed by `- a` lines. Comments after the value are dropped."""
-    items: list[str] = []
-    for index, line in enumerate(meta):
-        if not re.match(rf"\A{re.escape(key)}\s*:", line):
-            continue
-        value = line.split(":", 1)[1].split("#", 1)[0].strip()
-        if value.startswith("["):
-            items = [item.strip().strip("'\"") for item in value.strip("[]").split(",")]
-        else:
-            for following in meta[index + 1 :]:
-                if not following.lstrip().startswith("- "):
-                    break
-                items.append(following.lstrip()[2:].split("#", 1)[0].strip().strip("'\""))
-        break
-    return [item for item in items if item]
+    """The items of list `key`, as text."""
+    value = (yaml.load("\n".join(meta), Loader=yaml.BaseLoader) or {}).get(key) or []
+    return [item for item in (value if isinstance(value, list) else [value]) if item]
 
 
 def bullets(section: str) -> list[str]:
@@ -867,7 +858,7 @@ def with_list(meta: list[str], key: str, items: list[str]) -> list[str]:
         return meta
     index = next((i for i, line in enumerate(meta) if re.match(rf"\A{key}\s*:", line)), None)
     merged = list(dict.fromkeys((frontmatter_list(meta, key) if index is not None else []) + items))
-    line = f"{key}: [{', '.join(merged)}]"
+    line = f"{key}: {yaml.safe_dump(merged, default_flow_style=True, width=float('inf')).strip()}"
     if index is not None:
         # A block list's `- item` lines go with the key line they continue.
         end = index + 1
