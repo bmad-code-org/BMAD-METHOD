@@ -70,9 +70,10 @@ def read_frontmatter_description(skill_md: Path) -> str:
     if not m:
         return ""
     try:
-        return (yaml.load(m.group(1), Loader=yaml.BaseLoader) or {}).get("description", "")
+        meta = yaml.load(m.group(1), Loader=yaml.BaseLoader)
     except yaml.YAMLError:
         return ""
+    return meta.get("description", "") if isinstance(meta, dict) else ""
 
 
 def load_customize(toml_path: Path) -> dict | None:

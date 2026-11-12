@@ -234,6 +234,11 @@ class CheckTest(unittest.TestCase):
             code, data, _ = run("--check", no_fm)
             self.assertEqual(rules(data), ["bmod-tables", "frontmatter-missing"])
             self.assertEqual(data["bmod"], "invalid")
+            listed = self.write_skill(
+                tmp, "bmad-listed", "---\nname: bmad-listed\ndescription: [Use when asked]\n---\n\nBody.\n"
+            )
+            code, data, _ = run("--check", listed)
+            self.assertEqual(rules(data), ["frontmatter-missing"])
 
     def test_todo_markers_about_the_marker_do_not_count(self):
         with tempfile.TemporaryDirectory() as tmp:
