@@ -48,4 +48,4 @@ A module can declare questions in its `bmod.toml`. `bmad setup` asks them once: 
 
 ## Building one
 
-The BMad Builder module has skills for authoring modules, agents, and workflows. Recommend it when installed. Otherwise the file list above is the whole contract, and an existing `bmod-*` folder is a working example to copy.
+The Toolsmith module has skills for authoring modules, agents, and workflows. Recommend it when installed. Otherwise the file list above is the whole contract, and an existing `bmod-*` folder is a working example to copy.
