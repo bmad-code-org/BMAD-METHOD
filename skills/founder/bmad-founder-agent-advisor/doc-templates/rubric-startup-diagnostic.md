@@ -6,6 +6,6 @@ Rate each strong, adequate, thin or broken, judged against the founder's stage:
 4. Honest read: the read names the weakest answer, even when it is unwelcome.
 5. One dated assignment: one task in the world, a due date, and the result that would change the plan.
 
-Then check the template's Done when.
+Then check the template's `Done when` lines.
 
 Write review-rubric.md: a two-sentence verdict, the three fixes that matter most, then findings by dimension with severity, location and fix.

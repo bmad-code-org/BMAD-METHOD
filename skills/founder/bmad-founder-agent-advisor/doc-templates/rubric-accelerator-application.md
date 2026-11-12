@@ -6,6 +6,6 @@ Rate each strong, adequate, thin or broken, judged against the program's questio
 4. Fits the stage: progress claims suit where the company is; each is a figure with a date or a specific thing done.
 5. Founder's voice: first person, plain words, no claims a reviewer cannot check.
 
-Then check the template's Done when.
+Then check the template's `Done when` lines.
 
 Write review-rubric.md: a two-sentence verdict, the three fixes that matter most, then findings by dimension with severity, location and fix.

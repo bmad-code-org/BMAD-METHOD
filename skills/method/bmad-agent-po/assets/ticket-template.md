@@ -16,7 +16,7 @@ hitl: false   # true when a person does part of the work; story only, cut on a c
 risk: [low|medium|high; container: a best guess until sliced, then its children's highest]
 ---
 
-<!-- At create a container gets all but Requirements and Constraints, which SPEC writes from an input. An epic written at slicing gets Description, Outcome, Boundaries, Done when as far as known, and References to the parent; Requirements and Constraints come when it is refined. A pulled or reviewed story: Description, Verify: line, References, local Notes; refining adds numbered criteria and Boundaries. Done and dropped tickets stay as written. An initiative is the business outcome its epics serve, usually spanning quarters and more than one boundary; for a solo developer or small team a whole product is a fine initiative. -->
+<!-- At create a container gets all but Requirements and Constraints, which SPEC writes from an input. An epic written at slicing gets Description, Outcome, Boundaries, `Done when` as far as known, and References to the parent; Requirements and Constraints come when it is refined. A pulled or reviewed story: Description, Verify: line, References, local Notes; refining adds numbered criteria and Boundaries. Done and dropped tickets stay as written. An initiative is the business outcome its epics serve, usually spanning quarters and more than one boundary; for a solo developer or small team a whole product is a fine initiative. -->
 
 # [Title]
 
@@ -26,7 +26,7 @@ risk: [low|medium|high; container: a best guess until sliced, then its children'
 
 ## Outcome
 
-[Container: one sentence: for whom, what changes, the source's success signal named not restated. Story: cut.]
+[Container: one sentence: who benefits and what changes for them, plus a clause naming the source's own measure of success only when it states one. Never points at another section of this ticket or its parent. Story: cut.]
 
 ## Requirements
 

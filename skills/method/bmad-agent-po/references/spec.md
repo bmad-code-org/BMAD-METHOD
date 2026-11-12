@@ -6,7 +6,7 @@ Turns any intent input into a container's **derived lines**: the Requirements an
 
 ## Workspace
 
-The workspace is the ticket the user or the calling capability names, else the active initiative; a ticket named by id or title resolves as Dispatch in `workflow.md` says. A ticket with no file yet is created first from `{{ workflow.ticket_template }}`; at create SPEC also fills Description, Outcome, Done when (three to six checks at the altitude of the source's ids), Boundaries (the input's non-goals) and References from the input, open questions to Notes; a later slice revises them. A new initiative, named from the input's title, is created and recorded as On activation in `workflow.md` says.
+The workspace is the ticket the user or the calling capability names, else the active initiative; a ticket named by id or title resolves as Dispatch in `workflow.md` says. A ticket with no file yet is created first from `{{ workflow.ticket_template }}`; at create SPEC also fills Description, Outcome, `Done when` (three to six checks at the altitude of the source's ids), Boundaries (the input's non-goals) and References from the input, open questions to Notes; a later slice revises them. A new initiative, named from the input's title, is created and recorded as On activation in `workflow.md` says.
 
 **No input.** Ask for a file path, pasted content, an explanation, or a source.
 
@@ -53,7 +53,7 @@ Load-bearing content that needs more than one line (tables, diagrams, long refer
 2. **Requirements say WHAT, not HOW.** Implementation goes in a companion.
 3. **Constraints bend design decisions.**
 4. **Boundaries name at least one thing that is out.**
-5. **The Outcome's signal is testable or demonstrable.**
+5. **Each `Done when` check is testable or demonstrable.**
 6. **Requirement ids are never reused or renumbered.**
 7. **Every load-bearing source claim lands in the ticket or a companion.**
 8. **Every sentence in the ticket, companions, and `.memlog.md` carries load-bearing content.**

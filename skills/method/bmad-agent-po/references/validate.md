@@ -6,7 +6,7 @@ The checks are in `{{ rendered("references/validate-checks.md") }}`, one section
 
 - **Proposed child initiatives or epics, an epic breakdown, or a re-slice:** always, on the draft `tickets.toml` before approval. First run the Dependencies section yourself and fix the draft; give the agent its path. Show what the check changed and confirmed. Rerun when the user adds, removes, merges, or reorders items. At initiative slicing, check scope ownership; future epics need no stories or full detail.
 - **A refined ticket:** before execution.
-- **A container:** before closure, its implemented coverage and Done when.
+- **A container:** before closure, its implemented coverage and `Done when`.
 
 How:
 

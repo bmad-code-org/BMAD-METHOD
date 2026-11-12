@@ -102,7 +102,7 @@ store_before = ""
 # After the store is proven. End of references/store-setup.md.
 store_after = ""
 
-# Initiative, epic, story template; keep a home for Description, Outcome, Requirements, Constraints, Done when, Boundaries, References, Notes (`Decision:`, `Dropped:` lines in Notes). `tickets.py pull` writes a fixed layout, not this template. Lands in references/ticket.md, slice.md and spec.md.
+# Initiative, epic, story template; keep a home for Description, Outcome, Requirements, Constraints, `Done when`, Boundaries, References, Notes (`Decision:`, `Dropped:` lines in Notes). `tickets.py pull` writes a fixed layout, not this template. Lands in references/ticket.md, slice.md and spec.md.
 ticket_template = "{skill-root}/assets/ticket-template.md"
 # Bug template: Reproduction, Cause Hypothesis, fix or no-fix criteria. Lands in references/ticket.md.
 bug_template = "{skill-root}/assets/bug-template.md"
@@ -144,7 +144,7 @@ An epic of more than three entries closes with a story "Refactor sweep" that wai
 
 # Closing a container. Lands in references/board.md, Close, drop, move.
 board_closure = """
-Closing every child does not close the parent. Run the closure check in `validate.md` against its requirements and Done when; the user confirms completion.\
+Closing every child does not close the parent. Run the closure check in `validate.md` against its requirements and `Done when`; the user confirms completion.\
 """
 
 # Epic sizing norm. Lands in references/slice.md, Epic into stories.

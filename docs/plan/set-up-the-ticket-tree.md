@@ -173,7 +173,7 @@ When the work is more than one initiative's worth, Sofia proposes a parent initi
 
 ## Hand a Story to Build
 
-Name the story to `bmad-build`, for example "build story 1.2" for the second story of the first epic. There is no file to write first. Build reads the story's entry and its epic, plus the story file when you refined one. It plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
+Name the story to `bmad-build`, for example "build story 1.2" for the second story of the first epic. There is no file to write first. Build reads the story's entry and its epic, plus the story file when you refined one. It plans the story's acceptance criteria from the epic's Requirements and `Done when`, the entry's description, and its `Verify:` check.
 
 :::note[Refining is optional]
 A story needs no refining before `bmad-build`. Build refines it as part of the build: it questions you and writes the acceptance criteria itself. If you will build unattended, with `bmad-build-auto`, a loop, or a factory, nobody answers questions during the build, so review the sequence and each story with Sofia first. She writes full acceptance criteria only for a bug, a ticket with no epic, or when you ask.

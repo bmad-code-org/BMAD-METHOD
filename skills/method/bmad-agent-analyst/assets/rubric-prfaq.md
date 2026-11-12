@@ -6,6 +6,6 @@ Rate each strong, adequate, thin or broken, judged against the concept's stakes:
 4. Honest framing: nothing the press release claims is dodged or contradicted by an FAQ answer; an overclaim is exposed, not hidden.
 5. Hardest questions: the customer objection and the internal question the team hopes nobody asks are both there, each answered specifically; "we'll figure it out" is broken.
 
-Then check the template's Done when.
+Then check the template's `Done when` lines.
 
 Write review-rubric.md: a two-sentence verdict, the three fixes that matter most, then findings by dimension with severity, location and fix.

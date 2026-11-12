@@ -6,6 +6,6 @@ Rate each strong, adequate, thin or broken, judged against the reader's criteria
 4. Honest costs and risks: full cost and what could fail, each with how it is handled.
 5. One pass: the case comes through from the opening and headings; no padding.
 
-Then check the template's Done when.
+Then check the template's `Done when` lines.
 
 Write review-rubric.md: a two-sentence verdict, the three fixes that matter most, then findings by dimension with severity, location and fix.
