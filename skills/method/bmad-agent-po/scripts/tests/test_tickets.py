@@ -1490,6 +1490,14 @@ covers = ["R2", "R3"]
                 self.assertIn("story-a-plan.md", out["problems"][0])
             self.assertEqual(self.files(self.next()["ready_to_start"]), [None])
 
+    def test_a_loose_plan_at_the_initiative_root_is_not_a_problem(self):
+        self.breakdown_epic()
+        (self.initiative / "plan-loose-tooling-fix.md").write_text(plan("", "in-progress"), encoding="utf-8")
+        for command in ("next", "status"):
+            r = run(command, str(self.initiative))
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertNotIn("problems", json.loads(r.stdout))
+
     def test_a_plan_with_an_unknown_status_blocks_its_ticket_until_mark_fixes_it(self):
         self.breakdown_epic()
         self.add("story-scaffold-plan.md", plan(1, "already-satisfied"))
