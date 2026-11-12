@@ -6,6 +6,6 @@ Rate each strong, adequate, thin or broken, judged against what the readers need
 4. Cash clear: cash, burn and runway in months and as a date, and the three agree.
 5. Actionable: each ask or decision is specific, with who or what and by when, and a recommendation where the board decides; no padding.
 
-Then check the template's Done when.
+Then check the template's `Done when` lines.
 
 Write review-rubric.md: a two-sentence verdict, the three fixes that matter most, then findings by dimension with severity, location and fix.

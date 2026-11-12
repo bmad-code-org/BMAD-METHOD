@@ -6,6 +6,6 @@ Rate each strong, adequate, thin or broken, judged against what real customers w
 4. Right category: the category sets the expectations the product meets; a new one is justified.
 5. Plain one-liner: a best-fit customer understands it in one read, and it agrees with the positioning statement.
 
-Then check the template's Done when.
+Then check the template's `Done when` lines.
 
 Write review-rubric.md: a two-sentence verdict, the three fixes that matter most, then findings by dimension with severity, location and fix.

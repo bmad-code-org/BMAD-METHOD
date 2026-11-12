@@ -24,7 +24,7 @@ Read this when the question is about `bmad-code-review`, `bmad-walkthrough`, `bm
 - Not when: the user wants unit tests for work in flight (`bmad-build` writes and runs tests for the edge cases its plan lists; ask for more in the build request), a review, or a test strategy (the Test Architect module covers that).
 - Writes: tests where the project keeps its end-to-end tests, and nothing else. The report is in chat.
 
-**`bmad-retrospective`** — judges a finished epic folder in the ticket tree as a whole against the epic's Done when and the initiative's requirements.
+**`bmad-retrospective`** — judges a finished epic folder in the ticket tree as a whole against the epic's `Done when` and the initiative's requirements.
 - Gives: sourced findings no single session could see (architecture drift, duplication, spec versus built), owned action items, proposed decision records, and a verdict: accepted, accepted with open items, or rejected.
 - Pick when: every ticket of the epic is `built`, `done`, or `dropped`, and especially after unattended runs. It reads `tickets.toml`, the epic file, and each ticket's plan. An unfinished ticket forces a rejected verdict; tickets still at `built` are listed for the user to mark done.
 - Not when: one ticket or one diff is in question → `bmad-code-review` or `bmad-walkthrough`.

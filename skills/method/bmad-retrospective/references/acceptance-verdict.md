@@ -35,7 +35,7 @@ No status is written anywhere; the record is the follow-through. A run with no p
 
 ## The verdict
 
-Judge the final state against the epic file's Requirements and Done when. If the epic file has neither, profile the criteria from the diff and plans and mark the verdict as **profiled** rather than declared. Weigh verification results (the Phase 2 behavior check) and unresolved findings. Render one of:
+Judge the final state against the epic file's Requirements and `Done when`. If the epic file has neither, profile the criteria from the diff and plans and mark the verdict as **profiled** rather than declared. Weigh verification results (the Phase 2 behavior check) and unresolved findings. Render one of:
 
 - **Accepted** — criteria demonstrably met in the evidence, no blocking findings open, and **no unfinished tickets** for this epic.
 - **Accepted-with-open-items** — criteria met, but named findings remain deferred and tracked — still only when every ticket of this epic is finished.

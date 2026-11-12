@@ -6,6 +6,6 @@ Rate each strong, adequate, thin or broken, judged against the document's purpos
 4. Honest scope: non-goals stated, inferences tagged, open items fit the stakes.
 5. Usable downstream: consistent terms, ids resolve, depth and length fit the stakes.
 
-Then check the template's Done when.
+Then check the template's `Done when` lines.
 
 Write review-rubric.md: a two-sentence verdict, the three fixes that matter most, then findings by dimension with severity, location and fix.

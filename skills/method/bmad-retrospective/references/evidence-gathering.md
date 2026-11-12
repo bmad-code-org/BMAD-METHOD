@@ -6,7 +6,7 @@ Phase 1 of the retrospective. Enumerate what the completed epic produced, so eve
 
 Collect what the epic produced and note the source path or range of each:
 
-- **Epic file** — `epic-<slug>.md` in the epic folder, the folder's name plus `.md`, read in full: it is the spec the epic was built to. Requirements and Done when govern Phase 4; when the file has neither, note that the verdict will be profiled from the diff.
+- **Epic file** — `epic-<slug>.md` in the epic folder, the folder's name plus `.md`, read in full: it is the spec the epic was built to. Requirements and `Done when` govern Phase 4; when the file has neither, note that the verdict will be profiled from the diff.
 - **Initiative file** — `<initiative>/<initiative>.md`, the epic folder being `<initiative>/tickets/epic-<slug>/`. Open it only for a `covers` id the epic file does not restate.
 - **Entries** — the `tickets` rows of `tickets.py status <folder>`, and for each, `tickets.py find <folder> <ref>` with the row's `ref` (same command form as the workflow): its `description`, `verify`, and `covers` are what the build was given. `description` and `verify` are empty once the entry was pulled: the story file holds them.
 - **Story files** — `find`'s `story_file` when it is not null: the ticket itself; read each in full.
@@ -25,7 +25,7 @@ Each plan records its own `baseline_revision`, the commit its build started from
 Evidence availability varies; never hide a gap. Each later analysis declares what it needs and, when that input is absent, records a narrowed scope rather than guessing. A reader of the final retro must always be able to tell **"checked and clean"** from **"never checked."**
 
 - Missing session logs → process-lesson analysis is skipped, and the retro says so.
-- No Requirements or Done when in the epic file → the verdict is profiled from the diff and plans, flagged as profiled rather than declared.
+- No Requirements or `Done when` in the epic file → the verdict is profiled from the diff and plans, flagged as profiled rather than declared.
 - Sub-agents unavailable → analyses that would delegate run inline over a narrowed scope, and the narrowing is recorded.
 
 Carry the inventory forward into Phase 2 as the authoritative list of what is available to read.

@@ -6,6 +6,6 @@ Rate each strong, adequate, thin or broken, judged against what the founder need
 4. Signal set in advance: strong and weak signals and the count that means demand, written before the first interview.
 5. Asks for commitment: the close asks for time, an introduction or money, sized to the stage.
 
-Then check the template's Done when.
+Then check the template's `Done when` lines.
 
 Write review-rubric.md: a two-sentence verdict, the three fixes that matter most, then findings by dimension with severity, location and fix.

@@ -54,7 +54,7 @@ Sofia, the Product Owner (`bmad-agent-po`), keeps (see
 [Break Work into Stories](../plan/break-work-into-stories-and-track-it.md)):
 
 - **`tickets/tickets.toml`**: the epic's tickets, in build order.
-- **The epic file**: its Done when checks, the criteria the verdict judges.
+- **The epic file**: its `Done when` checks, the criteria the verdict judges.
 - **The initiative's requirements**: what each ticket's `covers` points at.
 - **Each ticket's plan and story file**: the plan's frozen decisions,
   triage log, verification, plan changes, and any `## Code Review` blocks;

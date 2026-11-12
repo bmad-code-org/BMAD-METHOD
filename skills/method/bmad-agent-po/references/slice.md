@@ -8,7 +8,7 @@ An initiative is sliced into epics; an epic is refined, then planning it writes 
 
 1. **Envelope.** A document in the folder is an input, not the container; a missing container is written from its input per `spec.md`.
 2. **Requirements.** Unwritten spec sections are written per The Operation in `spec.md` from an input; an epic's are written when it is refined.
-3. **Complete the container**: known unknowns in Notes, Outcome and Done when re-read against Requirements and Constraints. When the container was just written, confirm its scope with the user before slicing.
+3. **Complete the container**: known unknowns in Notes, Outcome and `Done when` re-read against Requirements and Constraints. When the container was just written, confirm its scope with the user before slicing.
 
 ## Read the code
 
@@ -48,11 +48,11 @@ Under either rule:
 - One epic unless a distinct outcome or an early-usable part splits it. Offer to split an epic whose stories would run past the count in Epic into stories.
 - A unit the work only consumes or configures is a touch point: list it in the initiative's Boundaries with its owning epic.
 - The platform baseline (scaffold, CI, deployment) is the opening epic or the first stories of the first epic.
-- Every epic delivers to production; its Done when includes integrated verification.
+- Every epic delivers to production; its `Done when` includes integrated verification.
 
 Draft the set as the initiative's `tickets/tickets.toml` from `{{ workflow.tickets_template }}`: one `[[epic]]` per epic in build order, each with an `id`, a `description` of what is true when it is done, the parent ids it `covers`, and an `after` naming what it needs from which epic; `after` on an epic file only for a whole-epic gate. Run the tree check in `validate.md`, then present the draft in build order, naming the rule that cut it, with each epic's boundary, the tracer path, touch points with owners, and decisions several epics share.
 
-On approval, create each new epic's folder in the initiative's `tickets/` folder and its file from `{{ workflow.ticket_template }}`, written thin: Description, Outcome, Boundaries, Done when as far as known, References to the parent, `covers` and `after`, with `refined: false` and no Requirements. Commit (on a tracker, publish) per `board.md`.
+On approval, create each new epic's folder in the initiative's `tickets/` folder and its file from `{{ workflow.ticket_template }}`, written thin: Description, Outcome, Boundaries, `Done when` as far as known, References to the parent, `covers` and `after`, with `refined: false` and no Requirements. Commit (on a tracker, publish) per `board.md`.
 
 Offer `bmad-architecture` to settle shared decisions in the architecture spine, cited in adopting epics' References. If declined, each becomes a `story` entry (`hitl = true`) in the opening epic's `tickets.toml`, written now, and each adopting epic gets `after = [{ epic = <opening>, needs = <the decision> }]`; planning keeps those entries first, ids kept.
 
@@ -66,7 +66,7 @@ An epic with `refined: false` has its scope agreed, not its detail; refine it on
 - Each thing its stories would have to agree on that is still open, with your pick: settle it with the user now, plan a spike first when only code can answer it, or leave it to the stories.
 - A reminder that the user can flesh the epic out further: more intent, as their own notes or a document from John (`bmad-agent-pm`) on the epic; more design, as `bmad-ux` or `bmad-architecture` on the epic; or research with `bmad-deep-recon`.
 
-A UX, architecture or John run the user chooses lands in the epic's folder, and SPEC adopts what it produces as a companion. Fill the epic in from the initiative's lines alone only when the user says to, or when it needs nothing more. Then write its Requirements per `spec.md`, re-read Outcome and Done when, set `refined: true`, and commit (on a tracker, publish) per `board.md`.
+A UX, architecture or John run the user chooses lands in the epic's folder, and SPEC adopts what it produces as a companion. Fill the epic in from the initiative's lines alone only when the user says to, or when it needs nothing more. Then write its Requirements per `spec.md`, re-read Outcome and `Done when`, set `refined: true`, and commit (on a tracker, publish) per `board.md`.
 
 ## Epic into stories
 
@@ -74,7 +74,7 @@ After the epic file, read its breakdown, child tickets, and results. Each blocki
 
 What makes a good story:
 
-- One step toward the epic's Done when, sized for one agent session; it need not be user-visible. Too small when setup outweighs the work: merge. A one-session epic gets one story.
+- One step toward the epic's `Done when`, sized for one agent session; it need not be user-visible. Too small when setup outweighs the work: merge. A one-session epic gets one story.
 - {{ workflow.tickets_tracer_bullet }}
 - Stories touching the same code form one ordered lane; an interface two lanes share gets a stub as its own early story.
 - Done is one runnable check.

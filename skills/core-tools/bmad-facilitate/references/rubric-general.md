@@ -6,6 +6,6 @@ Rate each strong, adequate, thin or broken, judged against the document's purpos
 4. Honest: what is unknown or inferred says so; open items fit the stakes.
 5. Fit: voice, terms, depth and length suit the reader and the stakes.
 
-Then check the template's Done when.
+Then check the template's `Done when` lines.
 
 Write review-rubric.md: a two-sentence verdict, the three fixes that matter most, then findings by dimension with severity, location and fix.
