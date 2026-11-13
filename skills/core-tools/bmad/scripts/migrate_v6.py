@@ -131,7 +131,7 @@ def stale_config_keys(project_root: Path) -> list[tuple[str, tuple[str, ...]]]:
         if path.is_symlink() or not path.is_file() or not inside_bmad(path, project_root):
             continue
         try:
-            data = tomllib.loads(path.read_text(encoding="utf-8"))
+            data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
         except (OSError, UnicodeError, tomllib.TOMLDecodeError):
             continue
         stale += [(relative, key) for key in V6_KEYS if lookup(data, key) is not _MISSING]
@@ -152,7 +152,7 @@ def stale_custom_keys(project_root: Path, retirement: Retirement) -> list[tuple[
             if path.is_symlink() or not path.is_file() or not inside_bmad(path, project_root):
                 continue
             try:
-                data = tomllib.loads(path.read_text(encoding="utf-8"))
+                data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
             except (OSError, UnicodeError, tomllib.TOMLDecodeError):
                 continue
             stale += [
@@ -230,7 +230,7 @@ def clean(project_root: Path, skill_root: Path, *, roots: tuple[Path, ...] = ())
     removed = [(file, key) for file, key in stale if (file, key) not in moved]
     edits = {
         relative: text_without_keys(
-            (project_root / relative).read_text(encoding="utf-8"),
+            (project_root / relative).read_text(encoding="utf-8-sig"),
             [key for file, key in removed if file == relative],
             [key for file, key in moved if file == relative],
         )
@@ -899,7 +899,7 @@ def story_text(
     breakdown = home / "tickets.toml"
     if breakdown.is_file():
         try:
-            floor = tomllib.loads(breakdown.read_text(encoding="utf-8")).get("next_id", 0)
+            floor = tomllib.loads(breakdown.read_text(encoding="utf-8-sig")).get("next_id", 0)
         except (OSError, UnicodeError, tomllib.TOMLDecodeError):
             floor = 0
         if isinstance(floor, bool) or not isinstance(floor, int):
