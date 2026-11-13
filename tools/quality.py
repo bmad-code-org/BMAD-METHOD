@@ -10,6 +10,7 @@ directory's own npm scripts.
 
 from __future__ import annotations
 
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -31,7 +32,9 @@ def main() -> int:
     for cwd, step in STEPS:
         where = "" if cwd == ROOT else f" (in {cwd.relative_to(ROOT)})"
         print(f"\n${where} {' '.join(step)}", flush=True)
-        if subprocess.run(step, cwd=cwd).returncode != 0:
+        # npm is npm.cmd on Windows, which CreateProcess does not find by its bare name.
+        program = shutil.which(step[0]) or step[0]
+        if subprocess.run([program, *step[1:]], cwd=cwd).returncode != 0:
             print(f"quality: failed at: {' '.join(step)}", file=sys.stderr)
             return 1
     print("\nquality: all checks passed")
