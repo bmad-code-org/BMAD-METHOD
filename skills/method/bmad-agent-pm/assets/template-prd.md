@@ -44,7 +44,7 @@ Altitude sets what this document decides: keep a line when the level below would
 <!-- Each domain noun defined once, with its relationships to other terms and its cardinality where relevant. A new noun in Features joins the glossary in the same pass. -->
 
 ## Features and requirements
-<!-- By feature: its behavior and the journeys it realizes, then nested FR-N: "[Actor] can [capability] [under conditions]" and out-of-scope bounds. At epic altitude each FR adds testable consequences; above it, one checkable result per capability, the edge cases left to the epics. At initiative altitude each feature is a likely epic: name it so the name lasts, and order features by dependency. Add a feature's own NFRs when they apply only to it. -->
+<!-- By feature: its behavior and the journeys it realizes, then nested FR-N: "[Actor] can [capability] [under conditions]" and out-of-scope bounds. At epic altitude each FR adds testable consequences; above it, one checkable result per capability, the edge cases left to the epics. At initiative altitude each feature is a likely epic: name it so the name lasts, and order features by dependency. Add a feature's own NFRs when they apply only to it. Where a feature crosses a trust boundary (input the product does not control, who may do or see what, secrets, another tenant's data), what must never happen is an FR with a testable consequence at its altitude, not a line in a security NFR. -->
 
 ## Rules
 <!-- include when: program or initiative altitude, where it is required; below that, when a rule spans the FRs and no parent states it. RULE-N, one line each: what everything below must obey, whichever feature it touches. A rule from a `brd` or a parent document keeps its id. -->
