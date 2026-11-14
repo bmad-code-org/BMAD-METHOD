@@ -10,7 +10,7 @@ Lane: the `customize.toml` surface and its wiring, per `lenses/standards.md`. Th
 - Arrays of tables without `code` or `id`, or mixing the two: medium; the resolver can only append.
 - Boolean toggles: one medium, three or more high; a switch means the author never decided.
 - Old-format config (`module.yaml`, `module-help.csv`, `_bmad/config.yaml`), installer questions, a settings concept in the skill, or config read other than via `resolve_config.py`: high.
-- The skill writing under `_bmad/custom/`, merging `customize.toml` with override files itself, or carrying its own reader for when `_bmad/` is absent: high. The resolver reads, `bmad-customize` writes, setup installs; `script_findings` carries `custom-io` for the script side. Users who will change a value and no line telling them to invoke `bmad-customize`: low.
+- The skill writing under `_bmad/custom/`, merging `customize.toml` with override files itself, or carrying its own reader for when `_bmad/` is absent: high. A memory agent writing its own `[[agent.dominion]]` entries to its own override file is the one exception. The resolver reads, `bmad-customize` writes, setup installs; `script_findings` carries `custom-io` for the script side. Users who will change a value and no line telling them to invoke `bmad-customize`: low.
 - Jinja where `SKILL.md` does not call `render_skill.py`: high; it reaches the model verbatim. In a rendered skill or rendered agent, `config.*`, `workflow.*` or `agent.*` in a file named "template": high.
 - Agent (`shape_hint` is `agent` or `memory-agent`): `[agent]` missing `name`, `title` or `icon`, or a menu item with both or neither of `skill` and `prompt`: high. A memory agent's `[agent]` duplicating its sanctum: medium; two selves drift.
 

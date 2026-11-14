@@ -25,6 +25,7 @@ KEYS = {
     "path_findings",
     "script_findings",
     "long_paragraphs",
+    "toml_errors",
 }
 SKILL_MD = "---\nname: {name}\ndescription: 'Does a thing. Use when asked.'\n---\n\n# Body\n\n{body}\n"
 GOOD_SCRIPT = '# /// script\n# requires-python = ">=3.11"\n# ///\nprint(1)\n'
@@ -146,10 +147,14 @@ class PrepassTest(unittest.TestCase):
                 "bmad-memory": ({"customize.toml": "[agent]\n", "scripts/wake.py": GOOD_SCRIPT}, "memory-agent"),
                 "bmad-single": ({"bmod.toml": "[bmod]\ncode = 'x'\n[skill]\n"}, "single-skill-module"),
                 "bmod-multi": ({"bmod.toml": "[bmod]\ncode = 'multi'\n"}, "multi-skill-module"),
+                "bmad-broken": ({"customize.toml": "[agent\nname = 'Ann'\n"}, "unknown"),
             }
             for name, (files, expected) in cases.items():
                 skill = make_skill(root, name=name, files=files)
                 self.assertEqual(prepass(skill)["shape_hint"], expected, name)
+
+            self.assertEqual(prepass(root / "bmad-broken")["toml_errors"][0]["path"], "customize.toml")
+            self.assertEqual(prepass(root / "bmad-agent")["toml_errors"], [])
 
             rendered = make_skill(
                 root, name="bmad-rendered", body='Run `uv run "{project-root}/_bmad/scripts/render_skill.py"`.'

@@ -23,9 +23,10 @@ Usage:
     project-root: the folder holding _bmad/
     skill-path:   the skill folder (SKILL.md, references/, assets/, scripts/)
 
-Exit 0 and a report on stdout; exit 2 on a usage error.
+Exit 0 and a report on stdout; exit 1 when the sanctum cannot be written; exit 2 on a usage error.
 """
 
+import argparse
 import sys
 from datetime import date
 from pathlib import Path
@@ -45,12 +46,13 @@ def substitute_vars(content: str, variables: dict) -> str:
 
 
 def main() -> int:
-    if len(sys.argv) < 3:
-        print("Usage: init-sanctum.py <project-root> <skill-path>", file=sys.stderr)
-        return 2
+    parser = argparse.ArgumentParser(description="Scaffold the sanctum before the First Breath conversation.")
+    parser.add_argument("project_root", type=Path, help="the folder holding _bmad/")
+    parser.add_argument("skill_path", type=Path, help="the skill folder (SKILL.md, references/, assets/, scripts/)")
+    args = parser.parse_args()
 
-    project_root = Path(sys.argv[1]).resolve()
-    skill_path = Path(sys.argv[2]).resolve()
+    project_root = args.project_root.resolve()
+    skill_path = args.skill_path.resolve()
     sanctum_path = project_root / "_bmad" / "memory" / SKILL_NAME
     assets_dir = skill_path / "assets"
 
@@ -61,31 +63,31 @@ def main() -> int:
         "sanctum_path": str(sanctum_path),
     }
 
-    sanctum_path.mkdir(parents=True, exist_ok=True)
-    for rel in MEMORY_DIRS:
-        (sanctum_path / rel).mkdir(parents=True, exist_ok=True)
-
     created = []
-    for template_path in sorted(assets_dir.glob("*-template.md")):
-        output_name = template_path.name.removesuffix("-template.md").upper() + ".md"
-        target = sanctum_path / output_name
-        if target.exists():
-            continue
-        content = substitute_vars(template_path.read_text(encoding="utf-8"), variables)
-        target.write_text(content, encoding="utf-8")
-        created.append(output_name)
+    try:
+        for rel in MEMORY_DIRS:
+            (sanctum_path / rel).mkdir(parents=True, exist_ok=True)
+        for template_path in sorted(assets_dir.glob("*-template.md")):
+            output_name = template_path.name.removesuffix("-template.md").upper() + ".md"
+            target = sanctum_path / output_name
+            if target.exists():
+                continue
+            content = substitute_vars(template_path.read_text(encoding="utf-8"), variables)
+            target.write_text(content, encoding="utf-8")
+            created.append(output_name)
+    except OSError as error:
+        print(f"Cannot write the sanctum at {sanctum_path}: {error.strerror or error}", file=sys.stderr)
+        return 1
 
     if existed and not created:
-        print(f"Sanctum already exists at {sanctum_path}")
-        print("This agent has already been born. Nothing to scaffold.")
+        print(f"Sanctum complete at {sanctum_path}; nothing to scaffold.")
         return 0
 
     print(f"{'Finished' if existed else 'Created'} sanctum at {sanctum_path}")
     for name in created:
         print(f"  Created {name}")
     print()
-    print("First Breath scaffolding complete. The conversational awakening can now begin.")
-    print(f"Sanctum: {sanctum_path}")
+    print("Scaffolding complete. The First Breath conversation can begin.")
     return 0
 
 

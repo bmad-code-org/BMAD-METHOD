@@ -130,7 +130,8 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         (self.sanctum / "BOND.md").write_text("# Bond\n\nCall them: Brian\n", encoding="utf-8")
         res = run(self.init, self.project, self.skill)
         self.assertEqual(res.returncode, 0, res.stderr)
-        self.assertIn("already been born", res.stdout)
+        self.assertIn("nothing to scaffold", res.stdout)
+        self.assertNotIn("born", res.stdout)
         self.assertIn("Call them: Brian", (self.sanctum / "BOND.md").read_text(encoding="utf-8"))
 
     def test_waking_prints_self_and_map_not_memory(self):
@@ -334,6 +335,35 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertNotIn("log →", out)
         self.assertIn("notes: access 'rw' is neither write nor read; treated as read", out)
         self.assertIn(f"notes → {(self.project / 'notes').resolve()} (read)", out)
+
+    def test_project_root_token_in_an_area_path_resolves(self):
+        self.birth()
+        (self.project / "journal").mkdir()
+        (self.project / "journal" / "README.md").write_text("# Journal\n", encoding="utf-8")
+        self.dominion(
+            "acme-agent-sage.toml",
+            '[[agent.dominion]]\nid = "journal"\npath = "{project-root}/journal"\naccess = "write"\n',
+        )
+        out = run(self.wake, self.project).stdout.split("===== dominion =====")[1]
+        self.assertIn(f"journal → {(self.project / 'journal').resolve()} (write)", out)
+        self.assertNotIn("MISSING", out)
+
+    def test_unwritable_sanctum_fails_with_one_line(self):
+        memory = self.project / "_bmad" / "memory"
+        memory.mkdir()
+        memory.chmod(0o500)
+        try:
+            res = run(self.init, self.project, self.skill)
+        finally:
+            memory.chmod(0o700)
+        self.assertEqual(res.returncode, 1)
+        self.assertIn("Cannot write the sanctum", res.stderr)
+        self.assertNotIn("Traceback", res.stderr)
+
+    def test_unknown_flag_is_refused(self):
+        res = run(self.wake, self.project, "--bogus")
+        self.assertEqual(res.returncode, 2)
+        self.assertIn("unrecognized arguments", res.stderr)
 
     def test_entry_without_id_is_named(self):
         self.birth()

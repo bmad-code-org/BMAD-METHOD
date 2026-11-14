@@ -36,6 +36,7 @@ Usage:
     project-root: the folder holding _bmad/
 """
 
+import argparse
 import json
 import os
 import re
@@ -110,7 +111,8 @@ def undistilled(raw: Path) -> list[str]:
         if not p.is_file():
             continue
         try:
-            head = p.read_text(encoding="utf-8", errors="replace")[:2000]
+            with p.open("rb") as f:
+                head = f.read(4096).decode("utf-8", errors="replace")
         except OSError:
             continue
         if STATUS_RAW_RE.search(head):
@@ -236,6 +238,8 @@ def read_dominion(project_root: Path) -> tuple[list[dict], list[str]]:
 
 
 def area_path(project_root: Path, raw: str) -> Path:
+    if raw.startswith("{project-root}"):
+        raw = str(project_root) + raw.removeprefix("{project-root}")
     path = Path(raw).expanduser()
     return (path if path.is_absolute() else project_root / path).resolve()
 
@@ -304,14 +308,12 @@ def emit_lost_name(sanctum: Path, project_root: Path) -> None:
 
 
 def main() -> int:
-    args = sys.argv[1:]
-    pulse = "--pulse" in args
-    positional = [a for a in args if not a.startswith("--")]
-    if not positional:
-        print("Usage: wake.py <project-root> [--pulse]", file=sys.stderr)
-        return 2
-
-    project_root = Path(positional[0]).resolve()
+    parser = argparse.ArgumentParser(description="Wake the agent: print its self and maps, or route to First Breath.")
+    parser.add_argument("project_root", type=Path, help="the folder holding _bmad/")
+    parser.add_argument("--pulse", action="store_true", help="woken on a schedule with no one at the keyboard")
+    args = parser.parse_args()
+    pulse = args.pulse
+    project_root = args.project_root.resolve()
     sanctum = project_root / "_bmad" / "memory" / SKILL_NAME
 
     missing = [name for name in IDENTITY_FILES if not (sanctum / name).is_file()]
@@ -328,7 +330,7 @@ def main() -> int:
             print(f"NO SANCTUM at {sanctum}")
         else:
             print(f"UNFINISHED BIRTH at {sanctum}: your sanctum exists but memory/.born does not.")
-        print("This is your one birth. Load references/first-breath.md and follow it to the end.")
+        print(f"This is your one birth. Load {SKILL_ROOT / 'references' / 'first-breath.md'} and follow it to the end.")
         if not missing:
             for name in IDENTITY_FILES:
                 emit(sanctum / name)

@@ -15,7 +15,7 @@ Ask about the layers as questions, not a menu; each yes adds one:
 - be taught new things over time: learned capabilities
 - work on its own when nobody is at the keyboard: Pulse
 
-Then ask whether the agent owns or tends anything beyond its own memory: the work itself, which people or other agents rely on without it and which must outlive it. A vault agent may own a whole workspace or a section of it, a coach a client's training log, a journal companion a diary in a private space; a pure companion owns nothing. A yes sets the `dominion` condition, which brings in the dominion text and First Breath's question about areas. Ship an area in `customize.toml` only when its path is the same in every install, as `[[agent.dominion]]` entries in place of `dominion = []`, kept last in the file; areas whose paths are the owner's to choose are asked at First Breath, not now. The work itself never goes under `_bmad/memory/`.
+Then ask whether the agent owns or tends anything beyond its own memory: the work itself, which people or other agents rely on without it and which must outlive it. A vault agent may own a whole workspace or a section of it, a coach a client's training log, a journal companion a diary in a private space; a pure companion owns nothing. A yes sets the `dominion` condition, which brings in the dominion text and First Breath's question about areas. Ship an area in `customize.toml` only when its path is the same in every install, as `[[agent.dominion]]` entries in place of `dominion = []`, kept last in the file; areas whose paths are the owner's to choose are asked at First Breath, not now.
 
 A memory agent serves one owner. First Breath asks whether the repository is private to that owner or shared, and the answer decides whether the sanctum and the owner's areas are committed and where loading in every chat is written; a build does not ask it.
 
@@ -30,7 +30,7 @@ An agent that names itself ships `name = ""`; the name is born at First Breath.
 | `references/first-breath.md` | `assets/first-breath-template.md` | the birth conversation, with the questions for this domain in `{discovery-questions}` |
 | `references/<capability>.md` | the agent shape's capability template with frontmatter `name`, `description`, `code`; `assets/intake-capability-template.md` when the agent takes in material | built-in capabilities, one CAPABILITIES.md row each |
 | `assets/*-template.md` | `assets/PERSONA-template.md` and its CREED, BOND, HOW-I-REMEMBER, CAPABILITIES and PULSE (Pulse only) siblings | sanctum seeds; HOW-I-REMEMBER is the short guide to the memory layout, printed at every waking |
-| `wake.py`, `init-sanctum.py` in `scripts/` | `assets/wake-template.py`, `assets/init-sanctum-template.py` | unchanged; both read the skill name from their folder. Wake prints the identity files, the capabilities table built from `references/` and the sanctum's `capabilities/`, a map of `memory/` and `raw/` with the last tending date and the session notes since, and a map of each dominion area. Init-sanctum writes the seeds and copies nothing from the skill |
+| `wake.py`, `init-sanctum.py` in `scripts/` | `assets/wake-template.py`, `assets/init-sanctum-template.py` | copied byte for byte; both read the skill name from their folder |
 
 ## Rules
 
@@ -40,7 +40,7 @@ An agent that names itself ships `name = ""`; the name is born at First Breath.
 - Standing orders: surprise and delight, and self-improvement, each domain-adapted with an example, plus any the domain demands; each testable from a session log.
 - First Breath is finished, never deferred. Until its wrap-up writes `memory/.born`, it is the agent's only job and every waking returns to it. Never write a First Breath that serves other work first, lets a question go unasked, or counts a question parked in `memory/pending.md` as answered.
 - `{discovery-questions}` is what this agent must learn about its owner that a generic assistant would not: two or more questions, each naming the sanctum file or dominion area its answer goes to. They are what makes one agent's First Breath differ from another's: a companion or coach asks about the person, a working agent about how they work.
-- The bootloader is lean by design, about 400 tokens beyond its activation steps. Style, principles and menus belong in the sanctum; judge it by what leaked in, not its weight.
+- The bootloader is lean by design: style, principles and menus belong in the sanctum; judge it by what leaked in.
 - Nothing about the owner is read from config. First Breath opens by asking what to call them; the reply sets the name and the language, and the agent writes both to BOND.md.
 - The sanctum holds only what the agent learns. What the skill ships stays in the skill, so an update reaches an agent already born; the facts of the work live in dominion areas, each with a README giving its layout, so they read without the agent. When the project's AGENTS.md has rules for an area, they win; when an area and the sanctum disagree, the area wins.
 - Memory is small files in folders by kind of subject, standing subjects by slug and events by date and slug, with a write-once `raw/` layer for what the owner hands over and distillations that link back to it.
