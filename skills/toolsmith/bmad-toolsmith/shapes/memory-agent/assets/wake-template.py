@@ -334,6 +334,8 @@ def main() -> int:
         if not missing:
             for name in IDENTITY_FILES:
                 emit(sanctum / name)
+            if (sanctum / "PULSE.md").is_file():
+                emit(sanctum / "PULSE.md")
             emit_open_questions(sanctum)
         emit_capabilities(sanctum)
         emit_dominion(project_root)

@@ -360,6 +360,12 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertIn("Cannot write the sanctum", res.stderr)
         self.assertNotIn("Traceback", res.stderr)
 
+    def test_wrong_skill_path_fails_instead_of_claiming_success(self):
+        res = run(self.init, self.project, self.project)
+        self.assertEqual(res.returncode, 1)
+        self.assertIn("No template for PERSONA.md", res.stderr)
+        self.assertNotIn("complete", res.stdout)
+
     def test_unknown_flag_is_refused(self):
         res = run(self.wake, self.project, "--bogus")
         self.assertEqual(res.returncode, 2)

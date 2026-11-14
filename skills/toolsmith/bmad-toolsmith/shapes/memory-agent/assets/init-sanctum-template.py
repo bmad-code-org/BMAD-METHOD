@@ -23,7 +23,7 @@ Usage:
     project-root: the folder holding _bmad/
     skill-path:   the skill folder (SKILL.md, references/, assets/, scripts/)
 
-Exit 0 and a report on stdout; exit 1 when the sanctum cannot be written; exit 2 on a usage error.
+Exit 0 and a report on stdout; exit 1 when the sanctum cannot be written or the skill has no identity templates; exit 2 on a usage error.
 """
 
 import argparse
@@ -36,6 +36,9 @@ SKILL_NAME = Path(__file__).resolve().parent.parent.name
 
 # The memory layout HOW-I-REMEMBER.md describes. The agent adds folders under memory/ as kinds of subject appear.
 MEMORY_DIRS = ("memory/sessions", "raw", "capabilities")
+
+# The files wake.py needs before the sanctum counts as present.
+IDENTITY_FILES = ("PERSONA.md", "CREED.md", "BOND.md", "HOW-I-REMEMBER.md", "CAPABILITIES.md")
 
 
 def substitute_vars(content: str, variables: dict) -> str:
@@ -77,6 +80,11 @@ def main() -> int:
             created.append(output_name)
     except OSError as error:
         print(f"Cannot write the sanctum at {sanctum_path}: {error.strerror or error}", file=sys.stderr)
+        return 1
+
+    missing = [name for name in IDENTITY_FILES if not (sanctum_path / name).is_file()]
+    if missing:
+        print(f"No template for {', '.join(missing)} in {assets_dir}; is the skill path right?", file=sys.stderr)
         return 1
 
     if existed and not created:

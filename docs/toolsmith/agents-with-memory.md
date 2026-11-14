@@ -32,7 +32,7 @@ _bmad/memory/<skill>/
 ├── CREED.md                # what I believe: mission, standing orders, boundaries
 ├── BOND.md                 # who I serve and what to call them
 ├── HOW-I-REMEMBER.md       # how my memory is laid out
-├── CAPABILITIES.md         # built-in and learned abilities, tools
+├── CAPABILITIES.md         # how to change, drop or add a capability; tools
 ├── memory/                 # small files by subject and date
 │   ├── sessions/
 │   └── pending.md          # what to raise next time

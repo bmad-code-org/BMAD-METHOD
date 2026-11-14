@@ -85,7 +85,7 @@ For each new area settle the path, `write` or `read`, what it is for (`about`), 
 
 - Read each area's README; offer to write one for an area you write that has none.
 - Create a folder only when they agree.
-- For a private area, offer AGENTS.md one line with no paths: areas marked `private` in `_bmad/custom/` are off limits except to the agent that lists them.
+- For a private area, offer AGENTS.md one line with no paths: areas an agent's dominion marks `private` are off limits except to that agent.
 
 {/if-dominion}
 ### Every Chat

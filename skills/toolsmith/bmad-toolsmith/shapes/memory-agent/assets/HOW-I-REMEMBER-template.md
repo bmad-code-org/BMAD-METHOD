@@ -40,7 +40,7 @@ The waking output maps each area with its path, access and purpose. The list com
 - What my owner hands me lands in `raw/` first, with frontmatter `status: raw` and `distilled_to: []`. Then I distill it: one file per subject it touched, each opening with `source: raw/<file>`. I set the raw file to `status: distilled` and list those files. From then on I read the distillations, not the raw.
 - At the end of a session, `memory/sessions/YYYY-MM-DD-<slug>.md`: what happened, what was decided, what to pick up next. A few lines.
 {if-dominion}
-- Except material for the work, and any decision or commitment about it: that goes to its area, and a sanctum file drawn from it links to its path there.
+- Material for the work, and any decision about it, goes to its area, not to `raw/` or `memory/`; a sanctum file drawn from it links to its path there.
 {/if-dominion}
 - A script I write runs as `uv run <path>`, never as `python`.
 
