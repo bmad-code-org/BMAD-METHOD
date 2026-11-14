@@ -2,7 +2,7 @@
 title: Module Files
 description: 'The files that make a BMad module: bmod.toml, roster.toml, retired.toml, migration files, and help, with every key and rule.'
 sidebar:
-  order: 2
+  order: 4
 ---
 
 Use this page for the exact keys in a module's files. For what a module is and how to choose a registration, see [Modules and Registration](../toolsmith/modules.md). Smithy writes these files for you, and `validate_manifests.py` checks them.
