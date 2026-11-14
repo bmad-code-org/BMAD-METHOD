@@ -1,5 +1,6 @@
 """Tests for the memory-agent shape's wake and init-sanctum templates: birth, resume after a cut-off birth, the waking map, capabilities and dominion."""
 
+import os
 import shutil
 import subprocess
 import sys
@@ -159,10 +160,15 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         (sessions / "2026-10-03-pricing.md").write_text("talked\n", encoding="utf-8")
         (self.sanctum / "memory" / "pending.md").write_text("Ask about the launch date.\n", encoding="utf-8")
         raw = self.sanctum / "raw"
-        (raw / "2026-10-02-oss-call.md").write_text(
-            "---\nstatus: raw\ndistilled_to: []\n---\nwords\n", encoding="utf-8"
+        (raw / "2026-10-02-oss-call.md").write_text("words\n", encoding="utf-8")
+        (raw / "2026-10-02-deck.pdf").write_bytes(b"%PDF-1.7\x00\xff")
+        (raw / "2026-09-30-oss-notes.md").write_text("words\n", encoding="utf-8")
+        (raw / "2026-09-29-memo.md").write_text("words\n", encoding="utf-8")
+        topics = self.sanctum / "memory" / "topics"
+        topics.mkdir()
+        (topics / "oss.md").write_text(
+            "---\nsource:\n  - raw/2026-09-30-oss-notes.md\n  - raw/2026-09-29-memo.md\n---\nfacts\n", encoding="utf-8"
         )
-        (raw / "2026-09-30-oss-notes.md").write_text("---\nstatus: distilled\n---\nwords\n", encoding="utf-8")
         res = run(self.wake, self.project)
         self.assertEqual(res.returncode, 0, res.stderr)
         out = res.stdout
@@ -171,7 +177,7 @@ class MemoryAgentScriptsTest(unittest.TestCase):
             self.assertIn(f"===== {name} =====", out)
         self.assertIn("memory/people/ (1 files)", out)
         self.assertIn("memory/sessions/ (2 files)", out)
-        self.assertIn("raw/ (2 files)", out)
+        self.assertIn("raw/ (4 files)", out)
         self.assertLess(
             out.index("memory/sessions/2026-10-03-pricing.md"), out.index("memory/sessions/2026-10-01-first-breath.md")
         )
@@ -181,12 +187,25 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertIn("Tended: 2026-10-02; session notes since: 1", again)
         self.assertIn("memory/sessions/ (2 files)", again)
         self.assertNotIn(".tended", again.split("memory map")[1].split("Tended:")[0])
-        self.assertIn("Undistilled raw (1):", out)
-        self.assertIn("raw/2026-10-02-oss-call.md", out)
-        self.assertNotIn("2026-09-30-oss-notes.md", out.split("Undistilled raw")[1])
+        self.assertIn("Undistilled raw (2):", out)
+        undistilled = out.split("Undistilled raw")[1].split("=====")[0]
+        self.assertIn("raw/2026-10-02-oss-call.md", undistilled)
+        self.assertIn("raw/2026-10-02-deck.pdf", undistilled)
+        self.assertNotIn("2026-09-30-oss-notes.md", undistilled)
+        self.assertNotIn("2026-09-29-memo.md", undistilled)
         self.assertIn("===== pending.md =====", out)
         self.assertIn("Ask about the launch date.", out)
         self.assertNotIn("SECRET-PEOPLE-BODY", out)
+
+    def test_session_note_written_after_tending_on_the_same_day_counts(self):
+        self.birth()
+        sessions = self.sanctum / "memory" / "sessions"
+        early, late = sessions / "2026-10-05-morning.md", sessions / "2026-10-05-evening.md"
+        stamp = self.sanctum / "memory" / ".tended"
+        for path, written in ((early, 1000), (stamp, 2000), (late, 3000)):
+            path.write_text("2026-10-05\n", encoding="utf-8")
+            os.utime(path, (written, written))
+        self.assertIn("Tended: 2026-10-05; session notes since: 1", run(self.wake, self.project).stdout)
 
     def test_pulse_appends_pulse_file_when_present(self):
         self.birth()
@@ -248,6 +267,21 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertNotIn("references/intake.md", table)
         capability(learned, "plan.md", "PLAN", "Plan", "retired: true\n")
         self.assertNotIn("[PLAN]", self.capabilities_section(run(self.wake, self.project).stdout))
+
+    def test_capability_with_broken_frontmatter_is_named_and_replaces_nothing(self):
+        self.birth()
+        learned = self.sanctum / "capabilities"
+        learned.mkdir(exist_ok=True)
+        (learned / "week.md").write_text(
+            "---\nname: Week\ndescription: Review the week: wins, misses\ncode: WEEK\n---\n", encoding="utf-8"
+        )
+        (learned / "intake.md").write_text("---\ncode: INTAKE\n---\n", encoding="utf-8")
+        (self.skill / "references" / "glossary.md").write_text("# Terms\n", encoding="utf-8")
+        section = self.capabilities_section(run(self.wake, self.project).stdout)
+        self.assertIn("capabilities/week.md: its frontmatter is not valid YAML", section)
+        self.assertIn("capabilities/intake.md: its frontmatter needs both `name` and `code`", section)
+        self.assertIn("| [INTAKE] | Intake | Keep and distill material | built-in |", section)
+        self.assertNotIn("glossary", section)
 
     def dominion(self, layer: str, body: str) -> None:
         with (self.project / "_bmad" / "custom" / layer).open("a", encoding="utf-8") as f:
@@ -374,6 +408,14 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertEqual(res.returncode, 1)
         self.assertIn("Cannot write the sanctum", res.stderr)
         self.assertNotIn("Traceback", res.stderr)
+
+    def test_unparseable_customize_fails_before_persona_is_written(self):
+        (self.skill / "customize.toml").write_text('[agent]\nname = "Sage\n', encoding="utf-8")
+        res = run(self.init, self.project, self.skill)
+        self.assertEqual(res.returncode, 1)
+        self.assertIn("Cannot read", res.stderr)
+        self.assertNotIn("Traceback", res.stderr)
+        self.assertFalse((self.sanctum / "PERSONA.md").exists())
 
     def test_wrong_skill_path_fails_instead_of_claiming_success(self):
         res = run(self.init, self.project, self.project)

@@ -12,9 +12,9 @@ table, a map of the memory and a map of the dominion. The capabilities table is
 built from frontmatter each waking: built-ins from the skill's references/,
 learned ones from the sanctum's capabilities/, a learned file with a built-in's
 code replacing it and `retired: true` dropping it. The memory map is each folder
-under memory/ and raw/ with its file count, the newest dated files, how many raw
-files are still undistilled, when the memory was last tended (memory/.tended)
-with the session notes written since, and memory/pending.md when it has
+under memory/ and raw/ with its file count, the newest dated files, the raw files
+no file under memory/ names as its source, when the memory was last tended
+(memory/.tended) with the session notes written since, and memory/pending.md when it has
 content. The dominion map is each area in `agent.dominion`, read through
 _bmad/scripts/resolve_customization.py: where it is, its access, its folders
 and newest dated files (only a count for a private area), and whether it is
@@ -64,7 +64,8 @@ IDENTITY_FILES = [
 
 RECENT_COUNT = 8
 DATED_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})")
-STATUS_RAW_RE = re.compile(r"^status:\s*raw\s*$", re.MULTILINE)
+# A distillation opens with `source: raw/<file>`, on one line or as a YAML list under it.
+SOURCE_RE = re.compile(r"^source:[^\n]*(?:\n[ \t]*-[^\n]*)*", re.MULTILINE)
 PERSONA_NAME_RE = re.compile(r"^- \*\*Name:\*\* ([^{*\s][^{*\n]*)$", re.MULTILINE)
 FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
 # A template placeholder is prose in braces, such as {learned at First Breath}; a bare token has no spaces.
@@ -103,21 +104,20 @@ def recent_dated(root: Path) -> list[str]:
     return [p.relative_to(root.parent).as_posix() for p in dated[:RECENT_COUNT]]
 
 
-def undistilled(raw: Path) -> list[str]:
+def undistilled(sanctum: Path) -> list[str]:
+    """Raw files that no file under memory/ names as its source."""
+    raw, memory = sanctum / "raw", sanctum / "memory"
     if not raw.is_dir():
         return []
-    out = []
-    for p in sorted(raw.iterdir()):
-        if not p.is_file():
-            continue
+    sources = []
+    for p in memory.rglob("*.md") if memory.is_dir() else []:
         try:
-            with p.open("rb") as f:
-                head = f.read(4096).decode("utf-8", errors="replace")
+            sources.extend(SOURCE_RE.findall(p.read_text(encoding="utf-8", errors="replace")[:4096]))
         except OSError:
             continue
-        if STATUS_RAW_RE.search(head):
-            out.append(p.name)
-    return out
+    cited = "\n".join(sources)
+    names = sorted(p.name for p in raw.iterdir() if p.is_file() and not p.name.startswith("."))
+    return [name for name in names if not re.search(rf"raw/{re.escape(name)}(?![\w.-])", cited)]
 
 
 def tending_line(sanctum: Path) -> str:
@@ -125,11 +125,17 @@ def tending_line(sanctum: Path) -> str:
     stamp = sanctum / "memory" / ".tended"
     tended = stamp.read_text(encoding="utf-8").strip()[:10] if stamp.is_file() else ""
     sessions = sanctum / "memory" / "sessions"
-    notes = [p.name for p in sessions.iterdir() if p.is_file() and DATED_RE.match(p.name)] if sessions.is_dir() else []
-    since = [n for n in notes if DATED_RE.match(n).group(1) > tended] if tended else notes
-    if tended:
-        return f"Tended: {tended}; session notes since: {len(since)}"
-    return f"Never tended; session notes: {len(since)}"
+    notes = [p for p in sessions.iterdir() if p.is_file() and DATED_RE.match(p.name)] if sessions.is_dir() else []
+    if not tended:
+        return f"Never tended; session notes: {len(notes)}"
+    # The stamp is a date, so a note dated that same day is told apart by which file was written last.
+    stamped = stamp.stat().st_mtime
+    since = [
+        p
+        for p in notes
+        if (day := DATED_RE.match(p.name).group(1)) > tended or (day == tended and p.stat().st_mtime > stamped)
+    ]
+    return f"Tended: {tended}; session notes since: {len(since)}"
 
 
 def emit_map(sanctum: Path) -> None:
@@ -141,7 +147,7 @@ def emit_map(sanctum: Path) -> None:
         print("\nNewest:")
         print("\n".join(f"  {r}" for r in recent))
     print(f"\n{tending_line(sanctum)}")
-    raw = undistilled(sanctum / "raw")
+    raw = undistilled(sanctum)
     if raw:
         print(f"\nUndistilled raw ({len(raw)}):")
         print("\n".join(f"  raw/{r}" for r in raw))
@@ -150,33 +156,40 @@ def emit_map(sanctum: Path) -> None:
         emit(pending)
 
 
-def frontmatter(path: Path) -> dict:
+def frontmatter(path: Path) -> dict | None:
+    """The file's frontmatter mapping, empty when it has none; None when the block does not parse."""
     match = FRONTMATTER_RE.match(path.read_text(encoding="utf-8", errors="replace"))
-    try:
-        meta = yaml.safe_load(match.group(1)) if match else None
-    except yaml.YAMLError:
+    if not match:
         return {}
-    return {k: v for k, v in meta.items()} if isinstance(meta, dict) else {}
+    try:
+        meta = yaml.safe_load(match.group(1))
+    except yaml.YAMLError:
+        return None
+    return meta if isinstance(meta, dict) else None
 
 
-def capability_rows(folder: Path, label: str, skip: set[str]) -> dict[str, tuple[dict, str]]:
-    """Capability files in folder with `name` and `code` frontmatter, by code."""
-    found = {}
+def capability_rows(folder: Path, label: str, skip: set[str]) -> tuple[dict[str, tuple[dict, str]], list[str]]:
+    """Capability files in folder by `code`, and the files whose frontmatter keeps them out of the table."""
+    found, problems = {}, []
     for path in sorted(folder.glob("*.md")) if folder.is_dir() else []:
         if path.name in skip:
             continue
-        meta = frontmatter(path)
-        if meta.get("code"):
-            found[str(meta["code"])] = (meta, f"{label}/{path.name}")
-    return found
+        meta, source = frontmatter(path), f"{label}/{path.name}"
+        if meta is None:
+            problems.append(f"{source}: its frontmatter is not valid YAML")
+        elif meta.get("code") and (meta.get("name") or meta.get("retired") is True):
+            found[str(meta["code"])] = (meta, source)
+        elif meta.get("code") or meta.get("name"):
+            problems.append(f"{source}: its frontmatter needs both `name` and `code`")
+    return found, problems
 
 
 def emit_capabilities(sanctum: Path) -> None:
-    built_in = capability_rows(SKILL_ROOT / "references", "references", SKILL_ONLY_FILES)
-    learned = capability_rows(sanctum / "capabilities", "capabilities", set())
+    built_in, built_in_problems = capability_rows(SKILL_ROOT / "references", "references", SKILL_ONLY_FILES)
+    learned, learned_problems = capability_rows(sanctum / "capabilities", "capabilities", set())
     rows = []
     for code, (meta, source) in {**built_in, **learned}.items():
-        if meta.get("retired") is True or not meta.get("name"):
+        if meta.get("retired") is True:
             continue
         kind = "learned" if code in learned else "built-in"
         if code in learned and code in built_in:
@@ -188,6 +201,10 @@ def emit_capabilities(sanctum: Path) -> None:
     print("| Code | Name | Description | Kind | Prompt |")
     print("|------|------|-------------|------|--------|")
     print("\n".join(rows) if rows else "| | (none) | | | |")
+    problems = built_in_problems + learned_problems
+    if problems:
+        print("Not listed, and replacing or retiring nothing:")
+        print("\n".join(f"  {problem}" for problem in problems))
 
 
 def walk_area(root: Path) -> tuple[dict[str, int], list[Path]]:

@@ -25,7 +25,7 @@ Usage:
     project-root: the folder holding _bmad/
     skill-path:   the skill folder (SKILL.md, references/, assets/, scripts/)
 
-Exit 0 and a report on stdout; exit 1 when the sanctum cannot be written or the skill has no identity templates; exit 2 on a usage error.
+Exit 0 and a report on stdout; exit 1 when the sanctum cannot be written, the skill has no identity templates, or its customize.toml does not parse; exit 2 on a usage error.
 """
 
 import argparse
@@ -54,9 +54,10 @@ def substitute_vars(content: str, variables: dict) -> str:
 def shipped_name(skill_path: Path) -> str:
     """The agent name customize.toml ships; empty when the agent names itself at First Breath."""
     try:
-        agent = tomllib.loads((skill_path / "customize.toml").read_text(encoding="utf-8")).get("agent", {})
-    except (OSError, tomllib.TOMLDecodeError):
+        text = (skill_path / "customize.toml").read_text(encoding="utf-8")
+    except OSError:
         return ""
+    agent = tomllib.loads(text).get("agent", {})
     name = agent.get("name", "") if isinstance(agent, dict) else ""
     return name.strip() if isinstance(name, str) else ""
 
@@ -73,9 +74,15 @@ def main() -> int:
     assets_dir = skill_path / "assets"
 
     existed = sanctum_path.is_dir()
+    # PERSONA.md is written once, so a name lost to a parse error would never come back.
+    try:
+        name = shipped_name(skill_path)
+    except tomllib.TOMLDecodeError as error:
+        print(f"Cannot read {skill_path / 'customize.toml'}: {error}", file=sys.stderr)
+        return 1
     variables = {
         "birth_date": date.today().isoformat(),
-        "agent_name": shipped_name(skill_path) or "{awaiting First Breath}",
+        "agent_name": name or "{awaiting First Breath}",
     }
 
     created = []

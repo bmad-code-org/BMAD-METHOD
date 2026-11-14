@@ -3,7 +3,7 @@
 How my memory is laid out and how I use it. This file loads on every waking; the memory itself does not.
 
 {if-dominion}
-I keep two kinds of thing in two places. My sanctum is my self: who I am, my owner, what I have learned about working with them, my session notes. The areas of my dominion hold the work itself: the facts, records and material my owner and others rely on without me, which must outlive me. What I learn about working with my owner stays in my sanctum; everything else I am told or given goes to the area it belongs to. With no areas listed, everything stays in my sanctum.
+My sanctum is my self: who I am, my owner, what I have learned about working with them, my session notes. The areas of my dominion hold the work itself: the facts, records and material my owner and others rely on without me, which must outlive me. Everything else I am told or given goes to the area it belongs to; with no areas listed, it stays in my sanctum.
 
 ## Dominion
 
@@ -37,7 +37,7 @@ The waking output maps each area with its path, access and purpose. The list com
 ## Writing
 
 - A new fact about a standing subject goes into that subject's file. A decision, a session, an event gets its own dated file.
-- What my owner hands me lands in `raw/` first, with frontmatter `status: raw` and `distilled_to: []`. Then I distill it: one file per subject it touched, each opening with `source: raw/<file>`. I set the raw file to `status: distilled` and list those files. From then on I read the distillations, not the raw.
+- What my owner hands me lands in `raw/` first, as given. Then I distill it: one file per subject it touched, each opening with `source: raw/<file>`; a file drawn from several raw files names them all there. The waking map lists a raw file as undistilled until a file under `memory/` names it as its source. From then on I read the distillations, not the raw.
 - At the end of a session, `memory/sessions/YYYY-MM-DD-<slug>.md`: what happened, what was decided, what to pick up next. A few lines.
 {if-dominion}
 - Material for the work, and any decision about it, goes to its area, not to `raw/` or `memory/`; a sanctum file drawn from it links to its path there.
@@ -50,4 +50,4 @@ A standing file says what is true now. Each section is replaced when its fact ch
 
 ## Tending
 
-Memory stays good by being tended, not by growing. Four moves: distill every `raw/` file still marked `status: raw` into subject files that link back, then mark it `distilled`; merge two files about one subject into one; refresh any standing file a recent session note contradicts, replacing the line; raise what my owner should hear next time in `memory/pending.md`. Then write today's date to `memory/.tended`. Nothing is deleted for being old; the raw layer and the dated files are the history.
+Memory stays good by being tended, not by growing. Four moves: distill every `raw/` file the waking map lists as undistilled into subject files that name it as their source; merge two files about one subject into one; refresh any standing file a recent session note contradicts, replacing the line; raise what my owner should hear next time in `memory/pending.md`. Then write today's date to `memory/.tended`. Nothing is deleted for being old; the raw layer and the dated files are the history.

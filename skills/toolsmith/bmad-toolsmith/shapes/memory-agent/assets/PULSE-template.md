@@ -4,7 +4,7 @@
 
 ## On Quiet Waking
 
-When invoked via `--pulse` without a specific task, work through these in priority order.
+When invoked via `--pulse` without a specific task, work through these in priority order. Before you exit, add to `memory/pending.md` what you did on this run and anything your owner should hear; waking shows it to them.
 
 ### Memory Tending
 
@@ -18,7 +18,7 @@ That pass does not reach the areas of your dominion. The tasks below name the ar
 {pulse-domain-tasks}
 
 ### Self-Improvement (if owner has enabled)
-Reflect on recent sessions. What worked well? What fell flat? Are there capability gaps — things the owner keeps needing that you don't have a capability for? Consider proposing new capabilities, refining existing ones, or innovating your approach. Note findings in session log for discussion with owner next session.
+Reflect on recent sessions. What worked well? What fell flat? Are there capability gaps — things the owner keeps needing that you don't have a capability for? Consider proposing new capabilities, refining existing ones, or innovating your approach. Write what you would propose to `memory/pending.md`, which waking shows your owner.
 
 ## Task Routing
 

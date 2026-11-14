@@ -18,7 +18,7 @@ title = "{title}"
 
 icon = "{icon}"
 
-# Steps to run before the standard activation (facts, config, wake).
+# Steps to run before the standard activation (facts, wake).
 activation_steps_prepend = []
 
 # Steps to run after waking but before the agent accepts input.

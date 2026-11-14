@@ -20,7 +20,7 @@ A document lands at `<type>-<slug>/<type>-<slug>.md` under `{output_folder}/{act
 
 ## customize.toml
 
-One table, read in activation. `[workflow]` for a skill: `activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete`, `<purpose>_output_path`, `run_folder_pattern`, and its own scalars, each commented with when to override it. `[agent]` for an agent: `name`, `title`, `icon`, `role`, `identity`, `communication_style`, `principles`, the two step arrays, `persistent_facts`, and `[[agent.menu]]` items with `code`, `description` and exactly one of `skill` or `prompt`; a memory agent adds `[[agent.dominion]]`.
+One table, read in activation. `[workflow]` for a skill: `activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete`, `<purpose>_output_path`, `run_folder_pattern`, and its own scalars, each commented with when to override it. `[agent]` for an agent: `name`, `title`, `icon`, `role`, `identity`, `communication_style`, `principles`, the two step arrays, `persistent_facts`, and `[[agent.menu]]` items with `code`, `description` and exactly one of `skill` or `prompt`. A memory agent's `[agent]` keeps `name`, `title`, `icon`, the two step arrays and `persistent_facts` and adds `[[agent.dominion]]`; its persona and capabilities live in the sanctum.
 
 The body reads values as `{workflow.<key>}` or `{agent.<key>}`; a value declared but hardcoded in the body makes every override a silent no-op.
 
