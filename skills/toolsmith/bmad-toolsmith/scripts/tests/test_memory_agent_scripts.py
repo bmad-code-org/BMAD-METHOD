@@ -33,7 +33,9 @@ def make_skill(root: Path) -> tuple[Path, Path]:
     (skill / "references" / "intake.md").write_text(
         "---\nname: Intake\ndescription: Keep and distill material\ncode: INTAKE\n---\n\nbody\n", encoding="utf-8"
     )
-    shutil.copy(ASSETS / "customize-template.toml", skill / "customize.toml")
+    # Built as an agent that names itself.
+    customize = (ASSETS / "customize-template.toml").read_text(encoding="utf-8")
+    (skill / "customize.toml").write_text(customize.replace('name = "{name}"', 'name = ""'), encoding="utf-8")
     (project / "_bmad" / "custom").mkdir(parents=True)
     (project / "_bmad" / "scripts").mkdir()
     for name in ("resolve_customization.py", "config_utils.py"):
@@ -86,6 +88,19 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         bond = (self.sanctum / "BOND.md").read_text(encoding="utf-8")
         self.assertNotIn("friend", bond)
         self.assertIn("learned at First Breath", bond)
+        self.assertIn("- **Name:** {awaiting First Breath}", (self.sanctum / "PERSONA.md").read_text(encoding="utf-8"))
+        creed = (self.sanctum / "CREED.md").read_text(encoding="utf-8")
+        self.assertIn("`{project-root}/`", creed)
+        self.assertNotIn(str(self.project), creed)
+
+    def test_birth_writes_a_shipped_name_into_persona(self):
+        customize = self.skill / "customize.toml"
+        customize.write_text(
+            customize.read_text(encoding="utf-8").replace('name = ""', 'name = "Sage"'), encoding="utf-8"
+        )
+        res = run(self.init, self.project, self.skill)
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertIn("- **Name:** Sage\n", (self.sanctum / "PERSONA.md").read_text(encoding="utf-8"))
 
     def test_cut_off_birth_is_finished_by_the_next_run(self):
         self.sanctum.mkdir(parents=True)

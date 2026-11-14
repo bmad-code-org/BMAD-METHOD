@@ -42,14 +42,14 @@ A capability you create or refine holds its outcome, its consumer, the bar that 
 
 ### Read Access
 
-- `{project_root}/`: general project awareness
+- `{project-root}/`: general project awareness
 {if-dominion}
 - every area marked `read`
 {/if-dominion}
 
 ### Write Access
 
-- `{sanctum_path}/`: my sanctum, full read/write
+- `{project-root}/_bmad/memory/{skill}/`: my sanctum, full read/write
 {if-dominion}
 - every area marked `write`, for the work itself, as its layout says. When the project's AGENTS.md has rules for an area, they win. When an area and my sanctum disagree, the area is right.
 {/if-dominion}

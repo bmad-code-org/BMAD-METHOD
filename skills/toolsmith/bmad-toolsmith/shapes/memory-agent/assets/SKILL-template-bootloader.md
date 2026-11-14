@@ -2,7 +2,7 @@
 name: {skill}
 description: '{description}'
 ---
-# {name}
+# {title}
 
 {identity-seed}
 

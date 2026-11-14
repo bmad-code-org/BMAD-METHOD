@@ -10,7 +10,9 @@ memory layout and writes every sanctum template in the skill's assets/.
 Safe to rerun. A file that already exists is never rewritten, so a run that was
 cut off partway is finished by the next one, and a finished sanctum is left
 alone. The owner's name and language are not read from anywhere: the agent
-learns them in the First Breath conversation and writes them to BOND.md.
+learns them in the First Breath conversation and writes them to BOND.md. The
+agent's own name goes into PERSONA.md when customize.toml ships one; an empty
+name is left for First Breath.
 
 The sanctum holds only what the agent learns. What the skill ships (its
 capability references and scripts) stays in the skill, so an update reaches an
@@ -28,6 +30,7 @@ Exit 0 and a report on stdout; exit 1 when the sanctum cannot be written or the 
 
 import argparse
 import sys
+import tomllib
 from datetime import date
 from pathlib import Path
 
@@ -48,6 +51,16 @@ def substitute_vars(content: str, variables: dict) -> str:
     return content
 
 
+def shipped_name(skill_path: Path) -> str:
+    """The agent name customize.toml ships; empty when the agent names itself at First Breath."""
+    try:
+        agent = tomllib.loads((skill_path / "customize.toml").read_text(encoding="utf-8")).get("agent", {})
+    except (OSError, tomllib.TOMLDecodeError):
+        return ""
+    name = agent.get("name", "") if isinstance(agent, dict) else ""
+    return name.strip() if isinstance(name, str) else ""
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Scaffold the sanctum before the First Breath conversation.")
     parser.add_argument("project_root", type=Path, help="the folder holding _bmad/")
@@ -62,8 +75,7 @@ def main() -> int:
     existed = sanctum_path.is_dir()
     variables = {
         "birth_date": date.today().isoformat(),
-        "project_root": str(project_root),
-        "sanctum_path": str(sanctum_path),
+        "agent_name": shipped_name(skill_path) or "{awaiting First Breath}",
     }
 
     created = []

@@ -19,7 +19,7 @@ Then ask whether the agent owns or tends anything beyond its own memory: the wor
 
 A memory agent serves one owner. First Breath asks whether the repository is private to that owner or shared, and the answer decides whether the sanctum and the owner's areas are committed and where loading in every chat is written; a build does not ask it.
 
-An agent that names itself ships `name = ""`; the name is born at First Breath.
+An agent that names itself ships `name = ""`; the name is born at First Breath. A shipped name goes into PERSONA.md when the sanctum is built.
 
 ## Files
 
@@ -34,7 +34,7 @@ An agent that names itself ships `name = ""`; the name is born at First Breath.
 
 ## Rules
 
-- Emit each markdown template with `uv run {skill-root}/scripts/process_template.py {skill-root}/shapes/memory-agent/assets/<template> -o {target}/<file> --var name=... --true pulse`: `{token}` is plain substitution, `{if-X}...{/if-X}` survives only with `--true X` (`pulse`, `evolvable`, `dominion`), and unknown tokens (`{project_root}`, `{sanctum_path}`, `{birth_date}`) pass through for init-sanctum at First Breath. Copy `wake-template.py` and `init-sanctum-template.py` byte for byte; never process them, since their f-strings look like tokens.
+- Emit each markdown template with `uv run {skill-root}/scripts/process_template.py {skill-root}/shapes/memory-agent/assets/<template> -o {target}/<file> --var name=... --true pulse`: `{token}` is plain substitution, `{if-X}...{/if-X}` survives only with `--true X` (`pulse`, `evolvable`, `dominion`), and unknown tokens (`{birth_date}`, `{agent_name}`) pass through for init-sanctum at First Breath, and `{project-root}` stays for the agent to resolve. Copy `wake-template.py` and `init-sanctum-template.py` byte for byte; never process them, since their f-strings look like tokens.
 - The description follows the canon's rule for agents. An agent that names itself ships it without a name, and First Breath writes the name in unless the skill is installed outside the project. That is the one edit an agent makes to its own `SKILL.md`; `wake.py` asks for it again after an update replaces the file.
 - The mission is species-level: too vague if a generic assistant could say it, not this one's if another kind of agent could.
 - Standing orders: surprise and delight, and self-improvement, each domain-adapted with an example, plus any the domain demands; each testable from a session log.

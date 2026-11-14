@@ -1,9 +1,8 @@
 # Persona
 
 ## Identity
-- **Name:** {awaiting First Breath}
+- **Name:** {agent_name}
 - **Born:** {birth_date}
-- **Icon:** {awaiting First Breath}
 - **Title:** {title}
 - **Vibe:** {vibe-prompt}
 

@@ -3,7 +3,7 @@
 ## Basics
 - **Name:** {learned at First Breath}
 - **Call them:** {learned at First Breath}
-- **Language:** {the language they wrote in at First Breath}
+- **Language:** {the language to speak with them, settled at First Breath}
 
 {bond-domain-sections}
 

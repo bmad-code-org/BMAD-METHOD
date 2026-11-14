@@ -7,7 +7,8 @@
 Rules, each a `rule` value in the findings:
   pep723-missing   no `# /// script` inline metadata block; `uv run` needs it to pick dependencies
   pep723-floor     the block has no requires-python, or its floor is below 3.11
-  test-missing     no scripts/tests/test_<name>.py beside the script
+  test-missing     no scripts/tests/test_<name>.py beside the script; a byte-for-byte copy of the
+                   memory-agent shape's wake.py or init-sanctum.py is tested in Toolsmith and never flagged
   network-call     imports a network module (urllib.request, requests, httpx, socket, http.client, aiohttp);
                    a skill script should work offline unless its docstring says why it cannot
   model-id         a string literal naming a model id (claude-*, gpt-*, gemini-*); users run any model,
@@ -22,7 +23,7 @@ Usage:
   scan_scripts.py <skill-folder>
 
 Output, one JSON object on stdout:
-  {"skill": str, "scripts": [{"path", "has_pep723", "floor", "has_test"}, ...],
+  {"skill": str, "scripts": [{"path", "has_pep723", "floor", "has_test", "copy_of" (copies only)}, ...],
    "findings": [{"path", "line", "rule", "text", "fix"}, ...]}
 Exit 0 when clean, 1 when there are findings, 2 on a usage error.
 """
@@ -37,6 +38,9 @@ import sys
 from pathlib import Path
 
 FLOOR = (3, 11)
+SKILL_ROOT = Path(__file__).resolve().parent.parent
+# The memory-agent shape copies these byte for byte into each agent it builds; their tests live with Toolsmith.
+COPIED_SCRIPTS = ("shapes/memory-agent/assets/wake-template.py", "shapes/memory-agent/assets/init-sanctum-template.py")
 PEP723_RE = re.compile(r"^# /// script\n(?P<body>(?:^#(?: .*)?\n)+?)^# ///$", re.MULTILINE)
 REQUIRES_RE = re.compile(r'^#\s*requires-python\s*=\s*"([^"]*)"', re.MULTILINE)
 VERSION_RE = re.compile(r">=\s*(\d+)\.(\d+)")
@@ -103,12 +107,20 @@ def scan_ast(tree: ast.AST, rel: str) -> list[dict]:
     return findings
 
 
-def scan_script(path: Path, scripts_dir: Path) -> tuple[dict, list[dict]]:
+def shape_scripts() -> dict[bytes, str]:
+    """The copied scripts by content."""
+    return {(SKILL_ROOT / rel).read_bytes(): rel for rel in COPIED_SCRIPTS if (SKILL_ROOT / rel).is_file()}
+
+
+def scan_script(path: Path, scripts_dir: Path, copies: dict[bytes, str]) -> tuple[dict, list[dict]]:
     rel = f"scripts/{path.name}"
     content = path.read_text(encoding="utf-8", errors="replace")
     has_block, requires = pep723_floor(content)
     test_file = scripts_dir / "tests" / f"test_{path.stem}.py"
     info = {"path": rel, "has_pep723": has_block, "floor": requires, "has_test": test_file.is_file()}
+    copy_of = copies.get(path.read_bytes())
+    if copy_of:
+        info["copy_of"] = copy_of
     findings = []
     if not has_block:
         findings.append(
@@ -116,7 +128,7 @@ def scan_script(path: Path, scripts_dir: Path) -> tuple[dict, list[dict]]:
         )
     elif requires is None or not floor_ok(requires):
         findings.append(finding(rel, 1, "pep723-floor", requires or "(none)", 'set requires-python = ">=3.11"'))
-    if not info["has_test"]:
+    if not info["has_test"] and not copy_of:
         findings.append(finding(rel, 1, "test-missing", path.name, f"add scripts/tests/test_{path.stem}.py (unittest)"))
     try:
         tree = ast.parse(content)
@@ -132,8 +144,9 @@ def scan_scripts(skill_root: Path) -> dict:
     scripts: list[dict] = []
     findings: list[dict] = []
     if scripts_dir.is_dir():
+        copies = shape_scripts()
         for path in sorted(scripts_dir.glob("*.py")):
-            info, found = scan_script(path, scripts_dir)
+            info, found = scan_script(path, scripts_dir, copies)
             scripts.append(info)
             findings.extend(found)
     findings.sort(key=lambda f: (f["path"], f["line"], f["rule"]))
