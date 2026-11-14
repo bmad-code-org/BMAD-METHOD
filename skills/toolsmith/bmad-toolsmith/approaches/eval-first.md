@@ -1,28 +1,29 @@
 # Eval-first
 
-Outcome: the cases exist before the skill does, so the skill is built to pass them and the passing run is on record.
+Outcome: the cases exist before the skill does, so the skill is built to pass them and the passing run is on record. Bare paths resolve from `{skill-root}`.
 
-## Cases before code
+## Scaffold
 
-From the discovery, write `{target}/evals/cases.json` (`{id, input, rubric[], state_prefix, files[]}`).
+Run `uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, adding `--bmod <record> --source <update_source>` when the execution plan registers it as a member. It refuses a folder that exists, so it runs before the cases are written.
 
-- Inputs are the user's real requests where they exist, as messy as they were typed.
+Load `shapes/<shape>/shape.md`, then the module shape the registration line names, if any.
+
+## Cases before the skill
+
+Load `approaches/eval-loop.md` for the case format and the loop. From the discovery, write `{target}/evals/cases.json` in that format:
+
+- Inputs are the user's real requests where they exist, as messy as they were typed, because invented cases come out homogeneous and easy.
 - Each rubric entry is a PASS or FAIL condition over the output, transcript or files, never a quality adjective.
-- A `state_prefix` reaches a mid-flow turn in one shot.
 
 Show the file and confirm it with the user, because cases they do not believe in prove nothing to them.
 
 ## Smallest skill
 
-Scaffold with `uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, adding `--bmod <record> --source <update_source>` when the execution plan registers it as a member.
-
-Load `shapes/<shape>/shape.md`, then the module shape the registration line names, if any.
-
 Write `SKILL.md` to `canon.md`, aimed at the cases, never to the rubric word for word, because a skill that quotes its grader passes the test and fails the user.
 
 ## Loop
 
-Load `approaches/eval-loop.md` and run it to a stop condition.
+Run the eval loop to a stop condition.
 
 ## Then
 

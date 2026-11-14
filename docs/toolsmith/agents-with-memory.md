@@ -114,6 +114,8 @@ Ask Smithy for an agent that remembers you. Use [the build steps](build-your-fir
 3. Smithy writes the bootloader, First Breath, capability files, sanctum seeds, `wake.py`, and `init-sanctum.py`.
 4. The first time you activate the agent, First Breath runs.
 
+When Smithy's templates for `wake.py` and `init-sanctum.py` improve, [validate mode](modes.md#validate) names an agent whose copies are behind, and [edit mode](modes.md#edit) copies the new versions in. The agent's memory is not touched.
+
 :::tip[Memory agents are personal]
 A memory agent serves one owner. In a repository others can read, say it is shared at First Breath, and the agent keeps its sanctum and the list of your areas out of git. The files in an area follow the repository's own git rules, so keep a personal area outside the repository or ignore its folder yourself.
 :::

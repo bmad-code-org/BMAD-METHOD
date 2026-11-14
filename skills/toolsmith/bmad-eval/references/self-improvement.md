@@ -33,17 +33,3 @@ Each round's proposed fix, scores and transcripts are already on disk in the run
 The failure that ends most auto-iterate loops is fixing the example instead of the cause. A case fails because the skill mishandled a class of input; patching the skill to special-case that one input passes the case and leaves the class broken, and often the patch is a hardcoded branch that makes the skill worse. Read each finding as a representative of an intent category and fix the category. A case where the skill invented a fact absent from the source is not "handle this memo," it is "the skill does not ground its output in the provided source," and the fix belongs at that level.
 
 When a proposed fix reaches for ALL-CAPS ALWAYS or NEVER or a stack of MUSTs, treat that as a warning sign. Shouting at the model is usually a sign the fix is patching a symptom; a sharper outcome statement or a small worked example generalizes where a louder rule does not. Prefer the version that explains the reasoning over the version that issues the command.
-
-## Why each guard is here
-
-| Guard | What it prevents |
-|---|---|
-| opt-in | a loop applying changes the user never authorized |
-| stakes calibration | the same aggressiveness on a throwaway and a depended-on skill |
-| eval confirms the review | auto-fixing a finding the evidence does not support |
-| one change per round | a round whose delta cannot be attributed to a specific fix |
-| revert on regression | building the next round on a change that made things worse |
-| round bound | a loop that runs away instead of handing back to a human |
-| trail on disk | reasoning that lives only in the model and cannot be audited |
-| benchmark as guardrail, human as judge | treating a green run as proof the change is correct |
-| generalize to intent | a hardcoded patch that passes the case and leaves the class broken |

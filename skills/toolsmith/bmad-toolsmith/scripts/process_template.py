@@ -50,9 +50,19 @@ def process_conditionals(text: str, true_conditions: set[str]) -> tuple[str, lis
             replacement = ""
             if condition not in removed:
                 removed.append(condition)
-        text = text[: match.start()] + replacement + text[match.end() :]
-    # Removed blocks leave runs of blank lines behind; keep at most one.
-    return re.sub(r"\n{3,}", "\n\n", text), kept, removed
+        text = text[: match.start()] + SEAM + replacement + SEAM + text[match.end() :]
+    return SEAM_RE.sub(close_seam, text), kept, removed
+
+
+SEAM = "\x00"
+SEAM_RE = re.compile(r"(\n*)((?:\x00\n*)+)")
+
+
+def close_seam(match: re.Match[str]) -> str:
+    """Where a block marker stood, keep the widest line break that touched it, so a removed block leaves the
+    spacing around it (one blank line in prose, two between Python definitions) instead of adding its own."""
+    runs = [len(match.group(1)), *(len(run) for run in match.group(2).split(SEAM)[1:])]
+    return "\n" * max(runs)
 
 
 def process_variables(text: str, variables: dict[str, str]) -> tuple[str, list[str]]:

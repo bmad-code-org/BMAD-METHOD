@@ -2,24 +2,34 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""scan_paths: lint a skill's Markdown files, and its eval JSON for absolute paths, for path conventions.
+"""scan_paths: lint a skill's Markdown files and customize.toml, and its eval JSON for absolute paths, for path conventions.
 
 Rules, each a `rule` value in the findings:
   bare-script-call   `uv run scripts/x.py` or `uv run ./scripts/x.py`; a skill's own scripts run as
                      `uv run {skill-root}/scripts/x.py` because the agent's working directory is the project
   installed-path     `{installed_path}` or an `installed_path` definition, a pre-skill leftover
-  absolute-path      /Users/, /home/, C:\\ or ~/ paths, which do not travel between machines
+  absolute-path      /Users/, /home/ or C:\\ paths, which do not travel between machines; a `~/` path names the
+                     user's own home and is allowed (eval cases refuse it, see below)
   cross-skill-ref    a path into another skill's folder (skills/<other>/..., .claude/skills/<other>/..., or
                      a ../ path that leaves this skill); to use another skill, invoke it by name
-  missing-file       a backticked skill-relative path (`references/x.md`) that does not exist from the file's
-                     folder or the skill root, when its first folder does exist (otherwise it is prose);
-                     files under assets/ and files named sample-* are not checked, they describe emitted output
-  old-module-format  a `module.yaml` or `module-help.csv` mention; modules are described by bmod.toml now
+  missing-file       a backticked bare path (`references/x.md`) that does not exist from the skill root, when its
+                     first folder exists from the skill root or the file's folder (otherwise it is prose); one
+                     that exists only from the file's folder is reported with its skill-root form; or a
+                     `{skill-root}/...` path, backticked or not and inside `uv run` command lines and fences too,
+                     that does not exist under the skill root. Paths holding a placeholder (`<`, `*`, `{`, `[`)
+                     are not resolved. Files under assets/ and files named sample-* are not checked, they
+                     describe emitted output
+  old-module-format  a `module.yaml` or `module-help.csv` mention, unless the same line calls the format old or
+                     forbids the file: old, legacy or v6 right before "format", "module" or the filename
+                     ("old format", "old-format module", "legacy module.yaml"), the filename right before one
+                     ("`module.yaml` (the v6 format)"), or never right before the filename, a verb allowed
+                     between ("never write `module.yaml`"); modules are described by bmod.toml now
   python-call        `python x.py`, `python3 -m x` or `pip install`; every script runs as `uv run <path>`,
                      which reads the script's PEP 723 header for its dependencies
 
-Fenced code blocks are checked for bare-script-call, installed-path, absolute-path, old-module-format and python-call
-(a wrong example teaches the wrong call) and skipped for the two reference-resolution rules.
+Fenced code blocks are checked for bare-script-call, installed-path, absolute-path, old-module-format, python-call
+and `{skill-root}/...` paths (a wrong example teaches the wrong call), and skipped for backticked bare paths.
+The root customize.toml gets the same rules as a Markdown file, with its comment lines left out.
 
 Usage:
   scan_paths.py <skill-folder> [--allow RULE ...]
@@ -36,6 +46,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path, PurePosixPath, PureWindowsPath
@@ -46,9 +57,20 @@ EXAMPLE_PREFIX = "sample-"
 
 BARE_SCRIPT_RE = re.compile(r"\buv\s+run\b[^`\n]*?\s(?:\./)?scripts/\S+")
 INSTALLED_PATH_RE = re.compile(r"\{installed_path\}|\binstalled_path\s*[:=]")
-# `~/.bmad/` is BMad's own per-user folder, the same path on every machine.
-ABS_PATH_RE = re.compile(r"(?:/Users/|/home/|\b[A-Za-z]:[\\/]|(?<![\w.])~/(?!\.bmad/))\S*")
+ABS_PATH_RE = re.compile(r"(?:/Users/|/home/|\b[A-Za-z]:[\\/])\S*")
 OLD_FORMAT_RE = re.compile(r"\bmodule\.yaml\b|\bmodule-help\.csv\b")
+# A line that calls the format old, or forbids the file, describes it rather than using it. The context word
+# must touch the format or the filename: "legacy config values > `module.yaml`" is still a real use.
+_OLD_FILE = r"`?[\w./{}-]*?\b(?:module\.yaml|module-help\.csv)\b`?"
+OLD_FORMAT_CONTEXT_RE = re.compile(
+    r"\b(?:old|legacy|v6)[\s-]+(?:module[\s-]+)?(?:format|module)\b"
+    rf"|\b(?:old|legacy|v6)\s+{_OLD_FILE}"
+    rf"|\bnever\s+(?:[a-z]+\s+)?{_OLD_FILE}"
+    rf"|{_OLD_FILE}\s*\(?(?:is\s+|are\s+)?(?:the\s+)?(?:old|legacy|v6)\b",
+    re.IGNORECASE,
+)
+SKILL_ROOT_PATH_RE = re.compile(r"\{skill-root\}/([^\s`'\"(),;|]*)")
+PLACEHOLDER_CHARS = "<*{["
 PYTHON_CALL_RE = re.compile(r"(?<![\w/.-])(?:python3?|pip3?)\s+(?:-m\s+\S+|\S+\.py\b|install\b)")
 BACKTICK_REF_RE = re.compile(r"`([^`\s]+/[^`\s]+\.(?:md|yaml|yml|toml|json|csv|txt|xml|py|html))`")
 SKILL_DIR_RE = re.compile(r"(?:^|/)(?:skills|\.claude/skills|\.agents/skills|_bmad)/([a-z0-9][a-z0-9-]*)/")
@@ -78,6 +100,11 @@ def line_of(content: str, offset: int) -> int:
     return content.count("\n", 0, offset) + 1
 
 
+def strip_comments(content: str) -> str:
+    """Blank TOML comment lines, keeping line numbers."""
+    return "\n".join("" if line.lstrip().startswith("#") else line for line in content.split("\n"))
+
+
 def iter_md_files(skill_root: Path):
     for path in sorted(skill_root.rglob("*.md")):
         parts = path.relative_to(skill_root).parts
@@ -104,7 +131,40 @@ def scan_regex_rules(content: str, rel: str) -> list[dict]:
         ),
     ):
         for match in regex.finditer(content):
+            if rule == "old-module-format" and OLD_FORMAT_CONTEXT_RE.search(line_text(content, match.start())):
+                continue
             findings.append(finding(rel, line_of(content, match.start()), rule, match.group(0), fix))
+    return findings
+
+
+def line_text(content: str, offset: int) -> str:
+    start = content.rfind("\n", 0, offset) + 1
+    end = content.find("\n", offset)
+    return content[start : end if end != -1 else len(content)]
+
+
+def scan_skill_root_paths(content: str, rel: Path, skill_root: Path) -> list[dict]:
+    """`{skill-root}/...` paths anywhere, fences and command lines included, resolved against the skill root."""
+    findings = []
+    if is_example(rel):
+        return findings
+    root = skill_root.resolve()
+    for match in SKILL_ROOT_PATH_RE.finditer(content):
+        raw = match.group(1).rstrip(".:")
+        if not raw or any(ch in raw for ch in PLACEHOLDER_CHARS):
+            continue
+        line = line_of(content, match.start())
+        target = (root / raw).resolve()
+        if root not in target.parents and target != root:
+            findings.append(
+                finding(rel.as_posix(), line, "cross-skill-ref", match.group(0), "a skill's files stay inside it")
+            )
+        elif not target.exists():
+            findings.append(
+                finding(
+                    rel.as_posix(), line, "missing-file", match.group(0), "fix the path or remove the dead reference"
+                )
+            )
     return findings
 
 
@@ -137,9 +197,18 @@ def scan_references(content: str, rel: Path, skill_root: Path) -> list[dict]:
             continue
         if raw.startswith(("/", "./", "_bmad/", "@")) or is_example(rel):
             continue
-        roots = [file_dir, skill_root]
-        if any((root / raw).exists() for root in roots):
+        if (skill_root / raw).exists():
             continue
+        if (file_dir / raw).exists():
+            # Lexical, not resolved: a symlinked folder may point outside the skill.
+            from_root = Path(os.path.relpath(os.path.normpath(file_dir / raw), os.path.normpath(skill_root))).as_posix()
+            findings.append(
+                finding(
+                    rel.as_posix(), line, "missing-file", raw, f"bare paths resolve from the skill root: `{from_root}`"
+                )
+            )
+            continue
+        roots = [file_dir, skill_root]
         first_dir = raw.split("/")[0]
         if any((root / first_dir).is_dir() for root in roots):
             findings.append(
@@ -157,6 +226,15 @@ def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
         content = path.read_text(encoding="utf-8", errors="replace")
         findings.extend(scan_regex_rules(content, rel.as_posix()))
         findings.extend(scan_references(content, rel, skill_root))
+        findings.extend(scan_skill_root_paths(content, rel, skill_root))
+    customize = skill_root / "customize.toml"
+    if customize.is_file():
+        count += 1
+        rel = Path("customize.toml")
+        content = strip_comments(customize.read_text(encoding="utf-8", errors="replace"))
+        findings.extend(scan_regex_rules(content, rel.as_posix()))
+        findings.extend(scan_references(content, rel, skill_root))
+        findings.extend(scan_skill_root_paths(content, rel, skill_root))
     # Eval cases name fixtures; an absolute path there breaks the run for everyone else.
     for path in sorted((skill_root / "evals").glob("*.json")):
         count += 1

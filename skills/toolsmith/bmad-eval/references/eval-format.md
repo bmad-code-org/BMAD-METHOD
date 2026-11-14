@@ -28,6 +28,8 @@ Field semantics:
 
 For trigger cases the shape is lighter: a `query` and a `should_trigger` boolean, because there is no artifact to grade, only whether the skill fired.
 
+A skill-creator `evals.json` converts with `uv run {skill-root}/scripts/convert_cases.py <evals.json> --output <cases.json>`; `--to skill-creator` reverses it.
+
 ## state_prefix: turn simulation in one shot
 
 Most multi-turn skills can be evaluated single-shot if the case is designed right. The `state_prefix` is the trick that makes mid-workflow points reachable without a multi-turn simulator. It is a bracketed prime prepended to the input that tells the skill where in its own flow this turn lands and what the user already said:
@@ -76,7 +78,7 @@ Run the case input twice in parallel in the same turn, once wrapped by the skill
 
 ### Variant: full versus stripped smallest-version
 
-Run the full skill against a stripped smallest-version of the same skill (passed as `--variant-path`), or against a snapshot of the prior version for an edit, on the same input. It settles whether a section suspected of being ceremony does real work. If the two outputs tie on the dimension the section was supposed to protect, the section is decoration and gets cut. If the small version is materially and durably worse, the section earned its keep.
+Run the full skill against a stripped smallest-version of the same skill (passed as `--variant-path`), or against a snapshot of the prior version for an edit, on the same input. It settles whether a section suspected of being ceremony does real work. If the two outputs tie on the dimension the section was supposed to protect, cut the section. If the small version is materially and durably worse, keep it.
 
 ### Quality: output versus rubric
 
@@ -85,6 +87,23 @@ Grade a single config's output against the named rubric with the read-only grade
 ### Trigger and description
 
 Generate near-miss should-trigger and should-not-trigger queries that share keywords, split them, measure real firing through the harness, and improve the description across bounded rounds with the held-out scores blinded from the improver. Trigger detection is a canary: the staged skill asks for a token at the start of the reply, and the token in the output is the load (`references/harness.md`).
+
+## Running baseline, variant and quality
+
+Baseline runs every case with the skill staged and with nothing staged; variant runs the skill against the one at `--variant-path`; quality runs one config.
+
+```
+uv run {skill-root}/scripts/run_evals.py \
+  --cases <cases-file> --skill-path <skill> --output-dir <dir> \
+  --mode quality|baseline|variant [--variant-path <skill>] \
+  --label <skill-name>-<mode> [--runs N]
+```
+
+`--runs` defaults to 1 for a quick look; a result counts as settled only at 3 or more. Case subsets, timeouts and workers are in the script's `--help`.
+
+For quality, spawn the grader in `references/grader.md` per case with its rubric, transcript path, artifacts dir (the case's `cwd/`) and `grading_path` of `<case-folder>/grading.json`. Relay its rubric feedback. If a grader errors, mark the case `grading_error`, never a default verdict.
+
+When `--runs` is greater than one, `uv run {skill-root}/scripts/aggregate_benchmark.py --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>` gives mean, sample standard deviation, min, max and delta (`--runs <run-dir>/<config>` for one config).
 
 ## Getting a skill to behave non-interactively
 

@@ -1,6 +1,6 @@
 ---
 title: 'Shapes of a Skill'
-description: 'The shapes Smithy builds: a plain skill, an agent with capabilities, a memory agent, a rendered skill with customizable steps, a script-backed utility, and single- and multi-skill modules.'
+description: 'The shapes Smithy builds: a plain skill, an agent with capabilities, a memory agent, a rendered skill with customizable steps, a rendered agent, a script-backed utility, and single- and multi-skill modules.'
 sidebar:
   order: 4
 ---
@@ -12,7 +12,8 @@ A shape is what a skill looks like on disk. Smithy works out the shape from the 
 | Plain skill | A `SKILL.md`, with references that load only when needed | You want an agent to do one job well on request |
 | Agent with capabilities | A named persona with a greeting and a menu | You want someone to work with across turns, who owns related capabilities |
 | Memory agent | An agent that keeps a memory folder and wakes as the same self | The agent must build up knowledge across sessions |
-| Rendered skill | Steps rendered from switches and prose blocks | Several teams want different steps, and a fork would drift |
+| Rendered skill | Steps rendered before each run from the skill's templates and the team's overrides | Several teams want different routes, rules, or wording, and a fork would drift |
+| Rendered agent | An agent whose capability files are rendered the same way | You want an agent, and teams must change what its capabilities do |
 | Script-backed utility | A thin `SKILL.md` over tested scripts | Most of the job is mechanical |
 
 Registration is a separate choice. Any of these shapes can stand alone as a single-skill module, join a module, or stay outside the registry. See [Modules and Registration](modules.md).
@@ -55,9 +56,23 @@ A memory agent keeps its identity and memory in a project folder and reloads the
 
 ## Rendered Skill
 
-A rendered skill keeps its steps as a template with switches and prose blocks. Before the skill runs, `render_skill.py` fills the template from the skill's `customize.toml` merged with team and personal overrides, and the agent reads the result. A team can switch off a step, add a rule, or change wording without editing the skill. `bmad-build` is this shape.
+A rendered skill keeps its steps as templates. Before the skill runs, `render_skill.py` fills them from the skill's `customize.toml` merged with team and personal overrides, and the agent reads the result. `bmad-build` is this shape.
 
-It is worth the extra machinery only when teams really differ in which steps run. A skill with one set of steps and a few settable values is a plain skill with a `customize.toml`.
+A team changes the skill only at the points its author declared:
+
+- A selector, a setting with named values that picks a route.
+- An instruction block the team replaces whole.
+- Instructions added before or after a step.
+
+There are no on/off switches. A value the skill cannot act on, such as a misspelled selector, stops the run with a clear message. A single run can override a value from the invocation.
+
+It is worth the extra machinery only when teams really differ in what the skill does. A skill with one set of steps and a few settable values is a plain skill with a `customize.toml`.
+
+## Rendered Agent
+
+A rendered agent is an [agent with capabilities](#agent-with-capabilities) whose capability files are rendered the same way, so a team can change a rule inside one capability without forking the agent. Each capability declares its own points: instructions before and after, selectors, and blocks a team replaces whole.
+
+It shows no menu. A request that names what you want runs the matching capability, and asked what it does, the agent answers in a sentence or two. The menu codes still work as shortcuts. A memory agent is never rendered.
 
 ## Script-Backed Utility
 

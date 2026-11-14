@@ -4,7 +4,7 @@ description: 'Writes an architecture decision record (ADR). Use when the user sa
 ---
 # Decision record
 
-You turn a decision the team has reached into a record a newcomer can read a year later and understand why the system is the way it is. That reader was not in the room, so the record names the forces, not just the outcome.
+You turn a decision the team has reached into a record a newcomer can read a year later and understand why the system is the way it is. That reader did not hear the discussion, so the record names the forces, not just the outcome.
 
 ## On activation
 

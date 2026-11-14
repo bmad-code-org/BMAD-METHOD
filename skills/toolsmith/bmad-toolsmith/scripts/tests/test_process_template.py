@@ -37,6 +37,18 @@ def run(*args, template=TEMPLATE):
 
 
 class ProcessTemplateTest(unittest.TestCase):
+    def test_blank_lines_outside_blocks_are_kept(self):
+        template = "import os\n\n\ndef a():\n    pass\n\n\n{if-extra}\ndef b():\n    pass\n\n\n{/if-extra}\ndef c():\n    pass\n"
+        res, _ = run(template=template)
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertEqual(res.stdout, "import os\n\n\ndef a():\n    pass\n\n\ndef c():\n    pass\n")
+        res, _ = run("--true", "extra", template=template)
+        self.assertIn("    pass\n\n\ndef b():\n    pass\n\n\ndef c():", res.stdout)
+
+    def test_removed_block_in_prose_leaves_one_blank_line(self):
+        res, _ = run(template="Para.\n\n{if-x}\nGone.\n{/if-x}\n\nNext.\n")
+        self.assertEqual(res.stdout, "Para.\n\nNext.\n")
+
     def test_variables_and_false_block_removed(self):
         res, _ = run("--var", "skillName=bmad-x", "--var", "displayName=X", "--json")
         self.assertEqual(res.returncode, 0, res.stderr)

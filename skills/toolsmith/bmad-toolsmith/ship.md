@@ -2,13 +2,15 @@
 
 Outcome: the skill at `{target}` has been through the lenses and improved from them, is valid, installable, measured for cost and offered a trigger eval, and the user knows where it is and what to do next.
 
-`{target}` is the skill folder, or the module folder after package or migrate: then the per-skill checks and the cost run for each member, and the manifest check for the record.
+`{target}` is the skill folder, or the module folder after package or migrate: then the per-skill checks and the cost run for each member, and the manifest check for the record. Bare paths resolve from `{skill-root}`.
 
-`{reports_folder}` was set at activation; if this session no longer holds it, run that step again.
+`{reports_folder}` was set at activation; if this session no longer holds it, run that step again. When the conversation no longer holds the execution plan, read it from `{reports_folder}/<name>-build/.memlog.md`.
+
+Run `uv run {skill-root}/scripts/prepass.py {target}`, for a module on the record and on each member; the sections below read its JSON.
 
 ## Manifest
 
-The pre-pass `bmod_kind` must match the execution plan's registration line: `skill` for a member, `record+skill` for a single-skill module, `none` for a plain skill.
+The pre-pass `bmod_kind` must match the execution plan's registration line: `skill` for a member, `record` for a module's record folder, `record+skill` for a single-skill module, `none` for a plain skill.
 
 Fix a mismatch here: write the missing `bmod.toml`, help and record edits from the shape the line names, `shapes/single-skill-module/shape.md` or `shapes/multi-skill-module/shape.md`. Dependencies and install below fills the dependency lists.
 
@@ -16,42 +18,37 @@ Never write `module.yaml`, `module-help.csv` or a setup skill; those are the old
 
 ## Refine
 
-For a skill Smithy wrote or rewrote this session (a build, a conversion), not a scaffold with `[TODO:` markers and not a skill the user owns after edit, package or migrate, where the review is offered instead.
+Run this section for a skill Smithy wrote or rewrote this session (a build, a conversion). Skip it for a scaffold that still has `[TODO:` markers and for a skill the user owns (after edit, package or migrate); Handoff offers the review instead.
 
-Copy `{target}` to `{reports_folder}/<YYYYMMDD-HHMMSS>-<skill>-before/`, then `uv run {skill-root}/scripts/prepass.py {target}`, then one subagent per lens in parallel: `lenses/lens-architecture.md`, `lenses/lens-determinism.md`, `lenses/lens-leanness.md`, `lenses/lens-customization.md`, `lenses/lens-trigger.md`, each given the pre-pass JSON, `{target}`, its lens file, `lenses/lens-contract.md` and `lenses/standards.md`. Inline, one at a time, when subagents are unavailable; say so.
+A small skill, whose only prompt files are `SKILL.md` and `help/help.md` and which has no scripts and no `customize.toml`, gets only the leanness and trigger lenses, one round, and no Checker; `cut_check.py` and every other section still run.
 
-Apply what is a defect against the standards or the canon's tests. Apply every leanness finding too, its `proposed_smallest` included: the lean version is the default, and the check below guards it. Leave what is a judgment call: a persona line, a split into two skills. Ask before applying a finding that undoes the approved execution plan (name, purpose, shape, location).
+Copy `{target}` to `{reports_folder}/<YYYYMMDD-HHMMSS>-<skill>-before/`, unless convert already made that copy this session, then launch one subagent per lens in parallel: `lenses/lens-architecture.md`, `lenses/lens-determinism.md`, `lenses/lens-leanness.md`, `lenses/lens-customization.md`, `lenses/lens-trigger.md`. Give each the pre-pass JSON and the absolute paths of `{target}`, its lens file, `canon.md`, `lenses/lens-contract.md` and `lenses/standards.md`. Inline, one at a time, when subagents are unavailable; say so.
 
-When a high or critical finding was fixed, run the lenses once more; stop after two rounds.
+Apply without asking what changes no behavior: a defect against the standards or the canon's tests, and a leanness finding whose `proposed_smallest` keeps every rule; the lean version is the default, and the check below guards it. Put the rest to the user in one list, each with its fix, before applying any of it: a finding that changes what the skill does or how it sounds (a cut rule, a persona line, a split into two skills) or undoes the approved execution plan (name, purpose, shape, location). When the user asked to move fast, apply none of these and list them in the summary.
 
-Then run `uv run {skill-root}/scripts/cut_check.py <copy> {target}` and restore, from the copy, each item under `lost` that no finding meant to remove. One subagent per changed prose file runs the Checker from `modes/cut-roles.md`, with what the execution plan fixed as its protected passages; restore each loss and meaning change it lists as the shortest sentence that states it.
+When a high or critical finding was fixed, rerun the pre-pass and the lenses once more; stop after two rounds.
 
-Last, say in chat what changed, one line per file; the tokens before and after, from `count_tokens.py` on the copy and on `{target}`; and what was left for the user, with its why.
+Then run `uv run {skill-root}/scripts/cut_check.py <copy> {target}`, adding `--protect-text` with the `<YYYYMMDD-HHMMSS>-<skill>-protected.txt` file in `{reports_folder}` when the execution plan named passages to keep word for word. Restore, from the copy, each item under `lost` that no finding meant to remove. One subagent per changed prose file runs the Checker from `modes/cut-roles.md`, with `<protected>` as none, since the script compared them, and the plan's decisions; restore each loss and meaning change it lists as the shortest sentence that states it.
+
+Last, say in chat what changed, one line per file; the token table from `cut_check.py`'s `tokens` (before, after and percent per file, and the total); and what was left for the user, with its why.
 
 ## Checks
 
-Run and fix until clean; after three failed fixes on one finding, stop and show it.
-
-- `uv run {skill-root}/scripts/init_skill.py --check {target}` (`--any-name` outside the BMAD-METHOD repo)
-- `uv run {skill-root}/scripts/scan_paths.py {target}`
-- `uv run {skill-root}/scripts/scan_scripts.py {target}` and the skill's tests, when it has scripts
-- `uv run {project-root}/_bmad/scripts/validate_manifests.py --project-root <repo root>` in a repository with `skills/*/bmod.toml`
-
-`modes/validate.md` says what each covers; it is not needed here.
+Run the commands under Checks in `modes/validate.md` on `{target}` and fix until clean; after three failed fixes on one finding, stop and show it. After a scaffold, the `[TODO:` findings are the user's to fill; leave them.
 
 ## Cost
 
-`uv run {skill-root}/scripts/count_tokens.py {target}`. Tell the user what `SKILL.md` costs per load and how long the description is.
+From the pre-pass, tell the user what `SKILL.md` costs per load (`skill_md_tokens`) and how long the description is (`description_chars`).
 
-Over about 800 tokens in a plain skill's `SKILL.md`, or 1,200 in an agent's, name what could move to a reference; the measure is what a run loads, not the skill's total.
+Name any part of `SKILL.md` that only some runs use; it belongs in a reference. A `SKILL.md` that every run needs whole stays whole, whatever its size: the count is evidence for that judgment, not a limit.
 
 For a description past its two parts, or with a phrase that is not an anchor, name what to cut.
 
 ## Trigger eval
 
-Offer it once; run it on a yes. If `{target}/evals/triggers.json` is absent, write it from the discovery: 8 to 10 queries that should fire, varied in wording and buried in larger requests, and 8 to 10 near misses that share vocabulary but should not. Then invoke the `bmad-eval` skill in trigger mode on `{target}`.
+Offer it once, unless it ran this session; run it on a yes. If `{target}/evals/triggers.json` is absent, write it from the discovery: 8 to 10 queries that should fire, varied in wording and buried in larger requests, and 8 to 10 near misses that share vocabulary but should not. Then invoke the `bmad-eval` skill in trigger mode on `{target}`.
 
-When the description is revised from failures, change its contexts and anchors, never paste a failed query's words into it.
+When the description is revised from failures, change its contexts and anchors, never paste a failed query's words into it, and show the revision before applying it.
 
 ## Dependencies and install
 
@@ -69,9 +66,7 @@ For anything named but not installed, offer `npx skills add <repo> --skill <name
 
 When the built skill replaces another, record the old name in the module record's `retired.toml`: `renamed = [{ from, to }]` for a successor, `removed` for a skill that is gone. `bmad setup` then deletes the stale install and moves its `_bmad/custom/` files.
 
-When the skill sits beside others in a module, add it in place to the record's `skills` list, and to `roster.toml` when it is an agent, matching the existing entries.
-
-Smithy builds and packages offline. The install path from a public repo is `npx skills add <repo> --skill <name>`; say that and no more. When the user names a marketplace or registry, fetch its current docs.
+Smithy does not publish. When the user names a marketplace or registry, fetch its current docs.
 
 ## Handoff
 
@@ -82,4 +77,6 @@ Tell the user:
 - One request to try first.
 - How it is registered. For its own record: ask `bmad setup <code>`, which creates the module's scripts folder and asks its questions. For a member: the record files that changed. For a plain skill, once: `bmad` help, setup and update checks will not see it.
 
-Offer, not run: a review (`modes/review.md`) and a baseline eval with the `bmad-eval` skill, which measures the skill against the bare model on the user's own cases; a distributed skill can answer that nowhere else.
+Offer, not run: a review (`modes/review.md`) and a baseline eval with the `bmad-eval` skill on the user's own cases.
+
+When a module plan is recorded at `{reports_folder}/bmod-<code>-build/.memlog.md`, append this member as built there, run the checks on the record, and offer the next member in its build order; on a yes, load `discover.md` for it.

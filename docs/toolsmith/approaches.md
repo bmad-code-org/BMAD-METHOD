@@ -19,7 +19,7 @@ An approach is the path from an idea to a skill. Every approach starts with the 
 
 Smithy scaffolds the skill and writes `SKILL.md`, then shows you the draft and description before writing anything else. A change to what the skill must do is cheap at this point.
 
-When you have a real input, Smithy runs the skill on it once through a subagent that sees only the skill and the input, and reads the trace. Several attempts before one worked means no default was named. An instruction followed where it did not apply needs a narrower condition. A helper rewritten by hand should become a script. A line the run never needed gets cut. Smithy fixes what the trace shows once, then moves to review.
+When you have a real input, Smithy runs the skill on it once through a subagent that sees only the skill and the input, and reads the trace. Several attempts before one worked means an instruction is too vague. Stalling between alternatives means no default was named. An instruction followed where it did not apply needs a narrower condition. A helper rewritten by hand should become a script. A line the run never needed gets cut. Smithy fixes what the trace shows once, records each decision in the build's memlog, then moves to review.
 
 With no real input, Smithy applies its writing standard line by line and tells you the skill has not run.
 
@@ -39,7 +39,7 @@ Use this approach when the output can be checked objectively: file transforms, e
 
 ## Skill-Creator Loop
 
-This is the loop from Anthropic's skill-creator, using BMad's shapes and eval runner. Smithy writes a draft with a deliberately specific description, because widening a description is easier than narrowing it. It writes two or three prompts with empty rubrics, then runs the loop. After that, `bmad-eval` tunes the description, and Smithy asks whether a team needs to change a rule or step without forking.
+This is the loop from Anthropic's skill-creator, using BMad's shapes and eval runner. Smithy writes a draft with a deliberately specific description, because widening a description is easier than narrowing it. It writes two or three prompts with empty rubrics, then runs the loop. After that, `bmad-eval` tunes the description, and Smithy shows you the winning description and applies it on your yes.
 
 If you have a skill-creator `evals.json`, `bmad-eval` can convert it.
 
@@ -48,7 +48,7 @@ If you have a skill-creator `evals.json`, `bmad-eval` can convert it.
 Eval-first and the skill-creator loop share one loop. Each round does the following:
 
 1. Run the skill and the bare model on the same inputs.
-2. Write the rubric from the first outputs, one binary check per failure seen. Drop a check that passes in both arms, because it tests nothing the skill adds.
+2. Where a case has no rubric yet, write it from the first outputs, one binary check per failure seen. Drop a check that passes in both arms, because it tests nothing the skill adds.
 3. Grade three runs per case and read the difference between the arms.
 4. Read the transcripts as well as the grades.
 5. Change one thing, and cut any line whose removal did not change results.
@@ -62,7 +62,7 @@ Use menu code `LOGS`, or say "make a skill from my sessions". This approach star
 
 Smithy offers to read the logs of the agent you are talking to, your memlogs, or files you name. It confirms the location with you, or asks if it cannot find it, and waits for a yes before reading.
 
-It then proposes at most three candidates. Each is a repeated request with its counts: how often you asked, in which words, which tools ran in which order, and your corrections word for word. Your corrections are the know-how a skill encodes. A request you never corrected is probably one the model already does well.
+It groups your requests by meaning, not exact words, and proposes at most three candidates. Each is a repeated request with its counts: how often you asked, in which words, which tools ran in which order, the files touched, the skills invoked, and your corrections word for word. A script lists each request with the message you sent next, and Smithy judges which of those messages were corrections. Your corrections are the know-how a skill encodes. A request you repeated without corrections is still a candidate when you typed the same instructions each time.
 
 When your corrections show an installed skill falling short, and that skill has a `customize.toml`, the candidate is a customization of it, not a new skill. It goes to `bmad-customize`. For a new skill, you pick one candidate and discovery asks only what the logs cannot say. The build then runs the lean way.
 

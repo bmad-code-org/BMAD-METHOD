@@ -73,7 +73,7 @@ When a description fails, change its situations and boundaries. Do not paste the
 
 ## Load Only What a Run Needs
 
-`SKILL.md` is read on every run, and a reference is read only when its branch is reached. So the question is how much one run loads, not how big the skill is. A plain skill's entry aims near 800 tokens, and an agent's near 1,200. A complex workflow is the right size at any total when each branch sits in its own file.
+`SKILL.md` is read on every run, and a reference is read only when its branch is reached. So the question is how much one run loads, not how big the skill is. Content in the entry that only some routes use belongs in a reference. An entry that every run needs whole stays whole, whatever its size. A complex workflow is the right size at any total when each branch sits in its own file.
 
 - Split by relevance, not size. What only some branches need goes in a reference.
 - Keep references one level deep. A reference never loads another.

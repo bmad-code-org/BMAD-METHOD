@@ -217,6 +217,72 @@ class CheckTest(unittest.TestCase):
             self.assertEqual(rules(data), ["bmod-tables", "frontmatter-missing"])
             self.assertEqual(data["bmod"], "invalid")
 
+    def test_todo_markers_about_the_marker_do_not_count(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = self.write_skill(
+                tmp,
+                "bmad-good",
+                "---\nname: bmad-good\ndescription: 'Does a thing. Use when asked.'\n---\n\n"
+                "The scaffold leaves a `[TODO:` marker; `--check` fails on any `[TODO:` left.\n"
+                "```\n[TODO: shown in a fence]\n```\n"
+                "Still to do: [TODO: real marker]\n",
+                extra={
+                    "scripts/gen.py": 'PLACEHOLDER = "[TODO: written by code]"\n# [TODO: a real note]\n',
+                    "customize.toml": 'path = "[TODO: fill]"\n',
+                },
+            )
+            code, data, _ = run("--check", skill)
+            self.assertEqual(code, 1)
+            self.assertEqual(
+                sorted((f["path"], f["line"]) for f in data["findings"] if f["rule"] == "todo-left"),
+                [("SKILL.md", 10), ("customize.toml", 1), ("scripts/gen.py", 2)],
+            )
+
+    def test_customize_that_does_not_parse(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = self.write_skill(
+                tmp,
+                "bmad-good",
+                "---\nname: bmad-good\ndescription: 'Does a thing. Use when asked.'\n---\n\nBody.\n",
+                extra={"customize.toml": '[workflow]\nok = "x"\nbroken = \n'},
+            )
+            code, data, _ = run("--check", skill)
+            self.assertEqual(code, 1)
+            self.assertEqual(rules(data), ["customize-invalid"])
+            self.assertEqual(data["findings"][0]["line"], 3)
+
+    def test_memory_script_that_differs_from_the_shape_template(self):
+        assets = SCRIPT.parents[1] / "shapes" / "memory-agent" / "assets"
+        wake = (assets / "wake-template.py").read_text(encoding="utf-8")
+        sanctum = (assets / "init-sanctum-template.py").read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = self.write_skill(
+                tmp,
+                "bmad-agent-mem",
+                "---\nname: bmad-agent-mem\ndescription: 'Remembers. Use when asked.'\n---\n\nBody.\n",
+                extra={"scripts/wake.py": wake, "scripts/init-sanctum.py": sanctum + "\n# local edit\n"},
+            )
+            code, data, _ = run("--check", skill)
+            self.assertEqual(code, 1)
+            self.assertEqual(
+                [(f["path"], f["rule"]) for f in data["findings"]], [("scripts/init-sanctum.py", "memory-script-stale")]
+            )
+
+    def test_memory_script_with_crlf_line_endings_is_not_stale(self):
+        assets = SCRIPT.parents[1] / "shapes" / "memory-agent" / "assets"
+        wake = (assets / "wake-template.py").read_bytes()
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = self.write_skill(
+                tmp,
+                "bmad-agent-mem",
+                "---\nname: bmad-agent-mem\ndescription: 'Remembers. Use when asked.'\n---\n\nBody.\n",
+                extra={"scripts/wake.py": ""},
+            )
+            (skill / "scripts" / "wake.py").write_bytes(wake.replace(b"\n", b"\r\n"))
+            code, data, _ = run("--check", skill)
+            self.assertEqual(code, 0)
+            self.assertEqual(rules(data), [])
+
     def test_record_rules(self):
         with tempfile.TemporaryDirectory() as tmp:
             record = self.write_skill(

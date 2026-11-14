@@ -25,9 +25,9 @@ Return JSON: { "file": path, "rewrites": [one line per passage removed or recast
 ```text
 <file> in the skill at {target} was just rewritten to be leaner. Read the old file at <old file>; the new file is on disk. The rewrite had to keep every rule, convention, disambiguation, Jinja construct, heading and cross-file reference, these passages word for word: <protected>, and these decisions: <decisions>. Assume it failed somewhere and find where.
 
-Walk the old file sentence by sentence. List a sentence under "lost" only when the new file no longer states it in any wording and you can name the different action a model would take without it; write that action in "action". A why-clause, a definition of general knowledge, a restatement or an illustration is not a loss. A protected passage not kept word for word is a loss whatever the action. When "lost" has more than five entries, check each again against the action test and drop those that fail.
+Walk the old file sentence by sentence. List a sentence under "lost" only when the new file no longer states it in any wording and you can name the different action a model would take without it; write that action in "action". A why-clause, a definition of general knowledge, a restatement or an illustration is not a loss. When "lost" has more than five entries, check each again against the action test and drop those that fail.
 
-Separately list where the new wording changes what a rule says, contradicts a decision, or moves a rule so it no longer covers what it covered ("changed_meaning"), and up to five passages that fewer words would still say as well, each with its shorter wording ("remaining_fat"). Edit nothing.
+Separately list where the new wording changes what a rule says, contradicts a decision, or moves a rule so it no longer covers what it covered ("changed_meaning"), and up to five passages that fewer words would still say as well, each with its shorter wording ("shorter_wordings"). Edit nothing.
 
-Return JSON: { "file": path, "lost": [{ "old_text", "action" }], "changed_meaning": [{ "old_text", "new_text", "why" }], "remaining_fat": [{ "text", "shorter" }] }
+Return JSON: { "file": path, "lost": [{ "old_text", "action" }], "changed_meaning": [{ "old_text", "new_text", "why" }], "shorter_wordings": [{ "text", "shorter" }] }
 ```

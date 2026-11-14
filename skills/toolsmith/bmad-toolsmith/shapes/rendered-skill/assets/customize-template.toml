@@ -10,15 +10,19 @@
 
 [workflow]
 
-# Instructions run before the user is greeted.
+# Instructions run on activation, before the persistent facts.
 activation_steps_prepend = []
 
-# Instructions run after the greeting and before step 01.
+# Instructions run after the persistent facts, before step 1.
 activation_steps_append = []
 
 # Facts kept in context for the whole run: literal text, or `file:` paths and
 # globs under {project-root}, loaded on activation.
 persistent_facts = []
+
+# Run at the end of the last step, before the workflow says it is complete.
+# Empty runs nothing.
+on_complete = ""
 
 # {What the selector chooses between.} One of: "{value_a}", "{value_b}".
 # Any other value halts the render.

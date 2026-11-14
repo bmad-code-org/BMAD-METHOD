@@ -36,7 +36,11 @@
     "should_trigger": true
   },
   {
-    "query": "hey smithy, I want a persona that remembers our conversations between sessions",
+    "query": "hey smithy, you around?",
+    "should_trigger": true
+  },
+  {
+    "query": "I want a persona that remembers our conversations between sessions and gets to know how I work over time",
     "should_trigger": true
   },
   {
@@ -117,6 +121,50 @@
   },
   {
     "query": "run the trigger optimization loop on skills/release-notes and tell me the hit rate",
+    "should_trigger": false
+  },
+  {
+    "query": "my Scout agent in skills/acme-agent-scout needs a new capability that drafts incident postmortems, add it to his menu",
+    "should_trigger": true
+  },
+  {
+    "query": "add a step to my acme-release-notes skill so it checks the version bump before it writes anything",
+    "should_trigger": true
+  },
+  {
+    "query": "I wrote skills/acme-onboarding last month, change it so it asks for the team name before generating the checklist",
+    "should_trigger": true
+  },
+  {
+    "query": "build a code-review skill that each of our three teams can adjust with their own steps and rules without forking it",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to build a module from scratch for our sales team: a call-prep skill, a proposal writer and an account-manager agent",
+    "should_trigger": true
+  },
+  {
+    "query": "migrate my bmad installation to the latest version",
+    "should_trigger": false
+  },
+  {
+    "query": "add the cis module to this project",
+    "should_trigger": false
+  },
+  {
+    "query": "validate these tickets before we start the sprint",
+    "should_trigger": false
+  },
+  {
+    "query": "define three personas for a roundtable on our pricing change",
+    "should_trigger": false
+  },
+  {
+    "query": "process this transcript from today's client call into notes",
+    "should_trigger": false
+  },
+  {
+    "query": "build the CSV export feature from story 2.3",
     "should_trigger": false
   }
 ]

@@ -9,18 +9,14 @@ You run a skill's evals and report what they say. Cite specific findings, flag e
 
 ## The four modes
 
-| Mode | Question it answers | Script / reference |
+| Mode | Question it answers | How it runs |
 |---|---|---|
-| baseline | Does the skill beat the bare model on the same input? | `references/eval-format.md`, `scripts/run_evals.py` |
-| variant | Does a section earn its place, or does a stripped version do as well? | `references/eval-format.md`, `scripts/run_evals.py` |
-| quality | Does the output meet the named rubric? | `references/grader.md`, `references/eval-format.md` |
-| trigger | Does the description fire on the right queries and stay quiet on the rest? | `references/harness.md`, `scripts/run_triggers.py` |
+| baseline | Does the skill beat the bare model on the same input? | `references/eval-format.md` |
+| variant | Does a section earn its place, or does a stripped or prior version do as well? | `references/eval-format.md` |
+| quality | Does the output meet the named rubric? | `references/eval-format.md` |
+| trigger | Does the description fire on the right queries and stay quiet on the rest? | the trigger command below; `references/description-optimization.md` to improve the description across rounds |
 
-Baseline runs every case with the skill staged and with nothing staged. Variant runs the skill against the one at `--variant-path`. Quality grades one config against its rubric. Trigger measures real firing; `references/description-optimization.md` improves the description across rounds.
-
-## Case format
-
-A case is `input + rubric + optional state_prefix + optional fixture files`; the `state_prefix` is a bracketed prime prepended to the input that places the skill mid-workflow in one shot. Cases live in `<skill>/evals/cases.json`, trigger queries as `{query, should_trigger}` in `<skill>/evals/triggers.json`. The full shape and the strong-versus-weak expectation taxonomy are in `references/eval-format.md`. A skill-creator `evals.json` converts with `uv run {skill-root}/scripts/convert_cases.py <evals.json> --output <cases.json>` (`--to skill-creator` reverses it).
+Read the named reference fully when its mode runs. Cases live in `<skill>/evals/cases.json` and trigger queries as `{query, should_trigger}` in `<skill>/evals/triggers.json`. Writing cases, or converting a skill-creator `evals.json`, follows `references/eval-format.md`.
 
 ## On activation
 
@@ -32,18 +28,7 @@ A case is `input + rubric + optional state_prefix + optional fixture files`; the
 
 ## Run execution
 
-The user asks for a run in `<mode>` mode on `<skill>` (the directory holding `SKILL.md`), with a variant skill for variant mode. The project root is the first ancestor of the skill holding `_bmad/` or `.git/`; the output dir is `{reports_folder}` when BMad is set up, else `~/bmad-evals/`. Every run is its own timestamped folder there, so runs never collide. Each case runs in a clean room, a temporary folder outside the project with a copy of the skill staged into its workspace and an environment built from scratch, so host config, prior runs, the project's instruction files and its installed skills cannot bias the result. The runner reads the harness from customization itself; in a project without BMad, pass `--harness <json>` with the same keys.
-
-Baseline, variant and quality:
-
-```
-uv run {skill-root}/scripts/run_evals.py \
-  --cases <cases-file> --skill-path <skill> --output-dir <dir> \
-  --mode quality|baseline|variant [--variant-path <skill>] \
-  --label <skill-name>-<mode> [--runs N]
-```
-
-`--runs` defaults to 1 for a quick look; a result counts as settled only at 3 or more. Case subsets, timeouts and workers are in the script docstrings. Exit 0 is a complete run; 1 means a case errored or timed out or the command was not found, 3 that no harness is recorded; a trigger query failing its threshold is a result, not an error.
+The skill under test is the directory holding `SKILL.md`. The project root is the first ancestor of the skill holding `_bmad/` or `.git/`; the output dir is `{reports_folder}` when BMad is set up, else `~/bmad-evals/`. Every run is its own timestamped folder there, so runs never collide. Each case runs in a clean room outside the project with a copy of the skill staged into its workspace and an environment built from scratch, so host config, prior runs, the project's instruction files and its installed skills cannot bias the result. The runners read the harness from customization themselves; in a project without BMad, pass `--harness <json>` with the same keys.
 
 Trigger:
 
@@ -53,15 +38,13 @@ uv run {skill-root}/scripts/run_triggers.py \
   [--runs-per-query N]
 ```
 
-For quality, spawn the grader in `references/grader.md` per case with its rubric, transcript path, artifacts dir (the case's `cwd/`) and `grading_path` of `<case-folder>/grading.json`. Relay its rubric feedback. If a grader errors, mark the case `grading_error`, never a default verdict.
-
-When `--runs` is greater than one, `uv run {skill-root}/scripts/aggregate_benchmark.py --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>` gives mean, sample standard deviation, min, max and delta (`--runs <run-dir>/<config>` for one config).
+Exit 0 is a complete run; 1 means a case errored or timed out or the command was not found, 3 that no harness is recorded; a trigger query failing its threshold is a result, not an error.
 
 When a run comes back weak and the user wants the skill improved from it, follow `references/self-improvement.md`.
 
 ## Artifacts
 
-Each run is a dated folder under the output dir, with `run.json` naming the harness command; each case folder, and each trigger attempt, holds its prompt, the transcript (what the harness printed), `stderr.txt`, `cwd/` (the workspace after the run), `timing.json` (written the moment the invocation ends) and `grading.json` when quality ran. Never delete, overwrite or rotate a run folder. Tell the user where it is when you finish.
+Each run folder holds `run.json` naming the harness command and one folder per case or trigger attempt with its prompt, transcript, `stderr.txt`, `cwd/` (the workspace after the run) and `timing.json`, plus `grading.json` when quality ran. Never delete, overwrite or rotate a run folder. Tell the user where it is when you finish.
 
 ## Outcomes
 

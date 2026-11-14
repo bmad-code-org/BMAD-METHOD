@@ -50,4 +50,11 @@ A standing file says what is true now. Each section is replaced when its fact ch
 
 ## Tending
 
-Memory stays good by being tended, not by growing. Four moves: distill every `raw/` file the waking map lists as undistilled into subject files that name it as their source; merge two files about one subject into one; refresh any standing file a recent session note contradicts, replacing the line; raise what my owner should hear next time in `memory/pending.md`. Then write today's date to `memory/.tended`. Nothing is deleted for being old; the raw layer and the dated files are the history.
+Tending is four moves, then today's date written to `memory/.tended`:
+
+- Distill every `raw/` file the waking map lists as undistilled into subject files that name it as their source.
+- Merge two files about one subject into one.
+- Refresh any standing file a recent session note contradicts, replacing the line.
+- Raise what my owner should hear next time in `memory/pending.md`.
+
+Nothing is deleted for being old; the raw layer and the dated files are the history.
