@@ -275,6 +275,10 @@ def lf_bytes(path: Path) -> bytes:
 
 
 def check_memory_scripts(skill_dir: Path, findings: list[dict]) -> None:
+    """Only a memory agent, whose SKILL.md wakes from `_bmad/memory/`, carries the shape's scripts."""
+    skill_md = skill_dir / "SKILL.md"
+    if not skill_md.is_file() or "_bmad/memory" not in skill_md.read_text(encoding="utf-8", errors="replace"):
+        return
     for name, template in MEMORY_SCRIPTS.items():
         copy, source = skill_dir / "scripts" / name, SHAPE_ASSETS / template
         if copy.is_file() and source.is_file() and lf_bytes(copy) != lf_bytes(source):

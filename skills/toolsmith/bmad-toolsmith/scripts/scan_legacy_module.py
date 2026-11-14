@@ -221,7 +221,7 @@ def scan(root: Path) -> dict | None:
             "greeting": greeting.strip() if isinstance(greeting, str) else "",
             "agents": meta.get("agents") if isinstance(meta.get("agents"), list) else [],
         },
-        "config_keys": [config_key(k, v) for k, v in meta.items() if k in own_keys],
+        "config_keys": [config_key(k, v) for k, v in meta.items() if k in own_keys and k not in legacy_keys],
         "help_rows": read_help_rows(help_csv),
         "skills": [s.name for s in skills if s.name != setup_skill],
         "legacy_reads": reads,

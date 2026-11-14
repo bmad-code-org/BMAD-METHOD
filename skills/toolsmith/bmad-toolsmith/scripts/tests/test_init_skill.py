@@ -259,7 +259,7 @@ class CheckTest(unittest.TestCase):
             skill = self.write_skill(
                 tmp,
                 "bmad-agent-mem",
-                "---\nname: bmad-agent-mem\ndescription: 'Remembers. Use when asked.'\n---\n\nBody.\n",
+                "---\nname: bmad-agent-mem\ndescription: 'Remembers. Use when asked.'\n---\n\nWake from `{project-root}/_bmad/memory/bmad-agent-mem/`.\n",
                 extra={"scripts/wake.py": wake, "scripts/init-sanctum.py": sanctum + "\n# local edit\n"},
             )
             code, data, _ = run("--check", skill)
@@ -275,10 +275,22 @@ class CheckTest(unittest.TestCase):
             skill = self.write_skill(
                 tmp,
                 "bmad-agent-mem",
-                "---\nname: bmad-agent-mem\ndescription: 'Remembers. Use when asked.'\n---\n\nBody.\n",
+                "---\nname: bmad-agent-mem\ndescription: 'Remembers. Use when asked.'\n---\n\nWake from `{project-root}/_bmad/memory/bmad-agent-mem/`.\n",
                 extra={"scripts/wake.py": ""},
             )
             (skill / "scripts" / "wake.py").write_bytes(wake.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n"))
+            code, data, _ = run("--check", skill)
+            self.assertEqual(code, 0)
+            self.assertEqual(rules(data), [])
+
+    def test_wake_script_in_a_skill_that_is_not_a_memory_agent_is_left_alone(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = self.write_skill(
+                tmp,
+                "bmad-alarm",
+                "---\nname: bmad-alarm\ndescription: 'Sets alarms. Use when asked.'\n---\n\nBody.\n",
+                extra={"scripts/wake.py": "print('wake up')\n"},
+            )
             code, data, _ = run("--check", skill)
             self.assertEqual(code, 0)
             self.assertEqual(rules(data), [])

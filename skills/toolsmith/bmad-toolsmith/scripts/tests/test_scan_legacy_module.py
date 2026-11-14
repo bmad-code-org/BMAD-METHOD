@@ -254,6 +254,8 @@ class ScanLegacyModuleTest(unittest.TestCase):
             code, data, err = run(root)
             self.assertEqual(code, 0, err)
             self.assertIn("{planning_artifacts}", [p["placeholder"] for p in data["legacy_placeholders"]])
+            # and it is no longer a question to keep
+            self.assertNotIn("planning_artifacts", [k["key"] for k in data["config_keys"]])
 
     def test_no_module_yaml_and_bad_path(self):
         with tempfile.TemporaryDirectory() as tmp:
