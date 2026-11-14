@@ -93,14 +93,15 @@ PLACEHOLDER_RE = re.compile(r"\{(" + "|".join(V6_ONLY_CONFIG_KEYS) + r")\}")
 
 
 def walk(root: Path):
-    for path in sorted(root.rglob("*")):
+    # Path order is case-insensitive on Windows; sort the POSIX string so output matches everywhere.
+    for path in sorted(root.rglob("*"), key=lambda p: p.as_posix()):
         if path.is_file() and not any(part in SKIP_DIRS for part in path.relative_to(root).parts):
             yield path
 
 
 def find_one(root: Path, name: str) -> Path | None:
     """The shallowest file with this name, or None."""
-    matches = sorted((p for p in walk(root) if p.name == name), key=lambda p: (len(p.parts), str(p)))
+    matches = sorted((p for p in walk(root) if p.name == name), key=lambda p: (len(p.parts), p.as_posix()))
     return matches[0] if matches else None
 
 
@@ -153,7 +154,7 @@ def read_help_rows(path: Path | None) -> list[dict]:
 
 
 def skill_dirs(root: Path) -> list[Path]:
-    return sorted({p.parent for p in walk(root) if p.name == "SKILL.md"})
+    return sorted({p.parent for p in walk(root) if p.name == "SKILL.md"}, key=lambda p: p.as_posix())
 
 
 def skill_of(root: Path, path: Path, skills: list[Path]) -> str:

@@ -50,7 +50,7 @@ READ_RE = re.compile(
 
 
 def files_under(folder: Path):
-    for path in sorted(folder.rglob("*")):
+    for path in sorted(folder.rglob("*"), key=lambda p: p.as_posix()):
         if path.is_file() and not any(part in SKIP_DIRS for part in path.relative_to(folder).parts):
             yield path
 
@@ -59,7 +59,7 @@ def skill_folders(root: Path) -> list[Path]:
     """The folder itself when it is a skill, else its child folders that are."""
     if (root / "SKILL.md").is_file():
         return [root]
-    return sorted(p for p in root.iterdir() if p.is_dir() and (p / "SKILL.md").is_file())
+    return sorted((p for p in root.iterdir() if p.is_dir() and (p / "SKILL.md").is_file()), key=lambda p: p.as_posix())
 
 
 def load_manifest(path: Path) -> dict:

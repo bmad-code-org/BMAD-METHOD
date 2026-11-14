@@ -70,14 +70,14 @@ def load_toml(path: Path) -> tuple[dict | None, str | None]:
 def skill_folders(root: Path) -> list[Path]:
     """Folders holding SKILL.md in root, or one level down under a folder that holds none."""
     found = []
-    for folder in sorted(root.iterdir()):
+    for folder in sorted(root.iterdir(), key=lambda p: p.as_posix()):
         if not folder.is_dir():
             continue
         if (folder / "SKILL.md").is_file():
             found.append(folder)
         else:
             try:
-                children = sorted(folder.iterdir())
+                children = sorted(folder.iterdir(), key=lambda p: p.as_posix())
             except OSError:
                 continue
             found.extend(p for p in children if p.is_dir() and (p / "SKILL.md").is_file())

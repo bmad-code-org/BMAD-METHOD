@@ -278,7 +278,7 @@ class CheckTest(unittest.TestCase):
                 "---\nname: bmad-agent-mem\ndescription: 'Remembers. Use when asked.'\n---\n\nBody.\n",
                 extra={"scripts/wake.py": ""},
             )
-            (skill / "scripts" / "wake.py").write_bytes(wake.replace(b"\n", b"\r\n"))
+            (skill / "scripts" / "wake.py").write_bytes(wake.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n"))
             code, data, _ = run("--check", skill)
             self.assertEqual(code, 0)
             self.assertEqual(rules(data), [])

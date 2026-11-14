@@ -106,7 +106,7 @@ def strip_comments(content: str) -> str:
 
 
 def iter_md_files(skill_root: Path):
-    for path in sorted(skill_root.rglob("*.md")):
+    for path in sorted(skill_root.rglob("*.md"), key=lambda p: p.as_posix()):
         parts = path.relative_to(skill_root).parts
         if any(part in SKIP_DIRS or part.startswith(".") for part in parts):
             continue
@@ -236,7 +236,7 @@ def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
         findings.extend(scan_references(content, rel, skill_root))
         findings.extend(scan_skill_root_paths(content, rel, skill_root))
     # Eval cases name fixtures; an absolute path there breaks the run for everyone else.
-    for path in sorted((skill_root / "evals").glob("*.json")):
+    for path in sorted((skill_root / "evals").glob("*.json"), key=lambda p: p.as_posix()):
         count += 1
         content = path.read_text(encoding="utf-8", errors="replace")
         try:

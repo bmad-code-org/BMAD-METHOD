@@ -100,7 +100,9 @@ class ScanScriptsTest(unittest.TestCase):
     def test_copy_with_crlf_line_endings_is_still_a_copy(self):
         with tempfile.TemporaryDirectory() as tmp:
             skill = make_skill(Path(tmp), {})
-            (skill / "scripts" / "wake.py").write_bytes(WAKE.read_bytes().replace(b"\n", b"\r\n"))
+            (skill / "scripts" / "wake.py").write_bytes(
+                WAKE.read_bytes().replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+            )
             code, data = scan(skill)
             self.assertNotIn("test-missing", [f["rule"] for f in data["findings"]])
             self.assertEqual(data["scripts"][0].get("copy_of"), "shapes/memory-agent/assets/wake-template.py")
