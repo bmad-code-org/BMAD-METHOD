@@ -3,6 +3,10 @@
 renamed = [
   { from = "bmad-create-ux-design", to = "bmad-ux" },
   { from = "bmad-ticket", to = "bmad-agent-po" },
+  { from = "bmad-quick-dev", to = "bmad-build" },
+  { from = "bmad-dev-auto", to = "bmad-build-auto" },
+  { from = "bmad-checkpoint-preview", to = "bmad-walkthrough" },
+  { from = "bmad-create-architecture", to = "bmad-architecture" },
 ]
 removed = [
   "bmad-agent-sm",
@@ -56,4 +60,12 @@ removed = [
   "bmad-prfaq",
   "bmad-product-brief",
   "bmad-prd",
+  "bmad-sprint-status",
+  "bmad-create-prd",
+  "bmad-edit-prd",
+  "bmad-validate-prd",
+  "bmad-create-story",
+  "bmad-dev-story",
+  "bmad-document-project",
+  "bmad-generate-project-context",
 ]
