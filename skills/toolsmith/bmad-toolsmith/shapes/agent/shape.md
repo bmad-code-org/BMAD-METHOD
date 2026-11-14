@@ -29,7 +29,7 @@ For each thing the agent does:
 
 Never copy another skill's content in; name it.
 
-Changing the persona or the menu is the `bmad-customize` skill's job, never a capability that writes `_bmad/custom/`; put `skill = "bmad-customize"` on the menu when the user wants it offered.
+Changing the persona or the menu is the `bmad-customize` skill's job, never a capability that writes `_bmad/custom/` (a memory agent's own dominion entries are the one exception, in its shape); put `skill = "bmad-customize"` on the menu when the user wants it offered.
 
 ## Persona
 

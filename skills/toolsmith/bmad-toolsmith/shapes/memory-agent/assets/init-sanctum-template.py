@@ -5,17 +5,19 @@
 """First Breath: deterministic sanctum scaffolding.
 
 Runs before the conversational awakening. Creates the sanctum folder and its
-memory layout, writes every sanctum template in the skill's assets/, copies the
-capability references and their scripts into the sanctum, and fills
-CAPABILITIES.md from the capability files' frontmatter.
+memory layout and writes every sanctum template in the skill's assets/.
 
 Safe to rerun. A file that already exists is never rewritten, so a run that was
 cut off partway is finished by the next one, and a finished sanctum is left
 alone. The owner's name and language are not read from anywhere: the agent
-learns them in the First Breath conversation and writes them to BOND.md.
+learns them in the First Breath conversation and writes them to BOND.md. The
+agent's own name goes into PERSONA.md when customize.toml ships one; an empty
+name is left for First Breath.
 
-After this runs the sanctum is self-contained: the agent depends on the skill
-bundle only for First Breath, wake.py and this script.
+The sanctum holds only what the agent learns. What the skill ships (its
+capability references and scripts) stays in the skill, so an update reaches an
+agent that already exists; wake.py lists the built-in capabilities from the
+skill at every waking.
 
 Usage:
     uv run {skill-root}/scripts/init-sanctum.py <project-root> <skill-path>
@@ -23,71 +25,23 @@ Usage:
     project-root: the folder holding _bmad/
     skill-path:   the skill folder (SKILL.md, references/, assets/, scripts/)
 
-Exit 0 and a report on stdout; exit 2 on a usage error.
+Exit 0 and a report on stdout; exit 1 when the sanctum cannot be written, the skill has no identity templates, or its customize.toml does not parse; exit 2 on a usage error.
 """
 
-import re
-import shutil
+import argparse
 import sys
+import tomllib
 from datetime import date
 from pathlib import Path
 
 # The skill folder's name is the skill name; this script lives in its scripts/.
 SKILL_NAME = Path(__file__).resolve().parent.parent.name
 
-# References that stay in the skill bundle: used once, at First Breath.
-SKILL_ONLY_FILES = {"first-breath.md"}
-
-# Bootloader-side scripts; capability scripts are everything else in scripts/.
-BOOT_SCRIPTS = {"init-sanctum.py", "wake.py"}
-
 # The memory layout HOW-I-REMEMBER.md describes. The agent adds folders under memory/ as kinds of subject appear.
 MEMORY_DIRS = ("memory/sessions", "raw", "capabilities")
 
-
-def parse_frontmatter(file_path: Path) -> dict:
-    """Extract YAML frontmatter from a markdown file."""
-    meta = {}
-    content = file_path.read_text(encoding="utf-8")
-    match = re.match(r"^---\s*\n(.*?)\n---", content, re.DOTALL)
-    if not match:
-        return meta
-    for line in match.group(1).strip().split("\n"):
-        if ":" in line:
-            key, _, value = line.partition(":")
-            meta[key.strip()] = value.strip().strip("'\"")
-    return meta
-
-
-def copy_files(source_dir: Path, dest_dir: Path, skip: set[str]) -> list[str]:
-    """Copy every file in source_dir that the destination lacks, except the skipped names."""
-    if not source_dir.is_dir():
-        return []
-    files = [f for f in sorted(source_dir.iterdir()) if f.is_file() and f.name not in skip]
-    copied = []
-    if files:
-        dest_dir.mkdir(parents=True, exist_ok=True)
-    for source_file in files:
-        target = dest_dir / source_file.name
-        if target.exists():
-            continue
-        shutil.copy2(source_file, target)
-        copied.append(source_file.name)
-    return copied
-
-
-def capabilities_table(references_dir: Path) -> str:
-    """Rows for CAPABILITIES.md from references with `name` and `code` frontmatter."""
-    rows = []
-    for md_file in sorted(references_dir.glob("*.md")) if references_dir.is_dir() else []:
-        if md_file.name in SKILL_ONLY_FILES:
-            continue
-        meta = parse_frontmatter(md_file)
-        if meta.get("name") and meta.get("code"):
-            rows.append(
-                f"| [{meta['code']}] | {meta['name']} | {meta.get('description', '')} | `references/{md_file.name}` |"
-            )
-    return "\n".join(rows)
+# The files wake.py needs before the sanctum counts as present.
+IDENTITY_FILES = ("PERSONA.md", "CREED.md", "BOND.md", "HOW-I-REMEMBER.md", "CAPABILITIES.md")
 
 
 def substitute_vars(content: str, variables: dict) -> str:
@@ -97,57 +51,70 @@ def substitute_vars(content: str, variables: dict) -> str:
     return content
 
 
-def main() -> int:
-    if len(sys.argv) < 3:
-        print("Usage: init-sanctum.py <project-root> <skill-path>", file=sys.stderr)
-        return 2
+def shipped_name(skill_path: Path) -> str:
+    """The agent name customize.toml ships; empty when the agent names itself at First Breath."""
+    try:
+        text = (skill_path / "customize.toml").read_text(encoding="utf-8")
+    except OSError:
+        return ""
+    agent = tomllib.loads(text).get("agent", {})
+    name = agent.get("name", "") if isinstance(agent, dict) else ""
+    return name.strip() if isinstance(name, str) else ""
 
-    project_root = Path(sys.argv[1]).resolve()
-    skill_path = Path(sys.argv[2]).resolve()
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Scaffold the sanctum before the First Breath conversation.")
+    parser.add_argument("project_root", type=Path, help="the folder holding _bmad/")
+    parser.add_argument("skill_path", type=Path, help="the skill folder (SKILL.md, references/, assets/, scripts/)")
+    args = parser.parse_args()
+
+    project_root = args.project_root.resolve()
+    skill_path = args.skill_path.resolve()
     sanctum_path = project_root / "_bmad" / "memory" / SKILL_NAME
     assets_dir = skill_path / "assets"
-    references_dir = skill_path / "references"
 
     existed = sanctum_path.is_dir()
+    # PERSONA.md is written once, so a name lost to a parse error would never come back.
+    try:
+        name = shipped_name(skill_path)
+    except tomllib.TOMLDecodeError as error:
+        print(f"Cannot read {skill_path / 'customize.toml'}: {error}", file=sys.stderr)
+        return 1
     variables = {
         "birth_date": date.today().isoformat(),
-        "project_root": str(project_root),
-        "sanctum_path": str(sanctum_path),
-        "capabilities-table": capabilities_table(references_dir),
+        "agent_name": name or "{awaiting First Breath}",
     }
 
-    sanctum_path.mkdir(parents=True, exist_ok=True)
-    for rel in MEMORY_DIRS:
-        (sanctum_path / rel).mkdir(parents=True, exist_ok=True)
-
-    copied_refs = copy_files(references_dir, sanctum_path / "references", SKILL_ONLY_FILES)
-    copied_scripts = copy_files(skill_path / "scripts", sanctum_path / "scripts", BOOT_SCRIPTS)
-
     created = []
-    for template_path in sorted(assets_dir.glob("*-template.md")):
-        output_name = template_path.name.removesuffix("-template.md").upper() + ".md"
-        target = sanctum_path / output_name
-        if target.exists():
-            continue
-        content = substitute_vars(template_path.read_text(encoding="utf-8"), variables)
-        target.write_text(content, encoding="utf-8")
-        created.append(output_name)
+    try:
+        for rel in MEMORY_DIRS:
+            (sanctum_path / rel).mkdir(parents=True, exist_ok=True)
+        for template_path in sorted(assets_dir.glob("*-template.md")):
+            output_name = template_path.name.removesuffix("-template.md").upper() + ".md"
+            target = sanctum_path / output_name
+            if target.exists():
+                continue
+            content = substitute_vars(template_path.read_text(encoding="utf-8"), variables)
+            target.write_text(content, encoding="utf-8")
+            created.append(output_name)
+    except OSError as error:
+        print(f"Cannot write the sanctum at {sanctum_path}: {error.strerror or error}", file=sys.stderr)
+        return 1
 
-    if existed and not created and not copied_refs and not copied_scripts:
-        print(f"Sanctum already exists at {sanctum_path}")
-        print("This agent has already been born. Nothing to scaffold.")
+    missing = [name for name in IDENTITY_FILES if not (sanctum_path / name).is_file()]
+    if missing:
+        print(f"No template for {', '.join(missing)} in {assets_dir}; is the skill path right?", file=sys.stderr)
+        return 1
+
+    if existed and not created:
+        print(f"Sanctum complete at {sanctum_path}; nothing to scaffold.")
         return 0
 
     print(f"{'Finished' if existed else 'Created'} sanctum at {sanctum_path}")
     for name in created:
         print(f"  Created {name}")
-    if copied_refs:
-        print(f"  Copied {len(copied_refs)} reference files to references/")
-    if copied_scripts:
-        print(f"  Copied {len(copied_scripts)} scripts to scripts/")
     print()
-    print("First Breath scaffolding complete. The conversational awakening can now begin.")
-    print(f"Sanctum: {sanctum_path}")
+    print("Scaffolding complete. The First Breath conversation can begin.")
     return 0
 
 

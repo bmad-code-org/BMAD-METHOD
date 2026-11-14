@@ -79,7 +79,7 @@ uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root
 
 A value that is declared but hardcoded in the body is a defect, because every override of it does nothing. Smithy's review flags this.
 
-A skill never writes its own overrides, never merges TOML itself, and never carries a second code path for when BMad is absent. `resolve_customization.py` reads, and `bmad-customize` writes. Where users will change a value, the skill says so in one line: invoke `bmad-customize`, naming the key.
+A skill never writes its own overrides, never merges TOML itself, and never carries a second code path for when BMad is absent. The one exception is a memory agent writing its own `[[agent.dominion]]` entries to its own override file. `resolve_customization.py` reads, and `bmad-customize` writes. Where users will change a value, the skill says so in one line: invoke `bmad-customize`, naming the key.
 
 ### 6. Test an Override
 

@@ -20,7 +20,15 @@ A document lands at `<type>-<slug>/<type>-<slug>.md` under `{output_folder}/{act
 
 ## customize.toml
 
-One table, read in activation. `[workflow]` for a skill: `activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete`, `<purpose>_output_path`, `run_folder_pattern`, and its own scalars, each commented with when to override it. `[agent]` for an agent: `name`, `title`, `icon`, `role`, `identity`, `communication_style`, `principles`, the two step arrays, `persistent_facts`, and `[[agent.menu]]` items with `code`, `description` and exactly one of `skill` or `prompt`. The body reads values as `{workflow.<key>}` or `{agent.<key>}`; a value declared but hardcoded in the body makes every override a silent no-op. Scalars override, arrays append, arrays of tables merge by `code` or `id`. No boolean toggles; a switch means the author never decided. Reading is the resolver's job; writing is the `bmad-customize` skill's, which authors the override files under `_bmad/custom/` for any skill with a `customize.toml`. A skill never writes there, never merges its own TOML, and never carries a second code path for when `_bmad/` is absent: it offers setup. When users will change a value, the body says so in one line: invoke the `bmad-customize` skill naming the key, and if it is not installed offer `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-customize`.
+One table, read in activation. `[workflow]` for a skill: `activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete`, `<purpose>_output_path`, `run_folder_pattern`, and its own scalars, each commented with when to override it. `[agent]` for an agent: `name`, `title`, `icon`, `role`, `identity`, `communication_style`, `principles`, the two step arrays, `persistent_facts`, and `[[agent.menu]]` items with `code`, `description` and exactly one of `skill` or `prompt`. A memory agent's `[agent]` keeps `name`, `title`, `icon`, the two step arrays and `persistent_facts` and adds `[[agent.dominion]]`; its persona and capabilities live in the sanctum.
+
+The body reads values as `{workflow.<key>}` or `{agent.<key>}`; a value declared but hardcoded in the body makes every override a silent no-op.
+
+Scalars override, arrays append, arrays of tables merge by `code` or `id`. No boolean toggles; a switch means the author never decided.
+
+Reading is the resolver's job; writing is the `bmad-customize` skill's, which authors the override files under `_bmad/custom/` for any skill with a `customize.toml`. A skill never writes there, never merges its own TOML, and never carries a second code path for when `_bmad/` is absent: it offers setup. The one exception: a memory agent writes its own `[[agent.dominion]]` entries, each restated whole, to its own `_bmad/custom/<skill>.toml` or `.user.toml`, because First Breath settles them in character.
+
+When users will change a value, the body says so in one line: invoke the `bmad-customize` skill naming the key, and if it is not installed offer `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-customize`.
 
 ## bmod.toml
 
@@ -32,4 +40,4 @@ A script does work that has one right answer per input: parsing, counting, resol
 
 ## Memory agents
 
-The sanctum lives at `{project-root}/_bmad/memory/{name}/`, `{name}` being the skill name; the agent needs the skill bundle only for first wake and init. Waking loads the identity files (PERSONA, CREED, BOND, HOW-I-REMEMBER as the layout guide, CAPABILITIES) and a generated map; memory is small files under `memory/<kind>/` and a write-once `raw/` layer, read as a conversation reaches them. The owner's name and language come from the First Breath conversation into BOND.md, never from config.
+The sanctum lives at `{project-root}/_bmad/memory/{name}/`, `{name}` being the skill name, and holds only what the agent learns: built-in capabilities and scripts stay in the skill, and the facts of the work live in the dominion areas `[[agent.dominion]]` lists. Waking loads the identity files (PERSONA, CREED, BOND, HOW-I-REMEMBER as the layout guide, CAPABILITIES) and a generated map; memory is small files under `memory/<kind>/` and a write-once `raw/` layer, read as a conversation reaches them. The owner's name and language come from the First Breath conversation into BOND.md, never from config.

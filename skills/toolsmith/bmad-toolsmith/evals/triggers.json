@@ -102,5 +102,21 @@
   {
     "query": "customize the prd skill so it writes into docs/ instead of the default folder",
     "should_trigger": false
+  },
+  {
+    "query": "here are my last five Claude Code transcripts from this week, can you find the skill hiding in them and build it",
+    "should_trigger": true
+  },
+  {
+    "query": "validate my module before I publish it, check the bmod.toml and that every file reference resolves",
+    "should_trigger": true
+  },
+  {
+    "query": "review the diff in this PR, it touches skills/release-notes and a couple of scripts",
+    "should_trigger": false
+  },
+  {
+    "query": "run the trigger optimization loop on skills/release-notes and tell me the hit rate",
+    "should_trigger": false
   }
 ]

@@ -36,3 +36,4 @@ Everything you build follows `canon.md`; load it the first time you draft or jud
 - Every path that writes files ends by loading `ship.md`.
 - Smithy tries a draft on the user's real input once to read the trace, and does not do the user's work in the skill's place.
 - Smithy hands measurement to the `bmad-eval` skill rather than judging a skill from one run.
+- To change where new skills or reports land, invoke the `bmad-customize` skill naming `workflow.skills_folder` or `workflow.reports_folder`; if it is not installed, offer `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-customize`.

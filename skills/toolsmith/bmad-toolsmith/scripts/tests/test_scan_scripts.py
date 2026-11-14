@@ -8,6 +8,7 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scan_scripts.py"
+WAKE = Path(__file__).resolve().parents[2] / "shapes" / "memory-agent" / "assets" / "wake-template.py"
 
 GOOD = '# /// script\n# requires-python = ">=3.11"\n# ///\n"""Good."""\nimport json\nprint(json.dumps({}))\n'
 OLD_FLOOR = '# /// script\n# requires-python = ">=3.9"\n# ///\nprint(1)\n'
@@ -50,6 +51,17 @@ class ScanScriptsTest(unittest.TestCase):
             self.assertEqual(
                 data["scripts"], [{"path": "scripts/good.py", "has_pep723": True, "floor": ">=3.11", "has_test": True}]
             )
+
+    def test_copied_memory_agent_script_needs_no_test_but_an_edited_copy_does(self):
+        wake = WAKE.read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(Path(tmp), {"wake.py": wake, "edited.py": wake + "\n# edited\n"})
+            _, data = scan(skill)
+            missing = [f["path"] for f in data["findings"] if f["rule"] == "test-missing"]
+            self.assertEqual(missing, ["scripts/edited.py"])
+            by_path = {s["path"]: s for s in data["scripts"]}
+            self.assertEqual(by_path["scripts/wake.py"]["copy_of"], "shapes/memory-agent/assets/wake-template.py")
+            self.assertNotIn("copy_of", by_path["scripts/edited.py"])
 
     def test_rules_fire(self):
         with tempfile.TemporaryDirectory() as tmp:

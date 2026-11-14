@@ -17,7 +17,7 @@ shape_hint is inferred, first match wins:
   single-skill-module  bmod.toml has both [bmod] and [skill]
   multi-skill-module   bmod.toml has [bmod] only (a module record)
   script-utility       scripts/ exists and SKILL.md is under 60 lines
-  plain-skill          everything else; "unknown" when there is no SKILL.md
+  plain-skill          everything else; "unknown" when there is no SKILL.md or customize.toml does not parse
 
 Usage:
   prepass.py <skill-folder>
@@ -26,7 +26,7 @@ Output, one JSON object on stdout:
   {"skill", "shape_hint", "files": [{"path", "tokens", "kind"}], "skill_md_tokens", "total_tokens",
    "has_customize", "has_scripts", "scripts": [{"path", "has_pep723", "has_test"}],
    "description_chars", "has_use_when", "frontmatter_ok", "bmod_kind", "path_findings": [...], "script_findings": [...],
-   "long_paragraphs": [{"path", "line", "words", "longest_sentence"}]}
+   "long_paragraphs": [{"path", "line", "words", "longest_sentence"}], "toml_errors": [{"path", "error"}]}
   kind is one of entry, prompt, script, test, asset, config, other.
   bmod_kind is none (no bmod.toml), skill (a module member), record (a record folder), record+skill (a
   single-skill module) or invalid (a file with neither table, or one that does not parse).
@@ -78,12 +78,28 @@ def load_toml(path: Path) -> dict:
         return {}
 
 
+def toml_errors(root: Path) -> list[dict]:
+    """Manifests that exist but do not parse; a lens reading an empty table would misjudge the shape."""
+    errors = []
+    for name in ("customize.toml", "bmod.toml"):
+        path = root / name
+        if not path.is_file():
+            continue
+        try:
+            tomllib.loads(path.read_text(encoding="utf-8"))
+        except (tomllib.TOMLDecodeError, UnicodeDecodeError) as error:
+            errors.append({"path": name, "error": str(error)})
+    return errors
+
+
 def shape_hint(root: Path, skill_text: str | None) -> str:
     if skill_text is None:
         return "unknown"
     scripts = root / "scripts"
     if MEMORY_RE.search(skill_text) or (scripts / "wake.py").is_file() or (scripts / "init-sanctum.py").is_file():
         return "memory-agent"
+    if any(e["path"] == "customize.toml" for e in toml_errors(root)):
+        return "unknown"
     is_agent = "agent" in load_toml(root / "customize.toml")
     if "render_skill.py" in skill_text:
         return "rendered-agent" if is_agent else "rendered-skill"
@@ -180,6 +196,7 @@ def build(root: Path) -> dict:
         "has_use_when": bool(USE_WHEN_RE.search(description)),
         "frontmatter_ok": frontmatter_ok,
         "bmod_kind": bmod_kind(root),
+        "toml_errors": toml_errors(root),
         "path_findings": scan_skill(root)["findings"],
         "script_findings": scripts_result["findings"],
         "long_paragraphs": long_lines,
