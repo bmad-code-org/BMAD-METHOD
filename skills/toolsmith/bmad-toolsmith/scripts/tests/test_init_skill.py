@@ -47,7 +47,7 @@ class CreateTest(unittest.TestCase):
             self.assertEqual(data["created"], ["SKILL.md", "bmod.toml", "references/", "scripts/"])
             self.assertEqual(data["shape"], "plain-skill")
             text = (skill / "SKILL.md").read_text(encoding="utf-8")
-            self.assertTrue(text.startswith("---\nname: bmad-demo\ndescription: '"))
+            self.assertTrue(text.startswith("---\nname: bmad-demo\ndescription: "))
             self.assertIn("# bmad-demo", text)
             bmod = tomllib.loads((skill / "bmod.toml").read_text(encoding="utf-8"))
             self.assertEqual(bmod, {"skill": {"bmod": "bmod-example", "source": "github:acme/example/skills"}})
@@ -216,6 +216,11 @@ class CheckTest(unittest.TestCase):
             code, data, _ = run("--check", no_fm)
             self.assertEqual(rules(data), ["bmod-tables", "frontmatter-missing"])
             self.assertEqual(data["bmod"], "invalid")
+            listed = self.write_skill(
+                tmp, "bmad-listed", "---\nname: bmad-listed\ndescription: [Use when asked]\n---\n\nBody.\n"
+            )
+            code, data, _ = run("--check", listed)
+            self.assertEqual(rules(data), ["frontmatter-missing"])
 
     def test_record_rules(self):
         with tempfile.TemporaryDirectory() as tmp:

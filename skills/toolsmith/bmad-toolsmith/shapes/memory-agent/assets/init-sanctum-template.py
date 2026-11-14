@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """First Breath: deterministic sanctum scaffolding.
 
@@ -32,6 +33,8 @@ import sys
 from datetime import date
 from pathlib import Path
 
+import yaml
+
 # The skill folder's name is the skill name; this script lives in its scripts/.
 SKILL_NAME = Path(__file__).resolve().parent.parent.name
 
@@ -46,17 +49,9 @@ MEMORY_DIRS = ("memory/sessions", "raw", "capabilities")
 
 
 def parse_frontmatter(file_path: Path) -> dict:
-    """Extract YAML frontmatter from a markdown file."""
-    meta = {}
-    content = file_path.read_text(encoding="utf-8")
-    match = re.match(r"^---\s*\n(.*?)\n---", content, re.DOTALL)
-    if not match:
-        return meta
-    for line in match.group(1).strip().split("\n"):
-        if ":" in line:
-            key, _, value = line.partition(":")
-            meta[key.strip()] = value.strip().strip("'\"")
-    return meta
+    """A markdown file's YAML frontmatter, every value as text; {} when it has none."""
+    match = re.match(r"^---\s*\n(.*?)\n---", file_path.read_text(encoding="utf-8"), re.DOTALL)
+    return (yaml.load(match.group(1), Loader=yaml.BaseLoader) or {}) if match else {}
 
 
 def copy_files(source_dir: Path, dest_dir: Path, skip: set[str]) -> list[str]:
