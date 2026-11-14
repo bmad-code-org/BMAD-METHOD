@@ -278,9 +278,11 @@ class MemoryAgentScriptsTest(unittest.TestCase):
             "---\nname: Week\ndescription: Review the week: wins, misses\ncode: WEEK\n---\n", encoding="utf-8"
         )
         (learned / "intake.md").write_text("---\ncode: INTAKE\n---\n", encoding="utf-8")
+        (learned / "open.md").write_text("---\nname: Open\ncode: OPEN\n\nnever closed\n", encoding="utf-8")
         (self.skill / "references" / "glossary.md").write_text("# Terms\n", encoding="utf-8")
         section = self.capabilities_section(run(self.wake, self.project).stdout)
-        self.assertIn("capabilities/week.md: its frontmatter is not valid YAML", section)
+        self.assertIn("capabilities/week.md: its frontmatter does not parse", section)
+        self.assertIn("capabilities/open.md: its frontmatter does not parse", section)
         self.assertIn("capabilities/intake.md: its frontmatter needs both `name` and `code`", section)
         self.assertIn("| [INTAKE] | Intake | Keep and distill material | built-in |", section)
         self.assertNotIn("glossary", section)
@@ -364,6 +366,28 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertIn("2 files; names not shown", out)
         self.assertNotIn("sister", out)
         self.assertNotIn("entries", out)
+
+    def test_private_area_inside_a_wider_area_is_left_out_of_its_map(self):
+        self.birth()
+        for folder, file in (("diary", "2026-11-10-argued-with-sister.md"), ("notes", "2026-11-09-plan.md")):
+            (self.project / folder).mkdir()
+            (self.project / folder / file).write_text("x\n", encoding="utf-8")
+        self.dominion(
+            "acme-agent-sage.user.toml",
+            '[[agent.dominion]]\nid = "all"\npath = "."\n\n'
+            '[[agent.dominion]]\nid = "diary"\npath = "diary/"\nprivate = true\n',
+        )
+        out = run(self.wake, self.project).stdout.split("===== dominion =====")[1]
+        self.assertIn("notes/2026-11-09-plan.md", out)
+        self.assertIn("1 files; names not shown", out)
+        self.assertNotIn("sister", out)
+        self.assertNotIn("diary/ (", out)
+
+    def test_dominion_written_as_one_table_is_named(self):
+        self.birth()
+        self.dominion("acme-agent-sage.toml", '[agent.dominion]\nid = "notes"\npath = "notes"\n')
+        out = run(self.wake, self.project).stdout
+        self.assertIn("Dominion not read: agent.dominion is not a list", out.split("===== dominion =====")[1])
 
     def test_retired_area_is_dropped_and_malformed_entries_are_named(self):
         self.birth()

@@ -14,6 +14,6 @@ Material for the work is the exception: the original and the distillations go to
 {/if-dominion}
 **For:** my future self, who will read the distillations and never the raw again, so a distillation must stand on its own: who, what, when, what was decided, what is still open.
 
-**How I know it worked:** each file made from it opens with `source: raw/<file>`, so the waking map no longer lists the raw file as undistilled; no subject the material touched is missing a file; a standing subject's file was updated in place rather than duplicated.
+**How I know it worked:** each file made from it opens with `source:` and the path of the original, `raw/<file>` when my sanctum keeps it, so the waking map no longer lists that raw file as undistilled; no subject the material touched is missing a file; a standing subject's file was updated in place rather than duplicated.
 
 Ask before distilling only when the material's date or owner is not in it, or when it is unclear whether it is about the work or about us. A recording is transcribed first, with the tool my owner has, and the transcript is the raw file.

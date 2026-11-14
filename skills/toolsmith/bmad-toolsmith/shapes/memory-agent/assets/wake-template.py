@@ -157,10 +157,11 @@ def emit_map(sanctum: Path) -> None:
 
 
 def frontmatter(path: Path) -> dict | None:
-    """The file's frontmatter mapping, empty when it has none; None when the block does not parse."""
-    match = FRONTMATTER_RE.match(path.read_text(encoding="utf-8", errors="replace"))
+    """The file's frontmatter mapping, empty when it has none; None when the block does not parse or never closes."""
+    text = path.read_text(encoding="utf-8", errors="replace")
+    match = FRONTMATTER_RE.match(text)
     if not match:
-        return {}
+        return None if text.startswith("---") else {}
     try:
         meta = yaml.safe_load(match.group(1))
     except yaml.YAMLError:
@@ -176,7 +177,7 @@ def capability_rows(folder: Path, label: str, skip: set[str]) -> tuple[dict[str,
             continue
         meta, source = frontmatter(path), f"{label}/{path.name}"
         if meta is None:
-            problems.append(f"{source}: its frontmatter is not valid YAML")
+            problems.append(f"{source}: its frontmatter does not parse")
         elif meta.get("code") and (meta.get("name") or meta.get("retired") is True):
             found[str(meta["code"])] = (meta, source)
         elif meta.get("code") or meta.get("name"):
@@ -207,12 +208,17 @@ def emit_capabilities(sanctum: Path) -> None:
         print("\n".join(f"  {problem}" for problem in problems))
 
 
-def walk_area(root: Path) -> tuple[dict[str, int], list[Path]]:
-    """File counts by top-level folder of an area ("." for its own files), and its newest dated files."""
+def walk_area(root: Path, private: set[Path]) -> tuple[dict[str, int], list[Path]]:
+    """File counts by top-level folder of an area ("." for its own files), and its newest dated files.
+
+    A private area inside this one is left out: its own entry gives its count, and its names appear nowhere.
+    """
     counts: dict[str, int] = {}
     dated: list[Path] = []
     for current, dirs, files in os.walk(root):
         dirs[:] = sorted(d for d in dirs if not d.startswith((".", "_bmad")) and d not in SKIP_DIRS)
+        if private:
+            dirs[:] = [d for d in dirs if (Path(current) / d).resolve() not in private]
         rel = Path(current).relative_to(root)
         top = rel.parts[0] if rel.parts else "."
         visible = [f for f in files if not f.startswith(".")]
@@ -235,9 +241,14 @@ def read_dominion(project_root: Path) -> tuple[list[dict], list[str]]:
         entries = json.loads(res.stdout).get("agent.dominion", [])
     except json.JSONDecodeError:
         return [], ["Dominion not read: the resolver printed no JSON"]
+    if not isinstance(entries, list):
+        return [], ["Dominion not read: agent.dominion is not a list; write each area as its own [[agent.dominion]]"]
     areas, problems, seen = [], [], set()
-    for entry in entries if isinstance(entries, list) else []:
-        if not isinstance(entry, dict) or entry.get("retired") is True:
+    for entry in entries:
+        if not isinstance(entry, dict):
+            problems.append(f"{entry!r}: not an [[agent.dominion]] entry, skipped")
+            continue
+        if entry.get("retired") is True:
             continue
         label = entry.get("id") or entry.get("path") or "an entry"
         if not entry.get("id"):
@@ -268,6 +279,7 @@ def emit_dominion(project_root: Path) -> None:
     print("\n===== dominion =====")
     if problems:
         print("\n".join(problems))
+    private_paths = {area_path(project_root, str(a["path"])) for a in areas if a.get("private") is True}
     for area in areas:
         path = area_path(project_root, str(area["path"]))
         access = "write" if area.get("access") == "write" else "read"
@@ -281,7 +293,7 @@ def emit_dominion(project_root: Path) -> None:
         # A whole-workspace area keeps its layout in the project's AGENTS.md; its README is the project's.
         if access == "write" and path != project_root.resolve() and not (path / "README.md").is_file():
             print("  No README.md: the area's layout is written nowhere")
-        counts, recent = walk_area(path)
+        counts, recent = walk_area(path, private_paths - {path})
         if private:
             print(f"  {sum(counts.values())} files; names not shown")
             continue

@@ -115,5 +115,5 @@ Ask Smithy for an agent that remembers you. Use [the build steps](build-your-fir
 4. The first time you activate the agent, First Breath runs.
 
 :::tip[Memory agents are personal]
-A memory agent serves one owner. In a repository others can read, say it is shared at First Breath, and the agent keeps its sanctum and your areas out of git.
+A memory agent serves one owner. In a repository others can read, say it is shared at First Breath, and the agent keeps its sanctum and the list of your areas out of git. The files in an area follow the repository's own git rules, so keep a personal area outside the repository or ignore its folder yourself.
 :::

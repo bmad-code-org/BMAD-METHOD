@@ -22,7 +22,7 @@ A yes sets the `dominion` condition, which brings in the dominion text and First
 - An area whose path is the same in every install ships in `customize.toml`, as an `[[agent.dominion]]` entry in place of `dominion = []`, kept last in the file.
 - An area whose path is the owner's to choose is asked at First Breath, not now. The agent writes it to its own `_bmad/custom/<skill>.toml` or `.user.toml`, the one override a skill writes itself.
 
-A memory agent serves one owner. First Breath asks whether the repository is private to that owner or shared, and the answer decides whether the sanctum and the owner's areas are committed and where loading in every chat is written; a build does not ask it.
+A memory agent serves one owner. First Breath asks whether the repository is private to that owner or shared, and the answer decides whether the sanctum and the list of the owner's areas are committed and where loading in every chat is written; a build does not ask it.
 
 An agent that names itself ships `name = ""`; the name is born at First Breath. A shipped name goes into PERSONA.md when the sanctum is built.
 
