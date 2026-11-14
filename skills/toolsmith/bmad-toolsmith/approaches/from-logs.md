@@ -12,7 +12,7 @@ For Claude Code transcripts and memlogs, run `uv run {skill-root}/scripts/read_s
 
 ## Candidates
 
-Group the requests by meaning, not exact words. Propose at most three candidates, each a repeated request with its counts: how often asked, in which words, which tools in which order, and the corrections verbatim. The digest's `files_touched` and `skills_invoked` cover the whole log.
+Group the requests by meaning, not exact words. Propose at most three candidates, each a repeated request with its counts: how often asked, in which words, which tools in which order, and the corrections verbatim, taken from the source log when the digest cut a text short at 300 characters. The digest's `files_touched` and `skills_invoked` cover the whole log.
 
 The corrections are the know-how a skill encodes. A request repeated without corrections is still a candidate when the user typed the same instructions each time.
 

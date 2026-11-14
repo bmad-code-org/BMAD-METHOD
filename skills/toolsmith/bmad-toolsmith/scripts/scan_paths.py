@@ -45,6 +45,7 @@ Exit 0 when clean, 1 when there are findings, 2 on a usage error.
 from __future__ import annotations
 
 import argparse
+import itertools
 import json
 import os
 import re
@@ -69,7 +70,7 @@ OLD_FORMAT_CONTEXT_RE = re.compile(
     rf"|{_OLD_FILE}\s*\(?(?:is\s+|are\s+)?(?:the\s+)?(?:old|legacy|v6)\b",
     re.IGNORECASE,
 )
-SKILL_ROOT_PATH_RE = re.compile(r"\{skill-root\}/([^\s`'\"(),;|]*)")
+SKILL_ROOT_PATH_RE = re.compile(r"\{skill-root\}/([^\s`'\"(),;|#]*)")
 PLACEHOLDER_CHARS = "<*{["
 PYTHON_CALL_RE = re.compile(r"(?<![\w/.-])(?:python3?|pip3?)\s+(?:-m\s+\S+|\S+\.py\b|install\b)")
 BACKTICK_REF_RE = re.compile(r"`([^`\s]+/[^`\s]+\.(?:md|yaml|yml|toml|json|csv|txt|xml|py|html))`")
@@ -131,10 +132,22 @@ def scan_regex_rules(content: str, rel: str) -> list[dict]:
         ),
     ):
         for match in regex.finditer(content):
-            if rule == "old-module-format" and OLD_FORMAT_CONTEXT_RE.search(line_text(content, match.start())):
+            if rule == "old-module-format" and OLD_FORMAT_CONTEXT_RE.search(clause_text(content, match.start())):
                 continue
             findings.append(finding(rel, line_of(content, match.start()), rule, match.group(0), fix))
     return findings
+
+
+def clause_text(content: str, offset: int) -> str:
+    """The clause of the line around offset, cut at `;` and at sentence ends, so context words in one clause
+    do not excuse a filename in the next."""
+    line = line_text(content, offset)
+    at = offset - (content.rfind("\n", 0, offset) + 1)
+    bounds = [0, *(m.end() for m in re.finditer(r";\s*|[.!?]\s+(?=[A-Z`])", line)), len(line)]
+    for start, end in itertools.pairwise(bounds):
+        if start <= at < end:
+            return line[start:end]
+    return line
 
 
 def line_text(content: str, offset: int) -> str:

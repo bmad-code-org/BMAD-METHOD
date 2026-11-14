@@ -14,7 +14,7 @@ Load `approaches/eval-loop.md` for the case format. Write two or three cases int
 
 ## Description round
 
-If `{target}/evals/triggers.json` is absent, write it from the discovery: 8 to 10 queries that should fire, varied in wording and buried in larger requests, and 8 to 10 near misses that share vocabulary but should not. Then invoke the `bmad-eval` skill in trigger mode with its description-optimization loop on `{target}`. Show the winning description and apply it on a yes.
+If `{target}/evals/triggers.json` is absent, write it from the discovery: 8 to 10 queries that should fire, varied in wording and buried in larger requests, and 8 to 10 near misses that share vocabulary but should not. Then copy `{target}` to `{reports_folder}/<YYYYMMDD-HHMMSS>-<skill>-trial/` and invoke the `bmad-eval` skill in trigger mode with its description-optimization loop on that copy, since the loop rewrites the description it measures. Show the winning description and write it into `{target}/SKILL.md` on a yes.
 
 ## Then
 

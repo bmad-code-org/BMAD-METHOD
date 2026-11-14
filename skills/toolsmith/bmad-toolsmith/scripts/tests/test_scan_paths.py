@@ -29,6 +29,34 @@ def rules(data):
 
 
 class ScanPathsTest(unittest.TestCase):
+    def test_link_to_a_section_of_an_existing_file_resolves(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                {
+                    "SKILL.md": "---\nname: bmad-demo\ndescription: 'Demo. Use when testing.'\n---\n\n"
+                    "See [usage]({skill-root}/references/guide.md#usage).\n",
+                    "references/guide.md": "# Guide\n\n## Usage\n",
+                },
+            )
+            _, data = scan(skill)
+            self.assertEqual(rules(data), [])
+
+    def test_old_format_context_covers_only_its_own_clause(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                {
+                    "SKILL.md": "---\nname: bmad-demo\ndescription: 'Demo. Use when testing.'\n---\n\n"
+                    "Never write module.yaml; read module-help.csv first.\n"
+                    "Never write module.yaml or module-help.csv.\n",
+                },
+            )
+            _, data = scan(skill)
+            found = [(f["line"], f["detail"] if "detail" in f else f.get("match")) for f in data["findings"]]
+            self.assertEqual([f["rule"] for f in data["findings"]], ["old-module-format"], found)
+            self.assertEqual(data["findings"][0]["line"], 6)
+
     def test_absolute_fixture_path_in_eval_cases_fires(self):
         with tempfile.TemporaryDirectory() as tmp:
             skill = make_skill(

@@ -45,7 +45,7 @@ SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", "venv", ".pytest_ca
 SCANNED_SUFFIXES = {".md", ".toml", ".yaml", ".yml", ".py"}
 # The separator spans newlines, quotes and commas so a key split across an argv list still matches.
 READ_RE = re.compile(
-    r"(?<![\w-])(?:--key|-k)[\s=,\"']+modules\.([a-z0-9][a-z0-9-]*)(?:\.([A-Za-z0-9_]+))?(?![\w-]|\.\w)"
+    r"(?<![\w-])(?:--key|-k)[\s=,\"']+modules\.([a-z0-9][a-z0-9-]*)(?:\.([A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*))?(?![\w.-])"
 )
 
 
@@ -105,7 +105,10 @@ def scan(root: Path) -> dict | None:
                     continue
                 full = f"modules.{code}.{key}"
                 read_keys.add(full)
-                if key not in records[code]["questions"]:
+                # A read of a dotted prefix reads every question under it.
+                under = [q for q in records[code]["questions"] if q.startswith(key + ".")]
+                read_keys.update(f"modules.{code}.{q}" for q in under)
+                if key not in records[code]["questions"] and not under:
                     unasked.append(
                         {
                             "skill": folder.name,

@@ -17,7 +17,7 @@ Show it whole, as tables, then wait for a yes:
 Files, old to new:
 
 - `files_to_delete`: deleted. `retired.toml` lists `setup_skill` under `removed` when there was one.
-- `module` to the record's `bmod.toml` (in `bmod-<code>/`, or the skill's own folder for one skill): `code`, `version` and `skills` as scanned; `update_source` from the user; `post_install_message` from `greeting`; one `[[bmod.config_questions]]` per entry of `config_keys`, `scope = "user"` where `user_setting` was true.
+- `module` to the record's `bmod.toml` (in `bmod-<code>/`, or the skill's own folder for one skill): `code`, `version` and `skills` as scanned; `update_source` from the user; `post_install_message` from `greeting`; one `[[bmod.config_questions]]` per entry of `config_keys`, `scope = "user"` where `user_setting` was true, its `default` rewritten by the config rules below.
 - `agents` to `roster.toml`: `code`, `skill`, `name`, `icon`, `title`, and `description` as `persona`.
 - `help_rows` to `help/help.md`: one entry per skill from its rows, what it gives and when to recommend it; preceded-by and followed-by become what to offer next. A skill with many rows gets a `help/<skill>.md` topic named in `help.md`.
 - Each skill: a `bmod.toml` with `[skill]` (`bmod`, `source`) and `scripts` when it ships any.

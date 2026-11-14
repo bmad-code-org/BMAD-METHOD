@@ -132,6 +132,31 @@ class ScanConfigReadsTest(unittest.TestCase):
                 [{"skill": "acme-notes", "file": "acme-notes/scripts/read.py", "line": 8, "key": "modules.acme.typo"}],
             )
 
+    def test_dotted_question_keys_and_prefix_reads(self):
+        record = '[bmod]\ncode = "acme"\nversion = "1.0.0"\nskills = ["acme-notes"]\n\n'
+        record += "".join(
+            f'[[bmod.config_questions]]\nkey = "{k}"\nprompt = "?"\n\n'
+            for k in ("export.format", "export.path", "style")
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "acme"
+            write(
+                root,
+                {
+                    "bmod-acme/SKILL.md": "---\nname: bmod-acme\ndescription: x\n---\n",
+                    "bmod-acme/bmod.toml": record,
+                    "acme-notes/SKILL.md": (
+                        f"---\nname: acme-notes\ndescription: x\n---\n\n`{RESOLVE} --key modules.acme.export.format`.\n"
+                        f"`{RESOLVE} --key modules.acme.export`.\n"
+                    ),
+                    "acme-notes/bmod.toml": "[skill]\n",
+                },
+            )
+            code, data, err = run(root)
+            self.assertEqual(code, 0, err)
+            self.assertEqual(data["unasked"], [])
+            self.assertEqual(data["unread"], [{"key": "modules.acme.style"}])
+
     def test_no_record_or_bad_manifest_fails(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "plain"

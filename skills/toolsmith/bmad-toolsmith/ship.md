@@ -38,7 +38,7 @@ Run the commands under Checks in `modes/validate.md` on `{target}` and fix until
 
 ## Cost
 
-From the pre-pass, tell the user what `SKILL.md` costs per load (`skill_md_tokens`) and how long the description is (`description_chars`).
+Rerun the pre-pass when anything changed since it ran. From it, tell the user what `SKILL.md` costs per load (`skill_md_tokens`) and how long the description is (`description_chars`).
 
 Name any part of `SKILL.md` that only some runs use; it belongs in a reference. A `SKILL.md` that every run needs whole stays whole, whatever its size: the count is evidence for that judgment, not a limit.
 
