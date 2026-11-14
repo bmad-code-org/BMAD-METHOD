@@ -52,7 +52,9 @@ def capability(folder: Path, file: str, code: str, name: str, extra: str = "") -
 
 
 def run(script: Path, *args: str) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, str(script), *map(str, args)], capture_output=True, text=True)
+    return subprocess.run(
+        [sys.executable, str(script), *map(str, args)], capture_output=True, text=True, encoding="utf-8"
+    )
 
 
 class MemoryAgentScriptsTest(unittest.TestCase):
@@ -397,6 +399,7 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertIn(f"journal → {(self.project / 'journal').resolve()} (write)", out)
         self.assertNotIn("MISSING", out)
 
+    @unittest.skipIf(sys.platform == "win32", "Windows ignores the read-only bit on a folder")
     def test_unwritable_sanctum_fails_with_one_line(self):
         memory = self.project / "_bmad" / "memory"
         memory.mkdir()
