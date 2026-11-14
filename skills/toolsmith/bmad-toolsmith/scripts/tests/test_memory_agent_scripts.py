@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 ASSETS = Path(__file__).resolve().parents[2] / "shapes" / "memory-agent" / "assets"
-RESOLVER_SCRIPTS = Path(__file__).resolve().parents[3] / "bmad" / "scripts"
+RESOLVER_SCRIPTS = Path(__file__).resolve().parents[4] / "core-tools" / "bmad" / "scripts"
 TEMPLATES = [
     "PERSONA-template.md",
     "CREED-template.md",
