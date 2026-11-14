@@ -90,7 +90,7 @@ It then learns about you and finds its specific mission for you, saving as it go
 
 First Breath is finished before anything else. Until it is, it is the agent's only job: if you ask for other work, it does it once the questions are done. If you stop early, the next session brings it back to the questions it has not asked. The wrap-up writes `memory/.born`, and only then does the agent wake as itself.
 
-There are two styles. A deep relationship agent explores freely. A focused agent asks a short list of questions.
+Every memory agent's First Breath follows the same steps. What differs is the questions Smithy writes for its domain: a companion or coach asks about you, a working agent asks how you work.
 
 ## Naming the Agent
 
