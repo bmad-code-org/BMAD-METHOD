@@ -66,7 +66,7 @@ Each area the agent writes has a `README.md` giving its layout; a whole-workspac
 
 ## Waking
 
-On each activation, `wake.py` checks for the sanctum. With no sanctum, or one missing an identity file, the agent runs First Breath. Otherwise, it prints the five identity files, the capabilities table, a map of memory and a map of the dominion. The capabilities table is built from the skill's references and the sanctum's `capabilities/` at every waking, so it is never out of date. The memory map shows each folder with its file count, the newest dated files, raw files not yet distilled, when memory was last tended, and anything pending. The dominion map shows each area's location, access, folders and newest dated files, only a count for a private area, and flags an area that is missing, has no README, or has a malformed entry.
+On each activation, `wake.py` checks for the sanctum. With no sanctum, one missing an identity file, or a First Breath that never finished, the agent runs First Breath. Otherwise, it prints the five identity files, the capabilities table, a map of memory and a map of the dominion. The capabilities table is built from the skill's references and the sanctum's `capabilities/` at every waking, so it is never out of date. The memory map shows each folder with its file count, the newest dated files, raw files not yet distilled, when memory was last tended, and anything pending. The dominion map shows each area's location, access, folders and newest dated files, only a count for a private area, and flags an area that is missing, has no README, or has a malformed entry.
 
 The memory files themselves do not load. The agent reads what a conversation reaches, so waking costs the same however much it knows. It finds things with `ls` and `grep`, and there is no index to maintain.
 
@@ -88,7 +88,9 @@ First Breath is the agent's first conversation with you. It is a conversation, n
 
 It then learns about you and finds its specific mission for you, saving as it goes. It confirms the areas it ships with, asks what else it should own or tend, and writes them to your customization. It asks once whether the repository is private to you or shared. In a private repository the sanctum is committed and the agent can load in every chat through AGENTS.md or a project hook. In a shared one the sanctum is added to `.gitignore`, your areas go in the ignored `.user.toml`, and loading in every chat goes only in your personal harness settings. It shows each change before making it. Anything unfinished goes to `memory/pending.md` for the next waking.
 
-There are two styles. A deep relationship agent explores freely. A focused agent gets the basics and defers to any urgent work you bring.
+First Breath is finished before anything else. Until it is, it is the agent's only job: if you ask for other work, it does it once the questions are done. If you stop early, the next session brings it back to the questions it has not asked. The wrap-up writes `memory/.born`, and only then does the agent wake as itself.
+
+There are two styles. A deep relationship agent explores freely. A focused agent asks a short list of questions.
 
 ## Naming the Agent
 

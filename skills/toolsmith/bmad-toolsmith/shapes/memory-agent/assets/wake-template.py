@@ -22,8 +22,11 @@ missing or lacks a README; an entry with `retired = true` is left out, and a
 malformed one is named. Memory and area files themselves are not printed; the
 agent reads the ones a conversation reaches. In --pulse mode it also appends PULSE.md. It says when the name in
 PERSONA.md has gone from the SKILL.md description. When the sanctum is missing
-or incomplete, it prints a directive to run First Breath, whose script finishes
-an incomplete sanctum, with the capabilities and dominion First Breath presents.
+or incomplete, or First Breath has not written memory/.born, it prints a
+directive to run First Breath, whose script finishes an incomplete sanctum, with
+the capabilities and dominion First Breath presents; for an unfinished birth it
+also prints the identity files and the placeholders still in them. A --pulse
+before the birth is finished prints MODE: UNBORN and nothing else.
 
 It writes nothing.
 
@@ -63,6 +66,8 @@ DATED_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})")
 STATUS_RAW_RE = re.compile(r"^status:\s*raw\s*$", re.MULTILINE)
 PERSONA_NAME_RE = re.compile(r"^- \*\*Name:\*\* ([^{*\s][^{*\n]*)$", re.MULTILINE)
 FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
+# A template placeholder is prose in braces, such as {learned at First Breath}; a bare token has no spaces.
+PLACEHOLDER_RE = re.compile(r"\{[^{}\n]*\s[^{}\n]*\}")
 
 # Never walked when mapping an area: hidden, tool and dependency folders, and anything starting with _bmad.
 SKIP_DIRS = {"node_modules", "__pycache__", "venv"}
@@ -266,6 +271,19 @@ def emit_dominion(project_root: Path) -> None:
             print("\n".join(f"    {p.relative_to(path).as_posix()}" for p in recent))
 
 
+def emit_open_questions(sanctum: Path) -> None:
+    """Template placeholders still in the identity files: what First Breath has not yet asked or written."""
+    lines = []
+    for name in IDENTITY_FILES:
+        for line in (sanctum / name).read_text(encoding="utf-8").splitlines():
+            if PLACEHOLDER_RE.search(line):
+                lines.append(f"  {name}: {line.strip()}")
+    print("\n===== still open =====")
+    print(
+        "\n".join(lines) if lines else "  (no placeholders left; check every question in first-breath.md is answered)"
+    )
+
+
 def emit_lost_name(sanctum: Path, project_root: Path) -> None:
     """Skills updates replace SKILL.md, which drops the name First Breath wrote into its description."""
     skill_md = SKILL_ROOT / "SKILL.md"
@@ -297,13 +315,24 @@ def main() -> int:
     sanctum = project_root / "_bmad" / "memory" / SKILL_NAME
 
     missing = [name for name in IDENTITY_FILES if not (sanctum / name).is_file()]
-    if missing:
+    born = not missing and (sanctum / "memory" / ".born").is_file()
+    if not born and pulse:
+        print("MODE: UNBORN")
+        print("First Breath is not finished, and it needs your owner. A Pulse does nothing until then: exit.")
+        return 0
+    if not born:
         print("MODE: FIRST_BREATH")
-        if sanctum.is_dir():
+        if missing and sanctum.is_dir():
             print(f"INCOMPLETE SANCTUM at {sanctum}: missing {', '.join(missing)}")
-        else:
+        elif missing:
             print(f"NO SANCTUM at {sanctum}")
-        print("This is your one birth. Load references/first-breath.md and follow it.")
+        else:
+            print(f"UNFINISHED BIRTH at {sanctum}: your sanctum exists but memory/.born does not.")
+        print("This is your one birth. Load references/first-breath.md and follow it to the end.")
+        if not missing:
+            for name in IDENTITY_FILES:
+                emit(sanctum / name)
+            emit_open_questions(sanctum)
         emit_capabilities(sanctum)
         emit_dominion(project_root)
         return 0

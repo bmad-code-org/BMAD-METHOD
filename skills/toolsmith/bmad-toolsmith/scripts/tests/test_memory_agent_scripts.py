@@ -63,6 +63,11 @@ class MemoryAgentScriptsTest(unittest.TestCase):
     def tearDown(self):
         self._tmp.cleanup()
 
+    def birth(self) -> None:
+        """Scaffold the sanctum and finish First Breath, as its wrap-up does."""
+        run(self.init, self.project, self.skill)
+        (self.sanctum / "memory" / ".born").write_text("2026-10-01\n", encoding="utf-8")
+
     def test_no_sanctum_routes_to_first_breath(self):
         res = run(self.wake, self.project)
         self.assertEqual(res.returncode, 0, res.stderr)
@@ -94,7 +99,31 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertEqual((self.sanctum / "PERSONA.md").read_text(encoding="utf-8"), "# Persona\n\nName: Sage\n")
         self.assertTrue((self.sanctum / "CREED.md").is_file())
         res = run(self.wake, self.project)
-        self.assertIn("MODE: WAKING", res.stdout)
+        self.assertIn("MODE: FIRST_BREATH", res.stdout)
+        self.assertIn("UNFINISHED BIRTH", res.stdout)
+
+    def test_unfinished_birth_returns_to_first_breath_with_what_is_open(self):
+        run(self.init, self.project, self.skill)
+        bond = self.sanctum / "BOND.md"
+        bond.write_text(
+            bond.read_text(encoding="utf-8").replace("{learned at First Breath}", "Brian", 1), encoding="utf-8"
+        )
+        out = run(self.wake, self.project).stdout
+        self.assertIn("MODE: FIRST_BREATH", out)
+        self.assertIn("UNFINISHED BIRTH", out)
+        self.assertIn("===== BOND.md =====", out)
+        still_open = out.split("===== still open =====")[1].split("=====")[0]
+        self.assertIn("BOND.md: - **Call them:** {learned at First Breath}", still_open)
+        self.assertNotIn("**Name:** Brian", still_open)
+        self.assertNotIn("===== memory map =====", out)
+        (self.sanctum / "memory" / ".born").write_text("2026-10-01\n", encoding="utf-8")
+        self.assertIn("MODE: WAKING", run(self.wake, self.project).stdout)
+
+    def test_pulse_before_birth_does_nothing(self):
+        run(self.init, self.project, self.skill)
+        out = run(self.wake, self.project, "--pulse").stdout
+        self.assertIn("MODE: UNBORN", out)
+        self.assertNotIn("=====", out)
 
     def test_finished_sanctum_is_left_alone(self):
         run(self.init, self.project, self.skill)
@@ -105,7 +134,7 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertIn("Call them: Brian", (self.sanctum / "BOND.md").read_text(encoding="utf-8"))
 
     def test_waking_prints_self_and_map_not_memory(self):
-        run(self.init, self.project, self.skill)
+        self.birth()
         people = self.sanctum / "memory" / "people"
         people.mkdir()
         (people / "ruben.md").write_text("Partner. SECRET-PEOPLE-BODY\n", encoding="utf-8")
@@ -144,7 +173,7 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertNotIn("SECRET-PEOPLE-BODY", out)
 
     def test_pulse_appends_pulse_file_when_present(self):
-        run(self.init, self.project, self.skill)
+        self.birth()
         res = run(self.wake, self.project, "--pulse")
         self.assertIn("MODE: PULSE", res.stdout)
         self.assertNotIn("===== PULSE.md =====", res.stdout)
@@ -153,7 +182,7 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertIn("===== PULSE.md =====", res.stdout)
 
     def name_the_agent(self) -> None:
-        run(self.init, self.project, self.skill)
+        self.birth()
         persona = self.sanctum / "PERSONA.md"
         text = persona.read_text(encoding="utf-8").replace("- **Name:** {awaiting First Breath}", "- **Name:** Bubbles")
         persona.write_text(text, encoding="utf-8")
@@ -172,7 +201,7 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertNotIn("===== description =====", run(self.wake, self.project).stdout)
 
     def test_waking_leaves_an_unnamed_agent_and_a_global_install_alone(self):
-        run(self.init, self.project, self.skill)
+        self.birth()
         (self.skill / "SKILL.md").write_text("---\ndescription: 'A companion.'\n---\n", encoding="utf-8")
         self.assertNotIn("===== description =====", run(self.wake, self.project).stdout)
         self.name_the_agent()
@@ -209,11 +238,11 @@ class MemoryAgentScriptsTest(unittest.TestCase):
             f.write(body)
 
     def test_no_dominion_prints_no_section(self):
-        run(self.init, self.project, self.skill)
+        self.birth()
         self.assertNotIn("===== dominion =====", run(self.wake, self.project).stdout)
 
     def test_waking_maps_each_area_and_flags_what_is_wrong(self):
-        run(self.init, self.project, self.skill)
+        self.birth()
         vault = self.project / "vault"
         (vault / "people").mkdir(parents=True)
         (vault / "decisions").mkdir()
@@ -259,7 +288,7 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertNotIn("No README.md", out.split("vault →")[1].split("notes →")[0])
 
     def test_whole_workspace_area_skips_bmad_folders_and_needs_no_readme(self):
-        run(self.init, self.project, self.skill)
+        self.birth()
         (self.sanctum / "memory" / "sessions" / "2026-10-09-chat.md").write_text("x\n", encoding="utf-8")
         (self.project / "_bmad-output").mkdir()
         self.dominion("acme-agent-sage.toml", '[[agent.dominion]]\nid = "all"\npath = "."\naccess = "write"\n')
@@ -270,7 +299,7 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertNotIn("No README.md", out)
 
     def test_private_area_shows_a_count_not_names(self):
-        run(self.init, self.project, self.skill)
+        self.birth()
         diary = self.project / "diary" / "entries"
         diary.mkdir(parents=True)
         (diary / "2026-11-10-argued-with-sister.md").write_text("x\n", encoding="utf-8")
@@ -285,7 +314,7 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertNotIn("entries", out)
 
     def test_retired_area_is_dropped_and_malformed_entries_are_named(self):
-        run(self.init, self.project, self.skill)
+        self.birth()
         for folder in ("log", "notes"):
             (self.project / folder).mkdir()
         self.dominion(
@@ -307,7 +336,7 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertIn(f"notes → {(self.project / 'notes').resolve()} (read)", out)
 
     def test_entry_without_id_is_named(self):
-        run(self.init, self.project, self.skill)
+        self.birth()
         (self.project / "notes").mkdir()
         self.dominion("acme-agent-sage.toml", '[[agent.dominion]]\npath = "notes"\n')
         out = run(self.wake, self.project).stdout.split("===== dominion =====")[1]
@@ -329,7 +358,7 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertIn("MISSING", out)
 
     def test_dominion_without_the_resolver_says_why(self):
-        run(self.init, self.project, self.skill)
+        self.birth()
         (self.project / "_bmad" / "scripts" / "resolve_customization.py").unlink()
         out = run(self.wake, self.project).stdout
         self.assertIn("MODE: WAKING", out)

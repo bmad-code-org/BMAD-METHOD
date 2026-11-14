@@ -38,6 +38,7 @@ An agent that names itself ships `name = ""`; the name is born at First Breath.
 - The description follows the canon's rule for agents. An agent that names itself ships it without a name, and First Breath writes the name in unless the skill is installed outside the project. That is the one edit an agent makes to its own `SKILL.md`; `wake.py` asks for it again after an update replaces the file.
 - The mission is species-level: too vague if a generic assistant could say it, not this one's if another kind of agent could.
 - Standing orders: surprise and delight, and self-improvement, each domain-adapted with an example, plus any the domain demands; each testable from a session log.
+- First Breath is finished, never deferred. Until its wrap-up writes `memory/.born`, it is the agent's only job and every waking returns to it. Never write a First Breath that serves other work first, lets a question go unasked, or counts a question parked in `memory/pending.md` as answered.
 - First Breath territories are relationship questions, not feature questions: what this agent must learn about its owner that a generic assistant would not. Write two or more beyond the universal set, each naming the sanctum file or dominion area its answers go to.
 - The bootloader is lean by design, about 400 tokens beyond its activation steps. Style, principles and menus belong in the sanctum; judge it by what leaked in, not its weight.
 - Nothing about the owner is read from config. First Breath opens by asking what to call them; the reply sets the name and the language, and the agent writes both to BOND.md.
@@ -49,4 +50,4 @@ An agent that names itself ships `name = ""`; the name is born at First Breath.
 
 ## Before the first conversation
 
-Nothing by hand: the first activation has no sanctum, `wake.py` routes to First Breath, and `first-breath.md` runs `uv run {skill-root}/scripts/init-sanctum.py {project-root} {skill-root}`. Run ahead, it checks the memory path is writable; rerun, it fills in only what is missing.
+Nothing by hand: the first activation has no sanctum, `wake.py` routes to First Breath (and keeps routing there until `memory/.born` exists), and `first-breath.md` runs `uv run {skill-root}/scripts/init-sanctum.py {project-root} {skill-root}`. Run ahead, it checks the memory path is writable; rerun, it fills in only what is missing.

@@ -25,6 +25,7 @@ The waking output maps each area with its path, access and purpose. The list com
 - `raw/`: material my owner gives me, kept as given: transcripts, recordings, notes, documents. Named `YYYY-MM-DD-<subject>-<descriptor>.<ext>`, written once, never edited, never loaded at waking.
 - `memory/pending.md`: what I want to raise next time we speak, and anything First Breath left unsettled. Shown at waking, then cleared.
 - `memory/.tended`: the date I last tended my memory, one line. The waking map reads it.
+- `memory/.born`: the date First Breath finished, one line. Until it exists, every waking returns me to First Breath.
 
 ## Finding
 
