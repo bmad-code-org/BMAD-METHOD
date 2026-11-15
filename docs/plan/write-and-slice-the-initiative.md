@@ -63,8 +63,7 @@ the ticket, or both; say which. Each answer you confirm turns its
 yourself too: now, before anything is cut from it, change any line you
 would not defend to a stakeholder.
 
-Sofia is the only writer of these sections. She derives them from
-`.memlog.md` beside the ticket, so a hand edit is overwritten on her next run.
+Sofia is the only writer of these sections, so don't edit them by hand.
 When an input changes, run her again with the change: she keeps every id and
 names the stories whose requirements changed.
 
@@ -134,7 +133,7 @@ where the no-show timer runs. Settle that with `bmad-architecture`?
 ## What You Get
 
 - `initiative-<slug>/initiative-<slug>.md`, the spec for the whole initiative,
-  with `.memlog.md` and any companions beside it
+  with any companions beside it
 - `initiative-<slug>/tickets/tickets.toml`, the epics in build order
 - One folder per epic under `tickets/`, each holding a thin epic file
 

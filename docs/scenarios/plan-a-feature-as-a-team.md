@@ -38,7 +38,8 @@ two parts: once for the initiative, then once for each epic.
    one: accept, so the PRD and the initiative Sofia writes share one folder.
 
    Validate it before the meeting where facilities settles the no-show
-   window; the findings land in `review-*.md` files beside the PRD.
+   window. John gives the findings in the conversation and offers to update
+   the PRD from them.
 
    ```text wrap
    /bmad-agent-pm validate the check-in PRD
@@ -216,7 +217,7 @@ If you lose track, ask `/bmad what's next?` or `/bmad-agent-po what's next?`.
 
 ## What You Have at the End
 
-A validated PRD with its review files, the initiative and its two epic files,
+A validated PRD, the initiative and its two epic files,
 the shared design and the architecture spine, any design or spine an epic
 needed of its own, each epic's stories, the code, one plan per story, and a
 retrospective per epic. You are done when the last epic's retrospective has

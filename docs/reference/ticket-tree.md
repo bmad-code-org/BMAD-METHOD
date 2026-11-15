@@ -14,8 +14,8 @@ These are the exact rules for the ticket tree that Sofia, the Product Owner
 ## Layout
 
 The tree is the folder `active_initiative` names under `output_folder`
-(`_bmad-output` by default). Each initiative and epic keeps its own file, its
-`.memlog.md`, other skills' run folders, and its retrospective at the top of
+(`_bmad-output` by default). Each initiative and epic keeps its own file,
+other skills' run folders, and its retrospective at the top of
 its folder. Its breakdown goes in a `tickets/` folder inside it.
 
 ```text
@@ -47,7 +47,7 @@ An initiative or epic file is the spec at its level.
 | Section | Holds | Written by |
 | --- | --- | --- |
 | Description, Outcome | What the work is, and what is true when it is done | Sofia |
-| Requirements | One line per requirement, with a stable `R<n>` id naming its source: `R1 (FR-1)`, or on an epic `R1 (parent R3)` | Sofia only, derived from `.memlog.md` |
+| Requirements | One line per requirement, with a stable `R<n>` id naming its source: `R1 (FR-1)`, or on an epic `R1 (parent R3)` | Sofia only |
 | Constraints | Rules the work must keep, each citing its source id; no `R<n>` of their own | Sofia only |
 | Done when | Three to six checks that show the work is finished, judged at closure and by the retrospective | Sofia |
 | Boundaries | What is out of scope, and units the work only touches | Sofia |

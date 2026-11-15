@@ -60,7 +60,7 @@ The loop stops when every check passes on three runs, or when you say it is good
 
 Use menu code `LOGS`, or say "make a skill from my sessions". This approach starts before discovery.
 
-Smithy offers to read the logs of the agent you are talking to, your memlogs, or files you name. It confirms the location with you, or asks if it cannot find it, and waits for a yes before reading.
+Smithy offers to read the logs of the agent you are talking to or files you name. It confirms the location with you, or asks if it cannot find it, and waits for a yes before reading.
 
 It groups your requests by meaning, not exact words, and proposes at most three candidates. Each is a repeated request with its counts: how often you asked, in which words, which tools ran in which order, the files touched, the skills invoked, and your corrections word for word. A script lists each request with the message you sent next, and Smithy judges which of those messages were corrections. Your corrections are the know-how a skill encodes. A request you repeated without corrections is still a candidate when you typed the same instructions each time.
 

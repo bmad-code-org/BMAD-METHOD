@@ -128,9 +128,10 @@ Where it's decided: [PR #2944](https://github.com/bmad-code-org/BMAD-METHOD/pull
 
 ## Ask in Plain Words
 
-An agent runs the item that fits your request. With no request it says in one
-line what it does, and it shows its menu only when you ask what it can do.
-Menu items are words, not two-letter codes, and Sofia never shows a menu: say
-what you want.
+An agent runs the item that fits your request, and a request that fits nothing
+becomes a conversation. With no request it says in one line what it does.
+Asked what it can do, it answers in a few sentences and offers its list; the
+full table appears only when you ask for it. Items are words, not two-letter
+codes.
 
-Where it's decided: [PR #3172](https://github.com/bmad-code-org/BMAD-METHOD/pull/3172), [PR #3176](https://github.com/bmad-code-org/BMAD-METHOD/pull/3176).
+Where it's decided: [PR #3172](https://github.com/bmad-code-org/BMAD-METHOD/pull/3172), [PR #3176](https://github.com/bmad-code-org/BMAD-METHOD/pull/3176), [PR #3197](https://github.com/bmad-code-org/BMAD-METHOD/pull/3197).

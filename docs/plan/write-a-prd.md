@@ -59,8 +59,7 @@ until you accept that item. At Finalize, John settles the tags that block a
 decision, one at a time, and defers the rest to the PRD's open questions.
 After a headless run, or a yes to a group, the tags still open move to the
 template's assumptions section or a closing `## Assumptions` list, one line
-each. Every fact, decision, and assumption is logged in `.memlog.md` beside
-the PRD.
+each.
 
 Length fits the stakes, under a ceiling set by the level: about 3,000 words
 for a program or an initiative, 2,000 for an epic, and two pages for hobby or
@@ -122,12 +121,13 @@ After the conversation, part of `prd-check-in/prd-check-in.md`:
 ## Finalize, Validate, and Update
 
 Finalize settles the blocking tags as in step 2 and asks you to read the
-three decisions it is least sure of. Sessions pause and resume. Each open
+three decisions it is least sure of. Sessions pause and resume: a new chat
+picks up from the document, which marks the sections still open. Each open
 question (`OQ-N`) names an owner, when it is needed, and what it blocks.
 Names, owners, and dates come from you; John never guesses them.
 
-Validate reviews the PRD without changing it and writes the findings to
-`review-*.md` files beside it, which suits a review meeting. Update
+Validate reviews the PRD without changing it, gives you the findings in the
+conversation, and offers an update from them. Update
 reconciles the PRD with a change and shows conflicts with earlier decisions
 before it applies anything. When the PRD changes after the initiative is
 written, run Sofia again with it; see

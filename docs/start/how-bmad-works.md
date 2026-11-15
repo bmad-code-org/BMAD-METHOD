@@ -42,8 +42,8 @@ Each role on a team has an agent to work through.
 | Developer          | Amelia (`bmad-agent-dev`)        | Runs `bmad-build`, `bmad-code-review`, `bmad-qa-generate-e2e-tests`, and `bmad-retrospective`                                                                                                            |
 
 Each agent runs the skills named, and calling a skill directly does the same
-work. Agents show no menu: say what you want in plain words, or ask one what
-it can do.
+work. Say what you want in plain words. Ask an agent what it can do and it
+answers in a few sentences, with its full list only if you ask for it.
 
 ## Pick a Route
 
