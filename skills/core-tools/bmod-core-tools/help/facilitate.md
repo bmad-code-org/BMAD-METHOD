@@ -10,9 +10,9 @@ It coaches the user through one document from a template, and later updates or v
 - A template with `paced: true` is walked in order instead: the user sees the sections up front, each is finished before the next, and each section's comment sets the coach's voice and stance for that part. Paced templates shipped: Mary's PRFAQ and brief, John's experiment, opportunity and pitch, and Method's decision record and postmortem.
 - Each message that asks something opens with a progress line, such as `PRFAQ · Customer FAQ (2 of 4)` or `PRD · 6 of 24 done`, counted against the template's facilitation order.
 - Every section is settled before the end, on every path: required ones filled, optional ones offered, include-when ones checked against their condition. Asking for the fast path never drops a section quietly.
-- The fast path asks what the template requires plus up to three high-impact questions, drafts the rest as logged assumptions, then offers to walk the user through those.
-- It skips questions only when the user says headless or autonomous, or hands over material and asks for the document. It then fills gaps with best guesses, logged as assumptions.
-- Unfinished runs resume.
+- The fast path asks what the template requires plus up to three high-impact questions, drafts the rest with each guess tagged `[ASSUMPTION]` in the document, then offers to walk the user through those.
+- It skips questions only when the user says headless or autonomous, or hands over material and asks for the document. It then fills gaps with best guesses, tagged as assumptions.
+- Unfinished runs resume in a new chat from the document itself. A finished run leaves the document, its companions and its view; working files go to the system temp folder and are deleted at the end.
 - With no fitting template it builds a structure for the document type, says so, and at close offers to save it as a template.
 
 ## Templates the modules ship
@@ -45,7 +45,7 @@ The user says what they want in plain words: the topic, a template (an id, a fil
 
 Recommend `bmad-customize` for any of these changes, to a template or a setting; it writes the file. Templates are files in `_bmad/custom/facilitate-templates/`, and settings go in `_bmad/custom/bmad-facilitate.toml`, both committed so everyone gets them.
 
-- Add a template: a file in that folder with `template` and `description` in its frontmatter, and any rubric beside it. `facilitation_order` lists the sections by id (the heading lowercased, punctuation dropped, spaces as hyphens) in the order they come up, `?` marking one not required; `list_templates.py` reports ids and headings that do not match. `guidance: guidance-planning` adds the shipped planning rules: stakes levels, `[ASSUMPTION]` tags in the body, ids and testable requirements. A `companions` comment asks for more files beside the document. A plain markdown file of headings works; each heading becomes a required section. A bare `## Table of Contents` heading after the title makes the skill fill and check one.
+- Add a template: a file in that folder with `template` and `description` in its frontmatter, and any rubric beside it. `facilitation_order` lists the sections by id (the heading lowercased, punctuation dropped, spaces as hyphens) in the order they come up, `?` marking one not required; `list_templates.py` reports ids and headings that do not match. `guidance: guidance-planning` adds the shipped planning rules: stakes levels, ids and testable requirements. A `companions` comment asks for more files beside the document. A plain markdown file of headings works; each heading becomes a required section. A bare `## Table of Contents` heading after the title makes the skill fill and check one.
 - Replace or edit a shipped template: copy it from `doc-templates/` in the record of the module that ships it into that folder and keep its `template` id. The project's copy wins.
 - A module adds templates through `doc-templates/` in its record folder; no setting is needed. An `agents:` frontmatter list names the skills that run one, so help can say who offers it.
 - Keep personal templates for every project in `~/.bmad/facilitate-templates/`. The project's folder is searched first.

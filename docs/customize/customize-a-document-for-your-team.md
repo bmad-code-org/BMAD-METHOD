@@ -19,7 +19,7 @@ BMad installed with the BMad Method module, `bmad setup` run, and a coding tool 
 :::
 
 :::tip[Quick Path]
-Tell `bmad-customize` what every PRD needs. It writes an extension in `_bmad/custom/facilitate-templates/` and shows you the result. Write a PRD with John and open `.template.md` in its folder to see your rules in what the coach read.
+Tell `bmad-customize` what every PRD needs. It writes an extension in `_bmad/custom/facilitate-templates/` and shows you the result. Ask it to show the merged template to see your rules in what the coach reads.
 :::
 
 ## The Example
@@ -88,13 +88,13 @@ Talk to John (`bmad-agent-pm`):
 John, let's create a PRD for text message appointment reminders.
 ```
 
-John coaches the PRD as usual, and tells you up front that your project adds rules to it. On the fast path he raises both rules in his first batch of questions; when coaching, he raises each as the conversation reaches it. When the conversation reaches Success metrics, he offers metrics from your catalog, such as no-show rate. Propose one the catalog lacks, such as "patient happiness", and he says it is not in the catalog and logs an open question for its owner instead of defining it himself. After MVP scope he asks who leads Support for the launch, then walks you through the first week of tickets. Answer "Support will figure it out" and he presses for the answers.
+John coaches the PRD as usual, and tells you up front that your project adds rules to it. On the fast path he raises both rules in his first batch of questions; when coaching, he raises each as the conversation reaches it. When the conversation reaches Success metrics, he offers metrics from your catalog, such as no-show rate. Propose one the catalog lacks, such as "patient happiness", and he says it is not in the catalog and records an open question for its owner instead of defining it himself. After MVP scope he asks who leads Support for the launch, then walks you through the first week of tickets. Answer "Support will figure it out" and he presses for the answers.
 
 ## Step 4: See What the Coach Read
 
-Open the PRD's folder. Beside the PRD and its `.memlog.md` is `.template.md`: John's PRD template merged with every extension of it, the extensions first. Your file's text sits at the top, under a line naming its path.
+Ask `bmad-customize` to show the merged PRD template: John's PRD template merged with every extension of it, the extensions first, as the coach reads it at the start of every run. Your file's text sits at the top, under a line naming its path.
 
-If a rule ever seems ignored, look here first. Text that is not in `.template.md` never reached the coach.
+If a rule ever seems ignored, look here first. Text that is not in the merged template never reaches the coach.
 
 ## Step 5: When Changes Outgrow an Extension
 
@@ -147,9 +147,7 @@ your-project/
 │   ├── prd-larkspur.md                     # extension: every PRD
 │   └── prd-billing.md                      # new template: billing PRDs
 └── _bmad-output/.../prd-text-reminders/
-    ├── prd-text-reminders.md               # the PRD
-    ├── .memlog.md                          # its decision log
-    └── .template.md                        # what the coach read
+    └── prd-text-reminders.md               # the PRD
 ```
 
 ## Quick Reference
@@ -161,7 +159,7 @@ your-project/
 | Remove a section | List the order in the extension's `facilitation_order` and leave the section out |
 | Make HTML views by default for PRDs | `html_view: always` in the extension's frontmatter |
 | Give one team its own document | A copy with a new `template` id, `description`, `not_for` and `agents` |
-| Check what a run used | Open `.template.md` in the run folder |
+| Check what a run reads | Ask `bmad-customize` to show the merged template |
 
 ## Common Questions
 
@@ -178,5 +176,5 @@ your-project/
 Ask the `bmad` skill, or bring questions to the [BMad Discord](https://discord.gg/gk8jAdXWmj).
 
 :::tip[Key Takeaways]
-Templates are facilitation instructions: a section comment says where the section goes, what to ask and when to push. Extend a template by default so updates keep arriving, and copy it only to rebuild a document or to give one team a document of its own. `.template.md` shows exactly what the coach read.
+Templates are facilitation instructions: a section comment says where the section goes, what to ask and when to push. Extend a template by default so updates keep arriving, and copy it only to rebuild a document or to give one team a document of its own. The merged template shows exactly what the coach reads.
 :::

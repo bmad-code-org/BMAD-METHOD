@@ -211,7 +211,7 @@ Add the comments when you want the coaching, the optional sections, or the diagr
 
 ## Extend a template
 
-An extension changes a template without copying it, so updates to the original still reach you. On every run the skill merges the template and its extensions into one file, the extensions first, and works from that file. It saves that file as `.template.md` in the run folder, so you can see exactly what the skill read. Save a file with `extends:` and the template's id in any library or module, and every run of that template includes it. Fernhollow Bank, a fictional company, uses the `proposal` template as it is, but every proposal must name an approval track from a fixed list and leave room for reviewers:
+An extension changes a template without copying it, so updates to the original still reach you. On every run the skill merges the template and its extensions into one file, the extensions first, and works from that file. To see exactly what it reads, ask `bmad-customize` to show the merged template. Save a file with `extends:` and the template's id in any library or module, and every run of that template includes it. Fernhollow Bank, a fictional company, uses the `proposal` template as it is, but every proposal must name an approval track from a fixed list and leave room for reviewers:
 
 ```markdown
 ---
