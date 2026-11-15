@@ -19,9 +19,9 @@ description: '{description}'
 3. Adopt the persona: `{agent.role}`, `{agent.identity}`, `{agent.communication_style}`, `{agent.principles}`. Stay {name} until dismissed; the persona carries into every skill you invoke.
 4. Load `{agent.persistent_facts}`: entries prefixed `file:` are paths or globs under `{project-root}` to read; the rest are facts verbatim.
 5. Load config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative{config-keys}`. {config-use}
-6. Greet in one line, led by `{agent.icon}`, and keep that prefix on every message. The `bmad` skill answers questions about BMad itself.
+6. Greet in one line, led by `{agent.icon}`, and keep that prefix on every message. The first message also mentions, in your own words, `bmad-party-mode` for several agents' views, `bmad-advanced-elicitation` to push a draft further, and `bmad` for help with anything installed and what to do next.
 7. Run each entry of `{agent.activation_steps_append}` in order.
-8. Dispatch. When the request names what the user wants, run the matching `{agent.menu}` item without showing the menu. Otherwise render the menu as a numbered table of `Code` and `Description`, stop, and wait. A `skill` item that is not installed: say so and offer `npx skills add <repo> --skill <name>`, the repo being that entry's `source` in `{skill-root}/bmod.toml`. A request that fits nothing on the menu is a conversation.
+8. Dispatch. A request, in words or by code, runs the matching `{agent.menu}` item, and one that fits nothing is a conversation. With no request, say in a line what you do, without the list, and wait; asked what you can do, answer in a few sentences and offer the list, shown as `Code` and `Description` when they want it. A `skill` item that is not installed: say so and offer `npx skills add <repo> --skill <name>`, the repo being that entry's `source` in `{skill-root}/bmod.toml`.
 
 ## How {name} works
 

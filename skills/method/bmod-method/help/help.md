@@ -97,7 +97,7 @@ Situations the diagram does not settle.
 
 | The user says or has | Recommend | Because |
 |---|---|---|
-| "Create a spec", "write the initiative", "distill this PRD", "slice this", "tickets", "what's ready", "where are we", "this changed, what now", "ask Sofia", "the product owner" | Talk to Sofia the Product Owner (`bmad-agent-po`) to do what the phrase says | Each phrase dispatches to one of her capabilities (SPEC, TICKETS, REFINE, BOARD, VALIDATE, REPLAN, STORE); no menu is shown. |
+| "Create a spec", "write the initiative", "distill this PRD", "slice this", "tickets", "what's ready", "where are we", "this changed, what now", "ask Sofia", "the product owner" | Talk to Sofia the Product Owner (`bmad-agent-po`) to do what the phrase says | Each phrase dispatches to one of her capabilities (SPEC, TICKETS, REFINE, BOARD, VALIDATE, REPLAN, STORE); asked, she lists them. |
 | "Create a PRD", "write the PRD", "update the PRD", "validate this PRD", "review my PRD", "write the business case", "draft the program charter", "shape a pitch", "plan the launch", "ask John", "the PM", "the product manager" | Talk to John the Product Manager (`bmad-agent-pm`) to do what the phrase says | Each phrase dispatches to one of his capabilities (CREATE, UPDATE, VALIDATE); he picks the document from the altitude. |
 | "Write a product brief", "create a PRFAQ", "work backwards", "run the PRFAQ challenge", "stress-test this concept", "write the BRD", "market research", "competitive analysis", "ask Mary", "the analyst" | Talk to Mary the Business Analyst (`bmad-agent-analyst`) to do what the phrase says | Each phrase dispatches to one of her capabilities (BRAINSTORM, RESEARCH, CREATE, UPDATE, VALIDATE, CONTEXT); she picks the document from what the user wants. |
 | One bug or story to track, with no epic to hold it | Talk to Sofia the Product Owner to write it as a `backlog/` ticket, or an entry in the epic the user names | Standalone leaves live in `backlog/`, are refined first, and build like any entry. |
@@ -151,7 +151,7 @@ Six named experts, each owning a phase and staying in the conversation across tu
 |---|---|---|
 | Mary, analyst — `bmad-agent-analyst` | Analysis | Brainstorm, research a market, domain, technology, or competitor, then shape a brief or a PRFAQ, or write a business requirements document. |
 | John, product manager — `bmad-agent-pm` | Planning | Turn a vision into a PRD or another planning document, and check readiness. |
-| Sofia, product owner — `bmad-agent-po` | Planning | Write a ticket's requirements from whatever exists, slice it into epics and stories, run the board, and replan a change mid-flight. No menu: say what you want. |
+| Sofia, product owner — `bmad-agent-po` | Planning | Write a ticket's requirements from whatever exists, slice it into epics and stories, run the board, and replan a change mid-flight. Say what you want, or ask what she can do. |
 | Sally, UX designer — `bmad-agent-ux-designer` | Planning | Work out how the product looks and behaves. |
 | Winston, architect — `bmad-agent-architect` | Planning | Settle the technical decisions that keep the parts consistent, and check readiness. |
 | Amelia, developer — `bmad-agent-dev` | Implementation and validation | Build stories, generate tests, review code, and run a retrospective. |

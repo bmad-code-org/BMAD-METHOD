@@ -5,7 +5,7 @@ The `toolsmith` module is for people who author skills, agents and modules, not 
 ## The skills
 
 - `bmad-toolsmith` is Smithy, the Toolsmith. He builds a skill, agent or module from a conversation about what it is for, who uses it and what it produces, and he edits, converts, reviews, cuts, packages, validates and migrates skills that exist. He coaches by default: he helps the user decide well and aims for a tool that does its job for whoever acts on its output. A user in a hurry, or who asks him to work on his own, gets the fast path: a short confirmation, then the plan. Nothing is written until the user approves his execution plan. He needs `bmad` set up in the project (he offers setup otherwise) and `uv` installed.
-- `bmad-eval` runs a skill's evals and reports what they show: baseline (does it beat the bare model), variant (does a stripped or prior version do as well), quality (does the output meet its rubric), trigger (does the description fire on the right requests). Smithy reaches it from his menu and after a build; recommend it directly when the user has a skill and cases and wants numbers, not a conversation.
+- `bmad-eval` runs a skill's evals and reports what they show: baseline (does it beat the bare model), variant (does a stripped or prior version do as well), quality (does the output meet its rubric), trigger (does the description fire on the right requests). Smithy reaches it when asked and after a build; recommend it directly when the user has a skill and cases and wants numbers, not a conversation.
 
 ## Routing
 

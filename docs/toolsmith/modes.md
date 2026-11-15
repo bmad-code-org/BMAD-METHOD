@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-Smithy also works on skills that already exist, including ones built elsewhere. Say what you want done, or pick a code from Smithy's menu.
+Smithy also works on skills that already exist, including ones built elsewhere. Say what you want done, or use a code from the table as a shortcut.
 
 | Mode | Code | What you get | Say |
 | --- | --- | --- | --- |

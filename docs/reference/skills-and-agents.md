@@ -45,7 +45,7 @@ Open your skills directory to see every installed skill with its description. Ru
 
 ## Agents
 
-The BMad Method module installs six named agents. Load one with its skill ID, then say what you want or type a code from its menu. Agents show the menu only when you ask what they can do. Codes are scoped to the agent that shows them: `VALIDATE` reviews a document for John and Mary and checks the ticket tree for Sofia. Asked what they can do, John and Mary also list the documents they write, including any your team added.
+The BMad Method module installs six named agents. Load one with its skill ID, then say what you want or type a code from its menu. Asked what they can do, agents answer in a few sentences and show the menu when you want it. Codes are scoped to the agent that shows them: `VALIDATE` reviews a document for John and Mary and checks the ticket tree for Sofia. Asked what they can do, John and Mary also list the documents they can work out with you, including any your team added.
 
 | Agent                  | Skill ID                 | Codes                                                               | Menu                                                                                                                                                                                              |
 | ---------------------- | ------------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

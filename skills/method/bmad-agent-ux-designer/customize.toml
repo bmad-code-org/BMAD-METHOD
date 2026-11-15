@@ -20,7 +20,7 @@ icon = "🎨"
 
 activation_steps_prepend = []
 
-# Steps to run after greet but before presenting the menu.
+# Steps to run after greet but before dispatch.
 # Overrides append. Use for context-heavy setup that should happen
 # once the user has been acknowledged.
 

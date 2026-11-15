@@ -71,7 +71,7 @@ A plain skill with a `customize.toml` reaches about the same result with less ma
 
 A rendered agent is an [agent with capabilities](#agent-with-capabilities) whose capability files are rendered the same way, so a team can change a rule inside one capability without forking the agent. Each capability declares its own points: instructions before and after, selectors, and blocks a team replaces whole.
 
-It shows no menu. A request that names what you want runs the matching capability, and asked what it does, the agent answers in a sentence or two. The menu codes still work as shortcuts. A memory agent is never rendered.
+A request that names what you want runs the matching capability. Asked what it does, the agent answers in a few sentences and shows the menu codes when you want them. A memory agent is never rendered.
 
 ## Script-Backed Utility
 
