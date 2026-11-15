@@ -20,11 +20,11 @@ These settle a skill:
 Name only the one shape the answers reach:
 
 - A persona with a menu is an agent.
-- A persona whose capabilities teams must change without forking is a rendered agent.
 - Memory across sessions is a memory agent: used daily for a month, its thirtieth session would differ from the first. "Nice if it remembered" is a stateless agent with `persistent_facts`. For a memory agent, also ask: will the owner hand it material to keep, teach it new capabilities, have it work on a schedule with nobody present, and does it own or tend anything beyond its memory that people or other agents rely on and that must outlive it? The answers set its files in the plan.
-- Teams swapping steps without forking is a rendered skill.
 - Mostly deterministic work is a script-backed utility.
 - Anything else is a plain skill.
+
+How customizable it is follows who runs it. A skill for the user alone ships no `customize.toml`, and an agent keeps only its persona and activation steps there. Declare more only when other people or teams will run it and want it to behave differently. Build a rendered skill or rendered agent only when the user asks for one.
 
 Push back where the idea is thin:
 

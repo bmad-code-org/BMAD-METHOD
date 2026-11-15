@@ -1,6 +1,6 @@
 ---
 title: 'Shapes of a Skill'
-description: 'The shapes Smithy builds: a plain skill, an agent with capabilities, a memory agent, a rendered skill with customizable steps, a rendered agent, a script-backed utility, and single- and multi-skill modules.'
+description: 'The shapes Smithy builds: a plain skill, an agent with capabilities, a memory agent, rendered skills and agents, a script-backed utility, and single- and multi-skill modules.'
 sidebar:
   order: 4
 ---
@@ -12,8 +12,7 @@ A shape is what a skill looks like on disk. Smithy works out the shape from the 
 | Plain skill | A `SKILL.md`, with references that load only when needed | You want an agent to do one job well on request |
 | Agent with capabilities | A named persona with a greeting and a menu | You want someone to work with across turns, who owns related capabilities |
 | Memory agent | An agent that keeps a memory folder and wakes as the same self | The agent must build up knowledge across sessions |
-| Rendered skill | Steps rendered before each run from the skill's templates and the team's overrides | Several teams want different routes, rules, or wording, and a fork would drift |
-| Rendered agent | An agent whose capability files are rendered the same way | You want an agent, and teams must change what its capabilities do |
+| Rendered skill or agent | Files filled from the team's settings before each run | You ask for one; a shared plain skill gets about the same from a `customize.toml` |
 | Script-backed utility | A thin `SKILL.md` over tested scripts | Most of the job is mechanical |
 
 Registration is a separate choice. Any of these shapes can stand alone as a single-skill module, join a module, or stay outside the registry. See [Modules and Registration](modules.md).
@@ -28,7 +27,7 @@ Most needs land here, including long multi-step workflows. A plain skill can hol
 | `references/<topic>.md` | A branch that only some runs need, loaded when reached |
 | `scripts/<name>.py` | Work with one right answer per input, with a test beside it |
 | `assets/` | Templates and files the skill emits |
-| `customize.toml` | What a team can change without forking |
+| `customize.toml` | What a team can change without forking, only when other people will run the skill |
 | `bmod.toml` | How the skill registers with BMad |
 
 Only `SKILL.md` is required. A skill small enough to be one file is one file. A complex workflow stays a plain skill when each branch sits in its own reference, and it is the right size at any total if one run loads only what it needs.
@@ -62,11 +61,11 @@ A team changes the skill only at the points its author declared:
 
 - A selector, a setting with named values that picks a route.
 - An instruction block the team replaces whole.
-- Instructions added before or after a step.
+- Instructions added at activation or when the workflow completes.
 
 There are no on/off switches. A value the skill cannot act on, such as a misspelled selector, stops the run with a clear message. A single run can override a value from the invocation.
 
-It is worth the extra machinery only when teams really differ in what the skill does. A skill with one set of steps and a few settable values is a plain skill with a `customize.toml`.
+A plain skill with a `customize.toml` reaches about the same result with less machinery, so Smithy builds a rendered skill only when you ask for one.
 
 ## Rendered Agent
 
