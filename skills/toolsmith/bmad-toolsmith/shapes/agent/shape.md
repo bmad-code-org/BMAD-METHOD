@@ -29,6 +29,10 @@ Never copy another skill's content in; name it.
 
 Changing the persona or the menu is the `bmad-customize` skill's job, never a capability that writes `_bmad/custom/` (a memory agent's own dominion entries are the one exception, in its shape); put `skill = "bmad-customize"` on the menu when the user wants it offered.
 
+## Documents
+
+An agent that writes documents a person talks through carries them as templates `bmad-facilitate` runs, and the plan names both shapes: load `shapes/document-template/shape.md` for where they go and the hand-off. The agent never writes a template's document itself.
+
 ## Persona
 
 Leanness does not cut the persona: `identity`, `communication_style` and `principles` are what the agent judges by when no capability fits. Write them, and the persona paragraph in `SKILL.md`, in its own voice, one or two sentences each: an identity with a concrete reference, a communication style that says how it talks, three to five principles, each a stance.

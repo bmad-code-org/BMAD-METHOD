@@ -13,7 +13,8 @@ It coaches the user through one document from a template, and later updates or v
 - The fast path asks what the template requires plus up to three high-impact questions, drafts the rest with each guess tagged `[ASSUMPTION]` in the document, then offers to walk the user through those.
 - It skips questions only when the user says headless or autonomous, or hands over material and asks for the document. It then fills gaps with best guesses, tagged as assumptions.
 - Unfinished runs resume in a new chat from the document itself. A finished run leaves the document, its companions and its view; working files go to the system temp folder and are deleted at the end.
-- With no fitting template it builds a structure for the document type, says so, and at close offers to save it as a template.
+- With no fitting template it builds a structure for the document type, says so, and at close offers to make it a template.
+- Asked to make a template for a kind of document, it coaches the user through one with its own `document-template` template, which holds the rules for a good template, and writes the file to `_bmad/custom/facilitate-templates/` unless told otherwise.
 
 ## Templates the modules ship
 
@@ -34,7 +35,7 @@ Method also ships John's planning templates and Mary's analysis templates, which
 
 When the user asks what it can coach them through or which templates exist, list them instead of answering from this file, because `templates` in `knowledge.py`'s output covers only what installed modules ship, and a team's own templates appear nowhere else.
 
-1. Run `uv run {project-root}/_bmad/scripts/list_templates.py --libraries-of <bmad-facilitate's folder> --libraries-of <each installed agent whose customize.toml sets template_libraries> --project-root {project-root} --root <folder>`, with one `--root` for each skills folder the host has active, project folders first. `bmad-ingest`'s library holds another kind of template, so leave it out.
+1. Run `uv run {project-root}/_bmad/scripts/list_templates.py --libraries-of <bmad-facilitate's folder> --libraries-of <each installed agent whose customize.toml sets template_libraries> <bmad-facilitate's folder>/assets --project-root {project-root} --root <folder>`, with one `--root` for each skills folder the host has active, project folders first. `bmad-ingest`'s library holds another kind of template, so leave it out.
 2. Group `templates` by `source`, saying what each is for and naming its `extensions`. Name anything `shadowed`, `orphaned` or `unreachable`, and follow any `tool_sources`. The two default folders showing as `missing` is normal.
 
 ## Calling it directly
@@ -43,9 +44,9 @@ The user says what they want in plain words: the topic, a template (an id, a fil
 
 ## A team's own templates
 
-Recommend `bmad-customize` for any of these changes, to a template or a setting; it writes the file. Templates are files in `_bmad/custom/facilitate-templates/`, and settings go in `_bmad/custom/bmad-facilitate.toml`, both committed so everyone gets them.
+Who does what: `bmad-facilitate` writes every new template; `bmad-customize` changes a template that exists or a setting, and hands a new document type to `bmad-facilitate`; Smithy (`bmad-toolsmith`) decides when an agent should carry templates, has the engine write them, and wires the agent to them. Templates are files in `_bmad/custom/facilitate-templates/`, and settings go in `_bmad/custom/bmad-facilitate.toml`, both committed so everyone gets them.
 
-- Add a template: a file in that folder with `template` and `description` in its frontmatter, and any rubric beside it. `facilitation_order` lists the sections by id (the heading lowercased, punctuation dropped, spaces as hyphens) in the order they come up, `?` marking one not required; `list_templates.py` reports ids and headings that do not match. `guidance: guidance-planning` adds the shipped planning rules: stakes levels, ids and testable requirements. A `companions` comment asks for more files beside the document. A plain markdown file of headings works; each heading becomes a required section. A bare `## Table of Contents` heading after the title makes the skill fill and check one.
+- Add a template: ask `bmad-facilitate` to make one, or write a file in that folder with `template` and `description` in its frontmatter, and any rubric beside it. `facilitation_order` lists the sections by id (the heading lowercased, punctuation dropped, spaces as hyphens) in the order they come up, `?` marking one not required; `list_templates.py` reports ids and headings that do not match. `guidance: guidance-planning` adds the shipped planning rules: stakes levels, ids and testable requirements. A `companions` comment asks for more files beside the document. A plain markdown file of headings works; each heading becomes a required section. A bare `## Table of Contents` heading after the title makes the skill fill and check one.
 - Replace or edit a shipped template: copy it from `doc-templates/` in the record of the module that ships it into that folder and keep its `template` id. The project's copy wins.
 - A module adds templates through `doc-templates/` in its record folder; no setting is needed. An `agents:` frontmatter list names the skills that run one, so help can say who offers it.
 - Keep personal templates for every project in `~/.bmad/facilitate-templates/`. The project's folder is searched first.

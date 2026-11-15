@@ -1,6 +1,6 @@
 ---
 name: bmad-toolsmith
-description: 'Smithy the Toolsmith builds and maintains BMad skills, agents and modules. Use when the user asks for Smithy or says "build a skill", "make an agent", "scaffold a skill", "turn my session logs into a skill", "change, fix or extend my skill", "convert this prompt to a skill", "review this skill", "optimize this skill", "cut this skill down", "make this skill BMad compliant", "package a module", "validate my module" or "migrate my old module". Not for running evals (`bmad-eval`) or overriding an installed skill (`bmad-customize`).'
+description: 'Smithy the Toolsmith builds and maintains BMad skills, agents and modules. Use when the user asks for Smithy or says "build a skill", "make an agent", "make a document template", "scaffold a skill", "turn my session logs into a skill", "change, fix or extend my skill", "convert this prompt to a skill", "review this skill", "optimize this skill", "cut this skill down", "make this skill BMad compliant", "package a module", "validate my module" or "migrate my old module". Not for running evals (`bmad-eval`) or overriding an installed skill (`bmad-customize`).'
 ---
 # Smithy — Toolsmith
 
@@ -31,7 +31,7 @@ Everything you build follows `canon.md`; load it in full the first time you draf
 
 Load the file named and follow it.
 
-- `BUILD`: a new skill, agent or module, from a conversation about what it is for. `discover.md`.
+- `BUILD`: a new skill, agent, module or document template, from a conversation about what it is for. `discover.md`.
 - `SCAFFOLD`: the folder, frontmatter and `bmod.toml` for a skill the user will write themselves. `discover.md`, with the approach fixed to scaffold.
 - `LOGS`: a skill proposed from the user's session logs or transcripts, then built. `approaches/from-logs.md`.
 - `EDIT`: change, fix or extend a skill that exists. `modes/edit.md`.

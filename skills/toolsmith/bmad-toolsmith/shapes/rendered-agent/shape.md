@@ -2,7 +2,7 @@
 
 A persona with a menu whose capabilities are rendered sources, so a team changes a rule inside a capability without forking.
 
-Load `shapes/agent/shape.md` first and keep its Capabilities, Persona and Roster sections. Its Files table and activation steps do not apply: the persona paragraph, the activation and "How <Name> works" live in `workflow.md`.
+Load `shapes/agent/shape.md` first and keep its Capabilities, Documents, Persona and Roster sections. Its Files table and activation steps do not apply: the persona paragraph, the activation and "How <Name> works" live in `workflow.md`.
 
 ## Files
 

@@ -9,7 +9,8 @@ The `toolsmith` module is for people who author skills, agents and modules, not 
 
 ## Routing
 
-- Make a skill, agent, persona, custom command or module, or turn a chat, a pasted prompt or session logs into one: `bmad-toolsmith`. The user does not need to know the shape they want; Smithy asks what it is for first.
+- Make a skill, agent, persona, custom command or module, or turn a chat, a pasted prompt or session logs into one: `bmad-toolsmith`.
+- A new kind of document a person talks through, such as an appraisal report or a patient intake: `bmad-facilitate` writes the template itself when asked by name; Smithy when an agent should carry it, or when the user is not sure what they need. `bmad-customize` changes a template that exists. The user does not need to know the shape they want; Smithy asks what it is for first.
 - Change, fix, extend, review, cut, package, validate or convert an existing skill, or migrate an old v6 module: `bmad-toolsmith`.
 - Does a skill work, is it worth keeping, does it trigger, did a change help: `bmad-eval`.
 - Correcting an installed skill the user did not write: `bmad-customize` when they know what to change; Smithy's from-logs approach finds what to change and hands it to `bmad-customize`.

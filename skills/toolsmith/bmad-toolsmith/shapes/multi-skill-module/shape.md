@@ -23,7 +23,7 @@ The record, `bmod-<code>/`:
 - `roster.toml` from `shapes/multi-skill-module/assets/roster-template.toml`, only when a member is an agent.
 - `help/help.md` from `shapes/multi-skill-module/assets/help-template.md`, always. `help/<topic>.md` for depth, each named in `help.md` with when to read it; a topic `help.md` does not name is never read.
 - `retired.toml` from `shapes/multi-skill-module/assets/retired-template.toml`, only when the module has renamed or removed a skill.
-- `doc-templates/`, only when the module ships document templates for `bmad-facilitate`: one `template-<id>.md` per template, its frontmatter carrying `template: <id>`.
+- `doc-templates/`, only when the module ships document templates for `bmad-facilitate`: one `template-<id>.md` per template, its frontmatter carrying `template: <id>` and `agents:` naming the members that offer it, with any rubric beside it. `shapes/document-template/shape.md` has the rest.
 - `migration-<n>.toml`, only when a new version must change files in users' projects; `bmad migrate` runs them in `<n>` order. Ask the user for its contents.
 
 Each member: `bmod.toml` from `shapes/multi-skill-module/assets/member-bmod-template.toml`, with `bmod = "bmod-<code>"`, `source` equal to the record's `update_source`, and its own `required_skills`, `recommended_skills` and `scripts` (files it ships into `_bmad/scripts`) when it has them.
