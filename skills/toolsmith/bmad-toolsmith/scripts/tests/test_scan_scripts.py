@@ -1,4 +1,4 @@
-"""Tests for scan_scripts.py: header, floor, test presence, network and model-id rules."""
+"""Tests for scan_scripts.py: header, floor, test presence, argparse, network and model-id rules."""
 
 import json
 import subprocess
@@ -10,12 +10,28 @@ from pathlib import Path
 SCRIPT = Path(__file__).resolve().parents[1] / "scan_scripts.py"
 WAKE = Path(__file__).resolve().parents[2] / "shapes" / "memory-agent" / "assets" / "wake-template.py"
 
-GOOD = '# /// script\n# requires-python = ">=3.11"\n# ///\n"""Good."""\nimport json\nprint(json.dumps({}))\n'
-OLD_FLOOR = '# /// script\n# requires-python = ">=3.9"\n# ///\nprint(1)\n'
-NO_FLOOR = "# /// script\n# dependencies = []\n# ///\nprint(1)\n"
-NO_HEADER = '#!/usr/bin/env python3\nimport requests\nMODEL = "claude-opus-4-1"\nprint(requests, MODEL)\n'
+GOOD = '# /// script\n# requires-python = ">=3.11"\n# ///\n"""Good."""\nimport argparse\nimport json\nprint(json.dumps({}))\n'
+OLD_FLOOR = '# /// script\n# requires-python = ">=3.9"\n# ///\nimport argparse\nprint(1)\n'
+NO_FLOOR = "# /// script\n# dependencies = []\n# ///\nfrom argparse import ArgumentParser\nprint(1)\n"
+NO_HEADER = (
+    '#!/usr/bin/env python3\nimport argparse\nimport requests\nMODEL = "claude-opus-4-1"\nprint(requests, MODEL)\n'
+)
 BROKEN = '# /// script\n# requires-python = ">=3.11"\n# ///\ndef (:\n'
-CUSTOM_IO = '# /// script\n# requires-python = ">=3.11"\n# ///\nfrom pathlib import Path\np = Path("_bmad/custom") / "demo.user.toml"\nprint(p)\n'
+CUSTOM_IO = '# /// script\n# requires-python = ">=3.11"\n# ///\nimport argparse\nfrom pathlib import Path\np = Path("_bmad/custom") / "demo.user.toml"\nprint(p)\n'
+NO_ARGPARSE = '# /// script\n# requires-python = ">=3.11"\n# ///\nimport sys\n\n\nif __name__ == "__main__":\n    print(sys.argv[1])\n'
+HEADER = '# /// script\n# requires-python = ">=3.11"\n# ///\n'
+REFUSES = (
+    HEADER + 'import sys\n\nif __name__ == "__main__":\n    sys.exit("a library module; never invoked directly")\n'
+)
+RAISES = HEADER + 'if __name__ == "__main__":\n    raise SystemExit("import me instead")\n'
+EXITS_MAIN = (
+    HEADER + 'import sys\n\n\ndef main():\n    return 0\n\n\nif __name__ == "__main__":\n    sys.exit(main())\n'
+)
+CLICK = (
+    HEADER + 'import click\n\n\n@click.command()\ndef main():\n    pass\n\n\nif __name__ == "__main__":\n    main()\n'
+)
+TYPER = HEADER + 'from typer import run\n\nif __name__ == "__main__":\n    run(print)\n'
+LIBRARY = '# /// script\n# requires-python = ">=3.11"\n# ///\n"""Helpers the other scripts import."""\nVALUE = 1\n'
 
 
 def make_skill(root: Path, scripts: dict[str, str], tests: tuple[str, ...] = ()) -> Path:
@@ -49,8 +65,47 @@ class ScanScriptsTest(unittest.TestCase):
             self.assertEqual(code, 0, data)
             self.assertEqual(data["findings"], [])
             self.assertEqual(
-                data["scripts"], [{"path": "scripts/good.py", "has_pep723": True, "floor": ">=3.11", "has_test": True}]
+                data["scripts"],
+                [
+                    {
+                        "path": "scripts/good.py",
+                        "has_pep723": True,
+                        "floor": ">=3.11",
+                        "has_test": True,
+                        "has_argparse": True,
+                    }
+                ],
             )
+
+    def test_script_without_argparse_fires(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(Path(tmp), {"raw.py": NO_ARGPARSE, "lib.py": LIBRARY}, ("test_raw.py", "test_lib.py"))
+            code, data = scan(skill)
+            self.assertEqual(code, 1)
+            self.assertEqual(
+                [(f["path"], f["rule"]) for f in data["findings"]], [("scripts/raw.py", "argparse-missing")]
+            )
+            self.assertEqual([s["has_argparse"] for s in data["scripts"]], [False, False])
+
+    def test_refusing_library_and_click_or_typer_scripts_need_no_argparse(self):
+        scripts = {"refuses.py": REFUSES, "raises.py": RAISES, "cli.py": CLICK, "app.py": TYPER, "runs.py": EXITS_MAIN}
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(Path(tmp), scripts, tuple(f"test_{name}" for name in scripts))
+            code, data = scan(skill)
+            self.assertEqual(code, 1)
+            self.assertEqual(
+                [(f["path"], f["rule"]) for f in data["findings"]], [("scripts/runs.py", "argparse-missing")]
+            )
+
+    def test_copy_with_crlf_line_endings_is_still_a_copy(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(Path(tmp), {})
+            (skill / "scripts" / "wake.py").write_bytes(
+                WAKE.read_bytes().replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+            )
+            code, data = scan(skill)
+            self.assertNotIn("test-missing", [f["rule"] for f in data["findings"]])
+            self.assertEqual(data["scripts"][0].get("copy_of"), "shapes/memory-agent/assets/wake-template.py")
 
     def test_copied_memory_agent_script_needs_no_test_but_an_edited_copy_does(self):
         wake = WAKE.read_text(encoding="utf-8")

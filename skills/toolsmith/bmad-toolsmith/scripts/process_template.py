@@ -34,6 +34,7 @@ from pathlib import Path
 BLOCK_RE = re.compile(r"\{if-([a-zA-Z0-9_-]+)\}(.*?)\{/if-\1\}", re.DOTALL)
 MARKER_RE = re.compile(r"\{/?if-[a-zA-Z0-9_-]+\}")
 TOKEN_RE = re.compile(r"\{[a-zA-Z][a-zA-Z0-9_.-]*\}")
+VAR_RE = re.compile(r"\{([^{}\s]+)\}")
 
 
 def process_conditionals(text: str, true_conditions: set[str]) -> tuple[str, list[str], list[str]]:
@@ -50,20 +51,45 @@ def process_conditionals(text: str, true_conditions: set[str]) -> tuple[str, lis
             replacement = ""
             if condition not in removed:
                 removed.append(condition)
-        text = text[: match.start()] + replacement + text[match.end() :]
-    # Removed blocks leave runs of blank lines behind; keep at most one.
-    return re.sub(r"\n{3,}", "\n\n", text), kept, removed
+        text = text[: match.start()] + SEAM + replacement + SEAM + text[match.end() :]
+    return SEAM_RE.sub(close_seam, text), kept, removed
 
 
-def process_variables(text: str, variables: dict[str, str]) -> tuple[str, list[str]]:
-    """Replace {name} for every name in variables; return (text, names substituted)."""
+SEAM = "\x00"
+SEAM_RE = re.compile(r"(\n*)((?:\x00\n*)+)")
+
+
+def close_seam(match: re.Match[str]) -> str:
+    """Where a block marker stood, keep the widest line break that touched it, so a removed block leaves the
+    spacing around it (one blank line in prose, two between Python definitions) instead of adding its own."""
+    runs = [len(match.group(1)), *(len(run) for run in match.group(2).split(SEAM)[1:])]
+    return "\n" * max(runs)
+
+
+def process_variables(text: str, variables: dict[str, str], toml: bool = False) -> tuple[str, list[str]]:
+    """Replace {name} for every name in variables; return (text, names substituted).
+
+    A token that is the whole of a quoted string gets its value escaped for that string: inside "..." a
+    backslash and a double quote are backslashed (TOML, YAML and JSON agree); inside '...' outside TOML, a
+    single quote is doubled (YAML). A TOML '...' literal cannot hold a single quote, so it is left as given."""
     substituted: list[str] = []
-    for name, value in variables.items():
-        placeholder = "{" + name + "}"
-        if placeholder in text:
-            text = text.replace(placeholder, value)
+
+    def fill(match: re.Match[str]) -> str:
+        name = match.group(1)
+        if name not in variables:
+            return match.group(0)
+        if name not in substituted:
             substituted.append(name)
-    return text, substituted
+        value = variables[name]
+        before, after = text[match.start() - 1 : match.start()], text[match.end() : match.end() + 1]
+        if before == after == '"':
+            return value.replace("\\", "\\\\").replace('"', '\\"')
+        if before == after == "'" and not toml:
+            return value.replace("'", "''")
+        return value
+
+    # One pass over the template: a token inside an inserted value stays as the author wrote it.
+    return VAR_RE.sub(fill, text), substituted
 
 
 def parse_var(raw: str) -> tuple[str, str]:
@@ -93,7 +119,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     content, kept, removed = process_conditionals(content, set(args.true_conditions))
-    content, substituted = process_variables(content, dict(args.var))
+    content, substituted = process_variables(content, dict(args.var), toml=args.template.suffix == ".toml")
 
     leftover = sorted(set(MARKER_RE.findall(content)))
     if leftover:

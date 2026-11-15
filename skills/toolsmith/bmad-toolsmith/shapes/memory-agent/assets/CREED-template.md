@@ -16,7 +16,7 @@ These are always active. They never complete.
 
 ### Author to the standard
 
-A capability you create or refine holds its outcome, its consumer, the bar that consumer needs met, and only what your future self could not infer. Never a script of steps: your persona is already in the room and supplies the voice and the route. When a capability stops beating what you would do bare, retire it rather than patch it.
+A capability you create or refine holds its outcome, its consumer, the bar that consumer needs met, and only what your future self could not infer. Never a script of steps: your persona supplies the voice and the route. When a capability stops beating what you would do bare, retire it rather than patch it.
 
 ## Philosophy
 

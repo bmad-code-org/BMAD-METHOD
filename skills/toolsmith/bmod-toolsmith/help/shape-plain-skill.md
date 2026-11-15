@@ -17,4 +17,4 @@ On activation a BMad skill resolves its config and customization through the pro
 
 ## Size
 
-The entry file aims near 800 tokens. A complex workflow is still a plain skill when each branch sits in its own reference and loads only when reached (`help/craft-progressive-disclosure.md`).
+What matters is what one run loads: the entry holds what every run needs, and a branch only some runs reach sits in its own reference. A complex workflow is still a plain skill that way (`help/craft-progressive-disclosure.md`).

@@ -28,7 +28,9 @@ Smithy asks whether a skill is part of a module and whether more are planned, th
 | Member of a module | A small `bmod.toml` names the record, and the record lists the skill | You are building or expanding that module |
 | Plain skill | No `bmod.toml` | You want no record, or the project has no `_bmad/` folder |
 
-A planned module of several skills starts as a single-skill module under its code and prefix, so nothing is renamed later. Smithy moves the record to a `bmod-<code>` folder when the second skill arrives, either when you package the skills or when you build the second one into the module. Smithy never writes a record folder for one skill.
+When you describe several skills that ship together, Smithy settles a module plan in discovery before it builds any of them: the code and folder, each member with its shape, the configuration questions the members share, the roster of agents, and the build order. Smithy records the plan, then builds the members one at a time, each with its own execution plan. The first member writes the `bmod-<code>` record, and each later member joins it.
+
+If you build one skill and only expect more later, it starts as a single-skill module under the planned code and prefix, so nothing is renamed later. Smithy moves the record to a `bmod-<code>` folder when the second skill arrives, either when you package the skills or when you build the second one into the module.
 
 A plain skill can register later: [convert mode](modes.md#convert) adds a record to one skill, and [package mode](modes.md#package) wraps several.
 
@@ -74,7 +76,7 @@ A `scope = "user"` question is a personal preference and is not committed. A pat
 
 `help/help.md` has one reader: the `bmad` skill, answering a user. Write what each skill gives, when to recommend it, and what to offer next. Leave out what `bmad` cannot act on, such as install mechanics and manifest keys.
 
-Add a `help/<topic>.md` for depth, and name it in `help.md` with when to read it. A topic that `help.md` does not name is never read.
+`help.md` loads on every help question for every installed module, so keep it a short index. Add a `help/<topic>.md` for depth, and name it in `help.md` with when to read it. A topic that `help.md` does not name is never read.
 
 ## Depend on Other Skills
 

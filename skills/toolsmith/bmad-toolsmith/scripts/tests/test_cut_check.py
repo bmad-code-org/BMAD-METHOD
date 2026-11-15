@@ -71,6 +71,43 @@ class CutCheckTest(unittest.TestCase):
             self.assertNotEqual(res.returncode, 0)
             self.assertIn(entry.split("#")[-1], res.stderr)
 
+    def test_token_table_pairs_the_prompt_files(self):
+        (self.after / "references" / "r.md").write_text("Short.\n", encoding="utf-8")
+        (self.after / "references" / "new.md").write_text("A new file.\n", encoding="utf-8")
+        tokens = self.check()["tokens"]
+        rows = {r["path"]: r for r in tokens["files"]}
+        self.assertEqual(sorted(rows), ["SKILL.md", "references/new.md", "references/r.md"])
+        self.assertEqual(rows["SKILL.md"]["before"], rows["SKILL.md"]["after"])
+        self.assertEqual(rows["SKILL.md"]["percent"], 0.0)
+        r = rows["references/r.md"]
+        self.assertLess(r["after"], r["before"])
+        self.assertEqual(r["percent"], round((r["after"] - r["before"]) * 100 / r["before"], 1))
+        self.assertEqual(rows["references/new.md"]["before"], 0)
+        self.assertIsNone(rows["references/new.md"]["percent"])
+        self.assertEqual(tokens["total"]["before"], sum(x["before"] for x in tokens["files"]))
+        self.assertEqual(tokens["total"]["after"], sum(x["after"] for x in tokens["files"]))
+        self.assertIn(tokens["method"], ("tiktoken", "fallback"))
+
+    def test_protect_text_reports_each_passage_not_kept_verbatim(self):
+        protect = Path(self._tmp.name) / "protect.txt"
+        protect.write_text("Word for word.\n\nLong prose here.\n", encoding="utf-8")
+        (self.after / "SKILL.md").write_text(OLD.replace("Long prose here.", "Prose."), encoding="utf-8")
+        data = self.check("--protect-text", protect)
+        self.assertEqual(
+            {f["path"]: f["lost"] for f in data["files"]}["SKILL.md"], ["protected text: Long prose here."]
+        )
+        protect.write_text("Not in the skill.\n", encoding="utf-8")
+        res = run(self.before, self.after, "--protect-text", protect)
+        self.assertNotEqual(res.returncode, 0)
+        self.assertIn("Not in the skill.", res.stderr)
+
+    def test_heading_inside_a_fence_does_not_end_a_section(self):
+        text = "# X\n\n## Keep\n\nRun:\n\n```bash\n# a comment\necho hi\n```\n\nAfter the fence.\n\n## Next\n\nMore.\n"
+        (self.before / "SKILL.md").write_text(text, encoding="utf-8")
+        (self.after / "SKILL.md").write_text(text.replace("After the fence.", "Changed."), encoding="utf-8")
+        data = self.check("--protect", "SKILL.md#Keep")
+        self.assertEqual({f["path"]: f["lost"] for f in data["files"]}["SKILL.md"], ["protected: Keep"])
+
 
 if __name__ == "__main__":
     unittest.main()

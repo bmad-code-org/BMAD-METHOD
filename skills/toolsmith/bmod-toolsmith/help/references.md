@@ -11,7 +11,7 @@ Read this when the user asks where the official skill specification is, how a pa
 | Anthropic skills repository: <https://github.com/anthropics/skills> | Example skills and the skill-creator skill whose eval loop the skill-creator approach follows. |
 | Claude Code skills: <https://code.claude.com/docs/en/skills> | Where Claude Code loads skills from, its frontmatter extensions such as `disable-model-invocation`, slash invocation, and dynamic context. |
 | Codex and ChatGPT skills: <https://learn.chatgpt.com/docs/build-skills> | How Codex loads skills from `.agents/skills`, explicit versus implicit invocation, and its description budget. |
-| Cursor rules: <https://cursor.com/docs/context/rules> | The `.mdc` rule format Smithy converts from: `alwaysApply`, `description` and `globs`. |
+| Cursor rules: <https://cursor.com/docs/rules> | The `.mdc` rule format Smithy converts from: `alwaysApply`, `description` and `globs`. |
 | The `skills` CLI: <https://github.com/vercel-labs/skills> | `npx skills add`, the installer BMad uses, with its agent paths and options. |
 | Skills directory: <https://skills.sh/> | A directory of installable skills, useful for seeing what exists before building. |
 | Superpowers: <https://github.com/obra/superpowers> | A skills-based methodology whose writing-skills guidance informed some of BMad's rules. |

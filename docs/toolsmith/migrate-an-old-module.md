@@ -11,7 +11,7 @@ Use Smithy's migrate mode to convert an old-format module into the current forma
 
 - Your module has a `<code>-setup` skill, or a `module-setup.md` in a skill's assets
 - It carries `module.yaml` and `module-help.csv`
-- It writes to `_bmad/config.yaml` or `_bmad/module-help.csv`
+- It writes to `_bmad/config.yaml` or `_bmad/module-help.csv`, or its skills read `_bmad/<code>/config.yaml`
 - Smithy's validate mode reported it as an old-format module
 
 :::note[Prerequisites]
@@ -32,18 +32,20 @@ Smithy shows the whole execution plan as tables and waits for your yes. Nothing 
 
 | Old | New |
 | --- | --- |
-| The setup skill and merge scripts | Deleted, with the setup skill listed as removed in `retired.toml` |
+| The setup skill, merge scripts, and any `bmad-manifest.json` | Deleted, with the setup skill listed as removed in `retired.toml` |
 | `module.yaml` | `bmod-<code>/bmod.toml`, with one question per config key |
 | Agents | `roster.toml` |
 | `module-help.csv` | `help/help.md`, with a topic file for a skill that has many rows |
 | Each skill | A `bmod.toml` with a `[skill]` table |
 | A folder with one skill | A single-skill module, with no `bmod-<code>` folder |
 
-Every config read in the skills changes to use `resolve_config.py`:
+The skills' content converts too. The execution plan maps each old config read and each old placeholder, such as `{planning_artifacts}` or `{communication_language}`, to its current form. Each skill reads every key it uses in one `resolve_config.py` call when it activates, and placeholders for keys that still exist, such as `{output_folder}`, stay as they are.
 
 - `output_folder` becomes `core.output_folder`.
+- `planning_artifacts` and `implementation_artifacts` become the initiative folder, `{output_folder}/{active_initiative}`. A document goes in `<type>-<slug>/<type>-<slug>.md` under it.
+- `project_knowledge` has no current key. Smithy asks whether the module needs its own question for it, or names the project's docs folder in the text.
+- `user_name`, `communication_language`, `document_output_language`, and `user_skill_level` have no current key. Their reads are removed, and a sentence built on one of their placeholders is rewritten without it.
 - A module key becomes `modules.<code>.<key>`. A key that repeats the code must be renamed.
-- Reads of `user_name`, `communication_language`, and `document_output_language` are removed, because the current format has no such keys.
 - Fallbacks to the old per-module file are removed.
 
 The execution plan also lists what cannot convert:
@@ -57,7 +59,7 @@ The execution plan also lists what cannot convert:
 
 ### 3. Approve
 
-Smithy writes the new files, rewrites each config read, and removes each skill's step that ran the setup skill. It then deletes the listed files and nothing else.
+Smithy writes the new files, rewrites each config read and placeholder, and removes each skill's step that ran the setup skill. Where one skill's output path changes, it updates every skill that reads that path. It lists the skills a member invokes from other modules as dependencies, and replaces retired skill names with their successors. It then deletes the listed files and nothing else.
 
 ### 4. Review the Checks
 

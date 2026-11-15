@@ -23,7 +23,9 @@ Edit, convert, package, and migrate end with Smithy's ship step: validation, an 
 
 Edit changes a skill as you asked and disturbs nothing else. Smithy reads `SKILL.md` and only the files the change touches, then tells you what changes, what stays, and whether the shape or the description changes. A description change is a trigger change, so Smithy says so and extends the trigger queries to cover it.
 
-Smithy waits for your yes, makes the change, and removes any line the change makes dead. If you want to rethink the skill rather than adjust it, Smithy treats that as a new build, using the old skill as input.
+Smithy waits for your yes, makes the change, and removes any line the change makes dead. When a memory agent's `wake.py` or `init-sanctum.py` is behind Smithy's current template, Smithy tells you and copies the template over it. The agent's memory is not touched.
+
+If you want to rethink the skill rather than adjust it, Smithy treats that as a new build, using the old skill as input.
 
 ## Convert
 
@@ -34,13 +36,13 @@ It drops the host tool's mechanics, such as `globs`, `alwaysApply`, `$ARGUMENTS`
 There are two paths:
 
 - **Rebuilt beside the source.** A new BMad skill in the right shape. Discovery fills what the source never said, usually the consumer, the near misses, and the name. Smithy lists what did not carry over and leaves your source as it was.
-- **In place.** Say "make this skill work with bmad". Smithy works in the same folder. It lists what will change first: the name if you want your prefix on it, the description, paths and config reads, what is dropped, and a `bmod.toml` if you want the skill registered.
+- **In place.** Say "make this skill work with bmad". Smithy works in the same folder. It lists what will change first: the name if you want your prefix on it, the description, the shape if it changes, paths and config reads, what is dropped, a `bmod.toml` if you want the skill registered, and any passages you want kept word for word.
 
 An outside skill usually gains a description that triggers reliably, paths that work on other machines, configuration read from the project, and registration.
 
 ## Review
 
-Review is advice, not a gate. Point Smithy at a skill, whether yours, someone else's, or one you found. A script measures it first: tokens per file and per run, the description, frontmatter, script headers and tests, paths that do not resolve, how it is registered, and paragraphs over 150 words or holding a sentence over 60.
+Review is advice, not a gate. Point Smithy at a skill, whether yours, someone else's, or one you found. A script measures it first: tokens per file and per run, the description, frontmatter, script headers and tests, paths that do not resolve, how it is registered, how `customize.toml` is wired into the skill, long or dense paragraphs, and sentences repeated across files.
 
 Five lenses then read every file a model would read, each as a separate reader:
 
@@ -58,7 +60,7 @@ A skill Smithy just built has already been through these lenses. Use review for 
 
 ## Cut
 
-The cut mode (menu code `CUT`) rewrites a skill's prose into the fewest words that steer the model as far, without losing a rule. It drops sentences the model does not need, trims the words inside sentences that carry nothing, and recasts a passage that spends lines on a nudge as the few words that give it. There is no percentage to hit: a lean skill comes back nearly unchanged, and a bloated one comes back much shorter. Ask Smithy to "optimize this skill", "cut this skill down" or "make this skill BMad compliant". It is for a skill built elsewhere, or one you want tightened. A skill Smithy builds or converts gets the same treatment before it ships: Smithy applies every finding from its leanness review, then runs the same check for lost rules.
+The cut mode (menu code `CUT`) rewrites a skill's prose into the fewest words that steer the model as far, without losing a rule. It drops sentences the model does not need, trims the words inside sentences that carry nothing, and recasts a passage that spends lines on a nudge as the few words that give it. There is no percentage to hit: a lean skill comes back nearly unchanged, and a bloated one comes back much shorter. Ask Smithy to "optimize this skill", "cut this skill down" or "make this skill BMad compliant". It is for a skill built elsewhere, or one you want tightened. A skill Smithy builds or converts gets the same treatment before it ships: Smithy applies the leanness findings that keep every rule, asks before any that would change what the skill does or how it sounds, then runs the same check for lost rules.
 
 It takes two things:
 
@@ -79,15 +81,16 @@ Smithy offers to add the prefix to a member that lacks it, and says that renamin
 
 ## Validate
 
-Validate reports what would stop a skill or module installing, loading, or firing, and it writes nothing. Point it at a skill, a record folder, or a repository. It reports pass or fail, one line per failure with the fix, and whether the target would install and load.
+Validate reports what would stop a skill or module installing, loading, or firing, and it writes nothing. Point it at a skill, a module folder holding a record and its members, or a repository. It reports pass or fail, one line per failure with the fix, and whether the target would install and load.
 
 | Check | What it covers |
 | --- | --- |
 | `validate_manifests.py` | Manifests, membership, versions, retired names, help topics, and the roster, in a repository with `skills/*/bmod.toml` |
-| `init_skill.py --check` | Frontmatter, name, description, `[TODO:` markers, and whether `bmod.toml` parses |
-| `scan_paths.py` | Paths that do not resolve, bare `scripts/` calls, references into another skill, and old-format names |
+| `init_skill.py --check` | Frontmatter, name, description, `[TODO:` markers, whether `bmod.toml` and `customize.toml` parse, and a memory agent whose `wake.py` or `init-sanctum.py` differs from Smithy's current template |
+| `scan_paths.py` | Paths that do not resolve, bare `scripts/` calls, references into another skill, old-format names, and skill names an installed module retired |
 | `scan_scripts.py` | Script headers and tests, then runs the skill's tests |
+| `scan_config_reads.py` | In a module, a config value a member reads that no configuration question asks, and a question no member reads |
 
-Smithy also judges what the tools cannot, such as a member reading a value no configuration question asks, or a custom skill named `bmad-`. It offers a trigger eval when the skill has `evals/triggers.json`.
+Smithy also judges what the tools cannot, such as a record's `SKILL.md` doing more than point to `bmad setup`, or a custom skill named `bmad-`. A memory agent with an out-of-date script fails with [edit](#edit) as the fix. Smithy offers a trigger eval when the skill has `evals/triggers.json`.
 
 An old-format module fails with one line that names [migrate](migrate-an-old-module.md) as the fix.

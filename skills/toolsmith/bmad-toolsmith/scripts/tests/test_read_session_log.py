@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -81,68 +82,90 @@ def run(*args, env=None):
 
 
 class ReadSessionLogTest(unittest.TestCase):
-    def test_claude_code_digest(self):
+    def test_claude_code_turns(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = write_transcript(Path(tmp))
             code, data, err = run(path)
             self.assertEqual(code, 0, err)
+            self.assertEqual(set(data), {"sources", "skipped", "turns", "files_touched", "skills_invoked", "totals"})
             self.assertEqual(
-                set(data),
-                {"sources", "user_requests", "tool_sequences", "corrections", "files_touched", "skills_invoked"},
+                data["sources"], [{"path": str(path), "format": "claude-code", "entries": 14, "bad_lines": 1}]
             )
-            self.assertEqual(data["sources"], [{"path": str(path), "format": "claude-code", "entries": 14}])
-
-            requests = data["user_requests"]
-            self.assertEqual(requests[0]["count"], 2)
-            self.assertTrue(requests[0]["text"].startswith("Build me a changelog skill"))
-            self.assertEqual(len(requests[0]["text"]), 300)
-            self.assertTrue(requests[0]["text"].endswith("..."))
-            texts = " ".join(r["text"] for r in requests)
-            self.assertNotIn("secret meta", texts)
-            self.assertNotIn("sidechain", texts)
-            self.assertNotIn("assistant prose", json.dumps(data))
-            self.assertNotIn("<command-name>", texts)
-
-            self.assertEqual(
-                data["corrections"],
-                [
-                    "No, don't touch SKILL.md, put it in references instead",
-                    "[Request interrupted by user for tool use]",
-                ],
-            )
+            self.assertEqual(data["skipped"], [])
+            turns = data["turns"]
+            self.assertEqual(len(turns), 4)
+            self.assertEqual({t["source"] for t in turns}, {0})
+            self.assertTrue(turns[0]["request"].startswith("Build me a changelog skill"))
+            self.assertEqual(len(turns[0]["request"]), 300)
+            self.assertTrue(turns[0]["request"].endswith("..."))
+            self.assertEqual(turns[0]["tools"], ["Read", "Bash", "Edit"])
+            self.assertEqual(turns[0]["followed_by"], "No, don't touch SKILL.md, put it in references instead")
+            self.assertFalse(turns[0]["interrupted"])
+            self.assertIsNone(turns[0]["tag"])
+            self.assertEqual(turns[1]["tools"], ["Write"])
+            self.assertTrue(turns[1]["interrupted"])
+            self.assertEqual(turns[1]["followed_by"], "/bmad-eval")
+            self.assertEqual(turns[2]["request"], "/bmad-eval")
+            self.assertEqual(turns[2]["tools"], ["Skill", "Read"])
+            self.assertEqual(turns[2]["followed_by"], turns[3]["request"])
+            self.assertEqual(turns[3]["tools"], ["Read", "Bash"])
+            self.assertIsNone(turns[3]["followed_by"])
+            dumped = json.dumps(data)
+            for hidden in ("secret meta", "sidechain content", "assistant prose", "<command-name>"):
+                self.assertNotIn(hidden, dumped)
             self.assertEqual(data["skills_invoked"], [{"name": "bmad-eval", "count": 2}])
             self.assertEqual(
                 data["files_touched"],
                 ["/repo/evals/cases.json", "/repo/skills/bmad-x/SKILL.md", "/repo/skills/bmad-x/references/history.md"],
             )
-            sequences = {tuple(s["tools"]): s["count"] for s in data["tool_sequences"]}
-            self.assertEqual(sequences[("Read", "Bash")], 1)
-            self.assertEqual(sequences[("Read", "Bash", "Edit")], 1)
-            self.assertEqual(sequences[("Write",)], 1)
-            self.assertEqual(sequences[("Skill", "Read")], 1)
+            self.assertEqual(
+                data["totals"],
+                {"turns": 4, "turns_shown": 4, "interrupted": 1, "files_touched": 3, "skills_invoked": 1},
+            )
 
-    def test_memlog_digest_and_max_items(self):
+    def test_command_args_become_the_request(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "c.jsonl"
+            record = user("<command-name>/bmad-toolsmith</command-name>\n<command-args>fix this skill</command-args>")
+            path.write_text(json.dumps(record) + "\n", encoding="utf-8")
+            code, data, err = run(path)
+            self.assertEqual(code, 0, err)
+            self.assertEqual(data["turns"][0]["request"], "/bmad-toolsmith fix this skill")
+
+    def test_memlog_entries_keep_their_tags(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / ".memlog.md"
             path.write_text(MEMLOG, encoding="utf-8")
             code, data, err = run(path, "--format", "memlog")
             self.assertEqual(code, 0, err)
             self.assertEqual(data["sources"][0]["entries"], 7)
+            self.assertEqual(data["sources"][0]["bad_lines"], 0)
+            turns = data["turns"]
             self.assertEqual(
-                [r["text"] for r in data["user_requests"]],
-                ["keep the skill to one file", "name it bmad-changelog", "also read tags"],
+                [t["tag"] for t in turns],
+                ["note", "direction", "decision by user", "gap", "assumption", "idea by user", "note"],
             )
-            self.assertEqual(data["corrections"], ["no eval cases yet", "wait, the folder was wrong"])
-            code, data, _ = run(path, "--max-items", "1")
-            self.assertEqual(len(data["user_requests"]), 1)
-            self.assertEqual(len(data["corrections"]), 1)
+            self.assertEqual(turns[1]["request"], "keep the skill to one file")
+            self.assertEqual(turns[1]["followed_by"], "name it bmad-changelog")
+            self.assertEqual(turns[1]["tools"], [])
+
+    def test_max_turns_keeps_the_latest_and_totals_count_all(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / ".memlog.md"
+            path.write_text(MEMLOG, encoding="utf-8")
+            code, data, _ = run(path, "--max-turns", "2", "--max-items", "1")
+            self.assertEqual(code, 0)
+            self.assertEqual([t["request"] for t in data["turns"]], ["also read tags", "wait, the folder was wrong"])
+            self.assertEqual(data["totals"]["turns"], 7)
+            self.assertEqual(data["totals"]["turns_shown"], 2)
 
     def test_folder_and_project_resolution(self):
         with tempfile.TemporaryDirectory() as tmp:
             config = Path(tmp) / "config"
-            project_dir = Path(tmp) / "work" / "my.repo"
+            project_dir = Path(tmp) / "work" / "_my.repo x"
             project_dir.mkdir(parents=True)
-            encoded = str(project_dir.resolve()).replace("/", "-").replace(".", "-")
+            # Claude Code turns every character outside [A-Za-z0-9-] into "-": "/_" becomes "--".
+            encoded = re.sub(r"[^A-Za-z0-9-]", "-", str(Path(tmp).resolve())) + "-work--my-repo-x"
             folder = config / "projects" / encoded
             folder.mkdir(parents=True)
             write_transcript(folder, "a.jsonl")
@@ -153,21 +176,45 @@ class ReadSessionLogTest(unittest.TestCase):
             self.assertEqual(code, 0, err)
             self.assertEqual([s["format"] for s in data["sources"]], ["claude-code", "claude-code", "memlog"])
             self.assertEqual(data["skills_invoked"], [{"name": "bmad-eval", "count": 4}])
+            self.assertEqual(sorted({t["source"] for t in data["turns"]}), [0, 1, 2])
+            # followed_by never crosses from one source into the next
+            last_of_first = [t for t in data["turns"] if t["source"] == 0][-1]
+            self.assertIsNone(last_of_first["followed_by"])
             code, _, err = run("--project", Path(tmp) / "nowhere", env=env)
             self.assertEqual(code, 2)
 
-    def test_unknown_format_is_skipped_and_missing_path_errors(self):
+    def test_nothing_read_exits_one_with_reasons(self):
         with tempfile.TemporaryDirectory() as tmp:
             other = Path(tmp) / "notes.txt"
             other.write_text("hello", encoding="utf-8")
             code, data, err = run(other)
-            self.assertEqual(code, 0)
+            self.assertEqual(code, 1)
             self.assertEqual(data["sources"], [])
-            self.assertIn("unknown format", err)
+            self.assertEqual(data["skipped"][0]["path"], str(other))
+            self.assertIn("unknown format", data["skipped"][0]["reason"])
+            self.assertIn("no source was read", err)
+            empty = Path(tmp) / "empty"
+            empty.mkdir()
+            code, data, err = run(empty)
+            self.assertEqual(code, 1)
+            self.assertIn("no *.jsonl", data["skipped"][0]["reason"])
+
+    def test_one_source_read_is_success_and_skips_are_listed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            other = Path(tmp) / "notes.txt"
+            other.write_text("hello", encoding="utf-8")
+            path = write_transcript(Path(tmp))
+            code, data, err = run(path, other)
+            self.assertEqual(code, 0, err)
+            self.assertEqual(len(data["sources"]), 1)
+            self.assertEqual([s["path"] for s in data["skipped"]], [str(other)])
+
+    def test_usage_errors(self):
+        with tempfile.TemporaryDirectory() as tmp:
             code, _, _ = run(Path(tmp) / "missing.jsonl")
             self.assertEqual(code, 2)
-            code, _, _ = run()
-            self.assertEqual(code, 2)
+        code, _, _ = run()
+        self.assertEqual(code, 2)
 
 
 if __name__ == "__main__":

@@ -101,6 +101,11 @@ class RegistryTest(unittest.TestCase):
             # the symlinked copies did not double anything
             self.assertEqual(len(data["records"]), 3)
             self.assertEqual(len(data["unregistered"]), 2)
+            self.assertEqual(data["invalid"], [])
+            self.assertEqual(
+                data["roots"],
+                [{"path": r, "exists": True, "real_path": str(Path(r).resolve())} for r in roots],
+            )
 
     def test_empty_project(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -110,6 +115,58 @@ class RegistryTest(unittest.TestCase):
             self.assertEqual(data["bmad"], {"present": False, "version": None})
             self.assertEqual(data["records"], [])
             self.assertEqual(data["unregistered"], [])
+            self.assertFalse(data["skills_repo"])
+
+    def test_invalid_manifests_are_listed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = make_project(Path(tmp))
+            agents = project / ".agents" / "skills"
+            write(agents / "broken" / "SKILL.md", "---\nname: broken\ndescription: x\n---\n")
+            write(agents / "broken" / "bmod.toml", "[bmod\ncode = 'x'\n")
+            write(agents / "hollow" / "SKILL.md", "---\nname: hollow\ndescription: x\n---\n")
+            write(agents / "hollow" / "bmod.toml", "[bmod]\nversion = '1'\n")
+            data = run(project, "--root", str(agents))
+            invalid = {i["skill"]: i for i in data["invalid"]}
+            self.assertEqual(sorted(invalid), ["broken", "hollow"])
+            self.assertEqual(invalid["broken"]["path"], str(agents / "broken" / "bmod.toml"))
+            self.assertTrue(invalid["broken"]["error"])
+            self.assertIn("neither", invalid["hollow"]["error"])
+            self.assertEqual(len(data["records"]), 3)
+
+    def test_symlinked_root_and_missing_root(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = make_project(Path(tmp))
+            linked = project / "linked-skills"
+            os.symlink(project / ".agents" / "skills", linked)
+            missing = project / "nowhere"
+            data = run(project, "--root", str(linked), "--root", str(missing))
+            self.assertEqual(
+                data["roots"],
+                [
+                    {"path": str(linked), "exists": True, "real_path": str((project / ".agents" / "skills").resolve())},
+                    {"path": str(missing), "exists": False, "real_path": str(missing.resolve())},
+                ],
+            )
+
+    def test_skills_grouped_by_module_one_level_down(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "repo"
+            group = project / "skills" / "acme"
+            write(group / "bmod-acme" / "SKILL.md", "---\nname: bmod-acme\ndescription: x\n---\n")
+            write(group / "bmod-acme" / "bmod.toml", '[bmod]\ncode = "acme"\nversion = "2.0.0"\nskills = ["acme-a"]\n')
+            write(group / "acme-a" / "SKILL.md", "---\nname: acme-a\ndescription: x\n---\n")
+            write(group / "acme-a" / "bmod.toml", '[skill]\nbmod = "bmod-acme"\n')
+            data = run(project, "--root", str(project / "skills"))
+            self.assertTrue(data["skills_repo"])
+            self.assertEqual([(r["code"], r["skills"]) for r in data["records"]], [("acme", ["acme-a"])])
+
+    def test_plain_skills_folder_is_a_skills_repo(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "repo"
+            write(project / "skills" / "plain" / "SKILL.md", "---\nname: plain\ndescription: x\n---\n")
+            data = run(project, "--root", str(project / "skills"))
+            self.assertTrue(data["skills_repo"])
+            self.assertEqual(data["records"], [])
 
     def test_skills_repo_detected(self):
         with tempfile.TemporaryDirectory() as tmp:

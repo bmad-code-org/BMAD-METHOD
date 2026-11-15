@@ -1,6 +1,6 @@
 # Skill-creator loop
 
-Anthropic's skill-creator loop with BMad's shapes, packaging and harness. Its outcome: a skill iterated on measured results, its description tuned by a trigger eval.
+The outcome: a skill iterated on measured results, its description tuned by a trigger eval. Bare paths resolve from `{skill-root}`.
 
 ## Draft
 
@@ -10,17 +10,11 @@ Make the description deliberately specific: widening is easier than narrowing.
 
 ## Measure
 
-Write 2 to 3 prompts into `{target}/evals/cases.json` with empty rubrics, from the user's real requests. Load `approaches/eval-loop.md` and run it to a stop condition.
+Load `approaches/eval-loop.md` for the case format. Write two or three cases into `{target}/evals/cases.json` with empty rubrics, seeded from the user's real requests and transcripts before inventing any, because invented cases come out homogeneous and easy; the loop writes each rubric after the first outputs. Run the loop to a stop condition.
 
 ## Description round
 
-If `{target}/evals/triggers.json` is absent, write it to the spec in `ship.md` under Trigger eval. Then invoke the `bmad-eval` skill in trigger mode with its description-optimization loop on `{target}`. Apply the winning description.
-
-## BMad's step
-
-The customization decision: does a team need to swap a rule or step without forking? Then `customize.toml` and the rendered shape, else nothing.
-
-The canon pass is the lens round in `ship.md`.
+If `{target}/evals/triggers.json` is absent, write it from the discovery: 8 to 10 queries that should fire, varied in wording and buried in larger requests, and 8 to 10 near misses that share vocabulary but should not. Then copy `{target}` to `{reports_folder}/<YYYYMMDD-HHMMSS>-<skill>-trial/` and invoke the `bmad-eval` skill in trigger mode with its description-optimization loop on that copy, since the loop rewrites the description it measures. Show the winning description and write it into `{target}/SKILL.md` on a yes.
 
 ## Then
 

@@ -7,14 +7,18 @@
 Rules, each a `rule` value in the findings:
   pep723-missing   no `# /// script` inline metadata block; `uv run` needs it to pick dependencies
   pep723-floor     the block has no requires-python, or its floor is below 3.11
-  test-missing     no scripts/tests/test_<name>.py beside the script; a byte-for-byte copy of the
-                   memory-agent shape's wake.py or init-sanctum.py is tested in Toolsmith and never flagged
+  test-missing     no scripts/tests/test_<name>.py beside the script; an exact copy (line endings aside)
+                   of the memory-agent shape's wake.py or init-sanctum.py is tested in Toolsmith and never flagged
   network-call     imports a network module (urllib.request, requests, httpx, socket, http.client, aiohttp);
                    a skill script should work offline unless its docstring says why it cannot
   model-id         a string literal naming a model id (claude-*, gpt-*, gemini-*); users run any model,
                    so a script never hardcodes or validates against one
   custom-io        a string literal naming `_bmad/custom` or a `.user.toml` file; resolve_customization.py reads
                    overrides and the bmad-customize skill writes them, so a skill's own script touches neither
+  argparse-missing a script with an `if __name__ == "__main__":` entry point that imports none of argparse,
+                   click or typer, so it has no --help for the agent to read; a module only imported by its
+                   siblings is not flagged, nor one whose entry point only refuses to run
+                   (`sys.exit("...")` or `raise SystemExit("...")` with a message)
   syntax-error     the file does not parse
 
 A shebang is optional. Files under scripts/tests/ are not linted.
@@ -23,7 +27,7 @@ Usage:
   scan_scripts.py <skill-folder>
 
 Output, one JSON object on stdout:
-  {"skill": str, "scripts": [{"path", "has_pep723", "floor", "has_test", "copy_of" (copies only)}, ...],
+  {"skill": str, "scripts": [{"path", "has_pep723", "floor", "has_test", "has_argparse", "copy_of" (copies only)}, ...],
    "findings": [{"path", "line", "rule", "text", "fix"}, ...]}
 Exit 0 when clean, 1 when there are findings, 2 on a usage error.
 """
@@ -107,9 +111,44 @@ def scan_ast(tree: ast.AST, rel: str) -> list[dict]:
     return findings
 
 
+def imports_any(tree: ast.AST, modules: set[str]) -> bool:
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import) and any(alias.name.split(".")[0] in modules for alias in node.names):
+            return True
+        if isinstance(node, ast.ImportFrom) and node.module and node.module.split(".")[0] in modules:
+            return True
+    return False
+
+
+def is_refusal(stmt: ast.stmt) -> bool:
+    """`sys.exit("...")`, `exit("...")` or `raise SystemExit("...")`: a library that will not run on its own."""
+    call = stmt.exc if isinstance(stmt, ast.Raise) else stmt.value if isinstance(stmt, ast.Expr) else None
+    if not isinstance(call, ast.Call) or call.keywords or len(call.args) != 1:
+        return False
+    func = call.func
+    name = func.attr if isinstance(func, ast.Attribute) else func.id if isinstance(func, ast.Name) else ""
+    allowed = {"SystemExit"} if isinstance(stmt, ast.Raise) else {"exit"}
+    arg = call.args[0]
+    return name in allowed and isinstance(arg, ast.Constant) and isinstance(arg.value, str)
+
+
+def has_entry_point(tree: ast.Module) -> bool:
+    for node in tree.body:
+        if isinstance(node, ast.If) and isinstance(node.test, ast.Compare):
+            names = [node.test.left, *node.test.comparators]
+            if any(isinstance(n, ast.Name) and n.id == "__name__" for n in names):
+                if not all(is_refusal(stmt) for stmt in node.body):
+                    return True
+    return False
+
+
+def lf_bytes(path: Path) -> bytes:
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
 def shape_scripts() -> dict[bytes, str]:
-    """The copied scripts by content."""
-    return {(SKILL_ROOT / rel).read_bytes(): rel for rel in COPIED_SCRIPTS if (SKILL_ROOT / rel).is_file()}
+    """The copied scripts by content, line endings normalized."""
+    return {lf_bytes(SKILL_ROOT / rel): rel for rel in COPIED_SCRIPTS if (SKILL_ROOT / rel).is_file()}
 
 
 def scan_script(path: Path, scripts_dir: Path, copies: dict[bytes, str]) -> tuple[dict, list[dict]]:
@@ -117,8 +156,14 @@ def scan_script(path: Path, scripts_dir: Path, copies: dict[bytes, str]) -> tupl
     content = path.read_text(encoding="utf-8", errors="replace")
     has_block, requires = pep723_floor(content)
     test_file = scripts_dir / "tests" / f"test_{path.stem}.py"
-    info = {"path": rel, "has_pep723": has_block, "floor": requires, "has_test": test_file.is_file()}
-    copy_of = copies.get(path.read_bytes())
+    info = {
+        "path": rel,
+        "has_pep723": has_block,
+        "floor": requires,
+        "has_test": test_file.is_file(),
+        "has_argparse": False,
+    }
+    copy_of = copies.get(lf_bytes(path))
     if copy_of:
         info["copy_of"] = copy_of
     findings = []
@@ -135,6 +180,9 @@ def scan_script(path: Path, scripts_dir: Path, copies: dict[bytes, str]) -> tupl
     except SyntaxError as err:
         findings.append(finding(rel, err.lineno or 1, "syntax-error", str(err.msg), "fix the syntax"))
         return info, findings
+    info["has_argparse"] = imports_any(tree, {"argparse"})
+    if not imports_any(tree, {"argparse", "click", "typer"}) and has_entry_point(tree):
+        findings.append(finding(rel, 1, "argparse-missing", path.name, "parse arguments with argparse"))
     findings.extend(scan_ast(tree, rel))
     return info, findings
 

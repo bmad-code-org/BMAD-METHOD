@@ -1,6 +1,6 @@
 # {Capability}
 
-The outcome is {the artifact or change that exists when this is done}. {Who or what acts on it} does so without this conversation in the room, so it must {the bar: what has to be true of it for them to act}.
+The outcome is {the artifact or change that exists when this is done}. {Who or what acts on it} has the output but not this conversation, so it must {the bar: what has to be true of it for them to act}.
 
 {{ workflow.{capability}_before }}
 

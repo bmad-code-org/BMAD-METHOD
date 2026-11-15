@@ -2,7 +2,9 @@
 
 The return mechanics every lens shares.
 
-Input: the pre-pass JSON (`skill`, `shape_hint`, `files[{path, tokens, kind}]`, `skill_md_tokens`, `total_tokens`, `has_customize`, `has_scripts`, `scripts[{path, has_pep723, has_test}]`, `description_chars`, `has_use_when`, `frontmatter_ok`, `bmod_kind`, `path_findings`, `script_findings`, `long_paragraphs[{path, line, words, longest_sentence}]`, `toml_errors[{path, error}]`), the target path, and the lens file. Read the metrics first, then every file in `files[]` whose `kind` is `entry` or `prompt`, and any `asset` a model will read as text. The lens covers the whole skill, not `SKILL.md`; a finding names the file it is in.
+Input: the pre-pass JSON, the target path, and, as absolute paths, this contract, the lens file, `standards.md` (the standards) and `canon.md` (the canon). Read the standards and the canon, then the pre-pass, then every file in `files[]` whose `kind` is `entry` or `prompt`, and any `asset` a model will read as text. The lens covers the whole skill, not `SKILL.md`; a finding names the file it is in.
+
+A pre-pass field that answers a criterion is the evidence: cite it, do not re-derive it. A criterion keyed to a shape also applies to templates the target ships for that shape, read as the skill they will produce; template syntax in them (Jinja, `{placeholder}` keys) is expected.
 
 Return exactly this JSON in-context, never as a file:
 

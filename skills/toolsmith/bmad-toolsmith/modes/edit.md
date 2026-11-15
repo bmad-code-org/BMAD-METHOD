@@ -8,11 +8,11 @@ Set `{target}` to the skill folder. Read `SKILL.md` and only the files the chang
 
 ## Agree the change
 
-One Smithy execution plan, then wait: what changes, what stays, whether the shape changes (a menu added to a plain skill, memory added to an agent), whether the description changes. A description change is a trigger change; say so.
+One Smithy execution plan, then wait: what changes, what stays, whether the shape changes (a menu added to a plain skill, memory added to an agent; the shape list in `discover.md` says which shape fits), whether the description changes. A description change is a trigger change; say so.
 
 ## Rebuild instead
 
-When the user wants to rethink the skill from its outcomes rather than adjust it, that is a build: say so and load `discover.md` with the old skill as the mined input, not the starting point.
+When the user wants to rethink the skill from its outcomes rather than adjust it, that is a build: say so and load `discover.md` with the old skill as its input, not the starting point.
 
 ## Apply
 
@@ -23,6 +23,8 @@ When the change touches the description or adds a capability, write or extend `{
 For a rendered skill, edit the sources (`workflow.md`, `step-*.md`, `customize.toml`), never the rendered snapshot.
 
 For an agent, a new capability is a `references/<capability>.md` or a named skill, added to the menu.
+
+When `init_skill.py --check` reports `memory-script-stale`, tell the owner that the agent's script predates Smithy's current template, then apply the finding's fix: the template copied over it unchanged.
 
 ## Then
 

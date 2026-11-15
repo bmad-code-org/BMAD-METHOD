@@ -38,7 +38,7 @@ Score train and test separately. The train score and its per-query verdicts are 
 
 Hand the improver the current description, the train queries with their labels, and the train verdicts, and ask for a rewritten description that fixes the train failures. False negatives mean the description needs to claim ground it is leaving uncovered; false positives mean it needs to draw a sharper boundary against the near misses it is wrongly catching. The improver works the train failures only and never sees a test query or the test score, so it cannot tune to the held-out set.
 
-Also hand the improver the descriptions it already tried and why each fell short, so it tries something structurally different rather than nudging the same wording round after round. Without this, the loop tends to oscillate between two phrasings that each fix one failure and reintroduce the other. Feeding the history back pushes the improver toward a different cut of the boundary: reframing around intent instead of keywords, naming the adjacent skill the near misses belong to, or moving a qualifier from the trigger clause into the body.
+Also hand the improver the descriptions it already tried and why each fell short, so it tries something structurally different rather than nudging the same wording round after round. Without this, the loop tends to oscillate between two phrasings that each fix one failure and reintroduce the other. Feeding the history back pushes the improver toward a different cut of the boundary: stating the boundary by intent instead of keywords, naming the adjacent skill the near misses belong to, or moving a qualifier from the trigger clause into the body.
 
 Keep the description within whatever length and format bounds the runtime enforces (character cap, no angle brackets, and so on); a rewrite that triggers well but violates the bound is not a candidate.
 
@@ -51,14 +51,3 @@ Apply the new description, re-measure train and test, and record both scores plu
 After the rounds finish, pick the description with the best test score, not the best train score. Train measures how well the improver fixed the failures it could see; test measures whether that fix generalizes to queries it never saw, which is the only thing that matters in production. When two rounds tie on test, prefer the one with the better train score as the tiebreaker, and failing that the shorter, sharper description.
 
 Report the winning description, its test score, and the round-by-round trail (each description, its train score, its test score) so the choice is auditable and a human can override it. Each round's description and scores are written to the run folder as the loop runs.
-
-## Why each guard is here
-
-| Guard | What it prevents |
-|---|---|
-| near-miss should-not queries | a test set so easy the description never has to draw a real boundary |
-| 60/40 stratified split | a split that hides the false-positive or false-negative problem in one half |
-| fixed split across rounds | a weakness escaping into the train set on a later round |
-| test score blinded from improver | the improver tuning its wording to the held-out queries |
-| pick by test score, not train | shipping a description that fixed the visible failures but does not generalize |
-| prior attempts fed back | the loop oscillating between two phrasings instead of finding a new boundary |

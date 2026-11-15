@@ -25,8 +25,16 @@ Check:
   Verifies SKILL.md exists, the frontmatter has only `name` and `description`, the name matches the folder
   and the bmad regex (bmod- for a module record; any kebab name with --any-name), the description is at
   most 1024 characters and contains "Use when" or "Use if" (a record carries the fixed text instead), the
-  body is not empty, no `[TODO:` is left in any text file, and bmod.toml, when present, parses and carries
-  [skill] or [bmod]. "bmod" in the output is absent, ok or invalid.
+  body is not empty, no `[TODO:` is left in any text file, bmod.toml, when present, parses and carries
+  [skill] or [bmod], and customize.toml, when present, parses. A `[TODO:` inside a Markdown code span or
+  fence, or in a Python string rather than a comment, is text about the marker and does not count.
+  A memory agent's scripts/wake.py and scripts/init-sanctum.py must equal the shape templates in
+  shapes/memory-agent/assets/ of the Toolsmith skill holding this script, byte for byte apart from line endings.
+  "bmod" in the output is absent, ok or invalid.
+
+  Rules: skill-md-missing, frontmatter-missing, frontmatter-keys, name-missing, name-folder-mismatch,
+  name-format, description-missing, description-length, description-trigger, body-empty, todo-left,
+  bmod-invalid, bmod-tables, customize-invalid, memory-script-stale.
 
 Output: one JSON object on stdout. Create: {"ok", "skill", "dir", "shape", "created": [...]}.
 Check: {"ok", "skill", "bmod", "findings": [{"path", "line", "rule", "text", "fix"}, ...]}.
@@ -36,9 +44,11 @@ Exit 0 on success or a clean check, 1 on a failed check or a refused create, 2 o
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import re
 import sys
+import tokenize
 import tomllib
 from pathlib import Path
 
@@ -61,6 +71,12 @@ USE_WHEN_RE = re.compile(r"\buse\s+(?:when|if)\b", re.IGNORECASE)
 TODO_RE = re.compile(r"\[TODO:")
 TEXT_SUFFIXES = {".md", ".toml", ".py", ".json", ".yaml", ".yml", ".txt", ".html", ".csv"}
 DESCRIPTION_PLACEHOLDER = "[TODO: five-to-eight-word summary. Use when the user says '<phrase>' or '<phrase>'.]"
+FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")
+CODE_SPAN_RE = re.compile(r"(`+)(?!`).*?(?<!`)\1(?!`)")
+SHAPE_ASSETS = Path(__file__).resolve().parent.parent / "shapes" / "memory-agent" / "assets"
+# The memory-agent shape copies these templates byte for byte; a built agent's copy that differs is stale
+# (line endings aside: a CRLF checkout holds the same script).
+MEMORY_SCRIPTS = {"wake.py": "wake-template.py", "init-sanctum.py": "init-sanctum-template.py"}
 
 
 def yaml_single_quoted(value: str) -> str:
@@ -198,6 +214,85 @@ def read_bmod(skill_dir: Path, findings: list[dict]) -> tuple[dict | None, str]:
     return data, "ok"
 
 
+def markdown_marker_lines(text: str) -> list[int]:
+    """Lines with a marker outside fences and code spans."""
+    found = []
+    fence = ""
+    for number, line in enumerate(text.splitlines(), 1):
+        marker = FENCE_RE.match(line)
+        if fence:
+            if (
+                marker
+                and marker[1][0] == fence[0]
+                and len(marker[1]) >= len(fence)
+                and not line.strip()[len(marker[1]) :]
+            ):
+                fence = ""
+            continue
+        if marker:
+            fence = marker[1]
+            continue
+        if TODO_RE.search(CODE_SPAN_RE.sub("", line)):
+            found.append(number)
+    return found
+
+
+def python_marker_lines(text: str) -> list[int]:
+    """Lines with a marker in a comment; a string holding one is code that writes or matches it."""
+    try:
+        tokens = list(tokenize.generate_tokens(io.StringIO(text).readline))
+    except (tokenize.TokenError, SyntaxError):
+        return [n for n, line in enumerate(text.splitlines(), 1) if TODO_RE.search(line)]
+    return sorted({t.start[0] for t in tokens if t.type == tokenize.COMMENT and TODO_RE.search(t.string)})
+
+
+def marker_lines(path: Path, text: str) -> list[int]:
+    if path.suffix == ".md":
+        return markdown_marker_lines(text)
+    if path.suffix == ".py":
+        return python_marker_lines(text)
+    return [n for n, line in enumerate(text.splitlines(), 1) if TODO_RE.search(line)]
+
+
+def error_line(err: Exception) -> int:
+    # Python 3.11's TOMLDecodeError carries the line only in its message.
+    match = re.search(r"at line (\d+)", str(err))
+    return int(match.group(1)) if match else 1
+
+
+def check_customize(skill_dir: Path, findings: list[dict]) -> None:
+    path = skill_dir / "customize.toml"
+    if not path.is_file():
+        return
+    try:
+        tomllib.loads(path.read_text(encoding="utf-8"))
+    except (tomllib.TOMLDecodeError, UnicodeDecodeError) as err:
+        findings.append(finding("customize.toml", error_line(err), "customize-invalid", str(err), "fix the TOML"))
+
+
+def lf_bytes(path: Path) -> bytes:
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
+def check_memory_scripts(skill_dir: Path, findings: list[dict]) -> None:
+    """Only a memory agent, whose SKILL.md wakes from `_bmad/memory/`, carries the shape's scripts."""
+    skill_md = skill_dir / "SKILL.md"
+    if not skill_md.is_file() or "_bmad/memory" not in skill_md.read_text(encoding="utf-8", errors="replace"):
+        return
+    for name, template in MEMORY_SCRIPTS.items():
+        copy, source = skill_dir / "scripts" / name, SHAPE_ASSETS / template
+        if copy.is_file() and source.is_file() and lf_bytes(copy) != lf_bytes(source):
+            findings.append(
+                finding(
+                    f"scripts/{name}",
+                    1,
+                    "memory-script-stale",
+                    f"differs from shapes/memory-agent/assets/{template}",
+                    f"copy shapes/memory-agent/assets/{template} over it unchanged",
+                )
+            )
+
+
 def check(skill_dir: Path, any_name: bool) -> dict:
     findings: list[dict] = []
     bmod, bmod_status = read_bmod(skill_dir, findings)
@@ -256,15 +351,21 @@ def check(skill_dir: Path, any_name: bool) -> dict:
             if not body.strip():
                 findings.append(finding("SKILL.md", 1, "body-empty", "", "write the skill body after the frontmatter"))
 
+    check_customize(skill_dir, findings)
+    check_memory_scripts(skill_dir, findings)
+
     for path in sorted(skill_dir.rglob("*")):
         rel = path.relative_to(skill_dir)
         if not path.is_file() or path.suffix not in TEXT_SUFFIXES or any(p.startswith(".") for p in rel.parts):
             continue
-        for number, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
-            if TODO_RE.search(line):
-                findings.append(
-                    finding(rel.as_posix(), number, "todo-left", line.strip(), "fill in or remove the placeholder")
+        text = path.read_text(encoding="utf-8", errors="replace")
+        lines = text.splitlines()
+        for number in marker_lines(path, text):
+            findings.append(
+                finding(
+                    rel.as_posix(), number, "todo-left", lines[number - 1].strip(), "fill in or remove the placeholder"
                 )
+            )
 
     return {"ok": not findings, "skill": skill_dir.name, "bmod": bmod_status, "findings": findings}
 

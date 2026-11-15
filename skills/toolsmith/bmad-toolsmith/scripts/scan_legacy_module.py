@@ -9,7 +9,9 @@ The old format described a module with a `module.yaml` (code, module_version, mo
 `agents` roster, and one block per config key with `prompt`, `default`, `result`, `user_setting`,
 `single-select` or `multi-select`), a `module-help.csv` registry, and a `<code>-setup` skill (or an
 `assets/module-setup.md` in a single-skill module) that merged both into `_bmad/config.yaml`,
-`config.user.yaml` and `module-help.csv` with merge scripts. bmod.toml replaces all of it.
+`config.user.yaml` and `module-help.csv` with merge scripts. Some skills also carried a `bmad-manifest.json`
+of capabilities. bmod.toml and help documents replace all of it. Skills read the v6 config as `{key}`
+placeholders; v7 dropped some of those keys.
 
 Usage:
   scan_legacy_module.py <module-folder>
@@ -20,13 +22,18 @@ Output, one JSON object on stdout; paths are relative to the module folder:
    "help_rows": [{"skill", ...the other CSV columns}],
    "skills": [folder names that hold a SKILL.md],
    "legacy_reads": [{"skill", "path", "line", "text"}],
+   "legacy_placeholders": [{"skill", "file", "line", "placeholder"}],
    "setup_skill": name or null,
    "files_to_delete": [...]}
 
 kind is text, single-select, multi-select or confirm. unconvertible lists what a bmod [[bmod.config_questions]]
 entry (key, prompt, default, scope) cannot carry: select options, a result template, regex, required, example,
-a boolean default. legacy_reads lists every line in a skill that reads _bmad/config.yaml, config.user.yaml,
-_bmad/<code>/config.yaml or names a bmad-*-setup skill, outside the files slated for deletion.
+a boolean default.
+
+legacy_reads lists every line that names _bmad/config.yaml, _bmad/<code>/config.yaml, config.user.yaml,
+module.yaml, module-help.csv, module-setup.md, a bmad-*-setup skill or the module's own setup skill.
+legacy_placeholders lists every `{key}` naming a v6 config value v7 does not provide (V6_ONLY_CONFIG_KEYS),
+one entry per use. Both cover the .md, .toml, .yaml, .yml, .json and .py files outside files_to_delete.
 Exit 0 on success, 1 when no module.yaml is found, 2 on a usage error.
 """
 
@@ -55,19 +62,46 @@ MODULE_META_KEYS = {
     "directories",
     "post-install-notes",
 }
-LEGACY_FILE_NAMES = {"module.yaml", "module-help.csv", "merge-config.py", "merge-help-csv.py", "cleanup-legacy.py"}
-LEGACY_READ_RE = re.compile(r"_bmad/config\.yaml|config\.user\.yaml|\bbmad-[a-z0-9-]+-setup\b|module-setup\.md")
+LEGACY_FILE_NAMES = {
+    "module.yaml",
+    "module-help.csv",
+    "merge-config.py",
+    "merge-help-csv.py",
+    "cleanup-legacy.py",
+    "bmad-manifest.json",
+}
+LEGACY_READ_RE = re.compile(
+    r"_bmad/(?:[a-z0-9_-]+/)?config\.yaml|config\.user\.yaml|\bmodule\.yaml|module-help\.csv|module-setup\.md"
+    r"|\bbmad-[a-z0-9-]+-setup\b"
+)
+SCANNED_SUFFIXES = {".md", ".toml", ".yaml", ".yml", ".json", ".py"}
+# v6 config keys that v7 does not provide, with the v6 module that declared each. The list is
+# V6_KEYS in skills/core-tools/bmad/scripts/migrate_v6.py, the answers `bmad setup` removes. v7
+# provides core.project_name and core.output_folder (skills/core-tools/bmad/assets/config.template.toml),
+# core.active_initiative (the bmad skill's initiative step), and each module's own
+# [[bmod.config_questions]] as modules.<code>.<key>; placeholders for those are not legacy.
+V6_ONLY_CONFIG_KEYS = {
+    "user_name": "core",
+    "communication_language": "core",
+    "document_output_language": "core",
+    "user_skill_level": "bmm",
+    "planning_artifacts": "bmm",
+    "implementation_artifacts": "bmm",
+    "project_knowledge": "bmm",
+}
+PLACEHOLDER_RE = re.compile(r"\{(" + "|".join(V6_ONLY_CONFIG_KEYS) + r")\}")
 
 
 def walk(root: Path):
-    for path in sorted(root.rglob("*")):
+    # Path order is case-insensitive on Windows; sort the POSIX string so output matches everywhere.
+    for path in sorted(root.rglob("*"), key=lambda p: p.as_posix()):
         if path.is_file() and not any(part in SKIP_DIRS for part in path.relative_to(root).parts):
             yield path
 
 
 def find_one(root: Path, name: str) -> Path | None:
     """The shallowest file with this name, or None."""
-    matches = sorted((p for p in walk(root) if p.name == name), key=lambda p: (len(p.parts), str(p)))
+    matches = sorted((p for p in walk(root) if p.name == name), key=lambda p: (len(p.parts), p.as_posix()))
     return matches[0] if matches else None
 
 
@@ -120,7 +154,7 @@ def read_help_rows(path: Path | None) -> list[dict]:
 
 
 def skill_dirs(root: Path) -> list[Path]:
-    return sorted({p.parent for p in walk(root) if p.name == "SKILL.md"})
+    return sorted({p.parent for p in walk(root) if p.name == "SKILL.md"}, key=lambda p: p.as_posix())
 
 
 def skill_of(root: Path, path: Path, skills: list[Path]) -> str:
@@ -152,23 +186,31 @@ def scan(root: Path) -> dict | None:
     if module_setup is not None:
         to_delete.add(rel(root, module_setup))
 
+    own_keys = {k for k, v in meta.items() if k not in MODULE_META_KEYS and isinstance(v, dict) and "prompt" in v}
+    code = str(meta.get("code", ""))
+    # A key the module declares itself becomes its own config question, unless it is the v6 module that lost it.
+    legacy_keys = {k for k, owner in V6_ONLY_CONFIG_KEYS.items() if k not in own_keys or owner == code}
+    read_re = LEGACY_READ_RE
+    if setup_skill:
+        read_re = re.compile(f"{LEGACY_READ_RE.pattern}|\\b{re.escape(setup_skill)}\\b")
+
     reads = []
+    placeholders = []
     for path in walk(root):
-        if path.suffix != ".md":
+        if path.suffix not in SCANNED_SUFFIXES:
             continue
         relative = rel(root, path)
         if relative in to_delete or any(relative.startswith(d) for d in to_delete if d.endswith("/")):
             continue
+        skill = skill_of(root, path, skills)
         for number, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
-            if LEGACY_READ_RE.search(line):
-                reads.append(
-                    {
-                        "skill": skill_of(root, path, skills),
-                        "path": relative,
-                        "line": number,
-                        "text": line.strip()[:200],
-                    }
-                )
+            if read_re.search(line):
+                reads.append({"skill": skill, "path": relative, "line": number, "text": line.strip()[:200]})
+            for match in PLACEHOLDER_RE.finditer(line):
+                if match.group(1) in legacy_keys:
+                    placeholders.append(
+                        {"skill": skill, "file": relative, "line": number, "placeholder": match.group(0)}
+                    )
 
     greeting = meta.get("module_greeting", "")
     return {
@@ -179,14 +221,11 @@ def scan(root: Path) -> dict | None:
             "greeting": greeting.strip() if isinstance(greeting, str) else "",
             "agents": meta.get("agents") if isinstance(meta.get("agents"), list) else [],
         },
-        "config_keys": [
-            config_key(k, v)
-            for k, v in meta.items()
-            if k not in MODULE_META_KEYS and isinstance(v, dict) and "prompt" in v
-        ],
+        "config_keys": [config_key(k, v) for k, v in meta.items() if k in own_keys and k not in legacy_keys],
         "help_rows": read_help_rows(help_csv),
         "skills": [s.name for s in skills if s.name != setup_skill],
         "legacy_reads": reads,
+        "legacy_placeholders": placeholders,
         "setup_skill": setup_skill,
         "files_to_delete": sorted(to_delete),
     }

@@ -2,27 +2,23 @@
 
 A persona with a menu whose capabilities are rendered sources, so a team changes a rule inside a capability without forking.
 
-Reach it when the user wants someone to talk to who does several related things, and teams must change what those things do, not only add facts. A persona whose capabilities ship as they are: `shapes/agent/shape.md`. Must remember between sessions: `shapes/memory-agent/shape.md`, which stays on the resolver bootloader.
-
-The model is `bmad-build`'s form with the agent shape's content.
+Load `shapes/agent/shape.md` first and keep its Capabilities, Persona and Roster sections. Its Files table and activation steps do not apply: the persona paragraph, the activation and "How <Name> works" live in `workflow.md`.
 
 ## Files
 
 | File | From | Holds |
 |---|---|---|
-| `SKILL.md` | `assets/SKILL-template.md` | description, the render command, the invocation words mapped to `--set` |
-| `workflow.md` | `assets/workflow.md` | the activation from `{{ agent.* }}`: persona, facts, dispatch |
-| `references/<capability>.md` | `assets/capability.md` | one internal capability each |
-| `customize.toml` | `assets/customize-template.toml` | `[agent]` as the agent shape has it; `[workflow]`: every customization point |
+| `{target}/SKILL.md` | `shapes/rendered-agent/assets/SKILL-template.md` | description, the render command, the invocation words mapped to `--set` |
+| `{target}/workflow.md` | `shapes/rendered-agent/assets/workflow.md` | the activation from `{{ agent.* }}`: persona, facts, dispatch |
+| `{target}/references/<capability>.md` | `shapes/rendered-agent/assets/capability.md` | one internal capability each |
+| `{target}/customize.toml` | `shapes/rendered-agent/assets/customize-template.toml` | `[agent]` as the agent shape has it; `[workflow]`: every customization point |
 
-Build-time tokens: `{skill}` (folder name), `{name}`, `{title}`, `{icon}`, `{description}`, the persona and menu fields; `{project-root}` and `{skill-root}` are runtime.
-
-The agent shape's Capabilities, Persona and Roster sections hold, except that the persona paragraph, the activation and "How <Name> works" live in `workflow.md` and there are no numbered activation steps.
+Fill each template with `uv run {skill-root}/scripts/process_template.py {skill-root}/shapes/rendered-agent/assets/<template> -o {target}/<file> --var <token>=<value> ...`, passing `{skill}` (the folder name), `{name}`, `{title}`, `{icon}`, `{description}`, the persona and menu fields, and `{capability}`, `{selector}` and `{block}` for one capability; repeat a capability's blocks by hand for the others. Jinja passes through untouched. Then write by hand each `{...}` left that is not a run-time token; `{project-root}` and `{skill-root}` stay for run time.
 
 ## Rules
 
 - `SKILL.md` only runs `uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"`, maps the words of the invocation to `--set workflow.<key>=<value>`, follows the printed `workflow.md`, and halts on any failure. It holds no Jinja, because the renderer excludes it.
-- Jinja (`{{ agent.key }}`, `{{ workflow.key }}`, `{% if %}`, `rendered("references/<capability>.md")`) lives only in `workflow.md` and the capabilities. `agent` is the `[agent]` table and `workflow` the `[workflow]` table, both through the same layers.
+- Jinja (`{{ agent.key }}`, `{{ workflow.key }}`, `{% if %}`, `rendered("references/<capability>.md")`) lives only in `workflow.md` and the capabilities. `agent` is the `[agent]` table and `workflow` the `[workflow]` table, both with the team's overrides merged in.
 - An agent-facing `{{placeholder}}` sits inside `{% raw %}...{% endraw %}`; a single-brace `{placeholder}` passes through untouched.
 - The agent's documents go under `{{ initiative_folder }}`.
 - A customization value the templates cannot act on, such as a misspelled selector, is rejected at the top of `workflow.md` with `{{ halt("...") }}`, one guard per selector.

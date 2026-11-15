@@ -26,6 +26,9 @@ KEYS = {
     "script_findings",
     "long_paragraphs",
     "toml_errors",
+    "token_method",
+    "customize_findings",
+    "repeated_passages",
 }
 SKILL_MD = "---\nname: {name}\ndescription: 'Does a thing. Use when asked.'\n---\n\n# Body\n\n{body}\n"
 GOOD_SCRIPT = '# /// script\n# requires-python = ">=3.11"\n# ///\nprint(1)\n'
@@ -91,8 +94,8 @@ class PrepassTest(unittest.TestCase):
             self.assertEqual(
                 data["scripts"],
                 [
-                    {"path": "scripts/bare.py", "has_pep723": False, "has_test": False},
-                    {"path": "scripts/go.py", "has_pep723": True, "has_test": True},
+                    {"path": "scripts/bare.py", "has_pep723": False, "has_test": False, "has_argparse": False},
+                    {"path": "scripts/go.py", "has_pep723": True, "has_test": True, "has_argparse": False},
                 ],
             )
             self.assertEqual(data["description_chars"], len("Does a thing. Use when asked."))
@@ -101,6 +104,7 @@ class PrepassTest(unittest.TestCase):
             self.assertEqual(sorted(f["rule"] for f in data["path_findings"]), ["bare-script-call", "missing-file"])
             self.assertEqual(sorted(f["rule"] for f in data["script_findings"]), ["pep723-missing", "test-missing"])
             self.assertEqual(data["shape_hint"], "script-utility")
+            self.assertIn(data["token_method"], ("tiktoken", "fallback"))
 
     def test_long_paragraphs(self):
         long_paragraph = " ".join(["Do this thing now."] * 40)
@@ -119,9 +123,134 @@ class PrepassTest(unittest.TestCase):
             self.assertEqual(
                 found,
                 [
-                    {"path": "SKILL.md", "line": 10, "words": 160, "longest_sentence": 4},
-                    {"path": "SKILL.md", "line": 12, "words": 62, "longest_sentence": 62},
+                    {"path": "SKILL.md", "line": 10, "words": 160, "sentences": 40, "longest_sentence": 4},
+                    {"path": "SKILL.md", "line": 12, "words": 62, "sentences": 1, "longest_sentence": 62},
+                    {"path": "assets/template.md", "line": 1, "words": 160, "sentences": 40, "longest_sentence": 4},
                 ],
+            )
+
+    def test_dense_lines_are_flagged_by_length_or_by_rule_count(self):
+        six_rules = " ".join(["Do the first thing with care; then check it twice now."] * 4)  # 44 words, 8 clauses
+        dense = f"- {six_rules} {six_rules}"  # 89 words, 16 clauses
+        few_rules = " ".join(["word"] * 40) + ". " + " ".join(["word"] * 44) + "."  # 84 words, 2 sentences
+        long_bullet = "- " + " ".join((["word"] * 30 + ["end."]) * 4)  # 125 words, 4 sentences
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(Path(tmp), body=f"{dense}\n\n{few_rules}\n\n{long_bullet}\n\n- {six_rules}")
+            found = [(item["line"], item["words"], item["sentences"]) for item in prepass(skill)["long_paragraphs"]]
+            self.assertEqual(found, [(8, 89, 16), (12, 125, 4)])
+
+    def test_customize_findings(self):
+        customize = (
+            "# {workflow.in_a_comment} is ignored\n"
+            "[workflow]\n"
+            'used = "x"\n'
+            'unused = "y"\n'
+            "switch = true\n"
+            "[[workflow.items]]\n"
+            'code = "A"\n'
+            "private = true\n"
+            "[[workflow.items]]\n"
+            'label = "no id"\n'
+            "[agent]\n"
+            'name = "Ann"\n'
+            "[[agent.menu]]\n"
+            'code = "ONE"\n'
+            'prompt = "Read {agent.nickname}."\n'
+            "[[agent.menu]]\n"
+            'code = "TWO"\n'
+            'prompt = "x"\n'
+            'skill = "bmad-x"\n'
+            "[[agent.menu]]\n"
+            'code = "THREE"\n'
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                body="Write to `{workflow.used}`; `{workflow.missing}` and `{{ workflow.items }}` here.",
+                files={
+                    "customize.toml": customize,
+                    "assets/customize-template.toml": "[agent\n{placeholder} = {workflow.nope}\n",
+                    "assets/note.md": "{workflow.also_nope}\n",
+                    "references/r.md": "Loop {% for i in workflow.items %}x{% endfor %}.\n",
+                },
+            )
+            got = [(f["rule"], f["location"]) for f in prepass(skill)["customize_findings"]]
+            self.assertEqual(
+                sorted(got),
+                sorted(
+                    [
+                        ("unknown-token", "SKILL.md:8"),
+                        ("unread-key", "customize.toml:4"),
+                        ("unread-key", "customize.toml:5"),
+                        ("boolean-toggle", "customize.toml:5"),
+                        ("entry-without-id", "customize.toml:9"),
+                        ("agent-missing-field", "customize.toml:11"),
+                        ("unknown-token", "customize.toml:15"),
+                        ("menu-item-target", "customize.toml:16"),
+                        ("menu-item-target", "customize.toml:20"),
+                    ]
+                ),
+            )
+            rendered = make_skill(
+                Path(tmp),
+                name="bmad-rendered",
+                body='Run `uv run "{project-root}/_bmad/scripts/render_skill.py"`. {{ workflow.ghost }} {{ workflow.real }}',
+                files={"customize.toml": '[workflow]\nreal = "x"\n'},
+            )
+            got = [(f["rule"], f["detail"]) for f in prepass(rendered)["customize_findings"]]
+            self.assertEqual(got, [("unknown-token", "workflow.ghost is not declared")])
+            broken = make_skill(Path(tmp), name="bmad-broken", files={"customize.toml": "[agent\n"})
+            self.assertEqual(prepass(broken)["customize_findings"], [])
+
+    def test_customize_key_lines_come_from_their_own_table(self):
+        customize = (
+            '[agent]\nname = "A"\ntitle = "T"\nicon = "x"\n\n'
+            '[[agent.menu]]\ncode = "go"\nskill = "s"\nenabled = true\n\n'
+            "[workflow]\n\nenabled = false\n"
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(Path(tmp), body="Nothing here.", files={"customize.toml": customize})
+            got = sorted((f["rule"], f["location"]) for f in prepass(skill)["customize_findings"])
+            self.assertEqual(got, [("boolean-toggle", "customize.toml:13"), ("unread-key", "customize.toml:13")])
+
+    def test_jinja_constructs_are_scanned_whole_and_bound_names_skipped(self):
+        render = 'Run `uv run "{project-root}/_bmad/scripts/render_skill.py"`.'
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                body=render
+                + '\n\n{% if workflow.depth and workflow.missing %}\nGo {{ 1 | default(workflow.gone) }} {{ rendered("workflow.md") }}.\n{% endif %}',
+                files={
+                    "customize.toml": "[workflow]\ndepth = 3\n",
+                    "references/loop.md": (
+                        "{% for workflow in workflows %}{{ workflow.title }}{% endfor %}\n"
+                        "{% set agent = pick() %}{{ agent.nick }} {{ x | default(workflow.ghost) }}\n"
+                    ),
+                },
+            )
+            got = sorted((f["location"], f["detail"]) for f in prepass(skill)["customize_findings"])
+            self.assertEqual(
+                got,
+                [("SKILL.md:10", "workflow.missing is not declared"), ("SKILL.md:11", "workflow.gone is not declared")],
+            )
+
+    def test_repeated_passages(self):
+        rule = "Every reviewer gets the canon, the standards and its own lens file as absolute paths."
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                body=f"Intro. {rule}\n\n- Too short to count here.",
+                files={
+                    "modes/review.md": f"- {rule.replace('absolute', 'full')}\n\nToo short to count here.\n",
+                    "modes/other.md": f"```\n{rule}\n```\n{rule.replace('canon', 'whole canon and more')}\n",
+                    "assets/template.md": f"{rule}\n",
+                },
+            )
+            found = prepass(skill)["repeated_passages"]
+            self.assertEqual(len(found), 1)
+            self.assertEqual(found[0]["text"], rule)
+            self.assertEqual(
+                found[0]["locations"], [{"path": "SKILL.md", "line": 8}, {"path": "modes/review.md", "line": 1}]
             )
 
     def test_long_paragraphs_close_a_fence_only_on_its_own_marker(self):

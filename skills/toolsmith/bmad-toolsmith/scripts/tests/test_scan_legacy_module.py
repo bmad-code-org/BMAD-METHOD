@@ -94,7 +94,16 @@ class ScanLegacyModuleTest(unittest.TestCase):
             self.assertEqual(code, 0, err)
             self.assertEqual(
                 set(data),
-                {"module", "config_keys", "help_rows", "skills", "legacy_reads", "setup_skill", "files_to_delete"},
+                {
+                    "module",
+                    "config_keys",
+                    "help_rows",
+                    "skills",
+                    "legacy_reads",
+                    "legacy_placeholders",
+                    "setup_skill",
+                    "files_to_delete",
+                },
             )
             self.assertEqual(
                 data["module"],
@@ -170,6 +179,83 @@ class ScanLegacyModuleTest(unittest.TestCase):
             )
             self.assertEqual([r["line"] for r in data["legacy_reads"]], [6, 7])
             self.assertEqual(data["legacy_reads"][0]["skill"], "bmad-agent-dream-weaver")
+
+    def test_non_bmad_module_reads_in_every_file_kind(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "acme"
+            write(
+                root,
+                {
+                    "acme-setup/SKILL.md": "---\nname: acme-setup\ndescription: x\n---\n",
+                    "acme-setup/assets/module.yaml": "code: acme\nname: Acme\nmodule_version: 1.0.0\n",
+                    "acme-notes/SKILL.md": (
+                        "---\nname: acme-notes\ndescription: x\n---\n\n"
+                        "Load `{project-root}/_bmad/acme/config.yaml`.\n"
+                        "When it is missing, run acme-setup first.\n"
+                        "Read `{project-root}/_bmad/config.toml`.\n"
+                    ),
+                    "acme-notes/customize.toml": 'persistent_facts = ["file:{project-root}/_bmad/acme/config.yaml"]\n',
+                    "acme-notes/scripts/load.py": 'CONFIG = "_bmad/config.yaml"\n',
+                    "acme-notes/references/data.yaml": "source: module-help.csv\n",
+                    "acme-notes/references/data.json": '{"x": "_bmad/config.yaml"}\n',
+                    "acme-notes/references/data.csv": "_bmad/config.yaml\n",
+                    "acme-notes/bmad-manifest.json": '{"output-location": "_bmad/config.yaml"}\n',
+                },
+            )
+            code, data, err = run(root)
+            self.assertEqual(code, 0, err)
+            self.assertEqual(data["setup_skill"], "acme-setup")
+            self.assertEqual(
+                [(r["path"], r["line"]) for r in data["legacy_reads"]],
+                [
+                    ("acme-notes/SKILL.md", 6),
+                    ("acme-notes/SKILL.md", 7),
+                    ("acme-notes/customize.toml", 1),
+                    ("acme-notes/references/data.json", 1),
+                    ("acme-notes/references/data.yaml", 1),
+                    ("acme-notes/scripts/load.py", 1),
+                ],
+            )
+            self.assertEqual({r["skill"] for r in data["legacy_reads"]}, {"acme-notes"})
+            self.assertEqual(data["files_to_delete"], ["acme-notes/bmad-manifest.json", "acme-setup/"])
+
+    def test_legacy_placeholders(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "acme"
+            module_yaml = (
+                "code: acme\nname: Acme\nmodule_version: 1.0.0\n"
+                'planning_artifacts:\n  prompt: "Where?"\n  default: "{output_folder}/plans"\n'
+            )
+            write(
+                root,
+                {
+                    "module.yaml": module_yaml,
+                    "acme-notes/SKILL.md": (
+                        "---\nname: acme-notes\ndescription: x\n---\n\n"
+                        "Greet {user_name} in {communication_language}; write in {document_output_language}.\n"
+                        "Save to {planning_artifacts} under {output_folder} for {project_name} on {date}.\n"
+                    ),
+                    "acme-notes/customize.toml": 'note = "{implementation_artifacts}/x"\n',
+                },
+            )
+            code, data, err = run(root)
+            self.assertEqual(code, 0, err)
+            self.assertEqual(
+                [(p["skill"], p["file"], p["line"], p["placeholder"]) for p in data["legacy_placeholders"]],
+                [
+                    ("acme-notes", "acme-notes/SKILL.md", 6, "{user_name}"),
+                    ("acme-notes", "acme-notes/SKILL.md", 6, "{communication_language}"),
+                    ("acme-notes", "acme-notes/SKILL.md", 6, "{document_output_language}"),
+                    ("acme-notes", "acme-notes/customize.toml", 1, "{implementation_artifacts}"),
+                ],
+            )
+            # the v6 module that owned planning_artifacts loses it in v7
+            (root / "module.yaml").write_text(module_yaml.replace("code: acme", "code: bmm"), encoding="utf-8")
+            code, data, err = run(root)
+            self.assertEqual(code, 0, err)
+            self.assertIn("{planning_artifacts}", [p["placeholder"] for p in data["legacy_placeholders"]])
+            # and it is no longer a question to keep
+            self.assertNotIn("planning_artifacts", [k["key"] for k in data["config_keys"]])
 
     def test_no_module_yaml_and_bad_path(self):
         with tempfile.TemporaryDirectory() as tmp:

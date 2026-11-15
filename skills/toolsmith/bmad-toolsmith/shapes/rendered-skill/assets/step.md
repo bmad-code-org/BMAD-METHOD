@@ -22,8 +22,12 @@
 
 ## Next
 
-{The last line is one of these two.}
+{Every step but the last ends with:}
 
 Read fully and follow `{{ rendered("{next_step}") }}`.
+
+{The last step ends with:}
+
+{{ workflow.on_complete }}
 
 Workflow complete.

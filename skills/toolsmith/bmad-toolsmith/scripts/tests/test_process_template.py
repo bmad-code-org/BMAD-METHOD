@@ -4,6 +4,7 @@ import json
 import subprocess
 import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -37,6 +38,53 @@ def run(*args, template=TEMPLATE):
 
 
 class ProcessTemplateTest(unittest.TestCase):
+    def test_a_token_inside_an_inserted_value_is_left_alone(self):
+        res, _ = run(
+            "--var",
+            "description=Use when documenting {selector}.",
+            "--var",
+            "selector=route",
+            template="{description} {selector}\n",
+        )
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertEqual(res.stdout, "Use when documenting {selector}. route\n")
+
+    def test_value_is_escaped_for_the_quoted_string_it_fills(self):
+        res, _ = run(
+            "--var", "description=Records a team's decisions.", template="---\ndescription: '{description}'\n---\n"
+        )
+        self.assertEqual(res.stdout, "---\ndescription: 'Records a team''s decisions.'\n---\n")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "customize.toml"
+            path.write_text("identity = \"{identity}\"\nnote = '{note}'\n", encoding="utf-8")
+            res = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    str(path),
+                    "--var",
+                    'identity=A guide for "legacy" C:\\ paths',
+                    "--var",
+                    "note=plain",
+                ],
+                capture_output=True,
+                text=True,
+            )
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertEqual(tomllib.loads(res.stdout)["identity"], 'A guide for "legacy" C:\\ paths')
+
+    def test_blank_lines_outside_blocks_are_kept(self):
+        template = "import os\n\n\ndef a():\n    pass\n\n\n{if-extra}\ndef b():\n    pass\n\n\n{/if-extra}\ndef c():\n    pass\n"
+        res, _ = run(template=template)
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertEqual(res.stdout, "import os\n\n\ndef a():\n    pass\n\n\ndef c():\n    pass\n")
+        res, _ = run("--true", "extra", template=template)
+        self.assertIn("    pass\n\n\ndef b():\n    pass\n\n\ndef c():", res.stdout)
+
+    def test_removed_block_in_prose_leaves_one_blank_line(self):
+        res, _ = run(template="Para.\n\n{if-x}\nGone.\n{/if-x}\n\nNext.\n")
+        self.assertEqual(res.stdout, "Para.\n\nNext.\n")
+
     def test_variables_and_false_block_removed(self):
         res, _ = run("--var", "skillName=bmad-x", "--var", "displayName=X", "--json")
         self.assertEqual(res.returncode, 0, res.stderr)
