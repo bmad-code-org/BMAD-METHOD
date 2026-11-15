@@ -21,7 +21,7 @@ This installs both Smithy and `bmad-eval`, which Smithy requires. Ask the `bmad`
 
 ## Talk to Smithy
 
-Start the `bmad-toolsmith` skill, or ask for Smithy by name, and say what you want. You do not need to know the shape of the result, or which mode to use. Smithy shows a menu when you give no request.
+Start the `bmad-toolsmith` skill, or ask for Smithy by name, and say what you want. You do not need to know the shape of the result, or which mode to use. Asked what he does, Smithy answers in a few sentences and shows the codes below when you want them.
 
 | Code | What it does |
 | --- | --- |
