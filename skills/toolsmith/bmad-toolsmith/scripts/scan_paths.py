@@ -26,6 +26,10 @@ Rules, each a `rule` value in the findings:
                      between ("never write `module.yaml`"); modules are described by bmod.toml now
   python-call        `python x.py`, `python3 -m x` or `pip install`; every script runs as `uv run <path>`,
                      which reads the script's PEP 723 header for its dependencies
+  retired-skill      a skill name an installed module retired, read from the `retired.toml` files beside the target and
+                     beside this script (and one level up from a skills/<module>/ folder) (`renamed` gives the successor
+                     as the fix); a line that says retired, renamed, removed, deprecated, shim or
+                     formerly is describing it and is skipped
 
 Fenced code blocks are checked for bare-script-call, installed-path, absolute-path, old-module-format, python-call
 and `{skill-root}/...` paths (a wrong example teaches the wrong call), and skipped for backticked bare paths.
@@ -50,6 +54,7 @@ import json
 import os
 import re
 import sys
+import tomllib
 from pathlib import Path, PurePosixPath, PureWindowsPath
 
 SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", "venv"}
@@ -84,6 +89,7 @@ RULES = {
     "missing-file",
     "old-module-format",
     "python-call",
+    "retired-skill",
 }
 BMAD_RUNTIME_DIRS = {"scripts", "config", "custom", "memory", "render", "_config", "knowledge"}
 
@@ -230,9 +236,80 @@ def scan_references(content: str, rel: Path, skill_root: Path) -> list[dict]:
     return findings
 
 
+RETIRED_CONTEXT_RE = re.compile(
+    r"\b(?:retired|renamed|removed|deprecated|shim|formerly|was called|replaced by)\b", re.IGNORECASE
+)
+
+
+def own_module_skills(skill_root: Path) -> set[str]:
+    """The skills the target's own module ships, from its record's [bmod] skills list: the target's own
+    bmod.toml for a record, else the record its [skill] names, beside it or one folder up."""
+
+    def load(path: Path) -> dict:
+        try:
+            return tomllib.loads(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, tomllib.TOMLDecodeError):
+            return {}
+
+    data = load(skill_root / "bmod.toml")
+    bmod, skill = data.get("bmod"), data.get("skill")
+    if not (isinstance(bmod, dict) and bmod.get("skills")) and isinstance(skill, dict) and skill.get("bmod"):
+        for folder in (skill_root.parent, skill_root.parent.parent):
+            record = load(folder / str(skill["bmod"]) / "bmod.toml").get("bmod")
+            if isinstance(record, dict):
+                bmod = record
+                break
+    listed = bmod.get("skills") if isinstance(bmod, dict) else None
+    return {str(n) for n in listed} if isinstance(listed, list) else set()
+
+
+def retired_names(skill_root: Path) -> dict[str, str]:
+    """Retired skill name -> fix, from the retired.toml of every module record in the skills folders that hold
+    the target skill and this script's own skill (the folders where installed modules sit side by side)."""
+    # A skill's parent holds its sibling skills; the folder above counts only when it is a `skills/` folder
+    # grouping modules (skills/<module>/<skill>), never a shared temp or home folder.
+    roots = set()
+    for base in (skill_root.resolve(), Path(__file__).resolve().parents[1]):
+        roots.add(base.parent)
+        if base.parent.parent.name == "skills":
+            roots.add(base.parent.parent)
+    names: dict[str, str] = {}
+    for root in sorted(roots, key=lambda p: p.as_posix()):
+        records = sorted([*root.glob("*/retired.toml"), *root.glob("*/*/retired.toml")], key=lambda p: p.as_posix())
+        for record in records:
+            try:
+                data = tomllib.loads(record.read_text(encoding="utf-8"))
+            except (OSError, UnicodeError, tomllib.TOMLDecodeError):
+                continue
+            for entry in data.get("renamed") or []:
+                if isinstance(entry, dict) and entry.get("from") and entry.get("to"):
+                    names.setdefault(str(entry["from"]), f"renamed: use `{entry['to']}`")
+            for name in data.get("removed") or []:
+                names.setdefault(str(name), "retired with no successor: remove the reference")
+    # A module never flags a skill it still ships, even when a newer module retired that name.
+    for name in {skill_root.name, *own_module_skills(skill_root)}:
+        names.pop(name, None)
+    return names
+
+
+def scan_retired(content: str, rel: str, retired: dict[str, str]) -> list[dict]:
+    if not retired:
+        return []
+    alternatives = "|".join(map(re.escape, sorted(retired, key=len, reverse=True)))
+    pattern = re.compile(rf"(?<![\w-])({alternatives})(?![\w-])")
+    findings = []
+    for match in pattern.finditer(content):
+        if RETIRED_CONTEXT_RE.search(line_text(content, match.start())):
+            continue
+        name = match.group(1)
+        findings.append(finding(rel, line_of(content, match.start()), "retired-skill", name, retired[name]))
+    return findings
+
+
 def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
     findings: list[dict] = []
     count = 0
+    retired = retired_names(skill_root)
     for path in iter_md_files(skill_root):
         count += 1
         rel = path.relative_to(skill_root)
@@ -240,6 +317,7 @@ def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
         findings.extend(scan_regex_rules(content, rel.as_posix()))
         findings.extend(scan_references(content, rel, skill_root))
         findings.extend(scan_skill_root_paths(content, rel, skill_root))
+        findings.extend(scan_retired(content, rel.as_posix(), retired))
     customize = skill_root / "customize.toml"
     if customize.is_file():
         count += 1
@@ -248,6 +326,7 @@ def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
         findings.extend(scan_regex_rules(content, rel.as_posix()))
         findings.extend(scan_references(content, rel, skill_root))
         findings.extend(scan_skill_root_paths(content, rel, skill_root))
+        findings.extend(scan_retired(content, rel.as_posix(), retired))
     # Eval cases name fixtures; an absolute path there breaks the run for everyone else.
     for path in sorted((skill_root / "evals").glob("*.json"), key=lambda p: p.as_posix()):
         count += 1

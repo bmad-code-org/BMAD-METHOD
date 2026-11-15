@@ -59,7 +59,7 @@ The execution plan also lists what cannot convert:
 
 ### 3. Approve
 
-Smithy writes the new files, rewrites each config read and placeholder, and removes each skill's step that ran the setup skill. It then deletes the listed files and nothing else.
+Smithy writes the new files, rewrites each config read and placeholder, and removes each skill's step that ran the setup skill. Where one skill's output path changes, it updates every skill that reads that path. It lists the skills a member invokes from other modules as dependencies, and replaces retired skill names with their successors. It then deletes the listed files and nothing else.
 
 ### 4. Review the Checks
 

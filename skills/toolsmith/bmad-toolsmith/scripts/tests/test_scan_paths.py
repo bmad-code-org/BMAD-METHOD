@@ -57,6 +57,53 @@ class ScanPathsTest(unittest.TestCase):
             self.assertEqual([f["rule"] for f in data["findings"]], ["old-module-format"], found)
             self.assertEqual(data["findings"][0]["line"], 6)
 
+    def test_retired_skill_names_from_installed_records(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            record = Path(tmp) / "bmod-acme"
+            record.mkdir()
+            (record / "retired.toml").write_text(
+                'renamed = [{ from = "acme-helper", to = "acme" }]\nremoved = ["acme-old-review"]\n', encoding="utf-8"
+            )
+            skill = make_skill(
+                Path(tmp),
+                {
+                    "SKILL.md": "---\nname: bmad-demo\ndescription: 'Demo. Use when testing.'\n---\n\n"
+                    "Then invoke the `acme-helper` skill.\n"
+                    "Run acme-old-review on the result.\n"
+                    "acme-old-review was removed; use the review skill.\n"
+                    "The acme-helpers folder is not a skill.\n",
+                },
+            )
+            _, data = scan(skill)
+            found = [(f["line"], f["text"], f["fix"]) for f in data["findings"] if f["rule"] == "retired-skill"]
+            self.assertEqual(
+                found,
+                [
+                    (6, "acme-helper", "renamed: use `acme`"),
+                    (7, "acme-old-review", "retired with no successor: remove the reference"),
+                ],
+            )
+
+    def test_a_module_never_flags_a_skill_it_still_ships(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            newer = Path(tmp) / "bmod-newer"
+            newer.mkdir()
+            (newer / "retired.toml").write_text('removed = ["acme-notes"]\n', encoding="utf-8")
+            record = Path(tmp) / "bmod-acme"
+            record.mkdir()
+            (record / "bmod.toml").write_text(
+                '[bmod]\ncode = "acme"\nskills = ["bmad-demo", "acme-notes"]\n', encoding="utf-8"
+            )
+            skill = make_skill(
+                Path(tmp),
+                {
+                    "SKILL.md": "---\nname: bmad-demo\ndescription: 'Demo. Use when testing.'\n---\n\nThen run acme-notes.\n",
+                    "bmod.toml": '[skill]\nbmod = "bmod-acme"\n',
+                },
+            )
+            _, data = scan(skill)
+            self.assertEqual([f for f in data["findings"] if f["rule"] == "retired-skill"], [])
+
     def test_absolute_fixture_path_in_eval_cases_fires(self):
         with tempfile.TemporaryDirectory() as tmp:
             skill = make_skill(

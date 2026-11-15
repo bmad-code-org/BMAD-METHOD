@@ -40,6 +40,6 @@ Cannot convert, listed from `unconvertible`, with what it means for the user:
 
 ## Convert
 
-On approval, load `shapes/single-skill-module/shape.md` for a one-skill module, `shapes/multi-skill-module/shape.md` otherwise, and emit from its templates. Rewrite every config read and placeholder as planned. Remove each skill's step that ran the setup skill or loaded `module-setup.md` when unregistered. Write `retired.toml`. Then delete `files_to_delete`, and nothing else.
+On approval, load `shapes/single-skill-module/shape.md` for a one-skill module, `shapes/multi-skill-module/shape.md` otherwise, and emit from its templates. Rewrite every config read and placeholder as planned. Where a member's output path changes, rewrite every member that reads that path to match. Name each skill a member invokes from another module in that member's `bmod.toml` as `{ skill, source }`, and replace each name `scan_paths.py` reports as `retired-skill` with its successor. Remove each skill's step that ran the setup skill or loaded `module-setup.md` when unregistered. Write `retired.toml`. Then delete `files_to_delete`, and nothing else.
 
 Then load `ship.md`.

@@ -87,7 +87,7 @@ Validate reports what would stop a skill or module installing, loading, or firin
 | --- | --- |
 | `validate_manifests.py` | Manifests, membership, versions, retired names, help topics, and the roster, in a repository with `skills/*/bmod.toml` |
 | `init_skill.py --check` | Frontmatter, name, description, `[TODO:` markers, whether `bmod.toml` and `customize.toml` parse, and a memory agent whose `wake.py` or `init-sanctum.py` differs from Smithy's current template |
-| `scan_paths.py` | Paths that do not resolve, bare `scripts/` calls, references into another skill, and old-format names |
+| `scan_paths.py` | Paths that do not resolve, bare `scripts/` calls, references into another skill, old-format names, and skill names an installed module retired |
 | `scan_scripts.py` | Script headers and tests, then runs the skill's tests |
 | `scan_config_reads.py` | In a module, a config value a member reads that no configuration question asks, and a question no member reads |
 
