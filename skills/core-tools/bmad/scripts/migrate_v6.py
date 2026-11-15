@@ -443,7 +443,8 @@ def relative(path: Path, root: Path) -> str:
 
 def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object]:
     slug = SPEC_FOLDER.match(folder.name)["slug"]
-    spec = parse_spec(read_for_fold(folder / f"{folder.name}.md", project_root))
+    spec_path = folder / f"{folder.name}.md"
+    spec = parse_spec(yaml_checked(read_for_fold(spec_path, project_root), spec_path, project_root))
     loose = folder.parent == store
     if loose:
         home = store / "backlog"
@@ -466,7 +467,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     if taken:
         raise FoldProblem(f"{', '.join(taken)} already exist(s) beside the ticket")
 
-    existing = read_for_fold(ticket, project_root) if ticket.is_file() else ""
+    existing = yaml_checked(read_for_fold(ticket, project_root), ticket, project_root) if ticket.is_file() else ""
     existing_requirements = section_body(existing, "Requirements")
     offset = max((int(n) for n in R_LINE.findall(existing_requirements)), default=0)
     ids = {f"CAP-{n}": f"R{n + offset}" for n in spec["capabilities"]}
@@ -635,6 +636,15 @@ def read_for_fold(path: Path, project_root: Path) -> str:
         return path.read_text(encoding="utf-8")
     except (OSError, UnicodeError) as error:
         raise FoldProblem(f"{relative(path, project_root)} cannot be read: {error}") from error
+
+
+def yaml_checked(text: str, path: Path, project_root: Path) -> str:
+    """`text`, once its frontmatter reads as YAML, so a bad one stops the fold before anything changes."""
+    try:
+        yaml.load("\n".join(split_frontmatter(text)[0]), Loader=yaml.BaseLoader)
+    except yaml.YAMLError as error:
+        raise FoldProblem(f"{relative(path, project_root)} has invalid frontmatter: {error}") from error
+    return text
 
 
 def text_files(root: Path, *, skip: tuple[Path, ...] = ()) -> list[Path]:
