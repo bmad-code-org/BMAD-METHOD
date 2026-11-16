@@ -92,9 +92,9 @@ John coaches the PRD as usual, and tells you up front that your project adds rul
 
 ## Step 4: See What the Coach Read
 
-Ask `bmad-customize` to show the merged PRD template: John's PRD template merged with every extension of it, the extensions first, as the coach reads it at the start of every run. Your file's text sits at the top, under a line naming its path.
+Ask `bmad-customize` to show the merged PRD template: John's PRD template merged with every extension of it, the extensions first, as the next run reads it; a run already finished read the template as it stood then. Your file's text sits at the top, under a line naming its path.
 
-If a rule ever seems ignored, look here first. Text that is not in the merged template never reaches the coach.
+If a rule ever seems ignored, look here first. Text that is in neither the merged template nor the files its `guidance` and `methods` name never reaches the coach.
 
 ## Step 5: When Changes Outgrow an Extension
 

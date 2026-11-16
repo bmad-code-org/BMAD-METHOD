@@ -30,7 +30,7 @@ Each push gets a brief of exactly these parts and nothing of the conversation be
 
 1. The target: its path, the section if partial, and that its structure (headings, template slots) is a constraint, not content to push. A target of a few lines is quoted in the brief instead.
 2. Purpose and consumer, in a line or two.
-3. What is settled: the constraints the author worked under, decisions already made, alternatives already rejected, one line each, so the push does not reopen them. Take them from the target and what the caller passed.
+3. What is settled: the constraints the author worked under, decisions already made, alternatives already rejected, one line each, so the push does not reopen them. Take them from the target, what the caller passed, and, on a direct call, this conversation.
 4. The method: its name, gist and form line from `show`, quoted.
 5. The return, sized to the target, a few lines of form and at most five findings for a single choice: the form as the body, then a `## Findings` list, each with location, what is wrong or missing, and the proposed change; only what is specific to this draft, nothing that would be true of any draft of its kind.
 
