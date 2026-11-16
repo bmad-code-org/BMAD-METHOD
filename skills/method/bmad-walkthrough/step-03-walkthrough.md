@@ -66,11 +66,13 @@ the review narrative.
 - **Draw:** Diagram the mechanism of the block, or of the whole
   change, showing only what the linked code does and marking what is
   new or changed, in a rendered view the host offers; say which.
-  Pick the kind from what is new: dependencies, a flow across
-  components, or states. Use plain labeled boxes and arrows unless
-  the user asks for UML. Save the source in the walkthrough folder
-  and link it from the log. Suggest it when the change adds structure
-  the code doesn't show in one place.
+  Pick the kind from what is new: a class diagram for new types and
+  dependencies, a sequence diagram for a flow across components, or
+  a state diagram for states. Ask whether the user wants UML or plain
+  labeled boxes and arrows; the answer holds for the rest of the
+  review. Save the source in the walkthrough folder and link it from
+  the log. Suggest it when the change adds structure the code doesn't
+  show in one place.
 - **Wrap-up:** The review is finished. Guess the follow-through
   this work was for (e.g. merge the PR, write the review, commit
   and push if they edited) and ask the user if that is what they
