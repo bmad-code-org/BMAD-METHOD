@@ -28,7 +28,7 @@ Ask for a run in plain words, naming the skill and the mode.
 Run a baseline eval on skills/acme-release-notes with 3 runs per case.
 ```
 
-`bmad-eval` finds the cases in the skill's `evals/` folder, then in `evals/<skill-name>/` under the project. It will not invent cases. It shows a summary before starting: the skill, cases, modes, output folder, and command.
+`bmad-eval` finds the cases in `evals/<skill-name>/` at the root of the repository or project holding the skill, outside the skill so they never install with it. It will not invent cases. It shows a summary before starting: the skill, cases, modes, output folder, and command.
 
 :::caution[Runs bypass permission prompts]
 Nobody is there to answer a prompt, so runs turn them off. They are not contained unless the recorded command wraps your tool in a sandbox.
@@ -36,7 +36,7 @@ Nobody is there to answer a prompt, so runs turn them off. They are not containe
 
 ## Write Cases
 
-A case is an input, a rubric, an optional `state_prefix`, and optional fixture files. Cases live in `evals/cases.json`, and [Eval Format](../reference/eval-format.md) has the full format.
+A case is an input, a rubric, an optional `state_prefix`, and optional fixture files. Cases live in `evals/<skill-name>/cases.json`, and [Eval Format](../reference/eval-format.md) has the full format.
 
 - **Use real inputs.** Copy real requests, with their typos and casual wording. A tidy input tests a situation the skill rarely meets.
 - **Write rubric entries a wrong output cannot pass.** "`brief.md` exists" passes for an empty file. "`brief.md` names the mid-market insurer segment" does not.

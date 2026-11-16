@@ -84,7 +84,7 @@ def load_cases(data: object) -> list[dict]:
 
 
 def default_skill_name(path: Path) -> str:
-    # <skill>/evals/cases.json names the skill two levels up.
+    # <skill>/evals/cases.json names the skill two levels up; evals/<skill>/cases.json, one.
     parent = path.resolve().parent
     return parent.parent.name if parent.name == "evals" else parent.name
 

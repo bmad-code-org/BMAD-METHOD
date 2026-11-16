@@ -46,7 +46,7 @@ For a description past its two parts, or with a phrase that is not an anchor, na
 
 ## Trigger eval
 
-Offer it once, unless it ran this session; run it on a yes. If `{target}/evals/triggers.json` is absent, write it from the discovery: 8 to 10 queries that should fire, varied in wording and buried in larger requests, and 8 to 10 near misses that share vocabulary but should not. Then invoke the `bmad-eval` skill in trigger mode on `{target}`.
+Offer it once, unless it ran this session; run it on a yes. If `{evals}/triggers.json` is absent, write it from the discovery: 8 to 10 queries that should fire, varied in wording and buried in larger requests, and 8 to 10 near misses that share vocabulary but should not. Then invoke the `bmad-eval` skill in trigger mode on `{target}` with `{evals}/triggers.json`.
 
 When the description is revised from failures, change its contexts and anchors, never paste a failed query's words into it, and show the revision before applying it.
 

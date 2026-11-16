@@ -130,6 +130,20 @@ class ScanPathsTest(unittest.TestCase):
             self.assertEqual(code, 1)
             self.assertEqual(rules(data), [("evals/cases.json", "absolute-path")] * 2)
 
+    def test_absolute_fixture_path_in_root_eval_cases_fires(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".git").mkdir()
+            skill = make_skill(
+                root, {"SKILL.md": "---\nname: bmad-demo\ndescription: 'Demo. Use when testing.'\n---\n\nBody.\n"}
+            )
+            cases = root / "evals" / "bmad-demo" / "cases.json"
+            cases.parent.mkdir(parents=True)
+            cases.write_text(json.dumps([{"files": ["/tmp/a.md", "files/b.md"]}]), encoding="utf-8")
+            code, data = scan(skill)
+            self.assertEqual(code, 1)
+            self.assertEqual(rules(data), [("evals/bmad-demo/cases.json", "absolute-path")])
+
     def test_python_call_fires_and_uv_run_does_not(self):
         with tempfile.TemporaryDirectory() as tmp:
             skill = make_skill(

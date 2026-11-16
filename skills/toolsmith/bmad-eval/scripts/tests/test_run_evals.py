@@ -27,6 +27,8 @@ def make_project(root: Path, command: list[str] | None = None) -> tuple[Path, Pa
     skill = root / "skills" / "greet"
     write(skill / "SKILL.md", "---\nname: greet\ndescription: Greets. Use when greeting.\n---\nSay hi.\n")
     write(skill / "scripts" / "__pycache__" / "x.pyc", "")
+    write(skill / "evals" / "cases.json", "[]")
+    write(skill / "assets" / "evals" / "kept.md", "")
     write(root / "fixtures" / "notes.md", "fixture\n")
     cases = root / "evals" / "cases.json"
     write(
@@ -82,6 +84,10 @@ class RunEvalsTest(unittest.TestCase):
             staged = run_dir / "skill" / "c1" / "cwd" / ".agents" / "skills" / "greet"
             self.assertTrue(staged.is_dir() and not staged.is_symlink(), "the skill is copied, not linked")
             self.assertFalse((staged / "scripts" / "__pycache__").exists())
+            self.assertFalse((staged / "evals").exists(), "the skill's own cases stay out of the run")
+            self.assertTrue(
+                (staged / "assets" / "evals" / "kept.md").is_file(), "only the top-level evals/ is left out"
+            )
             self.assertFalse((run_dir / "bare" / "c1" / "cwd" / ".agents").exists(), "bare config stages nothing")
             self.assertEqual((run_dir / "skill" / "c1" / "cwd" / "fixtures" / "notes.md").read_text(), "fixture\n")
             case = run_dir / "skill" / "c1"

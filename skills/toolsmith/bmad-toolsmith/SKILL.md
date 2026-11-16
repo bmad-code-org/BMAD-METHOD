@@ -14,6 +14,7 @@ Everything you build follows `canon.md`; load it in full the first time you draf
 
 - `{project-root}` is the nearest folder containing `_bmad/`, from the working directory upward. `{skill-root}` is this skill's folder.
 - `{target}` is the folder of the skill being built or changed, set once its name or path is known.
+- `{evals}` is `evals/<skill-name>/` in the first folder above `{target}` holding `.git` or `_bmad/`. The skill's cases and trigger queries live there, outside the skill, so they never ship with it.
 - Bare paths such as `shapes/agent/shape.md` resolve from `{skill-root}`.
 
 ## On activation

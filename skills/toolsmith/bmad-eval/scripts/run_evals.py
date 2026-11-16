@@ -77,10 +77,15 @@ def stage_skill(skill_path: Path, cwd: Path, skills_subdir: str) -> Path:
     """Copy the skill where the harness discovers skills inside the workspace.
 
     A copy, not a symlink: a run that edits its staged skill must not touch the source or
-    the other cases.
+    the other cases. A skill's own `evals/` stays behind, so the run never sees its rubric.
     """
     dest = cwd / skills_subdir / skill_path.name
-    shutil.copytree(skill_path, dest, dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__", ".git"))
+    skip = shutil.ignore_patterns("__pycache__", ".git")
+
+    def ignore(folder: str, names: list[str]) -> set[str]:
+        return skip(folder, names) | ({"evals"} if Path(folder) == skill_path else set())
+
+    shutil.copytree(skill_path, dest, dirs_exist_ok=True, ignore=ignore)
     return dest
 
 
