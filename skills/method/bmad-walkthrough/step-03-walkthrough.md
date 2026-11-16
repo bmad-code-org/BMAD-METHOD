@@ -63,10 +63,14 @@ the review narrative.
   offers; say which. Save them in the walkthrough folder and link
   them from the log. Suggest it when the target is observable and
   the user would rather watch than drive.
-- **Draw:** Diagram the block's mechanism, showing only what the
-  linked code does, in a rendered view the host offers; say which.
-  Save the source in the walkthrough folder and link it from the
-  log. Suggest it when the mechanism has several moving parts.
+- **Draw:** Diagram the mechanism of the block, or of the whole
+  change, showing only what the linked code does and marking what is
+  new or changed, in a rendered view the host offers; say which.
+  Pick the kind from what is new: dependencies, a flow across
+  components, or states. Use plain labeled boxes and arrows unless
+  the user asks for UML. Save the source in the walkthrough folder
+  and link it from the log. Suggest it when the change adds structure
+  the code doesn't show in one place.
 - **Wrap-up:** The review is finished. Guess the follow-through
   this work was for (e.g. merge the PR, write the review, commit
   and push if they edited) and ask the user if that is what they

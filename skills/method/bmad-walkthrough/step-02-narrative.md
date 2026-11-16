@@ -20,6 +20,10 @@ unused before creating it.
 If you are running in a sidebar of VS Code, Cursor, or another
 editor, open the narrative file in the editor.
 
+If the change adds structure the code doesn't show in one place,
+offer the Draw move for the whole change in one line: the kind and
+why.
+
 ## CHECKPOINT
 
 Is the narrative file on disk? Block 1 links into it. Do not load
