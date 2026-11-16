@@ -42,7 +42,7 @@ Start with an extension. Move to a copy only when your changes outgrow it, becau
 
 ## What a Run Reads
 
-When a run starts, the skill merges the template and every extension of it into one file and works from that file alone, the extensions first so their rules win. To see exactly what the coach reads, ask `bmad-customize` to show the merged template.
+When a run starts, the skill merges the template and every extension of it into one file and works from that file alone, the extensions first so their rules win. To see exactly what the coach reads, ask `bmad-customize` to show the merged template; the files its `guidance` and `methods` name are read beside it.
 
 Settings that cover every document, such as doc standards, reviewers, where output goes and whether HTML views are made, live in `_bmad/custom/bmad-facilitate.toml` instead of a template.
 

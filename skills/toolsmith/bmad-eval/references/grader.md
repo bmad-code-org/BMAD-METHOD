@@ -65,7 +65,7 @@ The grader receives:
       }
     ],
     "uncovered": [
-      "The brief invented a competitor not present in the input or the transcript; no assertion would have caught this."
+      "The brief invented a competitor not present in the input, the memo or the transcript; no assertion would have caught this."
     ],
     "overall": "Assertions check structure but not content fidelity in two places."
   }

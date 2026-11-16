@@ -66,7 +66,7 @@ Strong patterns for process discipline:
 - Transcript tool-call patterns, such as "the transcript contains a call invoking bmad-review."
 - Phase ordering, such as "the polish call occurs after the brief Write and before the final JSON block."
 - Read-only enforcement, such as "the input brief.md is byte-identical to the fixture and no Write or Edit targeted it."
-- Bidirectional fidelity, such as "every decision the user made in the transcript is reflected in the brief, and no untagged claim in the brief is absent from the input or the transcript."
+- Bidirectional fidelity, such as "every decision the user made in the transcript is reflected in the brief, and no untagged claim in the brief is absent from the input, the files it names, and the transcript."
 
 Most process-discipline checks are deterministic reads of the transcript and filesystem, so the grader confirms them by quoting evidence rather than judging.
 
