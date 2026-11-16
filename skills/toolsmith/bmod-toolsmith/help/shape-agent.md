@@ -12,7 +12,7 @@ The agent's menu lists what it does. Each item either runs an installed skill th
 
 ## Documents
 
-An agent whose work includes documents a person talks through, such as appraisal reports, carries them as templates the `bmad-facilitate` skill runs instead of coaching them itself. Smithy has the engine write each template, puts it in the agent's `doc-templates/`, or `assets/` for an agent outside a module, and wires the agent to hand off to the engine, which brings the questions, the review, resume in a new chat and team customization. The agent adds its persona and domain knowledge. When no persona is needed, the template alone is the smaller build.
+An agent whose work includes documents a person talks through, such as appraisal reports, carries them as templates the `bmad-facilitate` skill runs instead of coaching them itself. Smithy has the engine write each template, puts it in the module record's `doc-templates/` (the agent's own folder when it is a single-skill module), or the agent's `assets/` outside a module, and wires the agent to hand off to the engine, which brings the questions, the review, resume in a new chat and team customization. The agent adds its persona and domain knowledge. When no persona is needed, the template alone is the smaller build.
 
 ## Customizing an agent
 
