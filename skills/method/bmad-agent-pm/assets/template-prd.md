@@ -98,7 +98,7 @@ Altitude sets what this document decides: keep a line when the level below would
 <!-- include when: the work is one or two stories. Each with acceptance criteria. -->
 
 ## Decisions
-<!-- optional. One line per decision: what was chosen, why, and the alternative it beat. A decision deferred on purpose names what would trigger making it. There is no addendum: detail stays in the memlog, a decision worth its own record goes to `decision-record`, a technical one to `bmad-architecture`, an edge case to the epic that meets it. -->
+<!-- optional. One line per decision: what was chosen, why, and the alternative it beat. A decision deferred on purpose names what would trigger making it. There is no addendum: a decision worth its own record goes to `decision-record`, a technical one to `bmad-architecture`, an edge case to the epic that meets it. -->
 
 ## Open questions
 <!-- OQ-N, each with an owner, when it is needed and the FRs or gates it blocks. Each becomes a ticket or research. -->

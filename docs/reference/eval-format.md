@@ -85,7 +85,7 @@ A wrong output must not be able to pass an expectation. A weak one is worse than
 | Negative assertions | "does not introduce content from unrelated sections" |
 | Frontmatter | "frontmatter contains title, status, created, updated" |
 | Bounded output | "the final message contains a JSON object with intent='create'" |
-| Side artifacts | ".memlog.md captures the pricing decision with its rejected alternative" |
+| Side artifacts | "the Decisions section records the pricing decision with its rejected alternative" |
 | Tool calls | "the transcript contains a call invoking bmad-editorial-review-prose" |
 | Phase order | "the polish call occurs after the brief Write and before the final JSON block" |
 | Read-only inputs | "the input is byte-identical to the fixture" |

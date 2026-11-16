@@ -60,8 +60,8 @@ Talk to John, the Product Manager (`bmad-agent-pm`), to create, update, or valid
   protagonist.
 - **Update** reconciles the PRD with a change signal, surfacing conflicts with
   earlier decisions before applying anything.
-- **Validate** critiques without changing and writes the findings to
-  `review-*.md` files beside the PRD.
+- **Validate** critiques without changing anything, gives the findings, and
+  offers an update from them.
 
 The PRD describes capabilities, not implementation: features grouped, with
 functional requirements under stable IDs and non-functional requirements in
@@ -125,7 +125,7 @@ one run per ticket. No leaf file needs to be pulled first.
 
 :::note[What each skill produces]
 John (`bmad-agent-pm`): `<id>-<slug>.md`, such as `prd-<slug>.md` or
-`business-case-<slug>.md`, or `review-*.md` findings.
+`business-case-<slug>.md`, or validation findings.
 Mary (`bmad-agent-analyst`): `brief-<slug>.md`, `prfaq-<slug>.md` or `brd-<slug>.md`. Each document
 lands in its own `<type>-<slug>/` folder in the active initiative's folder,
 or in the output folder when no initiative is active. Sofia writes the

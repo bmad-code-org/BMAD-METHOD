@@ -62,11 +62,11 @@ Strong patterns for artifact correctness:
 
 Strong patterns for process discipline:
 
-- Side-artifact existence paired with content, such as ".memlog.md captures the pricing decision with its rejected alternative and rationale."
+- Side-artifact existence paired with content, such as "decisions.md records the pricing decision with its rejected alternative and rationale."
 - Transcript tool-call patterns, such as "the transcript contains a call invoking bmad-review."
 - Phase ordering, such as "the polish call occurs after the brief Write and before the final JSON block."
 - Read-only enforcement, such as "the input brief.md is byte-identical to the fixture and no Write or Edit targeted it."
-- Bidirectional fidelity, such as "every decision in the memlog is reflected in the brief, and no claim in the brief is absent from the input or the memlog."
+- Bidirectional fidelity, such as "every decision the user made in the transcript is reflected in the brief, and no untagged claim in the brief is absent from the input, the files it names, and the transcript."
 
 Most process-discipline checks are deterministic reads of the transcript and filesystem, so the grader confirms them by quoting evidence rather than judging.
 

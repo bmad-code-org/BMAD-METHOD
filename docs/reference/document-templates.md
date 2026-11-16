@@ -47,7 +47,7 @@ The BMad Method also ships the planning templates John (`bmad-agent-pm`) and Mar
 | Drive questions from a catalog | `security-review`, `methods-security.csv` | The `methods` frontmatter names a CSV of key questions |
 | Walk the sections in order, each with its own voice | `prfaq` in `bmad-agent-analyst/assets/` | `paced: true` in the frontmatter, and each section comment is the brief for that part |
 | Change how a path runs | `security-review`, `stance` | The comment says what the fast path does for this document |
-| Use the shared planning rules | Any shipped template | `guidance: guidance-planning` adds stakes levels, `[ASSUMPTION]` tags in the body, ids and testable requirements |
+| Use the shared planning rules | Any shipped template | `guidance: guidance-planning` adds stakes levels, ids and testable requirements |
 | Review against its own rubric | `proposal`, `rubric-proposal.md` | The `rubric` frontmatter names the file |
 | Set the order and what is required | Any shipped template | `facilitation_order` lists the sections by id, `?` on those not required |
 | Include a section only when it applies | `proposal`, Alternatives | `alternatives?` in the order and an `include when:` section comment |
