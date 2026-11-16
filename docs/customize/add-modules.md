@@ -7,10 +7,6 @@ sidebar:
 
 A module is a set of skills that belong together, plus a `bmod-<code>` record folder that tells the `bmad` skill about them. You add one with the Skills CLI, then run `bmad setup <code>` to configure it. There is no separate installer, registry, or build step.
 
-:::note[Using v6.12?]
-v6.12 adds modules through `npx bmad-method install`, with `--custom-source` for Git URLs and local paths. That flow is documented on the [V6.12 branch](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12) and summarized at the end of this page.
-:::
-
 ## Official modules
 
 | Module | What it adds | Source |
@@ -47,21 +43,3 @@ When a newer version exists for a module installed from a tag, `bmad status` rep
 Ask Smithy, the `bmad-toolsmith` skill, to scaffold a module, add skills and agents to it, and validate it. [Toolsmith](../toolsmith/toolsmith.md) describes what it builds and how.
 
 A module needs a `bmod-<code>` record folder holding a `bmod.toml`, a stub `SKILL.md`, and a `help/help.md` that `bmad` reads to guide users. Each of its skills carries a small `bmod.toml` that names the record. A module of one skill needs no record folder: that skill's own `bmod.toml` holds both tables, and its `help/`, `doc-templates/` and `roster.toml` sit in the skill folder. Founder is built this way. A repository with several modules gives each one its own folder under `skills/`, so `npx skills add owner/repo/skills/<code>` installs one whole. Publish the repository and others add it with `npx skills add`. To test before publishing, add it from the local folder.
-
-## Modules in v6.12
-
-v6.12 reads modules from the official list in `npx bmad-method install`, or from a Git URL or local path you give it:
-
-| Input | Example |
-| --- | --- |
-| HTTPS or SSH Git URL | `https://github.com/org/repo`, `git@github.com:org/repo.git` |
-| URL with a subfolder or `@ref` | `https://github.com/org/repo/tree/main/my-module`, `https://github.com/org/repo@v1.2.0` |
-| Local path | `/Users/me/projects/my-module` |
-
-Pass a source on the command line with `--custom-source`; separate several sources with commas.
-
-```bash
-npx bmad-method install --directory . --custom-source /path/to/my-module --tools claude-code --yes
-```
-
-A source with `.claude-plugin/marketplace.json` lists its plugins for you to pick from. Without one, the installer scans the folder for skills and treats them as one module. Quick update (`--action quick-update`) refreshes installed modules from their recorded sources, and a full update (`--action update`) lets you add or remove them.

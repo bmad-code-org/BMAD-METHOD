@@ -8,7 +8,7 @@ sidebar:
 You already know Build from small projects. Here, you will use it in a specific
 version of Django: first for one bounded command change, then for three related
 stories under one epic. The two exercises demonstrate the
-[one-session and epic-sized planning paths](../plan/choose-a-planning-path.md).
+[one-session and epic-sized planning paths](../start/how-bmad-works.md#size-and-stakes).
 
 :::note[Prerequisites]
 Use a macOS or Linux shell with Git, Node.js 20.12+ and `npx`,
@@ -267,5 +267,5 @@ Retrospective reads the epic's `tickets.toml` and joined plans, then checks the 
 Now [install BMad in your own repository](../start/install-bmad.md), then use
 the `bmad-build` skill to make a change you want. See
 [Build a Change](../build/build-a-change.md) for the attended path. Use
-[Choose a Planning Path](../plan/choose-a-planning-path.md) to decide
+[How BMad Works](../start/how-bmad-works.md) to decide
 when a change needs a spec, automation, or the full project flow.

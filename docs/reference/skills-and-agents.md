@@ -72,7 +72,7 @@ Every installation includes the core module: eleven skills that work in any proj
 
 ### bmad
 
-The BMad hub. Ask it a question and it answers from the installed modules and recommends the next skill: it reads the active initiative, lists the `<type>-<slug>/` folders already written there, and puts the next steps in priority order with their skill commands. It also runs `bmad setup` and `bmad status` for the project's runtime, `bmad migrate method` to move a v6 project onto the current layout, and shows, switches, creates, or clears the active initiative.
+The BMad hub. Ask it a question and it answers from the installed modules and recommends the next skill: it reads the active initiative, lists the `<type>-<slug>/` folders already written there, and puts the next steps in priority order with their skill commands. It also runs `bmad setup` and `bmad status` for the project's runtime, `bmad migrate method` to move a project from an earlier BMad version onto the current layout, and shows, switches, creates, or clears the active initiative.
 
 **Input:** a question in plain language, or one of the commands above. **Output:** an answer with the prioritized next steps, or the command's result.
 
@@ -133,19 +133,19 @@ Writes and verifies customization overrides for installed skills, so you can cha
 
 Facilitates a brainstorming session using proven creative techniques, guiding you toward 100 or more ideas before organizing them. It shifts creative domain periodically to prevent clustering.
 
-**Input:** a topic or problem statement, plus optional context. **Output:** a self-contained `brainstorm.html` keepsake and an optional `brainstorm-<topic>.md` for downstream skills. See [Explore and Validate an Idea](../plan/explore-and-validate-an-idea.md).
+**Input:** a topic or problem statement, plus optional context. **Output:** a self-contained `brainstorm.html` keepsake and an optional `brainstorm-<topic>.md` for downstream skills. See [Clarify the Idea](../clarify/clarify-the-idea.md#generate-or-pressure-test-an-idea).
 
 ### bmad-deep-recon
 
 Researches a topic to support a decision, three ways: drafts a research prompt for the tool you already use, turns a finished report into a cited summary other skills consume, or runs the research here with parallel web searches. Built-in types cover market, domain, technical, competitive, user-voice, and academic literature research, plus choosing between candidates. It also answers questions about your own repository from its code and git history: a question one file answers gets a cited answer in chat, and anything larger a document that cites a line or commit for every claim and that `bmad-build` reads as evidence.
 
-**Output:** a cited `research-<topic>.md` and an optional HTML briefing; codebase research also writes each decision record you approve. See [Research a Decision](../plan/research-a-decision.md).
+**Output:** a cited `research-<topic>.md` and an optional HTML briefing; codebase research also writes each decision record you approve. See [Clarify the Idea](../clarify/clarify-the-idea.md#research-a-decision).
 
 ### bmad-forge-idea
 
 Pressure-tests a half-formed idea in a questioning conversation, one question at a time, with different personas probing its weak points, until you can act on it or drop it with confidence.
 
-**Output:** a `forge-report.html` keepsake every run, plus a `forge-<slug>.md` brief when the idea hardens. See [Explore and Validate an Idea](../plan/explore-and-validate-an-idea.md#pressure-test-an-idea-with-forge-idea).
+**Output:** a `forge-report.html` keepsake every run, plus a `forge-<slug>.md` brief when the idea hardens. See [Clarify the Idea](../clarify/clarify-the-idea.md#generate-or-pressure-test-an-idea).
 
 ### bmad-facilitate
 
@@ -165,7 +165,7 @@ Puts your installed agents, or custom personas, in one conversation, in characte
 
 Makes a long document, such as a large PRD, architecture or manual, cheap for an agent to navigate. It assesses the document first and recommends one of three outcomes: leave it as it is, add a detailed contents list with line ranges, or split it word for word into a map and shards. It never rewrites content: a script does the cutting and checks that nothing was lost. Each shard's frontmatter links back to the main file and holds its map entry, so any agent can change the document by following the note in the main file; running the skill again rebuilds the map from the shards and rechecks them. A long document that is kept and edited is split, and one that has to stay one file gets a contents list; see [Prepare Long Documents for Agents](../plan/prepare-long-documents-for-agents.md). Transcripts, chat exports and meeting notes go to `bmad-ingest` instead.
 
-**Input:** a markdown or text document; convert other formats first. **Output:** in the document's own folder, a main file named after the folder holding a note and the map, the shards, the frozen original in `.source/`, and an entry in its `.memlog.md`; or, for a contents list, the same file with the list added.
+**Input:** a markdown or text document; convert other formats first. **Output:** in the document's own folder, a main file named after the folder holding a note and the map, the shards, and the frozen original in `.source/`; or, for a contents list, the same file with the list added.
 
 ### bmad-ingest
 
@@ -184,7 +184,7 @@ The BMad Method module adds the six agents above and these workflow skills. The 
 
 | Skill                           | Purpose                                                                                           | See                                                                                                    |
 | ------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `bmad-agent-pm`                 | John, the Product Manager: create, update, or validate a PRD or another planning document        | [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)          |
+| `bmad-agent-pm`                 | John, the Product Manager: create, update, or validate a PRD or another planning document        | [Write a PRD](../plan/write-a-prd.md)          |
 | `bmad-ux`                       | Capture the UX vision as `DESIGN.md` and `EXPERIENCE.md`                                          | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
 | `bmad-architecture`             | Record the architecture decisions that keep separately built parts consistent                     | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
 | `bmad-project-context`          | Set up, refresh, or audit the repository's agent instructions                                     | [Set and Maintain Project Context](../existing-codebases/set-and-maintain-project-context.md)          |
@@ -193,7 +193,7 @@ The BMad Method module adds the six agents above and these workflow skills. The 
 | `bmad-code-review`              | Review code changes with several independent reviewers, then triage the findings                  | [Review a Change](../build/review-a-change.md)                                                         |
 | `bmad-walkthrough`              | Guide a human review of a commit, PR, file, or directory, one block at a time                      | [Walk Through a Change](../build/walk-through-a-change.md)                                             |
 | `bmad-qa-generate-e2e-tests`    | Generate automated API and end-to-end tests for implemented features                              | [Test Completed Work](../build/test-completed-work.md)                                                 |
-| `bmad-retrospective`            | Review a completed epic against its evidence and decide whether to accept it                      | [Finish an Epic](../build/finish-an-epic.md)                                                           |
+| `bmad-retrospective`            | Review a completed epic against its evidence and decide whether to accept it                      | [Finish an Epic](../learn/finish-an-epic.md)                                                           |
 
 ## Toolsmith Skills
 

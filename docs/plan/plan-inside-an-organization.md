@@ -2,7 +2,7 @@
 title: 'Plan Inside an Organization'
 description: How the full planning path works when several people must agree on the product, several engineers build it in parallel, and someone has to sign off — who owns which document, where approval happens, and how change flows.
 sidebar:
-  order: 2
+  order: 6
 ---
 
 Use this page when the work belongs to an organization rather than to you:
@@ -17,7 +17,7 @@ A single builder, or a small team that already agrees, does not need most of
 what follows. A forged idea, a PRFAQ, a brainstorm intent, or a
 well-written issue goes straight to Sofia, the Product Owner
 (`bmad-agent-po`), who writes the requirements into the ticket and slices it.
-[Choose a Planning Path](./choose-a-planning-path.md) covers that route.
+[How BMad Works](../start/how-bmad-works.md) covers that route.
 Sofia will tell you if the input is too thin; until she does, no PRD is
 required.
 
@@ -74,7 +74,8 @@ Linear, and a review cadence, and all of it stays.
   skill reads the code and records the conventions already there rather than
   proposing new ones.
 - **Your tracker stays your tracker.** Jira remains where the organization
-  plans, reports, and reviews. Sofia publishes leaf files when needed; build status lives in local joined plans. Tracker status is mirrored separately and never makes a build skip work.
+  plans, reports, and reviews. Sofia publishes leaf files when needed; build status lives in local joined plans. Tracker status is mirrored separately and never makes a build skip work. [Map Your Tracker to the Ticket Tree](../reference/map-your-tracker.md)
+  shows how your hierarchy maps onto the tree.
 - **Your reviews stay your reviews.** The five sign-off moments below are
   where the skills produce something reviewable. Put your existing approvals
   at those points and the documents the skills write become the material

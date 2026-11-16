@@ -2,7 +2,7 @@
 title: 'Prepare Long Documents for Agents'
 description: 'When bmad-shard-pro splits a long document into small files, when it adds a contents list instead, and when it leaves the document alone.'
 sidebar:
-  order: 9
+  order: 8
 ---
 
 Use the `bmad-shard-pro` skill to make a long document, such as a large PRD, an imported spec or a vendor manual, cheap for agents to read and maintain. This page explains which of its three outcomes fits your document.
