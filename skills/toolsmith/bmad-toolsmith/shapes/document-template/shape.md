@@ -26,13 +26,13 @@ The agent adds a persona and domain knowledge and leaves facilitation to the eng
 
 - A request to create, update or validate one of its documents invokes `bmad-facilitate`, passing:
   - the agent's persona, the intent, and the document or inputs in play;
-  - every template of its that fits, found with `list_templates.py --agent <skill> --brief`, not its pick unless the user named one;
+  - every template of its that fits, not its pick unless the user named one, found with `uv run {project-root}/_bmad/scripts/list_templates.py {project-root}/_bmad/custom/facilitate-templates ~/.bmad/facilitate-templates <its libraries> --root <each skills folder the host has active> --agent <skill> --brief`;
   - as template libraries, its `assets/` and its resolved `[workflow] template_libraries`, when it has either;
   - headless when it is, and the next steps to name at close.
 - It never writes a template's document itself, headless included: the sections, the review and the view all come from the engine.
-- `bmad-facilitate` is in its `required_skills` when it has a `bmod.toml`.
+- `bmad-facilitate` is in its `required_skills` when it has a `bmod.toml`. When it is not installed, the agent says so and offers `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-facilitate`.
 - No `[workflow] template_libraries` by default. Add it only when the agent will be shared and its templates may live outside the project.
-- A rendered agent passes `{{ initiative_folder }}/<id>-<slug>/` as the output folder, one per document. A memory agent's hand-off is one capability file, with its persona taken from the sanctum.
+- A rendered agent passes no output path: the engine's default already puts each document in its own folder under the initiative's. A memory agent's hand-off is one capability file, with its persona taken from the sanctum.
 
 ## Check
 

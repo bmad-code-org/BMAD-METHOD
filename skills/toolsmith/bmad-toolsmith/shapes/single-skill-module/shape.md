@@ -10,7 +10,7 @@ A later second skill turns this into `shapes/multi-skill-module/shape.md`, whose
 - `SKILL.md` and the rest of the skill from the skill shape the execution plan chose.
 - `help/help.md` from `shapes/single-skill-module/assets/help-template.md`: what the skill gives the user, written for the `bmad` help agent.
 - `roster.toml` from `shapes/multi-skill-module/assets/roster-template.toml`, only when the skill is an agent.
-- `doc-templates/`, only when the skill ships document templates for `bmad-facilitate`: one `template-<id>.md` per template, its frontmatter carrying `template: <id>` and `agents:` naming the skill, with any rubric beside it. `shapes/document-template/shape.md` has the rest.
+- `doc-templates/`, only when the skill ships document templates for `bmad-facilitate`: one `template-<id>.md` per template, its frontmatter carrying `template: <id>` and, when the skill offers it, `agents:` naming it, with any rubric beside it. `shapes/document-template/shape.md` has the rest.
 - `migration-<n>.toml`, only when a new version must change files in users' projects; `bmad migrate` runs them in `<n>` order. Ask the user for its contents.
 
 ## Rules

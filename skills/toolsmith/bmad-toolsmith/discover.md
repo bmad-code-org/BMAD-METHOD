@@ -19,7 +19,7 @@ These settle a skill:
 
 Name only the one shape the answers reach; an agent that writes documents also names the document template:
 
-- A person talking something through until a document comes out is a document template, alone or carried by an agent. A template alone needs only the document, its reader, a real example, who offers it and where it goes; the rest of this section and Registration are skipped.
+- A person talking something through until a document comes out is a document template, alone or carried by an agent. Settle here whether it stands alone or an agent carries it. A template alone needs only the document, its reader, a real example, who offers it and where it goes; the rest of this section and Registration are skipped.
 - A persona with a menu is an agent.
 - Memory across sessions is a memory agent: used daily for a month, its thirtieth session would differ from the first. "Nice if it remembered" is a stateless agent with `persistent_facts`. For a memory agent, also ask: will the owner hand it material to keep, teach it new capabilities, have it work on a schedule with nobody present, and does it own or tend anything beyond its memory that people or other agents rely on and that must outlive it? The answers set its files in the plan.
 - Mostly deterministic work is a script-backed utility.
@@ -82,7 +82,7 @@ Present it under that title, and wait for a yes or changes:
   - Else `~/.claude/skills/<name>` or `~/.agents/skills/<name>` when the skill is for the user everywhere or there is no project.
 - The files it will have, one line each, and any script worth writing because the work is deterministic or would be rewritten every run.
 
-A plan for a template alone holds only the document and its reader, the template id, where the file goes and who offers it; approval loads `shapes/document-template/shape.md` in place of an approach.
+A plan for a template alone holds only the document and its reader, the template id, where the file goes and who offers it; approval records it as below and loads `shapes/document-template/shape.md` in place of an approach.
 
 Approval sets `{target}` and fixes the execution plan. Record it: `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {reports_folder}/<name>-build` (skip `init` when that log exists), then `memlog.py append --workspace {reports_folder}/<name>-build --type decision --text "<line>"` per plan line and `--type note` per discovery answer it rests on. Without `_bmad/` there is no memlog; the plan stays in the conversation.
 

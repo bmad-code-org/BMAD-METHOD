@@ -31,7 +31,7 @@ Changing the persona or the menu is the `bmad-customize` skill's job, never a ca
 
 ## Documents
 
-An agent that writes documents a person talks through carries them as templates `bmad-facilitate` runs, and the plan names both shapes: load `shapes/document-template/shape.md` for where they go and the hand-off. The agent never writes a template's document itself.
+An agent that writes documents a person talks through carries them as templates `bmad-facilitate` runs, and the plan names both shapes: load `shapes/document-template/shape.md` whole. The agent never writes a template's document itself.
 
 ## Persona
 
