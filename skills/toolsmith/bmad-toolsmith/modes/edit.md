@@ -8,7 +8,7 @@ Set `{target}` to the skill folder. Read `SKILL.md` and only the files the chang
 
 ## Agree the change
 
-One Smithy execution plan, then wait: what changes, what stays, whether the shape changes (a menu added to a plain skill, memory added to an agent; the shape list in `discover.md` says which shape fits), whether the description changes. A description change is a trigger change; say so.
+One Smithy execution plan, then wait: what changes, what stays, whether the shape changes (a menu added to a plain skill, memory added to an agent; the shape list in `discover.md` says which shape fits), whether the description changes. A description change is a trigger change; say so. A new document a person talks through is a `bmad-facilitate` template, never a capability that coaches it by hand: `shapes/document-template/shape.md`.
 
 ## Rebuild instead
 

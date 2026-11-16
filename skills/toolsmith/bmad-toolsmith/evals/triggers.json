@@ -166,5 +166,25 @@
   {
     "query": "build the CSV export feature from story 2.3",
     "should_trigger": false
+  },
+  {
+    "query": "make a document template for our vet clinic's patient intake so the team gets coached through it the same way every time",
+    "should_trigger": true
+  },
+  {
+    "query": "I need an agent for my car dealership that writes appraisal reports for trade-ins",
+    "should_trigger": true
+  },
+  {
+    "query": "add a risks section to every PRD template we use",
+    "should_trigger": false
+  },
+  {
+    "query": "coach me through our patient intake document for Biscuit, the new beagle",
+    "should_trigger": false
+  },
+  {
+    "query": "change our intake template so it also asks for the owner's phone number",
+    "should_trigger": false
   }
 ]

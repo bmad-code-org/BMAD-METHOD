@@ -1,6 +1,6 @@
 ---
 title: 'Shapes of a Skill'
-description: 'The shapes Smithy builds: a plain skill, an agent with capabilities, a memory agent, rendered skills and agents, a script-backed utility, and single- and multi-skill modules.'
+description: 'The shapes Smithy builds: a plain skill, an agent with capabilities, a memory agent, rendered skills and agents, a script-backed utility, a document template, and single- and multi-skill modules.'
 sidebar:
   order: 4
 ---
@@ -14,6 +14,7 @@ A shape is what a skill looks like on disk. Smithy works out the shape from the 
 | Memory agent | An agent that keeps a memory folder and wakes as the same self | The agent must build up knowledge across sessions |
 | Rendered skill or agent | Files filled from the team's settings before each run | You ask for one; a shared plain skill gets about the same from a `customize.toml` |
 | Script-backed utility | A thin `SKILL.md` over tested scripts | Most of the job is mechanical |
+| Document template | A template `bmad-facilitate` runs, alone or carried by an agent | A person talks something through and a document comes out |
 
 Registration is a separate choice. Any of these shapes can stand alone as a single-skill module, join a module, or stay outside the registry. See [Modules and Registration](modules.md).
 
@@ -76,6 +77,12 @@ A request that names what you want runs the matching capability. Asked what it d
 ## Script-Backed Utility
 
 A thin `SKILL.md` names the outcome and when to run which script, and tested scripts do the work. It fits jobs with one right answer per input: transforming files, counting, checking structure, and generating from fixed rules. The prose keeps the part that needs judgment, which is what to do with the result. See [Scripts](write-a-good-skill.md#use-scripts-for-work-with-one-right-answer).
+
+## Document Template
+
+When a person talks something through and a document comes out, such as an appraisal report or a patient intake, the build is a template for `bmad-facilitate`, not a skill that coaches by hand. The engine then brings the questions, the review, resume in a new chat and team customization. Smithy proposes the smallest fit: a template alone, then an agent that carries templates when you want a persona or domain knowledge across documents, and a skill only when coaching cannot do the job.
+
+`bmad-facilitate` writes the template, because it holds the rules for a good one; Smithy decides where it goes and wires it in. A module member's templates go in its record's `doc-templates/`, and a template alone in `_bmad/custom/facilitate-templates/`. The agent hands every document to the engine and lists `bmad-facilitate` in `required_skills`. See [Write a Document Template](../customize/write-a-document-template.md) for the file format.
 
 ## Changing Shape Later
 

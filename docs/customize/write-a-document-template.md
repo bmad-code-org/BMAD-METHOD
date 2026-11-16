@@ -22,6 +22,8 @@ BMad installed with the core tools, and `bmad setup` run. Templates go in `_bmad
 
 ## Add a template to the library
 
+The quickest way is to ask `bmad-facilitate` to make a template for the document, such as "bmad-facilitate, make a template for vehicle appraisal reports". It coaches you through one, with the rules below built in, and saves it in `_bmad/custom/facilitate-templates/`. When an agent should offer it, ask Smithy (`bmad-toolsmith`) instead, who has the engine write it and wires the agent to it. The rest of this page is the format, for writing or reading one by hand.
+
 Save the template in `_bmad/custom/facilitate-templates/`, with any rubric or method catalog beside it. The skill lists every markdown file there whose frontmatter has `template:`. Nothing else needs registering.
 
 ```yaml

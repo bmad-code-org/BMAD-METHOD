@@ -2,7 +2,7 @@
 
 An agent that keeps a sanctum: its own memory at `_bmad/memory/<skill>/` under `{project-root}`. It wakes on its identity files and a memory map and reads small, well-named memory files as a conversation reaches them, so waking cost does not grow with what it knows.
 
-Load `shapes/agent/shape.md` first and keep its rules for capability files, the description and the roster. Its Files section, menu, persona fields and activation steps do not apply: here every capability is a file `wake.py` lists, the sanctum holds the persona, and the bootloader has its own activation.
+Load `shapes/agent/shape.md` first and keep its rules for capability files, the description, the roster and documents. Its Files section, menu, persona fields and activation steps do not apply: here every capability is a file `wake.py` lists, the sanctum holds the persona, and the bootloader has its own activation.
 
 ## What discovery's answers set
 
