@@ -42,6 +42,9 @@ Typical moments:
 Moves you can pick: Second opinion, Formal review, Test, Drive, Demo, Draw,
 Wrap-up. Formal review prefers `bmad-code-review` when it is installed. You
 can also ask for something that was not suggested, or just ask a question.
+Your team can add, replace or remove moves with `[[workflow.moves]]` in
+`_bmad/custom/bmad-walkthrough.toml`; see
+[Customize BMad](../customize/customize-bmad.md).
 
 ## What It Is Not
 
