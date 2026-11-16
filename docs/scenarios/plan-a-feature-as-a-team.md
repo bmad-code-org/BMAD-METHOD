@@ -31,10 +31,11 @@ two parts: once for the initiative, then once for each epic.
    [Write a PRD](../plan/write-a-prd.md).
 
    ```text wrap
-   /bmad-agent-pm create a PRD for room check-in from the rooms call note and facilities-email.md
+   /bmad-agent-pm Help us work out room check-in from the rooms call note and facilities-email.md
    ```
 
-   With no initiative active, John first offers the `bmad` skill to create
+   John proposes the document that fits and says why. For requirements the
+   whole team builds from, choose the PRD. With no initiative active, John first offers the `bmad` skill to create
    one: accept, so the PRD and the initiative Sofia writes share one folder.
 
    Validate it before the meeting where facilities settles the no-show

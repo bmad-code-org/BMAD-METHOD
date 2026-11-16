@@ -28,9 +28,11 @@ prerequisite.
 
 ### 1. Start with Everything You Have
 
-Ask for John by name or say what you want, and point him at your inputs, such
-as a brief, research, cited notes, or an existing PRD from Confluence or
-Notion. With no initiative active, he first offers the `bmad` skill to create
+Ask for John by name, tell him what you're trying to achieve, and point him at
+your inputs, such as a brief, research, cited notes, or an existing PRD from
+Confluence or Notion. You don't need to name a document: he proposes the one
+that fits, says why, and names close alternatives, and nothing starts until you
+confirm. Naming one, as in "a PRD", skips that choice. With no initiative active, he first offers the `bmad` skill to create
 one: accept, so the PRD and the initiative Sofia writes from it share one
 folder. He opens with a brain dump: why the document exists, who will act on
 it, and the full picture. Then, in a separate message, he echoes back the purpose, the reader,
@@ -85,8 +87,14 @@ never used, and `facilities-email.md`, where facilities set out its rules.
 **You:**
 
 ```text wrap
-/bmad-agent-pm create a PRD for room check-in from the rooms call note and facilities-email.md
+/bmad-agent-pm Help me work out room check-in: rooms get booked and never used. Read the rooms call note and facilities-email.md
 ```
+
+**John:** A PRD fits this: the check-in rules people must agree on before
+anyone builds. If you first need to decide whether it's worth doing at all, an
+opportunity write-up comes before it. Start the PRD?
+
+**You:** Yes, the PRD.
 
 **John:** Tell me everything first: why this PRD, who acts on it, and every
 input I should read.

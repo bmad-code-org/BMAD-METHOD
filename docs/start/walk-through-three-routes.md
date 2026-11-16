@@ -183,6 +183,12 @@ shows the other order, where Sofia writes and slices first.
 The new initiative becomes the active one, so BMad works on it by default.
 Part 2's initiative stays as it was. BMad may go straight on to the brief.
 
+:::tip[Outside This Walkthrough]
+You don't need to list the documents. Tell John, the Product Manager, what
+you're trying to achieve, and he proposes the planning document that fits and
+says why. Part 3 names the brief and the PRD so every reader gets the same run.
+:::
+
 ### 2. Write the Brief
 
 A brief is a one- or two-page summary of the product, why it matters, and who
