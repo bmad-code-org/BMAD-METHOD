@@ -20,9 +20,11 @@ unused before creating it.
 If you are running in a sidebar of VS Code, Cursor, or another
 editor, open the narrative file in the editor.
 
-If the change adds structure the code doesn't show in one place,
-offer the Draw move for the whole change in one line: the kind and
-why.
+Humans often understand boxes and arrows better than walls of code.
+If the change is bigger than 50 lines and adds structure that is not
+contained in one relatively small place in the code, offer the Draw
+move for the whole change, in 50 tokens or less: the suggested kind
+of drawing and why.
 
 ## CHECKPOINT
 
