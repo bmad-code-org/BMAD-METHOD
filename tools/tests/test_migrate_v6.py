@@ -135,6 +135,15 @@ class MigrateV6Tests(unittest.TestCase):
             {"core": {"future_key": "x"}, "modules": {"bmm": {"new_setting": 1}}},
         )
 
+    def test_a_config_file_saved_with_a_byte_order_mark_is_cleaned(self):
+        user = self.bmad / "custom" / "config.user.toml"
+        user.write_bytes(b'\xef\xbb\xbf[core]\nuser_name = "Ann"\nfuture_key = "x"\n')
+        stale = [{"file": "_bmad/custom/config.user.toml", "key": "core.user_name"}]
+
+        self.assertEqual(self.migrate()["stale_config_keys"], stale)
+        self.assertEqual(self.migrate("--clean")["removed_keys"], stale)
+        self.assertEqual(tomllib.loads(user.read_text(encoding="utf-8")), {"core": {"future_key": "x"}})
+
     def test_clean_with_nothing_to_remove_writes_nothing(self):
         before = snapshot(self.project)
 
@@ -744,6 +753,18 @@ class FoldSpecsTests(unittest.TestCase):
         write(loose / ".memlog.md", MEMLOG_BALL)
         write(self.store / "backlog" / "bug-slice.md", "---\nid: 4\ntype: bug\n---\n\n# Slice\n")
         write(self.store / "backlog" / "tickets.toml", "next_id = 9\n")
+
+        self.fold()
+
+        text = (self.store / "backlog" / "story-caddie.md").read_text(encoding="utf-8")
+        self.assertTrue(text.startswith("---\nid: 9\n"), msg=text)
+
+    def test_a_backlog_tickets_toml_saved_with_a_byte_order_mark_still_sets_the_next_id(self):
+        loose = self.store / "spec-caddie"
+        write(loose / "spec-caddie.md", spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY)
+        write(loose / ".memlog.md", MEMLOG_BALL)
+        write(self.store / "backlog" / "bug-slice.md", "---\nid: 4\ntype: bug\n---\n\n# Slice\n")
+        (self.store / "backlog" / "tickets.toml").write_bytes(b"\xef\xbb\xbfnext_id = 9\n")
 
         self.fold()
 

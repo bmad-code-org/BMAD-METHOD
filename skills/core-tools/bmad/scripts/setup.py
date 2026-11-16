@@ -522,7 +522,8 @@ def existing_user_config(project_root: Path) -> tuple[str | None, dict]:
     if not path.is_file():
         raise Exception(f"user config is not a file: {path}")
     try:
-        text = path.read_text(encoding="utf-8")
+        # utf-8-sig: Windows editors can save a byte-order mark, which tomllib rejects.
+        text = path.read_text(encoding="utf-8-sig")
     except (OSError, UnicodeError) as error:
         raise Exception(f"cannot read user config {path}: {error}") from error
     return text, parse_toml(text, path)
@@ -546,7 +547,7 @@ def custom_gitignore_state(project_root: Path) -> str:
     if not gitignore.exists() and not gitignore.is_symlink():
         return "missing"
     try:
-        lines = {line.strip() for line in gitignore.read_text(encoding="utf-8").splitlines()}
+        lines = {line.strip() for line in gitignore.read_text(encoding="utf-8-sig").splitlines()}
     except (OSError, UnicodeError):
         return "unprotected"
     return "current" if lines & GITIGNORE_COVERS_USER_CONFIG else "unprotected"
@@ -1108,7 +1109,7 @@ def existing_team_config(project_root: Path) -> tuple[str | None, dict]:
     if not path.is_file():
         raise Exception(f"team config is not a file: {path}")
     try:
-        text = path.read_text(encoding="utf-8")
+        text = path.read_text(encoding="utf-8-sig")
     except (OSError, UnicodeError) as error:
         raise Exception(f"cannot read team config {path}: {error}") from error
     return text, parse_toml(text, path)

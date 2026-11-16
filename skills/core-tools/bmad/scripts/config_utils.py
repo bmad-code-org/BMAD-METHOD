@@ -24,8 +24,8 @@ def load_toml(path: Path, *, required: bool = False) -> dict[str, Any]:
     if not path.is_file():
         raise ConfigError(f"TOML layer is not a file: {path}")
     try:
-        with path.open("rb") as stream:
-            parsed = tomllib.load(stream)
+        # utf-8-sig: Windows editors can save a byte-order mark, which tomllib rejects.
+        parsed = tomllib.loads(path.read_text(encoding="utf-8-sig"))
     except tomllib.TOMLDecodeError as error:
         raise ConfigError(f"failed to parse {path}: {error}") from error
     except OSError as error:

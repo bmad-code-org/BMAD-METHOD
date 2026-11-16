@@ -2850,6 +2850,27 @@ class BmadConfigScopeTests(unittest.TestCase):
                 self.assertIsNone(report["next"])
             self.assertEqual(gitignore.read_text(encoding="utf-8"), "# *.user.toml\nnotes/\n")
 
+    def test_files_saved_with_a_byte_order_mark_are_read_and_left_alone(self):
+        # Windows PowerShell 5.1 (Set-Content -Encoding UTF8) and Notepad's "UTF-8 with BOM" write one.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, skill = self.fixture(Path(temp_dir))
+            self.answer_all(project, skill)
+            files = [
+                project / "_bmad" / "config.toml",
+                project / "_bmad" / "custom" / "config.user.toml",
+                project / "_bmad" / "custom" / ".gitignore",
+            ]
+            for path in files:
+                path.write_bytes(b"\xef\xbb\xbf" + path.read_bytes())
+            before = {path: path.read_bytes() for path in files}
+
+            self.assertEqual(self.pending(project, skill), [])
+            for report in (status_report(self, project, skill), setup_report(self, project, skill)):
+                self.assertEqual(report["custom_gitignore"], "current")
+                self.assertEqual(report["problems"], [])
+            self.assertFalse(report["changed"])
+            self.assertEqual({path: path.read_bytes() for path in files}, before)
+
     def test_a_custom_folder_without_a_gitignore_gets_one(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             project, skill = self.fixture(Path(temp_dir))
