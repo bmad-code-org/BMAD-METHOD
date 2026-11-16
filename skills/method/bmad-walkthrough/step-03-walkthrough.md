@@ -68,11 +68,11 @@ the review narrative.
   new or changed, in a rendered view the host offers; say which.
   Pick the kind from what is new: a class diagram for new types and
   dependencies, a sequence diagram for a flow across components, or
-  a state diagram for states. Ask whether the user wants UML or plain
-  labeled boxes and arrows; the answer holds for the rest of the
-  review. Save the source in the walkthrough folder and link it from
-  the log. Suggest it when the change adds structure the code doesn't
-  show in one place.
+  a state diagram for states. Label each relationship in words
+  ("implements", "calls", "owns") rather than relying on arrowhead or
+  diamond notation. Save the source in the walkthrough folder and
+  link it from the log. Suggest it when the change adds structure the
+  code doesn't show in one place.
 - **Wrap-up:** The review is finished. Guess the follow-through
   this work was for (e.g. merge the PR, write the review, commit
   and push if they edited) and ask the user if that is what they
