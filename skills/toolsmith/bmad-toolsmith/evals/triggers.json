@@ -182,5 +182,9 @@
   {
     "query": "coach me through our patient intake document for Biscuit, the new beagle",
     "should_trigger": false
+  },
+  {
+    "query": "change our intake template so it also asks for the owner's phone number",
+    "should_trigger": false
   }
 ]

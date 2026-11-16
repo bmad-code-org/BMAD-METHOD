@@ -8,7 +8,7 @@ A template the `bmad-facilitate` skill runs: the coaching for one kind of docume
 - An agent with templates, when the user wants a persona to talk to, domain knowledge across several documents, or work besides the documents.
 - A skill only when coaching cannot do the job: the output is not a document, or deterministic work dominates.
 
-A plan for a template alone names no approach and no registration; this shape is the whole build, and `ship.md` does not run.
+A plan for a template alone names no approach and no registration: its name is the template id, `{target}` is the template file, this shape is the whole build, and `ship.md` does not run.
 
 ## Writing it
 
@@ -24,11 +24,15 @@ Invoke the `bmad-facilitate` skill for a `document-template` run. Pass the docum
 
 The agent adds a persona and domain knowledge and leaves facilitation to the engine.
 
-- A request to create, update or validate one of its documents invokes `bmad-facilitate`, passing the agent's persona, the intent, the document or inputs in play, every template of its that fits (not its pick, unless the user named one), its `assets/` and its resolved `{workflow.template_libraries}`, when it has either, as template libraries, headless when it is, and the next steps to name at close.
+- A request to create, update or validate one of its documents invokes `bmad-facilitate`, passing:
+  - the agent's persona, the intent, and the document or inputs in play;
+  - every template of its that fits, found with `list_templates.py --agent <skill> --brief`, not its pick unless the user named one;
+  - as template libraries, its `assets/` and its resolved `[workflow] template_libraries`, when it has either;
+  - headless when it is, and the next steps to name at close.
 - It never writes a template's document itself, headless included: the sections, the review and the view all come from the engine.
 - `bmad-facilitate` is in its `required_skills` when it has a `bmod.toml`.
 - No `[workflow] template_libraries` by default. Add it only when the agent will be shared and its templates may live outside the project.
-- A rendered agent passes `{{ initiative_folder }}` as the output folder. A memory agent's hand-off is one capability file, with its persona taken from the sanctum.
+- A rendered agent passes `{{ initiative_folder }}/<id>-<slug>/` as the output folder, one per document. A memory agent's hand-off is one capability file, with its persona taken from the sanctum.
 
 ## Check
 

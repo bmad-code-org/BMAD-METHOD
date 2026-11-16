@@ -57,6 +57,24 @@ class CreateTest(unittest.TestCase):
             self.assertEqual(code, 0, data)
             self.assertEqual(data["bmod"], "ok")
 
+    def test_doc_templates_dir(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, data, err = run(
+                "--name",
+                "acme-agent-vic",
+                "--dest",
+                tmp,
+                "--shape",
+                "agent",
+                "--dirs",
+                "doc-templates",
+                "--description",
+                GOOD_DESCRIPTION,
+            )
+            self.assertEqual(code, 0, err)
+            self.assertIn("doc-templates/", data["created"])
+            self.assertTrue((Path(tmp) / "acme-agent-vic" / "doc-templates").is_dir())
+
     def test_no_bmod_without_flag(self):
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp) / "bmad-demo"

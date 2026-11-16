@@ -10,7 +10,7 @@ The contract a built skill meets; the canon covers the prose.
 
 ## Layout
 
-- `SKILL.md` at the root; `references/` for prompt content a branch loads, one level deep; `scripts/` for deterministic code, tests in `scripts/tests/`; `assets/` for templates and examples of emitted output.
+- `SKILL.md` at the root; `references/` for prompt content a branch loads, one level deep; `scripts/` for deterministic code, tests in `scripts/tests/`; `assets/` for templates and examples of emitted output; `doc-templates/` in a module record for the `bmad-facilitate` templates it ships.
 - Folders stay flat; group files with a filename prefix (`scan-*.md`), not a subfolder. Only a rendered skill keeps `workflow.md` and step files at root.
 - An agent whose routes would not fit a flat folder may group them in subfolders by axis, as `bmad-toolsmith` does. Each route file then names the conventions it depends on, because the entry may have left context by the time it loads.
 
