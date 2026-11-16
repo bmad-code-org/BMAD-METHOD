@@ -18,7 +18,7 @@ When the user wants to rethink the skill from its outcomes rather than adjust it
 
 Make the change to the standard of `canon.md` and cut any line the change makes dead. Fit the existing voice and structure.
 
-When the change touches the description or adds a capability, write or extend `{target}/evals/triggers.json` with queries for the new ground and near misses, so ship's trigger eval covers the change.
+When the change touches the description or adds a capability, write or extend `{evals}/triggers.json` with queries for the new ground and near misses, so ship's trigger eval covers the change.
 
 For a rendered skill, edit the sources (`workflow.md`, `step-*.md`, `customize.toml`), never the rendered snapshot.
 

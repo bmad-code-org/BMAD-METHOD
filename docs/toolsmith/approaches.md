@@ -31,7 +31,7 @@ The ship step only validates here, because Smithy did not write the content. The
 
 ## Eval-First
 
-Smithy writes `evals/cases.json` before the skill exists, from your real requests, and confirms the cases with you. Each rubric entry is a pass or fail condition, never a quality word. Smithy then writes the smallest skill aimed at the cases, not at the rubric's wording, because a skill that quotes its grader passes the test and fails the user.
+Smithy writes `evals/<skill-name>/cases.json` at the repository root before the skill exists, from your real requests, and confirms the cases with you. Each rubric entry is a pass or fail condition, never a quality word. Smithy then writes the smallest skill aimed at the cases, not at the rubric's wording, because a skill that quotes its grader passes the test and fails the user.
 
 The loop below runs until a stop condition is met, and Smithy tells you which run folder holds the passing run.
 

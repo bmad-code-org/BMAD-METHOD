@@ -28,4 +28,4 @@ Judge what the tools do not check:
 
 One line per finding: file, what is wrong, the fix. Then the counts, and whether the target would install and load. Offer to fix through `modes/edit.md`.
 
-When `evals/triggers.json` exists, offer a trigger eval once and invoke the `bmad-eval` skill in trigger mode on a yes.
+When `{evals}/triggers.json` exists, offer a trigger eval once and invoke the `bmad-eval` skill in trigger mode on a yes.

@@ -6,7 +6,7 @@ Every run here invokes the `bmad-eval` skill on `{target}`.
 
 ## Cases
 
-Cases live at `{target}/evals/cases.json` as `{id, input, rubric[], state_prefix, files[]}`, written by the file that loaded this loop. A `state_prefix` places a case mid-flow.
+Cases live at `{evals}/cases.json` as `{id, input, rubric[], state_prefix, files[]}`, written by the file that loaded this loop. A `state_prefix` places a case mid-flow.
 
 ## One round
 

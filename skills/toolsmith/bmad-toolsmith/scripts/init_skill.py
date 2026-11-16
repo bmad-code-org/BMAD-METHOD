@@ -62,7 +62,7 @@ SHAPES = (
     "single-skill-module",
     "multi-skill-module",
 )
-KNOWN_DIRS = ("references", "scripts", "assets", "help", "evals", "doc-templates")
+KNOWN_DIRS = ("references", "scripts", "assets", "help", "doc-templates")
 KEBAB_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 BMAD_NAME_RE = re.compile(r"^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$")
 RECORD_NAME_RE = re.compile(r"^bmod-[a-z0-9]+(?:-[a-z0-9]+)*$")

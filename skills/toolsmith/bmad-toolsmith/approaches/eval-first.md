@@ -10,7 +10,7 @@ Load `shapes/<shape>/shape.md`, then the module shape the registration line name
 
 ## Cases before the skill
 
-Load `approaches/eval-loop.md` for the case format and the loop. From the discovery, write `{target}/evals/cases.json` in that format:
+Load `approaches/eval-loop.md` for the case format and the loop. From the discovery, write `{evals}/cases.json` in that format:
 
 - Inputs are the user's real requests where they exist, as messy as they were typed, because invented cases come out homogeneous and easy.
 - Each rubric entry is a PASS or FAIL condition over the output, transcript or files, never a quality adjective.

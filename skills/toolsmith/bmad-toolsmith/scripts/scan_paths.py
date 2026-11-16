@@ -306,6 +306,18 @@ def scan_retired(content: str, rel: str, retired: dict[str, str]) -> list[dict]:
     return findings
 
 
+def eval_files(skill_root: Path) -> list[tuple[Path, str]]:
+    """The skill's eval JSON in `evals/<name>/` at the root holding it, and in its own `evals/`."""
+    found = [(p, p.relative_to(skill_root).as_posix()) for p in (skill_root / "evals").glob("*.json")]
+    for folder in skill_root.resolve().parents:
+        if (folder / ".git").exists() or (folder / "_bmad").is_dir():
+            found += [
+                (p, p.relative_to(folder).as_posix()) for p in (folder / "evals" / skill_root.name).glob("*.json")
+            ]
+            break
+    return sorted(found, key=lambda item: item[1])
+
+
 def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
     findings: list[dict] = []
     count = 0
@@ -328,7 +340,7 @@ def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
         findings.extend(scan_skill_root_paths(content, rel, skill_root))
         findings.extend(scan_retired(content, rel.as_posix(), retired))
     # Eval cases name fixtures; an absolute path there breaks the run for everyone else.
-    for path in sorted((skill_root / "evals").glob("*.json"), key=lambda p: p.as_posix()):
+    for path, rel in eval_files(skill_root):
         count += 1
         content = path.read_text(encoding="utf-8", errors="replace")
         try:
@@ -345,7 +357,7 @@ def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
                 continue
             findings.append(
                 finding(
-                    path.relative_to(skill_root).as_posix(),
+                    rel,
                     line_of(content, max(content.find(json.dumps(entry)), 0)),
                     "absolute-path",
                     entry,

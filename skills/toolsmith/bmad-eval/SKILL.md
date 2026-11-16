@@ -16,14 +16,14 @@ You run a skill's evals and report what they say. Cite specific findings, flag e
 | quality | Does the output meet the named rubric? | `references/eval-format.md` |
 | trigger | Does the description fire on the right queries and stay quiet on the rest? | the trigger command below; `references/description-optimization.md` to improve the description across rounds |
 
-Read the named reference fully when its mode runs. Cases live in `<skill>/evals/cases.json` and trigger queries as `{query, should_trigger}` in `<skill>/evals/triggers.json`. Writing cases, or converting a skill-creator `evals.json`, follows `references/eval-format.md`.
+Read the named reference fully when its mode runs. Cases live in `evals/<skill-name>/cases.json` at the root of the repository or project holding the skill, and trigger queries as `{query, should_trigger}` in `triggers.json` beside them, outside the skill so they never ship with it. Writing cases, or converting a skill-creator `evals.json`, follows `references/eval-format.md`.
 
 ## On activation
 
 1. Read config with `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder` and customization with `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. Absent keys are fine. `{reports_folder}` is `{workflow.reports_folder}` with `{output_folder}` filled in.
 2. Verify `<skill-path>/SKILL.md` exists; halt with a clear error if not.
 3. When `workflow.harness.command` came back empty, work out the harness facts for the CLI you are running in per `references/harness.md`, prove them on one case, and record them by invoking the `bmad-customize` skill (install: `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-customize`); the runner reads them from there. When nobody is at the keyboard, stop and show the table to record instead.
-4. Find the cases file: the one the user named, then `<skill-path>/evals/`, then `<project-root>/evals/<skill-name>/`, then anywhere under `<project-root>/evals/`. If nothing is found, halt and say so; the runner does not invent cases.
+4. Find the cases file: the one the user named, then `evals/<skill-name>/` in the nearest folder above the skill that has one, then `<skill-path>/evals/` for a skill built elsewhere, then anywhere under `<project-root>/evals/`. If nothing is found, halt and say so; the runner does not invent cases.
 5. Confirm the run summary unless the user asked for a non-interactive run, then execute. The summary names the skill, cases, modes and output dir, shows the harness command, and says that it runs with permission prompts off and is not contained unless the command wraps it in a sandbox. A non-interactive run needs the harness already recorded.
 
 ## Run execution
