@@ -281,7 +281,6 @@ starlight-toc h2,
   line-height: 1.55;
   letter-spacing: -0.008em;
   color: var(--sl-color-gray-2);
-  max-width: 52ch;
 }
 
 .sl-markdown-content :is(p, li) {
