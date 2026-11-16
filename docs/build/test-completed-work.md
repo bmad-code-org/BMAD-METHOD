@@ -2,7 +2,7 @@
 title: 'Test Completed Work'
 description: Choose a test-generation skill after implementation. Use bmad-qa-generate-e2e-tests for simple coverage or bmad-tea-automate for heavier coverage.
 sidebar:
-  order: 4
+  order: 5
 ---
 
 After a change is implemented, decide whether it needs more automated

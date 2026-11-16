@@ -2,7 +2,7 @@
 title: 'Walk Through a Change'
 description: Use bmad-walkthrough to review a commit, PR, file, or directory one block at a time.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 `bmad-walkthrough` is a guided human review. It writes a review narrative,

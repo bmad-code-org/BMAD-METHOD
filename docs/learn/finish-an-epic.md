@@ -1,16 +1,17 @@
 ---
 title: 'Finish an Epic'
-description: Close out a finished epic by reading the evidence it left — the diff, the commits, the plans — and judging the result instead of trusting memory.
+description: Judge a finished epic from the evidence it left (the diff, the commits, the plans) instead of trusting memory.
 sidebar:
-  order: 5
+  order: 2
 ---
 
-Run `bmad-retrospective` when every ticket of an epic is finished. It reads
+Run `bmad-retrospective` when every ticket of an epic (its stories, spikes,
+and bugs) is finished, before Sofia closes the epic. It reads
 what the epic left in the ticket tree — the epic file, each ticket's plan,
 the diff, and the commits — and uses that evidence instead of anyone's
 recollection. It produces a written review, proposed action items and
-decision records, and a verdict on whether the epic met its acceptance
-criteria.
+decision records, and a verdict on whether the epic met its Requirements and
+Done when checks.
 
 ## Why Run It After an Epic
 
@@ -36,26 +37,24 @@ is fresh and the session logs have not been cleared.
   the system.
 - **Follow-through**: whether the previous epic's action items were actually
   done.
-- **An acceptance verdict**: the epic judged against its own acceptance
-  criteria.
+- **An acceptance verdict**: the epic judged against its own Requirements and
+  Done when checks.
 
 Every finding carries a source reference: a file, a line, a commit, a log. A
-claim it can't point at doesn't make the report.
-
-:::note[It reads evidence, it doesn't invent it]
-The retrospective reports what the diff, the commits, and the plans actually
-show. It won't invent a root cause or a pattern the code doesn't back up.
-:::
+claim it can't point at doesn't make the report. Before it reads, it asks
+what you want weighted, such as a story that felt rushed; your answer focuses
+the review but never becomes a finding without a source.
 
 ## What It Reads
 
 The retrospective works on one epic folder in the ticket tree that
 Sofia, the Product Owner (`bmad-agent-po`), keeps (see
-[Break Work into Stories](../plan/break-work-into-stories-and-track-it.md)):
+[The Ticket Tree](../reference/ticket-tree.md)):
 
 - **`tickets/tickets.toml`**: the epic's tickets, in build order.
 - **The epic file**: its `Done when` checks, the criteria the verdict judges.
-- **The initiative's requirements**: what each ticket's `covers` points at.
+- **The epic's requirements**: what each ticket's `covers` points at, and the
+  initiative lines each one cites.
 - **Each ticket's plan and story file**: the plan's frozen decisions,
   triage log, verification, plan changes, and any `## Code Review` blocks;
   the story file only when the ticket was refined.
@@ -65,8 +64,9 @@ Sofia, the Product Owner (`bmad-agent-po`), keeps (see
   they landed.
 
 A ticket counts as finished when it is `built`, `done`, or `dropped`. Builds
-stop at `built`, and only you mark a ticket done, so the retrospective lists
-the tickets still at `built` for you to close.
+stop at `built`; you, or a script or AI session you direct, mark a ticket
+done. Mark them done before the retrospective; it lists any still at
+`built`.
 
 ## What You Get
 
@@ -78,12 +78,43 @@ the tickets still at `built` for you to close.
   mark the epic or any ticket done.
 - **A verdict** of `accepted`, `accepted-with-open-items`, or `rejected`,
   recorded in the document's frontmatter, which tells you whether to start
-  the next epic or hold and fix first. Unfinished tickets make the skill's
-  verdict `rejected`; a human can still override.
+  the next epic or hold and fix first. When the checks aren't met, or any
+  ticket is unfinished, the verdict is `rejected` unless a person overrides
+  it. When you then ask Sofia to close the epic, she checks it against its
+  Done when; if no retrospective exists yet, she offers one first.
 
-A failing epic never closes as quietly accepted. If the criteria aren't met,
-or any of the epic's tickets are still unfinished, and no one overrides the
-call, it closes as not accepted.
+:::note[Example: the room booker]
+In the [room booker](../start/how-bmad-works.md#the-example-app), an office's meeting-room app, epic 1 (door check-in) has all 8 stories
+built. You mark the last one done, then run the retrospective on the
+finished epic:
+
+**You:**
+
+```text wrap
+/bmad-agent-po mark story 1.8 done
+```
+
+```text wrap
+/bmad-retrospective 1
+```
+**`bmad-retrospective`:** Verdict: `accepted-with-open-items`. All three Done when
+checks are met. Open item: nothing tells facilities when a door tablet goes
+offline. People at that door cannot check in, and the server still frees the
+room. Proposed action: alert facilities when a tablet stops reporting.
+
+It files nothing itself. You tell Sofia, then have her close the epic once
+you confirm:
+
+**You:**
+
+```text wrap
+/bmad-agent-po File a bug: nothing alerts facilities when a door tablet goes offline.
+```
+
+```text wrap
+/bmad-agent-po close the door check-in epic
+```
+:::
 
 ## What to Do with the Output
 
@@ -92,9 +123,9 @@ specs automatically.
 
 - **Action items** feed the normal dev loop as fix-now work or fresh tickets.
   The retrospective writes them up; it doesn't execute them.
-- **Spec reconciliations** arrive with the evidence attached, for you to apply
-  to the project contract by hand. An uncertain interpretation never gets
-  written into a spec on its own.
+- **Spec reconciliations** arrive with the evidence attached. Take each to
+  Sofia ("this changed, what now") so she updates the ticket. An uncertain
+  interpretation is never written into a spec on its own.
 - **Decision records** (ADRs) are written beside the code they govern only
   when you approve each one, and committing them is up to you.
 - **The verdict** is the gate. A rejected epic, or one accepted with open

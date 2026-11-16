@@ -1,89 +1,139 @@
 ---
 title: 'Design UX and Architecture'
-description: When UX and architecture work is necessary, and how documented decisions stop agents and epics from implementing a system in conflicting ways.
+description: Decide whether the work needs a UX design or an architecture spine, run bmad-ux and bmad-architecture on the initiative or an epic, and have Sofia adopt their files so every build reads them.
 sidebar:
-  order: 6
+  order: 4
 ---
 
-Use this page to decide whether a change needs UX or architecture work before
-implementation. Most changes do not. Multi-epic and cross-system work usually
-does, because without shared decisions each agent or session makes its own.
+Use this page to decide whether the work needs UX or architecture before
+stories are planned. Most changes need neither. Work whose epics must share
+decisions (stack, contracts, formats, hosting) needs an architecture spine;
+epics that share none skip it.
 
-## Do You Need It?
+| Work | UX and architecture |
+| --- | --- |
+| A clear, local change with established patterns | Usually unnecessary |
+| Several related components with known constraints | Optional, depending on coordination risk |
+| Several epics that must share decisions, or decisions that cross systems | Architecture keeps the builds consistent |
+| A regulated, high-risk, or enterprise initiative | Follow your governance; architecture is normally required |
 
-| Work characteristics                              | Guidance                                                      |
-| ------------------------------------------------- | ------------------------------------------------------------- |
-| Clear, local change with established patterns     | Usually unnecessary                                           |
-| Several related components with known constraints | Optional, based on coordination risk                          |
-| Multiple epics or cross-system decisions          | Needed to align implementation                                |
-| Regulated, high-risk, or enterprise initiative    | Follow required governance; architecture is normally required |
+Sally, the UX Designer (`bmad-agent-ux-designer`), runs `bmad-ux`, and
+Winston, the Architect (`bmad-agent-architect`), runs `bmad-architecture`.
+Both change what `bmad-build` reads, not how it runs: each session still builds
+one story, but every session reads the same decisions, so the parts fit
+together.
 
-If several epics could be implemented by different agents or people, you need
-architecture. If the product has a user interface whose look and behavior
-matter to the outcome, you need UX.
+At the initiative and on each epic, UX goes first and architecture second, so
+the design can inform the technical choices. Architecture reads the
+initiative, so both come after Sofia writes and slices it, though UX can also
+lead earlier and feed the PRD or the initiative directly. BMad doesn't enforce
+the order, so swap them when a technical constraint has to settle what the
+screens can do. For kept code, such as a kept prototype, architecture runs
+before Sofia slices, to record the decisions the code already made. Skip
+either when it has no open questions.
 
-Both change what `bmad-build` reads; neither changes how Build runs. Build
-still runs one session at a time. What changes is that each session reads the
-same decisions, so the sessions fit together.
+When she slices, Sofia offers `bmad-architecture` for the decisions the epics
+share, but she won't prompt for `bmad-ux`. Run it yourself when the epics need
+a shared design system.
 
-## The Problem Without Shared Decisions
+## Design the Experience
 
-When several agents implement different parts of a system with no shared
-guidance, each makes independent technical choices. The results conflict in
-predictable places: one epic exposes REST while another writes GraphQL;
-`snake_case` columns meet `camelCase` ones; Redux in one area and React
-Context in the next; different directory layouts and test patterns per epic;
-session cookies here and JWT there. Each choice is defensible alone. Together
-they produce integration issues discovered mid-sprint, rework, and
-inconsistent patterns.
+Run `bmad-ux` when the interface matters to the outcome; skip it for back-end
+work and internal tools with no real interface. It records your vision, and
+never volunteers its own, in two peer documents: `DESIGN.md` for how the
+product looks (tokens, typography, components) and `EXPERIENCE.md` for how it
+works (structure, states, interactions, accessibility, key flows). When either
+conflicts with a mock, the document wins. With an existing design system,
+`DESIGN.md` references its tokens and records only your changes, and `EXPERIENCE.md`
+records only how your product behaves differently.
 
-## The Architecture Spine
+Choose a Fast path that drafts both with `[ASSUMPTION]` tags, a
+Coaching path with creative tools such as color themes, design directions,
+wireframes, and key-screen mocks, or a design handoff that prepares a
+prompt for an external design tool and folds its output back in. Change the
+files later with `bmad-ux` update, not by editing the ticket.
 
-Run `bmad-architecture` and you get a short architecture document (the
-**spine**). It records only the decisions that would conflict if two people
-made them independently: the design approach, the boundaries, how state is
-changed, who owns shared data. The stack, the folder tree, and the full data
-shape are starting points; the code owns them once they exist.
+## Settle the Decisions Epics Share
 
-One test decides what belongs. If two units built this independently, could
-they choose incompatibly? A decision goes in the spine only when the answer
-is yes, the call is non-obvious, and it is a real trade-off. Everything else
-is left to the code. Each decision gets a stable ID so tickets and stories can
-cite it.
+When several epics or agents build against the same system, each makes its
+own defensible choice, and the choices collide: REST here and GraphQL there,
+`snake_case` meeting `camelCase`, session cookies against JWT. Run
+`bmad-architecture` on the initiative to write a short architecture document,
+the **spine**, that records only the calls two people would otherwise make
+differently.
 
-The skill works from the ticket's requirements, with whatever else you have beside
-them: a long architecture document to shorten, or an existing codebase, where it
-reads the real code and records the conventions already there. Coaching is the default:
-the important calls are shown with the alternatives weighed, then you choose.
-A Fast path drafts the whole spine with `[ASSUMPTION]` tags instead. For a
-new project it recommends a current, well-known starter, because a good one
-already decides a lot of the architecture.
+One test decides what belongs: if two units built this independently, could
+they choose incompatibly? A decision goes in only when the answer is yes, the
+call is non-obvious, and it is a real trade-off. Each decision gets a stable
+id, `AD-1`, `AD-2`, that tickets cite, and the spine lists what it
+deliberately leaves to the code.
 
-Point it at the whole system or at one epic; an epic spine inherits the parent's decisions, records only what the parent left open, and is written in the epic's folder. When Sofia refines an epic, she reminds you that an epic run is one way to flesh it out. When the architecture skill finishes, it offers to add the spine to the ticket's References through Sofia, the Product Owner (`bmad-agent-po`), which is how Build and the readiness gate find it. Seed [project context](../existing-codebases/set-and-maintain-project-context.md) from it so every later skill reads the same rules.
+Coaching is the default, so you need no architecture background: for each big
+call (paradigm, stack or starter, major boundaries, deployment and hosting) it
+lays out the realistic options and why it leans one way, then you choose. For
+a new project it recommends a current, well-known starter, because a good one
+settles a coherent set of decisions for free. On an existing codebase it reads
+the code and confirms the conventions already there instead of re-documenting
+them. On code an earlier initiative built, the code is the source of truth:
+the spine ratifies the invariants it must keep, tagged `[ADOPTED]`, and
+decides only what this initiative adds or changes. One session's worth of work
+needs no spine.
+
+:::note[Example: the room booker]
+In the [room booker](../start/how-bmad-works.md#the-example-app), an office's meeting-room app:
+
+**You:**
+
+```text wrap
+/bmad-ux design the door tablet's check-in screen
+```
+
+It records the screen's four states in `EXPERIENCE.md`: free, booked and
+waiting for check-in, checked in, and just freed. In a new chat:
+
+**You:**
+
+```text wrap
+/bmad-architecture settle the decisions the check-in epics share
+```
+**`bmad-architecture`:** One call your epics would make differently: where the
+no-show timer runs. On the server, an offline tablet can never free a room by
+itself; on the tablet, check-in still works offline. I lean server. Which?
+
+**You:** Server.
+
+It records that as `AD-1` in `architecture-check-in/`. Then, to Sofia:
+
+**You:**
+
+```text wrap
+/bmad-agent-po adopt the design and the spine
+```
+**Sofia:** Added both to the initiative's References; both epics cite `AD-1`,
+and door check-in cites the design.
+:::
+
+## Adopt the Files into the Ticket
+
+A design or a spine helps only if the builds find it. When either skill
+finishes, ask Sofia to adopt its files:
+
+```text wrap
+/bmad-agent-po adopt the spine
+```
+
+She adds them to the initiative's References, and the epics that depend on
+them cite them. A build then reads them beside its story. `bmad-architecture` recommends this
+step itself when it finishes.
+
+Either skill can also run on one epic when the initiative's design or spine
+does not cover it. An epic run writes into the epic's folder. An architecture
+run inherits the parent spine's decisions and records only what it left open;
+for a UX run, ask it to cover only what the initiative's design leaves open.
 
 :::caution[Common mistakes]
 Deciding the API style "as we go", documenting every minor choice, and a spine
-written once and never updated are the three ways this step fails. Document
-decisions that cross epic boundaries, keep the spine current as you learn, and
-tell Sofia when a significant mid-implementation change arrives.
+written once and never updated are the three ways this step fails. Record the
+decisions that cross epic boundaries, and when one changes mid-flight, tell
+Sofia ([Learn and Adjust](../learn/learn-and-adjust.md#a-change-mid-flight)).
 :::
-
-## UX Design
-
-Run `bmad-ux` when user experience matters to the outcome. It produces two
-peer documents: `DESIGN.md` for how the product looks (colors, typography,
-spacing, components) and `EXPERIENCE.md` for how it works (information
-architecture, behavior and states, accessibility, key user flows). Both win
-over any mock or wireframe on conflict.
-
-The facilitator records your vision; it never volunteers colors, patterns, or directions. Three working modes: a Fast path that drafts both documents with `[ASSUMPTION]` tags, a Coaching path that walks the decisions with creative tools (color themes, design directions, wireframes, key-screen mocks), or a design handoff that builds a prompt for an external design tool and folds its output back in. UX can lead the PRD, follow it, or stand alone. Run on one epic, when the initiative's UX does not cover its screens, it writes in the epic's folder.
-
-Skip it for back-end work, internal tooling with no real interface, and
-changes to an existing UI that already has established patterns.
-
-## What Comes Next
-
-The spine and the UX documents become References of the ticket and input to
-[Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md),
-where the readiness gate checks that stories do not depend on decisions
-nothing records.

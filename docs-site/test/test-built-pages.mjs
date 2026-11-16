@@ -22,9 +22,12 @@ function page(relativePath) {
 }
 
 const buildPage = page('build/build-a-change/index.html');
-assert.match(buildPage, /<p class="eyebrow[^"]*">Build<\/p>/);
+assert.match(buildPage, /<p class="eyebrow[^"]*">Build and Verify<\/p>/);
 assert.equal(buildPage.includes(`href="${base}/build/build-a-change/"`), true);
 assert.equal(buildPage.includes('href="https://www.bmadcode.com/philosophy"'), true);
+
+const whyPage = page('start/why-bmad-works-this-way/index.html');
+assert.match(whyPage, /<p class="eyebrow[^"]*">Start<\/p>/);
 
 const unknownSection = page('404.html');
 assert.equal(unknownSection.includes('id="_top"'), true);

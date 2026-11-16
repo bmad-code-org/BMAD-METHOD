@@ -2,7 +2,7 @@
 title: Document Templates
 description: The templates that ship with bmad-facilitate, and which one shows each thing a template can do.
 sidebar:
-  order: 4
+  order: 3
 ---
 
 Use this page to find a shipped template to copy, or to see how a template does something you want. Modules ship them, each in the `doc-templates/` folder beside its `bmod.toml` in your skills folder: `bmod-method`, `bmad-founder-agent-advisor` or `bmod-cis`.
@@ -35,7 +35,28 @@ To change one for your team, extend it instead of copying it, so its updates kee
 | `validation-experiment` | Founder | Testing whether people will pay or act, with the pass mark set first |
 | `character` | Creative Intelligence Suite 0.4.0 and later | A fictional character for a story, game or campaign, on a one-page sheet |
 
-The BMad Method also ships the planning templates John (`bmad-agent-pm`) and Mary (`bmad-agent-analyst`) run, `brief`, `prfaq` and `brd` among them; see [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md).
+## Documents John and Mary write
+
+The BMad Method also ships the planning templates for John, the Product Manager (`bmad-agent-pm`), and Mary, the Business Analyst (`bmad-agent-analyst`). Each template lives in its agent's `assets/` folder. Both agents hand every create, update, and validate to `bmad-facilitate`, so each document works the same way. [Write a PRD](../plan/write-a-prd.md) shows the coaching and fast paths, stakes, and assumption tags they share.
+
+| Document | Who | Level | Fits |
+| --- | --- | --- | --- |
+| Opportunity assessment | John | Initiative | Whether a problem is worth pursuing, before any solution |
+| Experiment card | John | Any | A measured test of one hypothesis, its thresholds set before it runs |
+| Prototype plan | John | Any | A quick build to test an idea, some options, or a look and feel |
+| PRFAQ | Mary | Before an initiative | Whether a concept survives scrutiny, working back from its press release |
+| Brief | Mary | Before an initiative | Why to build a product, or pitching it, in a page or two |
+| Business case | John | Initiative | A funding decision: cost, expected return, go or no-go |
+| Strategy narrative | John | Program | A written argument for leadership to decide a strategy or annual plan |
+| PRD, light PRD | John | Any | Requirements a team builds from; the light one for a very simple project |
+| Shape Up pitch | John | Initiative or epic | A shaped, time-boxed proposal for teams that bet fixed cycles |
+| Program charter | John | Program | One mandate, benefits, scope, and governance across several initiatives |
+| Requirements specification | John | Initiative | Traceable, verifiable requirements for regulated or contracted work |
+| Business requirements document | Mary | Initiative | What the business requires and signs for, when a separate party builds, a sponsor signs, or a regulator or contract expects it |
+| Spec for a coding agent | John | One feature | A feature outside the ticket tree, with tests and acceptance |
+| Launch plan | John | Initiative | Coordinating a built feature's release across teams |
+
+The first seven come before you commit, in Clarify; the rest plan and ship the work. The brief, the PRFAQ, the experiment card, the opportunity assessment, and the pitch are walked one section at a time, in order. A brief from Mary feeds the PRD, but neither requires the other. A business case or strategy narrative stays in prose and ends with a `## For requirements` list of ids, so Sofia can write the initiative from it without a PRD.
 
 ## What a template can do
 

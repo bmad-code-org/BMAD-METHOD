@@ -2,7 +2,7 @@
 title: Eval Format
 description: 'The files bmad-eval reads and writes: cases, trigger queries, rubric expectations, runner commands, harness keys, and run folders.'
 sidebar:
-  order: 3
+  order: 5
 ---
 
 Use this page for the exact formats `bmad-eval` reads and writes. For when to run which mode, see [Eval Runner](../toolsmith/bmad-eval.md).

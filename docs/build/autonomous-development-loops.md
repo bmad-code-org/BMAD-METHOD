@@ -56,7 +56,7 @@ Supported intent shapes include:
 ### Tickets from the Tree
 
 Build Auto reads the tree through `{project-root}/_bmad/method/scripts/tickets.py`,
-the script `bmad setup` installs from Sofia's skill, [`bmad-agent-po`](../plan/break-work-into-stories-and-track-it.md).
+the script `bmad setup` installs from Sofia's skill, [`bmad-agent-po`](../reference/ticket-tree.md#the-script).
 This page describes the repo store, where a ticket's status lives in its plan.
 On a tracker store, `tickets.py mark` refuses to run, so move the ticket on
 the tracker through Sofia (`bmad-agent-po`).

@@ -76,7 +76,7 @@ Coding assistants are effective at implementation, but they often turn unstated 
 - **Guided collaboration** — Use structured workflows and multiple-agent discussions without handing over judgment.
 - **One delivery path** — Move from early thinking through reviewed implementation, correction, and learning.
 
-[See how much planning a change needs →](https://docs.bmad-method.org/plan/choose-a-planning-path/)
+[See how much planning a change needs →](https://docs.bmad-method.org/start/how-bmad-works/)
 
 ## BMad Ecosystem
 
@@ -94,7 +94,7 @@ Install the core method or add official modules for specialized work.
 ## Documentation
 
 - **[Build Your First Change](https://docs.bmad-method.org/start/build-your-first-change/)** — Install BMad and build a small project.
-- **[Choose a Planning Path](https://docs.bmad-method.org/plan/choose-a-planning-path/)** — Pick how much planning a change needs and see what each planning skill produces.
+- **[How BMad Works](https://docs.bmad-method.org/start/how-bmad-works/)** — The four stages, the ticket that is the spec at each level, and where your work starts.
 - **[Start in an Existing Codebase](https://docs.bmad-method.org/existing-codebases/start-in-an-existing-codebase/)** — Add BMad to an existing codebase.
 
 ## Community
