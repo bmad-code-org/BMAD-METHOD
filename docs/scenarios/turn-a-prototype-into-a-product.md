@@ -82,7 +82,8 @@ knows only one floor, and reads the bookings table directly.
 
    Repeat for each story. Then run the retrospective on the epic, and have
    Sofia validate and close it, as in
-   [Finish an Epic](../learn/finish-an-epic.md).
+   [Finish an Epic](../learn/finish-an-epic.md). Then repeat this step for each
+   remaining epic, naming that epic and its own story numbers.
 
 ## What You Have at the End
 

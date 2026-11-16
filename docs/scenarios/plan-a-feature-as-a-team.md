@@ -174,13 +174,15 @@ so agree it as a team or assign it in your tracker. Each owner repeats steps
 10. **Amelia adds a review with `bmad-code-review`,** on top of the quick one
     in `bmad-build`. It is optional for a prototype or internal tool and
     expected for work going to production, unless the build ran a thorough
-    review or a PR review bot covers it.
+    review or a PR review bot covers it. Run it on each story that needs it
+    right after that story's build, before you mark it done and before the
+    next build, so the review covers only that story's changes:
 
     ```text wrap
     /bmad-agent-dev review the code for story 1.2
     ```
 
-11. **Amelia runs `bmad-retrospective`** once every story is done or
+11. **Amelia runs `bmad-retrospective`** once every ticket is done or
     dropped. It judges the finished epic. See
     [Finish an Epic](../learn/finish-an-epic.md).
 

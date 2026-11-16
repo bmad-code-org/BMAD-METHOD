@@ -15,7 +15,7 @@ intended. Every size of work builds the same way, one session at a time.
 | **You produce** | Changed code and tests, one local commit, and a plan recording the run and the story's status |
 | **It is done when** | You have checked the result and marked the story done; the build itself stops at `built` |
 | **Skip it when** | The edit is obvious and low risk: ask your agent directly |
-| **What comes next** | The next ready story. When every story is done or dropped, the retrospective runs and Sofia closes the epic: [Learn and Adjust](../learn/learn-and-adjust.md) |
+| **What comes next** | The next ready story. When every ticket is done or dropped, the retrospective runs and Sofia closes the epic: [Learn and Adjust](../learn/learn-and-adjust.md) |
 
 ## Build One Story at a Time
 
@@ -152,7 +152,11 @@ Approve the plan, then start it again:
 For a `done_checkpoint`, pause after that run until a person says to continue.
 See [Autonomous Development Loops](./autonomous-development-loops.md#tickets-from-the-tree).
 
-A halted run leaves the plan `blocked`, and Sofia's next list shows why.
+A run on a ticket from the tree that halts `blocked` marks the ticket's plan
+`blocked`, creating the plan if the run halted before planning, and Sofia's
+next list shows why. A run on a loose description puts the reason under its
+plan's `## Auto Run Result`, or, with no plan, in
+`bmad-build-auto-result-<slug-or-timestamp>.md` in the initiative folder.
 Settle the reason, then follow
 [Autonomous Development Loops](./autonomous-development-loops.md#plan-status)
 to clear it and run again.

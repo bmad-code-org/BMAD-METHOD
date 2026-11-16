@@ -21,8 +21,10 @@ or ticket that owns it.
 
 ## Finish an Epic
 
-When every story is built, check the ones still at `built` and mark them done,
-with one command per story:
+When every story is built, check that the epic's bugs and spikes are finished
+too: the retrospective accepts an epic only when none of its tickets is
+unfinished. Then check the stories still at `built` and mark them done, with
+one command per story:
 
 ```text wrap
 /bmad-agent-po mark story 1.8 done

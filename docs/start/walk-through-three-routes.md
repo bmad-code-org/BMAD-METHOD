@@ -15,9 +15,10 @@ show BMad's core idea: it sizes the planning to the work.
 Jump to the part that matches your work, or do all three in order.
 
 :::note[Before You Start]
-[Install BMad and run `bmad setup`](./install-bmad.md) in a project that is a
-Git repository with at least one commit. Parts 2 and 3 build Python apps, so
-have Python 3 installed too.
+Each part is a new project. Give each its own Git repository with at least one
+commit, then [install BMad and run `bmad setup`](./install-bmad.md) in it. In
+one shared repository, a later part would build on the code an earlier part
+left. Parts 2 and 3 build Python apps, so have Python 3 installed too.
 :::
 
 ## Terms You'll See
