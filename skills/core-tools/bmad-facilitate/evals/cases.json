@@ -1,0 +1,99 @@
+[
+  {
+    "id": "headless-memo",
+    "input": "Run headless. Use bmad-facilitate to write a pilot plan from files/memo.md with the template at files/template-pilot-plan.md.",
+    "rubric": [
+      "Exactly one new markdown document exists under _bmad-output/, its frontmatter naming `template: pilot-plan` and listing files/memo.md in `sources`.",
+      "No `.memlog.md`, `.template.md` or `review-*.md` file exists anywhere in the workspace outside .claude/.",
+      "The document names Muddy Paws, Lead On and Wag Tails, the 300-reports-in-the-first-month target, and payments, scheduling and chat as out of scope.",
+      "Every claim in the document body that memo.md does not hold is tagged `[ASSUMPTION: ...]` where it lands or listed in an assumptions section or open questions; quote any untagged one as evidence.",
+      "The document contains no `<!-- open -->` or `<!-- settled out` marker.",
+      "The final message ends with a JSON object whose `intent` is `create`, with a `document` key and no `memlog` key."
+    ],
+    "files": [
+      "files/memo.md",
+      "files/template-pilot-plan.md",
+      "_bmad/config.toml",
+      "_bmad/scripts/resolve_customization.py",
+      "_bmad/scripts/resolve_config.py",
+      "_bmad/scripts/list_templates.py",
+      "_bmad/scripts/config_utils.py"
+    ]
+  },
+  {
+    "id": "named-file",
+    "input": "Run headless. bmad-facilitate: pilot plan from files/memo.md using files/template-pilot-plan.md, output to docs/pawpost-pilot.md",
+    "rubric": [
+      "docs/pawpost-pilot.md exists and holds the pilot plan for Pawpost, naming the three Leeds businesses.",
+      "Apart from .claude/ and the staged fixtures, docs/pawpost-pilot.md is the only file written in the workspace: no folder named for the document, no `.html` view, no review files.",
+      "The final message ends with a JSON object whose `document` is docs/pawpost-pilot.md."
+    ],
+    "files": [
+      "files/memo.md",
+      "files/template-pilot-plan.md",
+      "_bmad/config.toml",
+      "_bmad/scripts/resolve_customization.py",
+      "_bmad/scripts/resolve_config.py",
+      "_bmad/scripts/list_templates.py",
+      "_bmad/scripts/config_utils.py"
+    ]
+  },
+  {
+    "id": "resume",
+    "input": "bmad-facilitate, let's pick my Ledgerly pilot plan back up: files/pilot-plan-ledgerly/pilot-plan-ledgerly.md. The template is files/template-pilot-plan.md.",
+    "rubric": [
+      "The final message takes up Success, the first section still marked open, and gives its place in the run (4 of 5 or equivalent).",
+      "The final message does not ask again about the goal, the pilot customers or the scope.",
+      "The Goal, Pilot customers and Scope sections of files/pilot-plan-ledgerly/pilot-plan-ledgerly.md are unchanged.",
+      "No `.memlog.md` exists anywhere in the workspace."
+    ],
+    "files": [
+      "files/pilot-plan-ledgerly/pilot-plan-ledgerly.md",
+      "files/template-pilot-plan.md",
+      "_bmad/config.toml",
+      "_bmad/scripts/resolve_customization.py",
+      "_bmad/scripts/resolve_config.py",
+      "_bmad/scripts/list_templates.py",
+      "_bmad/scripts/config_utils.py"
+    ]
+  },
+  {
+    "id": "fast-finish",
+    "state_prefix": "[The user asked bmad-facilitate for a pilot plan from files/memo.md with the template files/template-pilot-plan.md, on the fast path. You read both and asked one batch: the success measure's date, and whether risks should be included. The user answered:]",
+    "input": "Judge it at the end of the first month. Yes include risks, the big one is walkers losing signal in the park so routes have gaps. Default anything else, skip the walkthrough and finish it, no HTML view.",
+    "rubric": [
+      "A pilot plan document exists under _bmad-output/ with `status: final` in its frontmatter.",
+      "The Success section judges the 300-report target at the end of the first month, and Risks names walkers losing signal with gaps in the route.",
+      "The document names Muddy Paws, Lead On and Wag Tails and keeps payments, scheduling and chat out of scope.",
+      "No `.memlog.md`, `.template.md`, `review-*.md` or `.html` file exists anywhere in the workspace outside .claude/."
+    ],
+    "files": [
+      "files/memo.md",
+      "files/template-pilot-plan.md",
+      "_bmad/config.toml",
+      "_bmad/scripts/resolve_customization.py",
+      "_bmad/scripts/resolve_config.py",
+      "_bmad/scripts/list_templates.py",
+      "_bmad/scripts/config_utils.py"
+    ]
+  },
+  {
+    "id": "new-template",
+    "input": "Run headless. Use bmad-facilitate to make a template for vehicle appraisal reports at our used car dealership. An appraiser inspects a trade-in, records VIN, mileage, condition by area (body, interior, mechanical, tyres), accident history from the history report, and three recent local comps, then gives an offer range. The sales manager reads it to approve the offer. Appraisers always get the reconditioning cost wrong, and they forget to check for open recalls.",
+    "rubric": [
+      "Exactly one `template-*.md` file exists in _bmad/custom/facilitate-templates/, with at most one `rubric-*.md` beside it, and nothing else is written outside .claude/ and the staged fixtures.",
+      "Its frontmatter holds `template`, `version`, a quoted `description`, `not_for`, `facilitation_order`, `title: \"\"` and `status: draft`, and no `sources` key.",
+      "Above the first heading it has `purpose`, `inputs` and `done when` comments, and every `##` heading is followed by a comment.",
+      "Its comments press on reconditioning cost and on checking open recalls.",
+      "It contains no `<!-- open` or `<!-- settled out` marker and no `## Assumptions` heading.",
+      "The transcript runs list_templates.py with `--template` on the new template and the result shows an empty `order_problems`."
+    ],
+    "files": [
+      "_bmad/config.toml",
+      "_bmad/scripts/resolve_customization.py",
+      "_bmad/scripts/resolve_config.py",
+      "_bmad/scripts/list_templates.py",
+      "_bmad/scripts/config_utils.py"
+    ]
+  }
+]

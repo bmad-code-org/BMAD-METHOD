@@ -605,3 +605,13 @@ def test_an_extension_order_that_is_not_a_one_line_list_is_reported_beside_a_goo
     assert found["order_problems"] == [
         f"`facilitation_order` in {tmp_path / 'e.md'} is ignored: it must be a one-line list, such as `[problem, scope?]`"
     ]
+
+
+def test_sources_may_sit_on_both_sides_of_an_option(tmp_path, capsys):
+    first, second = tmp_path / "first", tmp_path / "second"
+    first.mkdir()
+    second.mkdir()
+    (first / "a.md").write_text(template("alpha"))
+    (second / "b.md").write_text(template("beta"))
+    list_templates.main([str(first), "--project-root", str(tmp_path), str(second), "--brief"])
+    assert ids(json.loads(capsys.readouterr().out)) == ["alpha", "beta"]

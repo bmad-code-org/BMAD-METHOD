@@ -449,7 +449,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--brief", action="store_true", help="keep only what choosing a template needs")
     parser.add_argument("--template", help="keep only the template with this id")
     parser.add_argument("--merge", help="with --template, write the template and its extensions as one file here")
-    args = parser.parse_args(argv)
+    args = parser.parse_intermixed_args(argv)
     if not args.sources and not args.root and not args.libraries_of:
         parser.print_usage(sys.stderr)
         return 2
