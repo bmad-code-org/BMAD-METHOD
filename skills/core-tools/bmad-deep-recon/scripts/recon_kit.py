@@ -13,8 +13,20 @@ Subcommands:
   citations RESEARCH_MD
       Cross-check inline [n] markers against the source-appendix table:
       dangling markers (no appendix row) and orphaned rows (never cited).
-  tally MEMLOG_MD
-      Count memlog entries by type, and claim entries by status.
+  ledger FOLDER [--field KEY=VALUE ...]
+      The run's ledger, FOLDER/claims.md: where it is, whether it exists,
+      its frontmatter fields and entry count. With --field and no ledger
+      yet, create it with those fields; an existing ledger is never
+      rewritten. A ledger an earlier version kept as `.memlog.md` is
+      renamed to claims.md first.
+  log FOLDER --type TYPE --text TEXT [--text TEXT ...] [--by WHO]
+      Add entries at the end of the ledger, one `- (TYPE) TEXT` line per
+      --text. TYPE is decision, source, claim, assumption, question or
+      event. Entries are only ever added, so a status change is a new
+      claim line. A claim must carry `status=<word>`, and a ref on it is
+      written `ref=[<number>]`. Parallel calls all land.
+  tally CLAIMS_MD
+      Count ledger entries by type, and claim entries by status.
       Claim lines carry `status=<word>` and optionally `ref=[n]`; for a
       given ref the LAST status wins, so status changes are appends.
   staleness CLAIMS_JSON --windows JSON [--today YYYY-MM-DD]
@@ -142,6 +154,159 @@ def cmd_citations(args) -> int:
         },
         0 if ok else 1,
     )
+
+
+# --- ledger ------------------------------------------------------------------
+
+LEDGER = "claims.md"
+OLD_LEDGER = ".memlog.md"
+FIELD_KEY_RE = re.compile(r"^[A-Za-z_][\w-]*$")
+LOG_TYPES = ("decision", "source", "claim", "assumption", "question", "event")
+
+
+class LedgerError(Exception):
+    pass
+
+
+def ledger_path(folder: Path) -> tuple[Path, bool]:
+    """FOLDER/claims.md and whether it was just taken over from a `.memlog.md` of an earlier version."""
+    path, old = folder / LEDGER, folder / OLD_LEDGER
+    if path.exists() or not old.is_file():
+        return path, False
+    try:
+        os.replace(old, path)
+    except OSError:
+        # A read-only folder, or the file open elsewhere: carry on in the old file.
+        return (path if path.exists() else old), False
+    return path, True
+
+
+def ledger_fields(text: str) -> dict[str, str]:
+    lines = text.splitlines()
+    end = next((i for i in range(1, len(lines)) if lines[i] == "---"), None) if lines[:1] == ["---"] else None
+    fields: dict[str, str] = {}
+    for line in lines[1:end] if end else []:
+        key, sep, raw = line.partition(":")
+        raw = raw.strip()
+        if not sep or not key.strip():
+            continue
+        if raw.startswith('"'):
+            try:
+                raw = str(json.loads(raw))
+            except json.JSONDecodeError:
+                raw = raw.strip('"')
+        elif len(raw) >= 2 and raw[0] == raw[-1] == "'":
+            raw = raw[1:-1].replace("''", "'")
+        fields[key.strip()] = raw
+    return fields
+
+
+def ledger_state(path: Path, **extra) -> dict:
+    if not path.is_file():
+        return {"path": path.as_posix(), "exists": False, **extra}
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as e:
+        raise LedgerError(f"cannot read {path}: {e}") from e
+    entries = sum(1 for ln in text.splitlines() if ln.startswith("- "))
+    return {"path": path.as_posix(), "exists": True, **extra, "fields": ledger_fields(text), "entries": entries}
+
+
+def append_line(path: Path, text: str) -> None:
+    """Add text at end of file in one OS append write, so entries from parallel researchers all land."""
+    data = text.encode("utf-8")
+    if sys.platform != "win32":
+        fd = os.open(path, os.O_WRONLY | os.O_APPEND)
+        try:
+            if os.write(fd, data) != len(data):
+                raise OSError(f"short write appending to {path}")
+        finally:
+            os.close(fd)
+        return
+    # The CRT's append mode seeks then writes in two steps; a handle with only
+    # FILE_APPEND_DATA access makes Windows itself place every write at end of file.
+    import ctypes
+    from ctypes import wintypes
+
+    k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    k32.CreateFileW.argtypes = [
+        wintypes.LPCWSTR,
+        wintypes.DWORD,
+        wintypes.DWORD,
+        ctypes.c_void_p,
+        wintypes.DWORD,
+        wintypes.DWORD,
+        wintypes.HANDLE,
+    ]
+    k32.CreateFileW.restype = wintypes.HANDLE
+    k32.WriteFile.argtypes = [
+        wintypes.HANDLE,
+        ctypes.c_char_p,
+        wintypes.DWORD,
+        ctypes.POINTER(wintypes.DWORD),
+        ctypes.c_void_p,
+    ]
+    k32.WriteFile.restype = wintypes.BOOL
+    k32.CloseHandle.argtypes = [wintypes.HANDLE]
+    file_append_data, share_all, open_existing, normal = 0x4, 0x7, 3, 0x80
+    handle = k32.CreateFileW(str(path), file_append_data, share_all, None, open_existing, normal, None)
+    if handle is None or handle == wintypes.HANDLE(-1).value:
+        raise ctypes.WinError(ctypes.get_last_error())
+    try:
+        written = wintypes.DWORD()
+        if not k32.WriteFile(handle, data, len(data), ctypes.byref(written), None):
+            raise ctypes.WinError(ctypes.get_last_error())
+        if written.value != len(data):
+            raise OSError(f"short write appending to {path}")
+    finally:
+        k32.CloseHandle(handle)
+
+
+def cmd_ledger(args) -> int:
+    folder = Path(args.folder)
+    fields: dict[str, str] = {}
+    for pair in args.field or []:
+        key, sep, value = pair.partition("=")
+        if not sep or not FIELD_KEY_RE.match(key.strip()):
+            raise LedgerError(f"--field expects key=value with a plain key, got {pair!r}")
+        fields[key.strip()] = " ".join(value.split())
+    path, renamed = ledger_path(folder)
+    extra = {"renamed_from": OLD_LEDGER} if renamed else {}
+    if path.exists() or not fields:
+        return out(ledger_state(path, created=False, **extra), 0)
+    fields["created"] = datetime.now().strftime("%Y-%m-%dT%H:%M")
+    front = "".join(f"{k}: {json.dumps(v, ensure_ascii=False)}\n" for k, v in fields.items())
+    try:
+        folder.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        raise LedgerError(f"cannot create {folder}: {e.strerror or e}") from e
+    try:
+        with open(path, "x", encoding="utf-8", newline="\n") as handle:  # "x": two starters cannot both create it
+            handle.write(f"---\n{front}---\n\n")
+    except FileExistsError:
+        return out(ledger_state(path, created=False), 0)
+    except OSError as e:
+        raise LedgerError(f"cannot create {path}: {e.strerror or e}") from e
+    return out(ledger_state(path, created=True), 0)
+
+
+def cmd_log(args) -> int:
+    path, _ = ledger_path(Path(args.folder))
+    if not path.is_file():
+        raise LedgerError(f"no {LEDGER} in {args.folder}; create it with: ledger FOLDER --field topic=...")
+    texts = [" ".join(text.split()) for text in args.text]
+    for text in texts if args.type == "claim" else []:
+        # tally reads exactly these two shapes; anything else would be counted wrong.
+        if not re.search(r"(?<![\w-])status=[\w-]+", text) or re.search(r"(?<![\w-])ref=(?!\[\d+\])", text):
+            raise LedgerError(f"a claim carries status=<word> and, when it has a ref, ref=[<number>]: {text[:60]!r}")
+    tag = f"{args.type} by {args.by}" if args.by else args.type
+    try:
+        cut_off = not path.read_bytes().endswith(b"\n")
+        append_line(path, (chr(10) if cut_off else "") + "".join(f"- ({tag}) {text}\n" for text in texts))
+    except OSError as e:
+        raise LedgerError(f"cannot write {path}: {e.strerror or e}") from e
+    state = ledger_state(path)
+    return out({"path": state["path"], "entries": state["entries"]}, 0)
 
 
 # --- tally -------------------------------------------------------------------
@@ -609,8 +774,20 @@ def main(argv: list[str] | None = None) -> int:
     pc.add_argument("file", help="path to the research report (or - for stdin)")
     pc.set_defaults(func=cmd_citations)
 
-    pt = sub.add_parser("tally", help="count memlog entries by type and claims by status")
-    pt.add_argument("file", help="path to .memlog.md (or - for stdin)")
+    pl = sub.add_parser("ledger", help="the run's claims.md: its state, or create it with --field")
+    pl.add_argument("folder", help="the run folder")
+    pl.add_argument("--field", action="append", metavar="KEY=VALUE", help="frontmatter for a new ledger (repeatable)")
+    pl.set_defaults(func=cmd_ledger)
+
+    pw = sub.add_parser("log", help="add one entry at the end of the ledger")
+    pw.add_argument("folder", help="the run folder")
+    pw.add_argument("--type", required=True, choices=LOG_TYPES)
+    pw.add_argument("--text", required=True, action="append", help="one entry (repeatable)")
+    pw.add_argument("--by", help="who the entry came from")
+    pw.set_defaults(func=cmd_log)
+
+    pt = sub.add_parser("tally", help="count ledger entries by type and claims by status")
+    pt.add_argument("file", help="path to claims.md (or - for stdin)")
     pt.set_defaults(func=cmd_tally)
 
     ps = sub.add_parser("staleness", help="compute re-check dates from freshness windows")
@@ -650,7 +827,7 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     try:
         return args.func(args)
-    except (FileNotFoundError, GitError) as e:
+    except (FileNotFoundError, GitError, LedgerError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
 

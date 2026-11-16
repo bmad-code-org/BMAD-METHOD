@@ -1,6 +1,6 @@
 # Synthesis
 
-The report answers the decision — whether the material came from a native Run or a processed import. **Succinct is the contract**: findings and verdicts, not essays; rationale lives in the memlog; a reader gets the decision-relevant truth in minutes. For Process mode this is the whole point — the summary is what downstream consumers read so nobody reprocesses the original, and sections with nothing behind them collapse to a line rather than pad.
+The report answers the decision — whether the material came from a native Run or a processed import. **Succinct is the contract**: findings and verdicts, not essays; rationale lives in `claims.md`; a reader gets the decision-relevant truth in minutes. For Process mode this is the whole point — the summary is what downstream consumers read so nobody reprocesses the original, and sections with nothing behind them collapse to a line rather than pad.
 
 Assemble `<folder name>.md` in this order, shaped by `{workflow.audience}`:
 
@@ -13,4 +13,4 @@ Assemble `<folder name>.md` in this order, shaped by `{workflow.audience}`:
 7. **Source appendix** — the numbered source table: `[n] | claim/finding it supports | publisher | pub date | accessed | confidence`, the publisher cell a markdown link to the source URL. Every inline `[n]` resolves here.
 8. **Staleness map** — the claims that age fastest, computed not hand-derived: build the claims list (`claim`, `class`, `pub_date`) from the ledger, map the pack's freshness bars to months per class, and run `uv run {skill-root}/scripts/recon_kit.py staleness <claims.json> --windows '<map>'` — render its re-check dates and close by noting the earliest. This is Refresh's work order.
 
-Update the frontmatter (`status: complete`, `updated`, and the verified/unverified counts from `uv run {skill-root}/scripts/recon_kit.py tally {doc_workspace}/.memlog.md` — never hand-counted), log a final `event` in the memlog, and proceed to `references/finalize.md`.
+Update the frontmatter (`status: complete`, `updated`, and the verified/unverified counts from `uv run {skill-root}/scripts/recon_kit.py tally {doc_workspace}/claims.md` — never hand-counted), log a final `event`, and proceed to `references/finalize.md`.

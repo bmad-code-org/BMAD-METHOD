@@ -46,15 +46,15 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 ## Modes
 
-**Create.** Bind `{doc_workspace}` to `{workflow.ux_output_path}/{workflow.run_folder_pattern}/`, with the epic's folder in place of `{workflow.ux_output_path}` when the ticket is an epic. Create `.working/` and `imports/`; seed the memlog with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field topic="<product/UX>"`; create `DESIGN.md` (frontmatter only), `EXPERIENCE.md` (frontmatter only), and `{workflow.run_folder_pattern}.md`, frontmatter plus one line each naming the two spines. Run Discovery → Finalize.
+**Create.** Bind `{doc_workspace}` to `{workflow.ux_output_path}/{workflow.run_folder_pattern}/`, with the epic's folder in place of `{workflow.ux_output_path}` when the ticket is an epic. Create `.working/` and `imports/`; create `DESIGN.md` (frontmatter only), `EXPERIENCE.md` (frontmatter only), and `{workflow.run_folder_pattern}.md`, frontmatter plus one line each naming the two spines. Run Discovery → Finalize.
 
-**Update.** Read spines + memlog + the ticket in full (the sources when there is none); open a source only for a need the ticket or the change names. If `.memlog.md` is missing, init it with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace}` — this update is entry one. Surface conflicts with prior decisions. Run Finalize.
+**Update.** Read the spines and the ticket in full (the sources when there is none); open a source only for a need the ticket or the change names. Surface conflicts with what the spines already decide, then make the change in them. Run Finalize.
 
 **Validate.** See `references/validate.md`.
 
 ## Discovery
 
-**Capture; do not author.** The spines are distilled at Finalize toward the memlog. Decisions → `.memlog.md` (canonical), each appended via `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <decision|change|override|assumption|event> --text "…"` — never hand-edited; a resume reloads it. Creative-tool artifacts → `.working/`. User-supplied visuals (Figma, sketches, brand decks, image folders) → `imports/`, one `memlog.py append` per item. Spines win on conflict.
+**Capture; do not author.** Each decision goes into the spine section it belongs to as it settles, in the user's meaning: how it looks in `DESIGN.md`, how it works in `EXPERIENCE.md`, voice and tone in `EXPERIENCE.md`'s Voice and Tone. A guess is tagged `[ASSUMPTION]`; an unsettled item goes under `## Open Questions` in `EXPERIENCE.md`. The two spines are the run's state, and a resume reads them. Creative-tool artifacts → `.working/`. User-supplied visuals (Figma, sketches, brand decks, image folders) → `imports/`, each named in `EXPERIENCE.md`'s Inspiration & Anti-patterns with what to take from it. Spines win on conflict.
 
 **Ticket first.** Find the ticket for the work (`initiative-*.md`, `tickets/epic-*/epic-*.md`, and `story-*.md`, `bug-*.md`, `spike-*.md` in a `tickets/` folder, under `{output_folder}/{active_initiative}/`) and read it in full in the parent; its Requirements are the brief, and its `sources:` and `companions:` list what else exists. Open one of those only for a need the ticket points at; never re-derive requirements from a PRD or brief it already distilled. No ticket: list `<type>-*/<type>-*.md` for `brief`, `prd`, `architecture`, `research` there, then in `{output_folder}/`; surface paths only; user confirms which apply or adds others; subagent-extracts on confirm.
 
@@ -84,12 +84,12 @@ Used by Validate and Finalize. **Opt-in, lens-selectable** — reviewers are cos
 
 Outcomes, in order:
 
-- **Spines distilled.** Subagent reads `.memlog.md`, `.working/`, `imports/`, and the ticket in full, opening a source only where the memlog or ticket cites it; produces `DESIGN.md` against `## The DESIGN.md spine` + `{workflow.design_md_examples}` and `EXPERIENCE.md` against `## The EXPERIENCE.md spine` + `{workflow.experience_md_examples}`. Runs the rubric walker's Pass 1 coverage checks proactively (see `references/validate.md`). Surface gaps; never invent.
+- **Spines completed.** Subagent reads the two draft spines, `.working/`, `imports/`, and the ticket in full, opening a source only where a spine or the ticket cites it; keeping every decision already in them, completes `DESIGN.md` against `## The DESIGN.md spine` + `{workflow.design_md_examples}` and `EXPERIENCE.md` against `## The EXPERIENCE.md spine` + `{workflow.experience_md_examples}`. Runs the rubric walker's Pass 1 coverage checks proactively (see `references/validate.md`). Surface gaps; never invent.
 - **Inputs reconciled.** Subagent per user-supplied input → `reconcile-{input}.md`. Surface dropped qualitative ideas.
 - **Reviewer Gate offered.** Ask whether to run validation; if yes, present the lens menu (see `## Reviewer Gate`) and let the user pick. If any lens ran, resolve findings before polish; otherwise proceed.
-- **Open items triaged.** Open Questions, `[ASSUMPTION]`, `[NOTE FOR UX]`. Phase-blockers one at a time; non-blockers → `memlog.py append`.
+- **Open items triaged.** Open Questions, `[ASSUMPTION]`, `[NOTE FOR UX]`. Phase-blockers one at a time; the rest stay in the spines as written.
 - **Key-screen mocks rendered.** Key-screens tool → `.working/` for surfaces where layout drives behavior or anchors visual language.
-- **Mock coverage confirmed.** Walk every IA surface; classify *mocked* vs *spine-only*. Ask: *"These will be built from spine tables alone — any need a visual reference?"* Render more if named; log spine-only choices.
+- **Mock coverage confirmed.** Walk every IA surface; classify *mocked* vs *spine-only*. Ask: *"These will be built from spine tables alone — any need a visual reference?"* Render more if named.
 - **Layout extracted, artifacts promoted.** Distill subagent re-reads each `.working/` and `imports/` artifact; lifts visual decisions into DESIGN.md and behavioral decisions into EXPERIENCE.md. Promote `.working/` keepers to `mockups/` (HTML) or `wireframes/` (Excalidraw); imports stay. Inline relative links at relevant spine sections; state spines-win-on-conflict once.
-- **Polished, handed off, closed.** Apply `{workflow.doc_standards}` in order. Execute `{workflow.external_handoffs}`; surface URLs. Set both files' `status: final`, `updated: {date}`. Log finalization via `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type event --text "spines finalized"`. Share paths. Common next: `bmad-architecture`, asking Sofia (`bmad-agent-po`) to update the ticket's requirements from the spines, `bmad-build`. Run `{workflow.on_complete}`.
+- **Polished, handed off, closed.** Apply `{workflow.doc_standards}` in order. Execute `{workflow.external_handoffs}`; surface URLs. Set both files' `status: final`, `updated: {date}`. Share paths. Common next: `bmad-architecture`, asking Sofia (`bmad-agent-po`) to update the ticket's requirements from the spines, `bmad-build`. Run `{workflow.on_complete}`.
 

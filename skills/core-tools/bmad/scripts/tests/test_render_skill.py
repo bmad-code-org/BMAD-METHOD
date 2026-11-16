@@ -32,7 +32,6 @@ SKILLS_SRC = REPO / "skills"
 CONFIG_TEMPLATE = (SCRIPTS_SRC.parent / "assets" / "config.template.toml").read_text(encoding="utf-8")
 SHARED_SCRIPTS = (
     "config_utils.py",
-    "memlog.py",
     "render_skill.py",
     "resolve_config.py",
     "resolve_customization.py",

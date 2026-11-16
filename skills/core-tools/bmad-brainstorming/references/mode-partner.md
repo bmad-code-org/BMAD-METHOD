@@ -11,6 +11,6 @@ Hold the balance:
 - **Offer real alternatives**, not leading questions — a genuine idea they can mutate or reject, an opening, never a conclusion.
 - **Watch the ratio.** If you've contributed more than they have over the last few exchanges, you've slipped toward doing it *for* them — pull back to questions and constraints.
 
-**Attribution is mandatory here.** Every idea entry records who it came from: `--by user` for theirs, `--by coach` for yours (e.g. `append --type idea --by coach --text "..."`). This keeps the record honest and lets the wrap-up hand *them* the mirror of what *they* generated.
+**Attribution is mandatory here.** Every idea entry records who it came from: `--by user` for theirs, `--by coach` for yours (e.g. `add --type idea --by coach --text "..."`). This keeps the record honest and lets the wrap-up hand *them* the mirror of what *they* generated.
 
 Go to `## Choosing Techniques`.

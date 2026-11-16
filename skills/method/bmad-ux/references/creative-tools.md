@@ -14,6 +14,6 @@ Every renderer writes to `{doc_workspace}/.working/` with a descriptive filename
 
 ## Renderer contract
 
-The parent passes the subagent: current `.memlog.md`, relevant prior `.working/` captures, the user's stated intent for this pass, the output path. The subagent writes its artifact under `.working/` and returns ONLY a compact summary (file path, one line per variant, mode coverage). Parent never holds the full payload.
+The parent passes the subagent: the current draft spines, relevant prior `.working/` captures, the user's stated intent for this pass, the output path. The subagent writes its artifact under `.working/` and returns ONLY a compact summary (file path, one line per variant, mode coverage). Parent never holds the full payload.
 
 For HTML, open in the browser when interactive with the platform opener — `open "PATH"` on macOS, `xdg-open` on Linux, `start ""` on Windows, path always double-quoted. On failure, give the user the path instead. Skip in headless.

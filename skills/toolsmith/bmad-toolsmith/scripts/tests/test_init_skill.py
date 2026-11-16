@@ -180,7 +180,7 @@ class CheckTest(unittest.TestCase):
                 tmp,
                 "bmad-good",
                 "---\nname: bmad-good\ndescription: >-\n  Does a thing.\n  Use when asked.\n---\n\nBody.\n",
-                extra={".memlog.md": "- (note) [TODO: hidden files are not scanned]\n"},
+                extra={".scratch.md": "- (note) [TODO: hidden files are not scanned]\n"},
             )
             code, data, _ = run("--check", skill)
             self.assertEqual(code, 0, data)

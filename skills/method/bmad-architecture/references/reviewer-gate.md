@@ -1,6 +1,6 @@
 # Reviewer Gate
 
-The spine's pre-handoff review. Runs at Finalize (after distill + reconcile) and *is* the Validate intent. The difference is the ending: at Finalize you apply the clear fixes yourself; under Validate you report and don't change the spine.
+The spine's pre-handoff review. Runs at Finalize (after complete + reconcile) and *is* the Validate intent. The difference is the ending: at Finalize you apply the clear fixes yourself; under Validate you report and don't change the spine.
 
 Cheap deterministic pass first: `uv run {skill-root}/scripts/lint_spine.py --workspace {doc_workspace}` settles the mechanical misses (placeholders, duplicate `AD` IDs, missing Binds/Prevents/Rule, unpinned Stack versions), so reviewers spend judgment on the semantic half.
 

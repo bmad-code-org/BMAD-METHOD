@@ -4,7 +4,7 @@ Outcome: the skill at `{target}` has been through the lenses and improved from t
 
 `{target}` is the skill folder, or the module folder after package or migrate: then the per-skill checks and the cost run for each member, and the manifest check for the record. Bare paths resolve from `{skill-root}`.
 
-`{reports_folder}` was set at activation; if this session no longer holds it, run that step again. When the conversation no longer holds the execution plan, read it from `{reports_folder}/<name>-build/.memlog.md`.
+`{reports_folder}` was set at activation; if this session no longer holds it, run that step again. When the conversation no longer holds the execution plan, read it from `{reports_folder}/<name>-build/plan.md`.
 
 Run `uv run {skill-root}/scripts/prepass.py {target}`, for a module on the record and on each member; the sections below read its JSON.
 
@@ -79,4 +79,4 @@ Tell the user:
 
 Offer, not run: a review (`modes/review.md`) and a baseline eval with the `bmad-eval` skill on the user's own cases.
 
-When a module plan is recorded at `{reports_folder}/bmod-<code>-build/.memlog.md`, append this member as built there, run the checks on the record, and offer the next member in its build order; on a yes, load `discover.md` for it.
+When a module plan is recorded at `{reports_folder}/bmod-<code>-build/plan.md`, mark this member built there, run the checks on the record, and offer the next member in its build order; on a yes, load `discover.md` for it.

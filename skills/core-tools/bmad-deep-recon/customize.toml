@@ -29,7 +29,7 @@ persistent_facts = []
 # Where research runs live and how each run folder is named. Draft, Process,
 # and Run all use the same folder shape: brief.md (drafted prompts),
 # imports/ (originals, full fidelity), digests/ (extracted claims),
-# {run_folder_pattern}.md (the canonical summary/report), .memlog.md.
+# {run_folder_pattern}.md (the canonical summary/report), claims.md.
 research_output_path = "{output_folder}/{active_initiative}"
 run_folder_pattern = "research-{topic_slug}"
 

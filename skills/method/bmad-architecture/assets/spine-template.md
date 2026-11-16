@@ -14,7 +14,7 @@ sources: []                 # the ticket, plus any companion the spine read
 
 # Architecture Spine — {name}
 
-<!-- TEMPLATE GUIDE — act on these comments, then delete them; never emit a comment in the finished spine. This is a shape, not a script: keep only the sections this spine needs and cut the rest (no empty headers). A small intent may be just paradigm + a few ADs + conventions; a platform earns more. An inherited epic spine is usually mostly Inherited Invariants + a thin Deferred. Decisions, not rationale (rationale lives in the memlog). Carry shape in diagrams; prose only where it must. -->
+<!-- TEMPLATE GUIDE — act on these comments, then delete them; never emit a comment in the finished spine. This is a shape, not a script: keep only the sections this spine needs and cut the rest (no empty headers). A small intent may be just paradigm + a few ADs + conventions; a platform earns more. An inherited epic spine is usually mostly Inherited Invariants + a thin Deferred. Decisions, not rationale: one `Why` line where a decision chose among alternatives or the user gave a reason, nothing longer. Carry shape in diagrams; prose only where it must. -->
 
 ## Design Paradigm
 
@@ -30,13 +30,14 @@ sources: []                 # the ticket, plus any companion the spine read
 
 ## Invariants & Rules
 
-<!-- The durable heart: calls a future builder can't read off compliant code. One block per decision: stable ascending id (never reused/renumbered), Binds, Prevents (the divergence), Rule (enforceable). Tag [ADOPTED] when the user or existing reality settled it. Include a dependency-direction diagram (who may depend on whom) — it IS a rule; author it as valid mermaid, never an empty graph. -->
+<!-- The durable heart: calls a future builder can't read off compliant code. One block per decision: stable ascending id (never reused/renumbered), Binds, Prevents (the divergence), Rule (enforceable), and Why when alternatives were weighed or the user gave a reason (what it beat and why, one line), [ADOPTED] or not. Tag [ADOPTED] when the user or existing reality settled it. Include a dependency-direction diagram (who may depend on whom) — it IS a rule; author it as valid mermaid, never an empty graph. -->
 
 ### AD-1 — {decision}
 
 - **Binds:** {R ids / unit ids, areas, or `all`}
 - **Prevents:** {the divergence this stops}
 - **Rule:** {the constraint downstream must follow}
+- **Why:** {what it beat and the reason}
 
 ## Consistency Conventions
 
@@ -50,7 +51,7 @@ sources: []                 # the ticket, plus any companion the spine read
 
 ## Stack
 
-<!-- SEED — verified current at authoring; the code owns this once it exists. Name + version only; the why lives in the memlog. One row per language, framework, key dependency, platform, or chain that's pinned. -->
+<!-- SEED — verified current at authoring; the code owns this once it exists. Name + version only; a choice that beat an alternative or came with a reason is also an `AD`. One row per language, framework, key dependency, platform, or chain that's pinned. -->
 
 | Name | Version |
 | --- | --- |
@@ -76,3 +77,7 @@ sources: []                 # the ticket, plus any companion the spine read
 ## Deferred
 
 <!-- Decisions intentionally pushed down, each with the reason it can wait — including whole dimensions this altitude doesn't own yet. The half of the contract that keeps the spine lean. -->
+
+## Open Questions
+
+<!-- What is still unsettled, one line each, with who can answer it. Cut the section when it is empty. -->

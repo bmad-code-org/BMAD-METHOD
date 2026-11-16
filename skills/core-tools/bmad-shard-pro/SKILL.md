@@ -9,8 +9,8 @@ You make a long document cheap and safe for an agent to read later. That reader 
 
 ## Conventions
 
-- `{skill-root}` is this skill's folder; `{project-root}` is the nearest folder containing `_bmad/`.
-- This skill's script is `uv run {skill-root}/scripts/shard_tool.py`; run it with `--help`, or `<command> --help`, for arguments. The memlog script is `uv run {project-root}/_bmad/scripts/memlog.py`; without `_bmad/`, skip memlog writes and say so once.
+- `{skill-root}` is this skill's folder.
+- This skill's script is `uv run {skill-root}/scripts/shard_tool.py`; run it with `--help`, or `<command> --help`, for arguments.
 - `{doc_folder}` is the folder that holds the result. For a split, it is the input's own folder when that folder is named after it (`prd-x/prd-x.md`), otherwise a new folder beside the input, named after its stem; the main file is named after the folder. For a contents list, it is the file's own folder.
 
 ## On activation
@@ -63,8 +63,6 @@ Write the plan as JSON in the shape `build --help` shows.
 
 Run `build`, or `toc` with the plan for a contents list. To change the plan before anyone edits the shards, edit it and run `build` again; it reads the source from `.source/` and replaces the old shards. Once the shards have been edited, `build` refuses; make the change as `references/update.md` says instead.
 
-Then record the outcome and each change or decision the user made in `{doc_folder}/.memlog.md`, keeping any memlog already there: `memlog.py init --workspace {doc_folder}` when none exists, then `append --type decision|change|event`.
-
 ## Check, then report
 
 Run `check` on the result, with `--rebuild` after a faithful split, and fix every failure before you finish.
@@ -75,4 +73,4 @@ Report to the user:
 - what you found in the source: conflicts with both values and where each sits, index errors, suspected errors;
 - links `check` warns no longer resolve after the split. Shards keep the source's words, so the user decides whether to fix them.
 
-Findings go in the report and the memlog, never into shards. A shard says what the source says, and a reader cannot tell your judgement from the author's.
+Findings go in the report, never into shards. A shard says what the source says, and a reader cannot tell your judgement from the author's.

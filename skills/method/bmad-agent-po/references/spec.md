@@ -16,10 +16,10 @@ The workspace is the ticket the user or the calling capability names, else the a
 
 On a container, SPEC is the only writer of the derived lines; a change goes to the memlog, never into them by hand. A derive replaces exactly those lines, sets `sources:` and `companions:` in the frontmatter, adds a References line per companion, and touches nothing else. A source id on a line must exist in a `sources:` file; neither list names the memlog, README files or process records.
 
-Writes go through `{project-root}/_bmad/scripts/memlog.py`:
+Writes go through `{skill-root}/scripts/memlog.py`:
 
-- `uv run {project-root}/_bmad/scripts/memlog.py init --workspace <ticket folder> --field topic="<the ticket's title>"` — once, at create.
-- `uv run {project-root}/_bmad/scripts/memlog.py append --workspace <ticket folder> --type <decision|constraint|requirement|assumption|question|direction|note|event> --text "<one-line gist, reason included>"` — one per line; batch them in one shell call per section.
+- `uv run {skill-root}/scripts/memlog.py init --workspace <ticket folder> --field topic="<the ticket's title>"` — once, at create.
+- `uv run {skill-root}/scripts/memlog.py append --workspace <ticket folder> --type <decision|constraint|requirement|assumption|question|direction|note|event> --text "<one-line gist, reason included>"` — one per line; batch them in one shell call per section.
 - Terminal moments (a validation verdict, "spec finalized") are `--type event` entries; the memlog has no status field.
 
 ## The Operation

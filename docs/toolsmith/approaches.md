@@ -19,7 +19,7 @@ An approach is the path from an idea to a skill. Every approach starts with the 
 
 Smithy scaffolds the skill and writes `SKILL.md`, then shows you the draft and description before writing anything else. A change to what the skill must do is cheap at this point.
 
-When you have a real input, Smithy runs the skill on it once through a subagent that sees only the skill and the input, and reads the trace. Several attempts before one worked means an instruction is too vague. Stalling between alternatives means no default was named. An instruction followed where it did not apply needs a narrower condition. A helper rewritten by hand should become a script. A line the run never needed gets cut. Smithy fixes what the trace shows once, records each decision in the build's memlog, then moves to review.
+When you have a real input, Smithy runs the skill on it once through a subagent that sees only the skill and the input, and reads the trace. Several attempts before one worked means an instruction is too vague. Stalling between alternatives means no default was named. An instruction followed where it did not apply needs a narrower condition. A helper rewritten by hand should become a script. A line the run never needed gets cut. Smithy fixes what the trace shows once, records each fix in the build's plan file, then moves to review.
 
 With no real input, Smithy applies its writing standard line by line and tells you the skill has not run.
 

@@ -42,7 +42,7 @@ def split_frontmatter(text: str) -> tuple[str, str, int]:
     """Return (frontmatter, body, body_line_offset).
 
     Frontmatter is the content between the first two lines that are *exactly* `---`
-    (line-exact, like memlog.split — a `---` inside a value or a body thematic break never
+    (line-exact — a `---` inside a value or a body thematic break never
     truncates it). body_line_offset is the number of file lines before the body begins, so a
     body-relative line number plus the offset gives the absolute file line. Absent frontmatter
     → ('', text, 0)."""

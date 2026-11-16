@@ -4,11 +4,11 @@ The one approach that starts before `discover.md`. Its outcome: skill candidates
 
 ## Which logs
 
-Ask once, with the default offered: your own session logs for this project, wherever your harness keeps them, usually in the project or under its folder in the user's home; their memlogs; or files they name. Confirm the location, or ask when you cannot find it, and wait for a yes before reading.
+Ask once, with the default offered: your own session logs for this project, wherever your harness keeps them, usually in the project or under its folder in the user's home; or files they name. Confirm the location, or ask when you cannot find it, and wait for a yes before reading.
 
 ## Digest
 
-For Claude Code transcripts and memlogs, run `uv run {skill-root}/scripts/read_session_log.py` (see its `--help`); read other files directly. Its `turns` give each request with the tools that followed it, the user's next message (`followed_by`) and whether the user interrupted it. Which of those follow-ups are corrections is your judgment. When it exits non-zero, nothing was read: its error and `skipped` say why; ask the user where the logs are.
+For Claude Code transcripts, run `uv run {skill-root}/scripts/read_session_log.py` (see its `--help`); read other files directly. Its `turns` give each request with the tools that followed it, the user's next message (`followed_by`) and whether the user interrupted it. Which of those follow-ups are corrections is your judgment. When it exits non-zero, nothing was read: its error and `skipped` say why; ask the user where the logs are.
 
 ## Candidates
 

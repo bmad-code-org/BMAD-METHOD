@@ -81,7 +81,7 @@ class CountTokensTest(unittest.TestCase):
             (root / "SKILL.md").write_text(SAMPLE, encoding="utf-8")
             (root / "references").mkdir()
             (root / "references" / "a.md").write_text(SAMPLE, encoding="utf-8")
-            (root / ".memlog.md").write_text(SAMPLE, encoding="utf-8")
+            (root / ".scratch.md").write_text(SAMPLE, encoding="utf-8")
             (root / "logo.png").write_bytes(b"\x89PNG")
             data = json.loads(run(str(root)).stdout)
             paths = [Path(f["path"]).name for f in data["files"]]

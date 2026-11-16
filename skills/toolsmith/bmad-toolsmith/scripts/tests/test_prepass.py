@@ -65,7 +65,7 @@ class PrepassTest(unittest.TestCase):
                     "scripts/tests/test_go.py": "import unittest\n",
                     "assets/SKILL-template.md": "template\n",
                     "customize.toml": "[workflow]\nx = 1\n",
-                    ".memlog.md": "- (note) hidden\n",
+                    ".scratch.md": "- (note) hidden\n",
                 },
             )
             data = prepass(skill)

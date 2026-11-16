@@ -35,6 +35,6 @@ forge_output_path = "{output_folder}/{active_initiative}"
 
 # Run-folder pattern inside forge_output_path. Resolved against the
 # idea-derived slug at activation. Same slug = same folder, so resuming
-# an idea reuses its memlog. Override to add {date} or other components
+# an idea reuses its file. Override to add {date} or other components
 # if a fresh dated history per run is preferred.
 run_folder_pattern = "forge-{slug}"

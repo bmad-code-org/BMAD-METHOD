@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from datetime import date
@@ -44,7 +45,7 @@ An uncited assertion sits here [4].
 | [3] | never cited | https://example.com/x | 2025-11 | 2026-07-01 | low |
 """
 
-MEMLOG = """---
+LEDGER = """---
 topic: widgets
 updated: 2026-07-22T10:00
 ---
@@ -119,13 +120,213 @@ class CitationsEdgeTest(unittest.TestCase):
 class TallyTest(unittest.TestCase):
     def test_last_status_wins_per_ref(self):
         with tempfile.TemporaryDirectory() as tmp:
-            log = Path(tmp) / "memlog.md"
-            log.write_text(MEMLOG, encoding="utf-8")
+            log = Path(tmp) / "claims.md"
+            log.write_text(LEDGER, encoding="utf-8")
             code, result = run(["tally", str(log)])
         self.assertEqual(result["by_type"]["claim"], 4)
         self.assertEqual(result["claims"], {"unverified": 1, "verified": 2})
         self.assertEqual(result["claims_total"], 3)  # ref=[2] counted once
         self.assertEqual(code, 0)
+
+
+OLD_LEDGER = """---
+topic: kiln booking tools
+decision: 'build or adopt: which?'
+updated: 2026-06-07T14:22
+---
+
+
+- (decision) drafted an external research prompt
+- (claim) ref=[1] status=unverified class=pricing pub=2026-01 — the tool costs $20 a seat
+"""
+
+
+def run_err(argv):
+    out, err = io.StringIO(), io.StringIO()
+    with redirect_stdout(out), redirect_stderr(err):
+        code = main(argv)
+    return code, err.getvalue()
+
+
+class LedgerTest(unittest.TestCase):
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.folder = Path(tmp.name) / "research-kilns"
+        self.ledger = self.folder / "claims.md"
+
+    def entries(self):
+        return [ln for ln in self.ledger.read_text(encoding="utf-8").splitlines() if ln.startswith("- ")]
+
+    def test_a_folder_with_no_ledger_reports_none_and_writes_nothing(self):
+        code, result = run(["ledger", str(self.folder)])
+        self.assertEqual((code, result), (0, {"path": self.ledger.as_posix(), "exists": False, "created": False}))
+        self.assertFalse(self.folder.exists())
+        code, err = run_err(["log", str(self.folder), "--type", "source", "--text", "x"])
+        self.assertEqual(code, 2)
+        self.assertIn("no claims.md", err)
+
+    def test_fields_create_the_ledger_once_and_never_rewrite_it(self):
+        code, result = run(["ledger", str(self.folder), "--field", "topic=kilns: a study", "--field", "type=market"])
+        self.assertEqual((code, result["created"], result["entries"]), (0, True, 0))
+        self.assertEqual(
+            {k: v for k, v in result["fields"].items() if k != "created"}, {"topic": "kilns: a study", "type": "market"}
+        )
+        self.assertRegex(result["fields"]["created"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d$")
+        run(["log", str(self.folder), "--type", "decision", "--text", "approved the plan"])
+        code, result = run(["ledger", str(self.folder), "--field", "topic=something else"])
+        self.assertEqual((code, result["created"], result["entries"]), (0, False, 1))
+        self.assertEqual(result["fields"]["topic"], "kilns: a study")
+        self.assertIn('topic: "kilns: a study"\n', self.ledger.read_text(encoding="utf-8"), "values are quoted")
+        self.assertEqual(run_err(["ledger", str(self.folder / "x"), "--field", "no-equals"])[0], 2)
+        self.assertEqual(run_err(["ledger", str(self.folder / "x"), "--field", "a b=c"])[0], 2)
+
+    def test_log_adds_at_the_end_and_tally_reads_what_it_wrote(self):
+        run(["ledger", str(self.folder), "--field", "topic=kilns"])
+        run(["log", str(self.folder), "--type", "source", "--text", "three vendor\npricing pages"])
+        run(
+            [
+                "log",
+                str(self.folder),
+                "--type",
+                "claim",
+                "--text",
+                "ref=[1] status=unverified class=pricing — $20 a seat",
+            ]
+        )
+        code, result = run(
+            [
+                "log",
+                str(self.folder),
+                "--type",
+                "claim",
+                "--by",
+                "verifier",
+                "--text",
+                "ref=[1] status=verified class=pricing — $20 a seat",
+            ]
+        )
+        self.assertEqual((code, result), (0, {"path": self.ledger.as_posix(), "entries": 3}))
+        self.assertEqual(
+            self.entries(),
+            [
+                "- (source) three vendor pricing pages",
+                "- (claim) ref=[1] status=unverified class=pricing — $20 a seat",
+                "- (claim by verifier) ref=[1] status=verified class=pricing — $20 a seat",
+            ],
+        )
+        code, tally = run(["tally", str(self.ledger)])
+        self.assertEqual((tally["entries"], tally["claims"]), (3, {"verified": 1}))
+
+    def test_a_field_value_keeps_its_equals_signs(self):
+        code, result = run(["ledger", str(self.folder), "--field", "decision=x=1 or y=2"])
+        self.assertEqual(result["fields"]["decision"], "x=1 or y=2")
+
+    def test_a_folder_that_is_a_file_is_an_error(self):
+        self.folder.parent.mkdir(parents=True, exist_ok=True)
+        self.folder.write_text("not a folder", encoding="utf-8")
+        code, err = run_err(["ledger", str(self.folder), "--field", "topic=kilns"])
+        self.assertEqual(code, 2)
+        self.assertIn("cannot create", err)
+
+    def test_several_texts_in_one_call_are_several_entries_in_order(self):
+        run(["ledger", str(self.folder), "--field", "topic=kilns"])
+        texts = [x for n in (1, 2, 3) for x in ("--text", f"ref=[{n}] status=unverified claim {n}")]
+        code, result = run(["log", str(self.folder), "--type", "claim", *texts])
+        self.assertEqual((code, result["entries"]), (0, 3))
+        self.assertEqual(self.entries(), [f"- (claim) ref=[{n}] status=unverified claim {n}" for n in (1, 2, 3)])
+
+    def test_a_claim_without_a_status_is_refused(self):
+        run(["ledger", str(self.folder), "--field", "topic=kilns"])
+        for text in (
+            "ref=[2] the tool is popular",
+            "ref=[2] status unknown so far",
+            "ref=[2] substatus=verified",
+            "ref=I2 status=unverified a ref the tally cannot read",
+            "ref=two status=unverified",
+        ):
+            code, err = run_err(["log", str(self.folder), "--type", "claim", "--text", text])
+            self.assertEqual(code, 2, text)
+            self.assertIn("status=", err)
+        self.assertEqual(
+            run(["log", str(self.folder), "--type", "claim", "--text", "status=unverified no ref at all"])[0], 0
+        )
+        self.assertEqual(
+            run(["log", str(self.folder), "--type", "source", "--text", "ref=I2 is fine outside a claim"])[0], 0
+        )
+        Path(self.ledger).write_text(self.ledger.read_text(encoding="utf-8").split("\n- ")[0] + "\n", encoding="utf-8")
+        good = "ref=[1] status=verified — fine"
+        code, err = run_err(["log", str(self.folder), "--type", "claim", "--text", good, "--text", "ref=[2] no status"])
+        self.assertEqual(code, 2, "one bad claim refuses the whole call")
+        self.assertEqual(self.entries(), [])
+
+    def test_an_entry_type_the_tally_does_not_know_is_refused(self):
+        run(["ledger", str(self.folder), "--field", "topic=kilns"])
+        with self.assertRaises(SystemExit), redirect_stderr(io.StringIO()):
+            main(["log", str(self.folder), "--type", "claims", "--text", "ref=[1] status=verified"])
+        self.assertEqual(self.entries(), [])
+
+    def test_an_older_memlog_is_renamed_and_carried_on(self):
+        self.folder.mkdir()
+        old = self.folder / ".memlog.md"
+        old.write_text(OLD_LEDGER, encoding="utf-8")
+        code, result = run(["ledger", str(self.folder), "--field", "topic=ignored"])
+        self.assertEqual(
+            (code, result["created"], result["renamed_from"], result["entries"]), (0, False, ".memlog.md", 2)
+        )
+        self.assertEqual(result["fields"]["decision"], "build or adopt: which?")
+        self.assertFalse(old.exists())
+        run(["log", str(self.folder), "--type", "claim", "--text", "ref=[1] status=verified — $20 a seat"])
+        self.assertEqual(
+            self.ledger.read_text(encoding="utf-8"), OLD_LEDGER + "- (claim) ref=[1] status=verified — $20 a seat\n"
+        )
+        self.assertNotIn("renamed_from", run(["ledger", str(self.folder)])[1])
+
+    def test_an_older_memlog_is_renamed_when_log_comes_first(self):
+        self.folder.mkdir()
+        (self.folder / ".memlog.md").write_text(OLD_LEDGER.rstrip("\n"), encoding="utf-8")
+        run(["log", str(self.folder), "--type", "event", "--text", "refresh started"])
+        self.assertFalse((self.folder / ".memlog.md").exists())
+        self.assertEqual(self.ledger.read_text(encoding="utf-8"), OLD_LEDGER + "- (event) refresh started\n")
+
+    def test_an_older_memlog_stays_put_when_claims_md_is_already_there(self):
+        run(["ledger", str(self.folder), "--field", "topic=new"])
+        old = self.folder / ".memlog.md"
+        old.write_text(OLD_LEDGER, encoding="utf-8")
+        self.assertEqual(run(["ledger", str(self.folder)])[1]["entries"], 0)
+        self.assertEqual(old.read_text(encoding="utf-8"), OLD_LEDGER)
+
+    def test_an_older_memlog_that_cannot_be_renamed_is_carried_on_in_place(self):
+        if sys.platform == "win32" or os.geteuid() == 0:
+            self.skipTest("needs POSIX permissions and a non-root user")
+        self.folder.mkdir()
+        old = self.folder / ".memlog.md"
+        old.write_text(OLD_LEDGER, encoding="utf-8")
+        self.folder.chmod(0o555)
+        self.addCleanup(self.folder.chmod, 0o755)
+        code, result = run(["ledger", str(self.folder)])
+        self.assertEqual((result["path"], result["exists"], result["entries"]), (old.as_posix(), True, 2))
+        run(["log", str(self.folder), "--type", "event", "--text", "refresh started"])
+        self.assertEqual(old.read_text(encoding="utf-8"), OLD_LEDGER + "- (event) refresh started\n")
+
+    def test_appends_from_many_writers_at_once_all_land(self):
+        run(["ledger", str(self.folder), "--field", "topic=kilns"])
+        writers, each = 8, 100
+        gate = threading.Barrier(writers)
+
+        def write(w):
+            gate.wait()
+            for i in range(each):
+                recon_kit.append_line(self.ledger, f"- (source) w{w} line {i}\n")
+
+        threads = [threading.Thread(target=write, args=(w,)) for w in range(writers)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        self.assertEqual(
+            sorted(self.entries()), sorted(f"- (source) w{w} line {i}" for w in range(writers) for i in range(each))
+        )
 
 
 class StalenessTest(unittest.TestCase):

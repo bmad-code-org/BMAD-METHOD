@@ -86,8 +86,8 @@ it better) and whether the idea changes an existing product. Then it argues
 with you one question at a time; say "attack this", "defend this", or "switch
 roles" to change how a point is argued. Every session ends on a stamped
 report: Hardened, Killed, or Clarified. Killing an idea here is a good result,
-and it costs little. Only a hardened idea also gets `forge-<slug>.md`, with
-its decisions and the options rejected.
+and it costs little. Every session also keeps `forge-<slug>.md`, its running
+record; for a hardened idea it holds the decisions and the options rejected.
 
 ## Research a Decision
 

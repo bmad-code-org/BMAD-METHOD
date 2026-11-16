@@ -13,7 +13,7 @@
 # user's own skills folder when the skill is for them everywhere.
 skills_folder = ""
 
-# Where Smithy's review reports, build memlogs and before-copies land; eval runs land in
+# Where Smithy's review reports, build plans and before-copies land; eval runs land in
 # bmad-eval's own `workflow.reports_folder`. `{output_folder}` is `core.output_folder`.
 reports_folder = "{output_folder}/eval-reports"
 

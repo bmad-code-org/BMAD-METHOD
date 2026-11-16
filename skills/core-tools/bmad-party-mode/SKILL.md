@@ -10,8 +10,8 @@ Run a round-table where these agents talk to each other and to the user like rea
 ## Conventions
 
 - **Paths:** bare paths (e.g. `references/create-party.md`) resolve from `{skill-root}` (where `customize.toml` lives); `{project-root}`-prefixed paths from the project working dir. `{workflow.<name>}` resolves to `customize.toml`'s `[workflow]` table (overrides win).
-- **Scripts** (run via `uv run`): `{project-root}/_bmad/scripts/resolve_config.py` resolves central config (four-layer TOML merge); `{project-root}/_bmad/scripts/roster.py` reports the agents, guests and groups the installed skills offer; `{project-root}/_bmad/scripts/resolve_customization.py` resolves `{workflow.*}`; `{skill-root}/scripts/resolve_party.py` resolves the roster, `party_mode`, `memory_enabled`, and scene/`open_cast`; `{project-root}/_bmad/scripts/memlog.py` reads/writes per-party memory.
-- **File roles:** a party's memory is the per-party memlog at `{workflow.memory_dir}/<party>/.memlog.md`; custom members and groups live in the user's `customize.toml` overrides. Mechanics in `references/party-memory.md` (memory) and `references/create-party.md` (authoring).
+- **Scripts** (run via `uv run`): `{project-root}/_bmad/scripts/resolve_config.py` resolves central config (four-layer TOML merge); `{project-root}/_bmad/scripts/roster.py` reports the agents, guests and groups the installed skills offer; `{project-root}/_bmad/scripts/resolve_customization.py` resolves `{workflow.*}`; `{skill-root}/scripts/resolve_party.py` resolves the roster, `party_mode`, `memory_enabled`, and scene/`open_cast`; `{skill-root}/scripts/party_memory.py` recalls and writes a party's memory.
+- **File roles:** a party's memory is `{workflow.memory_dir}/<party>/memory.md`; custom members and groups live in the user's `customize.toml` overrides. Mechanics in `references/party-memory.md` (memory) and `references/create-party.md` (authoring).
 - **Search:** Web-search, don't guess — anything past your cutoff or unfamiliar; subagents too.
 
 ## On Activation
@@ -60,7 +60,7 @@ Use `{workflow.party_mode}` for the session unless the user passed `--mode <sess
 When the user signals done — read the room, don't wait for a magic word — or an explicit `--non-interactive` run has served its intent (never merely because the opening prompt got answered):
 
 - Read back the best takeaways.
-- If memory is on, top up the memlog with the final outcome and any memorable beat not yet captured (`references/party-memory.md`) — a top-up; memory accrued live.
+- If memory is on, add the final outcome and any memorable beat not yet recorded (`references/party-memory.md`). Memory was written as the session went, so this is not a recap.
 - Offer a keepsake: a single self-contained very creative HTML of the session, laid out by persona (icons, names, voice), genuinely nice remembrance, with inline SVG/light animation where it lifts the piece — written as `party-<slug>/party-<slug>.html` in `{workflow.output_dir}/`, `<slug>` the session's topic in kebab-case, or wherever they ask.
 - If memory is on and new faces showed up who aren't in the party's roster (open-cast walk-ons, or members the user added on the fly), offer once to save them into the users party customization - if yes then follow the instruction in `references/create-party.md` (declinable; don't stall the close).
 - Run `{workflow.on_complete}` if non-empty, then drop back to normal mode.

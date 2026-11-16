@@ -24,7 +24,7 @@ What the trace means:
 - The same helper rewritten each run: bundle it as a script.
 - A line the run never needed: cut it.
 
-Fix what the trace shows, once, and append the decision to the build's memlog with `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {reports_folder}/<name>-build --type decision --text "..."`, or keep it in the conversation when there is no `_bmad/`.
+Fix what the trace shows, once, and add each fix as a line under `## Changes` in `{reports_folder}/<name>-build/plan.md`, or keep it in the conversation when there is no `_bmad/`.
 
 Where discovery ran the trigger phrase bare, compare against it: a line that changed nothing goes. Otherwise judge the trace against the execution plan's outcome and bar.
 
