@@ -119,8 +119,10 @@ bug. Table order is build order.
 | `plan_checkpoint` | A person reviews the ticket or plan before the run. Honored by whoever starts the runs, not the build |
 | `done_checkpoint` | Pause after the run until a person says continue. Honored by whoever starts the runs, not the build |
 
-Optional keys also include `estimate`, `references`, and `notes`. An entry
-needs no file to be built. Once a story's file exists, the file is the source
+Optional keys also include `estimate`, `references`, and `notes`. A build
+that leaves work for a later story in the same epic adds a line to that story's
+`notes`, or to its file's `## Notes`, with `tickets.py note`, as long as no
+build has started it. An entry needs no file to be built. Once a story's file exists, the file is the source
 of truth: a build reads the file, and Sofia keeps the entry's `id`, `type`, `title`,
 `after`, and `hitl` equal to it. `tickets.py status` reports `drift` only for
 `after` and `hitl`.
