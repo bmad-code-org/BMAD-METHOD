@@ -63,6 +63,7 @@ This is an alpha. Major changes are still planned before 7.0.0, and an update ca
 * Every skill resolves `{project-root}` by walking up from the working directory to the nearest folder containing `_bmad/`, so an agent started in a worktree or subfolder finds the right install.
 * The skill renderer takes per-run overrides with `--set key=value` and `--overrides <file.toml>`, and a skill's sources can carry conditional sections. `bmad-walkthrough`, `bmad-retrospective`, `bmad-code-review` and `bmad-qa-generate-e2e-tests` now run through the renderer like `bmad-build`.
 * For module authors: a module record can name skills it `requires` (with a minimum version) or `recommends`, and every skill start checks that `bmad` and its module record are present and current, printing a note without failing the run. The record validator and release stamper ship with the `bmad` skill, and a GitHub Action, `uses: bmad-code-org/BMAD-METHOD@<sha>`, runs the validator on another module repository.
+* A skill's evals and script tests live outside it, under `evals/` and `tests/` at the repository root in folders that mirror `skills/` (`tests/core-tools/bmad-brainstorming/`), so installing a skill copies neither. Smithy writes and checks them there, and `bmad-eval` finds the cases there first.
 * The docs site takes the bmadcode.com design system, with every diagram a themed SVG that follows light and dark mode, and is reorganized by task: start, plan, build, existing codebases, customize, toolsmith and reference.
 
 ### 🐛 Fixes

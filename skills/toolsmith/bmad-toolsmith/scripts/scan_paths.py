@@ -306,15 +306,25 @@ def scan_retired(content: str, rel: str, retired: dict[str, str]) -> list[dict]:
     return findings
 
 
+def project_mirror(skill_root: Path) -> tuple[Path, Path] | None:
+    """The first folder above the skill holding `.git` or `_bmad/`, and the skill's path below the nearest
+    `skills/` folder in it (its name when none holds it): `evals/` and `tests/` there mirror that path."""
+    skill = skill_root.resolve()
+    for root in skill.parents:
+        if (root / ".git").exists() or (root / "_bmad").is_dir():
+            parts = skill.relative_to(root).parts
+            below = next((parts[i + 1 :] for i in range(len(parts) - 2, -1, -1) if parts[i] == "skills"), parts[-1:])
+            return root, Path(*below)
+    return None
+
+
 def eval_files(skill_root: Path) -> list[tuple[Path, str]]:
-    """The skill's eval JSON in `evals/<name>/` at the root holding it, and in its own `evals/`."""
+    """The skill's eval JSON in its `evals/` folder at the root holding it, and in its own `evals/`."""
     found = [(p, p.relative_to(skill_root).as_posix()) for p in (skill_root / "evals").glob("*.json")]
-    for folder in skill_root.resolve().parents:
-        if (folder / ".git").exists() or (folder / "_bmad").is_dir():
-            found += [
-                (p, p.relative_to(folder).as_posix()) for p in (folder / "evals" / skill_root.name).glob("*.json")
-            ]
-            break
+    mirror = project_mirror(skill_root)
+    if mirror:
+        root, below = mirror
+        found += [(p, p.relative_to(root).as_posix()) for p in (root / "evals" / below).glob("*.json")]
     return sorted(found, key=lambda item: item[1])
 
 

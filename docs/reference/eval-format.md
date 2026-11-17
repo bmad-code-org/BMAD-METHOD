@@ -12,15 +12,17 @@ Use this page for the exact formats `bmad-eval` reads and writes. For when to ru
 ```text
 <repository or project root>/
 ├── evals/
-│   └── <skill-name>/
-│       ├── cases.json      # baseline, variant, and quality cases
-│       ├── triggers.json   # trigger queries
-│       └── files/          # fixtures the cases name
+│   └── <module>/
+│       └── <skill-name>/
+│           ├── cases.json      # baseline, variant, and quality cases
+│           ├── triggers.json   # trigger queries
+│           └── files/          # fixtures the cases name
 └── skills/
-    └── <skill-name>/
+    └── <module>/
+        └── <skill-name>/
 ```
 
-Evals sit outside the skill, so installing the skill never copies them. `bmad-eval` looks for cases in the file you name, then `evals/<skill-name>/` in the nearest folder above the skill that has one, then `<skill>/evals/` for a skill built elsewhere, then anywhere under `<project-root>/evals/`. A run never stages the skill's own `evals/` folder, so the model under test cannot read its rubric.
+Evals sit outside the skill, so installing the skill never copies them. `bmad-eval` looks for cases in the file you name, then the skill's folder under `evals/` in the nearest folder above the skill holding one, mirroring its path below `skills/` (`evals/core-tools/bmad-brainstorming/`), then `<skill>/evals/` for a skill built elsewhere, then anywhere under `<project-root>/evals/`. A run never stages the skill's own `evals/` folder, so the model under test cannot read its rubric.
 
 ## Cases
 

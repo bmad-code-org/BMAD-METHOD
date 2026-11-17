@@ -10,7 +10,7 @@ The contract a built skill meets; the canon covers the prose.
 
 ## Layout
 
-- `SKILL.md` at the root; `references/` for prompt content a branch loads, one level deep; `scripts/` for deterministic code, tests in `scripts/tests/`; `assets/` for templates and examples of emitted output; `doc-templates/` in a module record for the `bmad-facilitate` templates it ships.
+- `SKILL.md` at the root; `references/` for prompt content a branch loads, one level deep; `scripts/` for deterministic code, its tests in `{tests}`, outside the skill; `assets/` for templates and examples of emitted output; `doc-templates/` in a module record for the `bmad-facilitate` templates it ships.
 - Folders stay flat; group files with a filename prefix (`scan-*.md`), not a subfolder. Only a rendered skill keeps `workflow.md` and step files at root.
 - An agent whose routes would not fit a flat folder may group them in subfolders by axis, as `bmad-toolsmith` does. Each route file then names the conventions it depends on, because the entry may have left context by the time it loads.
 
@@ -59,7 +59,7 @@ A script does work that has one right answer per input: parsing, counting, resol
 
 - Python with a PEP 723 header, `requires-python = ">=3.11"`, dependencies listed; stdlib first, with a graceful fallback when an optional import is absent.
 - argparse with `--help`. JSON on stdout when a model reads the result. Non-zero exit with a reason, never an error deferred to the model.
-- A test at `scripts/tests/test_<name>.py` using `unittest`.
+- A test at `{tests}/test_<name>.py` using `unittest`.
 - No model ids or time estimates anywhere in a skill.
 
 ## Memory agents
