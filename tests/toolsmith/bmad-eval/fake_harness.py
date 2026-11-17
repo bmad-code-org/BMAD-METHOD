@@ -2,7 +2,8 @@
 
 Behaves like a harness enough to exercise the runners: reads the skills staged under
 `.agents/skills` in the cwd, obeys a canary line when the prompt says "yes", writes an
-artifact, prints a usage line, and exits non-zero when the prompt says "crash". It also
+artifact, prints a usage line, and exits non-zero when the prompt says "crash". `route:<name>` in
+the prompt loads that staged skill, for the trigger matrix. It also
 checks the clean room: HOME must sit inside the stage and the host secret must be absent.
 """
 
@@ -43,6 +44,9 @@ def main() -> int:
     )
     (cwd / "login.txt").write_text(str((home / ".fake" / "auth.json").is_file()), encoding="utf-8")
     reply = ("yes" in prompt and tokens and tokens[0] + " ") or ""
+    for name in re.findall(r"route:([\w-]+)", prompt):  # the matrix: load the skill the prompt names
+        m = CANARY_RE.search((cwd / ".agents" / "skills" / name / "SKILL.md").read_text(encoding="utf-8"))
+        reply += m.group(1) + " "
     print(json.dumps({"type": "assistant", "message": {"content": [{"type": "text", "text": reply + "done"}]}}))
     print(json.dumps({"type": "result", "usage": {"input_tokens": 10, "output_tokens": 5}}))
     return 0

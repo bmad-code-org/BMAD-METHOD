@@ -14,14 +14,18 @@ runs an eval records in this skill's customization (`[workflow.harness]`):
   home_files  files or folders under the host home brought into the fresh HOME at the same
               path, so a CLI logged in through a file or keychain stays logged in.
 
-The runners read them through the project's customization resolver, or from `--harness <json>`
-for a project without BMad. A run happens in a clean room: a temporary folder outside the
+Further harnesses, one per tool or model, are named tables under `[workflow.harnesses.<name>]`
+with the same keys; `--harness-name <name>` picks one, and repeated runs the command once per
+name. The runners read them through the project's customization resolver, or from
+`--harness <json>` for a project without BMad. A run happens in a clean room: a temporary folder outside the
 project holding the workspace and the fresh HOME, so the project's instruction files and
 installed skills are not ancestors of the run. The workspace is copied back afterwards.
 """
 
 from __future__ import annotations
 
+import contextlib
+import io
 import json
 import os
 import re
@@ -36,6 +40,7 @@ from pathlib import Path
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 HARNESS_KEY = "workflow.harness"
+HARNESSES_KEY = "workflow.harnesses"
 DEFAULT_SKILL_DIR = ".agents/skills"
 SAFE_NAME_RE = re.compile(r"[^A-Za-z0-9._-]+")
 # A subprocess on Windows cannot start without these; nothing else crosses uninvited.
@@ -90,9 +95,12 @@ def validate_harness(harness: object) -> dict:
     return harness
 
 
-def resolve_harness(project_root: Path | None, explicit: Path | None) -> tuple[dict | None, str]:
+def resolve_harness(
+    project_root: Path | None, explicit: Path | None, name: str | None = None
+) -> tuple[dict | None, str]:
     """The harness table and where it came from; (None, why) when there is none.
 
+    With a name, the table is `[workflow.harnesses.<name>]`; a name not recorded is a ValueError.
     The runner never reads the override files itself: the project's resolver merges the layers.
     """
     if explicit is not None:
@@ -104,14 +112,60 @@ def resolve_harness(project_root: Path | None, explicit: Path | None) -> tuple[d
     resolver = project_root / "_bmad" / "scripts" / "resolve_customization.py"
     if not resolver.is_file():
         return None, "BMad is not set up in this project; pass --harness"
+    key = HARNESSES_KEY if name else HARNESS_KEY
     argv = [sys.executable, str(resolver), "--skill", str(SKILL_ROOT), "--project-root", str(project_root)]
-    proc = subprocess.run([*argv, "--key", HARNESS_KEY], capture_output=True, text=True)
+    proc = subprocess.run([*argv, "--key", key], capture_output=True, text=True)
     if proc.returncode != 0:
         return None, f"customization resolver failed: {proc.stderr.strip()[-300:]}"
-    harness = json.loads(proc.stdout or "{}").get(HARNESS_KEY)
-    if not isinstance(harness, dict) or not harness.get("command"):
+    found = json.loads(proc.stdout or "{}").get(key)
+    if name:
+        named = found if isinstance(found, dict) else {}
+        if name not in named:
+            recorded = ", ".join(sorted(named)) or "none"
+            raise ValueError(f"no harness named {name!r} in bmad-eval's customization; recorded: {recorded}")
+        return validate_harness(named[name]), f"customization {HARNESSES_KEY}.{name}"
+    if not isinstance(found, dict) or not found.get("command"):
         return None, "no harness recorded in bmad-eval's customization"
-    return validate_harness(harness), f"customization {HARNESS_KEY}"
+    return validate_harness(found), f"customization {HARNESS_KEY}"
+
+
+def add_harness_args(p) -> None:
+    """The two ways a runner is told its harness: a JSON file, or recorded names."""
+    p.add_argument("--harness", type=Path, default=None, help="harness JSON for a project without BMad")
+    p.add_argument(
+        "--harness-name",
+        action="append",
+        default=[],
+        help="a harness recorded under [workflow.harnesses.<name>]; repeat to run once per name",
+    )
+
+
+def run_each_harness(main: Callable[[list[str]], int], argv: list[str], names: list[str]) -> int:
+    """Run a runner once per harness name and print one JSON object keyed by name.
+
+    Each run keeps its own run folder. The exit code is the worst of the runs.
+    """
+    rest, skip = [], False
+    for token in argv:
+        if skip:
+            skip = False
+        elif token == "--harness-name":
+            skip = True
+        elif not token.startswith("--harness-name="):
+            rest.append(token)
+    results, codes = {}, []
+    for name in dict.fromkeys(names):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            codes.append(main([*rest, "--harness-name", name]))
+        text = out.getvalue().strip()
+        try:
+            results[name] = json.loads(text) if text else None
+        except json.JSONDecodeError:
+            results[name] = text
+    print(json.dumps({"harnesses": results}, indent=2))
+    order = (0, 1, 3, 2)  # a usage error outranks a missing harness, which outranks a failed attempt
+    return max(codes, key=lambda c: order.index(c) if c in order else len(order))
 
 
 def build_argv(harness: Mapping, prompt: str, cwd: str) -> list[str]:

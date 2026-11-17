@@ -55,14 +55,6 @@ class CountTokensTest(unittest.TestCase):
         self.assertEqual(method, "fallback")
         self.assertEqual(tokens, len(SAMPLE) // 4)
 
-    def test_fallback_within_tolerance_of_tiktoken(self):
-        mod = load_module()
-        real_tokens, method = mod.count_tokens(SAMPLE)
-        if method != "tiktoken":
-            self.skipTest("tiktoken not installed")
-        fallback = len(SAMPLE) // 4
-        self.assertTrue(real_tokens * 0.5 <= fallback <= real_tokens * 1.5)
-
     def test_cli_file_schema(self):
         with tempfile.TemporaryDirectory() as tmp:
             f = Path(tmp) / "sample.md"

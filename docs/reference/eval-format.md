@@ -12,6 +12,9 @@ Use this page for the exact formats `bmad-eval` reads and writes. For when to ru
 ```text
 <repository or project root>/
 ├── evals/
+│   ├── suites/
+│   │   └── <suite-name>/
+│   │       └── trigger-matrix.json   # queries across a whole install
 │   └── <module>/
 │       └── <skill-name>/
 │           ├── cases.json      # baseline, variant, and quality cases
@@ -74,6 +77,20 @@ Only a case where the conversation itself is the deliverable needs real multiple
 
 Aim for about twenty queries, roughly half of each kind, varied in form. Make the should-not queries near misses that share keywords and domain with the real ones.
 
+## Trigger Matrix
+
+A suite that spans skills lives in `evals/suites/<suite-name>/`. Its `trigger-matrix.json` is a JSON array of `{query, expect, also_ok}` records: `expect` is the skill that should load, or `null` for none, and `also_ok` names skills that may load instead.
+
+```json
+[
+  { "query": "help me come up with names for my bakery", "expect": "bmad-brainstorming" },
+  { "query": "do some market research on AI note-taking apps", "expect": "bmad-deep-recon", "also_ok": ["bmad-agent-analyst"] },
+  { "query": "rename this variable to camelCase", "expect": null }
+]
+```
+
+Every skill of the install is staged at once, each with its real description, so a query fails when another skill loads in its place. Write queries where two descriptions could both claim the request, and keep `also_ok` to skills that would serve it as well.
+
 ## Strong and Weak Expectations
 
 A wrong output must not be able to pass an expectation. A weak one is worse than none, because a passing check reads as proof.
@@ -121,6 +138,14 @@ uv run {skill-root}/scripts/run_triggers.py \
   [--runs-per-query N]
 ```
 
+Trigger matrix, given the folders that hold the install's skills:
+
+```bash
+uv run {skill-root}/scripts/run_matrix.py \
+  --skills <folder> [--skills <folder> ...] --queries <trigger-matrix.json> --output-dir <dir> \
+  [--runs-per-query N]
+```
+
 Aggregate the time, tokens, and tool calls of repeated runs into mean, sample standard deviation, min, max, and delta:
 
 ```bash
@@ -135,7 +160,7 @@ uv run {skill-root}/scripts/convert_cases.py <evals.json> --output <cases.json>
 
 | Exit code | Meaning |
 | --- | --- |
-| 0 | The run completed. A trigger query failing its threshold is a result, not an error |
+| 0 | The run completed. A trigger or matrix query failing its threshold is a result, not an error |
 | 1 | A case errored or timed out, or the command was not found |
 | 2 | Usage error |
 | 3 | No harness is recorded |
@@ -159,6 +184,16 @@ command = ["claude", "-p", "{prompt}", "--output-format", "stream-json", "--verb
 skill_dir = ".claude/skills"
 env = { USER = "" }
 home_files = ["Library/Keychains"]
+```
+
+Further harnesses, one per tool or model to compare, are named tables with the same keys. Pass `--harness-name <name>` to any runner to run through one; repeat it to run once per name. Each name gets its own run folder, and the output is one JSON object keyed by name.
+
+```toml
+[workflow.harnesses.codex]
+command = ["codex", "exec", "--json", "--ephemeral", "--skip-git-repo-check", "--dangerously-bypass-approvals-and-sandbox", "{prompt}"]
+skill_dir = ".agents/skills"
+env = { CODEX_HOME = "~/.codex" }
+home_files = [".codex/auth.json"]
 ```
 
 ## Run Folders
