@@ -1094,8 +1094,23 @@ Verify: {verify}
 
 
 def title_slug(title: str) -> str:
-    title = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
-    return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:60].rstrip("-") or "untitled"
+    """A title as a file name: letters and digits, lowercase, each run of anything else one `-`, at most 60
+    characters, else `untitled`. A character with an ASCII form takes it (`Café` is `cafe`); a letter or digit
+    of a script other than Latin is kept, with its marks (`修复登录`); any other character with no ASCII form,
+    a Latin letter such as `ß` among them, is dropped, so a slug of Latin text is what it always was."""
+    out, kept = [], False
+    for c in unicodedata.normalize("NFKC", title):
+        folded = unicodedata.normalize("NFKD", c).encode("ascii", "ignore").decode("ascii")
+        if folded:
+            out.append(re.sub(r"[^a-z0-9]", "-", folded.lower()))
+            kept = False
+        else:
+            mark = unicodedata.category(c).startswith("M")
+            kept = (mark and kept) or (c.isalnum() and not unicodedata.name(c, "").startswith("LATIN "))
+            if kept:
+                out.append(c.lower())
+    slug = re.sub(r"-+", "-", unicodedata.normalize("NFKC", "".join(out)))
+    return slug.strip("-")[:60].rstrip("-") or "untitled"
 
 
 def resolve_ticket(tree: dict, text: str) -> dict:

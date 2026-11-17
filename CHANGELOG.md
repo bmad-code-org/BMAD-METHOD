@@ -69,6 +69,7 @@ This is an alpha. Major changes are still planned before 7.0.0, and an update ca
 
 ### 🐛 Fixes
 
+* A ticket titled in a script other than Latin gets a file named in that script, `story-修复登录.md`, not `story-untitled.md`. Accented Latin letters still fold to ASCII, `Café` to `cafe`, and a title in Latin script names its file as before.
 * **The verification-gap lens files only gaps worth a test.** A gap finding now exists only when the lens names a concrete regression a test in the repo's own suite could catch; unreachable states, defensive branches and redundant code are dropped rather than deferred, and the `defer` disposition is gone. The lens no longer asks for tests of build, toolchain or configuration plumbing that CI exercises by building. It reports a fourth shape, the stale-verification gap: a test that asserts the outcome the change got wrong, so the fix will fail it. Dead tests and stale test comments go to `Other findings`, where triage can grade them low. Applies to `bmad-code-review`, `bmad-build`, `bmad-build-auto` and the `verification-gap` lens of `bmad-review`.
 * Every review lens inspects only. Reviewer prompts in `bmad-code-review`, `bmad-build` and `bmad-build-auto` say not to modify code, run builds or tests, or invoke quality gates; session logs showed about half of reviewers doing so.
 * `bmad-code-review` diffs a branch from its merge base, asks for a SHA or branch when `gh pr view` fails, and audits intent against the spec or the user's own words, never the review request itself.

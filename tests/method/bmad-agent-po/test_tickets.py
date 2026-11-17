@@ -1,10 +1,12 @@
 import importlib.util
 import json
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 import tomllib
+import unicodedata
 import unittest
 from datetime import date
 from pathlib import Path
@@ -292,6 +294,17 @@ covers = ["R2", "R3"]
         self.assertEqual(json.loads(run("pull", str(self.epic), "1").stdout)["file"], "story-cafe-menu.md")
         plans = [Path(json.loads(run("find", str(self.epic), n).stdout)["plan"]).name for n in ("1", "2")]
         self.assertEqual(plans, ["story-cafe-menu-plan.md", "story-cafe-menu-2-plan.md"])
+
+    def test_a_title_in_another_script_names_its_file_in_that_script(self):
+        (tk(self.epic) / "tickets.toml").write_text(
+            '[[entry]]\nid = 1\ntype = "story"\ntitle = "修复登录"\n\n'
+            '[[entry]]\nid = 2\ntype = "story"\ntitle = "修复登录"\n\n'
+            '[[entry]]\nid = 3\ntype = "bug"\ntitle = "Исправить вход"\n',
+            encoding="utf-8",
+        )
+        files = [json.loads(run("pull", str(self.epic), n).stdout)["file"] for n in ("1", "2", "3")]
+        self.assertEqual(files, ["story-修复登录.md", "story-修复登录-2.md", "bug-исправить-вход.md"])
+        self.assertEqual(json.loads(run("find", str(self.epic), "story-修复登录").stdout)["id"], 1)
 
     def test_a_leaf_file_with_a_byte_order_mark_is_read(self):
         (tk(self.epic) / "story-scaffold.md").write_bytes(b"\xef\xbb\xbf" + ticket("done", 1).encode("utf-8"))
@@ -2194,6 +2207,52 @@ class FrontmatterTests(unittest.TestCase):
         for value in ("a   # b", "line\x85break\u2028and\u2029more", "del\x7f c1\x9f", 'it\'s "x" \\ y'):
             with self.subTest(value=value):
                 self.assertEqual(self.parse(f"reason: {self.t.quoted(value)}"), {"reason": value})
+
+
+class TitleSlugTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.slug = staticmethod(load_tickets().title_slug)
+
+    def test_letters_of_other_scripts_are_kept(self):
+        for title, expected in (
+            ("修复登录", "修复登录"),
+            ("Исправить Вход", "исправить-вход"),
+            ("إصلاح تسجيل الدخول", "إصلاح-تسجيل-الدخول"),
+            ("हिन्दी पाठ", "हिन्दी-पाठ"),
+            ("로그인 수정", "로그인-수정"),
+            ("Fix 登录 bug", "fix-登录-bug"),
+            ("ＡＰＩ：修复", "api-修复"),
+        ):
+            with self.subTest(title=title):
+                self.assertEqual(self.slug(title), expected)
+
+    def test_a_slug_of_latin_text_is_what_it_was(self):
+        def before(title):
+            title = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
+            return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:60].rstrip("-") or "untitled"
+
+        for title in (
+            "Café ✓ menu",
+            "Straße — Søren's Łódź plan",
+            "Login—fix",
+            "ﬁle ½ ™ ①",
+            "Crème brûlée, naïve façade",
+            "x" * 80,
+            "a" * 59 + " b",
+            "✓ — ✓",
+        ):
+            with self.subTest(title=title):
+                self.assertEqual(self.slug(title), before(title))
+
+    def test_a_slug_is_safe_as_a_file_name(self):
+        for title in ('a/b\\c:d*e?f"g<h>i|j\x00k', "修复/登录", "../..", "登" * 80, "🚀🚀"):
+            with self.subTest(title=title):
+                slug = self.slug(title)
+                self.assertTrue(slug == "untitled" or all(c.isalnum() or c == "-" for c in slug), slug)
+                self.assertLessEqual(len(slug), 60)
+        self.assertEqual(self.slug("登" * 80), "登" * 60)
+        self.assertEqual(self.slug("🚀🚀"), "untitled")
 
 
 if __name__ == "__main__":
