@@ -30,7 +30,8 @@ Commands, each printing one line of JSON:
 `--by` who it came from (user, coach); both render as one tag, `(idea by user)`.
 
 A session written before the log had this name keeps it in `.memlog.md`. `start`, `add` and `set` rename
-that file to `ideas.md` the first time they touch its folder; `open` lists it where it is.
+that file to `ideas.md` the first time they touch its folder, and stop with an error when they cannot;
+`open` lists it where it is.
 
 Exit codes: 0 done, 2 usage error or a missing or unreadable log.
 """
@@ -62,9 +63,9 @@ def log_path(folder: Path) -> Path:
         return path
     try:
         os.replace(old, path)
-    except OSError:
-        # A read-only folder, or the file open elsewhere: carry on in the old file.
-        return path if path.exists() else old
+    except OSError as error:
+        if not path.exists():  # another writer may have renamed it first
+            raise LogError(f"cannot rename {old} to {NAME}: {error.strerror or error}") from error
     return path
 
 
@@ -181,7 +182,7 @@ def cmd_open(args) -> int:
             if fields.get("status") == "complete" or (older and "mode" not in fields):
                 continue
             changed = datetime.fromtimestamp(path.stat().st_mtime).strftime(STAMP)
-            sessions.append({**item, "ideas": path.as_posix(), **fields, "updated": changed, "entries": count(body)})
+            sessions.append({**fields, **item, "ideas": path.as_posix(), "updated": changed, "entries": count(body)})
     print(json.dumps({"ok": True, "sessions": sessions}, ensure_ascii=False))
     return 0
 

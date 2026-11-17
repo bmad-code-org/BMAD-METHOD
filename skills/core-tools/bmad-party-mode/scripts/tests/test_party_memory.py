@@ -94,15 +94,16 @@ class PartyMemoryTest(unittest.TestCase):
         self.assertEqual(run("recall", *self.where())[1]["entries"], 1)
         self.assertEqual(old.read_text(encoding="utf-8"), OLD_LOG)
 
-    def test_an_older_memlog_that_cannot_be_renamed_is_used_where_it_is(self):
+    def test_an_older_memlog_that_cannot_be_renamed_stops_the_command(self):
         old = self.dir / "crew" / ".memlog.md"
         old.parent.mkdir(parents=True)
         old.write_text(OLD_LOG, encoding="utf-8")
         self.addCleanup(read_only(old.parent))
-        code, data, _ = run("recall", *self.where())
-        self.assertEqual((code, data), (0, {"ok": True, "path": old.as_posix(), "exists": True, "entries": 2}))
-        run("remember", *self.where(), "--text", "sailed north")
-        self.assertEqual(old.read_text(encoding="utf-8"), OLD_LOG + "- sailed north\n")
+        for args in (("recall", *self.where()), ("remember", *self.where(), "--text", "sailed north")):
+            code, _, err = run(*args)
+            self.assertEqual(code, 2, args[0])
+            self.assertIn("cannot rename", err)
+        self.assertEqual(old.read_text(encoding="utf-8"), OLD_LOG)
         self.assertFalse(self.file.exists())
 
     def test_a_party_id_that_is_a_path_is_refused(self):

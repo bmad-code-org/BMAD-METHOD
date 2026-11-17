@@ -26,4 +26,4 @@ The parent, at Finalize "Promote working artifacts," uses this summary to insert
 - Do not invent layout — every composition decision must trace to a `.working/` artifact or a decision in the spines. If a layout question is open, the mock is premature.
 - Do not show every screen of every flow — 2-4 load-bearing surfaces, not 14.
 - Do not stage marketing copy. Strings come from the product content in the spines and the voice rules.
-- Do not introduce a new pattern not in the spine's Component Patterns table. If you need one, leave that screen unrendered and name the pattern in your summary.
+- Do not introduce a new pattern not in the spine's Component Patterns table. If you need one, leave that screen unrendered and name the pattern in your summary; the parent asks the user about it, records the decision in the spines, and renders that screen again.

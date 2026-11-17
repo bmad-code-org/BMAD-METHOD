@@ -19,8 +19,8 @@ Commands, each printing one line of JSON:
 both render as one tag, `(callback by analyst)`.
 
 A party whose memory was written before the file had this name keeps it in `.memlog.md`. Both commands
-rename that file to `memory.md` the first time they touch the party's folder, and use it where it is
-when it cannot be renamed.
+rename that file to `memory.md` the first time they touch the party's folder, and stop with an error
+when they cannot.
 
 Exit codes: 0 done, 2 usage error or a file that cannot be read or written.
 """
@@ -51,9 +51,9 @@ def memory_path(directory: str, party: str) -> Path:
         return path
     try:
         os.replace(old, path)
-    except OSError:
-        # A read-only folder, or the file open elsewhere: carry on in the old file.
-        return path if path.exists() else old
+    except OSError as error:
+        if not path.exists():  # another writer may have renamed it first
+            raise PartyMemoryError(f"cannot rename {old} to {NAME}: {error.strerror or error}") from error
     return path
 
 

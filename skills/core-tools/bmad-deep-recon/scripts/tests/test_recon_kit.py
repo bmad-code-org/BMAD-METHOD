@@ -128,6 +128,18 @@ class TallyTest(unittest.TestCase):
         self.assertEqual(result["claims_total"], 3)  # ref=[2] counted once
         self.assertEqual(code, 0)
 
+    def test_status_and_ref_inside_longer_keys_are_not_read(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            log = Path(tmp) / "claims.md"
+            log.write_text(
+                "---\ntopic: t\n---\n\n- (claim) ref=[1] substatus=unverified status=verified a\n"
+                "- (claim) xref=[9] status=unverified b\n",
+                encoding="utf-8",
+            )
+            result = run(["tally", str(log)])[1]
+        self.assertEqual(result["claims"], {"verified": 1, "unverified": 1})
+        self.assertEqual(result["claims_total"], 2)
+
 
 OLD_LEDGER = """---
 topic: kiln booking tools
@@ -296,7 +308,7 @@ class LedgerTest(unittest.TestCase):
         self.assertEqual(run(["ledger", str(self.folder)])[1]["entries"], 0)
         self.assertEqual(old.read_text(encoding="utf-8"), OLD_LEDGER)
 
-    def test_an_older_memlog_that_cannot_be_renamed_is_carried_on_in_place(self):
+    def test_an_older_memlog_that_cannot_be_renamed_stops_the_command(self):
         if sys.platform == "win32" or os.geteuid() == 0:
             self.skipTest("needs POSIX permissions and a non-root user")
         self.folder.mkdir()
@@ -304,10 +316,12 @@ class LedgerTest(unittest.TestCase):
         old.write_text(OLD_LEDGER, encoding="utf-8")
         self.folder.chmod(0o555)
         self.addCleanup(self.folder.chmod, 0o755)
-        code, result = run(["ledger", str(self.folder)])
-        self.assertEqual((result["path"], result["exists"], result["entries"]), (old.as_posix(), True, 2))
-        run(["log", str(self.folder), "--type", "event", "--text", "refresh started"])
-        self.assertEqual(old.read_text(encoding="utf-8"), OLD_LEDGER + "- (event) refresh started\n")
+        for argv in (["ledger", str(self.folder)], ["log", str(self.folder), "--type", "event", "--text", "x"]):
+            code, err = run_err(argv)
+            self.assertEqual(code, 2, argv[0])
+            self.assertIn("cannot rename", err)
+        self.assertEqual(old.read_text(encoding="utf-8"), OLD_LEDGER)
+        self.assertFalse(self.ledger.exists())
 
     def test_appends_from_many_writers_at_once_all_land(self):
         run(["ledger", str(self.folder), "--field", "topic=kilns"])

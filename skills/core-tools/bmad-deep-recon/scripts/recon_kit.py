@@ -175,9 +175,10 @@ def ledger_path(folder: Path) -> tuple[Path, bool]:
         return path, False
     try:
         os.replace(old, path)
-    except OSError:
-        # A read-only folder, or the file open elsewhere: carry on in the old file.
-        return (path if path.exists() else old), False
+    except OSError as error:
+        if path.exists():  # another writer renamed it first
+            return path, False
+        raise LedgerError(f"cannot rename {old} to {LEDGER}: {error.strerror or error}") from error
     return path, True
 
 
@@ -329,9 +330,9 @@ def cmd_tally(args) -> int:
         etype = m.group(1) or "note"
         by_type[etype] = by_type.get(etype, 0) + 1
         if etype == "claim":
-            status_m = re.search(r"status=([\w-]+)", m.group(2))
+            status_m = re.search(r"(?<![\w-])status=([\w-]+)", m.group(2))
             status = status_m.group(1) if status_m else "unknown"
-            ref_m = re.search(r"ref=\[?(\d+)\]?", m.group(2))
+            ref_m = re.search(r"(?<![\w-])ref=\[?(\d+)\]?", m.group(2))
             if ref_m:
                 by_ref[int(ref_m.group(1))] = status  # last status wins per ref
             else:

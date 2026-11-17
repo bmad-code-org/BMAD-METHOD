@@ -32,7 +32,7 @@ Lead by questioning, not lecturing. Ask one question at a time, press on weak po
    - Script not found, or no `output_folder`: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - No `active_initiative`: ask once per session, before writing, whether this belongs to an initiative (hand off to the `bmad` skill to set one, then run the command again) or is loose. Loose work drops `/{active_initiative}` from every path.
 4. Note whether a BMad persona is already active in this conversation — the user loaded one (e.g. the analyst, the storyteller) and invoked the forge from within it. If so, that persona leads the session, in voice, throughout.
-5. Resume: look for `forge-*/forge-*.md` in `{workflow.forge_output_path}/` and in `{output_folder}/` whose frontmatter `status` is `open`. Offer to resume one, reading that file once to rebuild state, or to start fresh.
+5. Resume: look for `forge-*/forge-*.md` in `{workflow.forge_output_path}/` and in `{output_folder}/` whose frontmatter `status` is `open`. Offer to resume one, reading that file once to rebuild state, or to start fresh. On resume, that file is the session's file and its folder is `{workspace}`; skip *Set up the session*.
 6. Run each `{workflow.activation_steps_append}` entry.
 
 ## Open the session
@@ -76,7 +76,7 @@ status: open
 ## Open
 ```
 
-A file already there is this idea's earlier session: continue in it, set `status: open`, and keep what it holds. Tell the user the path; state is on disk now, so the session survives interruption.
+A file already there is this idea's earlier session: continue in it, set `status: open`, and keep what it holds. If the user chose to start fresh, add a suffix to `{slug}` (`-2`) instead, so the earlier session stays as it was. Tell the user the path; state is on disk now, so the session survives interruption.
 
 ## The forge
 

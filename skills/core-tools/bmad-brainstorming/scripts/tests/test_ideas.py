@@ -167,14 +167,15 @@ class IdeasTest(unittest.TestCase):
         self.assertEqual(self.log.read_text(encoding="utf-8"), OLD_LOG)
         self.assertFalse((self.folder / ".memlog.md").exists())
 
-    def test_an_older_memlog_that_cannot_be_renamed_is_carried_on_in_place(self):
+    def test_an_older_memlog_that_cannot_be_renamed_stops_the_write(self):
         self.folder.mkdir()
         old = self.folder / ".memlog.md"
         old.write_text(OLD_LOG, encoding="utf-8")
         self.addCleanup(read_only(self.folder))
-        code, data, _ = self.add("Bisque", "--type", "idea")
-        self.assertEqual((code, data["entries"], data["ideas"]), (0, 4, old.as_posix()))
-        self.assertEqual(old.read_text(encoding="utf-8"), OLD_LOG + "- (idea) Bisque\n")
+        code, _, err = self.add("Bisque", "--type", "idea")
+        self.assertEqual(code, 2)
+        self.assertIn("cannot rename", err)
+        self.assertEqual(old.read_text(encoding="utf-8"), OLD_LOG)
         self.assertFalse(self.log.exists())
 
     def test_a_write_that_fails_is_one_line_and_exit_2(self):
@@ -249,10 +250,25 @@ class IdeasTest(unittest.TestCase):
         self.assertNotIn("brainstorm-tickets", {Path(s["folder"]).name for s in data["sessions"]})
         self.assertTrue((not_ours / ".memlog.md").is_file(), "a wide pattern still leaves another skill's log alone")
 
+    def test_open_keeps_its_own_folder_and_ideas_over_fields_of_those_names(self):
+        self.start()
+        run("set", "--folder", str(self.folder), "--key", "folder", "--value", "elsewhere")
+        run("set", "--folder", str(self.folder), "--key", "ideas", "--value", "elsewhere/ideas.md")
+        (session,) = run("open", "--root", str(self.root))[1]["sessions"]
+        self.assertEqual((session["folder"], session["ideas"]), (self.folder.as_posix(), self.log.as_posix()))
+
+    def test_open_reports_a_session_once_when_a_root_repeats(self):
+        self.start()
+        code, data, _ = run("open", "--root", str(self.root), "--root", str(self.root))
+        self.assertEqual((code, len(data["sessions"])), (0, 1))
+
     def test_open_reports_a_session_once_when_roots_overlap(self):
         self.start()
         link = self.root / "alias"
-        link.symlink_to(self.root, target_is_directory=True)
+        try:
+            link.symlink_to(self.root, target_is_directory=True)
+        except OSError:
+            self.skipTest("this account cannot create symlinks")
         code, data, _ = run("open", "--root", str(self.root), "--root", str(link))
         self.assertEqual((code, len(data["sessions"])), (0, 1))
 
