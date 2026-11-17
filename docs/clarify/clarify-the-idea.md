@@ -136,13 +136,13 @@ brief instead; see [Document Templates](../reference/document-templates.md#docum
 A throwaway prototype needs no skill: prompt your agent directly. John, the
 Product Manager (`bmad-agent-pm`), writes a prototype plan when you want the
 run recorded, its Outcome noting whether the idea held; for thresholds set in
-advance, use his experiment card. Once the prototype plan is final, John
+advance, use the experiment card. Once the prototype plan is final, John
 offers to build it with `bmad-build-auto`, then asks you to keep it, throw it
 away, or drop the idea. Make that choice on purpose. If you throw the
 prototype away, its notes are some of the best input Sofia can get. If you
 keep it, it is an existing codebase and needs a spec like any other.
 
-For a funding decision, ask John for a business case; to judge a problem
+For a funding decision, ask Mary for a business case; to judge a problem
 before any solution, an opportunity assessment; for a leadership strategy, a
 strategy narrative.
 

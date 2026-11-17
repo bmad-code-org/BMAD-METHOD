@@ -2,8 +2,9 @@
 title: ""
 template: narrative
 version: 1.1.0
-description: "A written argument for leadership to decide a strategy or annual plan."
+description: "A written argument for leadership to decide a program's strategy or annual plan."
 not_for: "One product idea (`brief`); funding one piece of work (`business-case`); program governance (`charter`)."
+agents: [bmad-agent-analyst]
 facilitation_order: [introduction-and-ask, goals, tenets, state-of-the-business, lessons-learned, strategic-priorities, resource-request?, faq, appendix?]
 guidance: guidance-planning
 rubric: rubric-planning
@@ -18,7 +19,7 @@ updated: ""
 
 <!-- inputs: Current results against the last plan and what was learned. Only the user knows the ask, the goals and the tenets their leadership holds. -->
 
-<!-- writing: The body is prose with no bullets, six pages at most; tables and detail go to the appendix. -->
+<!-- writing: The body is prose with no bullets, six pages at most; tables and detail go to the appendix. When the work has a ticket, give each outcome, capability and rule a stable id and list those ids in a closing `## For requirements` section, which the Product Owner reads. -->
 
 <!-- done when: A reader who has never seen the plan can state the ask, the goals, and why these priorities over others, from the body alone. -->
 

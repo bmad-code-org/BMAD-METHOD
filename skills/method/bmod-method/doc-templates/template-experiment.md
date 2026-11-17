@@ -4,6 +4,7 @@ template: experiment
 version: 1.1.0
 description: "A measured test of one hypothesis, its thresholds set before it runs."
 not_for: "Learning by building something (`prototype-plan`); a change already decided that needs requirements (`prd`, `prd-light`)."
+agents: [bmad-agent-analyst, bmad-agent-pm]
 paced: true
 facilitation_order: [hypothesis, test, thresholds, guardrails, duration, result?]
 guidance: guidance-planning

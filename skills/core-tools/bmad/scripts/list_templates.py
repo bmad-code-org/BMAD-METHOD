@@ -26,7 +26,8 @@ may leave out a heading of the template: that section is removed and named in `r
 `rubric`, `methods`, `style` and `view` are relative to their file and come back resolved; a bare
 name with no extension, such as `slides`, comes back as it is.
 
-`--brief` keeps only each template's id, description, not_for, category and output, for choosing one.
+`--brief` keeps only each template's id, description, not_for, category, agents and output, for choosing
+one; a template that names no agents and replaces one of the same id reports that one's agents.
 `--template <id>` keeps only that template; `--merge <path>` then writes it as one file to read
 whole: the merged frontmatter, each extension's body in search order, then the template's body
 without its removed sections, with every path made absolute.
@@ -324,7 +325,7 @@ def scan(sources: list[str]) -> dict:
 
 
 PATH_KEYS = ("guidance", "rubric", "methods", "style", "view")
-BRIEF = ("id", "description", "not_for", "category", "output")
+BRIEF = ("id", "description", "not_for", "category", "agents", "output")
 
 
 def body(text: str) -> str:
@@ -427,6 +428,13 @@ def offers(agents: list[str], file: str, agent: str) -> bool:
     return "://" not in file and Path(file).resolve().parent.parent.name == agent
 
 
+def owners(template: dict, shadowed: list[dict] = ()) -> list[str]:
+    """The agents a template names, or with none, those named by the templates of the same id it replaces."""
+    if template["agents"]:
+        return template["agents"]
+    return list(dict.fromkeys(a for s in shadowed if s["kept"] == template["file"] for a in s["agents"]))
+
+
 def owned_by(template: dict, agent: str, shadowed: list[dict] = ()) -> bool:
     """Whether `agent` offers the template, itself or through a template of the same id it replaces."""
     if offers(template["agents"], template["file"], agent):
@@ -484,7 +492,9 @@ def main(argv: list[str]) -> int:
         for key in [k for k in template if k.startswith("_")]:
             del template[key]
     if args.brief:
-        result["templates"] = [{key: t[key] for key in BRIEF} for t in result["templates"]]
+        result["templates"] = [
+            {key: t[key] for key in BRIEF} | {"agents": owners(t, result["shadowed"])} for t in result["templates"]
+        ]
     print(json.dumps(result, indent=2))
     return 0
 

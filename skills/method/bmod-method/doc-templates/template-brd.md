@@ -2,8 +2,9 @@
 title: ""
 template: brd
 version: 1.1.0
-description: "What the business requires and signs for, when the builder is a separate party."
+description: "What the business requires and signs for in an initiative a separate party builds."
 not_for: "Product work inside one organization (`opportunity`, `prd`); a funding decision (`business-case`); what the system shall do, line by line (`srs`)."
+agents: [bmad-agent-analyst]
 facilitation_order: [objectives, stakeholders, scope, current-and-future-process, business-requirements, business-rules, constraints-and-assumptions?, cost-and-benefit?, traceability, open-questions, summary, approval]
 guidance: guidance-planning
 rubric: rubric-planning

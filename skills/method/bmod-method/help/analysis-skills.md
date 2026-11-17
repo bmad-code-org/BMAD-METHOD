@@ -16,4 +16,4 @@ Read this when the question is about the brief or the PRFAQ Mary (`bmad-agent-an
 - With the brief: most projects need one of the two. Pick by what the user lacks, a clear description or confidence in the idea. A brief after a PRFAQ is reasonable when stakeholders need a short read.
 - Writes: `{output_folder}/{active_initiative}/prfaq-<slug>/prfaq-<slug>.md`.
 
-Mary also writes the business requirements document (`brd`); `help/planning-skills.md` says when it fits.
+Mary also writes the business requirements document (`brd`); `help/planning-skills.md` says when it fits. Her other documents decide whether to go ahead: an opportunity assessment (`opportunity`) judges whether a problem is worth pursuing before any solution, a business case (`business-case`) gets a go or no-go on funding, and a strategy narrative (`narrative`) argues a strategy or annual plan to leadership. She shares the experiment card (`experiment`) and the program charter (`charter`) with John.

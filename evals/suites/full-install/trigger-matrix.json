@@ -119,14 +119,67 @@
   },
   {
     "query": "write a product brief for my idea",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "help me write a PRFAQ for the new dashboard",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "write a business case for replacing our billing system",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "is this problem worth pursuing? I need an opportunity assessment",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "write a strategy narrative for next year's plan",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "write the BRD for the vendor who is building our portal",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "write an experiment card for the new onboarding flow",
     "expect": "bmad-agent-analyst",
     "also_ok": [
       "bmad-agent-pm"
     ]
   },
   {
-    "query": "help me write a PRFAQ for the new dashboard",
-    "expect": "bmad-agent-analyst"
+    "query": "draft a program charter for the platform migration",
+    "expect": "bmad-agent-pm",
+    "also_ok": [
+      "bmad-agent-analyst"
+    ]
+  },
+  {
+    "query": "shape a pitch for the next six-week cycle",
+    "expect": "bmad-agent-pm"
+  },
+  {
+    "query": "plan the launch of the new checkout across teams",
+    "expect": "bmad-agent-pm",
+    "also_ok": [
+      "bmad-founder-agent-advisor"
+    ]
+  },
+  {
+    "query": "write a spec I can hand to a coding agent for the export feature",
+    "expect": "bmad-agent-pm",
+    "also_ok": [
+      "bmad-agent-po"
+    ]
+  },
+  {
+    "query": "write a requirements specification for our regulated billing feature",
+    "expect": "bmad-agent-pm"
+  },
+  {
+    "query": "write a prototype plan to try this idea quickly",
+    "expect": "bmad-agent-pm"
   },
   {
     "query": "turn this PRD into epics and stories",
