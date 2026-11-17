@@ -2229,15 +2229,15 @@ class TitleSlugTests(unittest.TestCase):
     def setUpClass(cls):
         cls.slug = staticmethod(load_tickets().title_slug)
 
-    def test_letters_of_other_scripts_are_kept(self):
+    def test_a_title_with_no_ascii_letter_keeps_its_own(self):
         for title, expected in (
             ("修复登录", "修复登录"),
             ("Исправить Вход", "исправить-вход"),
             ("إصلاح تسجيل الدخول", "إصلاح-تسجيل-الدخول"),
             ("हिन्दी पाठ", "हिन्दी-पाठ"),
+            ("ภาษาไทย ที่", "ภาษาไทย-ที่"),
             ("로그인 수정", "로그인-수정"),
-            ("Fix 登录 bug", "fix-登录-bug"),
-            ("ＡＰＩ：修复", "api-修复"),
+            ("修复/登录 ✓", "修复-登录"),
             ("サーバー設定", "サーバー設定"),
             ("⽼人", "老人"),
             (unicodedata.normalize("NFD", "로그인 수정"), "로그인-수정"),
@@ -2264,6 +2264,8 @@ class TitleSlugTests(unittest.TestCase):
             "rock\u02bcn roll",
             "\u2132ix \u2183 \u2180",
             "10 \u2126 resistor",
+            "Fix \u767b\u5f55 bug",
+            "\uff21\uff30\uff29\uff1a\u4fee\u590d",
         ):
             with self.subTest(title=title):
                 self.assertEqual(self.slug(title), before(title))

@@ -1093,49 +1093,18 @@ Verify: {verify}
 {references}{notes}"""
 
 
-# The Unicode blocks of Latin letters and of the symbols Latin text uses: a letter in one with no ASCII form
-# is dropped from a slug, as it always was. The standard library has no script property to ask instead.
-LATIN_BLOCKS = (
-    (0x0000, 0x036F),  # ASCII, Latin-1, Latin Extended-A and -B, IPA, spacing modifiers, combining marks
-    (0x1D00, 0x1DFF),  # phonetic extensions, combining marks supplement
-    (0x1E00, 0x1EFF),  # Latin Extended Additional
-    (0x2000, 0x2BFF),  # punctuation, letterlike symbols, number forms, arrows, math, shapes, dingbats
-    (0x2C60, 0x2C7F),  # Latin Extended-C
-    (0xA720, 0xA7FF),  # Latin Extended-D
-    (0xAB30, 0xAB6F),  # Latin Extended-E
-    (0xFB00, 0xFB06),  # Latin ligatures
-    (0xFF00, 0xFF5E),  # fullwidth ASCII
-    (0x10780, 0x107BF),  # Latin Extended-F
-    (0x1D400, 0x1D7FF),  # mathematical letters and digits
-    (0x1DF00, 0x1DFFF),  # Latin Extended-G
-)
-
-
-def latin_block(c: str) -> bool:
-    return any(a <= ord(c) <= b for a, b in LATIN_BLOCKS)
-
-
 def title_slug(title: str) -> str:
-    """A title as a file name: letters and digits, lowercase, each run of anything else one `-`, at most 60
-    characters and 180 bytes, else `untitled`. A character with an ASCII form takes it (`Café` is `cafe`); a
-    letter or digit of a script other than Latin is kept, with its marks (`修复登录`); any other character with
-    no ASCII form, a letter of a Latin block such as `ß` or `ʻ` among them, is dropped, so a slug of Latin
-    text is what it always was."""
-    out, kept = [], False
-    # Each character as written, so its ASCII form or its block decides before normalizing could change it
-    # (`ŉ` is `ʼn` in NFKC, the ohm sign `Ω` the Greek letter in NFC); the slug is NFKC at the end.
-    for c in title:
-        folded = unicodedata.normalize("NFKD", c).encode("ascii", "ignore").decode("ascii")
-        if folded:
-            out.append(re.sub(r"[^a-z0-9]", "-", folded.lower()))
-            kept = False
-            continue
-        for k in unicodedata.normalize("NFKC", c):
-            mark = unicodedata.category(k).startswith("M")
-            kept = (mark and kept) or (k.isalnum() and not latin_block(c) and not latin_block(k))
-            if kept:
-                out.append(k.lower())
-    slug = re.sub(r"-+", "-", unicodedata.normalize("NFKC", "".join(out))).strip("-")[:60]
+    """A title as a file name: folded to ASCII and lowercase, each run of anything else one `-` (`Café` is
+    `cafe`). A title with no ASCII letter or digit, one in Chinese or Cyrillic say, keeps its own letters, digits
+    and marks instead, the characters Unicode's identifier rule (UAX #31) allows (`修复登录`). At most 60
+    characters and 180 bytes, else `untitled`."""
+    folded = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
+    slug = re.sub(r"[^a-z0-9]+", "-", folded.lower()).strip("-")
+    if not slug:
+        text = unicodedata.normalize("NFKC", title).lower()
+        slug = "".join(c if c != "_" and f"a{c}".isidentifier() else "-" for c in text)
+        slug = re.sub(r"-+", "-", unicodedata.normalize("NFKC", slug)).strip("-")
+    slug = slug[:60]
     while len(slug.encode("utf-8")) > 180:  # room left for `<type>-`, `-<id>` and `-plan.md` in 255 bytes
         slug = slug[:-1]
     return slug.rstrip("-") or "untitled"
