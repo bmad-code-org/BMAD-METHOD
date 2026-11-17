@@ -5,6 +5,9 @@ PATH, a fresh HOME, and the harness's `env` table, where a value is set as given
 the fresh HOME and an empty value forwards the host's only when the host has it. Nothing else.
 """
 
+import contextlib
+import io
+import json
 import os
 import subprocess
 import sys
@@ -16,7 +19,13 @@ from unittest import mock
 SCRIPTS_DIR = Path(__file__).resolve().parents[3] / "skills/toolsmith/bmad-eval/scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-from eval_common import PLATFORM_ENV, build_case_env, run_in_clean_room, validate_harness  # noqa: E402
+from eval_common import (  # noqa: E402
+    PLATFORM_ENV,
+    build_case_env,
+    run_each_harness,
+    run_in_clean_room,
+    validate_harness,
+)
 
 HOST_ENV = {
     "PATH": "/usr/bin:/bin",
@@ -66,6 +75,29 @@ class EnvIsolationTest(unittest.TestCase):
         ):
             with self.assertRaises(ValueError, msg=bad):
                 validate_harness(bad)
+
+
+class EachHarnessTest(unittest.TestCase):
+    def test_runs_once_per_name_and_returns_the_worst_code(self):
+        seen = []
+
+        def main(argv):
+            seen.append(argv)
+            print(json.dumps({"name": argv[-1]}))
+            return {"a": 0, "b": 1, "c": 3}[argv[-1]]
+
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = run_each_harness(
+                main,
+                ["--x", "1", "--harness-name", "a", "--harness-name=b", "--harness-name", "c", "--harness-name", "a"],
+                ["a", "b", "c", "a"],
+            )
+        self.assertEqual(
+            seen, [["--x", "1", "--harness-name", n] for n in ("a", "b", "c")], "a repeated name runs once"
+        )
+        self.assertEqual(json.loads(out.getvalue()), {"harnesses": {n: {"name": n} for n in ("a", "b", "c")}})
+        self.assertEqual(code, 3, "no harness outranks a failed attempt")
 
 
 class CleanRoomGitTest(unittest.TestCase):

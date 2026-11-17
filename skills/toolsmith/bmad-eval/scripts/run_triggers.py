@@ -24,7 +24,7 @@ timing.json and cwd/ (the workspace after the run, staged skill included) under
 
 Usage:
   uv run run_triggers.py --skill-path SKILL_DIR --queries QUERIES.json --output-dir DIR
-    [--project-root DIR] [--harness HARNESS.json] [--runs-per-query N] [--threshold 0.5]
+    [--project-root DIR] [--harness HARNESS.json | --harness-name NAME ...] [--runs-per-query N] [--threshold 0.5]
     [--timeout SECS] [--workers N] [--quiet]
 
 QUERIES.json is a list of {"query": "...", "should_trigger": true|false}.
@@ -47,10 +47,12 @@ from pathlib import Path
 from eval_common import (
     DEFAULT_SKILL_DIR,
     account_transcript,
+    add_harness_args,
     find_project_root,
     make_run_dir,
     read_json,
     resolve_harness,
+    run_each_harness,
     run_in_clean_room,
     utc_now_iso,
     write_json,
@@ -156,13 +158,19 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument(
         "--project-root", type=Path, default=None, help="holds _bmad/; found from the skill path when omitted"
     )
-    p.add_argument("--harness", type=Path, default=None, help="harness JSON for a project without BMad")
+    add_harness_args(p)
     p.add_argument("--runs-per-query", type=int, default=3)
     p.add_argument("--threshold", type=float, default=0.5)
     p.add_argument("--timeout", type=int, default=180)
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--quiet", action="store_true")
     args = p.parse_args(argv)
+    if len(args.harness_name) > 1:
+        return run_each_harness(main, list(sys.argv[1:] if argv is None else argv), args.harness_name)
+    if args.harness and args.harness_name:
+        print("pass --harness or --harness-name, not both", file=sys.stderr)
+        return 2
+    harness_name = args.harness_name[0] if args.harness_name else None
 
     skill_path = args.skill_path.resolve()
     queries_file = args.queries.resolve()
@@ -178,12 +186,14 @@ def main(argv: list[str] | None = None) -> int:
 
     project_root = args.project_root.resolve() if args.project_root else find_project_root(skill_path)
     try:
-        harness, harness_note = resolve_harness(project_root, args.harness)
+        harness, harness_note = resolve_harness(project_root, args.harness, harness_name)
     except (ValueError, json.JSONDecodeError) as e:
         print(f"harness invalid: {e}", file=sys.stderr)
         return 2
 
-    run_id, run_dir = make_run_dir(args.output_dir, f"{skill_name}-triggers")
+    run_id, run_dir = make_run_dir(
+        args.output_dir, f"{skill_name}-triggers" + (f"-{harness_name}" if harness_name else "")
+    )
     (run_dir / "queries").mkdir(parents=True, exist_ok=True)
     write_json(
         run_dir / "run.json",

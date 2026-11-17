@@ -2,7 +2,7 @@
 
 Read this when the question is about `bmad-eval`, trigger accuracy, or whether a skill works. An eval runs a skill through the user's own agent runtime in a clean working directory and reports what came back. Smithy offers one at the end of every build and reaches `bmad-eval` from his menu, so a user usually meets it through him. Call it directly when the user has the skill and the cases and wants the numbers.
 
-## The four modes
+## The five modes
 
 | Mode | Answers | Recommend when |
 |---|---|---|
@@ -10,6 +10,7 @@ Read this when the question is about `bmad-eval`, trigger accuracy, or whether a
 | Variant | Does a section earn its place, or does a stripped or prior version do as well? | The user cut or changed something and wants to know whether it mattered. |
 | Quality | Does the output meet the case's rubric? | The user has a rubric for what good output looks like and wants each case graded against it, with no partial credit. |
 | Trigger | Does the description fire on the requests it should and stay quiet on the rest? | The skill does not trigger, triggers on the wrong things, or has just been built. |
+| Matrix | With every skill of an install present, does each request load the skill meant for it? | Two skills seem to compete for the same requests, a description changed, or before a release. The queries live in `evals/suites/<suite-name>/trigger-matrix.json`. |
 
 ## What a trigger eval is
 
@@ -21,7 +22,7 @@ Firing and output are probabilistic, so one run proves little. Three runs per ca
 
 ## Which harness runs it
 
-An eval runs through the agent CLI the user is already working in: Claude Code, Codex or another. `bmad-eval` ships no list of harnesses. The first time it runs in a project, the agent works out four facts about its own CLI (the command for one non-interactive run, the folder it reads skills from, the env vars the run needs, and the files that keep it logged in) and records them in `bmad-eval`'s customization through `bmad-customize`, where the user can read and change them. Each case then runs in a clean working directory with a copy of the skill and a fresh HOME, so the user's own skills, memory and settings do not leak into the result. The run bypasses the CLI's permission prompts, because nobody is there to answer them; the agent says so when confirming the run, and a user who wants the run contained wraps the recorded command in a sandbox.
+An eval runs through the agent CLI the user is already working in: Claude Code, Codex or another. `bmad-eval` ships no list of harnesses. The first time it runs in a project, the agent works out four facts about its own CLI (the command for one non-interactive run, the folder it reads skills from, the env vars the run needs, and the files that keep it logged in) and records them in `bmad-eval`'s customization through `bmad-customize`, where the user can read and change them. To compare tools or models, the user names the others they have; each is worked out, proved on one case and recorded as a named harness, and one run through several names reports where they disagree. Each case then runs in a clean working directory with a copy of the skill and a fresh HOME, so the user's own skills, memory and settings do not leak into the result. The run bypasses the CLI's permission prompts, because nobody is there to answer them; the agent says so when confirming the run, and a user who wants the run contained wraps the recorded command in a sandbox.
 
 ## Where runs land
 

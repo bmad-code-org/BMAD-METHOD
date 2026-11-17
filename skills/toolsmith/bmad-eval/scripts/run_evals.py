@@ -32,7 +32,7 @@ records each as skipped and exits 3.
 Usage:
   uv run run_evals.py --cases CASES.json --skill-path SKILL_DIR --output-dir DIR
     [--mode quality|baseline|variant] [--variant-path SKILL_DIR] [--project-root DIR]
-    [--harness HARNESS.json] [--case-ids A1,B3] [--runs N] [--timeout SECS]
+    [--harness HARNESS.json | --harness-name NAME ...] [--case-ids A1,B3] [--runs N] [--timeout SECS]
     [--workers N] [--label NAME] [--quiet]
 
 CASES.json is a list of cases or {"cases": [...]}. Each case:
@@ -57,11 +57,13 @@ from urllib.parse import quote, unquote
 from eval_common import (
     DEFAULT_SKILL_DIR,
     account_transcript,
+    add_harness_args,
     contained,
     find_project_root,
     make_run_dir,
     read_json,
     resolve_harness,
+    run_each_harness,
     run_in_clean_room,
     safe_name,
     utc_now_iso,
@@ -273,7 +275,7 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="holds _bmad/ and anchors fixture paths; found from the skill path when omitted",
     )
-    p.add_argument("--harness", type=Path, default=None, help="harness JSON for a project without BMad")
+    add_harness_args(p)
     p.add_argument("--case-ids", default=None, help="comma-separated subset of case ids to run")
     p.add_argument("--runs", type=int, default=1, help="repeats per case per config for the variance benchmark")
     p.add_argument("--timeout", type=int, default=600)
@@ -281,6 +283,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--label", default="evals", help="label for the run id")
     p.add_argument("--quiet", action="store_true")
     args = p.parse_args(argv)
+    if len(args.harness_name) > 1:
+        return run_each_harness(main, list(sys.argv[1:] if argv is None else argv), args.harness_name)
+    if args.harness and args.harness_name:
+        print("pass --harness or --harness-name, not both", file=sys.stderr)
+        return 2
+    harness_name = args.harness_name[0] if args.harness_name else None
 
     cases_file = args.cases.resolve()
     if not cases_file.is_file():
@@ -319,7 +327,7 @@ def main(argv: list[str] | None = None) -> int:
         cases = [c for c in cases if str(c.get("id")) in wanted]
 
     try:
-        harness, harness_note = resolve_harness(project_root, args.harness)
+        harness, harness_note = resolve_harness(project_root, args.harness, harness_name)
     except (ValueError, json.JSONDecodeError) as e:
         print(f"harness invalid: {e}", file=sys.stderr)
         return 2
@@ -333,7 +341,9 @@ def main(argv: list[str] | None = None) -> int:
         print("fixtures cannot be staged:\n  " + "\n  ".join(problems), file=sys.stderr)
         return 2
 
-    run_id, run_dir = make_run_dir(args.output_dir, safe_name(args.label))
+    run_id, run_dir = make_run_dir(
+        args.output_dir, safe_name(args.label + (f"-{harness_name}" if harness_name else ""))
+    )
     write_json(
         run_dir / "run.json",
         {

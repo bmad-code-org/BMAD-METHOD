@@ -27,4 +27,6 @@ home_files = ["Library/Keychains"]
 
 Prove the facts on one case before the set; a wrong flag, folder or login shows there. A run bypasses your permission prompts and is not contained unless the command wraps it in a sandbox, so say that when confirming a run. When nobody is at the keyboard and nothing is recorded, stop and show the table to record. In a project without BMad, write the same keys as JSON and pass `--harness <file>`.
 
+To run through another tool or model the user has, such as a second CLI or the same CLI with another model, work out the same keys for it from its `--help`, prove them on one case with `--harness-name <name>`, and record them as `[workflow.harnesses.<name>]` through `bmad-customize`. Name each for what it runs (`codex`, `claude-sonnet`). Repeating `--harness-name` runs once per name, so one request compares tools.
+
 Trigger mode detects a load with a canary: the staged skill's body asks for a token at the start of the reply, and the token in the output is the load, on any CLI. Token counts are read when the output is line-delimited JSON with usage blocks; otherwise elapsed time is the measure.

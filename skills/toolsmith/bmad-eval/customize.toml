@@ -23,3 +23,9 @@ env = {}
 # Files or folders under the host home brought into the fresh HOME at the same path, so the
 # CLI stays logged in. Examples: [".codex/auth.json"], ["Library/Keychains"].
 home_files = []
+
+# Further harnesses, one per tool or model to compare, each a table with the keys above:
+# [workflow.harnesses.codex], [workflow.harnesses.claude-sonnet]. `--harness-name <name>` runs
+# through one; repeated, the runner runs once per name. bmad-eval records each through
+# bmad-customize after proving it on one case.
+[workflow.harnesses]

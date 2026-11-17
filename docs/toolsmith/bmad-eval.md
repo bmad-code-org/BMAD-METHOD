@@ -1,15 +1,15 @@
 ---
 title: 'Eval Runner'
-description: 'Measure whether a skill works with bmad-eval: baseline, variant, quality, and trigger runs in a clean working directory, with a permanent record of each run.'
+description: 'Measure whether a skill works with bmad-eval: baseline, variant, quality, trigger and trigger-matrix runs in a clean working directory, with a permanent record of each run.'
 sidebar:
   order: 13
 ---
 
-`bmad-eval` runs a skill through your own coding tool in a clean working directory and reports what came back. Use it to find out whether a skill beats the bare model, whether a change helped, whether the output meets a standard, and whether the description fires on the right requests.
+`bmad-eval` runs a skill through your own coding tool in a clean working directory and reports what came back. Use it to find out whether a skill beats the bare model, whether a change helped, whether the output meets a standard, whether the description fires on the right requests, and whether the skills of a whole install compete for the same requests.
 
 Smithy offers an eval at the end of every build and runs `bmad-eval` from its menu, so you will usually reach it there. Call it directly when you have a skill and cases and want the numbers.
 
-## The Four Modes
+## The Five Modes
 
 | Mode | Question it answers | Use it when |
 | --- | --- | --- |
@@ -17,6 +17,7 @@ Smithy offers an eval at the end of every build and runs `bmad-eval` from its me
 | Variant | Does a section earn its place, or does a stripped or prior version do as well? | You cut or changed something and want to know if it mattered |
 | Quality | Does the output meet the case's rubric? | You know what good output looks like and want each case graded |
 | Trigger | Does the description fire when it should and stay quiet otherwise? | A skill does not fire, fires on the wrong things, or is newly built |
+| Matrix | With every skill of an install present, does each request load the skill meant for it? | Before a release, after a description changes, or when two skills seem to compete |
 
 A skill the bare model matches should be retired, not patched. The bare model improves with each release, so a baseline run is worth repeating.
 
@@ -57,6 +58,8 @@ The should-not queries matter most when they are near misses: requests that shar
 
 When queries fail, the description is changed in its situations and boundaries, never by pasting in a failed query. `bmad-eval` can also run an optimization loop that improves the description against a held-out test set, so the rewrite does not overfit.
 
+A trigger eval stages the skill alone, so it cannot show two skills competing. The trigger matrix stages every skill of an install at once and records which one each query loads. Its report lists the failing queries and a table of which skill loaded in place of which, so overlapping descriptions show up as a recurring pair. The queries live in a suite folder, `evals/suites/<suite-name>/trigger-matrix.json`; this repository's is `evals/suites/full-install/`.
+
 ## What Keeps a Run Clean
 
 Each case runs in a temporary folder outside your project, with a copy of the skill and a fresh home folder. Your own skills, memory, settings, and project instructions do not load, unless the recorded `env` or `home_files` bring them in. To test firing, the staged skill asks for a token at the start of the reply, and seeing that token proves the skill loaded on any tool.
@@ -73,6 +76,8 @@ Evals run through the coding tool you are already using, such as Claude Code or 
 - The files that keep it logged in
 
 These are recorded in `bmad-eval`'s customization through `bmad-customize`, where you can read and change them.
+
+To compare tools or models, name the others you want to run against, such as Codex or the same tool with another model. Each is worked out and proved the same way and recorded as a named harness. A run through several names keeps one run folder per name and reports where they disagree. Tools route skills differently, so a description that loads well in one can miss in another.
 
 ## Read the Results
 
