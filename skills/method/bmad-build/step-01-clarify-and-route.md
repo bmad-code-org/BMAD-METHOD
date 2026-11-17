@@ -20,8 +20,8 @@ Before listing artifacts, resolve existing workflow state in this order. Skip th
    - If it points to a file that matches the plan template (has `status` frontmatter with a recognized value: draft, ready-for-dev, in-progress, in-review, built, done, blocked, or dropped) → set `plan_file`, then **EARLY EXIT** to the appropriate step: `draft` → `{{ rendered("step-02-plan.md") }}`, {% if workflow.route == "oneshot" %}`ready-for-dev`/`in-progress` → `{{ rendered("step-oneshot.md") }}`{% elif workflow.route == "full" %}`ready-for-dev`/`in-progress` → `{{ rendered("step-03-implement.md") }}`, `in-review`/`built` → `{{ rendered("step-04-review.md") }}`{% else %}`ready-for-dev`/`in-progress` → `{{ rendered("step-03-implement.md") }}` (or `{{ rendered("step-oneshot.md") }}` when `route` is `oneshot`), `in-review`/`built` → `{{ rendered("step-04-review.md") }}`{% endif %}. For `done`, ingest as context and proceed to INSTRUCTIONS — do not resume. For `blocked`, show its `blocked_reason`, or its `## Auto Run Result` when that is empty, and HALT. For `dropped`, say the ticket was dropped and HALT.
    - Anything else (a ticket file whose `type` is `initiative` or `epic`, intent files, external docs, planning documents, descriptions) → ingest it in full as starting intent and proceed to INSTRUCTIONS. Do not attempt to infer a workflow state from it.
 
-2. Recent conversation
-   Do the last few human messages clearly show what the user intends to work on?
+2. Recent conversation or branch
+   Do the last few human messages clearly show what the user intends to work on, or does the current branch name hold a ticket ref that `find` resolves?
    Use the same routing as above.
 
 3. The ticket tree
