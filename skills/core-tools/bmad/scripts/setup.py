@@ -2080,7 +2080,7 @@ def read_plain_tree(root: Path) -> PlainTree:
 
 
 def shared_scripts_tree(src: Path) -> PlainTree:
-    # The bmad skill's own tests ship with its scripts but do not belong in a project.
+    # A bmad skill installed from an earlier version carries its tests, which do not belong in a project.
     tree = read_plain_tree(src)
     return PlainTree(
         tuple(path for path in tree.directories if path.parts[0] != "tests"),

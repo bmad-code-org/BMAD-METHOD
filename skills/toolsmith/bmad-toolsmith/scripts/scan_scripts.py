@@ -7,7 +7,9 @@
 Rules, each a `rule` value in the findings:
   pep723-missing   no `# /// script` inline metadata block; `uv run` needs it to pick dependencies
   pep723-floor     the block has no requires-python, or its floor is below 3.11
-  test-missing     no scripts/tests/test_<name>.py beside the script; an exact copy (line endings aside)
+  test-missing     no test_<name>.py in the skill's folder under tests/ at the root holding it (the first
+                   folder above with .git or _bmad/, mirroring the skill's path below skills/), nor in the
+                   skill's own scripts/tests/; an exact copy (line endings aside)
                    of the memory-agent shape's wake.py or init-sanctum.py is tested in Toolsmith and never flagged
   network-call     imports a network module (urllib.request, requests, httpx, socket, http.client, aiohttp);
                    a skill script should work offline unless its docstring says why it cannot
@@ -21,7 +23,7 @@ Rules, each a `rule` value in the findings:
                    (`sys.exit("...")` or `raise SystemExit("...")` with a message)
   syntax-error     the file does not parse
 
-A shebang is optional. Files under scripts/tests/ are not linted.
+A shebang is optional. Only scripts/*.py is linted.
 
 Usage:
   scan_scripts.py <skill-folder>
@@ -151,16 +153,18 @@ def shape_scripts() -> dict[bytes, str]:
     return {lf_bytes(SKILL_ROOT / rel): rel for rel in COPIED_SCRIPTS if (SKILL_ROOT / rel).is_file()}
 
 
-def scan_script(path: Path, scripts_dir: Path, copies: dict[bytes, str]) -> tuple[dict, list[dict]]:
+def scan_script(
+    path: Path, scripts_dir: Path, copies: dict[bytes, str], tests_dir: Path | None, tests_rel: str = ""
+) -> tuple[dict, list[dict]]:
     rel = f"scripts/{path.name}"
     content = path.read_text(encoding="utf-8", errors="replace")
     has_block, requires = pep723_floor(content)
-    test_file = scripts_dir / "tests" / f"test_{path.stem}.py"
+    name = f"test_{path.stem}.py"
     info = {
         "path": rel,
         "has_pep723": has_block,
         "floor": requires,
-        "has_test": test_file.is_file(),
+        "has_test": any(d is not None and (d / name).is_file() for d in (tests_dir, scripts_dir / "tests")),
         "has_argparse": False,
     }
     copy_of = copies.get(lf_bytes(path))
@@ -174,7 +178,8 @@ def scan_script(path: Path, scripts_dir: Path, copies: dict[bytes, str]) -> tupl
     elif requires is None or not floor_ok(requires):
         findings.append(finding(rel, 1, "pep723-floor", requires or "(none)", 'set requires-python = ">=3.11"'))
     if not info["has_test"] and not copy_of:
-        findings.append(finding(rel, 1, "test-missing", path.name, f"add scripts/tests/test_{path.stem}.py (unittest)"))
+        where = tests_rel or "scripts/tests"
+        findings.append(finding(rel, 1, "test-missing", path.name, f"add {where}/{name} (unittest)"))
     try:
         tree = ast.parse(content)
     except SyntaxError as err:
@@ -187,14 +192,29 @@ def scan_script(path: Path, scripts_dir: Path, copies: dict[bytes, str]) -> tupl
     return info, findings
 
 
+def project_mirror(skill_root: Path) -> tuple[Path, Path] | None:
+    """The first folder above the skill holding `.git` or `_bmad/`, and the skill's path below the nearest
+    `skills/` folder in it (its name when none holds it): `evals/` and `tests/` there mirror that path."""
+    skill = skill_root.resolve()
+    for root in skill.parents:
+        if (root / ".git").exists() or (root / "_bmad").is_dir():
+            parts = skill.relative_to(root).parts
+            below = next((parts[i + 1 :] for i in range(len(parts) - 2, -1, -1) if parts[i] == "skills"), parts[-1:])
+            return root, Path(*below)
+    return None
+
+
 def scan_scripts(skill_root: Path) -> dict:
     scripts_dir = skill_root / "scripts"
     scripts: list[dict] = []
     findings: list[dict] = []
+    mirror = project_mirror(skill_root)
+    tests_dir = mirror[0] / "tests" / mirror[1] if mirror else None
+    tests_rel = (Path("tests") / mirror[1]).as_posix() if mirror else ""
     if scripts_dir.is_dir():
         copies = shape_scripts()
         for path in sorted(scripts_dir.glob("*.py")):
-            info, found = scan_script(path, scripts_dir, copies)
+            info, found = scan_script(path, scripts_dir, copies, tests_dir, tests_rel)
             scripts.append(info)
             findings.extend(found)
     findings.sort(key=lambda f: (f["path"], f["line"], f["rule"]))

@@ -8,10 +8,10 @@ A thin `SKILL.md` over a script that does the work.
 |---|---|
 | `{target}/SKILL.md` | `shapes/script-utility/assets/SKILL-template.md` |
 | `{target}/scripts/<name>.py` | `shapes/script-utility/assets/script-template.py` |
-| `{target}/scripts/tests/test_<name>.py` | `shapes/script-utility/assets/test-template.py` |
+| `{tests}/test_<name>.py` | `shapes/script-utility/assets/test-template.py` |
 | `{target}/bmod.toml` | `init_skill.py --bmod <record> --source <update_source>` when the skill joins a module; `ship.md` adds its dependency lists; a skill outside BMad has none |
 
-Fill each template with `uv run {skill-root}/scripts/process_template.py {skill-root}/shapes/script-utility/assets/<template> -o {target}/<file> --var <token>=<value> ...`, passing `{name}`, `{title}`, `{description}`, `{script}` (the script's name, no `.py`) and `{purpose}`. Then write by hand each `{...}` instruction left; `{skill-root}` and the f-string fields in the Python files stay as they are.
+Fill each template with `uv run {skill-root}/scripts/process_template.py {skill-root}/shapes/script-utility/assets/<template> -o {target}/<file> --var <token>=<value> ...`, passing `{name}`, `{title}`, `{description}`, `{script}` (the script's name, no `.py`), `{skill_path}` (`{target}`'s path from the folder holding `{tests}`) and `{purpose}`. Then write by hand each `{...}` instruction left; `{skill-root}` and the f-string fields in the Python files stay as they are.
 
 ## Rules
 

@@ -91,6 +91,6 @@ Validate reports what would stop a skill or module installing, loading, or firin
 | `scan_scripts.py` | Script headers and tests, then runs the skill's tests |
 | `scan_config_reads.py` | In a module, a config value a member reads that no configuration question asks, and a question no member reads |
 
-Smithy also judges what the tools cannot, such as a record's `SKILL.md` doing more than point to `bmad setup`, or a custom skill named `bmad-`. A memory agent with an out-of-date script fails with [edit](#edit) as the fix. Smithy offers a trigger eval when the skill has `evals/<skill-name>/triggers.json` at the repository root.
+Smithy also judges what the tools cannot, such as a record's `SKILL.md` doing more than point to `bmad setup`, or a custom skill named `bmad-`. A memory agent with an out-of-date script fails with [edit](#edit) as the fix. Smithy offers a trigger eval when the skill has a `triggers.json` in its folder under `evals/` at the repository root.
 
 An old-format module fails with one line that names [migrate](migrate-an-old-module.md) as the fix.

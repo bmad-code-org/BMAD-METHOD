@@ -91,7 +91,7 @@ A BMad script follows these rules:
 - Run as `uv run {skill-root}/scripts/<name>.py`, never `python`, `pip`, or a bare `scripts/x.py`.
 - `--help`, JSON on stdout when the agent reads the result, and a non-zero exit with a reason.
 - Standard library first, with no network unless the docstring says why.
-- A `unittest` test at `scripts/tests/test_<name>.py`, asserting what the script produced.
+- A `unittest` test outside the skill, under `tests/` at the repository root in a folder mirroring the skill's path below `skills/`, asserting what the script produced.
 - No model ids, because users run any model.
 
 ## Patterns Worth Using

@@ -3,7 +3,7 @@
 
 # BMAD-METHOD
 
-Open source framework for structured, agent-assisted software delivery. Skills live in `skills/`, Python tooling in `tools/`, the Astro docs site in `docs-site/`, and documentation in `docs/`.
+Open source framework for structured, agent-assisted software delivery. Skills live in `skills/`, with their script tests in `tests/` and their evals in `evals/`, each in a folder mirroring the skill's path under `skills/`. Python tooling is in `tools/`, the Astro docs site in `docs-site/`, and documentation in `docs/`.
 
 ## Policy
 
