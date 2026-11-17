@@ -234,17 +234,19 @@ review = "thorough"
 
 Both build skills also expose `before_implement`, an instruction that runs
 after planning and before any code changes. With the TEA module installed,
-this makes every build of a ticket with acceptance criteria write failing
-acceptance tests first (ATDD):
+this makes every build of a ticket write failing acceptance tests first
+(ATDD):
 
 ```toml
 # _bmad/custom/bmad-build.toml (and bmad-build-auto.toml)
 [workflow]
 before_implement = """
-When {plan_file} names a `ticket` and lists acceptance criteria, run
-bmad-tea-automate in red mode for that ticket. Add the test files it writes
-to the plan's Code Map, add a task that turns them green, and add a command
-to Verification that runs them.
+When {plan_file} names a `ticket`, run bmad-tea-automate in red mode for
+that ticket. It saves each acceptance test skipped. Add the test files to
+the plan's Code Map, a task that unskips each test and sees it fail before
+the code it covers is written, and a command to Verification that runs
+them. A oneshot plan has no Code Map or tasks: add the Verification command
+and unskip each test the same way while implementing.
 """
 ```
 

@@ -33,8 +33,8 @@ kind of work.
 Other TEA skills (test design, trace, test review, NFRs, and gates) and
 Automate's red mode for acceptance test-driven development (ATDD) are
 available. They are not the default test-generation path. To have every
-build of a ticket with acceptance criteria write failing acceptance tests
-before it writes code, set the build's `before_implement` hook; see
+build of a ticket write failing acceptance tests before it writes code, set
+the build's `before_implement` hook; see
 [Customize BMad](../customize/customize-bmad.md).
 
 ## Run `bmad-qa-generate-e2e-tests`
