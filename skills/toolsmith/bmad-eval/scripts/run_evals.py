@@ -263,7 +263,9 @@ def load_cases(cases_file: Path) -> list[dict]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, allow_abbrev=False
+    )
     p.add_argument("--cases", required=True, type=Path)
     p.add_argument("--skill-path", required=True, type=Path, help="the skill under test (holds SKILL.md)")
     p.add_argument("--output-dir", required=True, type=Path)

@@ -151,7 +151,9 @@ def run_query_once(
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, allow_abbrev=False
+    )
     p.add_argument("--skill-path", required=True, type=Path)
     p.add_argument("--queries", required=True, type=Path)
     p.add_argument("--output-dir", required=True, type=Path)
@@ -165,6 +167,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--quiet", action="store_true")
     args = p.parse_args(argv)
+    if args.runs_per_query < 1:
+        print("--runs-per-query must be at least 1", file=sys.stderr)
+        return 2
     if len(args.harness_name) > 1:
         return run_each_harness(main, list(sys.argv[1:] if argv is None else argv), args.harness_name)
     if args.harness and args.harness_name:

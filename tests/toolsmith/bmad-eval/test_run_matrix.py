@@ -9,6 +9,10 @@ from pathlib import Path
 
 SCRIPTS_DIR = Path(__file__).resolve().parents[3] / "skills/toolsmith/bmad-eval/scripts"
 RUNNER = SCRIPTS_DIR / "run_matrix.py"
+sys.path.insert(0, str(SCRIPTS_DIR))
+
+from run_matrix import discover, score  # noqa: E402
+
 FAKE = Path(__file__).resolve().parent / "fake_harness.py"
 RESOLVER = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad/scripts"
 
@@ -144,6 +148,41 @@ class MatrixTest(unittest.TestCase):
         code, _, err = self.run_named("--harness", str(self.harness), "--harness-name", "one")
         self.assertEqual(code, 2)
         self.assertIn("not both", err)
+
+    def test_linked_skill_folders_are_followed_and_a_skill_reached_twice_counts_once(self):
+        tool = self.root / "tool-skills"
+        tool.mkdir()
+        try:
+            for name in ("alpha", "beta"):
+                (tool / name).symlink_to(self.skills / "mod" / name, target_is_directory=True)
+        except OSError:
+            self.skipTest("this account cannot create symlinks")
+        self.assertEqual(sorted(discover([tool])), ["alpha", "beta"])
+        self.assertEqual(sorted(discover([tool, self.skills])), ["alpha", "beta", "gamma"])
+
+    def test_a_skill_name_that_is_a_path_is_refused(self):
+        skill(self.skills / "mod", "delta", "Delta.")
+        path = self.skills / "mod" / "delta" / "SKILL.md"
+        path.write_text(path.read_text().replace("name: delta", "name: ../escape"), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "not a plain folder name"):
+            discover([self.skills])
+
+    def test_runs_split_across_allowed_skills_pass_and_rates_are_not_rounded_first(self):
+        split = score({"query": "q", "expect": "a", "also_ok": ["b", "c"]}, [["a"], ["b"], ["c"]], 3, 0.5)
+        self.assertEqual((split["pass"], split["stolen_by"]), (True, []))
+        two_of_three = score({"query": "q", "expect": "a"}, [["a"], ["a"], []], 3, 0.667)
+        self.assertEqual(two_of_three["loaded"], {"a": 0.667})
+        self.assertFalse(two_of_three["pass"], "2/3 is below 0.667 even though it displays as 0.667")
+        stolen = score({"query": "q", "expect": "a"}, [["a", "b"], ["b"]], 2, 0.5)
+        self.assertEqual((stolen["pass"], stolen["stolen_by"]), (False, ["b"]))
+
+    def test_zero_runs_and_an_abbreviated_option_are_usage_errors(self):
+        code, _, err = self.run_matrix([{"query": "x", "expect": None}], "--runs-per-query", "0")
+        self.assertEqual(code, 2)
+        self.assertIn("at least 1", err)
+        code, _, err = self.run_matrix([{"query": "x", "expect": None}], "--harness-n", "a")
+        self.assertEqual(code, 2)
+        self.assertIn("unrecognized arguments", err)
 
     def test_no_harness_exits_3(self):
         path = self.root / "matrix.json"

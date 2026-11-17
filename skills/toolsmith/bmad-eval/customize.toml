@@ -26,6 +26,6 @@ home_files = []
 
 # Further harnesses, one per tool or model to compare, each a table with the keys above:
 # [workflow.harnesses.codex], [workflow.harnesses.claude-sonnet]. `--harness-name <name>` runs
-# through one; repeated, the runner runs once per name. bmad-eval records each through
-# bmad-customize after proving it on one case.
+# through one; repeated, the runner runs once per name. bmad-eval proves each on one case with
+# a temporary --harness file, then records it through bmad-customize.
 [workflow.harnesses]

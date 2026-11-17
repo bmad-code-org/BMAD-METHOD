@@ -12,9 +12,9 @@ Every SKILL.md under each --skills folder is staged under its own name with its 
 description and a body holding a canary unique to that skill and attempt. A canary in what the
 harness printed means that skill loaded. Bodies are replaced, so a loaded skill does no work.
 
-A query passes when its expected skill, or one named in `also_ok`, loads in at least
---threshold of its runs and no other skill does; with `expect` null, when no skill does or
-only one named in `also_ok`. A
+A query passes when at least --threshold of its runs loaded its expected skill or one named in
+`also_ok` (with `expect` null, nothing outside `also_ok`), and no other skill loaded in that
+share of runs. Folders linked into a --skills folder are followed, as tool folders link skills. A
 query whose attempts did not all complete is unmeasured, never passed.
 
 Each attempt keeps prompt.txt, transcript.jsonl, stderr.txt, timing.json and cwd/ under
@@ -29,7 +29,7 @@ MATRIX.json is a list of {"query": "...", "expect": "<skill name>" | null, "also
 
 Output, also written to matrix-result.json: each query with every skill that loaded and its
 rate, and `confusion`, which for each expected skill counts the queries where another skill
-loaded in its place, and `missed` the queries where no skill loaded.
+loaded in its place, and `missed` the queries that failed with no other skill taking them.
 
 Exit 0 when every query was measured, 1 when any attempt failed, 2 on a usage error, 3 when no
 harness is recorded. A failing query is a result, not an error. With several --harness-name, it runs
@@ -40,6 +40,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import re
 import sys
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -61,21 +63,41 @@ from eval_common import (
 from run_triggers import parse_skill_md
 
 CANARY_PREFIX = "ROUTED-"
+NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
 NONE = "(none)"
+
+
+def skill_folders(root: Path) -> list[Path]:
+    """Folders holding a SKILL.md under root, following linked folders (tool folders link each skill)."""
+    found, seen = [], set()
+    for folder, dirs, files in os.walk(root, followlinks=True):
+        real = os.path.realpath(folder)
+        if real in seen:
+            dirs[:] = []
+            continue
+        seen.add(real)
+        if "SKILL.md" in files:
+            found.append(Path(folder))
+    return sorted(found)
 
 
 def discover(roots: list[Path]) -> dict[str, str]:
     """Every skill under the roots, name to description; a name found twice is a usage error."""
     skills: dict[str, str] = {}
+    origin: dict[str, str] = {}
     for root in roots:
-        folders = sorted(path.parent for path in root.rglob("SKILL.md"))
+        folders = skill_folders(root)
         for folder in folders:
             if any(other in folder.parents for other in folders):
                 continue  # a sample inside a skill's assets is not installed
             name, description = parse_skill_md(folder)
+            if not NAME_RE.fullmatch(name):
+                raise ValueError(f"{folder}: skill name {name!r} is not a plain folder name")
             if name in skills:
+                if origin[name] == os.path.realpath(folder):
+                    continue  # the same skill reached through two folders
                 raise ValueError(f"two skills are named {name!r}; stage one install at a time")
-            skills[name] = description
+            skills[name], origin[name] = description, os.path.realpath(folder)
     if not skills:
         raise ValueError("no SKILL.md under " + ", ".join(str(r) for r in roots))
     return skills
@@ -116,38 +138,46 @@ def loaded_skills(output: str, canaries: dict[str, str]) -> list[str]:
 
 
 def score(query: dict, runs: list[list[str]], expected_runs: int, threshold: float) -> dict:
-    """One query's result from the skills each completed run loaded."""
+    """One query's result from the skills each completed run loaded.
+
+    A run is acceptable when it loaded a skill the query allows (or, with `expect` null, nothing
+    else). The query passes when enough runs are acceptable and no other skill reaches the
+    threshold; that skill is `stolen_by`. Rates are compared unrounded.
+    """
     counts: dict[str, int] = {}
     for loaded in runs:
         for name in loaded:
             counts[name] = counts.get(name, 0) + 1
-    rates = {name: round(n / len(runs), 3) for name, n in sorted(counts.items())} if runs else {}
     ok = {query["expect"], *query.get("also_ok", [])} - {None}
-    winners = {name for name, rate in rates.items() if rate >= threshold}
-    measured = len(runs) == expected_runs
-    passed = (winners <= ok and (bool(winners) or query["expect"] is None)) if measured else None
+    total = len(runs)
+    if query["expect"] is None:
+        acceptable = sum(1 for loaded in runs if set(loaded) <= ok)
+    else:
+        acceptable = sum(1 for loaded in runs if set(loaded) & ok)
+    stolen_by = sorted(n for n, c in counts.items() if n not in ok and total and c / total >= threshold)
+    measured = total == expected_runs and total > 0
+    passed = (acceptable / total >= threshold and not stolen_by) if measured else None
     return {
         "query": query["query"],
         "expect": query["expect"],
         "also_ok": query.get("also_ok", []),
-        "loaded": rates,
-        "runs": len(runs),
+        "loaded": {n: round(c / total, 3) for n, c in sorted(counts.items())},
+        "runs": total,
         "pass": passed,
+        "stolen_by": stolen_by,
     }
 
 
-def confusion(results: list[dict], threshold: float) -> dict[str, dict[str, int]]:
+def confusion(results: list[dict]) -> dict[str, dict[str, int]]:
     """For each expected skill, how often another skill loaded in its place, or none did."""
     table: dict[str, dict[str, int]] = {}
     for r in results:
         if r["pass"] is not False:
             continue
-        ok = {r["expect"], *r["also_ok"]} - {None}
         row = table.setdefault(r["expect"] or NONE, {})
-        winners = {name for name, rate in r["loaded"].items() if rate >= threshold}
-        for name in sorted(winners - ok):
+        for name in r["stolen_by"]:
             row[name] = row.get(name, 0) + 1
-        if r["expect"] is not None and not winners:
+        if not r["stolen_by"]:
             row["missed"] = row.get("missed", 0) + 1
     return table
 
@@ -180,7 +210,9 @@ def run_once(query: str, skills: dict[str, str], harness: dict, attempt_dir: Pat
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, allow_abbrev=False
+    )
     p.add_argument("--skills", required=True, type=Path, action="append", help="a folder of skills; repeatable")
     p.add_argument("--queries", required=True, type=Path)
     p.add_argument("--output-dir", required=True, type=Path)
@@ -192,6 +224,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--quiet", action="store_true")
     args = p.parse_args(argv)
+    if args.runs_per_query < 1:
+        print("--runs-per-query must be at least 1", file=sys.stderr)
+        return 2
     if len(args.harness_name) > 1:
         return run_each_harness(main, list(sys.argv[1:] if argv is None else argv), args.harness_name)
     if args.harness and args.harness_name:
@@ -270,7 +305,7 @@ def main(argv: list[str] | None = None) -> int:
         "harness": harness_note,
         "skills": len(skills),
         "results": results,
-        "confusion": confusion(results, args.threshold),
+        "confusion": confusion(results),
         "summary": {
             "total": len(results),
             "passed": sum(1 for r in results if r["pass"] is True),
