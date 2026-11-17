@@ -122,7 +122,8 @@ bug. Table order is build order.
 Optional keys also include `estimate`, `references`, and `notes`. An entry
 needs no file to be built. Once a story's file exists, the file is the source
 of truth: a build reads the file, and Sofia keeps the entry's `id`, `type`, `title`,
-`after`, and `hitl` equal to it; `tickets.py status` reports any `drift`.
+`after`, and `hitl` equal to it. `tickets.py status` reports `drift` only for
+`after` and `hitl`.
 
 ## Epic and Initiative Tables
 
@@ -195,7 +196,8 @@ The tracker state never makes a build skip planning.
 ## What Is Ready
 
 Ask Sofia "what's next?", or run `tickets.py next`. Each open ticket falls in
-one list.
+one list. With a tracker store, `tickets.py next` refuses until you sync ticket
+status from the tracker and rerun it with `--synced`.
 
 | List | When |
 | --- | --- |

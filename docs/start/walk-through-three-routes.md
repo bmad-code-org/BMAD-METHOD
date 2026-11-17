@@ -15,9 +15,10 @@ show BMad's core idea: it sizes the planning to the work.
 Jump to the part that matches your work, or do all three in order.
 
 :::note[Before You Start]
-[Install BMad and run `bmad setup`](./install-bmad.md) in a project that is a
-Git repository with at least one commit. Parts 2 and 3 build Python apps, so
-have Python 3 installed too.
+Each part is a new project. Give each its own Git repository with at least one
+commit, then [install BMad and run `bmad setup`](./install-bmad.md) in it. In
+one shared repository, a later part would build on the code an earlier part
+left. Parts 2 and 3 build Python apps, so have Python 3 installed too.
 :::
 
 ## Terms You'll See
@@ -181,6 +182,12 @@ shows the other order, where Sofia writes and slices first.
 
 The new initiative becomes the active one, so BMad works on it by default.
 Part 2's initiative stays as it was. BMad may go straight on to the brief.
+
+:::tip[Outside This Walkthrough]
+You don't need to list the documents. Tell John, the Product Manager, what
+you're trying to achieve, and he proposes the planning document that fits and
+says why. Part 3 names the brief and the PRD so every reader gets the same run.
+:::
 
 ### 2. Write the Brief
 

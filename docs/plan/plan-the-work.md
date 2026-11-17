@@ -47,7 +47,7 @@ With one:
 | State | Next step | Page |
 | --- | --- | --- |
 | No initiative yet | Sofia writes it from what you have | [Write and Slice the Initiative](./write-and-slice-the-initiative.md) |
-| No initiative yet, and people must agree on what the product is | Optionally, John, the Product Manager, writes the PRD first | [Write a PRD](./write-a-prd.md) |
+| No initiative yet, and people must agree on what the product is | Optionally, John, the Product Manager, first writes a PRD or the planning document that fits | [Write a PRD](./write-a-prd.md) |
 | Open questions or assumptions in the initiative | Sofia walks them with you | [Write and Slice the Initiative](./write-and-slice-the-initiative.md#2-settle-what-she-could-not) |
 | Not sliced | Sofia cuts it into epics | [Write and Slice the Initiative](./write-and-slice-the-initiative.md#3-cut-it-into-epics) |
 | The interface matters, or epics must share decisions | `bmad-ux`, `bmad-architecture`, then Sofia adopts their files | [Design UX and Architecture](./design-ux-and-architecture.md) |
