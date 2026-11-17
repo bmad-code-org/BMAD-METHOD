@@ -1093,15 +1093,38 @@ Verify: {verify}
 {references}{notes}"""
 
 
+# The Unicode blocks of Latin letters and of the symbols Latin text uses: a letter in one with no ASCII form
+# is dropped from a slug, as it always was. The standard library has no script property to ask instead.
+LATIN_BLOCKS = (
+    (0x0000, 0x036F),  # ASCII, Latin-1, Latin Extended-A and -B, IPA, spacing modifiers, combining marks
+    (0x1D00, 0x1DFF),  # phonetic extensions, combining marks supplement
+    (0x1E00, 0x1EFF),  # Latin Extended Additional
+    (0x2000, 0x2BFF),  # punctuation, letterlike symbols, number forms, arrows, math, shapes, dingbats
+    (0x2C60, 0x2C7F),  # Latin Extended-C
+    (0xA720, 0xA7FF),  # Latin Extended-D
+    (0xAB30, 0xAB6F),  # Latin Extended-E
+    (0xFB00, 0xFB06),  # Latin ligatures
+    (0xFF00, 0xFF5E),  # fullwidth ASCII
+    (0x10780, 0x107BF),  # Latin Extended-F
+    (0x1D400, 0x1D7FF),  # mathematical letters and digits
+    (0x1DF00, 0x1DFFF),  # Latin Extended-G
+)
+
+
+def latin_block(c: str) -> bool:
+    return any(a <= ord(c) <= b for a, b in LATIN_BLOCKS)
+
+
 def title_slug(title: str) -> str:
     """A title as a file name: letters and digits, lowercase, each run of anything else one `-`, at most 60
     characters and 180 bytes, else `untitled`. A character with an ASCII form takes it (`Café` is `cafe`); a
     letter or digit of a script other than Latin is kept, with its marks (`修复登录`); any other character with
-    no ASCII form, a Latin or modifier letter such as `ß` or `ʻ` among them, is dropped, so a slug of Latin
+    no ASCII form, a letter of a Latin block such as `ß` or `ʻ` among them, is dropped, so a slug of Latin
     text is what it always was."""
     out, kept = [], False
-    # NFC, not NFKC: a character with an ASCII form takes it before its compatibility parts could be kept.
-    for c in unicodedata.normalize("NFC", title):
+    # Each character as written, so its ASCII form or its block decides before normalizing could change it
+    # (`ŉ` is `ʼn` in NFKC, the ohm sign `Ω` the Greek letter in NFC); the slug is NFKC at the end.
+    for c in title:
         folded = unicodedata.normalize("NFKD", c).encode("ascii", "ignore").decode("ascii")
         if folded:
             out.append(re.sub(r"[^a-z0-9]", "-", folded.lower()))
@@ -1109,8 +1132,7 @@ def title_slug(title: str) -> str:
             continue
         for k in unicodedata.normalize("NFKC", c):
             mark = unicodedata.category(k).startswith("M")
-            other = k.isalnum() and not unicodedata.name(k, "").startswith(("LATIN ", "MODIFIER LETTER "))
-            kept = (mark and kept) or other
+            kept = (mark and kept) or (k.isalnum() and not latin_block(c) and not latin_block(k))
             if kept:
                 out.append(k.lower())
     slug = re.sub(r"-+", "-", unicodedata.normalize("NFKC", "".join(out))).strip("-")[:60]

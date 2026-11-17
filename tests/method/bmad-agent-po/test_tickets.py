@@ -306,6 +306,21 @@ covers = ["R2", "R3"]
         self.assertEqual(files, ["story-修复登录.md", "story-修复登录-2.md", "bug-исправить-вход.md"])
         self.assertEqual(json.loads(run("find", str(self.epic), "story-修复登录").stdout)["id"], 1)
 
+    def test_a_long_title_in_four_byte_letters_still_names_a_leaf_and_its_plan(self):
+        title = "\U00020000" * 60
+        (tk(self.epic) / "tickets.toml").write_text(
+            f'[[entry]]\nid = 1\ntype = "story"\ntitle = "{title}"\n\n'
+            f'[[entry]]\nid = 123456\ntype = "story"\ntitle = "{title}"\n',
+            encoding="utf-8",
+        )
+        for n in ("1", "123456"):
+            r = run("pull", str(self.epic), n)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertLessEqual(
+                len(Path(json.loads(run("find", str(self.epic), n).stdout)["plan"]).name.encode()), 255
+            )
+            self.assertEqual(run("mark", str(self.epic), n, "in-progress").returncode, 0)
+
     def test_a_leaf_file_with_a_byte_order_mark_is_read(self):
         (tk(self.epic) / "story-scaffold.md").write_bytes(b"\xef\xbb\xbf" + ticket("done", 1).encode("utf-8"))
         rows = self.status_rows(self.epic)
@@ -2225,6 +2240,7 @@ class TitleSlugTests(unittest.TestCase):
             ("ＡＰＩ：修复", "api-修复"),
             ("サーバー設定", "サーバー設定"),
             ("⽼人", "老人"),
+            (unicodedata.normalize("NFD", "로그인 수정"), "로그인-수정"),
         ):
             with self.subTest(title=title):
                 self.assertEqual(self.slug(title), expected)
@@ -2246,6 +2262,8 @@ class TitleSlugTests(unittest.TestCase):
             "\u0149 plan",
             "Hawai\u02bbi",
             "rock\u02bcn roll",
+            "\u2132ix \u2183 \u2180",
+            "10 \u2126 resistor",
         ):
             with self.subTest(title=title):
                 self.assertEqual(self.slug(title), before(title))
