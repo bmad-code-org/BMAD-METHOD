@@ -2158,6 +2158,120 @@ class ActiveInitiativeTests(TreeCase):
         self.assertEqual(self.ok(run("next", cwd=self.root))["folder"], "initiative-checkout")
 
 
+class TreeWriterVerbTests(TreeCase):
+    """`name`, `render`, and `add-entry`: what another program writing the tree calls instead of copying the rules."""
+
+    def ok(self, r):
+        self.assertEqual(r.returncode, 0, r.stderr)
+        return json.loads(r.stdout)
+
+    def fails(self, r, message):
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertIn(message, json.loads(r.stderr)["error"])
+
+    def add_entry(self, entry, folder=None):
+        return run("add-entry", str(folder or self.epic), stdin=json.dumps(entry))
+
+    def breakdown_epic(self):
+        (tk(self.epic) / "tickets.toml").write_text(TicketsTests.BREAKDOWN, encoding="utf-8")
+
+    def test_name_gives_the_file_pull_writes(self):
+        self.assertEqual(
+            self.ok(run("name", "story", "Café: the menu")),
+            {"slug": "cafe-the-menu", "stem": "story-cafe-the-menu", "file": "story-cafe-the-menu.md"},
+        )
+        self.assertEqual(self.ok(run("name", "spike", "修复登录"))["file"], "spike-修复登录.md")
+        self.assertEqual(run("name", "epic", "x").returncode, 2)
+
+    def test_add_entry_takes_next_id_and_goes_last(self):
+        (tk(self.epic) / "tickets.toml").write_text(
+            'next_id = 9\n\n[[entry]]\nid = 1\ntype = "story"\ntitle = "Scaffold"\n', encoding="utf-8"
+        )
+        self.add("story-scaffold-2.md", ticket("", 4))
+        entry = {
+            "type": "story",
+            "title": "Scaffold",
+            "description": 'Says "hi"',
+            "covers": ["R1"],
+            "after": [1, "story-scaffold-2"],
+            "hitl": True,
+            "risk": "low",
+            "estimate": 2,
+            "notes": ["from the tracker"],
+        }
+        out = self.ok(self.add_entry(entry))
+        self.assertEqual((out["folder"], out["id"], out["stem"]), ("epic-cart", 9, "story-scaffold-9"))
+        data = tomllib.loads((tk(self.epic) / "tickets.toml").read_text(encoding="utf-8"))
+        self.assertEqual(data["next_id"], 9)
+        self.assertEqual(data["entry"][-1], {"id": 9, **entry})
+        self.assertEqual(self.ok(self.add_entry({"type": "bug", "title": "Next"}))["id"], 10)
+
+    def test_add_entry_makes_the_breakdown_of_a_backlog(self):
+        backlog = self.add_backlog()
+        out = self.ok(self.add_entry({"type": "story", "title": "Improve login"}, backlog))
+        self.assertEqual(
+            (out["id"], out["stem"], Path(out["file"])), (1, "story-improve-login", backlog.resolve() / "tickets.toml")
+        )
+
+    def test_add_entry_writes_nothing_it_cannot_read_back(self):
+        self.breakdown_epic()
+        before = (tk(self.epic) / "tickets.toml").read_bytes()
+        for entry, message in (
+            ({"type": "story", "title": "x", "status": "done"}, "unknown key 'status'"),
+            ({"type": "epic", "title": "x"}, "type 'epic'"),
+            ({"type": "story", "title": "two\nlines"}, "title is one line"),
+            ({"type": "story", "title": "x", "after": [99]}, "nothing was added"),
+            ({"type": "story", "title": "x", "hitl": "yes"}, "hitl must be true or false"),
+        ):
+            with self.subTest(entry=entry):
+                self.fails(self.add_entry(entry), message)
+                self.assertEqual((tk(self.epic) / "tickets.toml").read_bytes(), before)
+        self.fails(self.add_entry({"type": "story", "title": "x"}, self.initiative), "holds epics, not entries")
+
+    def test_render_is_what_add_entry_pull_and_mirror_write(self):
+        self.write_store("jira")
+        self.breakdown_epic()
+        entry = {
+            "type": "story",
+            "title": "修复登录 “quoted”",
+            "description": "Fix it.",
+            "verify": "It logs in.",
+            "covers": ["R1"],
+            "after": [1],
+            "risk": "medium",
+            "estimate": 3,
+            "unknown": "Which provider?",
+            "references": ["docs/a.md"],
+            "notes": ["from the tracker"],
+            "refine": True,
+        }
+        n = self.ok(self.add_entry(entry))["id"]
+        tracker = {"tracker_id": "PROJ-7", "remote": "https://x.test/PROJ-7", "tracker_status": "in-progress"}
+        mirrored = self.ok(run("mirror", str(self.epic), stdin=json.dumps([{"ref": n, **tracker}])))["mirrored"]
+        written = (tk(self.epic) / mirrored[0]["file"]).read_text(encoding="utf-8")
+        parent = "out/initiative-checkout/tickets/epic-cart/epic-cart.md"
+        item = {**entry, "id": n, "parent": "epic-cart", "parent_file": parent, **tracker}
+        self.assertEqual(self.ok(run("render", stdin=json.dumps(item)))["text"], written)
+
+    def test_render_leaves_out_a_backlog_leafs_parent(self):
+        text = self.ok(run("render", stdin=json.dumps({"type": "bug", "title": "Login fails"})))["text"]
+        self.assertTrue(
+            text.startswith('---\ntype: bug\ntitle: "Login fails"\nafter: []\nrefined: false\nhitl: false\n---\n')
+        )
+        self.assertNotIn("parent", text)
+
+    def test_render_refuses_what_would_not_read_back(self):
+        for item, message in (
+            ({"type": "story", "title": "x", "risk": "a: b"}, "would not read back"),
+            ({"type": "story", "title": "x", "covers": ["R1, R2"]}, "would not read back"),
+            ({"type": "story", "title": "x", "id": "1.2"}, "id must be"),
+            ({"type": "story", "title": "x", "tracker_status": "open"}, "tracker_status"),
+            ({"type": "story", "title": "x", "status": "done"}, "unknown key 'status'"),
+        ):
+            with self.subTest(item=item):
+                self.fails(run("render", stdin=json.dumps(item)), message)
+
+
 def load_tickets():
     spec = importlib.util.spec_from_file_location("tickets_under_test", SCRIPT)
     module = importlib.util.module_from_spec(spec)

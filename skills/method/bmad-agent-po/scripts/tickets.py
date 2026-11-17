@@ -33,6 +33,10 @@ holds `_bmad/`; `output_folder` and `active_initiative` come from the merged BMa
 active initiative and its `tickets/` folder, then the project root. A `tickets/` folder given as
 `<dir>` is read as the folder that holds it.
 
+`name`, `render`, and `add-entry` let another program that writes the tree, a tracker sync say, name,
+write, and number tickets by these rules instead of copying them: `name` and `render` read only their
+input, and `add-entry` and `status`, given a folder's path, need no BMad config.
+
 Output is one JSON object on stdout. Exit 0 on success, 1 on a malformed tree, 2 when the store
 forbids the operation.
 """
@@ -1089,7 +1093,6 @@ Verify: {verify}
 
 ## References
 
-- parent — {parent}
 {references}{notes}"""
 
 
@@ -1223,37 +1226,38 @@ def write_leaf(t: dict, tree: dict, root: Path | None) -> Path:
     path = tickets_dir(folder) / f"{leaf_stem(t, tree)}.md"
     if path.exists():
         raise TicketError(f"{path.name} exists already; change entry {t['id']}'s title")
-    after = [str(ref(b, t["epic"], tree)) for b in t["after"]]
-    parent = parent_reference(folder, root)
+    after = f"[{', '.join(str(ref(b, t['epic'], tree)) for b in t['after'])}]"
+    path.write_text(leaf_text(t, after, parent_reference(folder, root)), encoding="utf-8")
+    t["file"] = path.name
+    return path
+
+
+def leaf_text(t: dict, after: str, parent: str, tracker: dict[str, str] | None = None) -> str:
+    """A leaf file as `pull` writes it from an entry row, then the `mirror` lines in `tracker` appended."""
     notes = ([f"Unknown: {t['unknown']}"] if t["unknown"] else []) + t["notes"]
     # Other empty fields are left out; `after` and `hitl` stay because `status` compares them with the entry.
     # No status: the build writes it when it starts.
     fields = [
-        ("id", str(t["id"])),
+        ("id", str(t["id"]) if t["id"] is not None else ""),
         ("type", t["type"]),
         ("title", json.dumps(t["title"], ensure_ascii=False)),
         ("parent", t["epic"]),
         ("covers", f"[{', '.join(t['covers'])}]" if t["covers"] else ""),
-        ("after", f"[{', '.join(after)}]"),
+        ("after", after),
         ("refined", "false" if t["refine"] else ""),
         ("hitl", "true" if t["hitl"] else "false"),
         ("risk", t["risk"]),
         ("estimate", json.dumps(str(t["estimate"])) if t["estimate"] != "" else ""),
+        *(tracker or {}).items(),
     ]
-    path.write_text(
-        PULLED.format(
-            frontmatter="\n".join(f"{k}: {v}" for k, v in fields if v != ""),
-            heading=t["title"],
-            parent=parent,
-            description=t["description"],
-            verify=t["verify"],
-            references="".join(f"- {r}\n" for r in t["references"]),
-            notes="\n## Notes\n\n" + "".join(f"- {n}\n" for n in notes) if notes else "",
-        ),
-        encoding="utf-8",
+    return PULLED.format(
+        frontmatter="\n".join(f"{k}: {v}" for k, v in fields if v != ""),
+        heading=t["title"],
+        description=t["description"],
+        verify=t["verify"],
+        references=(f"- parent — {parent}\n" if parent else "") + "".join(f"- {r}\n" for r in t["references"]),
+        notes="\n## Notes\n\n" + "".join(f"- {n}\n" for n in notes) if notes else "",
     )
-    t["file"] = path.name
-    return path
 
 
 def quoted(value: str) -> str:
@@ -1779,6 +1783,155 @@ def cmd_move(args) -> dict:
     }
 
 
+# ---------------------------------------------------------------- for other programs that write the tree
+
+ENTRY_KEYS = (
+    "type",
+    "title",
+    "description",
+    "verify",
+    "covers",
+    "after",
+    "hitl",
+    "risk",
+    "estimate",
+    "unknown",
+    "references",
+    "notes",
+    "refine",
+    "plan_checkpoint",
+    "done_checkpoint",
+)
+TRACKER_KEYS = ("tracker_id", "remote", "tracker_status", "assignee")
+
+
+def read_object(where: str = "stdin") -> dict:
+    try:
+        item = json.load(sys.stdin)
+    except json.JSONDecodeError as e:
+        raise TicketError(f"{where} is not JSON: {e}") from e
+    if not isinstance(item, dict):
+        raise TicketError(f"{where}: give one JSON object")
+    return item
+
+
+def entry_from_json(item: dict, where: str, extra: tuple = ()) -> dict:
+    """The `[[entry]]` keys of a JSON object, each checked: only the template's keys, `type` and `title` required."""
+    unknown = [k for k in item if k not in (*ENTRY_KEYS, *extra)]
+    if unknown:
+        raise TicketError(f"{where}: unknown key {unknown[0]!r}")
+    if item.get("type") not in LEAF_TYPES:
+        raise TicketError(f"{where}: type {item.get('type')!r} is not one of {', '.join(LEAF_TYPES)}")
+    for key in ("title", "description", "verify", "risk", "unknown"):
+        if not isinstance(item.get(key, ""), str):
+            raise TicketError(f"{where}: {key} must be a string")
+    if not item.get("title", "").strip() or "\n" in item["title"] or "\r" in item["title"]:
+        raise TicketError(f"{where}: title is one line of text")
+    for key in ("covers", "references", "notes"):
+        if not isinstance(item.get(key, []), list) or not all(isinstance(v, str) and v for v in item.get(key, [])):
+            raise TicketError(f"{where}: {key} must be a list of strings")
+    for key in ("hitl", "refine", "plan_checkpoint", "done_checkpoint"):
+        if not isinstance(item.get(key, False), bool):
+            raise TicketError(f"{where}: {key} must be true or false")
+    for b in item.get("after", []) if isinstance(item.get("after", []), list) else [None]:
+        if isinstance(b, bool) or not isinstance(b, (int, str)) or (isinstance(b, str) and ("," in b or not b)):
+            raise TicketError(f"{where}: after takes ids and names without commas, not {b!r}")
+    if isinstance(item.get("estimate"), bool) or not isinstance(item.get("estimate", ""), (int, float, str)):
+        raise TicketError(f"{where}: estimate must be a number or a string")
+    return {k: item[k] for k in ENTRY_KEYS if k in item}
+
+
+def toml_value(value) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, list):
+        return list_text(value, toml=True)
+    return str(value) if isinstance(value, (int, float)) else json.dumps(value, ensure_ascii=False)
+
+
+def cmd_name(args) -> dict:
+    slug = title_slug(args.title)
+    return {"slug": slug, "stem": f"{args.type}-{slug}", "file": f"{args.type}-{slug}.md"}
+
+
+def cmd_render(args) -> dict:
+    """A leaf file's text as `pull` and then `mirror` would write it, from one JSON object; nothing is read or written."""
+    item = read_object()
+    entry = entry_from_json(item, "stdin", ("id", "parent", "parent_file", *TRACKER_KEYS))
+    n = _id(item.get("id"))
+    if "id" in item and n is None:
+        raise TicketError("stdin: id must be a number, or letters and digits")
+    for key in ("parent", "parent_file"):
+        value = item.get(key, "")
+        if not isinstance(value, str) or "\n" in value or "\r" in value:
+            raise TicketError(f"stdin: {key} is one line of text")
+    values = _mirror_values({k: item[k] for k in (*TRACKER_KEYS, "after") if k in item}, "stdin")
+    after = values.pop("after", "[]")
+    t = {
+        "id": n,
+        "type": entry["type"],
+        "title": entry["title"],
+        "epic": item.get("parent", ""),
+        "covers": entry.get("covers", []),
+        "refine": entry["type"] == "bug" or entry.get("refine", False),
+        "hitl": entry.get("hitl", False),
+        "risk": entry.get("risk", ""),
+        "estimate": entry.get("estimate", ""),
+        **{k: entry.get(k, "") for k in ("description", "verify", "unknown")},
+        **{k: entry.get(k, []) for k in ("references", "notes")},
+    }
+    text = leaf_text(t, after, item.get("parent_file", ""), values)
+    want = {"type": t["type"], "title": t["title"], "parent": t["epic"], "covers": t["covers"], "risk": t["risk"]}
+    try:
+        fm = parse_frontmatter(text, "the rendered leaf")
+        covers = fm.get("covers", [])
+        got = {**{k: fm.get(k, "") for k in want}, "covers": [str(c) for c in covers] if covers else []}
+    except TicketError:
+        got = None
+    if got != want:
+        raise TicketError("stdin: the leaf would not read back; check its parent, covers and risk")
+    return {"text": text}
+
+
+def cmd_add_entry(args) -> dict:
+    """Append an `[[entry]]` with the folder's `next_id` to its `tickets.toml`; nothing is written if the tree then
+    would not read."""
+    folder = locate_dir(args, args.dir)
+    entry = entry_from_json(read_object(), "stdin")
+    tree = load_tree(folder)
+    if tree["scope"] is None:
+        raise TicketError(f"{folder.name} holds epics, not entries")
+    n = next_id(tree, folder.name)
+    block = f"[[entry]]\nid = {n}\n" + "".join(f"{k} = {toml_value(v)}\n" for k, v in entry.items())
+    if parse_table(block)[1] != {"id": n, **entry}:
+        raise TicketError("stdin: the entry would not read back from tickets.toml")
+    home = tickets_dir(folder)
+    path = home / BREAKDOWN
+    raw = path.read_bytes() if path.is_file() else None
+    existing = read_text(path) if raw is not None else ""
+    text = (existing.rstrip("\n") + "\n\n" if existing.strip() else "") + block
+    data = text.encode("utf-8")  # before the file is opened, so a failure leaves it as it was
+    made = None if home.is_dir() else home
+    try:
+        if made is not None:
+            made.mkdir()
+        path.write_bytes(data)
+        tree = load_tree(folder)
+        t = next(t for t in tree["tickets"] if t["epic"] == folder.name and t["id"] == n)
+    except (TicketError, OSError, ValueError) as e:
+        try:
+            if raw is None:
+                path.unlink(missing_ok=True)
+            else:
+                path.write_bytes(raw)
+            if made is not None and made.is_dir() and not any(made.iterdir()):
+                made.rmdir()
+        except OSError:  # the first failure is the one reported
+            pass
+        raise TicketError(f"nothing was added: {e}") from e
+    return {"folder": folder.name, "id": n, "file": str(path), "stem": leaf_stem(t, tree)}
+
+
 REF_HELP = """<ref> is `<epic id>.<entry id>`, an entry id inside an epic folder (one with a letter, from any
 folder), a tracker id, a file name, or an unbroken phrase from the title that matches one ticket."""
 
@@ -1895,6 +2048,36 @@ is untouched. When any of it fails, nothing is written.
 
 Output: `from`, `to`, `old_id`, `id`, `ref` (as find on the initiative resolves it), `file`, `plan`,
 `next_id` (what <from> now keeps), and `rewritten`, one `where` and `after` per line rewritten.""",
+    "name": """The file name a leaf of <type> with <title> takes. Reads nothing.
+
+The slug is the title folded to ASCII and lowercase, each run of anything else one `-` (`Café` is
+`cafe`); a title with no ASCII letter or digit keeps its own letters, digits and marks (`修复登录`). At most
+60 characters and 180 bytes, else `untitled`. `pull` adds `-<id>` when an earlier entry or a file in the
+folder has the name already; add-entry reports the name with that applied.
+
+Output: `slug`, `stem` (`<type>-<slug>`), and `file`.""",
+    "render": f"""A leaf file's text as pull writes it from an entry and mirror then adds the tracker's keys. Reads
+only stdin and writes nothing.
+
+Stdin is one JSON object: `type` ({", ".join(LEAF_TYPES)}) and `title`, and any of the other entry keys
+add-entry takes; `id`; `parent`, the parent folder's name, left out for a backlog leaf; `parent_file`,
+the parent's file as the `- parent —` reference names it, a path from the project root; and
+`tracker_id`, `remote`, `tracker_status`, and `assignee` as mirror takes them. `after` is as mirror
+takes it: a number is a sibling's id, a string any other prerequisite form.
+
+Output: `text`, the whole file.""",
+    "add-entry": """Append an entry to a folder's `tickets.toml`, its id the folder's `next_id`.
+
+<dir> is an epic folder, an initiative folder with no epics, or a backlog folder. Stdin is one JSON
+object of the entry keys in the skill's `assets/tickets-template.toml`, without `id`: `type` and `title`
+(one line) required; `description`, `verify`, `risk`, `unknown` strings; `covers`, `references`, `notes`
+lists of strings; `after` a list of ids and names; `hitl`, `refine`, `plan_checkpoint`,
+`done_checkpoint` true or false; `estimate`. An unknown key is refused. The entry goes last, its keys
+in that order; the file is made when missing. When the tree would not read with it, an `after` naming
+nothing for one, nothing is written.
+
+Output: `folder`, `id`, `file` (the `tickets.toml` written), and `stem`, the name pull gives its leaf
+file.""",
 }
 
 
@@ -1968,6 +2151,22 @@ def main() -> int:
     p.add_argument("ref")
     p.add_argument("to", help="the folder it goes to")
     p.set_defaults(func=cmd_move)
+    p = sub.add_parser("name", help="the file name a leaf's title gives", description=HELP["name"], formatter_class=raw)
+    p.add_argument("type", choices=LEAF_TYPES)
+    p.add_argument("title")
+    p.set_defaults(func=cmd_name)
+    p = sub.add_parser(
+        "render", help="a leaf file's text from JSON on stdin", description=HELP["render"], formatter_class=raw
+    )
+    p.set_defaults(func=cmd_render)
+    p = sub.add_parser(
+        "add-entry",
+        help="append an entry with the folder's next_id to its tickets.toml",
+        description=HELP["add-entry"],
+        formatter_class=raw,
+    )
+    p.add_argument("dir")
+    p.set_defaults(func=cmd_add_entry)
     args = parser.parse_args()
     try:
         print(json.dumps(args.func(args), ensure_ascii=False, default=str))
