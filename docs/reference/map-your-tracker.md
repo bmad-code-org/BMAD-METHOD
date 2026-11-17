@@ -1,6 +1,6 @@
 ---
 title: 'Map Your Tracker to the Ticket Tree'
-description: What each level of Sofia's ticket tree becomes in Jira, Linear, GitHub Issues, Notion, and Trello, which tracker concepts have no counterpart, and how to map a hierarchy whose names don't match.
+description: What each level of Sofia's ticket tree becomes in Jira, Linear, GitHub Issues, Notion, Shortcut, and Trello, which tracker concepts have no counterpart, and how to map a hierarchy whose names don't match.
 sidebar:
   order: 6
 ---
@@ -29,13 +29,13 @@ does the same job:
 
 These are the defaults Sofia's tracker setup starts from.
 
-| BMad             | Jira                                                                                     | Linear                                                                                         | GitHub Issues                         | Notion                  | Trello                         |
-| ---------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------- | ----------------------- | ------------------------------ |
-| Initiative       | Not published, unless you map it to your site's level above Epic (Premium or Enterprise) | Not published. Mapping it to Linear initiatives needs initiative tools in Linear's MCP server, and can't round-trip: they nest and allow several parents | Milestone                             | Row of type initiative  | Card in the Initiatives list   |
-| Epic             | Epic                                                                                     | Parent issue labelled `epic`                                                                   | Parent issue labelled `epic`          | Row of type epic        | Card in the Epics list         |
-| Story, bug, spike | Story, Bug, or Task labelled `spike`                                                    | Sub-issue of the epic, labelled with its type                                                  | Sub-issue labelled with its type      | Row linked to its epic by Parent | Card labelled with its type    |
-| `after`          | A Blocks link                                                                            | A blocking relation                                                                            | A blocked-by relation                 | The Blocked by relation | The blocker's link in the card's description |
-| `hitl`, risk     | Labels                                                                                   | Labels                                                                                         | Labels                                | Properties              | Labels                         |
+| BMad             | Jira                                                                                     | Linear                                                                                         | GitHub Issues                         | Notion                  | Shortcut | Trello                         |
+| ---------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------- | ----------------------- | -------- | ------------------------------ |
+| Initiative       | Not published, unless you map it to your site's level above Epic (Premium or Enterprise) | Not published. Mapping it to Linear initiatives needs initiative tools in Linear's MCP server, and can't round-trip: they nest and allow several parents | Milestone                             | Row of type initiative  | Objective | Card in the Initiatives list   |
+| Epic             | Epic                                                                                     | Parent issue labelled `epic`                                                                   | Parent issue labelled `epic`          | Row of type epic        | Epic | Card in the Epics list         |
+| Story, bug, spike | Story, Bug, or Task labelled `spike`                                                    | Sub-issue of the epic, labelled with its type                                                  | Sub-issue labelled with its type      | Row linked to its epic by Parent | Story of type feature, bug, or chore labelled `spike` | Card labelled with its type    |
+| `after`          | A Blocks link                                                                            | A blocking relation                                                                            | A blocked-by relation                 | The Blocked by relation | A blocks link between stories; an epic's `after` stays in the files | The blocker's link in the card's description |
+| `hitl`, risk     | Labels                                                                                   | Labels                                                                                         | Labels                                | Properties              | Labels | Labels                         |
 
 A level that isn't published leaves its children attached to the nearest
 published level: with the Jira defaults, epics publish as top-level Epics. The
@@ -43,13 +43,13 @@ Jira store works with Jira Cloud through `acli`, Atlassian's command line.
 
 Statuses map the same way:
 
-| BMad state  | Jira        | Linear      | GitHub Issues            | Notion      | Trello      |
-| ----------- | ----------- | ----------- | ------------------------ | ----------- | ----------- |
-| backlog     | To Do       | Backlog     | `backlog` label          | Backlog     | Backlog     |
-| in-progress | In Progress | In Progress | `in-progress` label      | In Progress | In Progress |
-| review      | In Review   | In Review   | `review` label           | Review      | Review      |
-| done        | Done        | Done        | Closed                   | Done        | Done        |
-| dropped     | Done, resolution Won't Do | Canceled    | Closed as not planned    | Dropped     | Archived    |
+| BMad state  | Jira        | Linear      | GitHub Issues            | Notion      | Shortcut | Trello      |
+| ----------- | ----------- | ----------- | ------------------------ | ----------- | -------- | ----------- |
+| backlog     | To Do       | Backlog     | `backlog` label          | Backlog     | Backlog | Backlog     |
+| in-progress | In Progress | In Progress | `in-progress` label      | In Progress | In Progress | In Progress |
+| review      | In Review   | In Review   | `review` label           | Review      | In Review | Review      |
+| done        | Done        | Done        | Closed                   | Done        | Done | Done        |
+| dropped     | Done, resolution Won't Do | Canceled    | Closed as not planned    | Dropped     | Archived | Archived    |
 
 ## What Has No Counterpart
 
