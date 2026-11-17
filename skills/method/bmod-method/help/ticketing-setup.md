@@ -20,7 +20,7 @@ Copy a brief, PRD, UX design, or architecture into the initiative folder as `<ty
 
 - Tickets are files in the store unless the user connects a tracker: "set up the ticket store", or "reconfigure the ticket store" to change it later. Nothing needs setting up for the repo store.
 - The choice goes in `_bmad/custom/ticketing-store-config.toml`. It holds only what the project sets, such as the tracker's project key; a key added there overrides the skill's default for that tracker.
-- Choices: repo (the default; files under version control, no account), GitHub Issues, Jira, Linear, Notion, or Trello. Sofia checks the needed CLI or connection at setup.
+- Choices: repo (the default; files under version control, no account), GitHub Issues, Jira, Linear, Notion, Shortcut, or Trello. Sofia checks the needed CLI or connection at setup.
 - Repo is the most tested. The trackers are lightly tested.
 - With a tracker, the markdown files stay the working copy. Nothing syncs on its own: files and tracker line up only when the user asks Sofia. She never pushes.
 
