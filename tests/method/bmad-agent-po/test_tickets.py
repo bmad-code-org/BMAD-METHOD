@@ -2223,6 +2223,8 @@ class TitleSlugTests(unittest.TestCase):
             ("로그인 수정", "로그인-수정"),
             ("Fix 登录 bug", "fix-登录-bug"),
             ("ＡＰＩ：修复", "api-修复"),
+            ("サーバー設定", "サーバー設定"),
+            ("⽼人", "老人"),
         ):
             with self.subTest(title=title):
                 self.assertEqual(self.slug(title), expected)
@@ -2241,17 +2243,23 @@ class TitleSlugTests(unittest.TestCase):
             "x" * 80,
             "a" * 59 + " b",
             "✓ — ✓",
+            "\u0149 plan",
+            "Hawai\u02bbi",
+            "rock\u02bcn roll",
         ):
             with self.subTest(title=title):
                 self.assertEqual(self.slug(title), before(title))
 
     def test_a_slug_is_safe_as_a_file_name(self):
-        for title in ('a/b\\c:d*e?f"g<h>i|j\x00k', "修复/登录", "../..", "登" * 80, "🚀🚀"):
+        for title in ('a/b\\c:d*e?f"g<h>i|j\x00k', "修复/登录", "../..", "登" * 80, "\U00020000" * 80, "🚀🚀"):
             with self.subTest(title=title):
                 slug = self.slug(title)
                 self.assertTrue(slug == "untitled" or all(c.isalnum() or c == "-" for c in slug), slug)
                 self.assertLessEqual(len(slug), 60)
+                # `story-<slug>-<id>-plan.md` stays under the 255 bytes a file name may take.
+                self.assertLessEqual(len(slug.encode("utf-8")), 180)
         self.assertEqual(self.slug("登" * 80), "登" * 60)
+        self.assertEqual(self.slug("\U00020000" * 80), "\U00020000" * 45)
         self.assertEqual(self.slug("🚀🚀"), "untitled")
 
 

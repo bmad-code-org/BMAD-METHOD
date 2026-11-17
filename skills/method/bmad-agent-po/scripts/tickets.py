@@ -1095,22 +1095,28 @@ Verify: {verify}
 
 def title_slug(title: str) -> str:
     """A title as a file name: letters and digits, lowercase, each run of anything else one `-`, at most 60
-    characters, else `untitled`. A character with an ASCII form takes it (`Café` is `cafe`); a letter or digit
-    of a script other than Latin is kept, with its marks (`修复登录`); any other character with no ASCII form,
-    a Latin letter such as `ß` among them, is dropped, so a slug of Latin text is what it always was."""
+    characters and 180 bytes, else `untitled`. A character with an ASCII form takes it (`Café` is `cafe`); a
+    letter or digit of a script other than Latin is kept, with its marks (`修复登录`); any other character with
+    no ASCII form, a Latin or modifier letter such as `ß` or `ʻ` among them, is dropped, so a slug of Latin
+    text is what it always was."""
     out, kept = [], False
-    for c in unicodedata.normalize("NFKC", title):
+    # NFC, not NFKC: a character with an ASCII form takes it before its compatibility parts could be kept.
+    for c in unicodedata.normalize("NFC", title):
         folded = unicodedata.normalize("NFKD", c).encode("ascii", "ignore").decode("ascii")
         if folded:
             out.append(re.sub(r"[^a-z0-9]", "-", folded.lower()))
             kept = False
-        else:
-            mark = unicodedata.category(c).startswith("M")
-            kept = (mark and kept) or (c.isalnum() and not unicodedata.name(c, "").startswith("LATIN "))
+            continue
+        for k in unicodedata.normalize("NFKC", c):
+            mark = unicodedata.category(k).startswith("M")
+            other = k.isalnum() and not unicodedata.name(k, "").startswith(("LATIN ", "MODIFIER LETTER "))
+            kept = (mark and kept) or other
             if kept:
-                out.append(c.lower())
-    slug = re.sub(r"-+", "-", unicodedata.normalize("NFKC", "".join(out)))
-    return slug.strip("-")[:60].rstrip("-") or "untitled"
+                out.append(k.lower())
+    slug = re.sub(r"-+", "-", unicodedata.normalize("NFKC", "".join(out))).strip("-")[:60]
+    while len(slug.encode("utf-8")) > 180:  # room left for `<type>-`, `-<id>` and `-plan.md` in 255 bytes
+        slug = slug[:-1]
+    return slug.rstrip("-") or "untitled"
 
 
 def resolve_ticket(tree: dict, text: str) -> dict:
