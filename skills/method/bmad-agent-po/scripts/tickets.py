@@ -1094,8 +1094,20 @@ Verify: {verify}
 
 
 def title_slug(title: str) -> str:
-    title = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
-    return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:60].rstrip("-") or "untitled"
+    """A title as a file name: folded to ASCII and lowercase, each run of anything else one `-` (`Café` is
+    `cafe`). A title with no ASCII letter or digit, one in Chinese or Cyrillic say, keeps its own letters, digits
+    and marks instead, the characters Unicode's identifier rule (UAX #31) allows (`修复登录`). At most 60
+    characters and 180 bytes, else `untitled`."""
+    folded = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
+    slug = re.sub(r"[^a-z0-9]+", "-", folded.lower()).strip("-")
+    if not slug:
+        text = unicodedata.normalize("NFKC", title).lower()
+        slug = "".join(c if c != "_" and f"a{c}".isidentifier() else "-" for c in text)
+        slug = re.sub(r"-+", "-", unicodedata.normalize("NFKC", slug)).strip("-")
+    slug = slug[:60]
+    while len(slug.encode("utf-8")) > 180:  # room left for `<type>-`, `-<id>` and `-plan.md` in 255 bytes
+        slug = slug[:-1]
+    return slug.rstrip("-") or "untitled"
 
 
 def resolve_ticket(tree: dict, text: str) -> dict:
