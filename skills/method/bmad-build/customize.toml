@@ -43,6 +43,21 @@ If the change touches more than five files and is not simple or mechanical,
 consider upgrading to full.
 """
 
+# Instruction run before implementation starts: after planning, once
+# `baseline_revision` is captured, before any code change. It runs again after
+# a review loopback reverts the code; any other resumed run skips it.
+# Empty means nothing runs.
+#
+# Example: acceptance tests first (ATDD) with the TEA module installed.
+# before_implement = """
+# When {plan_file} names a `ticket` and lists acceptance criteria, run
+# bmad-tea-automate in red mode for that ticket. Add the test files it writes
+# to the plan's Code Map, add a task that turns them green, and add a command
+# to Verification that runs them.
+# """
+
+before_implement = ""
+
 # Instruction run after Build completes.
 # Empty means no extra completion behavior.
 

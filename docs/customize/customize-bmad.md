@@ -232,6 +232,22 @@ review depth. The build skills default to `quick` and code review to
 review = "thorough"
 ```
 
+Both build skills also expose `before_implement`, an instruction that runs
+after planning and before any code changes. With the TEA module installed,
+this makes every build of a ticket with acceptance criteria write failing
+acceptance tests first (ATDD):
+
+```toml
+# _bmad/custom/bmad-build.toml (and bmad-build-auto.toml)
+[workflow]
+before_implement = """
+When {plan_file} names a `ticket` and lists acceptance criteria, run
+bmad-tea-automate in red mode for that ticket. Add the test files it writes
+to the plan's Code Map, add a task that turns them green, and add a command
+to Verification that runs them.
+"""
+```
+
 Read a workflow's `customize.toml` to see the fields it exposes. If the
 field you need is not there, use `activation_steps_*` and
 `persistent_facts`, or open an issue asking for a customization point.
