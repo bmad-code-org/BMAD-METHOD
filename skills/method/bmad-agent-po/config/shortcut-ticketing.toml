@@ -44,7 +44,7 @@ store config or any file in the project.
 When `team` is empty and `GET /groups` lists more than one team, ask which and put its mention name in
 `team` in the project's store config.
 Workflow states cannot be created through the API: compare the team's workflow from `GET /workflows`
-with [tickets.status], and tell the user what to add under Settings, Workflows, or which map entry to
+with [tickets.status] except dropped, and tell the user what to add under Settings, Workflows, or which map entry to
 set in the project's store config. Then `GET /custom-fields`: when Priority is disabled, offer that the
 user enable it under Settings, Fields.
 """
@@ -66,7 +66,7 @@ An epic: `POST /epics` with name, description, labels, group_ids, objective_ids,
 Changes: `PUT /epics/<id>`. Shortcut has no blocking between epics; an epic's after stays in the files.
 An initiative is an objective: `POST /objectives` with name, description, and state, which takes the
 names mapped above for an epic; its epics carry its id in objective_ids. Changes: `PUT /objectives/<id>`.
-dropped is `archived: true` on a story, epic, or objective.
+dropped is `archived: true` on a story, epic, or objective, leaving its workflow state as it is.
 """
 
 query = """
