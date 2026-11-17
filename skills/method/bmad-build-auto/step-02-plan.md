@@ -21,7 +21,7 @@
 {% endif %}
 4. Read `{{ rendered("plan-template.md") }}` fully, preserving all frontmatter fields and resolving `date` to the current system date.
    - **Oneshot:** set `route: oneshot`.
-   - **Full:** set `route: full`. Put what you learned into `## Code Map`: paths, symbols or lines, what to reuse, and what not to change. The subagent should be able to work from the plan without being told any of it again.
+   - **Full:** set `route: full`. Put what you learned into `## Code Map`: paths, symbols or lines, what to reuse, and what not to change. The subagent should be able to work from the plan without being told any of it again. Choose the simplest design that does this change's job; add no speculative structure. When the change adds to code that already repeats, say in Design Notes whether to keep repeating or consolidate, and why. When a later ticket in the epic covers work this change could reach into, name it with its ref under **Never**.
 
    Set `route_source` from step 3 and `risk` from step 2.
 

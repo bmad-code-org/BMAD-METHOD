@@ -153,7 +153,7 @@ different way of delivering.
 
 | Piece | Size | When it is too big or too small |
 | --- | --- | --- |
-| Build session | One goal: roughly 500 changed lines, not counting tests, in a handful of files, started in a fresh chat | The build offers to split a request with two independent goals, or a plan longer than about 1,600 tokens (not on the one-shot route); on a split it writes the rest to `deferred-work.md` |
+| Build session | One goal: roughly 500 changed lines, not counting tests, in a handful of files, started in a fresh chat | The build offers to split a request with two independent goals; on a split it writes the rest to `deferred-work.md` |
 | Story | One step toward the epic's Done when, sized for one build session; it need not be something a user sees | Sofia merges a story whose setup outweighs its work, and splits rather than shrinks one that would leave something as a placeholder |
 | Epic | One capability, delivered and deployed together; typically eight to twelve stories | Past that, Sofia offers to split the epic; an epic one session can build gets one story |
 | Initiative | Several epics toward one outcome | Work bigger than one initiative gets a parent initiative over several initiatives, not epics inside epics |

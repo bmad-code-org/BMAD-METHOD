@@ -100,14 +100,14 @@ deferred: [] # append-only machine-readable deferred review findings; each item 
 
 <!-- If the approach is straightforward, delete this section. Do not write "N/A" or "None".
      Delete this section if route is oneshot. -->
-<!-- Design rationale and golden examples only when non-obvious. Keep examples to 5–10 lines. -->
+<!-- The concrete design decisions for this change, with golden examples when non-obvious. Keep examples to 5–10 lines. Never restate principles or project rules. -->
 
 DESIGN_RATIONALE_AND_EXAMPLES
 
 ## Verification
 
 <!-- If no build, test, or lint commands apply, delete this section. Do not write "N/A" or "None". -->
-<!-- How the agent confirms its own work. Prefer CLI commands. When no CLI check applies, state what to inspect manually. -->
+<!-- How the agent confirms its own work. Prefer CLI commands that run the narrowest tests covering the changed files; the full suite only when the project's instructions ask for it. When no CLI check applies, state what to inspect manually. -->
 
 **Commands:**
 - `COMMAND` -- expected: SUCCESS_CRITERIA

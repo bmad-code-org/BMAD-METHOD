@@ -46,8 +46,8 @@ Where it's decided: [PR #2932](https://github.com/bmad-code-org/BMAD-METHOD/pull
 A story is sized for one agent session: one goal, roughly 500 changed lines,
 started in a fresh chat from its ticket. The build aims its plan at 900 to
 1,600 tokens, because a shorter plan risks ambiguity and a longer one
-risks context rot in the agent that implements it; a second goal or a longer
-plan is offered as a split. A story too small to repay its setup is merged
+risks context rot in the agent that implements it; a second goal is offered
+as a split. A story too small to repay its setup is merged
 into another. A story that would leave work for now, as a placeholder, or
 wired later is split, never shrunk.
 
