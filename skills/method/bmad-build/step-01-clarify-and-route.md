@@ -46,7 +46,7 @@ Before listing artifacts, resolve existing workflow state in this order. Skip th
 
 ### Ticket resolution
 
-This runs on the output of `tickets.py find` for one ticket. Read `story_file` in full when it is not null, else take find's `description`, `verify`, `covers`, `references`, `notes`, and `unknown`; then read `epic_file` in full when it is not null. That is the starting intent. The ticket distills its `sources:`, so never re-read them; open a file its References or `companions:` name only for a need the ticket points at. Never write to a ticket file, and never run `pull` or `mark`.
+This runs on the output of `tickets.py find` for one ticket. Read `story_file` in full when it is not null, else take find's `description`, `verify`, `covers`, `references`, `notes`, and `unknown`; then read `epic_file` in full when it is not null. That is the starting intent. The ticket distills its `sources:`, so never re-read them; open a file its References or `companions:` name only for a need the ticket points at. Never write to a ticket file, and never run `pull` or `mark`. The one exception: when this build leaves something a later ticket of the same epic must act on, add one line naming it with `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} note <find's folder> <entry id> "<note>"`, and tell the user.
 
 - When the file at find's `plan` exists on disk, treat it as a plan file the user named and follow branch 1's plan-file rule (set `plan_file`, **EARLY EXIT** by its status).
 - Otherwise set `plan_file` to find's `plan`; the plan's frontmatter carries `ticket` set to find's `id`, or to the stem of find's `story_file` when `id` is null, never its `ref`. Proceed to INSTRUCTIONS, skipping step 5.
