@@ -1,4 +1,4 @@
-"""Tests for read_session_log.py over a synthetic Claude Code transcript and a synthetic memlog."""
+"""Tests for read_session_log.py over a synthetic Claude Code transcript."""
 
 import json
 import os
@@ -53,20 +53,6 @@ TRANSCRIPT = [
     "this line is not json",
 ]
 
-MEMLOG = """---
-topic: bmad-changelog
-updated: 2026-06-07T14:22
----
-
-- (note) user picked the lean approach
-- (direction) keep the skill to one file
-- (decision by user) name it bmad-changelog
-- (gap) no eval cases yet
-- (assumption) git is installed
-- (idea by user) also read tags
-- (note) wait, the folder was wrong
-"""
-
 
 def write_transcript(folder: Path, name="s1.jsonl"):
     path = folder / name
@@ -101,7 +87,7 @@ class ReadSessionLogTest(unittest.TestCase):
             self.assertEqual(turns[0]["tools"], ["Read", "Bash", "Edit"])
             self.assertEqual(turns[0]["followed_by"], "No, don't touch SKILL.md, put it in references instead")
             self.assertFalse(turns[0]["interrupted"])
-            self.assertIsNone(turns[0]["tag"])
+            self.assertNotIn("tag", turns[0])
             self.assertEqual(turns[1]["tools"], ["Write"])
             self.assertTrue(turns[1]["interrupted"])
             self.assertEqual(turns[1]["followed_by"], "/bmad-eval")
@@ -132,32 +118,24 @@ class ReadSessionLogTest(unittest.TestCase):
             self.assertEqual(code, 0, err)
             self.assertEqual(data["turns"][0]["request"], "/bmad-toolsmith fix this skill")
 
-    def test_memlog_entries_keep_their_tags(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / ".memlog.md"
-            path.write_text(MEMLOG, encoding="utf-8")
-            code, data, err = run(path, "--format", "memlog")
-            self.assertEqual(code, 0, err)
-            self.assertEqual(data["sources"][0]["entries"], 7)
-            self.assertEqual(data["sources"][0]["bad_lines"], 0)
-            turns = data["turns"]
-            self.assertEqual(
-                [t["tag"] for t in turns],
-                ["note", "direction", "decision by user", "gap", "assumption", "idea by user", "note"],
-            )
-            self.assertEqual(turns[1]["request"], "keep the skill to one file")
-            self.assertEqual(turns[1]["followed_by"], "name it bmad-changelog")
-            self.assertEqual(turns[1]["tools"], [])
-
     def test_max_turns_keeps_the_latest_and_totals_count_all(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / ".memlog.md"
-            path.write_text(MEMLOG, encoding="utf-8")
+            path = write_transcript(Path(tmp))
             code, data, _ = run(path, "--max-turns", "2", "--max-items", "1")
             self.assertEqual(code, 0)
-            self.assertEqual([t["request"] for t in data["turns"]], ["also read tags", "wait, the folder was wrong"])
-            self.assertEqual(data["totals"]["turns"], 7)
+            self.assertEqual([t["request"][:10] for t in data["turns"]], ["/bmad-eval", "build me a"])
+            self.assertEqual(len(data["files_touched"]), 1)
+            self.assertEqual(data["totals"]["turns"], 4)
             self.assertEqual(data["totals"]["turns_shown"], 2)
+            self.assertEqual(data["totals"]["files_touched"], 3)
+
+    def test_format_reads_a_transcript_under_another_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_transcript(Path(tmp), "session.log")
+            self.assertEqual(run(path)[0], 1)
+            code, data, err = run(path, "--format", "claude-code")
+            self.assertEqual(code, 0, err)
+            self.assertEqual(data["totals"]["turns"], 4)
 
     def test_folder_and_project_resolution(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -170,13 +148,13 @@ class ReadSessionLogTest(unittest.TestCase):
             folder.mkdir(parents=True)
             write_transcript(folder, "a.jsonl")
             write_transcript(folder, "b.jsonl")
-            (folder / ".memlog.md").write_text(MEMLOG, encoding="utf-8")
+            (folder / "notes.md").write_text("- not a transcript\n", encoding="utf-8")
             env = dict(os.environ, CLAUDE_CONFIG_DIR=str(config))
             code, data, err = run("--project", project_dir, env=env)
             self.assertEqual(code, 0, err)
-            self.assertEqual([s["format"] for s in data["sources"]], ["claude-code", "claude-code", "memlog"])
+            self.assertEqual([s["format"] for s in data["sources"]], ["claude-code", "claude-code"])
             self.assertEqual(data["skills_invoked"], [{"name": "bmad-eval", "count": 4}])
-            self.assertEqual(sorted({t["source"] for t in data["turns"]}), [0, 1, 2])
+            self.assertEqual(sorted({t["source"] for t in data["turns"]}), [0, 1])
             # followed_by never crosses from one source into the next
             last_of_first = [t for t in data["turns"] if t["source"] == 0][-1]
             self.assertIsNone(last_of_first["followed_by"])

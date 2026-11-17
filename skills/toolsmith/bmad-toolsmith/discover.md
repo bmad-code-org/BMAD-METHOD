@@ -84,6 +84,6 @@ Present it under that title, and wait for a yes or changes:
 
 A plan for a template alone holds only the document and its reader, the template id, where the file goes and who offers it; approval records it as below and loads `shapes/document-template/shape.md` in place of an approach.
 
-Approval sets `{target}` and fixes the execution plan. Record it: `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {reports_folder}/<name>-build` (skip `init` when that log exists), then `memlog.py append --workspace {reports_folder}/<name>-build --type decision --text "<line>"` per plan line and `--type note` per discovery answer it rests on. Without `_bmad/` there is no memlog; the plan stays in the conversation.
+Approval sets `{target}` and fixes the execution plan. Record it: write `{reports_folder}/<name>-build/plan.md`, holding the plan as approved and, under `## Rests on`, one line per discovery answer it rests on. Without `_bmad/` there is no reports folder; the plan stays in the conversation.
 
-Later files read the plan back from that `.memlog.md` when the conversation no longer holds it, work from it without re-asking, and bring the user any change to what the skill does or how it sounds. Then load `approaches/<approach>.md`.
+Later files read the plan back from that file when the conversation no longer holds it, work from it without re-asking, and bring the user any change to what the skill does or how it sounds; a change the user approves is edited into the file. Then load `approaches/<approach>.md`.

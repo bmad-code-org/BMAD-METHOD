@@ -18,7 +18,6 @@ SETUP_PY = REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts" / "setup.py"
 BMAD_SOURCE = "github:bmad-code-org/BMAD-METHOD/skills"
 SHARED_SCRIPTS = (
     "config_utils.py",
-    "memlog.py",
     "render_skill.py",
     "resolve_config.py",
     "resolve_customization.py",
@@ -389,8 +388,8 @@ class BmadSetupTests(unittest.TestCase):
             root = Path(temp_dir)
             project = root / "proj"
             skill = write_dest_bmad(root)
-            write(skill / "scripts" / "tests" / "test_memlog.py")
-            write(project / "_bmad" / "scripts" / "tests" / "test_memlog.py")
+            write(skill / "scripts" / "tests" / "test_resolve_config.py")
+            write(project / "_bmad" / "scripts" / "tests" / "test_resolve_config.py")
 
             result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)

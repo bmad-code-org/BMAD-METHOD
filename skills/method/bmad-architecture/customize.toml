@@ -41,7 +41,7 @@ on_complete = ""
 # need. Override the path in team/user TOML to enforce a different spine shape.
 spine_template = "assets/spine-template.md"
 
-# Run folder location. The spine (`{run_folder_pattern}.md`), its .memlog.md, and any fuller rendering the run
+# Run folder location. The spine (`{run_folder_pattern}.md`) and any fuller rendering the run
 # produces all land inside `{spine_output_path}/{run_folder_pattern}/`. Resume-check scans
 # `{spine_output_path}` for prior unfinished runs.
 #

@@ -3,7 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
-"""memlog — an append-only memory log: LLM-optimal working memory for a skill.
+"""memlog — the append-only log Sofia keeps beside a ticket, `.memlog.md`.
 
 A memlog is the dense, chronological record of everything that mattered in a piece of
 work — every item the user generated or accepted — kept minimal like human memory: only

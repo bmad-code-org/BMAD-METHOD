@@ -401,7 +401,7 @@ class TestRules(ProjectCase):
             "bmad-script-ok",
             {
                 "notes.md": "Run `uv run {skill-root}/scripts/tool.py` "
-                "and `uv run {project-root}/_bmad/scripts/memlog.py`.\n"
+                "and `uv run {project-root}/_bmad/scripts/resolve_config.py`.\n"
             },
         )
         self.assertEqual(findings_by_rule(self.findings_for(skill), "PATH-06"), [])

@@ -4,7 +4,7 @@ The trust layer — the same rules whatever produced the material (a native run'
 
 ## The claims ledger
 
-The memlog `claim` entries are the ledger: every claim a decision could rest on, with its class (each pack names its classes — quantitative sizes, pricing, versions/compatibility, regulatory assertions, …), source, publisher, publication date, and status. New claims enter `unverified`; on a Refresh or Deepen run, claims outside the run's scope keep their prior status from the memlog — only new and in-scope claims are (re)checked.
+The `claim` entries in `claims.md` are the ledger: every claim a decision could rest on, with its class (each pack names its classes — quantitative sizes, pricing, versions/compatibility, regulatory assertions, …), source, publisher, publication date, and status. New claims enter `unverified`; on a Refresh or Deepen run, claims outside the run's scope keep their prior status from the ledger — only new and in-scope claims are (re)checked.
 
 ## Levels
 
@@ -18,7 +18,7 @@ Verifier assistants run behind the research firewall on `{workflow.subagent_mode
 
 **Independent** means a different publisher with different underlying data or reporting — not a syndication, quote, or republication of the first source, and not the same vendor's marketing in two places. An imported report counts as one publisher regardless of how many sources it cites internally; two imports from different tools agreeing is genuine confirmation, and their disagreement is a finding.
 
-Outcomes per claim: **verified** (independent source agrees within tolerance — for quantitative claims, same order of magnitude and direction), **disputed** (independent sources materially disagree — report both figures, both cited; never average), **unverified** (no independent check within budget — the claim stays, flagged, and joins the staleness map), or **overturned** (the weight of evidence contradicts it — corrected in the text, original noted). Every status change lands in the memlog as a fresh `claim` line with the same `ref=` and the new status — last status wins, which is how `scripts/recon_kit.py tally` reads the ledger. A verification outcome adjusts status and flags — it never licenses rewriting a finding's substance beyond what the new evidence says.
+Outcomes per claim: **verified** (independent source agrees within tolerance — for quantitative claims, same order of magnitude and direction), **disputed** (independent sources materially disagree — report both figures, both cited; never average), **unverified** (no independent check within budget — the claim stays, flagged, and joins the staleness map), or **overturned** (the weight of evidence contradicts it — corrected in the text, original noted). Every status change lands in the ledger as a fresh `claim` line with the same `ref=` and the new status — last status wins, which is how `scripts/recon_kit.py tally` reads the ledger. A verification outcome adjusts status and flags — it never licenses rewriting a finding's substance beyond what the new evidence says.
 
 Confidence rendered in the report: **high** (verified, fresh, credible publishers), **medium** (single credible source, fresh), **low** (stale, weak publisher, or disputed) — plus the explicit `unverified` flag. Confidence is per-claim, never per-section.
 

@@ -23,7 +23,8 @@ Three services, freely combined — each detailed in its reference: **Draft** a 
 - **A claim is a sentence with a source.** Publisher, publication date, access date. No naked numbers.
 - **Report what is real.** Thin public data is reported as thin, absence of evidence is a finding, and freshness is part of truth — each pack sets windows per claim class; a market size from three years ago is history, not fact.
 - **Fast by default.** Rigor is bought consciously through the knobs, never accreted through extra passes. One gate, light checkpoints, no ceremony.
-- **The memlog is the process memory.** Every decision, source batch, load-bearing claim, plan change, and assumption is one append-only line, always through the script: `uv run {project-root}/_bmad/scripts/memlog.py` with `--type <decision|source|claim|assumption|question|event>`.
+- **`claims.md` is the run's ledger and process memory.** Every decision, source batch, load-bearing claim, plan change, and assumption is one line in `{doc_workspace}/claims.md`, added through the script and never edited: `uv run {skill-root}/scripts/recon_kit.py log {doc_workspace} --type <decision|source|claim|assumption|question|event> --text "…"`, repeating `--text` to add several entries of one type in one call.
+- **Open the ledger whenever you bind a run folder, new or existing:** `uv run {skill-root}/scripts/recon_kit.py ledger {doc_workspace} --field <key>="<value>" …`, with the fields the mode names. It creates `claims.md` when the folder has none; a ledger already there is left as it is, and its fields and entry count come back.
 - Web access is required for Run. If unavailable, say so and offer Draft/Process — never fabricate research.
 
 ## Resolution rules
@@ -59,7 +60,7 @@ Orthogonal to type is the **decision shape**: **explore** (the default — under
 
 ## Intents
 
-Route on the detected intent and load only what it names. Every intent shares the run-folder workspace shape — `brief.md`, `imports/`, `digests/`, the main file, `<folder name>.md`, `.memlog.md` — and ends per `references/finalize.md`.
+Route on the detected intent and load only what it names. Every intent shares the run-folder workspace shape — `brief.md`, `imports/`, `digests/`, the main file, `<folder name>.md`, `claims.md` — and ends per `references/finalize.md`.
 
 | Intent | What it does | Load |
 | --- | --- | --- |
@@ -79,11 +80,11 @@ When invoked headless, do not ask. A codebase ask (step 4) is reported as `"inte
   "intent": "run",
   "type": "market",
   "report": "{doc_workspace}/<folder name>.md",
-  "memlog": "{doc_workspace}/.memlog.md",
+  "claims_file": "{doc_workspace}/claims.md",
   "claims": {"verified": 12, "unverified": 3, "overturned": 0},
   "open_questions": [],
   "external_handoffs": []
 }
 ```
 
-Omit keys for artifacts not produced; the `claims` counts come from `uv run {skill-root}/scripts/recon_kit.py tally {doc_workspace}/.memlog.md`, never hand-counted: copy its `claims` object as it prints. Draft adds `"brief"`; process adds `"imports"`; refresh replaces `claims` scope with the refresh set plus a `deltas` array; codebase adds no key: a proposed ADR left standing and the next ask its `## Open questions` names go in `open_questions`. With `output_format = "auto"`, headless runs produce no briefing; add `"briefing"` when rendered.
+Omit keys for artifacts not produced; the `claims` counts come from `uv run {skill-root}/scripts/recon_kit.py tally {doc_workspace}/claims.md`, never hand-counted: copy its `claims` object as it prints. Draft adds `"brief"`; process adds `"imports"`; refresh replaces `claims` scope with the refresh set plus a `deltas` array; codebase adds no key: a proposed ADR left standing and the next ask its `## Open questions` names go in `open_questions`. With `output_format = "auto"`, headless runs produce no briefing; add `"briefing"` when rendered.

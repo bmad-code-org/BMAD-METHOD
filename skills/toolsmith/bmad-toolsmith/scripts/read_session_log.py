@@ -2,34 +2,33 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""read_session_log: digest Claude Code transcripts and memlogs into turns for the from-logs approach.
+"""read_session_log: digest Claude Code transcripts into turns for the from-logs approach.
 
-Sources:
+Source:
   claude-code   a session transcript, one JSON object per line, as Claude Code keeps them under
                 ~/.claude/projects/<encoded-cwd>/*.jsonl (the cwd with every character outside A-Z, a-z,
                 0-9 and "-" turned into "-"; $CLAUDE_CONFIG_DIR replaces ~/.claude when set). Each user prompt starts a turn; a /command
                 becomes the request "/<name> <args>". The turn holds the tools called until the next prompt.
                 Meta and sidechain (subagent) records are skipped. Tool results and assistant prose are never
                 copied out.
-  memlog        a .memlog.md: every entry is a turn, with its type and author as `tag` (`direction by user`).
 
 The script does not judge which follow-ups are corrections; read `followed_by` and decide.
 
 Usage:
-  read_session_log.py [<path> ...] [--project <cwd>] [--format auto|claude-code|memlog]
+  read_session_log.py [<path> ...] [--project <cwd>] [--format auto|claude-code]
                       [--max-turns N] [--max-items N]
 
-  A path may be a file or a folder (every *.jsonl and *.memlog.md inside). --project resolves the
-  transcript folder for that working directory. --format auto picks by file name.
+  A path may be a file or a folder (every *.jsonl inside). --project resolves the transcript folder
+  for that working directory. --format auto reads *.jsonl files; claude-code reads any file as one.
 
 Output, one JSON object on stdout; every text is cut to 300 characters:
   {"sources": [{"path", "format", "entries", "bad_lines"}],
    "skipped": [{"path", "reason"}],
-   "turns": [{"source", "request", "tag", "tools", "followed_by", "interrupted"}],
+   "turns": [{"source", "request", "tools", "followed_by", "interrupted"}],
    "files_touched": [path, ...], "skills_invoked": [{"name", "count"}],
    "totals": {"turns", "turns_shown", "interrupted", "files_touched", "skills_invoked"}}
 
-  source is the index of the turn's file in sources. tag is null for claude-code. tools lists tool names in
+  source is the index of the turn's file in sources. tools lists tool names in
   call order, a run of the same tool written once. followed_by is the next user message in the same source,
   or null. interrupted is true when the user interrupted the turn. bad_lines counts transcript lines that are
   not JSON. turns keeps the last --max-turns (default 400); files_touched and skills_invoked are cut to
@@ -52,7 +51,6 @@ TEXT_LIMIT = 300
 INTERRUPTED_RE = re.compile(r"^\[Request interrupted by user")
 COMMAND_RE = re.compile(r"<command-name>\s*/?([^<\s]+)\s*</command-name>")
 COMMAND_ARGS_RE = re.compile(r"<command-args>(.*?)</command-args>", re.DOTALL)
-MEMLOG_ENTRY_RE = re.compile(r"^- (?:\((?P<tag>[^)]*)\) )?(?P<text>.*)$")
 FILE_INPUT_KEYS = ("file_path", "notebook_path", "path")
 
 
@@ -94,9 +92,7 @@ class Digest:
 
     def render(self, max_turns: int, max_items: int) -> dict:
         shown = self.turns[-max_turns:] if max_turns > 0 else []
-        ordered = [
-            {k: t[k] for k in ("source", "request", "tag", "tools", "followed_by", "interrupted")} for t in shown
-        ]
+        ordered = [{k: t[k] for k in ("source", "request", "tools", "followed_by", "interrupted")} for t in shown]
         return {
             "sources": self.sources,
             "skipped": self.skipped,
@@ -123,8 +119,8 @@ def user_text(content) -> str | None:
     return None
 
 
-def new_turn(request: str, tag: str | None = None) -> dict:
-    return {"request": truncate(request), "tag": tag, "tools": [], "interrupted": False}
+def new_turn(request: str) -> dict:
+    return {"request": truncate(request), "tools": [], "interrupted": False}
 
 
 def read_claude_code(text: str, digest: Digest) -> tuple[int, int, list[dict]]:
@@ -180,34 +176,19 @@ def read_claude_code(text: str, digest: Digest) -> tuple[int, int, list[dict]]:
     return entries, bad_lines, turns
 
 
-def read_memlog(text: str, digest: Digest) -> tuple[int, int, list[dict]]:
-    turns: list[dict] = []
-    for line in text.splitlines():
-        match = MEMLOG_ENTRY_RE.match(line)
-        if not match:
-            continue
-        tag = (match.group("tag") or "").strip() or None
-        turns.append(new_turn(match.group("text").strip(), tag))
-    return len(turns), 0, turns
-
-
 def detect_format(path: Path, requested: str) -> str | None:
     if requested != "auto":
         return requested
-    if path.suffix == ".jsonl":
-        return "claude-code"
-    if path.name.endswith(".memlog.md") or path.name == ".memlog.md":
-        return "memlog"
-    return None
+    return "claude-code" if path.suffix == ".jsonl" else None
 
 
 def expand(paths: list[Path], digest: Digest) -> list[Path]:
     files: list[Path] = []
     for path in paths:
         if path.is_dir():
-            found = sorted(path.glob("*.jsonl"), key=lambda p: p.stat().st_mtime) + sorted(path.glob("*.memlog.md"))
+            found = sorted(path.glob("*.jsonl"), key=lambda p: p.stat().st_mtime)
             if not found:
-                digest.skipped.append({"path": str(path), "reason": "folder holds no *.jsonl or *.memlog.md"})
+                digest.skipped.append({"path": str(path), "reason": "folder holds no *.jsonl"})
             files.extend(found)
         else:
             files.append(path)
@@ -216,9 +197,9 @@ def expand(paths: list[Path], digest: Digest) -> list[Path]:
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("paths", nargs="*", type=Path, help="transcript files, memlogs, or folders of them")
+    p.add_argument("paths", nargs="*", type=Path, help="transcript files, or folders of them")
     p.add_argument("--project", help="working directory whose Claude Code transcripts to read")
-    p.add_argument("--format", choices=("auto", "claude-code", "memlog"), default="auto")
+    p.add_argument("--format", choices=("auto", "claude-code"), default="auto")
     p.add_argument("--max-turns", type=int, default=400, help="keep the last N turns (default 400)")
     p.add_argument("--max-items", type=int, default=20, help="cap for files_touched and skills_invoked (default 20)")
     args = p.parse_args(argv)
@@ -239,15 +220,16 @@ def main(argv: list[str] | None = None) -> int:
     for path in expand(paths, digest):
         fmt = detect_format(path, args.format)
         if fmt is None:
-            digest.skipped.append({"path": str(path), "reason": "unknown format; name it *.jsonl or *.memlog.md"})
+            digest.skipped.append(
+                {"path": str(path), "reason": "unknown format; name it *.jsonl or pass --format claude-code"}
+            )
             continue
         try:
             text = path.read_text(encoding="utf-8", errors="replace")
         except OSError as error:
             digest.skipped.append({"path": str(path), "reason": f"unreadable: {error.strerror or error}"})
             continue
-        reader = read_claude_code if fmt == "claude-code" else read_memlog
-        entries, bad_lines, turns = reader(text, digest)
+        entries, bad_lines, turns = read_claude_code(text, digest)
         digest.add_turns(len(digest.sources), turns)
         digest.sources.append({"path": str(path), "format": fmt, "entries": entries, "bad_lines": bad_lines})
 

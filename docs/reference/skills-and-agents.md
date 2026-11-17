@@ -145,7 +145,7 @@ Researches a topic to support a decision, three ways: drafts a research prompt f
 
 Pressure-tests a half-formed idea in a questioning conversation, one question at a time, with different personas probing its weak points, until you can act on it or drop it with confidence.
 
-**Output:** a `forge-report.html` keepsake every run, plus a `forge-<slug>.md` brief when the idea hardens. See [Clarify the Idea](../clarify/clarify-the-idea.md#generate-or-pressure-test-an-idea).
+**Output:** a `forge-report.html` keepsake every run, plus `forge-<slug>.md`, the session's record, which is the brief once the idea hardens. See [Clarify the Idea](../clarify/clarify-the-idea.md#generate-or-pressure-test-an-idea).
 
 ### bmad-facilitate
 

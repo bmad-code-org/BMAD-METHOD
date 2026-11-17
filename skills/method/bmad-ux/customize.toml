@@ -51,7 +51,7 @@ design_handoffs = [
 # HTML skeleton filled in by the validation synthesis pass.
 validation_report_template = "assets/validation-report-template.html"
 
-# Run folder. DESIGN.md, EXPERIENCE.md, the `{run_folder_pattern}.md` file naming them, .memlog.md, .working/
+# Run folder. DESIGN.md, EXPERIENCE.md, the `{run_folder_pattern}.md` file naming them, .working/
 # (creative-tool artifacts), imports/ (user-supplied screens / brand decks /
 # Figma exports / sketches), optional mockups/ and wireframes/ (promoted
 # artifacts), optional validation-report.* all land inside

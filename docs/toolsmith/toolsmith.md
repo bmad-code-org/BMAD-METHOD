@@ -44,7 +44,7 @@ Every new skill follows the same path. If you use the scaffold approach to write
 Smithy coaches by default. It helps you decide well, pushes back where an idea is thin, and aims for a tool that works for whoever uses its output. If you say you are in a hurry, or ask Smithy to work on its own, it takes the fast path: it confirms a plan instead of asking questions, and lists its judgment calls at the end.
 
 1. **Discovery.** Smithy reads what you have already said and asks only for what is missing, one or two questions at a time.
-2. **Smithy execution plan.** Smithy shows the name, purpose, description, shape, registration, approach, location, and files. Nothing is written until you approve it, and you can change any line. Smithy records the approved plan in a memlog in its reports folder, so a later session can pick it up.
+2. **Smithy execution plan.** Smithy shows the name, purpose, description, shape, registration, approach, location, and files. Nothing is written until you approve it, and you can change any line. Smithy writes the approved plan to a `plan.md` in its reports folder, so a later session can pick it up.
 3. **Build.** Smithy writes the skill, and tries it on a real input when you have one.
 4. **Review.** Five review lenses read everything Smithy wrote. Smithy fixes the defects they find. It asks before it applies a finding that changes what the skill does or how it sounds; on the fast path it lists those instead. A small skill, one `SKILL.md` with no scripts and no `customize.toml`, gets only the leanness and trigger lenses, in one round.
 5. **Hand-off.** Smithy validates the skill, offers a trigger eval, and tells you where the skill is and what to try first.

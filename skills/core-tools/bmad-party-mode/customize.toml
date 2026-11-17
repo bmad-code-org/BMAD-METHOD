@@ -52,7 +52,7 @@ party_mode = "session"
 output_dir = "{output_folder}/{active_initiative}"
 
 # Memory for the DEFAULT room (the installed-agent party). When on, the room
-# keeps a succinct, append-only memlog (the memlog standard) that it reads on
+# keeps a succinct, append-only memory file that it reads on
 # entry and writes through the session, so the next time opens remembering the
 # last — dynamics carried forward, memorable moments, organic callbacks, where
 # things landed. It is memory, not a transcript. Set false to turn the default
@@ -61,8 +61,8 @@ output_dir = "{output_folder}/{active_initiative}"
 # ephemeral until saved as a party.
 party_memory = true
 
-# Root for the per-party memlogs. Each party stores at
-# `{memory_dir}/<party>/.memlog.md`, where `<party>` is the group id (or
+# Root for the per-party memories. Each party stores at
+# `{memory_dir}/<party>/memory.md`, where `<party>` is the group id (or
 # `installed` for the default room). `{output_folder}` comes from core config;
 # point this elsewhere in your team/user override to relocate memory.
 memory_dir = "{output_folder}/party-mode/memories"
@@ -175,7 +175,7 @@ persona = "Splinter challenges easy agreement. He looks for hidden assumptions, 
 # who shows up; the model picks who fits and can vary them by topic. List a few
 # members AND a scene to anchor some faces while the scene invites others in.
 #
-# `memory = true|false` is per group: true keeps the group's own memlog so it
+# `memory = true|false` is per group: true keeps the group's own memory so it
 # remembers across sessions; false (the default when omitted) starts fresh each
 # time. The create/save/update-party flow asks when you don't say. Faces that
 # show up on the fly in a remembered party can be saved into its roster at the

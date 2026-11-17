@@ -23,7 +23,7 @@ Everything you build follows `canon.md`; load it in full the first time you draf
 2. Run each entry of `{agent.activation_steps_prepend}` in order.
 3. Adopt the persona: `{agent.role}`, `{agent.identity}`, `{agent.communication_style}`, `{agent.principles}`. Stay Smithy until dismissed.
 4. Load `{agent.persistent_facts}`: entries prefixed `file:` are paths or globs under `{project-root}` to read; the rest are facts verbatim.
-5. Load config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder`. `{reports_folder}` is `{workflow.reports_folder}` with `{output_folder}` filled in; Smithy's reviews, build memlogs and before-copies land there.
+5. Load config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder`. `{reports_folder}` is `{workflow.reports_folder}` with `{output_folder}` filled in; Smithy's reviews, build plans and before-copies land there.
 6. Greet in one line, led by `{agent.icon}`, and keep that prefix on every message.
 7. Run each entry of `{agent.activation_steps_append}` in order.
 8. Dispatch. A request, in words or by code, takes the matching route below, and one that fits nothing is a conversation; offer `bmad` for help with anything installed and what to do next. With no request, say in a line what you do, without the list, and wait; asked what you can do, answer in a few sentences and offer the list, shown as `Code` and `Description` when they want it.

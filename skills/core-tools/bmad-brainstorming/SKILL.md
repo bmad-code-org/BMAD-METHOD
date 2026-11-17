@@ -26,7 +26,7 @@ The session runs in one of three stances, chosen by the user — set explicitly 
    - Script not found, or no `output_folder`: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - No `active_initiative`: ask once per session, before writing, whether this belongs to an initiative (hand off to the `bmad` skill to set one, then run the command again) or is loose. Loose work drops `/{active_initiative}` from every path.
 4. **If launched headless** (a machine signal, not a human asking for output — `references/headless.md` lists them): load `references/headless.md` and follow it for the whole run; never load it otherwise. Outside headless, you generate ideas yourself only in autonomous mode (`references/mode-autonomous.md`) — never in facilitator or partner mode.
-5. **Otherwise (interactive):** greet the user. Note that `bmad-party-mode` and `bmad-advanced-elicitation` are available any time (mention only the ones installed; either may be absent). Glob `brainstorm-*/.memlog.md` in `{output_folder}/{active_initiative}/` and in `{output_folder}/`, read each frontmatter, and offer to resume any with `status` not `complete` (`## Resuming`) or start fresh (`## Run a Session`).
+5. **Otherwise (interactive):** greet the user. Note that `bmad-party-mode` and `bmad-advanced-elicitation` are available any time (mention only the ones installed; either may be absent). Run `uv run {skill-root}/scripts/ideas.py open --root {workflow.output_dir} --root {output_folder} --glob "<pattern>"`, the pattern being `{workflow.output_folder_name}` with `*` for `{topic_slug}`, and offer to resume any session it lists (`## Resuming`) or start fresh (`## Run a Session`).
 
 Run each `{workflow.activation_steps_append}` entry; if either hook list was non-empty, confirm every entry ran before continuing.
 
@@ -38,11 +38,11 @@ These fight your defaults, in every mode; hold them deliberately. The stance you
 - **Keep shifting the creative domain** — every 5–10 turns (or ~10 ideas when you're generating), usually by moving to the next technique.
 - **One prompt per message while in dialogue (Facilitator, Creative Partner); no multiple-choice menus.** Don't stack questions into a wall or hand a menu that invites lazy picking — both pull the user out of generating. The only exceptions are the two up-front *process* choices (stance, and the technique flow): *how* to run is theirs to pick; *what* to ideate never is.
 
-**The memlog** is the session's memory: the single source every output builds from, and the file a resume reloads. Whatever isn't in it is gone. Log every idea, decision, question, and bit of user direction — anything you'd regret losing if the window closed — one line each, the gist in the user's meaning, in time order; never edit or reorder. Skip your prompts and small talk. All writes to memlog are atomic and use the script `memlog.py` invoked as follows:
+**The ideas log**, `{doc_workspace}/ideas.md`, is the session's memory: the single source every output builds from, and the file a resume reloads. Whatever isn't in it is gone. Log every idea, decision, question, and bit of user direction — anything you'd regret losing if the window closed — one line each, the gist in the user's meaning, in time order; never edit or reorder. Skip your prompts and small talk. Every write to it goes through the script `ideas.py`:
 
-- `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field topic="<topic>" --field goal="<goal>" --field mode="<facilitator|partner|autonomous>"` — create it once topic, goal, and stance are known.
-- `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <kind> --text "<one-line gist>"` — log one entry. `--type` ∈ `idea`/`insight`/`question`/`decision`/`direction`/`technique` (a switch: `--text "started <name>"`); omit for a plain note. Add `--by user`/`--by coach` to mark authorship — **required in Creative Partner mode** (renders `(idea by user)`); skip it otherwise.
-- `uv run {project-root}/_bmad/scripts/memlog.py set --workspace {doc_workspace} --key status --value complete` — flip status at wrap-up.
+- `uv run {skill-root}/scripts/ideas.py start --folder {doc_workspace} --topic "<topic>" --goal "<goal>" --mode <facilitator|partner|autonomous>` — create it once topic, goal, and stance are known.
+- `uv run {skill-root}/scripts/ideas.py add --folder {doc_workspace} --type <kind> --text "<one-line gist>"` — log one entry; repeat `--text` to log several of one kind in one call. `--type` ∈ `idea`/`insight`/`question`/`decision`/`direction`/`technique` (a switch: `--text "started <name>"`); omit for a plain note. Add `--by user`/`--by coach` to mark authorship — **required in Creative Partner mode** (renders `(idea by user)`); skip it otherwise.
+- `uv run {skill-root}/scripts/ideas.py set --folder {doc_workspace} --key status --value complete` — flip status at wrap-up.
 
 ## Run a Session
 
@@ -56,7 +56,7 @@ Read the pasted block: the **`Facilitation mode:`** line → the stance; the **l
 
 **Or in chat.** If they can't open the page or would rather not, pick the stance here and choose techniques per `## Choosing Techniques`.
 
-Either way, once the stance is known, create the memlog (the `init` above, with `--field mode=`) and load its frame for the rest of the run — Facilitator → `references/mode-facilitator.md`, Creative Partner → `references/mode-partner.md`, Ideate for me → `references/mode-autonomous.md`. Tell the user the memlog path: state is on disk now, so the session survives interruption.
+Either way, once the stance is known, create the ideas log (the `start` above, with `--mode`) and load its frame for the rest of the run — Facilitator → `references/mode-facilitator.md`, Creative Partner → `references/mode-partner.md`, Ideate for me → `references/mode-autonomous.md`. Tell the user its path: state is on disk now, so the session survives interruption.
 
 ## Choosing Techniques
 

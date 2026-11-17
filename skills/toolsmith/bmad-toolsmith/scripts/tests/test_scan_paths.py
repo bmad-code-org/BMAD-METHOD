@@ -172,7 +172,7 @@ class ScanPathsTest(unittest.TestCase):
                     "SKILL.md": (
                         "---\nname: bmad-demo\ndescription: 'Demo. Use when testing.'\n---\n\n"
                         "Run `uv run {skill-root}/scripts/go.py` then read `references/notes.md`.\n"
-                        "Runtime: `uv run {project-root}/_bmad/scripts/memlog.py`.\n"
+                        "Runtime: `uv run {project-root}/_bmad/scripts/resolve_config.py`.\n"
                         "Invoke the `bmad-eval` skill. Output goes to `{output_folder}/report.md`.\n"
                     ),
                     "references/notes.md": "Back to `../SKILL.md` and `scripts/go.py`.\n",
@@ -200,7 +200,7 @@ class ScanPathsTest(unittest.TestCase):
                         "Mine: /Users/someone/skills/x.md and ~/.claude/skills/y.md\n"
                         "Read `references/missing.md`.\n"
                         "Borrow `skills/bmad-other/references/canon.md`.\n"
-                        "Also `{project-root}/_bmad/bmad-other/SKILL.md` but not `{project-root}/_bmad/scripts/memlog.py`.\n"
+                        "Also `{project-root}/_bmad/bmad-other/SKILL.md` but not `{project-root}/_bmad/scripts/resolve_config.py`.\n"
                         "Describe it in module.yaml and module-help.csv.\n"
                         "```\nuv run scripts/in-fence.py\n```\n"
                     ),
