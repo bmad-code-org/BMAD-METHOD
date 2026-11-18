@@ -2222,6 +2222,7 @@ class TreeWriterVerbTests(TreeCase):
             ({"type": "story", "title": "two\nlines"}, "title is one line"),
             ({"type": "story", "title": "x", "after": [99]}, "nothing was added"),
             ({"type": "story", "title": "x", "hitl": "yes"}, "hitl must be true or false"),
+            ({"type": "story", "title": "x", "risk": "a: b"}, "would not read back"),
         ):
             with self.subTest(entry=entry):
                 self.fails(self.add_entry(entry), message)
@@ -2265,6 +2266,7 @@ class TreeWriterVerbTests(TreeCase):
             ({"type": "story", "title": "x", "risk": "a: b"}, "would not read back"),
             ({"type": "story", "title": "x", "covers": ["R1, R2"]}, "would not read back"),
             ({"type": "story", "title": "x", "id": "1.2"}, "id must be"),
+            ({"type": "story", "title": "x", "id": "null"}, "would not read back"),
             ({"type": "story", "title": "x", "tracker_status": "open"}, "tracker_status"),
             ({"type": "story", "title": "x", "status": "done"}, "unknown key 'status'"),
         ):

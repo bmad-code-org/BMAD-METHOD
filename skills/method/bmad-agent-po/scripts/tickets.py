@@ -1226,10 +1226,13 @@ def write_leaf(t: dict, tree: dict, root: Path | None) -> Path:
     path = tickets_dir(folder) / f"{leaf_stem(t, tree)}.md"
     if path.exists():
         raise TicketError(f"{path.name} exists already; change entry {t['id']}'s title")
-    after = f"[{', '.join(str(ref(b, t['epic'], tree)) for b in t['after'])}]"
-    path.write_text(leaf_text(t, after, parent_reference(folder, root)), encoding="utf-8")
+    path.write_text(leaf_text(t, leaf_after(t, tree), parent_reference(folder, root)), encoding="utf-8")
     t["file"] = path.name
     return path
+
+
+def leaf_after(t: dict, tree: dict) -> str:
+    return f"[{', '.join(str(ref(b, t['epic'], tree)) for b in t['after'])}]"
 
 
 def leaf_text(t: dict, after: str, parent: str, tracker: dict[str, str] | None = None) -> str:
@@ -1881,16 +1884,21 @@ def cmd_render(args) -> dict:
         **{k: entry.get(k, []) for k in ("references", "notes")},
     }
     text = leaf_text(t, after, item.get("parent_file", ""), values)
+    if not reads_back(t, text):
+        raise TicketError("stdin: the leaf would not read back; check its id, parent, covers and risk")
+    return {"text": text}
+
+
+def reads_back(t: dict, text: str) -> bool:
+    """Whether a leaf's frontmatter gives back the row's id, type, title, parent, covers and risk."""
     want = {"type": t["type"], "title": t["title"], "parent": t["epic"], "covers": t["covers"], "risk": t["risk"]}
     try:
-        fm = parse_frontmatter(text, "the rendered leaf")
-        covers = fm.get("covers", [])
-        got = {**{k: fm.get(k, "") for k in want}, "covers": [str(c) for c in covers] if covers else []}
+        fm = parse_frontmatter(text, "the leaf")
     except TicketError:
-        got = None
-    if got != want:
-        raise TicketError("stdin: the leaf would not read back; check its parent, covers and risk")
-    return {"text": text}
+        return False
+    covers = fm.get("covers", [])
+    got = {**{k: fm.get(k, "") for k in want}, "covers": [str(c) for c in covers] if covers else []}
+    return got == want and _id(fm.get("id")) == t["id"]
 
 
 def cmd_add_entry(args) -> dict:
@@ -1918,6 +1926,8 @@ def cmd_add_entry(args) -> dict:
         path.write_bytes(data)
         tree = load_tree(folder)
         t = next(t for t in tree["tickets"] if t["epic"] == folder.name and t["id"] == n)
+        if not reads_back(t, leaf_text(t, leaf_after(t, tree), "")):
+            raise TicketError("its leaf file would not read back; check its covers and risk")
     except (TicketError, OSError, ValueError) as e:
         try:
             if raw is None:
