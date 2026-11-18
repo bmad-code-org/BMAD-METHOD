@@ -89,6 +89,8 @@ Start the `bmad-toolsmith` skill, or ask for Smithy by name, and say what you wa
 
 Every new skill follows the same path. If you use the scaffold approach to write the skill yourself, steps 3 and 4 are yours.
 
+![How Smithy builds a skill](/diagrams/toolsmith-build-path.svg)
+
 Smithy coaches by default. It helps you decide well, pushes back where an idea is thin, and aims for a tool that works for whoever uses its output. If you say you are in a hurry, or ask Smithy to work on its own, it takes the fast path: it confirms a plan instead of asking questions, and lists its judgment calls at the end.
 
 1. **Discovery.** Smithy reads what you have already said and asks only for what is missing, one or two questions at a time.
