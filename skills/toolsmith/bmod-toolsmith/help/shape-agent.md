@@ -8,7 +8,7 @@ An agent is a skill named `<prefix>-agent-<name>` with a persona: a name, a titl
 
 ## Capabilities
 
-The agent's menu lists what it does. Each item either runs an installed skill that does the job, or holds its own instruction: a sentence or two when the persona and a line of intent are all the model needs, or a capability file when there is know-how to hold. A capability big enough to be its own skill becomes a separate build, which Smithy notes as a recommendation.
+The agent's menu lists what it does. Each item either runs an installed skill that does the job, or holds its own instruction: a sentence or two when the persona and a line of intent are all the model needs, or a capability file when there is know-how to hold. A capability big enough to be its own skill becomes a separate build, which Smithy notes as a recommendation. Internal capabilities load only when used, so one agent can hold many; a capability goes external when it stands alone, someone would run it without the agent, or several agents need it. Most agents mix both.
 
 ## Documents
 

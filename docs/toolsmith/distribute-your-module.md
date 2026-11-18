@@ -80,6 +80,8 @@ npx skills add your-org/your-repo
 
 Then they ask `bmad` to run `bmad setup acme`. Users can pin to a tag with `your-org/your-repo#v1.2.0`. See [Add Modules](../customize/add-modules.md).
 
+The repository does not have to be on GitHub: `npx skills add` takes any Git URL. For update checks from another host, set `update_source` to the `https://` address of the folder holding your skill folders, served as raw files. A public repository appears on [skills.sh](https://skills.sh/) once people install it with the Skills CLI. A module that ships inside a plugin sets `update_source = "plugin:<name>"`, and its updates come through that plugin's marketplace.
+
 ### 6. Ship Updates
 
 - **Bump `version` in the record for every release.** `bmad setup` compares it with the installed version to offer the update.

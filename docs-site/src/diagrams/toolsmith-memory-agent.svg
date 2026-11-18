@@ -1,0 +1,65 @@
+<svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 392" role="img" aria-labelledby="ma-title ma-desc">
+<title id="ma-title">A memory agent's life</title>
+<desc id="ma-desc">A memory agent is born once, at First Breath, which builds its sanctum. Each session it wakes and reloads itself from the sanctum, works with you and writes what is worth keeping as it goes, then sleeps when the context clears, and wakes again next session. What it learns about you goes to its sanctum; the facts of the work go to its dominion, the areas it owns or tends. With Pulse on, it also wakes on a schedule, tends its memory, and does its own tasks.</desc>
+<defs>
+<marker id="ma-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+<marker id="ma-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+</defs>
+<rect class="node" x="10" y="55" width="120" height="40" rx="20"/>
+<text class="n" x="70" y="80">Born once</text>
+<rect class="node" x="160" y="50" width="170" height="50" rx="2"/>
+<text class="n" x="245" y="72">First Breath</text>
+<text class="sub mid" x="245" y="89">learns who you are</text>
+<rect class="node hot" x="370" y="50" width="160" height="50" rx="2"/>
+<text class="n" x="450" y="72">Wakes</text>
+<text class="sub mid" x="450" y="89">reloads itself</text>
+<rect class="node" x="570" y="50" width="170" height="50" rx="2"/>
+<text class="n" x="655" y="72">Works with you</text>
+<text class="sub mid" x="655" y="89">writes as it goes</text>
+<rect class="node" x="780" y="50" width="110" height="50" rx="2"/>
+<text class="n" x="835" y="72">Sleeps</text>
+<text class="sub mid" x="835" y="89">context clears</text>
+<path class="edge" d="M130 75 H158" marker-end="url(#ma-arrow)"/>
+<path class="edge" d="M330 75 H368" marker-end="url(#ma-arrow)"/>
+<path class="edge" d="M530 75 H568" marker-end="url(#ma-arrow)"/>
+<path class="edge" d="M740 75 H778" marker-end="url(#ma-arrow)"/>
+<path class="edge" d="M835 50 V30 Q835 20 825 20 H460 Q450 20 450 30 V48" marker-end="url(#ma-arrow)"/>
+<text class="k" x="600" y="40">next session</text>
+<rect class="panel" x="300" y="160" width="350" height="124" rx="2"/>
+<text class="k panel-title" x="316" y="182">Sanctum · its memory</text>
+<rect class="node" x="316" y="194" width="152" height="34" rx="2"/>
+<text class="n small" x="328" y="215">Who it is</text>
+<rect class="node" x="482" y="194" width="152" height="34" rx="2"/>
+<text class="n small" x="494" y="215">What it remembers</text>
+<rect class="node" x="316" y="236" width="152" height="34" rx="2"/>
+<text class="n small" x="328" y="257">What you handed it</text>
+<rect class="node" x="482" y="236" width="152" height="34" rx="2"/>
+<text class="n small" x="494" y="257">What it can do</text>
+<rect class="panel" x="690" y="160" width="200" height="124" rx="2"/>
+<text class="k panel-title" x="706" y="182">Dominion · its areas</text>
+<rect class="node" x="706" y="194" width="168" height="76" rx="2"/>
+<text class="n small" x="718" y="220">Areas it owns or tends</text>
+<text class="sub" x="718" y="240">a journal, a workspace,</text>
+<text class="sub" x="718" y="256">a few folders</text>
+<path class="edge soft" d="M245 100 V198 Q245 210 257 210 H298" marker-end="url(#ma-arrow-soft)"/>
+<text class="k" x="172" y="150">builds it</text>
+<path class="edge soft" d="M450 160 V102" marker-end="url(#ma-arrow-soft)"/>
+<text class="k" x="390" y="134">reloads</text>
+<path class="edge soft" d="M610 100 V158" marker-end="url(#ma-arrow-soft)"/>
+<text class="k" x="620" y="134">about you</text>
+<path class="edge soft" d="M700 100 C 700 130 780 130 780 158" marker-end="url(#ma-arrow-soft)"/>
+<text class="k" x="748" y="124">the work</text>
+<text class="k" x="160" y="312">PULSE · OPTIONAL</text>
+<rect class="node" x="160" y="320" width="170" height="50" rx="2"/>
+<text class="n" x="245" y="342">Wakes on a schedule</text>
+<text class="sub mid" x="245" y="359">nobody at the keyboard</text>
+<rect class="node" x="370" y="320" width="160" height="50" rx="2"/>
+<text class="n" x="450" y="342">Tends memory</text>
+<text class="sub mid" x="450" y="359">distills and merges</text>
+<rect class="node" x="570" y="320" width="170" height="50" rx="2"/>
+<text class="n" x="655" y="342">Its own tasks</text>
+<text class="sub mid" x="655" y="359">what you set it to do</text>
+<path class="edge" d="M330 345 H368" marker-end="url(#ma-arrow)"/>
+<path class="edge" d="M530 345 H568" marker-end="url(#ma-arrow)"/>
+<path class="edge soft" d="M450 320 V286" marker-end="url(#ma-arrow-soft)"/>
+</svg>

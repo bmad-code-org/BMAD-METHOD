@@ -2,8 +2,9 @@
 title: ""
 template: srs
 version: 1.1.0
-description: "Traceable, verifiable requirements for regulated or contracted work."
+description: "An initiative's traceable, verifiable requirements for regulated or contracted work."
 not_for: "Product work with no external check (`prd`); what the business requires, before system behavior (`brd`); one feature for a coding agent (`agent-spec`)."
+agents: [bmad-agent-pm]
 facilitation_order: [introduction, definitions, references, overall-description, functional-requirements, interface-requirements?, quality-requirements, compliance-requirements?, design-constraints?, verification, open-questions, revision-history]
 guidance: guidance-planning
 rubric: rubric-planning
@@ -16,7 +17,7 @@ updated: ""
 
 <!-- stance: Stakes are regulated or contracted; push for a source on every requirement. One with no source is cut or becomes an open question, because a baseline can only hold what someone can answer for. -->
 
-<!-- inputs: The governing regulations, standards and contract clauses, stakeholders and their needs, external interfaces, prior baselines. Only the user knows which obligations apply and who approves the baseline. -->
+<!-- inputs: The governing regulations, standards and contract clauses, stakeholders and their needs, external interfaces, prior baselines. A business requirements document among them: keep its ids. Only the user knows which obligations apply and who approves the baseline. -->
 
 <!-- writing: Requirement sections are tables: id, one "shall" statement, source (a stakeholder need, BR-N, RULE-N, regulation clause or contract item), verification method (inspection, analysis, demonstration or test). Ids are never reused. Defined terms are used exactly as defined. -->
 

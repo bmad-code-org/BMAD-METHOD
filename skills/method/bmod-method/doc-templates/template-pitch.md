@@ -2,8 +2,9 @@
 title: ""
 template: pitch
 version: 1.1.0
-description: "A shaped, time-boxed proposal for teams that bet fixed cycles."
+description: "A shaped, time-boxed initiative or epic proposal for teams that bet fixed cycles."
 not_for: "Open-ended requirements (`prd`); funding by estimate (`business-case`); one feature handed to a coding agent (`agent-spec`)."
+agents: [bmad-agent-pm]
 paced: true
 facilitation_order: [problem, appetite, solution, rabbit-holes, no-gos]
 guidance: guidance-planning

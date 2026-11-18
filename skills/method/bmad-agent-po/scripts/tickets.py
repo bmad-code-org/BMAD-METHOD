@@ -1094,8 +1094,20 @@ Verify: {verify}
 
 
 def title_slug(title: str) -> str:
-    title = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
-    return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:60].rstrip("-") or "untitled"
+    """A title as a file name: folded to ASCII and lowercase, each run of anything else one `-` (`Café` is
+    `cafe`). A title with no ASCII letter or digit, one in Chinese or Cyrillic say, keeps its own letters, digits
+    and marks instead, the characters Unicode's identifier rule (UAX #31) allows (`修复登录`). At most 60
+    characters and 180 bytes, else `untitled`."""
+    folded = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
+    slug = re.sub(r"[^a-z0-9]+", "-", folded.lower()).strip("-")
+    if not slug:
+        text = unicodedata.normalize("NFKC", title).lower()
+        slug = "".join(c if c != "_" and f"a{c}".isidentifier() else "-" for c in text)
+        slug = re.sub(r"-+", "-", unicodedata.normalize("NFKC", slug)).strip("-")
+    slug = slug[:60]
+    while len(slug.encode("utf-8")) > 180:  # room left for `<type>-`, `-<id>` and `-plan.md` in 255 bytes
+        slug = slug[:-1]
+    return slug.rstrip("-") or "untitled"
 
 
 def resolve_ticket(tree: dict, text: str) -> dict:
@@ -1506,6 +1518,69 @@ def set_after_line(block: str, current: list, new: list, where: str) -> str:
     return block[: m.start()] + m.group(1) + list_text(new, toml=True) + m.group(3) + block[m.end() :]
 
 
+NOTES_LINE_RE = re.compile(r"^[ \t]*notes[ \t]*=.*$", re.M)
+NOTES_HEADING_RE = re.compile(r"^## Notes[ \t]*$", re.M)
+HEADING_RE = re.compile(r"^#{1,2} ", re.M)
+
+
+def cmd_note(args) -> dict:
+    """Append a note to a ticket no build has started: its entry's `notes`, or its leaf file's `## Notes`."""
+    folder = _folder(args)
+    store = store_name(project_root_for(args, folder))
+    if store != "repo":
+        raise StoreRefusal(f"store is {store}: add the note through the store, not this script")
+    note = args.text.strip()
+    if not note or "\n" in note or "\r" in note:
+        raise TicketError("a note is one line of text")
+    note.encode("utf-8")  # an undecodable argument stops here, before any file is opened
+    t, tree = locate(args, folder, args.ref)
+    if t["status"] or t.get("plan"):
+        raise TicketError(f"{ref_name(t, tree)} has a plan or a status: its build has already read the ticket")
+    home = tickets_dir(tree["folders"][t["epic"]])
+    if t["file"]:
+        path = home / t["file"]
+        body = read_text(path)
+        m = NOTES_HEADING_RE.search(body)
+        if m:
+            nxt = HEADING_RE.search(body, m.end())
+            end = nxt.start() if nxt else len(body)
+            section = body[:end].rstrip("\n")
+            sep = "\n" if section[m.end() :].strip() else "\n\n"
+            body = f"{section}{sep}- {note}\n" + (f"\n{body[end:]}" if nxt else "")
+        else:
+            body = body.rstrip("\n") + f"\n\n## Notes\n\n- {note}\n"
+        path.write_text(body, encoding="utf-8")
+        return {"ticket": ref_name(t, tree), "file": str(path), "note": note}
+    path = home / BREAKDOWN
+    where = f"{shown(home)}/{BREAKDOWN}"
+    head, tables = split_tables(read_text(path))
+    parsed = [parse_table(b) for b in tables]
+    i, row = next((i, row) for i, (kind, row) in enumerate(parsed) if kind == "entry" and row["id"] == t["id"])
+    block, notes = tables[i], [*row.get("notes", []), note]
+    m = NOTES_LINE_RE.search(block)
+    if m:
+        # The whole line is replaced, once it is shown to hold the whole list.
+        try:
+            whole = tomllib.loads(m.group(0).strip()).get("notes") == row.get("notes")
+        except tomllib.TOMLDecodeError:
+            whole = False
+        if not whole:
+            raise TicketError(f"{where}: entry {t['id']}'s `notes` must sit on one line to be added to")
+        new = block[: m.start()] + f"notes = {list_text(notes, toml=True)}" + block[m.end() :]
+    else:
+        body = block.rstrip("\n")
+        new = f"{body}\nnotes = {list_text(notes, toml=True)}\n{block[len(body) + 1 :]}"
+    try:
+        ok = parse_table(new)[1] == {**row, "notes": notes}
+    except tomllib.TOMLDecodeError:
+        ok = False
+    if not ok:
+        raise TicketError(f"{where}: entry {t['id']}'s `notes` must sit on one line to be added to")
+    tables[i] = new
+    path.write_text(head + "".join(tables), encoding="utf-8")
+    return {"ticket": ref_name(t, tree), "file": str(path), "note": note}
+
+
 def cmd_move(args) -> dict:
     """Move an entry, with its leaf file and plan, to another folder, rewriting ids and every `after` that names it."""
     src, dest = locate_dir(args, args.src), locate_dir(args, args.to)
@@ -1794,6 +1869,18 @@ its tracker id, is listed under `containers` with its file's `status` and the `t
 nothing is written to it. A ticket the tree does not hold is listed under `unmatched` and the rest are
 written; values that would leave the tree unreadable write nothing, and the error then still lists
 `unmatched`.""",
+    "note": f"""Add a one-line note to a ticket no build has started. Repo store only.
+
+{DIR_HELP}
+{PARENT_HELP}
+{BACKLOG_HELP}
+{REF_HELP}
+
+The note goes last in the entry's `notes` in `tickets.toml`, or, once the entry is pulled, last under the
+leaf file's `## Notes`, which is added when missing. A ticket with a status is refused: its build has
+already read the ticket.
+
+Output: `ticket`, `file` (the file written), and `note`.""",
     "move": f"""Move an entry to another folder, with its leaf file and plan.
 
 <from> and <to> are folders as <dir> is for the other commands; <ref> names an entry in <from>.
@@ -1861,6 +1948,16 @@ def main() -> int:
     )
     p.add_argument("dir", nargs="?", help="default: the active initiative")
     p.set_defaults(func=cmd_mirror)
+    p = sub.add_parser(
+        "note",
+        help="add a note to a ticket no build has started (repo store only)",
+        description=HELP["note"],
+        formatter_class=raw,
+    )
+    p.add_argument("dir", nargs="?", help="default: the active initiative")
+    p.add_argument("ref")
+    p.add_argument("text")
+    p.set_defaults(func=cmd_note)
     p = sub.add_parser(
         "move",
         help="move an entry, its leaf file, and its plan to another folder",
