@@ -2969,6 +2969,27 @@ class BmadStatusTests(unittest.TestCase):
             self.assertEqual((repaired["status"], repaired["shared_scripts"]), ("repaired", "repaired"))
             self.assertTrue(status_report(self, project, skill)["current"])
 
+    def test_an_output_folder_moved_in_a_custom_layer_is_the_one_setup_keeps(self):
+        # The skills read core.output_folder through the custom and user layers; setup and status must too,
+        # or status owes setup forever and setup recreates the unused _bmad-output on every run.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            setup_report(self, project, skill)
+            write(project / "_bmad" / "custom" / "config.toml", '[core]\noutput_folder = "{project-root}/docs/work"\n')
+            write(project / "_bmad" / "custom" / "config.user.toml", '[core]\noutput_folder = "docs/mine"\n')
+            shutil.rmtree(project / "_bmad-output")
+
+            self.assertEqual(status_report(self, project, skill)["next"], "bmad setup")
+            self.assertTrue(setup_report(self, project, skill)["changed"])
+            self.assertTrue((project / "docs" / "mine").is_dir())
+            self.assertFalse((project / "docs" / "work").exists())
+            self.assertFalse((project / "_bmad-output").exists())
+            self.assertIsNone(status_report(self, project, skill)["next"])
+            self.assertFalse(setup_report(self, project, skill)["changed"])
+
     def test_status_owes_setup_whenever_setup_would_write(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
