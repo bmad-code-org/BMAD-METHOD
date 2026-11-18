@@ -184,6 +184,29 @@ def test_ad_heading_in_fence_not_counted():
     assert result["ok"] is True  # the fenced AD-2 is not a live AD → no ad_fields/ad_id finding
 
 
+def test_tilde_fence_is_blanked_too():
+    # a ~~~ fence is a fence: the TBD and the AD-9 heading inside a mermaid block are illustrative
+    text = (
+        "---\nname: 'x'\n---\n\n"
+        "### AD-1 — real\n\n- **Binds:** all\n- **Prevents:** drift\n- **Rule:** do x\n\n"
+        "~~~mermaid\ngraph TD\n  A[TBD] --> B\n### AD-9 — not live\n~~~\n"
+    )
+    assert lint_spine.lint(text)["ok"] is True
+
+
+def test_backticks_mentioned_in_prose_do_not_open_a_fence():
+    # two ``` mentions on different lines must not blank the AD between them, whose Rule is a placeholder
+    text = (
+        "---\nname: 'x'\n---\n\n"
+        "### AD-1 — snippets\n\n- **Binds:** docs\n- **Prevents:** drift\n- **Rule:** every snippet opens with a ``` line\n\n"
+        "### AD-2 — unfinished\n\n- **Binds:** all\n- **Prevents:** drift\n- **Rule:** TBD\n\n"
+        "### AD-3 — snippets end\n\n- **Binds:** docs\n- **Prevents:** drift\n- **Rule:** every snippet closes with a ``` line\n"
+    )
+    result = lint_spine.lint(text)
+    assert [f["category"] for f in result["findings"]] == ["placeholder"]
+    assert "line 15" in result["findings"][0]["location"]
+
+
 def test_stack_table_flags_only_the_unpinned_row():
     text = "---\nname: 'x'\n---\n\n## Stack\n\n| Name | Version |\n| --- | --- |\n| fastapi | 0.115 |\n| redis |  |\n"
     result = lint_spine.lint(text)

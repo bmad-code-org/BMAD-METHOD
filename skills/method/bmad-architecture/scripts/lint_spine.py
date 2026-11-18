@@ -32,7 +32,7 @@ from pathlib import Path
 
 AD_HEADING = re.compile(r"^#{2,4}\s*AD-(\d+)\b(.*)$", re.MULTILINE)
 HEADING = re.compile(r"^#{1,6}\s", re.MULTILINE)
-FENCE = re.compile(r"```.*?```", re.DOTALL)
+FENCE_LINE = re.compile(r"^\s*(`{3,}|~{3,})")  # a fence opens or closes only at the start of a line
 PLACEHOLDER_WORD = re.compile(r"\b(TBD|TODO|FIXME|XXX)\b")
 SIMILAR_TO = re.compile(r"similar to AD-\d+", re.IGNORECASE)
 TEMPLATE_TOKEN = re.compile(r"\{[a-z_][a-z0-9_ /.-]*\}")
@@ -57,9 +57,25 @@ def split_frontmatter(text: str) -> tuple[str, str, int]:
 
 
 def blank_fences(text: str) -> str:
-    """Replace each fenced block with the same number of newlines, so scanning skips fenced
-    content while every line number outside the fence stays put."""
-    return FENCE.sub(lambda m: "\n" * m.group(0).count("\n"), text)
+    """Blank every line of each fenced block, fence lines included, so scanning skips fenced
+    content while every line number outside the fence stays put.
+
+    Fences pair CommonMark-style: a line starting with three or more backticks or tildes opens a
+    block, which closes only on a line of the same character, at least as long, with nothing
+    after it. A ``` mentioned mid-sentence opens nothing, and a ~~~ block is a fence too."""
+    lines, open_fence = [], None  # (char, length) while inside a fenced block
+    for ln in text.split("\n"):
+        fence = FENCE_LINE.match(ln)
+        if open_fence is None:
+            if fence:
+                open_fence = (fence.group(1)[0], len(fence.group(1)))
+            lines.append("" if fence else ln)
+            continue
+        marker = fence.group(1) if fence else ""
+        if marker[:1] == open_fence[0] and len(marker) >= open_fence[1] and ln.strip() == marker:
+            open_fence = None
+        lines.append("")
+    return "\n".join(lines)
 
 
 def line_of(text: str, idx: int) -> int:
