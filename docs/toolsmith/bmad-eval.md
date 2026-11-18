@@ -62,7 +62,7 @@ A trigger eval stages the skill alone, so it cannot show two skills competing. T
 
 ## What Keeps a Run Clean
 
-Each case runs in a temporary folder with a copy of the skill and a fresh home folder, so your own skills, memory, settings, and project instructions do not load. The grader gives no partial credit and flags checks that pass for trivial reasons.
+Each case runs in a temporary folder with a copy of the skill and a fresh home folder, so your own skills, memory, settings, and project instructions do not load, unless the harness's `env` or `home_files` bring them in. The grader gives no partial credit and flags checks that pass for trivial reasons.
 
 ## Which Tool Runs It
 

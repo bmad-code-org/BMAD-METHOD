@@ -33,7 +33,7 @@ Smithy writes test cases from your real requests before the skill exists, confir
 
 > Build it eval-first. Here are three real requests it should handle.
 
-You get the skill, its cases under `evals/` at the repository root, and the run that passed.
+You get the skill, its cases under `evals/` at the repository root, and the passing run, or the cases still failing if you stopped early.
 
 ## Skill-Creator Loop
 

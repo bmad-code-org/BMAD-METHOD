@@ -78,7 +78,7 @@ The sanctum holds only what the agent learns. Built-in capabilities and scripts 
 
 An agent's dominion is its sanctum plus the areas it owns or tends: a whole workspace, a section of it, a few folders, or a private space such as a journal. The facts of the work go there, not in the sanctum, so people and other agents can read them without the agent, and they survive a wiped sanctum. An area can be private, which tells other agents to keep out.
 
-Some areas ship with the skill, and you add your own at First Breath or by telling the agent later. Each area the agent writes has a `README.md` giving its layout.
+Some areas ship with the skill, and you add your own at First Breath or by telling the agent later. Each area the agent writes has a `README.md` giving its layout; a whole-workspace area uses the project's AGENTS.md instead.
 
 ## Waking
 
@@ -112,7 +112,7 @@ Every memory agent's First Breath follows the same steps. What differs is the qu
 
 ## Naming the Agent
 
-An agent can ship with a name, or be named at First Breath. Once the name is settled, the agent adds it to its own description, so you can ask for it by name from the next session.
+An agent can ship with a name, or be named at First Breath. Once the name is settled, the agent adds it to its own description, so you can ask for it by name from the next session. A global install serves every project, so it keeps its skill name, and you invoke it by that.
 
 ## Pulse
 

@@ -4,11 +4,11 @@ The one approach that starts before `discover.md`. Its outcome: skill candidates
 
 ## Which logs
 
-Read the logs the user's request points to: by default your own session logs for this project, wherever your harness keeps them; or the projects, time span or files they name. Confirm the location, or ask when you cannot find it, and wait for a yes before reading.
+Read the logs the user's request points to: by default your own recent session logs for this project, wherever your harness keeps them; or the projects, time span or files they name. Confirm the location, or ask when you cannot find it, and wait for a yes before reading.
 
 ## Digest
 
-Read small logs yourself. Otherwise give each log to a subagent that returns what the session was for and where it went wrong, then each request the user made, the tools that followed in order, and the user's next message, both texts verbatim, and the files touched and skills invoked. Which follow-ups are corrections is your judgment. Keep any copies of the logs in a scratch folder and delete it when you are done.
+Logs can run to many sessions and megabytes, so plan how to read them before you start and keep your own context for the judgment: batches, a subagent per log, or a script, whichever fits. From each session you need what it was for and where it went wrong, each request with the tools that followed and the user's next message verbatim, and the files touched and skills invoked. Which follow-ups are corrections is your judgment. Keep any copies of the logs in a scratch folder and delete it when you are done.
 
 ## Candidates
 
@@ -18,7 +18,7 @@ Propose the ideas the logs support, strongest first. Each is a repeated request,
 
 The corrections are the know-how a skill encodes. A request repeated without corrections is still a candidate when the user typed the same instructions each time.
 
-Leave out what an installed skill already covers, unless the corrections show it falling short. Then the candidate is an edit of that skill when the user owns it; ask when unsure. It is a customization when the skill has a `customize.toml`. Otherwise, name the shortfall with its corrections, so the user can report it upstream, and leave it out. A correction that is a rule for agents in one repository, not a skill, is a pitfall for that repository's AGENTS.md.
+Leave out what an installed skill already covers, unless the corrections show it falling short. Then the candidate is an edit of that skill when the user owns it; ask when unsure. It is a customization when the skill's `customize.toml` exposes what the corrections change. Otherwise, name the shortfall with its corrections, so the user can report it upstream, and leave it out. A correction that is a rule for agents in one repository, not a skill, is a pitfall for that repository's AGENTS.md.
 
 The user picks one or none. When they pick none, write the list to `{reports_folder}`, and this approach ends.
 
