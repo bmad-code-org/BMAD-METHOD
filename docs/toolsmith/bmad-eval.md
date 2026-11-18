@@ -58,26 +58,17 @@ The should-not queries matter most when they are near misses: requests that shar
 
 When queries fail, the description is changed in its situations and boundaries, never by pasting in a failed query. `bmad-eval` can also run an optimization loop that improves the description against a held-out test set, so the rewrite does not overfit.
 
-A trigger eval stages the skill alone, so it cannot show two skills competing. The trigger matrix stages every skill of an install at once and records which one each query loads. Its report lists the failing queries and a table of which skill loaded in place of which, so overlapping descriptions show up as a recurring pair. The queries live in a suite folder, `evals/suites/<suite-name>/trigger-matrix.json`; this repository's is `evals/suites/full-install/`.
+A trigger eval stages the skill alone, so it cannot show two skills competing. The trigger matrix stages every skill of an install at once and records which one each query loads. Its report lists the failing queries and a table of which skill loaded in place of which, so overlapping descriptions show up as a recurring pair.
 
 ## What Keeps a Run Clean
 
-Each case runs in a temporary folder outside your project, with a copy of the skill and a fresh home folder. Your own skills, memory, settings, and project instructions do not load, unless the recorded `env` or `home_files` bring them in. To test firing, the staged skill asks for a token at the start of the reply, and seeing that token proves the skill loaded on any tool.
-
-Grading is independent too. The grader reads the output, gives no partial credit, puts the burden of proof on a pass, and flags checks that pass for trivial reasons.
+Each case runs in a temporary folder with a copy of the skill and a fresh home folder, so your own skills, memory, settings, and project instructions do not load. The grader gives no partial credit and flags checks that pass for trivial reasons.
 
 ## Which Tool Runs It
 
-Evals run through the coding tool you are already using, such as Claude Code or Codex. `bmad-eval` ships no list of tools. The first time it runs in a project, your agent works out four facts about its own tool and proves them on one case:
+Evals run through the coding tool you already use, such as Claude Code or Codex. The first time, your agent works out how to run its own tool unattended, proves it on one case, and records it in `bmad-eval`'s customization, where you can change it.
 
-- The command for one non-interactive run
-- The folder it reads skills from
-- The environment variables a run needs
-- The files that keep it logged in
-
-These are recorded in `bmad-eval`'s customization through `bmad-customize`, where you can read and change them.
-
-To compare tools or models, name the others you want to run against, such as Codex or the same tool with another model. Each is worked out and proved the same way and recorded as a named harness. A run through several names keeps one run folder per name and reports where they disagree. Tools route skills differently, so a description that loads well in one can miss in another.
+To compare tools or models, name them, such as Codex or the same tool with another model. Each gets its own run folder, and the report shows where they disagree. Tools route skills differently, so a description that loads well in one can miss in another.
 
 ## Read the Results
 
