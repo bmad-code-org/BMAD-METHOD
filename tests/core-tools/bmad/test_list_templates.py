@@ -514,6 +514,27 @@ def test_brief_names_who_offers_a_template(tmp_path, capsys):
     assert found["charter"]["agents"] == ["bmad-agent-analyst", "bmad-agent-pm"]
 
 
+def test_brief_names_the_skill_whose_folder_holds_a_template_that_names_no_one(tmp_path, capsys):
+    custom, agent, module = (
+        tmp_path / "custom",
+        tmp_path / "acme-agent" / "assets",
+        tmp_path / "bmod-acme" / "doc-templates",
+    )
+    for folder in (custom, agent, module):
+        folder.mkdir(parents=True)
+    for skill in (agent.parent, module.parent):
+        (skill / "SKILL.md").write_text("---\nname: x\n---\n")
+    (agent / "plan.md").write_text(template("plan"))
+    (agent / "memo.md").write_text(template("memo", "Shipped."))
+    (custom / "memo.md").write_text(template("memo", "Ours."))
+    (module / "record.md").write_text(template("record"))
+    list_templates.main([str(custom), str(agent), str(module), "--brief"])
+    found = {t["id"]: t for t in json.loads(capsys.readouterr().out)["templates"]}
+    assert found["plan"]["agents"] == ["acme-agent"]
+    assert (found["memo"]["description"], found["memo"]["agents"]) == ("Ours.", ["acme-agent"])
+    assert found["record"]["agents"] == [], "a module record's folder holds for no one"
+
+
 def test_template_keeps_one_and_an_unknown_id_exits_1(tmp_path, capsys):
     (tmp_path / "a.md").write_text(template("a"))
     (tmp_path / "b.md").write_text(template("b"))
