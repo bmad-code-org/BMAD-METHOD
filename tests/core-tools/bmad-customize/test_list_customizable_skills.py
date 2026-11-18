@@ -156,6 +156,11 @@ class ScannerTest(unittest.TestCase):
         result = MODULE.scan_skills([self.skills], self.root)
         self.assertEqual(result["agents"][0]["description"], "Double-quoted desc.")
 
+    def test_frontmatter_that_is_not_a_mapping_gives_an_empty_description(self):
+        _make_skill(self.skills, "bmad-list", '[agent]\nicon = "x"\n', "---\n[unfinished]\n---\n")
+        result = MODULE.scan_skills([self.skills], self.root)
+        self.assertEqual(result["agents"][0]["description"], "")
+
     def test_multiple_skills_roots_are_merged(self):
         extra_root = self.root / "extra-skills"
         extra_root.mkdir()

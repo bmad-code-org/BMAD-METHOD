@@ -95,7 +95,7 @@ class ParseSkillTest(unittest.TestCase):
             cases = {
                 "description: 'It''s quoted. Use when x.'\n": "It's quoted. Use when x.",
                 'description: "Say \\"hi\\". Use when x."\n': 'Say "hi". Use when x.',
-                "description: |\n  Block one.\n  Block two.\n": "Block one. Block two.",
+                "description: |\n  Block one.\n  Block two.\n": "Block one.\nBlock two.",
                 "description: 'Spans\n  two lines.'\n": "Spans two lines.",
                 "description: Plain. Use when x.\n": "Plain. Use when x.",
             }
