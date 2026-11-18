@@ -2,8 +2,9 @@
 title: ""
 template: charter
 version: 1.1.0
-description: "One mandate, benefits, scope and governance across several initiatives."
+description: "A program's mandate, benefits, scope and governance across its initiatives."
 not_for: "A single initiative (`brief` or `prd`); funding one piece of work (`business-case`); choosing a strategy (`narrative`)."
+agents: [bmad-agent-analyst, bmad-agent-pm]
 facilitation_order: [justification, vision, strategic-alignment, benefits, scope, initiatives, rules?, stakeholders, governance, timeline, risks-and-issues]
 guidance: guidance-planning
 rubric: rubric-planning

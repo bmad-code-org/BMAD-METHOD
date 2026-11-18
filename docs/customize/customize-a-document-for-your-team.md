@@ -169,7 +169,7 @@ your-project/
 
 **Who gets the change?** Everyone who pulls the project, since `_bmad/custom/` is committed. For a change only you want in every project, put the file in `~/.bmad/facilitate-templates/`.
 
-**Does this work for Mary's documents too?** Yes. Extend `brief`, `prfaq` or `brd` the same way.
+**Does this work for Mary's documents too?** Yes. Extend `brief`, `prfaq`, `business-case` or any other template the same way.
 
 ## Getting Help
 

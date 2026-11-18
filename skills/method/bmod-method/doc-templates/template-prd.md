@@ -3,7 +3,8 @@ title: ""
 template: prd
 version: 1.1.0
 description: "Requirements a team builds from, at any altitude."
-not_for: "Deciding whether to build (`opportunity`) or writing down why (`brief`); a very simple project (`prd-light`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`); what a business signs for when the builder is a separate party (`brd`)."
+not_for: "Deciding whether to build (`opportunity`) or writing down why (`brief`); a very simple project (`prd-light`); a hobby project, or an idea to try before committing (`prototype-plan`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`); what a business signs for when the builder is a separate party (`brd`)."
+agents: [bmad-agent-pm]
 facilitation_order: [document-purpose, vision, users-and-journeys, glossary, features-and-requirements, rules?, non-goals, mvp-scope, success-metrics, quality-and-constraints?, change-boundary?, ai-behavior-and-evaluation?, experience-and-platform?, stakeholders-risks-and-rollout?, integrations-and-operations?, data-and-compliance?, api-contract-and-versioning?, slos-and-performance-budgets?, consumer-migration?, developer-experience?, hardware-and-deployment?, stories?, decisions?, open-questions]
 guidance: guidance-planning
 rubric: rubric-planning
@@ -18,7 +19,7 @@ updated: ""
 
 Altitude sets what this document decides: keep a line when the level below would decide wrongly without it, and leave it out when that level would decide better with more information. A program PRD states outcomes, the initiatives and their order, and the rules over all of them, with no requirements. An initiative PRD states the problem and who has it, the outcome and its measures, capabilities with one checkable result each, rules, non-goals, known risks and the questions only the user can answer; how each capability behaves, screens, architecture, story order and the edge cases an epic will meet stay below it. An epic PRD states testable requirements, edge cases and failure states, what is in and out for this slice and what stays unchanged; it cites its parent's ids rather than restating them, and leaves data model, APIs and story scenarios below it. Non-goals and known rabbit holes take detail at every altitude, because they stop invention below. -->
 
-<!-- inputs: Form factor if the sources do not say. Only the user knows who it is for, what is out, and what success looks like. -->
+<!-- inputs: Form factor if the sources do not say. A business requirements document among the sources: keep its ids. Only the user knows who it is for, what is out, and what success looks like. -->
 
 <!-- writing: Capabilities, not implementation. Ids (UJ-N, FR-N, RULE-N, SM-N, OQ-N) are global; no traceability matrix. Domain nouns are used exactly as the glossary defines them. Ceilings: about 3,000 words at program or initiative altitude, 2,000 at epic altitude, two pages for hobby and solo work. A document past its ceiling pushes detail to the level below or splits; padding to look thorough is the failure. -->
 

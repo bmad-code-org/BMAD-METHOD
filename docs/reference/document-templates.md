@@ -37,20 +37,20 @@ To change one for your team, extend it instead of copying it, so its updates kee
 
 ## Documents John and Mary write
 
-The BMad Method also ships the planning templates for John, the Product Manager (`bmad-agent-pm`), and Mary, the Business Analyst (`bmad-agent-analyst`). Each template lives in its agent's `assets/` folder. Both agents hand every create, update, and validate to `bmad-facilitate`, so each document works the same way. [Write a PRD](../plan/write-a-prd.md) shows the coaching and fast paths, stakes, and assumption tags they share.
+The BMad Method also ships the planning templates for John, the Product Manager (`bmad-agent-pm`), and Mary, the Business Analyst (`bmad-agent-analyst`). The templates live in the method module's `doc-templates/` folder, and each names the agents that offer it in `agents`. Mary writes the documents that decide whether and why to go ahead; John writes the ones that define what gets built and how it ships. The list says who offers each by default; either writes any of them when you ask. Both agents hand every create, update, and validate to `bmad-facilitate`, so each document works the same way. [Write a PRD](../plan/write-a-prd.md) shows the coaching and fast paths, stakes, and assumption tags they share.
 
 | Document | Who | Level | Fits |
 | --- | --- | --- | --- |
-| Opportunity assessment | John | Initiative | Whether a problem is worth pursuing, before any solution |
-| Experiment card | John | Any | A measured test of one hypothesis, its thresholds set before it runs |
+| Opportunity assessment | Mary | Initiative | Whether a problem is worth pursuing, before any solution |
+| Experiment card | Mary or John | Any | A measured test of one hypothesis, its thresholds set before it runs |
 | Prototype plan | John | Any | A quick build to test an idea, some options, or a look and feel |
 | PRFAQ | Mary | Before an initiative | Whether a concept survives scrutiny, working back from its press release |
 | Brief | Mary | Before an initiative | Why to build a product, or pitching it, in a page or two |
-| Business case | John | Initiative | A funding decision: cost, expected return, go or no-go |
-| Strategy narrative | John | Program | A written argument for leadership to decide a strategy or annual plan |
+| Business case | Mary | Initiative | A funding decision: cost, expected return, go or no-go |
+| Strategy narrative | Mary | Program | A written argument for leadership to decide a strategy or annual plan |
 | PRD, light PRD | John | Any | Requirements a team builds from; the light one for a very simple project |
 | Shape Up pitch | John | Initiative or epic | A shaped, time-boxed proposal for teams that bet fixed cycles |
-| Program charter | John | Program | One mandate, benefits, scope, and governance across several initiatives |
+| Program charter | Mary or John | Program | One mandate, benefits, scope, and governance across several initiatives |
 | Requirements specification | John | Initiative | Traceable, verifiable requirements for regulated or contracted work |
 | Business requirements document | Mary | Initiative | What the business requires and signs for, when a separate party builds, a sponsor signs, or a regulator or contract expects it |
 | Spec for a coding agent | John | One feature | A feature outside the ticket tree, with tests and acceptance |
@@ -66,7 +66,7 @@ The first seven come before you commit, in Clarify; the rest plan and ship the w
 | Make the user pick from a list | `decision-record`, Status | The section comment names the allowed values |
 | Make the user pick from a source | `security-review`, Scope and system | The section comment points at the method catalog |
 | Drive questions from a catalog | `security-review`, `methods-security.csv` | The `methods` frontmatter names a CSV of key questions |
-| Walk the sections in order, each with its own voice | `prfaq` in `bmad-agent-analyst/assets/` | `paced: true` in the frontmatter, and each section comment is the brief for that part |
+| Walk the sections in order, each with its own voice | `prfaq` in `bmod-method/doc-templates/` | `paced: true` in the frontmatter, and each section comment is the brief for that part |
 | Change how a path runs | `security-review`, `stance` | The comment says what the fast path does for this document |
 | Use the shared planning rules | Any shipped template | `guidance: guidance-planning` adds stakes levels, ids and testable requirements |
 | Review against its own rubric | `proposal`, `rubric-proposal.md` | The `rubric` frontmatter names the file |
@@ -76,7 +76,7 @@ The first seven come before you commit, in Clarify; the rest plan and ship the w
 | Add a table of contents | `proposal` | A bare `## Table of Contents` heading after the title |
 | Render as slides | `pitch-deck` | `view: slides` in the frontmatter |
 | Always make the view | `pitch-deck` | `html_view: always` in the frontmatter, because the slides are the deliverable |
-| Render the same layout every time | `prfaq` in `bmad-agent-analyst/assets/`, `prfaq-view.html`; also `brief` and John's `pitch` | `view` names an HTML file whose slots a script fills at close |
+| Render the same layout every time | `prfaq` in `bmod-method/doc-templates/`, `prfaq-view.html`; also `brief` and `pitch` | `view` names an HTML file whose slots a script fills at close |
 | Have a page written for each document | `character`, `character-sheet.html` | `view` names a starter, and a `view` comment gives the brief |
 | Have a page written from a brief alone | Founder's templates, such as `pitch-deck` | A `view` comment with no `view` file says where to be creative |
 | Propose rather than only ask | `character`, `stance` | The comment invites proposals; one the user accepts is theirs |

@@ -26,7 +26,9 @@ may leave out a heading of the template: that section is removed and named in `r
 `rubric`, `methods`, `style` and `view` are relative to their file and come back resolved; a bare
 name with no extension, such as `slides`, comes back as it is.
 
-`--brief` keeps only each template's id, description, not_for, category and output, for choosing one.
+`--brief` keeps only each template's id, description, not_for, category, agents and output, for choosing
+one; `agents` there is who offers the template: those it names, else the skill whose folder holds it,
+else those of the template of the same id it replaces.
 `--template <id>` keeps only that template; `--merge <path>` then writes it as one file to read
 whole: the merged frontmatter, each extension's body in search order, then the template's body
 without its removed sections, with every path made absolute.
@@ -324,7 +326,7 @@ def scan(sources: list[str]) -> dict:
 
 
 PATH_KEYS = ("guidance", "rubric", "methods", "style", "view")
-BRIEF = ("id", "description", "not_for", "category", "output")
+BRIEF = ("id", "description", "not_for", "category", "agents", "output")
 
 
 def body(text: str) -> str:
@@ -427,6 +429,23 @@ def offers(agents: list[str], file: str, agent: str) -> bool:
     return "://" not in file and Path(file).resolve().parent.parent.name == agent
 
 
+def named_or_holding(agents: list[str], file: str) -> list[str]:
+    """The agents a file names, or with none, the skill whose own folder holds it; a module record holds for no one."""
+    if agents or "://" in file:
+        return agents
+    skill = Path(file).resolve().parent.parent
+    return [skill.name] if (skill / "SKILL.md").is_file() and not skill.name.startswith("bmod-") else []
+
+
+def owners(template: dict, shadowed: list[dict] = ()) -> list[str]:
+    """Who offers a template: itself, or with no one, the templates of the same id it replaces."""
+    own = named_or_holding(template["agents"], template["file"])
+    if own:
+        return own
+    replaced = [s for s in shadowed if s["kept"] == template["file"]]
+    return list(dict.fromkeys(a for s in replaced for a in named_or_holding(s["agents"], s["file"])))
+
+
 def owned_by(template: dict, agent: str, shadowed: list[dict] = ()) -> bool:
     """Whether `agent` offers the template, itself or through a template of the same id it replaces."""
     if offers(template["agents"], template["file"], agent):
@@ -484,7 +503,9 @@ def main(argv: list[str]) -> int:
         for key in [k for k in template if k.startswith("_")]:
             del template[key]
     if args.brief:
-        result["templates"] = [{key: t[key] for key in BRIEF} for t in result["templates"]]
+        result["templates"] = [
+            {key: t[key] for key in BRIEF} | {"agents": owners(t, result["shadowed"])} for t in result["templates"]
+        ]
     print(json.dumps(result, indent=2))
     return 0
 
