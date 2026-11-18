@@ -56,6 +56,7 @@ reject_unusable_bmad = _setup.reject_unusable_bmad
 render_toml = _setup.render_toml
 retired_skills = _setup.retired_skills
 retirement_report = _setup.retirement_report
+skill_folders = _setup.skill_folders
 write_text = _setup.write_text
 
 # Traces the classic installer leaves under _bmad.
@@ -179,18 +180,27 @@ def custom_key_notes(stale: list[tuple[str, tuple[str, ...]]]) -> list[str]:
 
 
 def unused_customizations(project_root: Path, installation: Installation, retirement: Retirement) -> list[str]:
-    """`_bmad/custom/` files of skills that are not installed. Files setup is about to rename are not unused."""
+    """`_bmad/custom/` files of skills that are not installed. Files setup is about to rename are not unused.
+
+    Installed means present in the active roots or in any `.<tool>/skills` of the project: a teammate's tool may
+    load a skill this host does not, and its customization is shared through the repository."""
     custom = project_root / "_bmad" / "custom"
     if custom.is_symlink() or not custom.is_dir():
         return []
     moving = {old for old, _new in (*retirement.renames, *retirement.unmoved)}
+    installed = set(installation.folders)
+    for folder in skill_folders(project_root, installation):
+        try:
+            installed.update(entry.name for entry in folder.iterdir() if entry.is_dir())
+        except OSError:
+            continue
     unused: list[str] = []
     for path in sorted(custom.iterdir(), key=lambda entry: entry.name):
         name = path.name
         stem = name.removesuffix(".toml").removesuffix(".user")
         if not name.startswith("bmad-") or not name.endswith(".toml") or name in moving:
             continue
-        if stem not in installation.folders:
+        if stem not in installed:
             unused.append(name)
     return unused
 
