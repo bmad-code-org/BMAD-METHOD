@@ -228,7 +228,15 @@ def load_breakdown(folder: Path) -> dict:
             r["id"] = _id(r.get("id"))
             if r["id"] is None:
                 raise TicketError(f"{where}: every {table} needs an `id`: a number, or letters and digits")
-            if table != "entry":
+            if table == "entry":
+                for a in r.get("after", []):
+                    # TOML reads a bare `1.10` as the number 1.1, so the dotted id would silently point at 1.1.
+                    if isinstance(a, bool) or not isinstance(a, (int, str)):
+                        raise TicketError(
+                            f"{where}: entry {r['id']} `after` {a!r} is not an id; write a sibling's id as a number "
+                            'and a dotted or named id in quotes, like "1.10"'
+                        )
+            else:
                 if not isinstance(r.get("slug"), str) or not r["slug"]:
                     raise TicketError(f"{where}: {table} {r['id']} needs a `slug`")
                 for a in r.get("after", []):
