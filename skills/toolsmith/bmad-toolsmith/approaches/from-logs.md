@@ -18,7 +18,7 @@ Propose the ideas the logs support, strongest first. Each is a repeated request,
 
 The corrections are the know-how a skill encodes. A request repeated without corrections is still a candidate when the user typed the same instructions each time.
 
-Leave out what an installed skill already covers, unless the corrections show it falling short. Then the candidate is an edit of that skill when the user owns it; ask when unsure. It is a customization when the skill's `customize.toml` exposes what the corrections change. Otherwise, name the shortfall with its corrections, so the user can report it upstream, and leave it out. A correction that is a rule for agents in one repository, not a skill, is a pitfall for that repository's AGENTS.md.
+Leave out what an installed skill already covers, unless the corrections show it falling short. Then the candidate is an edit of that skill when the user owns it; ask when unsure. It is a customization when `bmad-customize` can make the change, through a setting the skill's `customize.toml` exposes or one of its templates. Otherwise, name the shortfall with its corrections, so the user can report it upstream, and leave it out. A correction that is a rule for agents in one repository, not a skill, is a pitfall for that repository's AGENTS.md.
 
 The user picks one or none. When they pick none, write the list to `{reports_folder}`, and this approach ends.
 
