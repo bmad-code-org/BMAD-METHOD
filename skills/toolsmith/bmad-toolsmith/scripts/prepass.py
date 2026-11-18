@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["tiktoken"]
+# dependencies = ["pyyaml>=6.0.2,<7", "tiktoken"]
 # ///
 """prepass: the deterministic pre-pass the review lenses read before opening any file.
 

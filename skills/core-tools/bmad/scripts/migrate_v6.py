@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Report or remove the v6 traces in `_bmad/` that v7 does not read, or fold pre-release spec folders.
 
@@ -29,6 +30,8 @@ import shutil
 import sys
 import tomllib
 from pathlib import Path, PurePosixPath
+
+import yaml
 
 sys.dont_write_bytecode = True
 
@@ -440,7 +443,8 @@ def relative(path: Path, root: Path) -> str:
 
 def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object]:
     slug = SPEC_FOLDER.match(folder.name)["slug"]
-    spec = parse_spec(read_for_fold(folder / f"{folder.name}.md", project_root))
+    spec_path = folder / f"{folder.name}.md"
+    spec = parse_spec(yaml_checked(read_for_fold(spec_path, project_root), spec_path, project_root))
     loose = folder.parent == store
     if loose:
         home = store / "backlog"
@@ -463,7 +467,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     if taken:
         raise FoldProblem(f"{', '.join(taken)} already exist(s) beside the ticket")
 
-    existing = read_for_fold(ticket, project_root) if ticket.is_file() else ""
+    existing = yaml_checked(read_for_fold(ticket, project_root), ticket, project_root) if ticket.is_file() else ""
     existing_requirements = section_body(existing, "Requirements")
     offset = max((int(n) for n in R_LINE.findall(existing_requirements)), default=0)
     ids = {f"CAP-{n}": f"R{n + offset}" for n in spec["capabilities"]}
@@ -634,6 +638,15 @@ def read_for_fold(path: Path, project_root: Path) -> str:
         raise FoldProblem(f"{relative(path, project_root)} cannot be read: {error}") from error
 
 
+def yaml_checked(text: str, path: Path, project_root: Path) -> str:
+    """`text`, once its frontmatter reads as YAML, so a bad one stops the fold before anything changes."""
+    try:
+        yaml.load("\n".join(split_frontmatter(text)[0]), Loader=yaml.BaseLoader)
+    except yaml.YAMLError as error:
+        raise FoldProblem(f"{relative(path, project_root)} has invalid frontmatter: {error}") from error
+    return text
+
+
 def text_files(root: Path, *, skip: tuple[Path, ...] = ()) -> list[Path]:
     """The .md and .toml files under root, hidden files, archives and `skip` folders left out."""
     found: list[Path] = []
@@ -744,21 +757,9 @@ def split_frontmatter(text: str) -> tuple[list[str], str]:
 
 
 def frontmatter_list(meta: list[str], key: str) -> list[str]:
-    """`key: [a, b]`, or `key:` followed by `- a` lines. Comments after the value are dropped."""
-    items: list[str] = []
-    for index, line in enumerate(meta):
-        if not re.match(rf"\A{re.escape(key)}\s*:", line):
-            continue
-        value = line.split(":", 1)[1].split("#", 1)[0].strip()
-        if value.startswith("["):
-            items = [item.strip().strip("'\"") for item in value.strip("[]").split(",")]
-        else:
-            for following in meta[index + 1 :]:
-                if not following.lstrip().startswith("- "):
-                    break
-                items.append(following.lstrip()[2:].split("#", 1)[0].strip().strip("'\""))
-        break
-    return [item for item in items if item]
+    """The items of list `key`, as text."""
+    value = (yaml.load("\n".join(meta), Loader=yaml.BaseLoader) or {}).get(key) or []
+    return [item for item in (value if isinstance(value, list) else [value]) if item]
 
 
 def bullets(section: str) -> list[str]:
@@ -867,7 +868,7 @@ def with_list(meta: list[str], key: str, items: list[str]) -> list[str]:
         return meta
     index = next((i for i, line in enumerate(meta) if re.match(rf"\A{key}\s*:", line)), None)
     merged = list(dict.fromkeys((frontmatter_list(meta, key) if index is not None else []) + items))
-    line = f"{key}: [{', '.join(merged)}]"
+    line = f"{key}: {yaml.safe_dump(merged, default_flow_style=True, width=float('inf')).strip()}"
     if index is not None:
         # A block list's `- item` lines go with the key line they continue.
         end = index + 1
