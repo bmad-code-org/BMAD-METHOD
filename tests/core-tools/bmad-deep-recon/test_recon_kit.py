@@ -189,7 +189,7 @@ class LedgerTest(unittest.TestCase):
         code, result = run(["ledger", str(self.folder), "--field", "topic=something else"])
         self.assertEqual((code, result["created"], result["entries"]), (0, False, 1))
         self.assertEqual(result["fields"]["topic"], "kilns: a study")
-        self.assertIn('topic: "kilns: a study"\n', self.ledger.read_text(encoding="utf-8"), "values are quoted")
+        self.assertIn("topic: 'kilns: a study'\n", self.ledger.read_text(encoding="utf-8"), "values are quoted")
         self.assertEqual(run_err(["ledger", str(self.folder / "x"), "--field", "no-equals"])[0], 2)
         self.assertEqual(run_err(["ledger", str(self.folder / "x"), "--field", "a b=c"])[0], 2)
 
