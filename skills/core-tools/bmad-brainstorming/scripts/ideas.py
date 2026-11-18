@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """ideas — the append-only log of a brainstorming session, `ideas.md` in the session's folder.
 
@@ -9,10 +10,10 @@ order it happened. Every output is built from it and a resume reloads it. Entrie
 added at the end; nothing is edited, reordered or removed.
 
     ---
-    topic: "Onboarding flow for a budgeting app"
-    goal: "lift week-1 retention"
-    mode: "facilitator"
-    created: "2026-06-07T14:22"
+    topic: Onboarding flow for a budgeting app
+    goal: lift week-1 retention
+    mode: facilitator
+    created: 2026-06-07T14:22
     ---
 
     - (technique) started SCAMPER
@@ -46,6 +47,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import yaml
+
 NAME = "ideas.md"
 OLD_NAME = ".memlog.md"
 KEY_RE = re.compile(r"^[A-Za-z_][\w-]*$")
@@ -69,18 +72,6 @@ def log_path(folder: Path) -> Path:
     return path
 
 
-def parse_value(raw: str) -> str:
-    raw = raw.strip()
-    if raw.startswith('"'):
-        try:
-            return str(json.loads(raw))
-        except json.JSONDecodeError:
-            return raw.strip('"')
-    if len(raw) >= 2 and raw[0] == raw[-1] == "'":
-        return raw[1:-1].replace("''", "'")
-    return raw
-
-
 def read(path: Path) -> tuple[dict[str, str], str]:
     """Frontmatter fields in file order, and the body. The closing fence is the first line that is exactly `---`."""
     try:
@@ -92,19 +83,19 @@ def read(path: Path) -> tuple[dict[str, str], str]:
     end = next((i for i in range(1, len(lines)) if lines[i] == "---"), None) if lines[:1] == ["---"] else None
     if end is None:
         raise LogError(f"{path} has no frontmatter")
-    fields: dict[str, str] = {}
-    for line in lines[1:end]:
-        key, sep, value = line.partition(":")
-        if sep and key.strip():
-            fields[key.strip()] = parse_value(value)
+    try:
+        fields = yaml.load("\n".join(lines[1:end]), Loader=yaml.BaseLoader) or {}
+    except yaml.YAMLError:
+        fields = None
+    if not isinstance(fields, dict):
+        raise LogError(f"{path} has frontmatter that is not YAML fields")
     return fields, "\n".join(lines[end + 1 :]).strip("\n")
 
 
 def write(path: Path, fields: dict[str, str], body: str) -> None:
     """Whole-file write through a temp file, so a crash never leaves half a log."""
-    front = "".join(
-        f"{key}: {json.dumps(' '.join(value.split()), ensure_ascii=False)}\n" for key, value in fields.items()
-    )
+    one_line = {key: " ".join(value.split()) for key, value in fields.items()}
+    front = yaml.safe_dump(one_line, sort_keys=False, allow_unicode=True, width=float("inf"))
     tmp = path.with_suffix(".md.tmp")
     tmp.write_text(f"---\n{front}---\n\n{body}\n" if body else f"---\n{front}---\n", encoding="utf-8", newline="\n")
     os.replace(tmp, path)

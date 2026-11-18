@@ -106,9 +106,7 @@ class IdeasTest(unittest.TestCase):
     def test_fields_survive_text_that_is_not_plain_yaml(self):
         self.start(topic='Fix #42: "names"', goal="say: it's ok\nplease", mode="facilitator")
         raw = self.log.read_text(encoding="utf-8").splitlines()
-        self.assertEqual(
-            raw[1:3], ['topic: "Fix #42: \\"names\\""', 'goal: "say: it\'s ok please"'], "values are quoted"
-        )
+        self.assertEqual(raw[1:3], ["topic: 'Fix #42: \"names\"'", "goal: 'say: it''s ok please'"], "values are quoted")
         fields, _ = ideas.read(self.log)
         self.assertEqual(
             {k: v for k, v in fields.items() if k != "created"},
