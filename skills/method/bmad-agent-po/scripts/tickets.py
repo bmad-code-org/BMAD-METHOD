@@ -1818,11 +1818,15 @@ def read_object(where: str = "stdin") -> dict:
     return item
 
 
-def entry_from_json(item: dict, where: str, extra: tuple = ()) -> dict:
-    """The `[[entry]]` keys of a JSON object, each checked: only the template's keys, `type` and `title` required."""
-    unknown = [k for k in item if k not in (*ENTRY_KEYS, *extra)]
-    if unknown:
-        raise TicketError(f"{where}: unknown key {unknown[0]!r}")
+def entry_from_json(item: dict, where: str, extra: tuple = (), team_keys: bool = False) -> dict:
+    """The `[[entry]]` keys of a JSON object, the template's checked, `type` and `title` required. With `team_keys`,
+    other keys a team's own template adds are kept after them; never the id, status, or tracker keys, which
+    `tickets.toml` does not hold."""
+    for k in item:
+        if team_keys and k in ("id", *PLAN_FIELDS, *TRACKER_KEYS):
+            raise TicketError(f"{where}: {k} is not kept in tickets.toml")
+        if not team_keys and k not in (*ENTRY_KEYS, *extra):
+            raise TicketError(f"{where}: unknown key {k!r}")
     if item.get("type") not in LEAF_TYPES:
         raise TicketError(f"{where}: type {item.get('type')!r} is not one of {', '.join(LEAF_TYPES)}")
     for key in ("title", "description", "verify", "risk", "unknown"):
@@ -1841,7 +1845,8 @@ def entry_from_json(item: dict, where: str, extra: tuple = ()) -> dict:
             raise TicketError(f"{where}: after takes ids and names without commas, not {b!r}")
     if isinstance(item.get("estimate"), bool) or not isinstance(item.get("estimate", ""), (int, float, str)):
         raise TicketError(f"{where}: estimate must be a number or a string")
-    return {k: item[k] for k in ENTRY_KEYS if k in item}
+    known = {k: item[k] for k in ENTRY_KEYS if k in item}
+    return {**known, **{k: v for k, v in item.items() if k not in known}} if team_keys else known
 
 
 def toml_value(value) -> str:
@@ -1905,13 +1910,17 @@ def cmd_add_entry(args) -> dict:
     """Append an `[[entry]]` with the folder's `next_id` to its `tickets.toml`; nothing is written if the tree then
     would not read."""
     folder = locate_dir(args, args.dir)
-    entry = entry_from_json(read_object(), "stdin")
+    entry = entry_from_json(read_object(), "stdin", team_keys=True)
     tree = load_tree(folder)
     if tree["scope"] is None:
         raise TicketError(f"{folder.name} holds epics, not entries")
     n = next_id(tree, folder.name)
     block = f"[[entry]]\nid = {n}\n" + "".join(f"{k} = {toml_value(v)}\n" for k, v in entry.items())
-    if parse_table(block)[1] != {"id": n, **entry}:
+    try:
+        same = parse_table(block)[1] == {"id": n, **entry}
+    except ValueError:  # a team key or value TOML cannot hold
+        same = False
+    if not same:
         raise TicketError("stdin: the entry would not read back from tickets.toml")
     home = tickets_dir(folder)
     path = home / BREAKDOWN
@@ -2082,8 +2091,9 @@ Output: `text`, the whole file.""",
 object of the entry keys in the skill's `assets/tickets-template.toml`, without `id`: `type` and `title`
 (one line) required; `description`, `verify`, `risk`, `unknown` strings; `covers`, `references`, `notes`
 lists of strings; `after` a list of ids and names; `hitl`, `refine`, `plan_checkpoint`,
-`done_checkpoint` true or false; `estimate`. An unknown key is refused. The entry goes last, its keys
-in that order; the file is made when missing. When the tree would not read with it, an `after` naming
+`done_checkpoint` true or false; `estimate`. Any other key, one a team's own template adds, is kept after
+them, a string, number, true or false, or list; `status` and the tracker keys are refused. The entry goes
+last, its keys in that order; the file is made when missing. When the tree would not read with it, an `after` naming
 nothing for one, nothing is written.
 
 Output: `folder`, `id`, `file` (the `tickets.toml` written), and `stem`, the name pull gives its leaf

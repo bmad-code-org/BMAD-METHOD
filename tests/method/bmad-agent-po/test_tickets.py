@@ -2213,11 +2213,29 @@ class TreeWriterVerbTests(TreeCase):
             (out["id"], out["stem"], Path(out["file"])), (1, "story-improve-login", backlog.resolve() / "tickets.toml")
         )
 
+    def test_add_entry_keeps_the_keys_a_team_template_adds(self):
+        self.breakdown_epic()
+        entry = {"component": "checkout", "type": "story", "title": "Apply a discount code", "squad": ["payments"]}
+        out = self.ok(self.add_entry(entry))
+        text = (tk(self.epic) / "tickets.toml").read_text(encoding="utf-8")
+        self.assertTrue(
+            text.endswith(
+                f'[[entry]]\nid = {out["id"]}\ntype = "story"\ntitle = "Apply a discount code"\n'
+                'component = "checkout"\nsquad = ["payments"]\n'
+            ),
+            text,
+        )
+        self.assertEqual(self.ok(run("pull", str(self.epic), str(out["id"])))["file"], "story-apply-a-discount-code.md")
+
     def test_add_entry_writes_nothing_it_cannot_read_back(self):
         self.breakdown_epic()
         before = (tk(self.epic) / "tickets.toml").read_bytes()
         for entry, message in (
-            ({"type": "story", "title": "x", "status": "done"}, "unknown key 'status'"),
+            ({"type": "story", "title": "x", "status": "done"}, "status is not kept in tickets.toml"),
+            ({"type": "story", "title": "x", "tracker_id": "DESK-4"}, "tracker_id is not kept"),
+            ({"type": "story", "title": "x", "id": 7}, "id is not kept"),
+            ({"type": "story", "title": "x", "component": None}, "would not read back"),
+            ({"type": "story", "title": "x", "component": {"a": 1}}, "would not read back"),
             ({"type": "epic", "title": "x"}, "type 'epic'"),
             ({"type": "story", "title": "two\nlines"}, "title is one line"),
             ({"type": "story", "title": "x", "after": [99]}, "nothing was added"),
