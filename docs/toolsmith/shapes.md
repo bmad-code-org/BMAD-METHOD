@@ -10,11 +10,11 @@ A shape is what a skill looks like on disk. Smithy works out the shape from the 
 | Shape | What you get | Your need lands here when |
 | --- | --- | --- |
 | Plain skill | A `SKILL.md`, with references that load only when needed | You want an agent to do one job well on request |
-| Agent with capabilities | A named persona with a greeting and a menu | You want someone to work with across turns, who owns related capabilities |
-| Memory agent | An agent that keeps a memory folder and wakes as the same self | The agent must build up knowledge across sessions |
+| Agent with capabilities | A named persona with a greeting and a menu. Each capability is held inside the agent and loads only when used, or is an installed skill the agent runs. | You want someone to work with across turns, who owns several related jobs |
+| Memory agent | An agent that keeps a memory folder and wakes as the same self | The agent must build up knowledge across sessions, and each owner shapes it in a first conversation |
 | Rendered skill or agent | Files filled from the team's settings before each run | You ask for one; a shared plain skill gets about the same from a `customize.toml` |
 | Script-backed utility | A thin `SKILL.md` over tested scripts | Most of the job is mechanical |
-| Document template | A template `bmad-facilitate` runs, alone or carried by an agent | A person talks something through and a document comes out |
+| Document template | A template `bmad-facilitate` runs, alone or carried by an agent | A person talks something through and a document comes out. An agent can carry several templates and pick one from the request, as the BMad Method's Analyst and PM agents do. |
 
 Registration is a separate choice. Any of these shapes can stand alone as a single-skill module, join a module, or stay outside the registry. See [Modules and Registration](modules.md).
 
@@ -41,12 +41,22 @@ An agent is a skill named `<prefix>-agent-<name>` with a persona and a menu. Cho
 
 The persona lives in an `[agent]` table in `customize.toml`: `name`, `title`, `icon`, `role`, `identity`, `communication_style`, and `principles`. The persona guides the agent when no capability fits, so it is written in the agent's own voice.
 
-Each `[[agent.menu]]` item has a `code`, a `description`, and exactly one of these:
+### Internal and External Capabilities
 
-- `skill`, when an installed skill does the job and the agent invokes it.
-- `prompt`, holding the whole instruction in a sentence or two, or a line that reads a file under `references/`.
+A capability can live inside the agent or be a separate skill the agent runs. Each `[[agent.menu]]` item has a `code`, a `description`, and exactly one of these:
 
-A capability needs its own file only when there is know-how to hold. One big enough to stand alone should become its own skill.
+- `prompt`, for an internal capability: the whole instruction in a sentence or two, or a line that reads a file under `references/`. Only the file for the capability in use loads, so one agent can hold many capabilities without loading all of them on every run.
+- `skill`, for an external capability: an installed skill that does the job, which the agent invokes.
+
+| | Internal | External |
+| --- | --- | --- |
+| Lives in | The agent's own folder | Its own skill folder |
+| Used by | This agent only | Any agent or skill that invokes it |
+| Fits when | The job belongs to this agent's persona and work | The job stands alone, someone would run it without the agent, or several agents need it |
+
+Most agents mix both. A capability needs its own file only when there is know-how to hold, and one big enough to stand alone should become its own skill. A plain skill can run other installed skills the same way, listing them in `required_skills`.
+
+If you are not sure you need an agent, build the job as a plain skill first. When you later want a persona or memory on top, an agent's menu item can run that skill, and nothing about the skill changes.
 
 The agent's description lists its name and the phrases of every capability built into it, because nothing else triggers those capabilities. A menu item that runs an installed skill adds no phrases, because that skill triggers itself. In a module, an agent also gets a `roster.toml` entry, which is how `bmad` and party mode know it exists.
 
