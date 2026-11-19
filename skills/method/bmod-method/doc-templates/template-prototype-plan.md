@@ -1,7 +1,7 @@
 ---
 title: ""
 template: prototype-plan
-version: 1.1.0
+version: 1.2.0
 description: "A quick build to test an idea, some options or a look and feel; the first offer for a hobby project."
 not_for: "Committed work that needs requirements (`prd`, `prd-light`); measuring a change with real users (`experiment`); writing down why to build (`brief`); one feature for a coding agent (`agent-spec`)."
 agents: [bmad-agent-pm]
@@ -16,6 +16,8 @@ updated: ""
 <!-- purpose: Capture the ask and the goal so a prototype can be built without this conversation. -->
 
 <!-- stance: Keep it as short as the prototype allows. A hobby one-off needs a few open-ended questions; a prototype with more riding on it gets every question it needs, until the user says execute, when you stop asking, tag what is left and finish. Keep technical questions few, or offer them rather than ask them. With no preference and nothing already built, suggest a starter project to build from, checked on the web for what is current. When a large codebase exists, offer `bmad-deep-recon` on a specific question so the build starts from what is true today. Skip Finalize's review and polish unless the user asks for them. Remind the user that a prototype's best use is what it teaches; it need not be what goes to production. -->
+
+<!-- opening: What the prototype should prove or let the user try, and where it will be built. -->
 
 <!-- inputs: The ask, the goal and where to build it; the platform and technology when they are not obvious or the work is net new. Only the user knows what they want to learn from it and what result would make them drop it. -->
 

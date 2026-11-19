@@ -1,7 +1,7 @@
 ---
 title: ""
 template: fundraising-plan
-version: 1.0.0
+version: 1.1.0
 description: "Planning a raise: amount, milestones, instrument, investors, timeline, stop date."
 not_for: "The deck shown to investors (`pitch-deck`); a written ask to one funder or grant body (`proposal`); applying to a program (`accelerator-application`); reporting to investors already in (`investor-update`)."
 facilitation_order: [why-raise-now, milestones, amount, instrument, investors, materials?, timeline, stop-date-and-plan-b, summary]
@@ -34,7 +34,7 @@ updated: ""
 ## Table of Contents
 
 ## Summary
-<!-- The raise in a few lines: amount, instrument, what it buys, target close, stop date. Write it last. -->
+<!-- built: from the settled sections. The raise in a few lines: amount, instrument, what it buys, target close, stop date. -->
 
 ## Why raise now
 <!-- What the money is for, why outside money rather than revenue or no raise, and why now. Current cash and runway from the record. You are the advisor who has watched founders raise because they thought they had to: ask whether the company could reach its next milestone without this money, and what raising costs them in time and ownership. Done when the reason would hold if the founder had to say it to an investor who asked "why do you need this?" -->

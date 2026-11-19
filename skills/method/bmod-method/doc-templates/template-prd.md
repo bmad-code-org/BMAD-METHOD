@@ -1,11 +1,11 @@
 ---
 title: ""
 template: prd
-version: 1.1.0
+version: 1.2.0
 description: "Requirements a team builds from, at any altitude."
 not_for: "Deciding whether to build (`opportunity`) or writing down why (`brief`); a very simple project (`prd-light`); a hobby project, or an idea to try before committing (`prototype-plan`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`); what a business signs for when the builder is a separate party (`brd`)."
 agents: [bmad-agent-pm]
-facilitation_order: [document-purpose, vision, users-and-journeys, glossary, features-and-requirements, rules?, non-goals, mvp-scope, success-metrics, quality-and-constraints?, change-boundary?, ai-behavior-and-evaluation?, experience-and-platform?, stakeholders-risks-and-rollout?, integrations-and-operations?, data-and-compliance?, api-contract-and-versioning?, slos-and-performance-budgets?, consumer-migration?, developer-experience?, hardware-and-deployment?, stories?, decisions?, open-questions]
+facilitation_order: [document-purpose, vision, users-and-journeys, features-and-requirements, rules?, non-goals, mvp-scope, success-metrics, quality-and-constraints?, change-boundary?, ai-behavior-and-evaluation?, experience-and-platform?, stakeholders-risks-and-rollout?, integrations-and-operations?, data-and-compliance?, api-contract-and-versioning?, slos-and-performance-budgets?, consumer-migration?, developer-experience?, hardware-and-deployment?, stories?, decisions?, open-questions, glossary]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft
@@ -15,9 +15,11 @@ updated: ""
 
 <!-- purpose: Requirements a team, human or AI, builds from. -->
 
-<!-- stance: This template is expert prior knowledge, not a checklist. Required here means the default: drop a section only for a reason a reviewer would accept, reorder and combine for readability, and never include one just because it appears. Drop or downscale journeys for a single-operator internal tool, a regulatory-only update, hobby work or a purely technical PRD. Otherwise journeys are captured, not authored: the user narrates a real session with a named protagonist (Mary, mom of three, not "the user"), covering what the person does, in what order and where it lands; you structure it into UJ-N form and confirm. On the coaching path, ask which entry fits, because it sets the section order: Vision + Features (capability-first, for enterprise, developer products, internal tools and anyone who thinks in features), Journey-led (user-first, for consumer, UX-heavy and multi-stakeholder products), or let you suggest from what you heard.
+<!-- stance: This template is expert prior knowledge, not a checklist. Required here means the default: drop a section only for a reason a reviewer would accept, reorder and combine for readability, and never include one just because it appears. Drop or downscale journeys for a single-operator internal tool, a regulatory-only update, hobby work or a purely technical PRD. Otherwise journeys are captured, not authored: the user narrates a real session with a named protagonist (Mary, mom of three, not "the user"), covering what the person does, in what order and where it lands; you structure it into UJ-N form and confirm. Unless the run is fast, ask in the read-back which entry fits, because it sets the section order: Vision + Features (capability-first, for enterprise, developer products, internal tools and anyone who thinks in features), Journey-led (user-first, for consumer, UX-heavy and multi-stakeholder products), or let you suggest from what you heard.
 
 Altitude sets what this document decides: keep a line when the level below would decide wrongly without it, and leave it out when that level would decide better with more information. A program PRD states outcomes, the initiatives and their order, and the rules over all of them, with no requirements. An initiative PRD states the problem and who has it, the outcome and its measures, capabilities with one checkable result each, rules, non-goals, known risks and the questions only the user can answer; how each capability behaves, screens, architecture, story order and the edge cases an epic will meet stay below it. An epic PRD states testable requirements, edge cases and failure states, what is in and out for this slice and what stays unchanged; it cites its parent's ids rather than restating them, and leaves data model, APIs and story scenarios below it. Non-goals and known rabbit holes take detail at every altitude, because they stop invention below. -->
+
+<!-- opening: Whether this is a new product or a change to an existing one, which decides the Change boundary and how much of what exists the document must respect. -->
 
 <!-- inputs: Form factor if the sources do not say. A business requirements document among the sources: keep its ids. Only the user knows who it is for, what is out, and what success looks like. -->
 
@@ -42,13 +44,13 @@ Altitude sets what this document decides: keep a line when the level below would
 <!-- example: UJ-3. Priya checks the trip damage before she's even home. Priya, budgeting on a single income with a new baby, finishes a grocery run and gets in the car. Already authenticated via biometric on a previous session, she opens the app, taps the camera and scans the receipt. The app reads the total and shows a single-screen overlay: this trip $84.20, weekly cap $250, $172.10 remaining, three days left in the week. She closes the app and drives home. Edge case: if she scanned a receipt earlier today, the app asks whether this replaces or adds to that trip before counting it against the cap. -->
 
 ## Glossary
-<!-- Each domain noun defined once, with its relationships to other terms and its cardinality where relevant. A new noun in Features joins the glossary in the same pass. -->
+<!-- built: once the other sections are settled, from the terms they use: domain nouns, the user's own jargon, and any word a reader or coding agent could take two ways, each defined once with its relationships and its cardinality where relevant. Show the list and ask only which definitions are wrong or missing. -->
 
 ## Features and requirements
-<!-- By feature: its behavior and the journeys it realizes, then nested FR-N: "[Actor] can [capability] [under conditions]" and out-of-scope bounds. At epic altitude each FR adds testable consequences; above it, one checkable result per capability, the edge cases left to the epics. At initiative altitude each feature is a likely epic: name it so the name lasts, and order features by dependency. Add a feature's own NFRs when they apply only to it. -->
+<!-- Coach it as a workout: draw out what the user sees before you propose any, and never open with a drafted list. By feature: its behavior and the journeys it realizes, then nested FR-N: "[Actor] can [capability] [under conditions]" and out-of-scope bounds. At epic altitude each FR adds testable consequences; above it, one checkable result per capability, the edge cases left to the epics. Parity features from research are candidates for the user to keep, cut or change, not requirements until they choose them. How the work is sliced into epics belongs to the ticket tree's slicing, not here. Add a feature's own NFRs when they apply only to it. -->
 
 ## Rules
-<!-- include when: program or initiative altitude, where it is required; below that, when a rule spans the FRs and no parent states it. RULE-N, one line each: what everything below must obey, whichever feature it touches. A rule from a `brd` or a parent document keeps its id. -->
+<!-- include when: program or initiative altitude, where it is required; below that, when a rule spans the FRs and no parent states it. Coach it as a workout: ask what must always or never hold before you propose any, and never open with a drafted list. RULE-N, one line each: what everything below must obey, whichever feature it touches. A rule from a `brd` or a parent document keeps its id. -->
 
 ## Non-goals
 <!-- What this is not and will not become, so no level below adds the nearby thing. -->

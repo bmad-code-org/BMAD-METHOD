@@ -1,11 +1,11 @@
 ---
 title: ""
 template: brd
-version: 1.1.0
+version: 1.2.0
 description: "What the business requires and signs for in an initiative a separate party builds."
 not_for: "Product work inside one organization (`opportunity`, `prd`); a funding decision (`business-case`); what the system shall do, line by line (`srs`)."
 agents: [bmad-agent-analyst]
-facilitation_order: [objectives, stakeholders, scope, current-and-future-process, business-requirements, business-rules, constraints-and-assumptions?, cost-and-benefit?, traceability, open-questions, summary, approval]
+facilitation_order: [objectives, stakeholders, scope, current-and-future-process, business-requirements, business-rules, constraints-and-assumptions?, cost-and-benefit?, traceability, open-questions, approval, summary]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft
@@ -30,7 +30,7 @@ updated: ""
 ## Table of Contents
 
 ## Summary
-<!-- What the business wants changed, for whom, and why now, in a short paragraph. -->
+<!-- built: from the settled sections. What the business wants changed, for whom, and why now, in a short paragraph. -->
 
 ## Objectives
 <!-- The measurable outcomes this serves, short, citing the business case or charter when one exists. -->

@@ -1,10 +1,10 @@
 ---
 title: ""
 template: postmortem
-version: 1.1.0
+version: 1.2.0
 description: "Causes and actions after something went wrong, written blamelessly."
 not_for: "Judging a person's performance."
-paced: true
+order: fixed
 facilitation_order: [impact, timeline, detection-and-response?, contributing-factors, lessons?, action-items, communication?, summary]
 guidance: guidance-planning
 rubric: rubric-planning
@@ -19,6 +19,8 @@ updated: ""
   - Blameless: assume people acted sensibly on what they knew, and fix systems and processes, not people.
   - Facts before causes: settle the timeline, then analyze.
 -->
+
+<!-- opening: What went wrong and when, and where the records of it live (logs, chat, tickets, alerts), so they are read before anyone reconstructs events from memory. -->
 
 <!-- inputs: Timestamped logs, chat, tickets, alerts and emails, asked for before reconstructing anything, because records beat memory; an event placed from memory alone is tagged `[ASSUMPTION]`. Only the user knows what people saw and believed at each moment, where the team got lucky, and which actions it will commit to. -->
 
@@ -37,7 +39,7 @@ updated: ""
 ## Table of Contents
 
 ## Summary
-<!-- What happened, the impact, and where things stand, in two or three sentences, drawn from the sections above. Done when it holds nothing the sections do not. -->
+<!-- built: from the sections above. What happened, the impact, and where things stand, in two or three sentences. Done when it holds nothing the sections do not. -->
 
 ## Impact
 <!-- Who or what was affected, how much, for how long. Ask for numbers from the records: requests failed, customers affected, minutes down, money lost. Done when each figure names its source or is tagged. -->

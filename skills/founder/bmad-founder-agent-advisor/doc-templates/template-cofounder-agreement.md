@@ -4,7 +4,7 @@ template: cofounder-agreement
 version: 1.0.0
 description: "Co-founders agree roles, decisions, equity and leaving before a lawyer drafts."
 not_for: "Hiring an employee (`first-hire`)."
-paced: true
+order: fixed
 facilitation_order: [goals, roles, decisions, deadlock, time-and-money, equity-split, vesting, if-someone-leaves, revisiting?, questions-for-a-lawyer]
 guidance: guidance-planning
 rubric: rubric-cofounder-agreement.md

@@ -1,11 +1,11 @@
 ---
 title: ""
 template: experiment
-version: 1.1.0
+version: 1.2.0
 description: "A measured test of one hypothesis, its thresholds set before it runs."
 not_for: "Learning by building something (`prototype-plan`); a change already decided that needs requirements (`prd`, `prd-light`)."
 agents: [bmad-agent-analyst, bmad-agent-pm]
-paced: true
+order: fixed
 facilitation_order: [hypothesis, test, thresholds, guardrails, duration, result?]
 guidance: guidance-planning
 rubric: rubric-planning
@@ -17,6 +17,8 @@ updated: ""
 <!-- purpose: Settle one question by measurement, with what counts as an answer fixed before the data arrives. -->
 
 <!-- stance: One hypothesis per card; a second one is a second card. Press for numbers on the thresholds. When the traffic or time available cannot show the effect, say so before anyone runs it. -->
+
+<!-- opening: The change being tested and the one metric it should move. -->
 
 <!-- inputs: The change, who sees it and the metric it should move. Only the user knows what result would make them act, and what must not get worse. -->
 

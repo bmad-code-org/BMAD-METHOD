@@ -1,7 +1,7 @@
 ---
 title: ""
 template: proposal
-version: 1.1.0
+version: 1.2.0
 description: "Asking someone for money, time or approval, such as a grant or bid."
 not_for: "A talk with slides (`pitch-deck`); an application to an accelerator (`accelerator-application`); planning a whole raise (`fundraising-plan`)."
 facilitation_order: [need, goals-and-outcomes, approach, alternatives?, team-and-track-record?, evaluation?, budget, risks, sustainability?, deliverables-and-terms?, summary]
@@ -34,7 +34,7 @@ updated: ""
 ## Table of Contents
 
 ## Summary
-<!-- The ask, what it achieves, for whom, by when. -->
+<!-- built: from the settled sections. The ask, what it achieves, for whom, by when. -->
 
 ## Need
 <!-- The problem or opportunity, who has it, the evidence, why now. -->

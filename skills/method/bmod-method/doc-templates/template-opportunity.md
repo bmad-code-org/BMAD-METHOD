@@ -5,7 +5,7 @@ version: 1.1.0
 description: "Whether a problem is worth an initiative, before any solution."
 not_for: "A chosen solution that needs a case for building it (`brief`); a funding decision with costs (`business-case`)."
 agents: [bmad-agent-analyst]
-paced: true
+order: fixed
 facilitation_order: [problem, who-has-it, how-big, alternatives, why-us, why-now, getting-to-market?, success-measures, critical-success-factors, recommendation]
 guidance: guidance-planning
 rubric: rubric-planning

@@ -1,11 +1,11 @@
 ---
 title: ""
 template: srs
-version: 1.1.0
+version: 1.2.0
 description: "An initiative's traceable, verifiable requirements for regulated or contracted work."
 not_for: "Product work with no external check (`prd`); what the business requires, before system behavior (`brd`); one feature for a coding agent (`agent-spec`)."
 agents: [bmad-agent-pm]
-facilitation_order: [introduction, definitions, references, overall-description, functional-requirements, interface-requirements?, quality-requirements, compliance-requirements?, design-constraints?, verification, open-questions, revision-history]
+facilitation_order: [introduction, references, overall-description, functional-requirements, interface-requirements?, quality-requirements, compliance-requirements?, design-constraints?, verification, open-questions, revision-history, definitions]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft
@@ -31,7 +31,7 @@ updated: ""
 <!-- Purpose, scope (what the system does and does not do), intended readers. -->
 
 ## Definitions
-<!-- Terms, acronyms and abbreviations. -->
+<!-- built: once the requirements are settled, from the terms they use: terms, acronyms and abbreviations. Ask only which are wrong or missing. -->
 
 ## References
 <!-- Every regulation, standard, contract and document cited, with the version or date as supplied. -->

@@ -1,7 +1,7 @@
 ---
 title: ""
 template: board-pack
-version: 1.0.0
+version: 1.1.0
 description: "The pre-read sent before a board meeting: decisions needed, metrics, plan, risks, cash."
 not_for: "The regular update to all investors when there is no board meeting (`investor-update`)."
 facilitation_order: [decisions-needed, metrics, progress-against-plan, cash, risks, discussion-topics?, summary]
@@ -34,7 +34,7 @@ updated: ""
 ## Table of Contents
 
 ## Summary
-<!-- The state of the company in a short paragraph: how it is doing against plan, the decisions asked for, and the one thing the founder most wants the board's help with. Write it last. -->
+<!-- built: from the settled sections. The state of the company in a short paragraph: how it is doing against plan, the decisions asked for, and the one thing the founder most wants the board's help with. -->
 
 ## Decisions needed
 <!-- Each decision the board must take at this meeting: the question, the options, the founder's recommendation and why, and what is asked (a vote, an approval, a view). Formal items such as approving last minutes or option grants go after the real decisions. You are the director who hates being surprised: ask what the founder needs from this board, and what decision they are putting off. When a "decision" is really news, move it to Progress or Discussion topics. When nothing needs deciding, write "No decisions this meeting" and go on. Done when each decision is a question the board can answer at the meeting, with a recommendation, or the section says there are none. -->
