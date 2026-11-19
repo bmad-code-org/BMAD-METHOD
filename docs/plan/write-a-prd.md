@@ -1,6 +1,6 @@
 ---
 title: Write a PRD
-description: Write a PRD with John, the Product Manager, or another planning document with John or Mary, the Business Analyst. Covers stakes, the coaching and fast paths, assumption tags, and which document fits.
+description: Write a PRD with John, the Product Manager, or another planning document with John or Mary, the Business Analyst. Covers stakes, step-by-step, freeform and fast modes, assumption tags, and which document fits.
 sidebar:
   order: 2
 ---
@@ -34,16 +34,11 @@ Confluence or Notion. You don't need to name a document: he proposes the one
 that fits, says why, and names close alternatives, and nothing starts until you
 confirm. Naming one, as in "a PRD", skips that choice. With no initiative active, he first offers the `bmad` skill to create
 one: accept, so the PRD and the initiative Sofia writes from it share one
-folder. He opens with a brain dump: why the document exists, who will act on
-it, and the full picture. Then, in a separate message, he echoes back the purpose, the reader,
-and the stakes he read, so you can correct them.
+folder. He asks at most two questions first, such as whether this is a new product or a change to one, skipping any your request answered, then asks for a brain dump: why the document exists, who will act on it, and the full picture, and then whether there is anything else. In a separate message he echoes back the purpose, the reader and the stakes he read, so you can correct them. Before the first section he asks the few questions whose answers would change several sections, such as who buys it or what it must never do, so the big forks are settled before any section depends on them.
 
-### 2. Choose the Path
+### 2. Choose the Mode
 
-The coaching path, the default, is a conversation that steers back to the
-sections still unfilled and pushes back where an answer is thin. The fast
-path, when you ask for speed, asks what the template requires, topped up with
-its own high-impact questions to three in all, then drafts the rest.
+By default John takes the PRD step-by-step: one section at a time, in order, settling each before the next, with your brain dump already written into the sections it filled. Ask for freeform and he recaps, reviews and pushes in whatever order fits, and shows you every section before the review, so none goes in unseen. Ask for fast, or for speed, and he asks what the template requires, topped up with his own high-impact questions to three in all, then drafts the rest. To make one mode the start for every document, for yourself or your team, ask `bmad-customize` to set `mode` for `bmad-facilitate`.
 
 Either way he asks only what only you know and finds other facts himself. The
 stakes change how hard he pushes and what he fills in without you:
@@ -102,8 +97,8 @@ input I should read.
 After your brain dump:
 
 **John:** Purpose: agree the check-in rules before anyone builds. Readers:
-facilities and two developers. Stakes: internal. I'll coach unless you'd
-rather take the fast path.
+facilities and two developers. Stakes: internal. We'll go step by step;
+say freeform or fast to change that.
 
 After the conversation, part of `prd-check-in/prd-check-in.md`:
 

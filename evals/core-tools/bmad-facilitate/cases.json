@@ -59,7 +59,7 @@
   },
   {
     "id": "fast-finish",
-    "state_prefix": "[The user asked bmad-facilitate for a pilot plan from files/memo.md with the template files/template-pilot-plan.md, on the fast path. You read both and asked one batch: the success measure's date, and whether risks should be included. The user answered:]",
+    "state_prefix": "[The user asked bmad-facilitate for a pilot plan from files/memo.md with the template files/template-pilot-plan.md, in fast mode. You read both and asked one batch: the success measure's date, and whether risks should be included. The user answered:]",
     "input": "Judge it at the end of the first month. Yes include risks, the big one is walkers losing signal in the park so routes have gaps. Default anything else, skip the walkthrough and finish it, no HTML view.",
     "rubric": [
       "A pilot plan document exists under _bmad-output/ with `status: final` in its frontmatter.",
@@ -85,10 +85,69 @@
       "Its frontmatter holds `template`, `version`, a quoted `description`, `not_for`, `facilitation_order`, `title: \"\"` and `status: draft`, and no `sources` key.",
       "Above the first heading it has `purpose`, `inputs` and `done when` comments, and every `##` heading is followed by a comment.",
       "Its comments press on reconditioning cost and on checking open recalls.",
-      "It contains no `<!-- open` or `<!-- settled out` marker and no `## Assumptions` heading.",
+      "It contains no `<!-- open -->`, `<!-- open: ` or `<!-- settled out` marker (an `<!-- opening: ... -->` comment is template content, not a marker) and no `## Assumptions` heading.",
       "The transcript runs list_templates.py with `--template` on the new template and the result shows an empty `order_problems`."
     ],
     "files": [
+      "_bmad/config.toml",
+      "_bmad/scripts/resolve_customization.py",
+      "_bmad/scripts/resolve_config.py",
+      "_bmad/scripts/list_templates.py",
+      "_bmad/scripts/config_utils.py"
+    ]
+  },
+  {
+    "id": "read-back-default-step-by-step",
+    "state_prefix": "[The user asked bmad-facilitate for a pilot plan with the template files/template-pilot-plan.md. You merged the template, asked what the pilot is for and who it is with, and invited a brain dump. The user pointed you at files/memo.md; you have not read it yet. You will read it, write what it gives into the open sections, and ask whether there is anything else. The user's answer to that comes next:]",
+    "input": "it's Pawpost, everything is in files/memo.md, read that. the walking businesses are the pilot customers. nothing else, go ahead",
+    "rubric": [
+      "A pilot plan document exists under _bmad-output/ whose five sections (Goal, Pilot customers, Scope, Success, Risks) each still sit under `<!-- open -->`, and Pilot customers already names Muddy Paws, Lead On and Wag Tails.",
+      "The final message reads back the purpose, the reader and the stakes, says how many sections the document has, and does not list all five sections one per line.",
+      "The final message names the mode as step-by-step (one section at a time, in order), says the user can switch to freeform or fast, and says the run can be stopped and resumed.",
+      "The final message asks at most two questions, each one whose answer would change more than one section or the plan's argument (such as what the pilot must prove), and does not ask for the pilot customers, the scope or the 300-report target, which memo.md gives.",
+      "When the final message works a section, it works only Goal, and its progress line gives the section in play and its place, such as `Pilot plan · Goal (1 of 5)`."
+    ],
+    "files": [
+      "files/memo.md",
+      "files/template-pilot-plan.md",
+      "_bmad/config.toml",
+      "_bmad/scripts/resolve_customization.py",
+      "_bmad/scripts/resolve_config.py",
+      "_bmad/scripts/list_templates.py",
+      "_bmad/scripts/config_utils.py"
+    ]
+  },
+  {
+    "id": "read-back-freeform",
+    "state_prefix": "[The user asked bmad-facilitate for a pilot plan with the template files/template-pilot-plan.md. You merged the template, asked what the pilot is for and who it is with, and invited a brain dump. The user pointed you at files/memo.md; you have not read it yet. You will read it, write what it gives into the open sections, and ask whether there is anything else. The user's answer to that comes next:]",
+    "input": "Pawpost, read files/memo.md. nothing else. and can we do it freeform, whatever order fits",
+    "rubric": [
+      "A pilot plan document exists under _bmad-output/ whose five sections (Goal, Pilot customers, Scope, Success, Risks) each still sit under `<!-- open -->` or are settled only after their text was shown in the final message.",
+      "The final message agrees to work freeform, in whatever order fits, and does not list all five sections one per line.",
+      "The final message asks at most two questions, each one whose answer would change more than one section or the plan's argument, and does not ask for the pilot customers, the scope or the 300-report target, which memo.md gives."
+    ],
+    "files": [
+      "files/memo.md",
+      "files/template-pilot-plan.md",
+      "_bmad/config.toml",
+      "_bmad/scripts/resolve_customization.py",
+      "_bmad/scripts/resolve_config.py",
+      "_bmad/scripts/list_templates.py",
+      "_bmad/scripts/config_utils.py"
+    ]
+  },
+  {
+    "id": "fixed-order-refuses-freeform",
+    "state_prefix": "[The user asked bmad-facilitate for a pilot plan with the template files/template-pilot-plan-fixed-order.md. You merged the template, asked what the pilot is for and who it is with, and invited a brain dump. The user pointed you at files/memo.md; you have not read it yet. You will read it, write what it gives into the open sections, and ask whether there is anything else. The user's answer to that comes next:]",
+    "input": "Pawpost, it's all in files/memo.md. nothing else. honestly skip the one-at-a-time stuff, just do it freeform",
+    "rubric": [
+      "The final message says this template runs its sections in order and keeps that order; it does not agree to work them freeform.",
+      "The final message offers fast mode as the quicker way, or takes up Goal as the first section.",
+      "The final message does not list all five sections one per line."
+    ],
+    "files": [
+      "files/memo.md",
+      "files/template-pilot-plan-fixed-order.md",
       "_bmad/config.toml",
       "_bmad/scripts/resolve_customization.py",
       "_bmad/scripts/resolve_config.py",

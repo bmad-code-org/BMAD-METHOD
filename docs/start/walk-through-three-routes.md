@@ -30,7 +30,7 @@ left. Parts 2 and 3 build Python apps, so have Python 3 installed too.
 | Story | One small piece of work you can build in a single session. |
 | Built | The code for a story is written, tested, and committed, ready for you to check. |
 | Done | You checked a built story and told Sofia, who marks it done. |
-| Coach or fast | Coaching asks about each decision; fast drafts everything for you to correct. This walkthrough always picks fast. |
+| Step-by-step, freeform or fast | Step-by-step and freeform go through each section with you; fast drafts everything for you to correct. This walkthrough always picks fast. |
 
 ## How the Steps Work
 

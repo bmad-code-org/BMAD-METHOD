@@ -37,7 +37,7 @@ To change one for your team, extend it instead of copying it, so its updates kee
 
 ## Documents John and Mary write
 
-The BMad Method also ships the planning templates for John, the Product Manager (`bmad-agent-pm`), and Mary, the Business Analyst (`bmad-agent-analyst`). The templates live in the method module's `doc-templates/` folder, and each names the agents that offer it in `agents`. Mary writes the documents that decide whether and why to go ahead; John writes the ones that define what gets built and how it ships. The list says who offers each by default; either writes any of them when you ask. Both agents hand every create, update, and validate to `bmad-facilitate`, so each document works the same way. [Write a PRD](../plan/write-a-prd.md) shows the coaching and fast paths, stakes, and assumption tags they share.
+The BMad Method also ships the planning templates for John, the Product Manager (`bmad-agent-pm`), and Mary, the Business Analyst (`bmad-agent-analyst`). The templates live in the method module's `doc-templates/` folder, and each names the agents that offer it in `agents`. Mary writes the documents that decide whether and why to go ahead; John writes the ones that define what gets built and how it ships. The list says who offers each by default; either writes any of them when you ask. Both agents hand every create, update, and validate to `bmad-facilitate`, so each document works the same way. [Write a PRD](../plan/write-a-prd.md) shows the modes, stakes, and assumption tags they share.
 
 | Document | Who | Level | Fits |
 | --- | --- | --- | --- |
@@ -66,8 +66,8 @@ The first seven come before you commit, in Clarify; the rest plan and ship the w
 | Make the user pick from a list | `decision-record`, Status | The section comment names the allowed values |
 | Make the user pick from a source | `security-review`, Scope and system | The section comment points at the method catalog |
 | Drive questions from a catalog | `security-review`, `methods-security.csv` | The `methods` frontmatter names a CSV of key questions |
-| Walk the sections in order, each with its own voice | `prfaq` in `bmod-method/doc-templates/` | `paced: true` in the frontmatter, and each section comment is the brief for that part |
-| Change how a path runs | `security-review`, `stance` | The comment says what the fast path does for this document |
+| Walk the sections in order, each with its own voice | `prfaq` in `bmod-method/doc-templates/` | `order: fixed` in the frontmatter, and each section comment is the brief for that part |
+| Change how a mode runs | `security-review`, `stance` | The comment says what fast mode does for this document |
 | Use the shared planning rules | Any shipped template | `guidance: guidance-planning` adds stakes levels, ids and testable requirements |
 | Review against its own rubric | `proposal`, `rubric-proposal.md` | The `rubric` frontmatter names the file |
 | Set the order and what is required | Any shipped template | `facilitation_order` lists the sections by id, `?` on those not required |

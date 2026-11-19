@@ -415,6 +415,27 @@ def test_order_problems_name_unknown_repeated_and_unlisted_sections(tmp_path):
     ]
 
 
+def test_a_built_section_taken_up_before_a_worked_one_is_an_order_problem(tmp_path):
+    text = (
+        '---\ntemplate: t\ndescription: "Use it."\nfacilitation_order: [glossary, problem, summary]\n---\n\n# {title}\n\n'
+        "## Summary\n<!-- built: from the sections below. -->\n\n## Problem\n<!-- What hurts. -->\n\n"
+        "## Glossary\n<!-- Built: from the terms the sections use. -->\n"
+    )
+    (tmp_path / "t.md").write_text(text)
+    problems = list_templates.scan([str(tmp_path)])["templates"][0]["order_problems"]
+    assert problems == ["`glossary` is built from the other sections but is taken up before `problem`"]
+
+
+def test_built_sections_last_in_the_order_are_no_problem(tmp_path):
+    text = (
+        '---\ntemplate: t\ndescription: "Use it."\nfacilitation_order: [problem, glossary, summary]\n---\n\n# {title}\n\n'
+        "## Summary\n<!-- built: from the sections below. -->\n\n## Problem\n<!-- What hurts. -->\n\n"
+        "## Glossary\n<!-- built: from the terms the sections use. -->\n"
+    )
+    (tmp_path / "t.md").write_text(text)
+    assert list_templates.scan([str(tmp_path)])["templates"][0]["order_problems"] == []
+
+
 def test_a_section_an_extension_adds_joins_the_order_as_required(tmp_path):
     (tmp_path / "t.md").write_text(ORDERED)
     (tmp_path / "e.md").write_text("---\nextends: t\n---\n\n## Security sign-off\n<!-- After Problem. -->\n")
@@ -465,6 +486,98 @@ def test_an_extension_sets_the_view_and_whether_it_renders(tmp_path):
     found = list_templates.scan([str(tmp_path)])["templates"][0]
     assert found["view"] == str(tmp_path / "page.html")
     assert found["html_view"] == "always"
+
+
+def test_mode_and_order_come_through_and_are_empty_when_unset(tmp_path):
+    (tmp_path / "t.md").write_text(template("t", extra="mode: freeform\norder: fixed\n"))
+    (tmp_path / "u.md").write_text(template("u"))
+    found = {t["id"]: t for t in list_templates.scan([str(tmp_path)])["templates"]}
+    assert (found["t"]["mode"], found["t"]["order"]) == ("freeform", "fixed")
+    assert (found["u"]["mode"], found["u"]["order"]) == ("", "")
+
+
+def test_an_extension_sets_order(tmp_path):
+    (tmp_path / "t.md").write_text(template("t"))
+    (tmp_path / "e.md").write_text(extension("t", "order: fixed\n"))
+    assert list_templates.scan([str(tmp_path)])["templates"][0]["order"] == "fixed"
+
+
+def test_an_extension_clears_order_with_an_empty_value_and_the_merge_says_so(tmp_path, capsys):
+    lib, custom = tmp_path / "lib", tmp_path / "custom"
+    lib.mkdir()
+    custom.mkdir()
+    (lib / "t.md").write_text(template("t", extra="order: fixed\n"))
+    (custom / "e.md").write_text(extension("t", 'order: ""\n'))
+    list_templates.main([str(custom), str(lib), "--template", "t", "--merge", str(tmp_path / "m.md")])
+    assert json.loads(capsys.readouterr().out)["templates"][0]["order"] == ""
+    assert 'order: ""' in (tmp_path / "m.md").read_text().split("---")[1]
+
+
+def test_an_extension_without_order_keeps_the_templates(tmp_path):
+    (tmp_path / "t.md").write_text(template("t", extra="order: fixed\n"))
+    (tmp_path / "e.md").write_text(extension("t", "html_view: never\n"))
+    assert list_templates.scan([str(tmp_path)])["templates"][0]["order"] == "fixed"
+
+
+def facilitate_skill(tmp_path, mode: str = "") -> Path:
+    skill = tmp_path / "skills" / "bmad-facilitate"
+    (skill / "assets").mkdir(parents=True)
+    (skill / "customize.toml").write_text(
+        f'[workflow]\nmode = "{mode}"\ntemplate_libraries = ["{{project-root}}/_bmad/custom/facilitate-templates", "{{skill-root}}/assets"]\n'
+    )
+    return skill
+
+
+def listed_mode(tmp_path, capsys, front: str = "", team: str | None = None, user: str | None = None, extend: str = ""):
+    skill = facilitate_skill(tmp_path)
+    (skill / "assets" / "t.md").write_text(template("t", extra=front))
+    custom = tmp_path / "_bmad" / "custom"
+    (custom / "facilitate-templates").mkdir(parents=True)
+    if extend:
+        (custom / "facilitate-templates" / "e.md").write_text(extension("t", extend))
+    for name, value in (("bmad-facilitate.toml", team), ("bmad-facilitate.user.toml", user)):
+        if value is not None:
+            (custom / name).write_text(f'[workflow]\nmode = "{value}"\n')
+    merge = tmp_path / "m.md"
+    list_templates.main(
+        ["--libraries-of", str(skill), "--project-root", str(tmp_path), "--template", "t", "--merge", str(merge)]
+    )
+    found = json.loads(capsys.readouterr().out)["templates"][0]
+    assert list_templates.frontmatter(merge.read_text())["mode"] == found["mode"]
+    return found
+
+
+def test_with_nothing_set_a_walk_is_step_by_step(tmp_path, capsys):
+    assert listed_mode(tmp_path, capsys)["mode"] == "step-by-step"
+
+
+def test_a_template_sets_its_own_mode(tmp_path, capsys):
+    assert listed_mode(tmp_path, capsys, front="mode: freeform\n")["mode"] == "freeform"
+
+
+def test_an_extension_changes_one_templates_mode(tmp_path, capsys):
+    assert listed_mode(tmp_path, capsys, extend="mode: fast\n")["mode"] == "fast"
+
+
+def test_the_teams_mode_beats_the_templates(tmp_path, capsys):
+    assert listed_mode(tmp_path, capsys, front="mode: freeform\n", team="fast")["mode"] == "fast"
+
+
+def test_the_users_mode_beats_the_teams(tmp_path, capsys):
+    assert listed_mode(tmp_path, capsys, team="fast", user="freeform")["mode"] == "freeform"
+
+
+def test_a_fixed_order_turns_freeform_into_step_by_step_but_keeps_fast(tmp_path, capsys):
+    assert listed_mode(tmp_path, capsys, front="order: fixed\n", team="freeform")["mode"] == "step-by-step"
+    assert listed_mode(tmp_path / "b", capsys, front="order: fixed\n", team="fast")["mode"] == "fast"
+
+
+def test_an_unknown_mode_is_named_and_skipped(tmp_path, capsys):
+    found = listed_mode(tmp_path, capsys, front="mode: freeform\n", team="quick")
+    assert found["mode"] == "freeform"
+    assert found["order_problems"] == [
+        "`mode` in the customization is `quick`, not one of step-by-step, freeform, fast, so it is ignored"
+    ]
 
 
 def test_a_bare_view_name_stays_a_name(tmp_path):

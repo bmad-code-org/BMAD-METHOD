@@ -2,6 +2,10 @@
 
 For plans, requirements and cases for a decision. These rules add to the skill's; the template's own comments win over them.
 
+## Opening
+
+When an initiative is active or a ticket is in play, and neither the caller nor the ticket gives the altitude, the first opening question asks which level of the ticket tree the document is for: the program, the initiative or one of its epics. The answer sets what the document decides and where it is saved.
+
 ## Stakes
 
 Read the stakes as one of: hobby or personal use, internal, pitch or investor, publication, public launch, regulated or contracted.

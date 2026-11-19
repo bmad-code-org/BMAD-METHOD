@@ -45,7 +45,8 @@ updated: ""
 | `version` | Optional version of the template. It is copied into each document, so a later update can say the template has moved on. |
 | `description` | One short line saying what the template is for. Help lists it for every template on every run, so keep it under about 80 characters. Quote it, because a colon breaks unquoted YAML. |
 | `not_for` | Optional short line naming what the template is not for, and the template to use instead. Read with `description` when choosing one, and not listed in help. |
-| `paced` | Optional. `true` walks the sections in order, one at a time, for a document whose conversation matters as much as the result. See [Walk the sections in order](#walk-the-sections-in-order). |
+| `mode` | Optional. The mode a run of this template starts in: `step-by-step` (the default), `freeform` or `fast`. A team's or user's `mode` wins over it. See [Choose how a run walks the sections](#choose-how-a-run-walks-the-sections). |
+| `order` | Optional. `fixed` for a document whose order matters as much as the result: freeform is never used, and fast keeps the order. |
 | `facilitation_order` | The sections by id, in the order the skill takes them up, with `?` on each one that is not required. See [Order the sections](#order-the-sections). |
 | `guidance` | Optional rules shared by a family of templates and read as part of each, as a path relative to the template, or the bare name `guidance-planning` for the shipped planning rules: stakes from hobby to regulated, stable ids and testable requirements, and detail pushed to the level below. Every shipped template sets it. Without it the skill names no stakes levels; a document such as fiction says what it needs in its own comments. Every document, with or without it, carries `[ASSUMPTION: ...]` tags where the coach guessed, until you accept or correct each one. |
 | `agents` | Optional list of the skills that offer this template, such as `[bmad-agent-pm]`; name several to share it. It says who offers the template by default; any agent the user asks can still write it. The `bmad` skill uses the list to say who offers the template. A template in an agent's `assets/` folder counts as that agent's without it. |
@@ -152,7 +153,8 @@ Above the first heading, give each of these keys its own comment, a line or two.
 | --- | --- |
 | `purpose` | The decision or job the document serves. |
 | `stance` | How to coach for this document, including how a path should run. |
-| `inputs` | What must be asked, and which of it only the user knows. Each one is asked on the coaching and fast paths unless the user already gave it, so list only what you want asked. |
+| `opening` | Up to two questions asked before the brain dump, the ones whose answers change how the rest is coached. Without it the skill asks what the user is making and who it is for. Either way, a question the request already answers is skipped. |
+| `inputs` | What must be asked, and which of it only the user knows. Each one is asked on every path but headless unless the user already gave it, so list only what you want asked. |
 | `writing` | Rules specific to this document. |
 | `companions` | Other files to write beside the document, when, and what each holds. A file for a different reader belongs here, not overflow from the document. |
 | `done when` | The test that ends the questioning. |
@@ -161,13 +163,13 @@ Above the first heading, give each of these keys its own comment, a line or two.
 
 Add `view: slides` to the frontmatter for a slide view, or name an HTML view file; without it the HTML view is one page. In the document body, `{title}` is the only placeholder.
 
-Each section has one comment: a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A section that is not required starts its comment with `optional` or `include when:` and a condition.
+Each section has one comment: a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A section that is not required starts its comment with `optional` or `include when:` and a condition. A section assembled from the others, such as a summary or a glossary, starts its comment with `built:`. The skill asks nothing for it up front, drafts it once the sections it draws on are settled, and shows it for correction; the template list reports one placed ahead of a section that is not built.
 
 ### Order the sections
 
 `facilitation_order` lists every `##` section by id: its heading in lowercase, with punctuation dropped and spaces as hyphens, so `What makes it different` is `what-makes-it-different` and `What's next?` is `whats-next`. It sets the order the skill takes the sections up in, not the document's order, so an executive summary can sit first in the document and come up last. A `?` after an id marks a section that is not required.
 
-The skill settles every section before it finishes, on every path. A required section is always filled. An optional one is offered when the order reaches it, and the user decides. An include-when one is checked against its condition, and the skill says what it found. The fast path settles them too, so asking for speed never drops a section quietly. Sections left out are named at the end with the reason.
+The skill settles every section before it finishes, in every mode. A required section is always filled. An optional one is offered when the order reaches it, and the user decides. An include-when one is checked against its condition, and the skill says what it found. Fast settles them too, so asking for speed never drops a section quietly. Sections left out are named at the end with the reason.
 
 The template list reports an id that names no heading, an id listed twice, and a heading left off the list. Every shipped template sets the key. A template without it still works: a section whose comment does not start with `optional` or `include when:` is required, and the document's order is the order.
 
@@ -175,13 +177,15 @@ Say what goes in each section, not how to write well. Leave out example content,
 
 A section comment can also steer the conversation or limit the answer, in plain sentences. The `Steps` comment above tells the skill when to press, and `Severity` limits the user to a list. A list can live elsewhere: "The user must pick a team from `docs/teams.md`." The shipped `decision-record` and `security-review` templates show both, and [Document Templates](../reference/document-templates.md) lists where to see each capability.
 
-### Walk the sections in order
+### Choose how a run walks the sections
 
-Set `paced: true` when going through the sections is the point, as in a PRFAQ, where the user defends each part before moving on. The skill shows the sections in facilitation order before it starts, then takes them one at a time and finishes each before opening the next.
+Every run starts in one of three modes. Step-by-step, the default, takes the sections one at a time in facilitation order and settles each before opening the next. Freeform works them in any order and grouping that fits, and shows each to the user before the review. Fast drafts the whole document first, then walks the guesses with the user. Set `mode: freeform` on a template whose sections are independent and usually filled together by a brain dump, as John's `launch` does. A `mode` set for a team or a user through `bmad-customize` wins over every template's, and the user can still switch for one run.
 
-In a paced template, each section comment is the brief for that part of the session. A voice, stance or method it sets, such as "you are now a skeptical customer", replaces the skill's coaching defaults until the section closes, so write it as instructions to the coach rather than only a description of the content. These shipped templates are paced: Mary's `prfaq` and `brief`, John's `experiment`, `opportunity` and `pitch`, and the module's `decision-record` and `postmortem`.
+Set `order: fixed` when an earlier section must be settled before a later one is worked, as in a PRFAQ, where the user defends the press release before the questions. A request for freeform then runs step-by-step, wherever it comes from, and fast keeps the order too. A team extension can set `mode` or `order`, or clear either with an empty value such as `order: ""`.
 
-Every run shows a progress line on the messages that ask something: `PRFAQ · Customer FAQ (2 of 4)` when paced, `PRD · 6 of 24 done` otherwise. The total is every section in the facilitation order, and a section counts once it is settled, so the total stays the same for the whole run.
+Each section comment is the brief for that part of the session. A voice, stance or method it sets, such as "you are now a skeptical customer", replaces the skill's defaults until the section closes, so write it as instructions to the coach rather than only a description of the content. These shipped templates set `order: fixed`: Mary's `prfaq`, John's `experiment`, `opportunity` and `pitch`, the module's `postmortem`, and Nadia's `cofounder-agreement` and `startup-diagnostic`.
+
+Every run shows a progress line on the messages that ask something: `PRFAQ · Customer FAQ (2 of 4)` step-by-step, `PRD · 6 of 24 done` otherwise. The total is every section in the facilitation order, and a section counts once it is settled, so the total stays the same for the whole run.
 
 Put a bare `## Table of Contents` heading right after the title of any template whose documents run long. Agents often read only the top of a file to judge it, so the skill fills this with a linked entry per section and a short phrase of its key terms, then checks it against the final headings. It gets no slide in a slide view.
 
