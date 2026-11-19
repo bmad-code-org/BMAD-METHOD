@@ -159,7 +159,7 @@ Coaches you through one document from a template library, then updates or valida
 
 ### bmad-party-mode
 
-Puts your installed agents, or custom personas, in one conversation, in character, with you steering. A mode setting decides whether one model voices everyone or separate agents think independently, and you can save custom parties for reuse. See [Run Multi-Agent Discussions](../customize/run-multi-agent-discussions.md).
+Puts your installed agents, or custom personas, in one conversation, in character, with you steering. A mode setting decides whether one model voices everyone or each persona gets its own agent, and you can save custom parties for reuse. See [Run Multi-Agent Discussions](../customize/run-multi-agent-discussions.md).
 
 ### bmad-shard-pro
 
