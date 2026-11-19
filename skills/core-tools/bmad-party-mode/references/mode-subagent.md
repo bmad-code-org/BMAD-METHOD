@@ -1,6 +1,6 @@
 # Subagent Mode
 
-Active when `{workflow.party_mode}` resolves to `subagent` (or a `--mode subagent` override). Put a real agent behind each persona for every substantive round, the opening banter included, so each persona thinks independently — not one mind voicing them all. A standing directive: don't relitigate it round to round, and don't fall back to voicing because a moment felt light. If your harness can't spawn agents, fall back to `session`.
+Active when `{workflow.party_mode}` resolves to `subagent` (or a `--mode subagent` override). Put a real agent behind each persona for every substantive round, the opening banter included — not one mind voicing them all. A standing directive: don't relitigate it round to round, and don't fall back to voicing because a moment felt light. If your harness can't spawn agents, fall back to `session`.
 
 ## Lifecycle
 

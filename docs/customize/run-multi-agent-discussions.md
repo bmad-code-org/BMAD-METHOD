@@ -46,7 +46,7 @@ or build one.
 | Goal | Type this |
 | --- | --- |
 | Start a party in the default mode | `/bmad-party-mode` |
-| Start in a specific mode | `/bmad-party-mode --mode auto` (also `session`, `subagent`, `agent-team`) |
+| Start in a specific mode | `/bmad-party-mode --mode subagent` (also `session`, `agent-team`) |
 | Run it once, non-interactively | `/bmad-party-mode --non-interactive "review this PR"` |
 | Open a saved party | `/bmad-party-mode --party code-review-crew` |
 | See the saved parties | `/bmad-party-mode --list-groups` |
@@ -61,15 +61,15 @@ voicing everyone, or separate agents reasoning on their own.
 
 | Mode | What it does | Use it when |
 | --- | --- | --- |
-| `session` | Default. One model voices every persona inline. | Most conversations: banter, brainstorming, quick back-and-forth. |
-| `auto` | Voices inline for light rounds, spawns independent agents only when independence changes the answer. | You want speed most of the time and real independence on the hard rounds. |
-| `subagent` | Spawns a separate agent for each persona every substantive round. | Reviews and focus groups, where the voices must stay independent. |
+| `session` | Default. One model voices every persona inline. | Almost always: conversation, brainstorming, focus groups, review panels. |
+| `subagent` | Spawns a separate agent for each persona every substantive round. | Each persona needs its own long research or file work. |
 | `agent-team` | Runs the personas as a persistent team whose members address each other directly. Claude Code only. | A live, hands-off round-table where the agents talk among themselves. |
 
-One model voicing five personas tends to make them agree. Separate agents
-keep their reasoning independent, which is the point of a review panel or a
-focus group, at a higher cost. `auto` spawns independent agents only when a
-round needs it.
+One model voicing every persona gives the liveliest room: short turns,
+interruptions, running jokes, characters who change their minds. Separate
+agents are slower, cost about three times as much, and tend to give
+speeches instead of a conversation. Use them when a persona has its own
+long piece of research or file work.
 
 When your tool can't run the mode you asked for, the party falls back:
 `agent-team` drops to `subagent`, then to `session`. The configured default
@@ -98,7 +98,7 @@ and drop them into different rooms.
 | --- | --- |
 | Themed cast | Famous investors, a TV ensemble — distinct voices around a topic. |
 | One-off personas | A persona or two added to the pool, no group needed. |
-| Focus group from data | Hand it customer or survey data; it builds representative personas. Pair with `subagent` so the customers stay independent. |
+| Focus group from data | Hand it customer or survey data; it builds representative personas. |
 | Review panel | Critical lenses that argue about what matters. The Code Review Crew is one. |
 | Deliberation scaffold | A room that makes you think harder without pretending to decide for you. The Anti-Consensus Club is one. |
 | Open-cast room | No fixed roster. The scene names a universe and the room is cast on the fly. |
@@ -124,8 +124,7 @@ about what matters.
 | Dana | The pragmatist — counters the perfectionists and ranks what's real versus a nit. |
 
 The crew ships inactive: the members sit in the pool and never join the
-default room. Open it with `--party code-review-crew` and `--mode subagent`
-so each viewpoint reviews on its own before they discuss.
+default room. Open it with `--party code-review-crew`.
 
 :::note[A debate, not a review]
 The crew argues. It does not verify or triage. For a review that produces
@@ -146,9 +145,7 @@ repetition, and returns the decision to you.
 | Killjoy | Loop stopper — stops repetition, fake disagreement, and unsupported speculation. |
 | Splinter | Consensus challenger — questions easy agreement and ignored tradeoffs. |
 
-Run it as `/bmad-party-mode --party anti-consensus-club --mode subagent`. The
-room recommends that mode at session start, then stops asking if you
-continue in another.
+Run it as `/bmad-party-mode --party anti-consensus-club`.
 
 ## Steer the room
 
