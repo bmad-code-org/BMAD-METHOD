@@ -39,7 +39,7 @@ Use this to standardize tool use and external systems for all dev work.
 One file applies to every workflow the agent runs — build, code review,
 test generation — and every engineer who pulls the repo inherits it.
 
-**Example:** Amelia always uses Context7 for library docs and falls back to
+**Example:** Mason always uses Context7 for library docs and falls back to
 Linear when a ticket is not in the ticket tree.
 
 ```toml

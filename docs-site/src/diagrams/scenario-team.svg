@@ -1,6 +1,6 @@
 <svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 268" role="img" aria-labelledby="scenario-team-title scenario-team-desc">
 <title id="scenario-team-title">Plan a Feature as a Team, step by step</title>
-<desc id="scenario-team-desc">For the initiative, John writes and validates the PRD, Sofia writes the initiative and two epics, Sally optionally designs what the epics share, and Winston optionally settles their shared decisions; for each epic, Sofia refines it, Sally and Winston optionally cover only what is new, Sofia puts the stories on the board, Amelia builds each story and adds a review for production work unless the build ran a thorough one, Amelia runs the retrospective, and Sofia validates and closes the epic.</desc>
+<desc id="scenario-team-desc">For the initiative, John writes and validates the PRD, Sofia writes the initiative and two epics, Sally optionally designs what the epics share, and Winston optionally settles their shared decisions; for each epic, Sofia refines it, Sally and Winston optionally cover only what is new, Sofia puts the stories on the board, Mason builds each story and adds a review for production work unless the build ran a thorough one, Mason runs the retrospective, and Sofia validates and closes the epic.</desc>
 <defs>
 <marker id="scenario-team-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
 <marker id="scenario-team-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
@@ -41,17 +41,17 @@
 <path class="edge" d="M367 139 H392" marker-end="url(#scenario-team-arrow)"/>
 <text class="k" x="589" y="107">BUILD</text>
 <rect class="node" x="589" y="114" width="170" height="50" rx="2"/>
-<text class="n" x="674" y="136">Amelia</text>
+<text class="n" x="674" y="136">Mason</text>
 <text class="sub mid" x="674" y="153">build each story</text>
 <path class="edge" d="M563 139 H588" marker-end="url(#scenario-team-arrow)"/>
 <text class="k" x="1" y="197">BUILD · optional</text>
 <rect class="node" x="1" y="204" width="170" height="50" rx="2"/>
-<text class="n" x="86" y="226">Amelia</text>
+<text class="n" x="86" y="226">Mason</text>
 <text class="sub mid" x="86" y="243">review if production</text>
 <path class="edge soft" d="M674 164 V182 H123.4 V203" marker-end="url(#scenario-team-arrow-soft)"/>
 <text class="k" x="197" y="197">LEARN</text>
 <rect class="node" x="197" y="204" width="170" height="50" rx="2"/>
-<text class="n" x="282" y="226">Amelia</text>
+<text class="n" x="282" y="226">Mason</text>
 <text class="sub mid" x="282" y="243">retrospective</text>
 <path class="edge" d="M171 229 H196" marker-end="url(#scenario-team-arrow)"/>
 <text class="k" x="393" y="197">LEARN</text>

@@ -1,6 +1,6 @@
 # Rules for skills that use the ticket tree
 
-Every skill that takes work from the tree, builds it, reviews it, or looks back on it follows these rules: `bmad-agent-po`, `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-retrospective`, and `bmad migrate`.
+Every skill that takes work from the tree, builds it, reviews it, or looks back on it follows these rules: `bmad-agent-po`, `bmad-agent-dev`, `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-retrospective`, and `bmad migrate`.
 
 This page is for people and agents who change those skills. No skill loads it: each one states the rules it acts on in its own files. When a rule changes here, change it in every skill that states it.
 
