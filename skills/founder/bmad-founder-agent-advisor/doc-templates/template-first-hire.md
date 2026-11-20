@@ -8,6 +8,7 @@ facilitation_order: [why-now, alternatives, cost, decision, scorecard, finding-c
 guidance: guidance-planning
 rubric: rubric-planning
 agents: [bmad-founder-agent-advisor]
+order: fixed
 view: always
 status: draft
 created: ""

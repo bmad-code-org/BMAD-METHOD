@@ -25,7 +25,7 @@ Altitude sets what this document decides: keep a line when the level below would
 
 <!-- writing: Capabilities, not implementation. Ids (UJ-N, FR-N, RULE-N, SM-N, OQ-N) are global; no traceability matrix. Domain nouns are used exactly as the glossary defines them. Ceilings: about 3,000 words at program or initiative altitude, 2,000 at epic altitude, two pages for hobby and solo work. A document past its ceiling pushes detail to the level below or splits; padding to look thorough is the failure. -->
 
-<!-- done when: Every FR can be checked at its altitude and traces to a journey or need, and every journey beat that needs the product has an FR; non-goals and out-of-scope items are explicit; above hobby stakes, success metrics name their counter-metrics; the shape fits the product (journeys carry a consumer, multi-stakeholder or UX-heavy product, a single-operator tool reads as a capability spec, a regulatory update traces its constraints, hobby work stays light); the user remembers making every decision in it, and nothing was invented to fill a section. -->
+<!-- done when: Below program altitude, every FR can be checked at its altitude and traces to a journey or need, and every journey beat that needs the product has an FR; non-goals and out-of-scope items are explicit; above hobby stakes, success metrics name their counter-metrics; the shape fits the product (journeys carry a consumer, multi-stakeholder or UX-heavy product, a single-operator tool reads as a capability spec, a regulatory update traces its constraints, hobby work stays light); the user remembers making every decision in it, and nothing was invented to fill a section. -->
 
 <!-- next: At close, say the PRD is revisited after each epic lands: what was learned retires assumptions and open questions through an Update. -->
 
@@ -58,7 +58,7 @@ Altitude sets what this document decides: keep a line when the level below would
 <!-- In scope; out of scope, with a one-line reason where it matters. Anything deferred names its target release, or says a later version when what the first one teaches will decide. Once the requirements are out and before settling this section, step back and coach leanness from what you know: how much was asked for against the team and the date, and whether this proves out an idea, delivers a clear mandate or meets a regulation. When it looks ambitious, say so in your own words, name what could wait and why, and make the case for a first version small enough to finish, test fully and win with, then a next one built on what that teaches. Press hardest on an idea being tested, ease off where a mandate or regulation fixes the scope, and skip this when the work is already lean. The call is the user's: what they keep stays. Headless, list the candidates as an open question and cut nothing. -->
 
 ## Success metrics
-<!-- SM-N with the current value where known, the target and the FRs they validate; counter-metrics naming the metric they balance. One sentence is enough at hobby stakes. -->
+<!-- SM-N with the current value where known, the target and the FRs they validate, at program altitude the initiatives; counter-metrics naming the metric they balance. One sentence is enough at hobby stakes. -->
 
 ## Quality and constraints
 <!-- include when: performance, security, reliability, privacy or cost matter product-wide. RULE-N ids continuing the Rules numbering, each with a threshold and the user outcome it protects; no generic non-functional list. -->

@@ -8,6 +8,7 @@ facilitation_order: [assumption, test, who-sees-it, pass-mark, cost-and-time, wh
 guidance: guidance-planning
 rubric: rubric-planning
 agents: [bmad-founder-agent-advisor]
+order: fixed
 view: always
 status: draft
 created: ""

@@ -27,6 +27,6 @@ Create, update and validate all run in the `bmad-facilitate` skill. Invoke it an
 
 - your persona, and on the first message your greeting and pointer lines as opening lines;
 - any libraries in the resolved `{workflow.template_libraries}`, with `{skill-root}` filled in;
-- the intent, the ticket or documents in play, and every template that fits, not your pick, unless the user named one;
+- the intent, the ticket or documents in play, and every template that fits, from the listing in step 8, not your pick, unless the user named one;
 - headless, when you are;
 - the next steps to name at close: Sofia (`bmad-agent-po`) writes the initiative's requirements from the document, or John (`bmad-agent-pm`) writes the requirements document first when they still need drawing out.
