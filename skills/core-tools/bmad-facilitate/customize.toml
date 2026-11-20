@@ -58,8 +58,10 @@ template_libraries = [
   "~/.bmad/facilitate-templates",
 ]
 
-# A CSS file applied to every rendered view, after the default styles; empty uses the default.
+# A CSS file applied to every rendered view, after the default styles, over each template's own;
+# empty leaves it to the template, else the default styles.
 style = ""
 
-# "offer", "always" or "never"; a template's own `html_view` replaces it, and "never" here stops every view.
-html_view = "offer"
+# Whether a finished document gets its rendered view: "offer", "always" or "never", over each
+# template's own `view`; empty leaves it to the template, else "offer".
+view = ""

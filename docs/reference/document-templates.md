@@ -70,15 +70,15 @@ The first seven come before you commit, in Clarify; the rest plan and ship the w
 | Change how a mode runs | `security-review`, `stance` | The comment says what fast mode does for this document |
 | Use the shared planning rules | Any shipped template | `guidance: guidance-planning` adds stakes levels, ids and testable requirements |
 | Review against its own rubric | `proposal`, `rubric-proposal.md` | The `rubric` frontmatter names the file |
-| Set the order and what is required | Any shipped template | `facilitation_order` lists the sections by id, `?` on those not required |
+| Set the order and what is required | Any shipped template | `facilitation_order` lists the sections by id; a section's comment says whether it is required |
 | Include a section only when it applies | `proposal`, Alternatives | `alternatives?` in the order and an `include when:` section comment |
 | Draw a diagram | `postmortem`, Timeline | A `diagram:` kind in the section comment |
 | Add a table of contents | `proposal` | A bare `## Table of Contents` heading after the title |
-| Render as slides | `pitch-deck` | `view: slides` in the frontmatter |
-| Always make the view | `pitch-deck` | `html_view: always` in the frontmatter, because the slides are the deliverable |
+| Render as slides | `pitch-deck` | `layout: slides` in the frontmatter |
+| Always make the view | `pitch-deck` | `view: always` in the frontmatter, because the slides are the deliverable |
 | Render the same layout every time | `prfaq` in `bmod-method/doc-templates/`, `prfaq-view.html`; also `brief` and `pitch` | `view` names an HTML file whose slots a script fills at close |
-| Have a page written for each document | `character`, `character-sheet.html` | `view` names a starter, and a `view` comment gives the brief |
-| Have a page written from a brief alone | Founder's templates, such as `pitch-deck` | A `view` comment with no `view` file says where to be creative |
+| Have a page written for each document | `character`, `character-sheet.html` | `layout` names a starter, and a `layout` comment gives the brief |
+| Have a page written from a brief alone | Founder's templates, such as `pitch-deck` | A `layout` comment with no `layout` file says where to be creative |
 | Propose rather than only ask | `character`, `stance` | The comment invites proposals; one the user accepts is theirs |
 | Write several files | `postmortem`, `companions` | The comment says when to write the customer notice and what it holds |
 

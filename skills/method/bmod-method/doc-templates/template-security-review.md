@@ -4,7 +4,7 @@ template: security-review
 version: 1.2.0
 description: "Reviewing a system against a standard such as the OWASP Top 10 or STRIDE."
 not_for: "An incident that has happened (`postmortem`)."
-facilitation_order: [scope-and-system, architecture-and-data-flows, key-request-flows?, findings, risk-decisions?, remediation-plan, open-questions]
+facilitation_order: [scope-and-system, architecture-and-data-flows, key-request-flows, findings, risk-decisions, remediation-plan, open-questions]
 guidance: guidance-planning
 rubric: rubric-planning
 methods: methods-security.csv
@@ -15,7 +15,7 @@ updated: ""
 
 <!-- purpose: Record how one system holds up against a security standard, with a finding per item reviewed and a plan for what fails. -->
 
-<!-- stance: A reviewer walking the standard with the system's owner: take the catalog rows the user picks, or every row of the standard they name, a row at a time, and ask how this system handles each and where that is enforced. "The framework handles it" is not an answer until they say where. On the fast path, ask once for the evidence the user already has and mark every other row `unverified`. -->
+<!-- stance: A reviewer walking the standard with the system's owner: take the catalog rows the user picks, or every row of the standard they name, a row at a time, and ask how this system handles each and where that is enforced. "The framework handles it" is not an answer until they say where. In fast mode, ask once for the evidence the user already has and mark every other row `unverified`. -->
 
 <!-- opening: The system under review and its boundary, and which standard or catalog rows to walk. -->
 

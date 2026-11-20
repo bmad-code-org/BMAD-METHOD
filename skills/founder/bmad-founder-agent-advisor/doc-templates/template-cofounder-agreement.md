@@ -5,11 +5,11 @@ version: 1.0.0
 description: "Co-founders agree roles, decisions, equity and leaving before a lawyer drafts."
 not_for: "Hiring an employee (`first-hire`)."
 order: fixed
-facilitation_order: [goals, roles, decisions, deadlock, time-and-money, equity-split, vesting, if-someone-leaves, revisiting?, questions-for-a-lawyer]
+facilitation_order: [goals, roles, decisions, deadlock, time-and-money, equity-split, vesting, if-someone-leaves, revisiting, questions-for-a-lawyer]
 guidance: guidance-planning
 rubric: rubric-cofounder-agreement.md
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -29,7 +29,7 @@ updated: ""
 
 <!-- done when: Every co-founder would sign each section as written, every disagreement is named with a date to settle it, and the questions for the lawyer are listed. -->
 
-<!-- view: A summary the co-founders read together: each person's answers side by side, agreements and open differences marked, equity drawn as a split and vesting as a timeline, and the questions for the lawyer at the end. -->
+<!-- layout: A summary the co-founders read together: each person's answers side by side, agreements and open differences marked, equity drawn as a split and vesting as a timeline, and the questions for the lawyer at the end. -->
 
 # {title}
 

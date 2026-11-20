@@ -4,11 +4,11 @@ template: ideal-customer
 version: 1.0.0
 description: "The first narrow group of customers to win, why them, and how to reach them."
 not_for: "The one-liner and what customers compare against (`positioning`); the whole business on one page (`lean-canvas`); the guide for talking to these customers (`customer-interview-script`); taking a product to market (`launch-plan`)."
-facilitation_order: [beachhead, profile, why-them-first, not-the-customer-yet, how-many, where-to-find-them, how-to-reach-them, next-group?]
+facilitation_order: [beachhead, profile, why-them-first, not-the-customer-yet, how-many, where-to-find-them, how-to-reach-them, next-group]
 guidance: guidance-planning
 rubric: rubric-planning
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,7 +27,7 @@ updated: ""
 
 <!-- done when: The beachhead is narrow enough to list names in, the reason for choosing it rests on evidence, the exclusions are explicit, and the first approach names who will be contacted and how. -->
 
-<!-- view: A profile of the customer the founder can hand to anyone doing outreach: who they are, the moment it becomes urgent, where to find them, with the groups that were weighed shown side by side and the chosen one leading. -->
+<!-- layout: A profile of the customer the founder can hand to anyone doing outreach: who they are, the moment it becomes urgent, where to find them, with the groups that were weighed shown side by side and the chosen one leading. -->
 
 # {title}
 

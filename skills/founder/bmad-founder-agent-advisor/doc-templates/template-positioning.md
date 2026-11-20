@@ -8,7 +8,7 @@ facilitation_order: [competitive-alternatives, unique-value, best-fit-customer, 
 guidance: guidance-planning
 rubric: rubric-positioning.md
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,7 +27,7 @@ updated: ""
 
 <!-- done when: Someone new to the product could say from the one-liner what it is, who it is for and why it beats what they use now, and every claim traces to the sections above it. -->
 
-<!-- view: A page a new hire reads in a minute: the one-liner large, the alternatives against this company as a comparison, then the best-fit customer and the market category. -->
+<!-- layout: A page a new hire reads in a minute: the one-liner large, the alternatives against this company as a comparison, then the best-fit customer and the market category. -->
 
 # {title}
 

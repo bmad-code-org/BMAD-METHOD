@@ -5,7 +5,7 @@ version: 1.1.0
 description: "A written argument for leadership to decide a program's strategy or annual plan."
 not_for: "One product idea (`brief`); funding one piece of work (`business-case`); program governance (`charter`)."
 agents: [bmad-agent-analyst]
-facilitation_order: [introduction-and-ask, goals, tenets, state-of-the-business, lessons-learned, strategic-priorities, resource-request?, faq, appendix?]
+facilitation_order: [introduction-and-ask, goals, tenets, state-of-the-business, lessons-learned, strategic-priorities, resource-request, faq, appendix]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft

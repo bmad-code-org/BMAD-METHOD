@@ -5,7 +5,7 @@ version: 1.0.0
 description: "A short plan for piloting a product with a few early customers."
 not_for: "A full product spec (`prd`)."
 order: fixed
-facilitation_order: [goal, pilot-customers, scope, success, risks?]
+facilitation_order: [goal, pilot-customers, scope, success, risks]
 guidance: guidance-planning
 status: draft
 created: ""

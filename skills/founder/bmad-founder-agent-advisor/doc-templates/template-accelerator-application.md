@@ -4,11 +4,11 @@ template: accelerator-application
 version: 1.0.0
 description: "An application to an accelerator such as YC, Techstars or Antler, in its own questions."
 not_for: "A written ask to a funder, grant or client (`proposal`); the deck (`pitch-deck`); planning the whole raise (`fundraising-plan`); testing whether the idea has demand at all (`startup-diagnostic`)."
-facilitation_order: [company, problem, progress, founders, insight-and-competition, business-model, funding-and-structure?, why-this-program?, founder-video?]
+facilitation_order: [company, problem, progress, founders, insight-and-competition, business-model, funding-and-structure, why-this-program, founder-video]
 guidance: guidance-planning
 rubric: rubric-accelerator-application.md
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -28,7 +28,7 @@ updated: ""
 
 <!-- done when: Every question the program asks is answered within its limit, each answer opens with the direct answer, every figure matches the record, and a reviewer reading only first sentences knows what the company does, for whom, and how far it has got. -->
 
-<!-- view: The answers in the program's order, each with its character count against the limit and easy to copy, so the founder can paste them straight into the form. -->
+<!-- layout: The answers in the program's order, each with its character count against the limit and easy to copy, so the founder can paste them straight into the form. -->
 
 # {title}
 

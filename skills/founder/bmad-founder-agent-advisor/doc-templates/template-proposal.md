@@ -4,11 +4,11 @@ template: proposal
 version: 1.2.0
 description: "Asking someone for money, time or approval, such as a grant or bid."
 not_for: "A talk with slides (`pitch-deck`); an application to an accelerator (`accelerator-application`); planning a whole raise (`fundraising-plan`)."
-facilitation_order: [need, goals-and-outcomes, approach, alternatives?, team-and-track-record?, evaluation?, budget, risks, sustainability?, deliverables-and-terms?, summary]
+facilitation_order: [need, goals-and-outcomes, approach, alternatives, team-and-track-record, evaluation, budget, risks, sustainability, deliverables-and-terms, summary]
 guidance: guidance-planning
 rubric: rubric-proposal.md
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,7 +27,7 @@ updated: ""
 
 <!-- done when: The ask is explicit and sized, every criterion the reader stated is answered where a reviewer will look, and budget, plan and timeline agree. -->
 
-<!-- view: Laid out for the person who decides: the ask and summary first, the budget as a table with a breakdown visual, and the reader's own headings in their order. -->
+<!-- layout: Laid out for the person who decides: the ask and summary first, the budget as a table with a breakdown visual, and the reader's own headings in their order. -->
 
 # {title}
 

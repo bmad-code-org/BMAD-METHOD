@@ -4,11 +4,11 @@ template: first-hire
 version: 1.0.0
 description: "Deciding whether to hire now, and the scorecard, cost and test for the role."
 not_for: "Agreeing roles and equity between co-founders (`cofounder-agreement`); the company's goals for the next quarter (`ninety-day-plan`)."
-facilitation_order: [why-now, alternatives, cost, scorecard?, finding-candidates?, testing-candidates?, questions-for-a-lawyer-or-accountant?, decision]
+facilitation_order: [why-now, alternatives, cost, scorecard, finding-candidates, testing-candidates, questions-for-a-lawyer-or-accountant, decision]
 guidance: guidance-planning
 rubric: rubric-planning
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,7 +27,7 @@ updated: ""
 
 <!-- done when: A reader can say whether to hire now and why, and what the hire would cost in cash, equity and runway; when the decision is to hire, also what this person must deliver by day 90 and how a candidate will be tested against the scorecard. -->
 
-<!-- view: The case for the hire up top, its cost in runway shown before and after, and the role laid out as a job description the founder can share. -->
+<!-- layout: The case for the hire up top, its cost in runway shown before and after, and the role laid out as a job description the founder can share. -->
 
 # {title}
 

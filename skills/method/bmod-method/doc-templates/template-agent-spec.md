@@ -5,7 +5,7 @@ version: 1.1.0
 description: "One feature outside the ticket tree, for a coding agent, with tests and acceptance."
 not_for: "Work a story or epic ticket already specifies; several features or a product (`prd`)."
 agents: [bmad-agent-pm]
-facilitation_order: [problem, user-stories, edge-cases, requirements, key-entities?, success-criteria, out-of-scope, assumptions, implementation-context?, open-questions?]
+facilitation_order: [problem, user-stories, edge-cases, requirements, key-entities, success-criteria, out-of-scope, assumptions, implementation-context, open-questions]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft

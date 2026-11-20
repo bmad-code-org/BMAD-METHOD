@@ -4,11 +4,11 @@ template: customer-interview-script
 version: 1.0.0
 description: "A customer interview guide built on past behaviour, not opinions about the future."
 not_for: "Deciding which customers to win first (`ideal-customer`); a demand test with a pass mark (`validation-experiment`); hard questions put to the founder (`startup-diagnostic`)."
-facilitation_order: [what-to-learn, who-to-talk-to, what-counts-as-a-signal, questions, follow-ups, closing-ask, opening, notes?]
+facilitation_order: [what-to-learn, who-to-talk-to, what-counts-as-a-signal, questions, follow-ups, closing-ask, opening, notes]
 guidance: guidance-planning
 rubric: rubric-customer-interview-script.md
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,7 +27,7 @@ updated: ""
 
 <!-- done when: Every question asks about past behaviour or money already spent, the people to talk to are named well enough to book, and what counts as a signal was decided before the first interview. -->
 
-<!-- view: A guide the founder glances at mid-call, fitting one printed page: what to learn at the top, the questions large and numbered with their follow-ups close by, the closing ask and the signals in a sidebar. A tally the founder can tick for each interview's strong and weak signals. -->
+<!-- layout: A guide the founder glances at mid-call, fitting one printed page: what to learn at the top, the questions large and numbered with their follow-ups close by, the closing ask and the signals in a sidebar. A tally the founder can tick for each interview's strong and weak signals. -->
 
 # {title}
 

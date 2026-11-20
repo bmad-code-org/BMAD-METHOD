@@ -6,7 +6,7 @@ description: "A measured test of one hypothesis, its thresholds set before it ru
 not_for: "Learning by building something (`prototype-plan`); a change already decided that needs requirements (`prd`, `prd-light`)."
 agents: [bmad-agent-analyst, bmad-agent-pm]
 order: fixed
-facilitation_order: [hypothesis, test, thresholds, guardrails, duration, result?]
+facilitation_order: [hypothesis, test, thresholds, guardrails, duration, result]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft

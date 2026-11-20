@@ -12,25 +12,26 @@ folder; the --folder folder (default `doc-templates`) of every module record in 
 after the sources. A file is a template when its frontmatter has `template:`, the template's id.
 A file with `extends:` adds to the template of that id wherever it sits, and an earlier
 extension's values win over a later one's and the template's. `--libraries-of <skill folder>` reads that skill's `workflow.template_libraries`, through its
-customization layers, as the first sources, and the first such skill's `workflow.mode` sets each template's
-`mode`. `--project-root` fills `{project-root}` in each source. A missing local path adds nothing
+customization layers, as the first sources, and the first such skill's `mode`, `view` and `style` win over
+each template's. `--project-root` fills `{project-root}` in each source. A missing local path adds nothing
 and is listed. `--agent <skill>` keeps only that agent's templates: those whose `agents:` list names
 it, those with no list in that skill's own folder, and those with no list that replace one of these.
 
 `facilitation_order` lists a template's `##` sections by id, each heading lowercased with its
-punctuation dropped and spaces as hyphens, `?` marking one that is not required. An extension's
-list replaces the template's. A section an extension adds without a list of its own is appended
-to the order, with `?` when its comment starts `optional` or `include when`. Each listed id must
+punctuation dropped and spaces as hyphens; a section's comment says whether it is required, and a `?`
+left on an id is an order problem. An extension's list replaces the template's. A section an extension
+adds without a list of its own is appended to the order. Each listed id must
 name a heading, no id may repeat, and every heading of the template, and of the extensions that
 set a list, must be listed; what breaks this comes back in `order_problems`. An extension's list
 may leave out a heading of the template: that section is removed and named in `removed`. `guidance`,
-`rubric`, `methods`, `style` and `view` are relative to their file and come back resolved; a bare
+`rubric`, `methods`, `style` and `layout` are relative to their file and come back resolved; a bare
 name with no extension, such as `slides`, comes back as it is.
 
-`mode` is the mode a run starts in: the first `--libraries-of` skill's `workflow.mode` when set, else the
-template's, else `step-by-step`; with `order: fixed`, `freeform` becomes `step-by-step`. A value that is not
-`step-by-step`, `freeform` or `fast` is skipped and named in `order_problems`. An extension's empty `mode` or
-`order` clears the template's.
+`mode` is the mode a run starts in and `view` whether a rendered view is made: the first `--libraries-of`
+skill's `workflow` value when set, else the template's, else `step-by-step` and `offer`; with `order: fixed`,
+`freeform` becomes `step-by-step`. A value not allowed (`step-by-step`, `freeform` or `fast`; `offer`, `always`
+or `never`) is skipped and named in `order_problems`. `style` is the customization's when set, else the
+template's. An extension's empty `mode` or `order` clears the template's.
 
 `--brief` keeps only each template's id, description, not_for, category, agents and output, for choosing
 one; `agents` there is who offers the template: those it names, else the skill whose folder holds it,
@@ -41,7 +42,7 @@ without its removed sections, with every path made absolute.
 
 Prints JSON:
   templates     id, version, description, not_for, category, agents, facilitation_order, guidance, rubric,
-                methods, output, style, view, html_view, mode, order, file, source, extensions, order_problems,
+                methods, output, style, layout, view, mode, order, file, source, extensions, order_problems,
                 removed, in search order
   shadowed      id, file, source, kept, agents: templates hidden by an earlier one with the same id
   orphaned      extends, file, source: extensions whose template was not found
@@ -74,10 +75,11 @@ GITHUB = re.compile(
 MODULE_FOLDER = "doc-templates"
 FIELDS = (
     "version", "description", "not_for", "category", "agents", "facilitation_order", "guidance", "rubric", "methods", "output", "style",
-    "view", "html_view", "mode", "order",
+    "layout", "view", "mode", "order",
 )  # fmt: skip
 CLEARABLE = ("mode", "order")
 MODES = ("step-by-step", "freeform", "fast")
+VIEWS = ("offer", "always", "never")
 SECTION = re.compile(r"^##[ \t]+(.+?)[ \t#]*$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 NOT_REQUIRED = re.compile(r"^\s*<!--\s*(optional|include when)\b", re.IGNORECASE)
@@ -219,7 +221,12 @@ def order_problems(
 ) -> list[str]:
     """What is wrong with a facilitation order against the headings it must cover."""
     ids = [entry.rstrip("?") for entry in order]
-    problems = [f"`{i}` is listed twice" for i in sorted({i for i in ids if ids.count(i) > 1})]
+    problems = [
+        f"`{entry}`: drop the `?`; a section's comment says whether it is required"
+        for entry in order
+        if entry.endswith("?")
+    ]
+    problems += [f"`{i}` is listed twice" for i in sorted({i for i in ids if ids.count(i) > 1})]
     problems += [f"`{i}` names no heading" for i in dict.fromkeys(ids) if i not in known]
     problems += [f"heading `{h}` is not listed" for h in dict.fromkeys(required_headings) if h not in ids]
     for n, i in enumerate(ids):
@@ -243,8 +250,8 @@ def fields(file: str, meta: dict[str, str]) -> dict[str, object]:
         "methods": beside(file, meta.get("methods", "")),
         "output": meta.get("output", ""),
         "style": beside(file, meta.get("style", "")),
-        "view": beside(file, meta.get("view", "")),
-        "html_view": meta.get("html_view", ""),
+        "layout": beside(file, meta.get("layout", "")),
+        "view": meta.get("view", ""),
         "mode": meta.get("mode"),
         "order": meta.get("order"),
     }
@@ -322,9 +329,9 @@ def scan(sources: list[str]) -> dict:
             for e in adding:
                 if e["facilitation_order"]:
                     continue
-                for section, not_required in e["_sections"]:
+                for section, _ in e["_sections"]:
                     if section not in listed_ids and section not in own:
-                        order.append(section + "?" * not_required)
+                        order.append(section)
                         listed_ids.add(section)
         template["_extension_headings"] = [s for e in adding for s, _ in e["_sections"]]
         template["_must_list"] = [s for e in adding if e["facilitation_order"] for s, _ in e["_sections"]]
@@ -345,9 +352,9 @@ def scan(sources: list[str]) -> dict:
             ]
             template["order_problems"] = order_problems(template["facilitation_order"], must, own + added, built)
         if template.pop("_bad_order") and not template["facilitation_order"]:
-            template["order_problems"] = ["`facilitation_order` must be a one-line list, such as `[problem, scope?]`"]
+            template["order_problems"] = ["`facilitation_order` must be a one-line list, such as `[problem, scope]`"]
         template["order_problems"] += [
-            f"`facilitation_order` in {file} is ignored: it must be a one-line list, such as `[problem, scope?]`"
+            f"`facilitation_order` in {file} is ignored: it must be a one-line list, such as `[problem, scope]`"
             for file in template.pop("_bad_extension_orders", [])
         ]
     return {
@@ -360,7 +367,7 @@ def scan(sources: list[str]) -> dict:
     }
 
 
-PATH_KEYS = ("guidance", "rubric", "methods", "style", "view")
+PATH_KEYS = ("guidance", "rubric", "methods", "style", "layout")
 BRIEF = ("id", "description", "not_for", "category", "agents", "output")
 
 
@@ -459,19 +466,27 @@ def workflow_of(skill: str, project_root: str | None) -> dict:
     return workflow
 
 
-def resolve_mode(template: dict, customized: str) -> tuple[str, list[str]]:
-    """The mode a run starts in: the customization's, else the template's, else step-by-step;
-    `order: fixed` turns freeform into step-by-step. Unknown values are named and skipped."""
-    problems, mode = [], ""
-    for where, value in (("the customization", customized), ("the template", template["mode"])):
-        if value and value not in MODES:
-            problems.append(f"`mode` in {where} is `{value}`, not one of {', '.join(MODES)}, so it is ignored")
-        elif value and not mode:
-            mode = value
-    mode = mode or "step-by-step"
-    if template["order"] == "fixed" and mode == "freeform":
-        mode = "step-by-step"
-    return mode, problems
+def resolved(key: str, template: dict, customized: str, allowed: tuple[str, ...]) -> tuple[str, list[str]]:
+    """The customization's value, else the template's, else the first allowed; a value not
+    allowed is named and skipped."""
+    problems, value = [], ""
+    for where, given in (("the customization", customized), ("the template", template[key])):
+        if given and given not in allowed:
+            problems.append(f"`{key}` in {where} is `{given}`, not one of {', '.join(allowed)}, so it is ignored")
+        elif given and not value:
+            value = given
+    return value or allowed[0], problems
+
+
+def resolve(template: dict, workflow: dict) -> None:
+    """Set the template's `mode`, `view` and `style` from the customization over the template's own.
+    `order: fixed` turns freeform into step-by-step."""
+    template["mode"], problems = resolved("mode", template, str(workflow.get("mode", "")), MODES)
+    if template["order"] == "fixed" and template["mode"] == "freeform":
+        template["mode"] = "step-by-step"
+    template["view"], more = resolved("view", template, str(workflow.get("view", "")), VIEWS)
+    template["style"] = str(workflow.get("style", "")) or template["style"]
+    template["order_problems"] += problems + more
 
 
 def offers(agents: list[str], file: str, agent: str) -> bool:
@@ -532,10 +547,8 @@ def main(argv: list[str]) -> int:
     sources = [lib for w in workflows for lib in w["template_libraries"]] + args.sources
     sources = [s.replace("{project-root}", args.project_root) if args.project_root else s for s in sources]
     result = scan(sources + module_libraries(args.root, args.folder))
-    customized = str(workflows[0].get("mode", "")) if workflows else ""
     for template in result["templates"]:
-        template["mode"], problems = resolve_mode(template, customized)
-        template["order_problems"] += problems
+        resolve(template, workflows[0] if workflows else {})
     if args.agent:
         result["templates"] = [t for t in result["templates"] if owned_by(t, args.agent, result["shadowed"])]
     if args.template:

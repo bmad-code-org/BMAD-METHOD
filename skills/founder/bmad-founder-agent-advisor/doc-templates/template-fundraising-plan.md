@@ -4,11 +4,11 @@ template: fundraising-plan
 version: 1.1.0
 description: "Planning a raise: amount, milestones, instrument, investors, timeline, stop date."
 not_for: "The deck shown to investors (`pitch-deck`); a written ask to one funder or grant body (`proposal`); applying to a program (`accelerator-application`); reporting to investors already in (`investor-update`)."
-facilitation_order: [why-raise-now, milestones, amount, instrument, investors, materials?, timeline, stop-date-and-plan-b, summary]
+facilitation_order: [why-raise-now, milestones, amount, instrument, investors, materials, timeline, stop-date-and-plan-b, summary]
 guidance: guidance-planning
 rubric: rubric-planning
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,7 +27,7 @@ updated: ""
 
 <!-- done when: The founder knows the amount and how it was built, the milestones it buys with dates, the instrument, the first investors to contact and the route to each, the close date, and the date and signal that change the plan. -->
 
-<!-- view: The raise at a glance: the amount and instrument up top, the milestones it buys on a timeline to the next round with the stop date marked, and the investor list as a pipeline by stage. -->
+<!-- layout: The raise at a glance: the amount and instrument up top, the milestones it buys on a timeline to the next round with the stop date marked, and the investor list as a pipeline by stage. -->
 
 # {title}
 

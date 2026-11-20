@@ -9,8 +9,8 @@ order: fixed
 facilitation_order: [problem, appetite, solution, rabbit-holes, no-gos]
 guidance: guidance-planning
 rubric: rubric-planning
-view: pitch-view.html
-html_view: always
+layout: pitch-view.html
+view: always
 status: draft
 created: ""
 updated: ""

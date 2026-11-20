@@ -47,17 +47,17 @@ updated: ""
 | `not_for` | Optional short line naming what the template is not for, and the template to use instead. Read with `description` when choosing one, and not listed in help. |
 | `mode` | Optional. The mode a run of this template starts in: `step-by-step` (the default), `freeform` or `fast`. A team's or user's `mode` wins over it. See [Choose how a run walks the sections](#choose-how-a-run-walks-the-sections). |
 | `order` | Optional. `fixed` for a document whose order matters as much as the result: freeform is never used, and fast keeps the order. |
-| `facilitation_order` | The sections by id, in the order the skill takes them up, with `?` on each one that is not required. See [Order the sections](#order-the-sections). |
+| `facilitation_order` | The sections by id, in the order the skill takes them up. See [Order the sections](#order-the-sections). |
 | `guidance` | Optional rules shared by a family of templates and read as part of each, as a path relative to the template, or the bare name `guidance-planning` for the shipped planning rules: stakes from hobby to regulated, stable ids and testable requirements, and detail pushed to the level below. Every shipped template sets it. Without it the skill names no stakes levels; a document such as fiction says what it needs in its own comments. Every document, with or without it, carries `[ASSUMPTION: ...]` tags where the coach guessed, until you accept or correct each one. |
 | `agents` | Optional list of the skills that offer this template, such as `[bmad-agent-pm]`; name several to share it. It says who offers the template by default; any agent the user asks can still write it. The `bmad` skill uses the list to say who offers the template. A template in an agent's `assets/` folder counts as that agent's without it. |
 | `rubric` | Optional path to a rubric for the review, relative to the template, or the bare name `rubric-planning` for the shipped planning rubric. Empty uses the shipped general rubric, which suits any document. |
 | `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
 | `output` | Optional run folder for this template. It may use `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
 | `style` | Optional CSS file for this template's rendered view, relative to the template. |
-| `view` | Optional layout for the rendered view: `document`, `slides`, or an HTML file relative to the template. It says what the view looks like, not whether it is made. See [Give a template its own view](#give-a-template-its-own-view). |
-| `html_view` | Optional. Whether this template's view is made: `always`, `offer` or `never`, replacing the team's setting for this template. Set `always` when the view is the deliverable, as `pitch-deck` does for its slides. A team's `never` still stops it. |
+| `layout` | Optional layout for the rendered view: `document`, `slides`, or an HTML file relative to the template. It says what the view looks like, not whether it is made. See [Give a template its own view](#give-a-template-its-own-view). |
+| `view` | Optional. Whether this template's view is made: `always`, `offer` or `never`. A team's or user's `view` wins over it. Set `always` when the view is the deliverable, as `pitch-deck` does for its slides. |
 
-`template`, `version` and `view` stay in the finished document, as does any field you add for a view to show. The other fields stay out.
+`template`, `version` and `layout` stay in the finished document, as does any field you add for a view to show. The other fields stay out.
 
 A method catalog has the header `category,method,name,description,key_questions`, with the key questions separated by `|`. The shipped `security-review` template uses one for the OWASP Top 10 and STRIDE:
 
@@ -110,7 +110,7 @@ title: ""
 template: runbook
 version: 1.0.0
 description: "Step-by-step instructions for one alert or recurring task."
-facilitation_order: [when-to-use, severity, steps, rollback?, escalation?]
+facilitation_order: [when-to-use, severity, steps, rollback, escalation]
 status: draft
 created: ""
 updated: ""
@@ -158,16 +158,16 @@ Above the first heading, give each of these keys its own comment, a line or two.
 | `writing` | Rules specific to this document. |
 | `companions` | Other files to write beside the document, when, and what each holds. A file for a different reader belongs here, not overflow from the document. |
 | `done when` | The test that ends the questioning. |
-| `view` | The brief for an HTML page written for each document. See [Give a template its own view](#give-a-template-its-own-view). |
+| `layout` | The brief for an HTML page written for each document. See [Give a template its own view](#give-a-template-its-own-view). |
 | `next` | What to offer or do once the document is done, such as handing it to a build. |
 
-Add `view: slides` to the frontmatter for a slide view, or name an HTML view file; without it the HTML view is one page. In the document body, `{title}` is the only placeholder.
+Add `layout: slides` to the frontmatter for a slide view, or name an HTML view file; without it the HTML view is one page. In the document body, `{title}` is the only placeholder.
 
 Each section has one comment: a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A section that is not required starts its comment with `optional` or `include when:` and a condition. A section assembled from the others, such as a summary or a glossary, starts its comment with `built:`. The skill asks nothing for it up front, drafts it once the sections it draws on are settled, and shows it for correction; the template list reports one placed ahead of a section that is not built.
 
 ### Order the sections
 
-`facilitation_order` lists every `##` section by id: its heading in lowercase, with punctuation dropped and spaces as hyphens, so `What makes it different` is `what-makes-it-different` and `What's next?` is `whats-next`. It sets the order the skill takes the sections up in, not the document's order, so an executive summary can sit first in the document and come up last. A `?` after an id marks a section that is not required.
+`facilitation_order` lists every `##` section by id: its heading in lowercase, with punctuation dropped and spaces as hyphens, so `What makes it different` is `what-makes-it-different` and `What's next?` is `whats-next`. It sets the order the skill takes the sections up in, not the document's order, so an executive summary can sit first in the document and come up last. Whether a section is required comes only from its comment, and the template list reports an id left with a `?` on it.
 
 The skill settles every section before it finishes, in every mode. A required section is always filled. An optional one is offered when the order reaches it, and the user decides. An include-when one is checked against its condition, and the skill says what it found. Fast settles them too, so asking for speed never drops a section quietly. Sections left out are named at the end with the reason.
 
@@ -240,14 +240,14 @@ An extension can hold anything a template can:
 | A section | Added where its comment says, and taken up at that point in the conversation. If the heading it names is gone, the skill places it by judgment. It is required unless its comment starts `optional` or `include when`, the same rule as a template's sections. With the same heading as a template section, it replaces that section or adds to it, as its comment says. |
 | `facilitation_order` frontmatter | Replaces the template's whole order. A template section it leaves out is removed from the document, and the template list names it under `removed`. Set it only to reorder or remove the template's sections, never just to place a new one, because a section the template adds in a later update is also left out and removed. |
 | `stance`, `inputs`, `writing` or `done when` comments | Added to the template's, and they win where they disagree with it. A policy to load goes in `inputs`; a review rule goes in `done when`. |
-| `description`, `not_for`, `guidance`, `rubric`, `methods`, `output`, `style`, `view` or `html_view` frontmatter | Replaces the template's value. |
+| `description`, `not_for`, `guidance`, `rubric`, `methods`, `output`, `style`, `layout`, `view`, `mode` or `order` frontmatter | Replaces the template's value. An empty `mode` or `order` clears the template's. |
 
 This extension opens every PRD with a quote and always makes its HTML view, while John's updates to the PRD still arrive:
 
 ```markdown
 ---
 extends: prd
-html_view: always
+view: always
 ---
 
 ## Quote
@@ -265,10 +265,10 @@ At close the skill can render the document as one HTML file, diagrams included. 
 ```toml
 [workflow]
 style = "{project-root}/_bmad/style/brand.css"
-html_view = "always"
+view = "always"
 ```
 
-`style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or a template's `writing` comment instead. A template's `style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template's own `html_view` replaces it for that template, except that `never` here stops every view.
+`style` is a CSS file applied to every view after the default styles. A written voice or style guide belongs in `doc_standards` or a template's `writing` comment instead. `view` is `offer` (ask at close), `always`, or `never`. Each wins over a template's own `style` or `view` when set; left empty, the template's holds, else the default styles and `offer`.
 
 ## Give a template its own view
 
@@ -276,17 +276,17 @@ A template stays markdown, and so does the document the skill writes, because th
 
 | You want | In the template | What happens |
 | --- | --- | --- |
-| The same layout every time, such as a form headed for PDF | `view: invoice.html` | A script fills the file's slots. Nothing is interpreted. |
-| A shared structure that adapts to each document | `view: character-sheet.html` and a `view` comment | A subagent uses the file as a starter and follows the comment. |
-| A page invented for each document, with no template | A `view` comment alone | A subagent writes it from the comment. |
+| The same layout every time, such as a form headed for PDF | `layout: invoice.html` | A script fills the file's slots. Nothing is interpreted. |
+| A shared structure that adapts to each document | `layout: character-sheet.html` and a `layout` comment | A subagent uses the file as a starter and follows the comment. |
+| A page invented for each document, with no template | A `layout` comment alone | A subagent writes it from the comment. |
 
-The `view` comment sits above the first heading with the other comments, and says what the page should do:
+The `layout` comment sits above the first heading with the other comments, and says what the page should do:
 
 ```markdown
-<!-- view: The sheet is the deliverable. `character-sheet.html` is a starter: keep to one printable page, and let this character's world set the look. -->
+<!-- layout: The sheet is the deliverable. `character-sheet.html` is a starter: keep to one printable page, and let this character's world set the look. -->
 ```
 
-A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless the template sets `html_view: always` or the comment calls it the deliverable. Use the script for anything regulated or signed, where the page must not vary. `html_view = "never"` stops all three.
+A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless the template sets `view: always` or the comment calls it the deliverable. Use the script for anything regulated or signed, where the page must not vary. `view = "never"` in the team's settings stops all three.
 
 ### Slots for a filled view
 

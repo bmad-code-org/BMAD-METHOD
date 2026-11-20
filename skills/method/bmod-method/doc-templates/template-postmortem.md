@@ -5,7 +5,7 @@ version: 1.2.0
 description: "Causes and actions after something went wrong, written blamelessly."
 not_for: "Judging a person's performance."
 order: fixed
-facilitation_order: [impact, timeline, detection-and-response?, contributing-factors, lessons?, action-items, communication?, summary]
+facilitation_order: [impact, timeline, detection-and-response, contributing-factors, lessons, action-items, communication, summary]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft

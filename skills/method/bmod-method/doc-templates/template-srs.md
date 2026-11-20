@@ -5,7 +5,7 @@ version: 1.2.0
 description: "An initiative's traceable, verifiable requirements for regulated or contracted work."
 not_for: "Product work with no external check (`prd`); what the business requires, before system behavior (`brd`); one feature for a coding agent (`agent-spec`)."
 agents: [bmad-agent-pm]
-facilitation_order: [introduction, references, overall-description, functional-requirements, interface-requirements?, quality-requirements, compliance-requirements?, design-constraints?, verification, open-questions, revision-history, definitions]
+facilitation_order: [introduction, references, overall-description, functional-requirements, interface-requirements, quality-requirements, compliance-requirements, design-constraints, verification, open-questions, revision-history, definitions]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft

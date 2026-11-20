@@ -5,11 +5,11 @@ version: 1.2.0
 description: "Why to build a product, or pitching it, in a page or two."
 not_for: "Committed work that needs requirements (`prd`); a formal funding decision on cost and return (`business-case`); testing a problem before any solution exists (`opportunity`)."
 agents: [bmad-agent-analyst]
-facilitation_order: [problem, solution, what-makes-it-different, who-it-serves, success-criteria, scope, the-ask?, vision?, executive-summary]
+facilitation_order: [problem, solution, what-makes-it-different, who-it-serves, success-criteria, scope, the-ask, vision, executive-summary]
 guidance: guidance-planning
 rubric: rubric-planning
-view: brief-view.html
-html_view: always
+layout: brief-view.html
+view: always
 status: draft
 created: ""
 updated: ""

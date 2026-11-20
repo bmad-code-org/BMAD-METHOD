@@ -5,7 +5,7 @@ version: 1.1.0
 description: "Funding approval for an initiative: cost, expected return, go or no-go."
 not_for: "Whether the problem is worth pursuing (`opportunity`); one mandate over several initiatives (`charter`); requirements to build from (`prd`)."
 agents: [bmad-agent-analyst]
-facilitation_order: [sponsors, hypothesis, business-outcomes, leading-indicators, background?, scope, nonfunctional-requirements?, mvp-and-what-follows, cost, return, recommendation]
+facilitation_order: [sponsors, hypothesis, business-outcomes, leading-indicators, background, scope, nonfunctional-requirements, mvp-and-what-follows, cost, return, recommendation]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft

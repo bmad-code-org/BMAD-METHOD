@@ -4,11 +4,11 @@ template: investor-update
 version: 1.0.0
 description: "The monthly or quarterly update to investors and advisors: numbers, news, asks."
 not_for: "The pre-read for a board meeting (`board-pack`); asking a new investor for money (`fundraising-plan`, `pitch-deck`)."
-facilitation_order: [metrics, wins, misses, what-we-learned, cash-and-runway, asks, next-period?, headline]
+facilitation_order: [metrics, wins, misses, what-we-learned, cash-and-runway, asks, next-period, headline]
 guidance: guidance-planning
 rubric: rubric-investor-update.md
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,7 +27,7 @@ updated: ""
 
 <!-- done when: A reader knows in the first lines how the period went, sees every headline metric against last period, knows the runway in months and as a date, and can act on each ask with one reply. -->
 
-<!-- view: An update an investor reads in two minutes: the headline numbers as tiles with their change since last time, small trend lines where several periods exist, cash and runway prominent, and the asks as a short list. It should still read well pasted into an email. -->
+<!-- layout: An update an investor reads in two minutes: the headline numbers as tiles with their change since last time, small trend lines where several periods exist, cash and runway prominent, and the asks as a short list. It should still read well pasted into an email. -->
 
 # {title}
 

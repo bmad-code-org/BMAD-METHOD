@@ -157,7 +157,7 @@ your-project/
 | Add a section to every PRD | A new heading in an `extends: prd` file, with a comment that places it and says what to ask |
 | Change how an existing section is coached | The same heading in the extension, with a comment that adds to or replaces the template's |
 | Remove a section | List the order in the extension's `facilitation_order` and leave the section out |
-| Make HTML views by default for PRDs | `html_view: always` in the extension's frontmatter |
+| Make HTML views by default for PRDs | `view: always` in the extension's frontmatter |
 | Start every document in one mode | Ask `bmad-customize` to set `mode` (`step-by-step`, `freeform` or `fast`) for `bmad-facilitate`: in `_bmad/custom/bmad-facilitate.toml` for the team, or `bmad-facilitate.user.toml` for you alone. It wins over each template's own `mode`, and anyone can still switch in a run |
 | Start one document in another mode | `mode: freeform` (or another mode) in the extension's frontmatter |
 | Make one document always run in order | `order: fixed` in the extension's frontmatter; `order: ""` clears it on a template that sets it |

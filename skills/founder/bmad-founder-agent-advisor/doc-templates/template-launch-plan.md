@@ -8,7 +8,7 @@ facilitation_order: [who-it-is-for, message, what-counts-as-working, channels, w
 guidance: guidance-planning
 rubric: rubric-planning
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,7 +27,7 @@ updated: ""
 
 <!-- done when: Someone helping could see what happens each week and who does it, and the founder knows the number, the date it is read, and what they will do if it is missed. -->
 
-<!-- view: The launch as a timeline of weeks with each channel and owner, the success number as a visible target, and the message the launch carries. -->
+<!-- layout: The launch as a timeline of weeks with each channel and owner, the success number as a visible target, and the message the launch carries. -->
 
 # {title}
 

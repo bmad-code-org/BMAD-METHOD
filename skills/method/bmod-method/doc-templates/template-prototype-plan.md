@@ -5,7 +5,7 @@ version: 1.2.0
 description: "A quick build to test an idea, some options or a look and feel; the first offer for a hobby project."
 not_for: "Committed work that needs requirements (`prd`, `prd-light`); measuring a change with real users (`experiment`); writing down why to build (`brief`); one feature for a coding agent (`agent-spec`)."
 agents: [bmad-agent-pm]
-facilitation_order: [ask-and-goal, timebox?, where-to-build, platform-and-technology?, existing-ground-truth?, options-to-compare?, look-and-feel?, validation?, decisions?, build, outcome?]
+facilitation_order: [ask-and-goal, timebox, where-to-build, platform-and-technology, existing-ground-truth, options-to-compare, look-and-feel, validation, decisions, build, outcome]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft
