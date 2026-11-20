@@ -59,7 +59,7 @@ query = """
 One issue: `gh issue view <n> --json
 number,title,labels,assignees,state,stateReason,milestone,parent,blockedBy,subIssuesSummary,body`.
 Type, hitl, risk, severity, and status are labels — except done and dropped, the closed states per
-[tickets.status]; after is blockedBy; the body's covers holds the source requirement ids. Children: `gh issue view <n>
+[tickets.status]; after is blockedBy; the `covers —` lines in its References hold the source requirement ids. Children: `gh issue view <n>
 --json subIssues`. Words: `gh issue list --search "<words>" --state all`, narrowed by
 --label. An initiative's issues are the ones in its milestone; a standalone ticket has no milestone.
 """
