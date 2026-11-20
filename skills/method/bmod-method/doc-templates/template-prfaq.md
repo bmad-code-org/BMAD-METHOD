@@ -1,16 +1,16 @@
 ---
 title: ""
 template: prfaq
-version: 1.1.0
+version: 1.2.0
 description: "Testing whether a product concept survives scrutiny, working backwards from its press release."
 not_for: "Writing up a product the user already believes in (`brief`); testing a problem before any solution exists (`opportunity`); committed work that needs requirements (`prd`)."
 agents: [bmad-agent-analyst]
-paced: true
+order: fixed
 facilitation_order: [press-release, customer-faq, internal-faq, verdict]
 guidance: guidance-planning
 rubric: rubric-prfaq.md
-view: prfaq-view.html
-html_view: always
+layout: prfaq-view.html
+view: always
 status: draft
 created: ""
 updated: ""

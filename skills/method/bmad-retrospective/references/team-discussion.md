@@ -8,7 +8,7 @@ Only when asked — "discuss it as a team," "run party mode," or similar. A defa
 
 ## How to run it
 
-Invoke **`bmad-party-mode`**, seeded with the consolidated Phase 2 findings and the epic context, so the installed agents react as real subagents with independent thinking rather than a scripted dialogue. Seed it with:
+Invoke **`bmad-party-mode`**, seeded with the consolidated Phase 2 findings and the epic context, so the installed agents react in character, as themselves, rather than a scripted dialogue. Seed it with:
 
 - The findings, each with its source reference, grouped by the aggregate view or lens that produced it.
 - The improvements the evidence confirms — real gains, patterns that worked — so positive observations are grounded in fact.

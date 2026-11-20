@@ -1,15 +1,15 @@
 ---
 title: ""
 template: cofounder-agreement
-version: 1.0.0
+version: 1.1.0
 description: "Co-founders agree roles, decisions, equity and leaving before a lawyer drafts."
 not_for: "Hiring an employee (`first-hire`)."
-paced: true
-facilitation_order: [goals, roles, decisions, deadlock, time-and-money, equity-split, vesting, if-someone-leaves, revisiting?, questions-for-a-lawyer]
+order: fixed
+facilitation_order: [goals, roles, decisions, deadlock, time-and-money, equity-split, vesting, if-someone-leaves, revisiting, questions-for-a-lawyer]
 guidance: guidance-planning
 rubric: rubric-cofounder-agreement.md
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -29,14 +29,14 @@ updated: ""
 
 <!-- done when: Every co-founder would sign each section as written, every disagreement is named with a date to settle it, and the questions for the lawyer are listed. -->
 
-<!-- view: A summary the co-founders read together: each person's answers side by side, agreements and open differences marked, equity drawn as a split and vesting as a timeline, and the questions for the lawyer at the end. -->
+<!-- layout: A summary the co-founders read together: each person's answers side by side, agreements and open differences marked, equity drawn as a split and vesting as a timeline, and the questions for the lawyer at the end. -->
 
 # {title}
 
 ## Table of Contents
 
 ## Goals
-<!-- What each co-founder wants from the company: how big, how fast, how long they plan to stay, an outcome they would be happy with, and what they will not do. You are the advisor who has watched co-founders split over goals they never said aloud. Ask each one in turn and compare; when the answers differ, say so plainly and ask whether they can both live with it. Done when each person's answer is in their own words and the differences are named. -->
+<!-- What each co-founder wants from the company: how big, how fast, how long they plan to stay, an outcome they would be happy with, and what they will not do. You are the advisor who has watched co-founders split over goals they never said aloud. Have each write their answer down before hearing the other's, then compare; when the answers differ, say so plainly and ask whether they can both live with it. Done when each person's answer is in their own words and the differences are named. -->
 
 ## Roles
 <!-- Who owns what: product, engineering, sales, fundraising, hiring, finance; and the titles. Ask who does each today and who will in a year. When two people claim the same area, or no one claims one, stay on it until it is settled. Done when every area has one owner. -->

@@ -121,7 +121,7 @@ Ask Mary, the Business Analyst (`bmad-agent-analyst`), for a PRFAQ:
 /bmad-agent-analyst create a PRFAQ for check in or lose the room
 ```
 
-She shows you its four parts and takes them in order, finishing each before
+She takes its four parts in order, finishing each before
 the next: the press release, the customer FAQ, the internal FAQ on
 feasibility, viability, resources, and risk, and the verdict, written last.
 Her role changes with the part: an editor for the press release, a skeptical

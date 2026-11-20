@@ -1,14 +1,15 @@
 ---
 title: ""
 template: positioning
-version: 1.0.0
+version: 1.1.0
 description: "Positioning and the one-liner: alternatives, unique value, best-fit customer, category."
 not_for: "The first narrow group to win and how to reach them (`ideal-customer`); the message, channels and weeks of a launch (`launch-plan`); one page on the whole business (`lean-canvas`)."
 facilitation_order: [competitive-alternatives, unique-value, best-fit-customer, market-category, positioning-statement, one-liner]
 guidance: guidance-planning
 rubric: rubric-positioning.md
 agents: [bmad-founder-agent-advisor]
-html_view: always
+order: fixed
+view: always
 status: draft
 created: ""
 updated: ""
@@ -25,9 +26,9 @@ updated: ""
   - The one-liner uses the customer's words, and category jargon only when customers use it.
 -->
 
-<!-- done when: Someone new to the product could say from the one-liner what it is, who it is for and why it beats what they use now, and every claim traces to the sections above it. -->
+<!-- done when: Someone new to the product could say from the one-liner what it is and who it is for, and from the positioning statement why it beats what they use now, and every claim traces to the sections it draws on. -->
 
-<!-- view: A page a new hire reads in a minute: the one-liner large, the alternatives against this company as a comparison, then the best-fit customer and the market category. -->
+<!-- layout: A page a new hire reads in a minute: the one-liner large, the alternatives against this company as a comparison, then the best-fit customer and the market category. -->
 
 # {title}
 
@@ -46,7 +47,7 @@ updated: ""
 <!-- The category that tells buyers what to compare the product with and what to expect. Test the obvious category first; propose a new one only when every existing one sets the wrong expectations, and say what teaching it will cost. -->
 
 ## Positioning statement
-<!-- For [best-fit customer] who [need], [product] is a [category] that [value]. Unlike [main alternative], it [unique value]. Built from the sections above; it is for the team, not for customers. -->
+<!-- built: from the other sections. For [best-fit customer] who [need], [product] is a [category] that [value]. Unlike [main alternative], it [unique value]. It is for the team, not for customers. -->
 
 ## One-liner
-<!-- The one sentence used on the website, in introductions and in the pitch: what it is and who it is for, in plain words. Offer three versions with a recommendation, and test each by asking whether a best-fit customer would know at once that it is for them. Done when the user would use it unchanged in all three places. -->
+<!-- built: from the other sections. The one sentence used on the website, in introductions and in the pitch: what it is and who it is for, in plain words. Offer three versions with a recommendation, and test each by asking whether a best-fit customer would know at once that it is for them. Done when the user would use it unchanged in all three places. -->

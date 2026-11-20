@@ -125,7 +125,7 @@ One line per skill: what it is for and what it writes. Paths are in the active i
 | `bmad-architecture` | Settles only the decisions that keep separately built parts consistent. Coaches a user with no architecture knowledge, recommends a current starter, and covers hosting and deployment. | `architecture-<slug>/architecture-<slug>.md` |
 | **Implementation** (`help/implementation-skills.md`) | | |
 | `bmad-build` | One session of delivery: clarifies intent, plans, implements, reviews, commits. The default for any real change. Takes free text, a ticket from the tree (nothing means the next ready one), or any file as intent. Reads a ticket in full with its epic. | A ticket's plan beside `tickets.toml`, or `plan-<slug>.md`; `deferred-work.md` |
-| `bmad-build-auto` | One unattended build of one ticket, dispatched by a loop or script. Never for attended work. | The same plans as `bmad-build` |
+| `bmad-build-auto` | One unattended build of one ticket, dispatched by a loop or script; with a user present, only to build a finished prototype plan or light PRD. | The same plans as `bmad-build` |
 | **Validation** (`help/validation-skills.md`) | | |
 | `bmad-code-review` | Agent review of any diff, PR, or branch, with triaged findings; with no argument it offers the tickets in review. Redundant right after a thorough `bmad-build` review of the same change. | A dated block in the plan's `## Code Review` section, or chat |
 | `bmad-walkthrough` | The human reviews a change block by block, guided. Also a way to learn unfamiliar code. | `walkthrough-<slug>/` with the narrative and a `-log.md` |
@@ -154,7 +154,7 @@ Six named experts, each owning a phase and staying in the conversation across tu
 | Sofia, product owner — `bmad-agent-po` | Planning | Write a ticket's requirements from whatever exists, slice it into epics and stories, run the board, and replan a change mid-flight. Say what you want, or ask what she can do. |
 | Sally, UX designer — `bmad-agent-ux-designer` | Planning | Work out how the product looks and behaves. |
 | Winston, architect — `bmad-agent-architect` | Planning | Settle the technical decisions that keep the parts consistent, and check readiness. |
-| Amelia, developer — `bmad-agent-dev` | Implementation and validation | Build stories, generate tests, review code, and run a retrospective. |
+| Mason, developer — `bmad-agent-dev` | Implementation and validation | Choose the development skill and its options, and run ready tickets unattended. |
 
 An agent and its skills are two ways into the same work: a skill run directly does the job, and an agent adds a guide who knows the whole phase. `bmad-party-mode` brings the agents together in one discussion and offers the `product-team` room.
 

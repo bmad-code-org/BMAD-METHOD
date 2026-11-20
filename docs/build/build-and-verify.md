@@ -114,6 +114,8 @@ You try a tablet, then tell Sofia:
 | API and end-to-end tests for finished work | `bmad-qa-generate-e2e-tests` | [Test Completed Work](./test-completed-work.md) |
 | A story built with nobody watching, one run per story | `bmad-build-auto` | [Autonomous Development Loops](./autonomous-development-loops.md) |
 
+If you do not remember any of this, just start `bmad-agent-dev` and ask.
+
 ## Run Stories Unattended
 
 Build the early, foundational stories with `bmad-build` and give their

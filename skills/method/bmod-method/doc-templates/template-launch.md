@@ -1,11 +1,12 @@
 ---
 title: ""
 template: launch
-version: 1.1.0
+version: 1.2.0
 description: "Coordinating the release of an initiative's built work across teams."
 not_for: "Deciding what to build (`brief` or `prd`); a launch talk or slides (`pitch-deck`)."
 agents: [bmad-agent-pm]
-facilitation_order: [roles, objective, background?, audience, success-metrics, competition?, messaging, pricing?, channels-and-activities, readiness, go-or-no-go-criteria]
+mode: freeform
+facilitation_order: [roles, objective, background, audience, success-metrics, go-or-no-go-criteria, competition, messaging, pricing, channels-and-activities, readiness]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft
@@ -16,6 +17,8 @@ updated: ""
 <!-- purpose: Coordinate the release of a built feature across product, marketing, sales and support. -->
 
 <!-- stance: Settle who drives and who approves, and the go or no-go criteria, before planning activities. Ask what each team needs to be ready. -->
+
+<!-- opening: What is shipping and on what date, and who runs the launch. -->
 
 <!-- inputs: What is shipping, for whom, and the target date. Only the user knows owners, dates, pricing and channels. -->
 

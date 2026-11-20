@@ -53,8 +53,8 @@ server exposes initiative tools.
 
 query = """
 One issue: `get_issue` with includeRelations — labels, priority, state, assignee, parent,
-project, relations, description; after is the "blocked by" relations, and the description's
-covers holds the source requirement ids. Many: `list_issues` by project, parent, label, state, or
+project, relations, description; after is the "blocked by" relations, and the `covers —` lines
+in its References hold the source requirement ids. Many: `list_issues` by project, parent, label, state, or
 query words.
 """
 

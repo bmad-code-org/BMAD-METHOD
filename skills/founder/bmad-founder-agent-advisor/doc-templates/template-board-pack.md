@@ -1,14 +1,14 @@
 ---
 title: ""
 template: board-pack
-version: 1.0.0
+version: 1.1.0
 description: "The pre-read sent before a board meeting: decisions needed, metrics, plan, risks, cash."
 not_for: "The regular update to all investors when there is no board meeting (`investor-update`)."
-facilitation_order: [decisions-needed, metrics, progress-against-plan, cash, risks, discussion-topics?, summary]
+facilitation_order: [decisions-needed, metrics, progress-against-plan, cash, risks, discussion-topics, summary]
 guidance: guidance-planning
 rubric: rubric-investor-update.md
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,17 +27,17 @@ updated: ""
 
 <!-- done when: A director who reads only this pack knows each decision asked of them and the recommendation, how the company is doing against plan and last meeting, the runway as a date, and the top risks with what is being done about each. -->
 
-<!-- view: A pre-read a director absorbs the night before: decisions needed first, as cards; metrics as tiles with their trend; plan against actual as a visual; cash and runway; risks ranked. -->
+<!-- layout: A pre-read a director absorbs the night before: decisions needed first, as cards; metrics as tiles with their trend; plan against actual as a visual; cash and runway; risks ranked. -->
 
 # {title}
 
 ## Table of Contents
 
 ## Summary
-<!-- The state of the company in a short paragraph: how it is doing against plan, the decisions asked for, and the one thing the founder most wants the board's help with. Write it last. -->
+<!-- built: from the settled sections. The state of the company in a short paragraph: how it is doing against plan, the decisions asked for, and the one thing the founder most wants the board's help with. -->
 
 ## Decisions needed
-<!-- Each decision the board must take at this meeting: the question, the options, the founder's recommendation and why, and what is asked (a vote, an approval, a view). Formal items such as approving last minutes or option grants go after the real decisions. You are the director who hates being surprised: ask what the founder needs from this board, and what decision they are putting off. When a "decision" is really news, move it to Progress or Discussion topics. When nothing needs deciding, write "No decisions this meeting" and go on. Done when each decision is a question the board can answer at the meeting, with a recommendation, or the section says there are none. -->
+<!-- Each decision the board must take at this meeting: the question, the options, the founder's recommendation and why, and what is asked (a vote, an approval, a view). Formal items such as approving last minutes or option grants go after the real decisions. You are the director who hates being surprised: ask what the founder needs from this board, and what decision they are putting off. When a "decision" is really news, move it to Progress against plan or Discussion topics. When nothing needs deciding, write "No decisions this meeting" and go on. Done when each decision is a question the board can answer at the meeting, with a recommendation, or the section says there are none. -->
 
 ## Metrics
 <!-- A table of the same key metrics as the last pack: now, last meeting and plan, each dated and matching `company.md`. A metric dropped since last time gets one line saying why. -->

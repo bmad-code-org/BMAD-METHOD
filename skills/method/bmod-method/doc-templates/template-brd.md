@@ -1,11 +1,11 @@
 ---
 title: ""
 template: brd
-version: 1.1.0
+version: 1.2.0
 description: "What the business requires and signs for in an initiative a separate party builds."
 not_for: "Product work inside one organization (`opportunity`, `prd`); a funding decision (`business-case`); what the system shall do, line by line (`srs`)."
 agents: [bmad-agent-analyst]
-facilitation_order: [objectives, stakeholders, scope, current-and-future-process, business-requirements, business-rules, constraints-and-assumptions?, cost-and-benefit?, traceability, open-questions, summary, approval]
+facilitation_order: [objectives, stakeholders, scope, current-and-future-process, business-requirements, business-rules, constraints-and-assumptions, cost-and-benefit, traceability, open-questions, approval, summary]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft
@@ -23,14 +23,14 @@ updated: ""
 
 <!-- done when: Every BR-N has an owner, a source, a priority and a way to verify it; every rule has an id and an owner; nothing in the document names a screen, a field or an API; and the approval block names who signs. -->
 
-<!-- next: `status: final` does not record a signature; the approval block does. After sign-off, `prd` or `srs` picks up the BR-N and RULE-N ids and fills the traceability table's empty columns. -->
+<!-- next: `status: final` does not record a signature; the approval block does. After sign-off, `prd` or `srs` cites the BR-N and RULE-N ids in its own requirements, and a later Update of this BRD fills the traceability table's empty columns. -->
 
 # {title}
 
 ## Table of Contents
 
 ## Summary
-<!-- What the business wants changed, for whom, and why now, in a short paragraph. -->
+<!-- built: from the settled sections. What the business wants changed, for whom, and why now, in a short paragraph. -->
 
 ## Objectives
 <!-- The measurable outcomes this serves, short, citing the business case or charter when one exists. -->
@@ -57,7 +57,7 @@ updated: ""
 <!-- include when: no business case exists. Rough cost, expected benefit and who bears each. -->
 
 ## Traceability
-<!-- A table: BR-N, then empty columns for the `prd` or `srs` line, the test and the ticket, which later documents fill in. -->
+<!-- A table: BR-N, then empty columns for the `prd` or `srs` line, the test and the ticket, which a later Update fills in from the documents that cite each id. -->
 
 ## Open questions
 <!-- Each with an owner and what it blocks. -->

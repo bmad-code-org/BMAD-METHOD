@@ -53,7 +53,7 @@ The BMad Method module installs six named agents. Load one with its skill ID, th
 | Product Manager (John) | `bmad-agent-pm`          | `CREATE`, `UPDATE`, `VALIDATE`                                      | Create or update a PRD or another document that defines what gets built or how it ships; validate one into review findings                                                                                           |
 | Product Owner (Sofia)  | `bmad-agent-po`          | `SPEC`, `TICKETS`, `REFINE`, `BOARD`, `VALIDATE`, `REPLAN`, `STORE` | Requirements from a PRD, brief, or notes into a ticket; slice an initiative or epic; refine a ticket; the board; validation; replan a mid-flight change; tracker setup                            |
 | Architect (Winston)    | `bmad-agent-architect`   | `ARCHITECTURE`                                                      | Architecture spine                                                                                                                                                                                |
-| Developer (Amelia)     | `bmad-agent-dev`         | `BUILD`, `TESTS`, `REVIEW`, `RETRO`                                 | Build; QA test generation; code review; epic retrospective                                                                                                                                        |
+| Developer (Mason)     | `bmad-agent-dev`         | `BUILD`, `UNATTENDED`, `REVIEW`, `WALKTHROUGH`, `TESTS`, `RETRO` | Build; unattended runs of ready tickets; code review and how much of it; walkthrough; QA test generation; epic retrospective |
 | UX Designer (Sally)    | `bmad-agent-ux-designer` | `DESIGN`                                                            | UX design                                                                                                                                                                                         |
 
 The Founder module adds Nadia the Founder Advisor (`bmad-founder-agent-advisor`). An experienced founder who coaches others, she tests whether an idea has demand, coaches seventeen business documents through `bmad-facilitate` (from a startup diagnostic and pricing to a fundraising plan, pitch deck and board pack), runs runway, unit economics and cap table math by script, turns customer interviews into evidence, works the investor pipeline with meeting prep and an objection bank, reads term sheets in plain words, and hosts a pitch room where investor personas make offers or pass. She keeps the company's facts, the funders and the decisions in a business record folder you choose at `bmad setup founder` (default `company/`), so every document quotes the same figures and any agent can read them. Install Founder in the folder where you plan the business, such as a notes vault, and ask for Nadia, the founder advisor or the advisor.
@@ -149,7 +149,7 @@ Pressure-tests a half-formed idea in a questioning conversation, one question at
 
 ### bmad-facilitate
 
-Coaches you through one document from a template library, then updates or validates it. It reads your inputs, asks only what you alone know, reviews the draft against a rubric, and polishes it. Rigor follows the stakes you state. It ships no templates itself; modules do. The BMad Method adds `decision-record`, `postmortem` and `security-review`, the Founder module adds seventeen business templates such as `startup-diagnostic`, `pricing`, `fundraising-plan`, `proposal` and `pitch-deck`, and the Creative Intelligence Suite adds `character` from its 0.4.0 release. Your team can add its own, replace a shipped one, or add rules to one; see [Write a Document Template](../customize/write-a-document-template.md). Planning documents such as PRDs belong to John (`bmad-agent-pm`), the brief, the PRFAQ and the BRD to Mary (`bmad-agent-analyst`), and the Founder templates to Nadia (`bmad-founder-agent-advisor`).
+Coaches you through one document from a template library, then updates or validates it. It reads your inputs, asks only what you alone know, reviews the draft against a rubric, and polishes it. Rigor follows the stakes you state. It ships only the template for writing templates; modules ship the rest. The BMad Method adds `decision-record`, `postmortem` and `security-review`, the Founder module adds seventeen business templates such as `startup-diagnostic`, `pricing`, `fundraising-plan`, `proposal` and `pitch-deck`, and the Creative Intelligence Suite adds `character` from its 0.4.0 release. Your team can add its own, replace a shipped one, or add rules to one; see [Write a Document Template](../customize/write-a-document-template.md). Planning documents such as PRDs belong to John (`bmad-agent-pm`), documents that decide whether and why to go ahead, such as the brief, the PRFAQ, the business case and the BRD, to Mary (`bmad-agent-analyst`), and the Founder templates to Nadia (`bmad-founder-agent-advisor`).
 
 **Output:** `<id>-<slug>.md` in its own folder, any companion files the template asks for, and an optional HTML view, which a pitch deck renders as slides.
 
@@ -159,7 +159,7 @@ Coaches you through one document from a template library, then updates or valida
 
 ### bmad-party-mode
 
-Puts your installed agents, or custom personas, in one conversation, in character, with you steering. A mode setting decides whether one model voices everyone or separate agents think independently, and you can save custom parties for reuse. See [Run Multi-Agent Discussions](../customize/run-multi-agent-discussions.md).
+Puts your installed agents, or custom personas, in one conversation, in character, with you steering. A mode setting decides whether one model voices everyone or each persona gets its own agent, and you can save custom parties for reuse. See [Run Multi-Agent Discussions](../customize/run-multi-agent-discussions.md).
 
 ### bmad-shard-pro
 
@@ -206,7 +206,7 @@ The Toolsmith module is for authoring skills and is installed separately. See [T
 
 ## Deprecated Names
 
-Earlier skill IDs, such as `bmad-create-prd`, `bmad-edit-prd`, `bmad-market-research`, `bmad-generate-project-context`, and `bmad-checkpoint-preview`, still resolve as forwarders to the current skill. Use the current names in new work.
+Earlier skill IDs, such as `bmad-create-prd`, `bmad-edit-prd`, `bmad-market-research`, `bmad-generate-project-context`, and `bmad-checkpoint-preview`, are removed and no longer forward to the current skill. `bmad setup` offers to delete any still installed. Use the current names.
 
 ## Naming and Modules
 

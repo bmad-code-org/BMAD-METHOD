@@ -39,7 +39,7 @@ Each role on a team has an agent to work through.
 | Product owner      | Sofia (`bmad-agent-po`)          | Writes the initiative, its epics, and their stories; runs the board                                                                                                                                      |
 | UX designer        | Sally (`bmad-agent-ux-designer`) | Runs `bmad-ux`                                                                                                                                                                                           |
 | Architect          | Winston (`bmad-agent-architect`) | Runs `bmad-architecture`                                                                                                                                                                                 |
-| Developer          | Amelia (`bmad-agent-dev`)        | Runs `bmad-build`, `bmad-code-review`, `bmad-qa-generate-e2e-tests`, and `bmad-retrospective`                                                                                                            |
+| Developer          | Mason (`bmad-agent-dev`)        | Knows the development skills and picks the one that fits; runs `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-walkthrough`, `bmad-qa-generate-e2e-tests`, and `bmad-retrospective`           |
 
 Each agent runs the skills named, and calling a skill directly does the same
 work. Say what you want in plain words. Ask an agent what it can do and it
@@ -136,7 +136,7 @@ word things differently.
 Size decides how many build sessions the work needs. Stakes, from a hobby
 project to regulated or contracted work, decide how heavy the planning gets.
 A large hobby project keeps planning light; a small change to a regulated
-system may not. [Write a PRD](../plan/write-a-prd.md#2-choose-the-path) lists
+system may not. [Write a PRD](../plan/write-a-prd.md#2-choose-the-mode) lists
 what each level changes. Risk, unclear requirements, broad architectural
 reach, or several people involved push work up from one session even when it
 is small.

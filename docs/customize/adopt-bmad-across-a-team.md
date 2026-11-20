@@ -13,7 +13,7 @@ committed to the repository so everyone inherits it on pull.
 Pick the surface this way:
 
 - The rule applies wherever an engineer does dev work: customize the **dev agent**.
-- The rule applies only to one workflow, such as writing a product brief: customize **that workflow**.
+- The rule applies only to one workflow, such as writing planning documents: customize **that workflow**. For one kind of document, such as the product brief, extend **its template**.
 - The change alters who is on the roster, or a path the whole team shares: edit **central config**.
 
 For how override files merge with the shipped defaults, see
@@ -22,8 +22,7 @@ mechanics; it shows what to write.
 
 :::tip[Applying these recipes]
 Run the `bmad-customize` skill and describe the intent; it writes the
-override file for recipes 1 through 3 and 6 and verifies the merge. Recipe
-4 is a template file you copy and edit; recipe 5, the agent roster in central config, is hand-authored.
+file for recipes 1 through 4 and 6 and verifies the merge. Recipe 5, the agent roster in central config, is hand-authored.
 :::
 
 Every per-skill recipe has a team form and a personal form. `bmad-agent-dev.toml`
@@ -39,7 +38,7 @@ Use this to standardize tool use and external systems for all dev work.
 One file applies to every workflow the agent runs — build, code review,
 test generation — and every engineer who pulls the repo inherits it.
 
-**Example:** Amelia always uses Context7 for library docs and falls back to
+**Example:** Mason always uses Context7 for library docs and falls back to
 Linear when a ticket is not in the ticket tree.
 
 ```toml
@@ -139,7 +138,7 @@ the output.
 
 Use this when the shipped structure does not match the format your organization expects. `bmad-facilitate` searches that folder first and the installed modules last, so a file there with the same `template:` id replaces the shipped one for John, Mary and anyone who calls the engine directly.
 
-Copy the shipped brief from `bmod-method/doc-templates/template-brief.md` in your skills folder, with `brief-view.html` beside it, which its `view` names. Keep `template: brief` and the other frontmatter keys, and edit the copy. Here the description changes:
+Copy the shipped brief from `bmod-method/doc-templates/template-brief.md` in your skills folder, with `brief-view.html` beside it, which its `layout` names. Keep `template: brief` and the other frontmatter keys, and edit the copy. Here the description changes:
 
 ```markdown
 ---

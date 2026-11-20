@@ -1,0 +1,90 @@
+[
+  {
+    "query": "Mason, should I walk through 2.3 myself before I call it done?",
+    "should_trigger": true
+  },
+  {
+    "query": "ask the developer agent how I should build this: it's a schema migration plus a backfill and I'm nervous about it",
+    "should_trigger": true
+  },
+  {
+    "query": "how much review does story 2.3 need? it touches the payment retry logic",
+    "should_trigger": true
+  },
+  {
+    "query": "the build of ticket 1.4 is blocked with 'intent gap', what do I do now?",
+    "should_trigger": true
+  },
+  {
+    "query": "retry the blocked ticket in the notifications epic",
+    "should_trigger": true
+  },
+  {
+    "query": "run the rest of the checkout epic unattended tonight and tell me what happened in the morning",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm heading out for a few hours, build the ready tickets while I am away",
+    "should_trigger": true
+  },
+  {
+    "query": "is another review pass worth it on 3.1, or am I just burning tokens?",
+    "should_trigger": true
+  },
+  {
+    "query": "talk to the dev agent: should 2.5 go through bmad-build or bmad-build-auto?",
+    "should_trigger": true
+  },
+  {
+    "query": "hey Mason, the unattended run left a patch file next to the plan and reverted the code, what is that for?",
+    "should_trigger": true
+  },
+  {
+    "query": "implement story 2.3",
+    "should_trigger": false
+  },
+  {
+    "query": "fix the bug where empty passwords pass login validation",
+    "should_trigger": false
+  },
+  {
+    "query": "run code review on this branch",
+    "should_trigger": false
+  },
+  {
+    "query": "what's ready? where are we on the checkout initiative",
+    "should_trigger": false
+  },
+  {
+    "query": "the rate limit requirement changed while we were building, what now",
+    "should_trigger": false
+  },
+  {
+    "query": "slice the checkout epic into stories",
+    "should_trigger": false
+  },
+  {
+    "query": "review my PRD and tell me if it's ready for engineering",
+    "should_trigger": false
+  },
+  {
+    "query": "create API and e2e tests for the login flow",
+    "should_trigger": false
+  },
+  {
+    "query": "let's retro the notifications epic",
+    "should_trigger": false
+  },
+  {
+    "query": "why is my docker build blocked on the apt-get step?",
+    "should_trigger": false
+  },
+  {
+    "query": "design the architecture for the notification service",
+    "should_trigger": false
+  },
+  {
+    "query": "what should I do next with bmad?",
+    "should_trigger": false
+  }
+]
