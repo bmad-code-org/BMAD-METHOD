@@ -35,8 +35,8 @@ The PRD is the document the organization owns. It is written by John, the
 Product Manager (`bmad-agent-pm`), validated by him, and updated through him; nothing else in the chain claims to
 say what the product is. Brainstorming, Forge Idea, Deep Recon, a product
 brief, and a PRFAQ exist to get the PRD written well. When the organization
-asks for a business case, a program charter, or a requirements specification
-for audited or contracted work, John writes those too; Mary (`bmad-agent-analyst`) writes a business requirements document. Everything after the PRD
+asks for a program charter, or a requirements specification
+for audited or contracted work, John writes those too; Mary (`bmad-agent-analyst`) writes a business case or a business requirements document. Everything after the PRD
 is derived from it:
 
 - `bmad-ux` writes `DESIGN.md` and `EXPERIENCE.md` in its own `ux-<slug>/` folder, as input beside the PRD.

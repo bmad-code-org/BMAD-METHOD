@@ -1,15 +1,15 @@
 ---
 title: ""
 template: startup-diagnostic
-version: 1.0.0
+version: 1.1.0
 description: "Hard questions on whether an idea has real demand, ending in one dated assignment."
 not_for: "The whole business on one page (`lean-canvas`); running the demand test the assignment names (`validation-experiment`); the questions to ask customers (`customer-interview-script`)."
-paced: true
-facilitation_order: [stage, demand, status-quo, who-needs-it-most, smallest-paid-version?, what-surprised-you?, three-years-out?, what-the-answers-show, assignment]
+order: fixed
+facilitation_order: [stage, demand, status-quo, who-needs-it-most, smallest-paid-version, what-surprised-you, three-years-out, what-the-answers-show, assignment]
 guidance: guidance-planning
 rubric: rubric-startup-diagnostic.md
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -28,7 +28,7 @@ updated: ""
 
 <!-- done when: Each answer names a real person, behaviour or amount, or says plainly that the founder does not know yet; the read says where the evidence is strong and where it is missing; and the assignment is one task with a date and a result that would change the plan. -->
 
-<!-- view: A one-page read for the founder. What the answers show leads; the stage sits as a marker on the line from no product to paying customers; each answer is a card showing how strong its evidence is; the assignment closes the page as the call to action, with its date. -->
+<!-- layout: A one-page read for the founder. What the answers show leads; the stage sits as a marker on the line from no product to paying customers; each answer is a card showing how strong its evidence is; the assignment closes the page as the call to action, with its date. -->
 
 # {title}
 
@@ -50,7 +50,7 @@ updated: ""
 <!-- include when: no paying customers yet. The smallest thing someone would pay for this week, even if it is done by hand behind the scenes. Founders often want to build the whole product first; ask what could be sold before it exists, to whom, and for how much. Done when the version, its price and the first person to offer it to are named. -->
 
 ## What surprised you
-<!-- include when: the product has users. Something the founder saw while watching a user that they did not expect. No surprise usually means they have not watched closely; ask when they last sat with a user and what that user did first. Done when the answer is something seen, not something said in a survey. -->
+<!-- include when: the product has users or paying customers. Something the founder saw while watching a user that they did not expect. No surprise usually means they have not watched closely; ask when they last sat with a user and what that user did first. Done when the answer is something seen, not something said in a survey. -->
 
 ## Three years out
 <!-- include when: the product has users or paying customers. Whether this becomes more essential or less in three years, and the change in the world that drives it. Ask what would make it unnecessary: a large platform adding it as a feature, a change in the rules, a cheaper way to do the job. Done when the driver is named and the founder has said what would end it. -->

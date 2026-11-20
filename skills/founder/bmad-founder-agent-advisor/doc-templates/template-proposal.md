@@ -1,14 +1,14 @@
 ---
 title: ""
 template: proposal
-version: 1.1.0
+version: 1.2.0
 description: "Asking someone for money, time or approval, such as a grant or bid."
 not_for: "A talk with slides (`pitch-deck`); an application to an accelerator (`accelerator-application`); planning a whole raise (`fundraising-plan`)."
-facilitation_order: [need, goals-and-outcomes, approach, alternatives?, team-and-track-record?, evaluation?, budget, risks, sustainability?, deliverables-and-terms?, summary]
+facilitation_order: [need, goals-and-outcomes, approach, alternatives, team-and-track-record, evaluation, budget, risks, sustainability, deliverables-and-terms, summary]
 guidance: guidance-planning
 rubric: rubric-proposal.md
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -21,20 +21,20 @@ updated: ""
 <!-- inputs: Who decides and what they weigh; the ask and its deadline; evidence of need; the plan, team and budget. Only the user knows the real budget and what in it is negotiable, and the history with this reader. -->
 
 <!-- writing:
-  - The summary's first sentence names the ask, its size and its deadline; write it last.
+  - The summary's first sentence names the ask, its size and its deadline.
   - Every figure traces to the budget.
 -->
 
 <!-- done when: The ask is explicit and sized, every criterion the reader stated is answered where a reviewer will look, and budget, plan and timeline agree. -->
 
-<!-- view: Laid out for the person who decides: the ask and summary first, the budget as a table with a breakdown visual, and the reader's own headings in their order. -->
+<!-- layout: Laid out for the person who decides: the ask and summary first, the budget as a table with a breakdown visual, and the reader's own headings in their order. -->
 
 # {title}
 
 ## Table of Contents
 
 ## Summary
-<!-- The ask, what it achieves, for whom, by when. -->
+<!-- built: from the settled sections. The ask, what it achieves, for whom, by when. -->
 
 ## Need
 <!-- The problem or opportunity, who has it, the evidence, why now. -->

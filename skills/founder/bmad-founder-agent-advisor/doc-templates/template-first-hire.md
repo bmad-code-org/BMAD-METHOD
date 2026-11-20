@@ -1,14 +1,15 @@
 ---
 title: ""
 template: first-hire
-version: 1.0.0
+version: 1.1.0
 description: "Deciding whether to hire now, and the scorecard, cost and test for the role."
 not_for: "Agreeing roles and equity between co-founders (`cofounder-agreement`); the company's goals for the next quarter (`ninety-day-plan`)."
-facilitation_order: [why-now, alternatives, cost, scorecard?, finding-candidates?, testing-candidates?, questions-for-a-lawyer-or-accountant?, decision]
+facilitation_order: [why-now, alternatives, cost, decision, scorecard, finding-candidates, testing-candidates, questions-for-a-lawyer-or-accountant]
 guidance: guidance-planning
 rubric: rubric-planning
 agents: [bmad-founder-agent-advisor]
-html_view: always
+order: fixed
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,14 +28,14 @@ updated: ""
 
 <!-- done when: A reader can say whether to hire now and why, and what the hire would cost in cash, equity and runway; when the decision is to hire, also what this person must deliver by day 90 and how a candidate will be tested against the scorecard. -->
 
-<!-- view: The case for the hire up top, its cost in runway shown before and after, and the role laid out as a job description the founder can share. -->
+<!-- layout: The case for the hire up top, its cost in runway shown before and after, and the role laid out as a job description the founder can share. -->
 
 # {title}
 
 ## Table of Contents
 
 ## Decision
-<!-- Hire now, hire later when a named condition is met, or do not hire; the role; the start date wanted. Write it last. -->
+<!-- Hire now, hire later when a named condition is met, or do not hire; the role; the start date wanted. Settle it once the cost is clear and before the role is shaped. -->
 
 ## Why now
 <!-- The work that is not getting done, who does it today, and what the delay costs in customers, revenue or the founder's time, with evidence. Ask what the founder would stop doing if this person started tomorrow, and what would break if no one is hired for six months. When the role belongs to a stage the company has not reached, such as a head of sales before anyone has paid, say so. Done when the cost of not hiring is as specific as the cost of hiring. -->

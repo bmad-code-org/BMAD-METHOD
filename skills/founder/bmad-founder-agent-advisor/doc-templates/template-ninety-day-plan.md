@@ -1,14 +1,14 @@
 ---
 title: ""
 template: ninety-day-plan
-version: 1.0.0
+version: 1.1.0
 description: "The next ninety days: two or three goals, a metric each, owners and check-in dates."
 not_for: "Testing whether demand is real (`startup-diagnostic`, `validation-experiment`); the plan for a raise (`fundraising-plan`); reporting the last period to investors (`investor-update`); taking a product to market (`launch-plan`)."
-facilitation_order: [starting-point, goals, not-doing, check-ins, risks?]
+facilitation_order: [starting-point, goals, not-doing, check-ins, risks]
 guidance: guidance-planning
 rubric: rubric-planning
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,7 +27,7 @@ updated: ""
 
 <!-- done when: Anyone in the company could name the goals, the metric and owner of each, what is off the list, and when progress is checked. -->
 
-<!-- view: The plan on one page: the goals as large cards with their measures, the weeks as a timeline, and what is not being done listed plainly. -->
+<!-- layout: The plan on one page: the goals as large cards with their measures, the weeks as a timeline, and what is not being done listed plainly. -->
 
 # {title}
 

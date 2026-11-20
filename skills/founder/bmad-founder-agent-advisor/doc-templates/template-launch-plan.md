@@ -1,14 +1,14 @@
 ---
 title: ""
 template: launch-plan
-version: 1.0.0
+version: 1.1.0
 description: "Taking a product to market: customer, message, channels, launch weeks and target."
 not_for: "Testing demand before the product exists (`validation-experiment`); the positioning and one-liner (`positioning`); a talk with slides (`pitch-deck`)."
 facilitation_order: [who-it-is-for, message, what-counts-as-working, channels, week-by-week]
 guidance: guidance-planning
 rubric: rubric-planning
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,7 +27,7 @@ updated: ""
 
 <!-- done when: Someone helping could see what happens each week and who does it, and the founder knows the number, the date it is read, and what they will do if it is missed. -->
 
-<!-- view: The launch as a timeline of weeks with each channel and owner, the success number as a visible target, and the message the launch carries. -->
+<!-- layout: The launch as a timeline of weeks with each channel and owner, the success number as a visible target, and the message the launch carries. -->
 
 # {title}
 

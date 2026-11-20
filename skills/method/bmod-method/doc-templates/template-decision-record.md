@@ -1,11 +1,10 @@
 ---
 title: ""
 template: decision-record
-version: 1.1.0
+version: 1.2.0
 description: "Recording any decision: context, options, choice and consequences."
 not_for: "Asking someone to approve the choice (`proposal`)."
-paced: true
-facilitation_order: [context, decision-drivers?, options-considered, decision, consequences, confirmation?, links?, status]
+facilitation_order: [context, decision-drivers, options-considered, decision, consequences, confirmation, links, status]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft
@@ -16,6 +15,8 @@ updated: ""
 <!-- purpose: Record one decision so a later reader knows what was chosen, what else was on the table, why this won, and what it costs. -->
 
 <!-- stance: Keep it short; most records fit on a page whatever the stakes. Press on the options and the drivers. -->
+
+<!-- opening: The decision in one line, and whether it is already made or still open, which decides whether the record argues the options or documents the choice. -->
 
 <!-- inputs: The choice, who decides, by when, and the forces at play. Only the user knows which drivers weighed most, what was ruled out in conversation, and who was consulted. -->
 

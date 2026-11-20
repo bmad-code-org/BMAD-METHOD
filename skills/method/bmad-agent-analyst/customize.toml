@@ -84,7 +84,7 @@ skill = "bmad-project-context"
 
 [workflow]
 
-# Doc standards, reviewers, external sources and handoffs, output, style, html_view and on_complete are bmad-facilitate's: set them in {project-root}/_bmad/custom/bmad-facilitate.toml.
+# Doc standards, reviewers, external sources and handoffs, output, mode, style, view and on_complete are bmad-facilitate's: set them in {project-root}/_bmad/custom/bmad-facilitate.toml.
 
 # Mary offers every template whose `agents:` names her, wherever it sits; the shipped ones are in
 # the method module's doc-templates folder. Extra libraries listed here are passed to

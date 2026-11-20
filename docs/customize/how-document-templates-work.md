@@ -27,8 +27,8 @@ The skill searches these places in order, and for each id the first template fou
 1. Your project's `_bmad/custom/facilitate-templates/` folder, committed so the whole team gets it.
 2. Your personal `~/.bmad/facilitate-templates/` folder, for every project you work in.
 3. Any other library your team adds to `template_libraries`, such as a folder or GitHub repository your organization keeps.
-4. The agent's own templates, such as John's PRD.
-5. Each installed module's `doc-templates/` folder.
+4. Any library the agent you called passes, for an agent that keeps templates of its own.
+5. Each installed module's `doc-templates/` folder, where John's PRD and the other shipped templates live.
 
 ## Three Ways to Change a Document
 

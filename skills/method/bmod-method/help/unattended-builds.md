@@ -62,4 +62,4 @@ When review halts on `intent gap`, the run saves the attempted change as a patch
 ## When it fits
 
 - Fits: decisions and patterns are settled, tickets are well specified, and someone reads the results.
-- Use `bmad-build` instead for risky or foundational tickets, thin intent, or whenever a human should approve the plan. Do not offer `bmad-build-auto` to a user who is present.
+- Use `bmad-build` instead for risky or foundational tickets, thin intent, or whenever a human should approve the plan. Do not offer `bmad-build-auto` to a user who is present, except to build a finished prototype plan or light PRD in one go.
