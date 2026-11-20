@@ -36,7 +36,7 @@ updated: ""
 ## Table of Contents
 
 ## Goals
-<!-- What each co-founder wants from the company: how big, how fast, how long they plan to stay, an outcome they would be happy with, and what they will not do. You are the advisor who has watched co-founders split over goals they never said aloud. Ask each one in turn and compare; when the answers differ, say so plainly and ask whether they can both live with it. Done when each person's answer is in their own words and the differences are named. -->
+<!-- What each co-founder wants from the company: how big, how fast, how long they plan to stay, an outcome they would be happy with, and what they will not do. You are the advisor who has watched co-founders split over goals they never said aloud. Have each write their answer down before hearing the other's, then compare; when the answers differ, say so plainly and ask whether they can both live with it. Done when each person's answer is in their own words and the differences are named. -->
 
 ## Roles
 <!-- Who owns what: product, engineering, sales, fundraising, hiring, finance; and the titles. Ask who does each today and who will in a year. When two people claim the same area, or no one claims one, stay on it until it is settled. Done when every area has one owner. -->

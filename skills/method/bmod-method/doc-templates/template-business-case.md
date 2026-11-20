@@ -5,7 +5,7 @@ version: 1.2.0
 description: "Funding approval for an initiative: cost, expected return, go or no-go."
 not_for: "Whether the problem is worth pursuing (`opportunity`); one mandate over several initiatives (`charter`); requirements to build from (`prd`)."
 agents: [bmad-agent-analyst]
-facilitation_order: [sponsors, hypothesis, business-outcomes, leading-indicators, background, scope, nonfunctional-requirements, mvp-and-what-follows, cost, return, recommendation]
+facilitation_order: [sponsors, hypothesis, business-outcomes, leading-indicators, background, scope, nonfunctional-requirements, mvp-and-what-follows, cost, return, recommendation, for-requirements]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft
@@ -19,7 +19,7 @@ updated: ""
 
 <!-- inputs: The sponsor, cost estimates, expected return and its basis: only the user or their finance partner has these. -->
 
-<!-- writing: One page, two at most. When the work has a ticket, give each outcome, capability and rule a stable id and list those ids in a closing `## For requirements` section, which the Product Owner reads. -->
+<!-- writing: One page, two at most. When the work has a ticket, give each outcome, capability and rule a stable id. -->
 
 <!-- done when: A funder could decide go or no-go from this document alone, and every figure names its source. -->
 
@@ -59,3 +59,6 @@ updated: ""
 
 ## Recommendation
 <!-- Go or no-go, and the reason. -->
+
+## For requirements
+<!-- include when: the work has a ticket. built: from the other sections. The stable ids of each outcome, capability and rule, listed for the Product Owner. -->

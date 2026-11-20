@@ -56,7 +56,7 @@ The BMad Method also ships the planning templates for John, the Product Manager 
 | Spec for a coding agent | John | One feature | A feature outside the ticket tree, with tests and acceptance |
 | Launch plan | John | Initiative | Coordinating a built feature's release across teams |
 
-The first seven come before you commit, in Clarify; the rest plan and ship the work. Each is walked one section at a time by default, except the launch plan, which starts freeform; the PRFAQ, the experiment card, the opportunity assessment and the pitch keep their order even when you ask for freeform. A brief from Mary feeds the PRD, but neither requires the other. A business case or strategy narrative stays in prose and ends with a `## For requirements` list of ids, so Sofia can write the initiative from it without a PRD.
+The first seven come before you commit, in Clarify; the rest plan and ship the work. Each is walked one section at a time by default, except the launch plan, which starts freeform, and the agent spec, which starts fast; the PRFAQ, the experiment card, the opportunity assessment and the pitch keep their order even when you ask for freeform. A brief from Mary feeds the PRD, but neither requires the other. A business case or strategy narrative stays in prose and ends with a `## For requirements` list of ids, so Sofia can write the initiative from it without a PRD.
 
 ## What a template can do
 
