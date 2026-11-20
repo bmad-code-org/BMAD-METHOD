@@ -4,7 +4,7 @@ Open this when the user asks what `bmad-facilitate` can write, how to call it wi
 
 ## What it is for
 
-It coaches the user through one document from a template, and later updates or validates it. Any document works, software or not. The user supplies what only they know; the skill reads their inputs, finds facts, reviews the draft and polishes it. Rigor follows the stakes where the template names them; the shipped templates run from a hobby project to regulated or contracted work. A PRD goes to John (`bmad-agent-pm`); a product brief, PRFAQ or BRD to Mary (`bmad-agent-analyst`).
+It coaches the user through one document from a template, and later updates or validates it. Any document works, software or not. The user supplies what only they know; the skill reads their inputs, finds facts, reviews the draft and polishes it. Rigor follows the stakes where the template names them; the shipped templates run from a hobby project to regulated or contracted work. A PRD goes to John (`bmad-agent-pm`); a product brief, PRFAQ, business case or BRD to Mary (`bmad-agent-analyst`); a founder's business document to Nadia (`bmad-founder-agent-advisor`).
 
 - Every interactive run opens the same way: at most two questions (the template's own, else what the user is making and who it is for), an invitation to say everything at once, "anything else?", then a read-back. Unless the run is fast, the questions whose answers change several sections come next, before the first section.
 - A run is in one of three modes. Step-by-step, the default, takes one section at a time in order. Freeform works the sections in any order and grouping that fits, each shown to the user before the review; John's launch plan starts that way, and his agent spec starts fast. Fast drafts first and then walks the guesses. A template's `mode` sets where its runs start; a team or one person sets `mode` once through `bmad-customize`, which then wins over every template's; the user can switch for one run by asking.
@@ -26,11 +26,11 @@ Core tools ships only the template for writing templates. Each module's template
 | `decision-record` | Method | Any decision worth recording: context, options, choice, consequences. |
 | `postmortem` | Method | Something went wrong and the team needs causes and actions, blamelessly. The timeline is drawn as a diagram, and it also writes a customer notice when customers were told. |
 | `security-review` | Method | Reviewing a system against the OWASP Top 10 or STRIDE. The standard's items drive the questions; another standard needs its rows added to the catalog first. |
-| `proposal` | Founder | Asking for money, time or approval: a grant, a bid, an internal request. The reader's own guidelines replace its headings. |
-| `pitch-deck` | Founder | A talk or pitch that needs a story and slides. It always renders as an HTML slide view unless the team's or user's `view` setting says otherwise. |
+| `proposal` | Founder, through Nadia | Asking for money, time or approval: a grant, a bid, an internal request. The reader's own guidelines replace its headings. |
+| `pitch-deck` | Founder, through Nadia | A talk or pitch that needs a story and slides. It always renders as an HTML slide view unless the team's or user's `view` setting says otherwise. |
 | `character` | Creative Intelligence Suite 0.4.0 and later | A fictional character for a story, game or campaign. The coach proposes options, and each character gets its own one-page HTML sheet unless the team's or user's `view` setting says otherwise. |
 
-Method also ships John's planning templates and Mary's analysis templates, which Method's own help covers.
+Method also ships John's planning templates and Mary's analysis templates, which Method's own help covers. Founder ships fifteen more business templates, which Nadia offers and Founder's own help covers.
 
 ## Listing what it can coach
 
