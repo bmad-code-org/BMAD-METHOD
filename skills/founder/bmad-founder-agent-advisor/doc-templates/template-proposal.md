@@ -21,7 +21,7 @@ updated: ""
 <!-- inputs: Who decides and what they weigh; the ask and its deadline; evidence of need; the plan, team and budget. Only the user knows the real budget and what in it is negotiable, and the history with this reader. -->
 
 <!-- writing:
-  - The summary's first sentence names the ask, its size and its deadline; write it last.
+  - The summary's first sentence names the ask, its size and its deadline.
   - Every figure traces to the budget.
 -->
 

@@ -10,7 +10,7 @@ When the document plans work the ticket tree will hold, an initiative is active 
 
 Read the stakes as one of: hobby or personal use, internal, pitch or investor, publication, public launch, regulated or contracted.
 
-- At hobby stakes, one line fills a section. Skip reconciliation unless the user wants it, and run the rubric walker or no reviewer, with no fresh reader and without naming them first.
+- At hobby stakes, one line fills a section. Skip reconciliation unless the user wants it, and run no reviewers.
 - Below regulated or contracted stakes, default and tag. At them, ask instead, and invent no regulation, citation or threshold. An obligation the user did not name, from you or a reviewer, is an open question; headless, so is anything you would have asked.
 - Only at launch, regulated or contracted stakes may a review fix make the document longer.
 

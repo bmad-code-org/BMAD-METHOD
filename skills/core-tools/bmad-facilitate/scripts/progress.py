@@ -91,7 +91,7 @@ def main(argv: list[str]) -> int:
     if missing:
         print(json.dumps({"error": f"missing: {', '.join(missing)}"}))
         return 2
-    texts = [p.read_text(encoding="utf-8") for p in paths]
+    texts = [p.read_text(encoding="utf-8-sig") for p in paths]
     print(json.dumps(progress(*texts), indent=2, ensure_ascii=False))
     return 0
 

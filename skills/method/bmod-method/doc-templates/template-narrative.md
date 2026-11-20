@@ -55,4 +55,4 @@ updated: ""
 <!-- optional. Data tables and detail the body cites. -->
 
 ## For requirements
-<!-- include when: the work has a ticket. built: from the other sections. The stable ids of each outcome, capability and rule, listed for the Product Owner; the one list the no-bullets rule allows. -->
+<!-- include when: the work has a ticket. Assembled from the settled sections, with nothing asked for it: a table of the stable ids of each outcome, capability and rule, for the Product Owner; the one table outside the appendix. -->

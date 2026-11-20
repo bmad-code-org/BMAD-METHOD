@@ -88,7 +88,7 @@ Talk to John (`bmad-agent-pm`):
 John, let's create a PRD for text message appointment reminders.
 ```
 
-John coaches the PRD as usual, and tells you up front that your project adds rules to it. In fast mode he raises both rules in his first batch of questions; otherwise he raises each as the conversation reaches its section. When the conversation reaches Success metrics, he offers metrics from your catalog, such as no-show rate. Propose one the catalog lacks, such as "patient happiness", and he says it is not in the catalog and records an open question for its owner instead of defining it himself. After MVP scope he asks who leads Support for the launch, then walks you through the first week of tickets. Answer "Support will figure it out" and he presses for the answers.
+John coaches the PRD as usual. In fast mode he raises both rules in his first batch of questions; otherwise he raises each as the conversation reaches its section. When the conversation reaches Success metrics, he offers metrics from your catalog, such as no-show rate. Propose one the catalog lacks, such as "patient happiness", and he says it is not in the catalog and records an open question for its owner instead of defining it himself. After MVP scope he asks who leads Support for the launch, then walks you through the first week of tickets. Answer "Support will figure it out" and he presses for the answers.
 
 ## Step 4: See What the Coach Read
 

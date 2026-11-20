@@ -45,7 +45,7 @@ stakes change how hard he pushes and what he fills in without you:
 
 | Stakes | What changes |
 | --- | --- |
-| Hobby or personal | One line can fill a section; a light review, or none |
+| Hobby or personal | One line can fill a section; no reviewers run |
 | Internal, pitch or investor, publication, public launch | He fills gaps himself, tags each `[ASSUMPTION]`, and pushes back harder as the stakes rise |
 | Regulated or contracted | He asks instead of guessing, and invents no regulation, citation, or threshold |
 

@@ -52,7 +52,7 @@ updated: ""
 | `agents` | Optional list of the skills that offer this template, such as `[bmad-agent-pm]`; name several to share it. It says who offers the template by default; any agent the user asks can still write it. The `bmad` skill uses the list to say who offers the template. A template in an agent's `assets/` folder counts as that agent's without it. |
 | `rubric` | Optional path to a rubric for the review, relative to the template, or the bare name `rubric-planning` for the shipped planning rubric. Empty uses the shipped general rubric, which suits any document. |
 | `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
-| `output` | Optional run folder for this template. It may use `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
+| `output` | Optional run folder for this template, or a path ending in `.md` for the document itself. It may use `{project-root}`, `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
 | `style` | Optional CSS file for this template's rendered view, relative to the template. |
 | `layout` | Optional layout for the rendered view: `document`, `slides`, or an HTML file relative to the template. It says what the view looks like, not whether it is made. See [Give a template its own view](#give-a-template-its-own-view). |
 | `view` | Optional. Whether this template's view is made: `always`, `offer` or `never`. A team's or user's `view` wins over it. Set `always` when the view is the deliverable, as `pitch-deck` does for its slides. |
@@ -185,7 +185,7 @@ Set `order: fixed` when an earlier section must be settled before a later one is
 
 Each section comment is the brief for that part of the session. A voice, stance or method it sets, such as "you are now a skeptical customer", replaces the skill's defaults until the section closes, so write it as instructions to the coach rather than only a description of the content. These shipped templates set `order: fixed`: Mary's `prfaq` and `opportunity`, John's `pitch`, the `experiment` card they both offer, the module's `postmortem`, and Nadia's `cofounder-agreement`, `startup-diagnostic` and `positioning`.
 
-Every run shows a progress line on the messages that ask something: `PRFAQ · Customer FAQ (2 of 4)` step-by-step, `PRD · 6 of 24 done` otherwise. The total is every section in the facilitation order, and a section counts once it is settled, so the total stays the same for the whole run.
+Every run shows a progress line on the messages that ask something: `PRFAQ · Customer FAQ (2 of 4)` step-by-step, `PRD · 6 of 23 done` otherwise. The total is every section in the facilitation order, and a section counts once it is settled, so the total stays the same for the whole run.
 
 Put a bare `## Table of Contents` heading right after the title of any template whose documents run long. Agents often read only the top of a file to judge it, so the skill fills this with a linked entry per section and a short phrase of its key terms, then checks it against the final headings. It gets no slide in a slide view.
 
@@ -308,7 +308,7 @@ The view file is ordinary HTML with its CSS inline. Attributes mark where the do
 A slot with nothing to show is removed along with its element, so a declined section leaves no empty card. Without a `data-rest` slot, a section the view does not name stays out of the page, and the render says which. The `style` setting still applies after the view's own CSS.
 
 :::tip[Templates for an agent]
-An agent's own templates ship in its `assets/` folder, and its `customize.toml` lists that folder in `template_libraries`. The agent passes the list when it runs `bmad-facilitate`, and it is searched after yours, so your copy with the same id wins. The settings in `bmad-facilitate.toml` (style, views, review and polish) still apply.
+An agent in a module offers the templates in the module's `doc-templates/` folder that name it in `agents`. An agent outside a module ships its templates in its `assets/` folder, and its `customize.toml` lists that folder in `template_libraries`. The agent passes the list when it runs `bmad-facilitate`, and it is searched after yours, so your copy with the same id wins. The settings in `bmad-facilitate.toml` (style, views, review and polish) still apply.
 :::
 
 ## Check the result

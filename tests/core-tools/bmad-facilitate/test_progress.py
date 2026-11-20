@@ -98,3 +98,10 @@ def test_main_prints_json_and_a_missing_file_exits_2(tmp_path, capsys):
     assert progress.main([str(tmp_path / "d.md"), str(tmp_path / "t.md")]) == 0
     assert json.loads(capsys.readouterr().out)["settled"] == 2
     assert progress.main([str(tmp_path / "nope.md")]) == 2
+
+
+def test_a_byte_order_mark_does_not_hide_the_templates_order(tmp_path, capsys):
+    (tmp_path / "d.md").write_text(DOC, encoding="utf-8-sig")
+    (tmp_path / "t.md").write_text(TEMPLATE, encoding="utf-8-sig")
+    assert progress.main([str(tmp_path / "d.md"), str(tmp_path / "t.md")]) == 0
+    assert json.loads(capsys.readouterr().out)["place"] == 2

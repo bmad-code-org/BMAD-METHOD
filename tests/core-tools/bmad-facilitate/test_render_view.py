@@ -28,7 +28,7 @@ _SPEC.loader.exec_module(render_view)
 DECK = """---
 title: "Measure first"
 template: pitch-deck
-view: slides
+layout: slides
 ---
 
 <!-- purpose: Move the room to measure first. -->
