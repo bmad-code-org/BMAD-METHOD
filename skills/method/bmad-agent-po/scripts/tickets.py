@@ -1651,12 +1651,18 @@ def cmd_add(args) -> dict:
     path = tickets_dir(folder) / BREAKDOWN
     old = path.read_bytes() if path.is_file() else None
     text = read_text(path) if old is not None else ""
-    path.write_text((text.rstrip("\n") + "\n\n" if text.strip() else "") + block, encoding="utf-8")
+    # Encoded before the file is opened, so text that cannot be written leaves the file as it was.
+    data = ((text.rstrip("\n") + "\n\n" if text.strip() else "") + block).encode("utf-8")
+    made = not path.parent.is_dir()  # an epic with no breakdown yet has no tickets/ folder
+    path.parent.mkdir(exist_ok=True)
+    path.write_bytes(data)
     try:
         load_tree(folder)  # an `after` naming nothing, or a cycle, leaves the file as it was
     except (TicketError, ValueError) as e:
         if old is None:
             path.unlink()
+            if made:
+                path.parent.rmdir()
         else:
             path.write_bytes(old)
         raise TicketError(f"nothing was added: {e}") from e

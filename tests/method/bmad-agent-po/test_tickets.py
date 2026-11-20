@@ -778,12 +778,12 @@ covers = ["R2", "R3"]
         self.pricing()
         self.breakdown_epic()
         before = (tk(self.epic) / "tickets.toml").read_text(encoding="utf-8")
+        n = json.loads(run("status", str(self.epic)).stdout)["next_id"]
         item = {"type": "story", "title": "Remove an item", "description": "A shopper removes an item.",
                 "covers": ["R1"], "after": [1, "epic-pricing"], "hitl": False, "risk": "low"}  # fmt: skip
         r = self.add_entry(self.epic, item)
         self.assertEqual(r.returncode, 0, r.stderr)
         out = json.loads(r.stdout)
-        n = max(t["id"] for t in self.status_rows(self.epic) if isinstance(t["id"], int))
         self.assertEqual((out["folder"], out["id"], out["ref"]), ("epic-cart", n, f"2.{n}"))
         self.assertEqual(out["entry"], {"id": n, **item})
         text = (tk(self.epic) / "tickets.toml").read_text(encoding="utf-8")
@@ -803,6 +803,17 @@ covers = ["R2", "R3"]
             '[[entry]]\nid = 4\ntype = "bug"\ntitle = "Totals round wrong"\n',
         )
 
+    def test_add_writes_the_first_entry_of_an_epic_with_no_tickets_folder(self):
+        fresh = self.add_epic("epic-fresh")
+        self.assertFalse((fresh / "tickets").exists())
+        r = self.add_entry(fresh, {"type": "story", "title": "First"})
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout)["id"], 1)
+        self.assertEqual(tomllib.loads((fresh / "tickets" / "tickets.toml").read_text())["entry"][0]["title"], "First")
+        r = self.add_entry(self.add_epic("epic-other"), {"type": "story", "title": "x", "after": [9]})
+        self.assertEqual(r.returncode, 1)
+        self.assertFalse((self.initiative / "tickets" / "epic-other" / "tickets").exists())
+
     def test_add_refuses_bad_input_and_writes_nothing(self):
         self.breakdown_epic()
         path = tk(self.epic) / "tickets.toml"
@@ -820,6 +831,9 @@ covers = ["R2", "R3"]
             self.assertEqual(r.returncode, 1, item)
             self.assertIn("error", json.loads(r.stderr))
             self.assertEqual(path.read_bytes(), before, item)
+        r = run("add", str(self.epic), stdin='{"type": "story", "title": "\\ud800"}')  # a lone surrogate
+        self.assertEqual(r.returncode, 1, r.stderr)
+        self.assertEqual(path.read_bytes(), before)
         self.assertEqual(self.add_entry(self.initiative, {"type": "story", "title": "x"}).returncode, 1)
 
     def test_find_by_cross_ref_id_file_tracker_id_and_title(self):
