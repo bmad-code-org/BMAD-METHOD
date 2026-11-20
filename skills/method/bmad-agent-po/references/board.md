@@ -67,7 +67,7 @@ After every `write`, and after the `query` before a board view, run `tickets.py 
 
 - `tracker_status` is the state mapped back through `[tickets.status]`: after `write`, the state sent; when two states share a tracker status the query cannot tell apart, the current one if it matches, else the earlier.
 - `after` holds tracker ids as strings; an empty string removes a key's line.
-- A tracker leaf missing from the tree, even one a known ticket's `after` names, comes back under `unmatched`: add an `[[entry]]` to the parent's `tickets.toml` (the folder's `next_id`, the item's type and title, a one-sentence description), mirror again with that `ref`, and put the item's body in the pulled file.
+- A tracker leaf missing from the tree, even one a known ticket's `after` names, comes back under `unmatched`: pipe the item's type, title, a one-sentence description, and its prerequisites as `after` (sibling ids as numbers) as JSON to `tickets.py add <parent folder>`, mirror again with the `ref` it prints, and put the item's body in the pulled file.
 - Query published containers with their leaves; `mirror` reports them under `containers`, never `unmatched`; tell the user when one's tracker status differs from its file's, and close one only through the closure check.
 - A body that differs from what Publish would send from the file: show both and ask.
 - Move a ticket the tracker shows under another parent per Close, drop, move, then mirror again.

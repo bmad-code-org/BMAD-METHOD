@@ -771,6 +771,57 @@ covers = ["R2", "R3"]
             text.endswith("## References\n\n- parent — out/initiative-checkout/tickets/epic-cart/epic-cart.md\n"), text
         )
 
+    def add_entry(self, folder, item):
+        return run("add", str(folder), stdin=json.dumps(item))
+
+    def test_add_appends_an_entry_with_the_next_id_and_find_resolves_it(self):
+        self.pricing()
+        self.breakdown_epic()
+        before = (tk(self.epic) / "tickets.toml").read_text(encoding="utf-8")
+        item = {"type": "story", "title": "Remove an item", "description": "A shopper removes an item.",
+                "covers": ["R1"], "after": [1, "epic-pricing"], "hitl": False, "risk": "low"}  # fmt: skip
+        r = self.add_entry(self.epic, item)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        n = max(t["id"] for t in self.status_rows(self.epic) if isinstance(t["id"], int))
+        self.assertEqual((out["folder"], out["id"], out["ref"]), ("epic-cart", n, f"2.{n}"))
+        self.assertEqual(out["entry"], {"id": n, **item})
+        text = (tk(self.epic) / "tickets.toml").read_text(encoding="utf-8")
+        self.assertTrue(text.startswith(before.rstrip("\n") + "\n\n[[entry]]\nid = "), text)
+        self.assertEqual(tomllib.loads(text)["entry"][-1], {"id": n, **item})
+        hit = json.loads(run("find", str(self.initiative), out["ref"]).stdout)
+        self.assertEqual(hit["title"], "Remove an item")
+
+    def test_add_creates_a_backlog_breakdown(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", 3, kind="bug"), backlog)
+        r = self.add_entry(backlog, {"type": "bug", "title": "Totals round wrong"})
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout)["id"], 4)
+        self.assertEqual(
+            (backlog / "tickets.toml").read_text(encoding="utf-8"),
+            '[[entry]]\nid = 4\ntype = "bug"\ntitle = "Totals round wrong"\n',
+        )
+
+    def test_add_refuses_bad_input_and_writes_nothing(self):
+        self.breakdown_epic()
+        path = tk(self.epic) / "tickets.toml"
+        before = path.read_bytes()
+        for item in (
+            {"type": "story"},
+            {"type": "epic", "title": "x"},
+            {"type": "story", "title": "x", "id": 9},
+            {"type": "story", "title": "x", "hitl": "yes"},
+            {"type": "story", "title": "x", "risk": "huge"},
+            {"type": "story", "title": "x", "after": [99]},
+            [{"type": "story", "title": "x"}],
+        ):
+            r = self.add_entry(self.epic, item)
+            self.assertEqual(r.returncode, 1, item)
+            self.assertIn("error", json.loads(r.stderr))
+            self.assertEqual(path.read_bytes(), before, item)
+        self.assertEqual(self.add_entry(self.initiative, {"type": "story", "title": "x"}).returncode, 1)
+
     def test_find_by_cross_ref_id_file_tracker_id_and_title(self):
         pricing = self.pricing()
         self.breakdown_epic()
