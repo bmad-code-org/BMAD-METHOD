@@ -1191,6 +1191,91 @@ def cmd_find(args) -> dict:
     }
 
 
+def parent_file(path: Path) -> Path | None:
+    """The file of the container a ticket file sits under: a leaf's epic or initiative, an epic's initiative."""
+    folder = path.parent
+    if path.name == f"{folder.name}.md":  # a container's own file: its parent holds its folder in `tickets/`
+        folder = folder.parent
+    folder = container_of(folder)
+    own = folder / f"{folder.name}.md"
+    return own if own.is_file() and own != path else None
+
+
+def section_lines(text: str, name: str) -> list[str]:
+    """The lines under a `## <name>` heading, up to the next heading."""
+    out, inside = [], False
+    for line in text.split("\n"):
+        if line.startswith("#"):
+            if inside and re.match(r"#{1,2} ", line):
+                break
+            if line.strip() == f"## {name}":
+                inside = True
+                continue
+        if inside:
+            out.append(line)
+    return out
+
+
+def tracker_body(path: Path) -> dict:
+    """The title and body Publish sends for a ticket file; see the `body` command's help."""
+    text = read_text(path).replace("\r\n", "\n")
+    fm = parse_frontmatter(text, path.name)
+    lines = FRONTMATTER_RE.sub("", text, count=1).split("\n")
+    heading = next((i for i, line in enumerate(lines) if line.startswith("# ")), None)
+    title = str(fm.get("title") or "") or (lines[heading][2:].strip() if heading is not None else "")
+    description = next((i for i, line in enumerate(lines) if line.strip() == "## Description"), None)
+    for i in sorted({heading, description} - {None}, reverse=True):
+        del lines[i : i + (2 if i + 1 < len(lines) and not lines[i + 1].strip() else 1)]
+    covers = fm.get("covers", "")
+    if covers == "":
+        covers = []
+    if not isinstance(covers, list):
+        raise TicketError(f"{path.name}: covers must be a list")
+    added = []
+    if covers:
+        parent = parent_file(path)
+        if parent is None:
+            raise TicketError(f"{path.name}: covers {', '.join(map(str, covers))} but no parent file holds them")
+        items = [
+            re.sub(r"^(?:[-*+]|\d+[.)])[ \t]+", "", line.strip())
+            for line in section_lines(read_text(parent).replace("\r\n", "\n"), "Requirements")
+        ]
+        missing = []
+        for c in map(str, covers):
+            hit = next((x for x in items if re.match(rf"{re.escape(c)}(?![0-9A-Za-z])", x)), None)
+            if hit is None:
+                missing.append(c)
+            else:
+                added.append(f"- covers — {hit}")
+        if missing:
+            raise TicketError(
+                f"{path.name}: covers {', '.join(missing)}, which {parent.name}'s Requirements does not hold",
+                missing=missing,
+            )
+    if added:
+        refs = next((i for i, line in enumerate(lines) if line.strip() == "## References"), None)
+        if refs is None:
+            lines += ["", "## References", "", *added]
+        else:
+            end = next((i for i in range(refs + 1, len(lines)) if re.match(r"#{1,2} ", lines[i])), len(lines))
+            last = max((i for i in range(refs + 1, end) if lines[i].strip()), default=None)
+            if last is None:  # an empty References: the lines go under its heading
+                lines[refs + 1 : refs + 1] = ["", *added]
+            else:
+                lines[last + 1 : last + 1] = added
+    return {"file": str(path), "title": title, "body": "\n".join(lines).strip("\n") + "\n"}
+
+
+def cmd_body(args) -> dict:
+    path = Path(args.ref)
+    if path.suffix == ".md" and path.is_file():
+        return tracker_body(path.resolve())
+    t, tree = locate(args, _folder(args), args.ref)
+    if not t["file"]:
+        raise TicketError(f"{ref_name(t, tree)} has no leaf file yet; `tickets.py pull` writes it")
+    return tracker_body(tickets_dir(tree["folders"][t["epic"]]) / t["file"])
+
+
 def ref_name(t: dict, tree: dict) -> str:
     return f"{t['file'] or t['id']} in {t['epic']}"
 
@@ -1840,6 +1925,20 @@ Output: the ticket's row; its entry's `description`, `verify`, `references`, and
 the entry is pulled, when `story_file` holds them; `unknown`; its `folder`; and the absolute paths
 `epic_file` (the file of the container it is under, null in a backlog folder), `story_file` (null until
 the entry is pulled), and `plan` (where its plan is or goes; it may not exist yet).""",
+    "body": f"""The title and body Publish sends to a tracker for a ticket, and Sync compares with.
+
+{DIR_HELP}
+{PARENT_HELP}
+{BACKLOG_HELP}
+{REF_HELP}
+A path to a ticket file, a container's own file included, is read as it is.
+
+The body is the file without its frontmatter, its first `# ` line, or its `## Description` heading. Each
+`covers` id adds `- covers — <the line>` to the end of References, the line being the one in the parent's
+Requirements that starts with that id, its list marker dropped. A covered id the parent's Requirements
+lacks is an error naming it under `missing`. The file is not changed.
+
+Output: `file` (absolute path), `title` (the frontmatter's, else the `# ` line's), and `body`.""",
     "pull": f"""Write an entry's leaf file from its entry.
 
 <dir> is the epic folder and <id> the entry's id. The file is `<type>-<slug of the title>.md` in the
@@ -1922,6 +2021,12 @@ def main() -> int:
     p.add_argument("dir", nargs="?", help="default: the active initiative")
     p.add_argument("ref")
     p.set_defaults(func=cmd_find)
+    p = sub.add_parser(
+        "body", help="the title and body published to a tracker", description=HELP["body"], formatter_class=raw
+    )
+    p.add_argument("dir", nargs="?", help="default: the active initiative")
+    p.add_argument("ref", help="a ticket reference, or a path to a ticket file")
+    p.set_defaults(func=cmd_body)
     p = sub.add_parser("pull", help="write an entry's leaf file", description=HELP["pull"], formatter_class=raw)
     p.add_argument("dir")
     p.add_argument("id")
