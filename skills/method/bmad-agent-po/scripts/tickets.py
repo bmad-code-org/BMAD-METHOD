@@ -1268,7 +1268,8 @@ def tracker_body(path: Path) -> dict:
 
 def cmd_body(args) -> dict:
     path = Path(args.ref)
-    if path.suffix == ".md" and path.is_file():
+    # With a <dir>, a bare file name names a ticket in it, as for find, not a file in the working directory.
+    if path.suffix == ".md" and path.is_file() and (args.dir is None or len(path.parts) > 1):
         return tracker_body(path.resolve())
     t, tree = locate(args, _folder(args), args.ref)
     if not t["file"]:
@@ -1931,7 +1932,8 @@ the entry is pulled), and `plan` (where its plan is or goes; it may not exist ye
 {PARENT_HELP}
 {BACKLOG_HELP}
 {REF_HELP}
-A path to a ticket file, a container's own file included, is read as it is.
+A path to a ticket file, a container's own file included, is read as it is; with <dir>, a bare file name
+names a ticket in it.
 
 The body is the file without its frontmatter, its first `# ` line, or its `## Description` heading. Each
 `covers` id adds `- covers — <the line>` to the end of References, the line being the one in the parent's

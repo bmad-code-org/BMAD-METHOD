@@ -804,6 +804,9 @@ covers = ["R2", "R3"]
         )
         self.assertEqual((tk(self.epic) / "story-add-an-item.md").read_text(encoding="utf-8"), self.LEAF)
         self.assertEqual(self.body(str(tk(self.epic) / "story-add-an-item.md")), out)
+        (self.root / "story-add-an-item.md").write_text('---\ntitle: "other"\n---\n\nNot this one.\n')
+        r = run("body", str(self.epic), "story-add-an-item.md", cwd=self.root)
+        self.assertEqual(json.loads(r.stdout), out, r.stderr)
 
     def test_body_of_an_epic_reads_its_covers_from_the_initiative(self):
         (self.initiative / "initiative-checkout.md").write_text(
