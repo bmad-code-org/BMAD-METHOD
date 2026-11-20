@@ -1,7 +1,7 @@
 ---
 title: ""
 template: document-template
-version: 1.0.0
+version: 1.1.0
 description: "A new document template: the coaching for a document people talk through."
 not_for: "Changing a template that exists (`bmad-customize`); one document, written once (run the closest template, or none)."
 facilitation_order: [purpose-and-reader, sections, inputs, stance, done-when, writing, identity, rubric, companions, view, next]

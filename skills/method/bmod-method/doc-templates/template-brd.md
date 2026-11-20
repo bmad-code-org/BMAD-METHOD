@@ -23,7 +23,7 @@ updated: ""
 
 <!-- done when: Every BR-N has an owner, a source, a priority and a way to verify it; every rule has an id and an owner; nothing in the document names a screen, a field or an API; and the approval block names who signs. -->
 
-<!-- next: `status: final` does not record a signature; the approval block does. After sign-off, `prd` or `srs` picks up the BR-N and RULE-N ids and fills the traceability table's empty columns. -->
+<!-- next: `status: final` does not record a signature; the approval block does. After sign-off, `prd` or `srs` cites the BR-N and RULE-N ids in its own requirements, and a later Update of this BRD fills the traceability table's empty columns. -->
 
 # {title}
 
@@ -57,7 +57,7 @@ updated: ""
 <!-- include when: no business case exists. Rough cost, expected benefit and who bears each. -->
 
 ## Traceability
-<!-- A table: BR-N, then empty columns for the `prd` or `srs` line, the test and the ticket, which later documents fill in. -->
+<!-- A table: BR-N, then empty columns for the `prd` or `srs` line, the test and the ticket, which a later Update fills in from the documents that cite each id. -->
 
 ## Open questions
 <!-- Each with an owner and what it blocks. -->

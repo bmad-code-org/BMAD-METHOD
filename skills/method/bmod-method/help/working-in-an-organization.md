@@ -25,8 +25,8 @@ Each document has one skill that writes it, so give it one owner. One person can
 
 | Role | Runs | Owns |
 |---|---|---|
-| Analyst | `bmad-agent-analyst` | Any brief, PRFAQ or business requirements document, and their updates |
-| Product manager | `bmad-agent-pm` | `prd-<slug>.md`, any business case or charter, and their updates |
+| Analyst | `bmad-agent-analyst` | Any brief, PRFAQ, business case or business requirements document, and their updates |
+| Product manager | `bmad-agent-pm` | `prd-<slug>.md`, any charter, and their updates |
 | Designer | `bmad-ux` | `DESIGN.md`, `EXPERIENCE.md` |
 | Tech lead | `bmad-architecture` | The architecture spine |
 | One engineer per epic | `bmad-agent-po`, `bmad-build`, `bmad-retrospective` | That epic's requirements, stories, verdict |

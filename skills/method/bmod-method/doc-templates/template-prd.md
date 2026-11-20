@@ -47,7 +47,7 @@ Altitude sets what this document decides: keep a line when the level below would
 <!-- built: once the other sections are settled, from the terms they use: domain nouns, the user's own jargon, and any word a reader or coding agent could take two ways, each defined once with its relationships and its cardinality where relevant. Show the list and ask only which definitions are wrong or missing. -->
 
 ## Features and requirements
-<!-- Coach it as a workout: draw out what the user sees before you propose any, and never open with a drafted list. By feature: its behavior and the journeys it realizes, then nested FR-N: "[Actor] can [capability] [under conditions]" and out-of-scope bounds. At epic altitude each FR adds testable consequences; above it, one checkable result per capability, the edge cases left to the epics. Parity features from research are candidates for the user to keep, cut or change, not requirements until they choose them. How the work is sliced into epics belongs to the ticket tree's slicing, not here. Add a feature's own NFRs when they apply only to it. -->
+<!-- Coach it as a workout: draw out what the user sees before you propose any, and never open with a drafted list. At program altitude, list the initiatives in their order, with no FRs. By feature: its behavior and the journeys it realizes, then nested FR-N: "[Actor] can [capability] [under conditions]" and out-of-scope bounds. At epic altitude each FR adds testable consequences; above it, one checkable result per capability, the edge cases left to the epics. Add each FR's id to the end of the journeys it realizes. Parity features from research are candidates for the user to keep, cut or change, not requirements until they choose them. How the work is sliced into epics belongs to the ticket tree's slicing, not here. Add a feature's own NFRs when they apply only to it. -->
 
 ## Rules
 <!-- include when: program or initiative altitude, where it is required; below that, when a rule spans the FRs and no parent states it. Coach it as a workout: ask what must always or never hold before you propose any, and never open with a drafted list. RULE-N, one line each: what everything below must obey, whichever feature it touches. A rule from a `brd` or a parent document keeps its id. -->
@@ -62,7 +62,7 @@ Altitude sets what this document decides: keep a line when the level below would
 <!-- SM-N with the current value where known, the target and the FRs they validate; counter-metrics naming the metric they balance. One sentence is enough at hobby stakes. -->
 
 ## Quality and constraints
-<!-- include when: performance, security, reliability, privacy or cost matter product-wide. RULE-N under the same id, each with a threshold and the user outcome it protects; no generic non-functional list. -->
+<!-- include when: performance, security, reliability, privacy or cost matter product-wide. RULE-N ids continuing the Rules numbering, each with a threshold and the user outcome it protects; no generic non-functional list. -->
 
 ## Change boundary
 <!-- include when: the work changes an existing product. What stays as it is, what changes, what is added and what must not change. -->

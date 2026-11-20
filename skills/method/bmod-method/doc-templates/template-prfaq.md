@@ -1,7 +1,7 @@
 ---
 title: ""
 template: prfaq
-version: 1.1.0
+version: 1.2.0
 description: "Testing whether a product concept survives scrutiny, working backwards from its press release."
 not_for: "Writing up a product the user already believes in (`brief`); testing a problem before any solution exists (`opportunity`); committed work that needs requirements (`prd`)."
 agents: [bmad-agent-analyst]

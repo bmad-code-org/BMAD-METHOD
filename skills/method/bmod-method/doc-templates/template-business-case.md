@@ -1,7 +1,7 @@
 ---
 title: ""
 template: business-case
-version: 1.1.0
+version: 1.2.0
 description: "Funding approval for an initiative: cost, expected return, go or no-go."
 not_for: "Whether the problem is worth pursuing (`opportunity`); one mandate over several initiatives (`charter`); requirements to build from (`prd`)."
 agents: [bmad-agent-analyst]

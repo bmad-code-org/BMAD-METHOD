@@ -1,7 +1,7 @@
 ---
 title: ""
 template: startup-diagnostic
-version: 1.0.0
+version: 1.1.0
 description: "Hard questions on whether an idea has real demand, ending in one dated assignment."
 not_for: "The whole business on one page (`lean-canvas`); running the demand test the assignment names (`validation-experiment`); the questions to ask customers (`customer-interview-script`)."
 order: fixed
@@ -50,7 +50,7 @@ updated: ""
 <!-- include when: no paying customers yet. The smallest thing someone would pay for this week, even if it is done by hand behind the scenes. Founders often want to build the whole product first; ask what could be sold before it exists, to whom, and for how much. Done when the version, its price and the first person to offer it to are named. -->
 
 ## What surprised you
-<!-- include when: the product has users. Something the founder saw while watching a user that they did not expect. No surprise usually means they have not watched closely; ask when they last sat with a user and what that user did first. Done when the answer is something seen, not something said in a survey. -->
+<!-- include when: the product has users or paying customers. Something the founder saw while watching a user that they did not expect. No surprise usually means they have not watched closely; ask when they last sat with a user and what that user did first. Done when the answer is something seen, not something said in a survey. -->
 
 ## Three years out
 <!-- include when: the product has users or paying customers. Whether this becomes more essential or less in three years, and the change in the world that drives it. Ask what would make it unnecessary: a large platform adding it as a feature, a change in the rules, a cheaper way to do the job. Done when the driver is named and the founder has said what would end it. -->

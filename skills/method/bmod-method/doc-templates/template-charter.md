@@ -1,7 +1,7 @@
 ---
 title: ""
 template: charter
-version: 1.1.0
+version: 1.2.0
 description: "A program's mandate, benefits, scope and governance across its initiatives."
 not_for: "A single initiative (`brief` or `prd`); funding one piece of work (`business-case`); choosing a strategy (`narrative`)."
 agents: [bmad-agent-analyst, bmad-agent-pm]

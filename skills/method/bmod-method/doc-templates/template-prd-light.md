@@ -1,7 +1,7 @@
 ---
 title: ""
 template: prd-light
-version: 1.1.0
+version: 1.2.0
 description: "A short PRD with enough technical detail for a very simple or hobby project."
 not_for: "Work with real stakes or several people building from it (`prd`); learning fast before committing (`prototype-plan`); one feature for a coding agent (`agent-spec`)."
 agents: [bmad-agent-pm]

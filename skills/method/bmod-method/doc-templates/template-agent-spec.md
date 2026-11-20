@@ -1,7 +1,7 @@
 ---
 title: ""
 template: agent-spec
-version: 1.1.0
+version: 1.2.0
 description: "One feature outside the ticket tree, for a coding agent, with tests and acceptance."
 not_for: "Work a story or epic ticket already specifies; several features or a product (`prd`)."
 agents: [bmad-agent-pm]

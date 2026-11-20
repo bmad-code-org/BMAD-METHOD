@@ -49,7 +49,7 @@ updated: ""
 <!-- SAFE, convertible note, priced round, grant, revenue-based financing or a loan, and why it fits this stage and this amount. Ask where the company is incorporated; whether the instrument fits that jurisdiction and its investor tax schemes is a question for the lawyer. The terms expected, such as a valuation cap, discount or price, and the dilution the founder will accept. Name what the founder does not know about each term and write it as a question for a lawyer. -->
 
 ## Investors
-<!-- The criteria first: stage, cheque size, sector, geography, whether they lead. Then the target list, grouped by priority, each with why they fit and the route in: a warm introduction by name, a program, or cold. Link each to their `people/` file. Ask how many conversations the founder expects per yes and whether the list is long enough for that; ask who could lead, because a round with no lead often does not close. Done when every named investor meets the criteria and has a route in. -->
+<!-- The criteria first: stage, cheque size, sector, geography, whether they lead. Then the target list, grouped by priority, each with why they fit, the route in (a warm introduction by name, a program, or cold) and where they stand in the pipeline. Link each to their `people/` file. Ask how many conversations the founder expects per yes and whether the list is long enough for that; ask who could lead, because a round with no lead often does not close. Done when every named investor meets the criteria and has a route in. -->
 
 ## Materials
 <!-- optional. What investors will ask for and its state: deck, financial model, data room, one-pager, product demo. Name the owner and the date for each that is not ready. -->

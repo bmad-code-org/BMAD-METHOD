@@ -9,9 +9,12 @@
 Counts the sections in the merged template's `facilitation_order`, else the document's own `##`
 headings with the table of contents left out. A section is settled once its `<!-- open -->`
 marker is gone, so one settled out counts too; a section the order lists and the document lacks
-is open. Prints JSON: `total`, `settled`, `open` (the open sections' headings in facilitation
-order, an id where the document has no heading) and `place` (the position in the order of the
-first open section, null when none is). Exits 2 when a file is missing.
+is open, and a heading the document repeats is open while any copy is. Prints JSON: `total`,
+`settled`, `open` (the open sections' headings in facilitation order, an id where the document has
+no heading), `place` (the position in the order of the first open section, null when none is),
+`missing` (ids the order lists that the document has no heading for) and `extra` (the document's
+headings the order does not list). When `missing` or `extra` is not empty the count does not fit the
+document, as when a reader's headings replaced the template's. Exits 2 when a file is missing.
 """
 
 from __future__ import annotations
@@ -63,7 +66,10 @@ def order_of(template: str) -> list[str]:
 
 
 def progress(document: str, template: str = "") -> dict:
-    found = {i: (heading, is_open) for i, heading, is_open in sections(document)}
+    found: dict[str, tuple[str, bool]] = {}
+    for i, heading, is_open in sections(document):
+        first = found.get(i, (heading, False))
+        found[i] = (first[0], first[1] or is_open)
     order = order_of(template) or list(found)
     still_open = [i for i in order if found.get(i, (i, True))[1]]
     return {
@@ -71,6 +77,8 @@ def progress(document: str, template: str = "") -> dict:
         "settled": len(order) - len(still_open),
         "open": [found.get(i, (i, True))[0] for i in still_open],
         "place": order.index(still_open[0]) + 1 if still_open else None,
+        "missing": [i for i in order if i not in found],
+        "extra": [heading for i, (heading, _) in found.items() if i not in order],
     }
 
 

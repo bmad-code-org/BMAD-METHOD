@@ -1,7 +1,7 @@
 ---
 title: ""
 template: opportunity
-version: 1.1.0
+version: 1.2.0
 description: "Whether a problem is worth an initiative, before any solution."
 not_for: "A chosen solution that needs a case for building it (`brief`); a funding decision with costs (`business-case`)."
 agents: [bmad-agent-analyst]

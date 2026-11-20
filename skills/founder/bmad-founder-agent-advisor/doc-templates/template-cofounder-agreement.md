@@ -1,7 +1,7 @@
 ---
 title: ""
 template: cofounder-agreement
-version: 1.0.0
+version: 1.1.0
 description: "Co-founders agree roles, decisions, equity and leaving before a lawyer drafts."
 not_for: "Hiring an employee (`first-hire`)."
 order: fixed

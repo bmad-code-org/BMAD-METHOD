@@ -1,7 +1,7 @@
 ---
 title: ""
 template: launch-plan
-version: 1.0.0
+version: 1.1.0
 description: "Taking a product to market: customer, message, channels, launch weeks and target."
 not_for: "Testing demand before the product exists (`validation-experiment`); the positioning and one-liner (`positioning`); a talk with slides (`pitch-deck`)."
 facilitation_order: [who-it-is-for, message, what-counts-as-working, channels, week-by-week]

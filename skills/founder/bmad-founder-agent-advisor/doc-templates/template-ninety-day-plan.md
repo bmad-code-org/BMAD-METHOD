@@ -1,7 +1,7 @@
 ---
 title: ""
 template: ninety-day-plan
-version: 1.0.0
+version: 1.1.0
 description: "The next ninety days: two or three goals, a metric each, owners and check-in dates."
 not_for: "Testing whether demand is real (`startup-diagnostic`, `validation-experiment`); the plan for a raise (`fundraising-plan`); reporting the last period to investors (`investor-update`); taking a product to market (`launch-plan`)."
 facilitation_order: [starting-point, goals, not-doing, check-ins, risks]

@@ -56,7 +56,7 @@ The BMad Method also ships the planning templates for John, the Product Manager 
 | Spec for a coding agent | John | One feature | A feature outside the ticket tree, with tests and acceptance |
 | Launch plan | John | Initiative | Coordinating a built feature's release across teams |
 
-The first seven come before you commit, in Clarify; the rest plan and ship the work. The brief, the PRFAQ, the experiment card, the opportunity assessment, and the pitch are walked one section at a time, in order. A brief from Mary feeds the PRD, but neither requires the other. A business case or strategy narrative stays in prose and ends with a `## For requirements` list of ids, so Sofia can write the initiative from it without a PRD.
+The first seven come before you commit, in Clarify; the rest plan and ship the work. Each is walked one section at a time by default, except the launch plan, which starts freeform; the PRFAQ, the experiment card, the opportunity assessment and the pitch keep their order even when you ask for freeform. A brief from Mary feeds the PRD, but neither requires the other. A business case or strategy narrative stays in prose and ends with a `## For requirements` list of ids, so Sofia can write the initiative from it without a PRD.
 
 ## What a template can do
 
@@ -68,15 +68,14 @@ The first seven come before you commit, in Clarify; the rest plan and ship the w
 | Drive questions from a catalog | `security-review`, `methods-security.csv` | The `methods` frontmatter names a CSV of key questions |
 | Walk the sections in order, each with its own voice | `prfaq` in `bmod-method/doc-templates/` | `order: fixed` in the frontmatter, and each section comment is the brief for that part |
 | Change how a mode runs | `security-review`, `stance` | The comment says what fast mode does for this document |
-| Use the shared planning rules | Any shipped template | `guidance: guidance-planning` adds stakes levels, ids and testable requirements |
+| Use the shared planning rules | Any Method or Founder template | `guidance: guidance-planning` adds stakes levels, ids and testable requirements |
 | Review against its own rubric | `proposal`, `rubric-proposal.md` | The `rubric` frontmatter names the file |
 | Set the order and what is required | Any shipped template | `facilitation_order` lists the sections by id; a section's comment says whether it is required |
-| Include a section only when it applies | `proposal`, Alternatives | `alternatives?` in the order and an `include when:` section comment |
+| Include a section only when it applies | `proposal`, Alternatives | An `include when:` section comment |
 | Draw a diagram | `postmortem`, Timeline | A `diagram:` kind in the section comment |
 | Add a table of contents | `proposal` | A bare `## Table of Contents` heading after the title |
-| Render as slides | `pitch-deck` | `layout: slides` in the frontmatter |
 | Always make the view | `pitch-deck` | `view: always` in the frontmatter, because the slides are the deliverable |
-| Render the same layout every time | `prfaq` in `bmod-method/doc-templates/`, `prfaq-view.html`; also `brief` and `pitch` | `view` names an HTML file whose slots a script fills at close |
+| Render the same layout every time | `prfaq` in `bmod-method/doc-templates/`, `prfaq-view.html`; also `brief` and `pitch` | `layout` names an HTML file whose slots a script fills at close |
 | Have a page written for each document | `character`, `character-sheet.html` | `layout` names a starter, and a `layout` comment gives the brief |
 | Have a page written from a brief alone | Founder's templates, such as `pitch-deck` | A `layout` comment with no `layout` file says where to be creative |
 | Propose rather than only ask | `character`, `stance` | The comment invites proposals; one the user accepts is theirs |

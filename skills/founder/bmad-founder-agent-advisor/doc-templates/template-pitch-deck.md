@@ -1,12 +1,11 @@
 ---
 title: ""
 template: pitch-deck
-version: 1.1.0
+version: 1.2.0
 description: "A talk or pitch with a story and slides, given by a presenter."
 not_for: "An ask read without a presenter (`proposal`)."
 facilitation_order: [hook, problem, why-now, solution, how-it-works, point, traction, market-and-model, competition, team, ask]
 guidance: guidance-planning
-rubric: rubric-proposal.md
 agents: [bmad-founder-agent-advisor]
 status: draft
 created: ""

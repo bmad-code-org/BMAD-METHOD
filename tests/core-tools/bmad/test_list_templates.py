@@ -434,6 +434,18 @@ def test_built_sections_last_in_the_order_are_no_problem(tmp_path):
     assert list_templates.scan([str(tmp_path)])["templates"][0]["order_problems"] == []
 
 
+def test_a_section_an_extension_appends_after_a_built_one_is_no_order_problem(tmp_path):
+    text = (
+        '---\ntemplate: t\ndescription: "Use it."\nfacilitation_order: [problem, summary]\n---\n\n# {title}\n\n'
+        "## Summary\n<!-- built: from the other sections. -->\n\n## Problem\n<!-- What hurts. -->\n"
+    )
+    (tmp_path / "t.md").write_text(text)
+    (tmp_path / "e.md").write_text("---\nextends: t\n---\n\n## Sign-off\n<!-- After Problem. -->\n")
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert found["facilitation_order"] == ["problem", "summary", "sign-off"]
+    assert found["order_problems"] == []
+
+
 def test_a_section_an_extension_adds_joins_the_order_as_required(tmp_path):
     (tmp_path / "t.md").write_text(ORDERED)
     (tmp_path / "e.md").write_text("---\nextends: t\n---\n\n## Security sign-off\n<!-- After Problem. -->\n")
@@ -604,6 +616,12 @@ def test_the_teams_style_beats_the_templates(tmp_path, capsys):
         listed_view(tmp_path / "b", capsys, front="style: own.css\n", team='style = "brand.css"')["style"]
         == "brand.css"
     )
+
+
+def test_an_order_other_than_fixed_is_named_and_cleared(tmp_path, capsys):
+    found = listed_view(tmp_path, capsys, front="order: true\n")
+    assert found["order"] == ""
+    assert found["order_problems"] == ["`order` is `true`, not `fixed`, so it is ignored"]
 
 
 def test_an_unknown_mode_is_named_and_skipped(tmp_path, capsys):

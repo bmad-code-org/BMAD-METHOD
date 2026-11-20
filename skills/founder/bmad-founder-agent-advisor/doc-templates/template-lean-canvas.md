@@ -1,7 +1,7 @@
 ---
 title: ""
 template: lean-canvas
-version: 1.0.0
+version: 1.1.0
 description: "The whole business model on one page, with its riskiest assumption named."
 not_for: "Hard questions on whether the demand is real (`startup-diagnostic`); the first group of customers to win (`ideal-customer`); the one-liner and what customers compare against (`positioning`)."
 facilitation_order: [customer-segments, problem, existing-alternatives, unique-value, solution, channels, revenue, costs, key-metric, unfair-advantage, riskiest-assumption]

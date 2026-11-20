@@ -48,7 +48,7 @@ updated: ""
 | `mode` | Optional. The mode a run of this template starts in: `step-by-step` (the default), `freeform` or `fast`. A team's or user's `mode` wins over it. See [Choose how a run walks the sections](#choose-how-a-run-walks-the-sections). |
 | `order` | Optional. `fixed` for a document whose order matters as much as the result: freeform is never used, and fast keeps the order. |
 | `facilitation_order` | The sections by id, in the order the skill takes them up. See [Order the sections](#order-the-sections). |
-| `guidance` | Optional rules shared by a family of templates and read as part of each, as a path relative to the template, or the bare name `guidance-planning` for the shipped planning rules: stakes from hobby to regulated, stable ids and testable requirements, and detail pushed to the level below. Every shipped template sets it. Without it the skill names no stakes levels; a document such as fiction says what it needs in its own comments. Every document, with or without it, carries `[ASSUMPTION: ...]` tags where the coach guessed, until you accept or correct each one. |
+| `guidance` | Optional rules shared by a family of templates and read as part of each, as a path relative to the template, or the bare name `guidance-planning` for the shipped planning rules: stakes from hobby to regulated, stable ids and testable requirements, and detail pushed to the level below. Every Method and Founder template sets it. Without it the skill names no stakes levels; a document such as fiction says what it needs in its own comments. Every document, with or without it, carries `[ASSUMPTION: ...]` tags where the coach guessed, until you accept or correct each one. |
 | `agents` | Optional list of the skills that offer this template, such as `[bmad-agent-pm]`; name several to share it. It says who offers the template by default; any agent the user asks can still write it. The `bmad` skill uses the list to say who offers the template. A template in an agent's `assets/` folder counts as that agent's without it. |
 | `rubric` | Optional path to a rubric for the review, relative to the template, or the bare name `rubric-planning` for the shipped planning rubric. Empty uses the shipped general rubric, which suits any document. |
 | `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
@@ -102,7 +102,7 @@ An organization can keep its templates in its own modules, one per program if it
 
 ## Write the template file
 
-A template is a markdown file in three parts: the document's frontmatter, comments that guide the coaching, and its sections. Frontmatter comes first. The comments never appear in the finished document. Where a template and the skill disagree, the template wins, on every path; only a headless run still asks nothing.
+A template is a markdown file in three parts: the document's frontmatter, comments that guide the coaching, and its sections. Frontmatter comes first. The comments never appear in the finished document. Where a template and the skill disagree, the template wins, in every mode; only a headless run still asks nothing.
 
 ```markdown
 ---
@@ -152,9 +152,9 @@ Above the first heading, give each of these keys its own comment, a line or two.
 | Key | What it tells the skill |
 | --- | --- |
 | `purpose` | The decision or job the document serves. |
-| `stance` | How to coach for this document, including how a path should run. |
+| `stance` | How to coach for this document, including how a mode should run. |
 | `opening` | Up to two questions asked before the brain dump, the ones whose answers change how the rest is coached. Without it the skill asks what the user is making and who it is for. Either way, a question the request already answers is skipped. |
-| `inputs` | What must be asked, and which of it only the user knows. Each one is asked on every path but headless unless the user already gave it, so list only what you want asked. |
+| `inputs` | What must be asked, and which of it only the user knows. Each one is asked in every mode but headless unless the user already gave it, so list only what you want asked. |
 | `writing` | Rules specific to this document. |
 | `companions` | Other files to write beside the document, when, and what each holds. A file for a different reader belongs here, not overflow from the document. |
 | `done when` | The test that ends the questioning. |
@@ -183,7 +183,7 @@ Every run starts in one of three modes. Step-by-step, the default, takes the sec
 
 Set `order: fixed` when an earlier section must be settled before a later one is worked, as in a PRFAQ, where the user defends the press release before the questions. A request for freeform then runs step-by-step, wherever it comes from, and fast keeps the order too. A team extension can set `mode` or `order`, or clear either with an empty value such as `order: ""`.
 
-Each section comment is the brief for that part of the session. A voice, stance or method it sets, such as "you are now a skeptical customer", replaces the skill's defaults until the section closes, so write it as instructions to the coach rather than only a description of the content. These shipped templates set `order: fixed`: Mary's `prfaq`, John's `experiment`, `opportunity` and `pitch`, the module's `postmortem`, and Nadia's `cofounder-agreement` and `startup-diagnostic`.
+Each section comment is the brief for that part of the session. A voice, stance or method it sets, such as "you are now a skeptical customer", replaces the skill's defaults until the section closes, so write it as instructions to the coach rather than only a description of the content. These shipped templates set `order: fixed`: Mary's `prfaq` and `opportunity`, John's `pitch`, the `experiment` card they both offer, the module's `postmortem`, and Nadia's `cofounder-agreement`, `startup-diagnostic` and `positioning`.
 
 Every run shows a progress line on the messages that ask something: `PRFAQ · Customer FAQ (2 of 4)` step-by-step, `PRD · 6 of 24 done` otherwise. The total is every section in the facilitation order, and a section counts once it is settled, so the total stays the same for the whole run.
 
@@ -286,7 +286,7 @@ The `layout` comment sits above the first heading with the other comments, and s
 <!-- layout: The sheet is the deliverable. `character-sheet.html` is a starter: keep to one printable page, and let this character's world set the look. -->
 ```
 
-A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless the template sets `view: always` or the comment calls it the deliverable. Use the script for anything regulated or signed, where the page must not vary. `view = "never"` in the team's settings stops all three.
+A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless `view` is `always`, from the template or the team's or user's settings, which win over the template's. Use the script for anything regulated or signed, where the page must not vary. `view = "never"` in those settings stops all three.
 
 ### Slots for a filled view
 

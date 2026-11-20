@@ -1,7 +1,7 @@
 ---
 title: ""
 template: pricing
-version: 1.0.0
+version: 1.1.0
 description: "How the product is priced: value metric, packages, evidence and how it is tested."
 not_for: "A demand test before anything is priced (`validation-experiment`); the one-page model with revenue and costs (`lean-canvas`); the best-fit customer and the alternative they compare against (`positioning`, `ideal-customer`)."
 facilitation_order: [buyer-and-value, value-metric, evidence-customers-will-pay, first-customers, packages, unit-economics, testing-and-changing-the-price, price]
@@ -34,7 +34,7 @@ updated: ""
 ## Table of Contents
 
 ## Price
-<!-- The price in a line or a small table: what the customer buys, what they pay, how often. Write it last. -->
+<!-- built: from the other sections. The price in a line or a small table: what the customer buys, what they pay, how often. -->
 
 ## Buyer and value
 <!-- Who pays (the buyer, who may not be the user), the result they get, and what that result is worth to them in money or time. Then what they use today, a competitor, a spreadsheet, a person or nothing, and what it costs them. You are the buyer's finance lead: ask what this replaces in the budget and where the money comes from. When the value comes back as "saves time", ask whose time, how many hours and what an hour costs them. Done when the value and the cost of today's alternative are each a number or a named open question. -->

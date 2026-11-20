@@ -39,7 +39,7 @@ updated: ""
 ## Table of Contents
 
 ## Summary
-<!-- built: from the sections above. What happened, the impact, and where things stand, in two or three sentences. Done when it holds nothing the sections do not. -->
+<!-- built: from the other sections. What happened, the impact, and where things stand, in two or three sentences. Done when it holds nothing the sections do not. -->
 
 ## Impact
 <!-- Who or what was affected, how much, for how long. Ask for numbers from the records: requests failed, customers affected, minutes down, money lost. Done when each figure names its source or is tagged. -->

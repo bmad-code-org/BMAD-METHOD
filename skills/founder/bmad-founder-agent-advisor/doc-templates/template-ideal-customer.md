@@ -1,7 +1,7 @@
 ---
 title: ""
 template: ideal-customer
-version: 1.0.0
+version: 1.1.0
 description: "The first narrow group of customers to win, why them, and how to reach them."
 not_for: "The one-liner and what customers compare against (`positioning`); the whole business on one page (`lean-canvas`); the guide for talking to these customers (`customer-interview-script`); taking a product to market (`launch-plan`)."
 facilitation_order: [beachhead, profile, why-them-first, not-the-customer-yet, how-many, where-to-find-them, how-to-reach-them, next-group]

@@ -56,6 +56,8 @@ def test_a_section_without_its_open_marker_is_settled_and_one_settled_out_counts
         "settled": 2,
         "open": ["Pilot customers", "Summary"],
         "place": 2,
+        "missing": [],
+        "extra": [],
     }
 
 
@@ -71,7 +73,19 @@ def test_an_opening_comment_is_not_an_open_marker():
 
 def test_a_section_the_order_lists_and_the_document_lacks_is_open():
     found = progress.progress("## Goal\nDone.\n", "---\nfacilitation_order: [goal, scope]\n---\n")
-    assert (found["settled"], found["open"], found["place"]) == (1, ["scope"], 2)
+    assert (found["settled"], found["open"], found["place"], found["missing"]) == (1, ["scope"], 2, ["scope"])
+
+
+def test_a_repeated_heading_is_open_while_any_copy_is():
+    doc = "## Point\nOne.\n\n## Point\n<!-- open -->\n"
+    found = progress.progress(doc, "---\nfacilitation_order: [point]\n---\n")
+    assert (found["total"], found["settled"]) == (1, 0)
+
+
+def test_headings_that_replaced_the_templates_are_named():
+    doc = "## Our approach\nDone.\n\n## Budget\n<!-- open -->\n"
+    found = progress.progress(doc, "---\nfacilitation_order: [approach, budget]\n---\n")
+    assert (found["missing"], found["extra"]) == (["approach"], ["Our approach"])
 
 
 def test_all_settled_has_no_place():

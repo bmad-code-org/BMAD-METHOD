@@ -30,7 +30,7 @@ name with no extension, such as `slides`, comes back as it is.
 `mode` is the mode a run starts in and `view` whether a rendered view is made: the first `--libraries-of`
 skill's `workflow` value when set, else the template's, else `step-by-step` and `offer`; with `order: fixed`,
 `freeform` becomes `step-by-step`. A value not allowed (`step-by-step`, `freeform` or `fast`; `offer`, `always`
-or `never`) is skipped and named in `order_problems`. `style` is the customization's when set, else the
+or `never`; `order` other than `fixed`) is skipped and named in `order_problems`. `style` is the customization's when set, else the
 template's. An extension's empty `mode` or `order` clears the template's.
 
 `--brief` keeps only each template's id, description, not_for, category, agents and output, for choosing
@@ -217,9 +217,10 @@ def section_ids(text: str) -> list[str]:
 
 
 def order_problems(
-    order: list[str], required_headings: list[str], known: list[str], built: list[str] = ()
+    order: list[str], required_headings: list[str], known: list[str], built: list[str] = (), placed: list[str] = ()
 ) -> list[str]:
-    """What is wrong with a facilitation order against the headings it must cover."""
+    """What is wrong with a facilitation order against the headings it must cover. `placed` are the
+    sections an extension appended, whose comments place them, so their position proves nothing."""
     ids = [entry.rstrip("?") for entry in order]
     problems = [
         f"`{entry}`: drop the `?`; a section's comment says whether it is required"
@@ -230,7 +231,7 @@ def order_problems(
     problems += [f"`{i}` names no heading" for i in dict.fromkeys(ids) if i not in known]
     problems += [f"heading `{h}` is not listed" for h in dict.fromkeys(required_headings) if h not in ids]
     for n, i in enumerate(ids):
-        later = next((j for j in ids[n + 1 :] if j not in built), None)
+        later = next((j for j in ids[n + 1 :] if j not in built and j not in placed), None)
         if i in built and later:
             problems.append(f"`{i}` is built from the other sections but is taken up before `{later}`")
     return problems
@@ -333,6 +334,7 @@ def scan(sources: list[str]) -> dict:
                     if section not in listed_ids and section not in own:
                         order.append(section)
                         listed_ids.add(section)
+                        template.setdefault("_placed", []).append(section)
         template["_extension_headings"] = [s for e in adding for s, _ in e["_sections"]]
         template["_must_list"] = [s for e in adding if e["facilitation_order"] for s, _ in e["_sections"]]
         template["_order_from_extension"] = any(e["facilitation_order"] for e in adding)
@@ -350,7 +352,9 @@ def scan(sources: list[str]) -> dict:
             built = built_ids(template["_text"]) + [
                 i for _, text in template["_extension_texts"] for i in built_ids(text)
             ]
-            template["order_problems"] = order_problems(template["facilitation_order"], must, own + added, built)
+            template["order_problems"] = order_problems(
+                template["facilitation_order"], must, own + added, built, template.get("_placed", [])
+            )
         if template.pop("_bad_order") and not template["facilitation_order"]:
             template["order_problems"] = ["`facilitation_order` must be a one-line list, such as `[problem, scope]`"]
         template["order_problems"] += [
@@ -485,6 +489,9 @@ def resolve(template: dict, workflow: dict) -> None:
     if template["order"] == "fixed" and template["mode"] == "freeform":
         template["mode"] = "step-by-step"
     template["view"], more = resolved("view", template, str(workflow.get("view", "")), VIEWS)
+    if template["order"] not in ("", "fixed"):
+        more.append(f"`order` is `{template['order']}`, not `fixed`, so it is ignored")
+        template["order"] = ""
     template["style"] = str(workflow.get("style", "")) or template["style"]
     template["order_problems"] += problems + more
 
