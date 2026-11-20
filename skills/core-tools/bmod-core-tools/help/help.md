@@ -50,6 +50,7 @@ An initiative is one body of work of any kind: a product, a feature, a book, a s
 ## `bmad`: setup, status, and help
 
 - `bmad setup` creates and repairs `{project-root}/_bmad`, including the shared scripts other skills call, and asks each installed module's new configuration questions. Recommend it after anything is installed or updated.
+- One of those questions is the session-start hook (`session_start_hook`, default off). Answered `on`, setup writes an entry into each coding tool's own hook file in the project, so every new session opens knowing which BMad skills are installed and when to use them, and keeps its other skills. Answered `off`, setup removes that entry. Recommend it when agents in the project keep working ad hoc instead of reaching for the installed skills, or when a team wants the method followed by default.
 - `bmad status` changes nothing. It reports what is installed, what is missing or out of date, and the one command to run next.
 - Either takes a module code, such as `bmad setup core-tools`, to cover that module only.
 - To add a module that is not installed, such as the Test Architect, run `npx skills add bmad-code-org/bmad-method-test-architecture-enterprise`, then `bmad setup tea`.

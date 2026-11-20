@@ -38,3 +38,12 @@ Agile AI-Driven Development. Powered by BMad Core and a growing module ecosystem
 post_install_message = '''
 BMad is ready. You can ask bmad for help or suggestions at any time, and if you add modules or want to check for updates in the future, just ask the bmad agent to update.
 '''
+
+# Asked by `bmad setup`. "on" writes a session-start hook into each coding tool's own hook file in the
+# project (`.claude/settings.json`, `.codex/hooks.json`), so the tool learns at the start of every session
+# which BMad skills are installed and when to reach for them, and keeps using its other skills. "off"
+# removes that entry and nothing else. The hook runs `_bmad/scripts/session_start.py`.
+[[bmod.config_questions]]
+key = "session_start_hook"
+prompt = "Tell your coding tools at the start of each session which BMad skills are installed and when to use them, through a session-start hook committed with the project? (on / off)"
+default = "off"
