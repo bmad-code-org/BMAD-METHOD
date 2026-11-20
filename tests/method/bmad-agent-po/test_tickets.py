@@ -771,6 +771,66 @@ covers = ["R2", "R3"]
             text.endswith("## References\n\n- parent — out/initiative-checkout/tickets/epic-cart/epic-cart.md\n"), text
         )
 
+    EPIC_REQUIREMENTS = (
+        "---\ntype: epic\ncovers: [R2]\nafter: []\n---\n# Cart\n\n## Description\n\nThe cart.\n\n"
+        "## Requirements\n\n- R10 (parent R3): Totals show tax.\n- R1 (parent R2): A shopper can add an item.\n\n"
+        "## References\n\n- parent — out/initiative-checkout/initiative-checkout.md, section Requirements\n"
+    )
+    LEAF = (
+        '---\nid: 1\ntype: story\ntitle: "Add an item"\nparent: epic-cart\ncovers: [R1, R10]\nafter: []\n'
+        "tracker_id: SHOP-4\nhitl: false\n---\n\n# Add an item\n\n## Description\n\nA shopper adds an item.\n\n"
+        "## Requirements\n\nVerify: the cart shows it.\n\n## References\n\n- parent — epic-cart.md, section Requirements\n\n"
+        "## Notes\n\n- Decision: one item at a time.\n"
+    )
+
+    def body(self, *args):
+        r = run("body", *args)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        return json.loads(r.stdout)
+
+    def test_body_is_the_file_without_frontmatter_title_or_description_heading_plus_covers_lines(self):
+        (self.epic / "epic-cart.md").write_text(self.EPIC_REQUIREMENTS, encoding="utf-8")
+        self.add("story-add-an-item.md", self.LEAF)
+        out = self.body(str(self.epic), "1")
+        self.assertEqual(out["title"], "Add an item")
+        self.assertEqual(out["file"], str(tk(self.epic).resolve() / "story-add-an-item.md"))
+        self.assertEqual(
+            out["body"],
+            "A shopper adds an item.\n\n## Requirements\n\nVerify: the cart shows it.\n\n## References\n\n"
+            "- parent — epic-cart.md, section Requirements\n"
+            "- covers — R1 (parent R2): A shopper can add an item.\n"
+            "- covers — R10 (parent R3): Totals show tax.\n\n"
+            "## Notes\n\n- Decision: one item at a time.\n",
+        )
+        self.assertEqual((tk(self.epic) / "story-add-an-item.md").read_text(encoding="utf-8"), self.LEAF)
+        self.assertEqual(self.body(str(tk(self.epic) / "story-add-an-item.md")), out)
+        (self.root / "story-add-an-item.md").write_text('---\ntitle: "other"\n---\n\nNot this one.\n')
+        r = run("body", str(self.epic), "story-add-an-item.md", cwd=self.root)
+        self.assertEqual(json.loads(r.stdout), out, r.stderr)
+
+    def test_body_of_an_epic_reads_its_covers_from_the_initiative(self):
+        (self.initiative / "initiative-checkout.md").write_text(
+            "---\ntype: initiative\n---\n# Checkout\n\n## Requirements\n\nR2 (prd FR-1): Shoppers buy online.\n"
+        )
+        (self.epic / "epic-cart.md").write_text(self.EPIC_REQUIREMENTS, encoding="utf-8")
+        out = self.body(str(self.epic / "epic-cart.md"))
+        self.assertEqual(out["title"], "Cart")
+        self.assertTrue(out["body"].startswith("The cart.\n\n## Requirements\n"), out["body"])
+        self.assertTrue(
+            out["body"].endswith("section Requirements\n- covers — R2 (prd FR-1): Shoppers buy online.\n"), out["body"]
+        )
+
+    def test_body_refuses_a_covered_id_the_parent_lacks_and_an_entry_not_yet_pulled(self):
+        (self.epic / "epic-cart.md").write_text(self.EPIC_REQUIREMENTS.replace("- R10", "- R11"), encoding="utf-8")
+        self.add("story-add-an-item.md", self.LEAF)
+        r = run("body", str(self.epic), "1")
+        self.assertEqual(r.returncode, 1)
+        self.assertEqual(json.loads(r.stderr)["missing"], ["R10"])
+        self.breakdown_epic()
+        r = run("body", str(self.epic), "2")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("tickets.py pull", json.loads(r.stderr)["error"])
+
     def test_find_by_cross_ref_id_file_tracker_id_and_title(self):
         pricing = self.pricing()
         self.breakdown_epic()
