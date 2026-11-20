@@ -29,7 +29,7 @@ On the repo store, approval commits (Conventions in `workflow.md`) and `publicat
 
 Publish to a tracker through `write`:
 
-- Write the leaf's file first (`tickets.py pull` if none); send its body without the frontmatter. Where the store has no field for covers, the body opens with a Covers list: each id with its requirement line from the parent.
+- Write the leaf's file first (`tickets.py pull` if none); send its body without the frontmatter, the `# <title>` line, or the `## Description` heading, since the tracker shows the title and labels the description. References lists each covered id with its requirement line from the parent.
 - Create parents and prerequisites first, adding local prerequisites to the scope. An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's remote item; `epic-<slug>` is the epic's.
 - A type mapped to `""` is never sent; its children attach to the nearest published ancestor. Say so once.
 - Offer `setup` at first publish, or when the tracker lacks something the maps or `fields` name.
