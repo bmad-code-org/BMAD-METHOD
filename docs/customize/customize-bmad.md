@@ -248,6 +248,30 @@ sequence, so you know when each hook fires:
 
 The workflow body begins after step 6.
 
+### Run acceptance tests before implementation
+
+With the TEA module installed, set `route = "full"` under `[workflow]` in
+`_bmad/custom/bmad-build.toml` or `_bmad/custom/bmad-build-auto.toml`.
+The full route runs `implementation_handoff` after planning.
+
+Copy the default `implementation_handoff` from the skill's `customize.toml`
+into the same `[workflow]` table, or use your team's existing override.
+Insert these instructions at the start of the handoff string, before it
+dispatches implementation:
+
+```text
+If {plan_file} names a `ticket`, do the following before dispatch:
+
+1. Run bmad-tea-automate in red mode for the ticket. Reuse existing test
+   scaffolds on resume and regenerate any a review loopback removed.
+2. List the test files in the plan's Code Map and add their run command to
+   Verification.
+3. For each scaffold, add or update a task to activate the skipped test,
+   confirm it fails for the missing behavior, then make it pass.
+
+Leave the frozen intent unchanged.
+```
+
 ## Override one rendered invocation
 
 To change a skill's customization for one run only, add `--set key=value`
