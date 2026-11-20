@@ -57,7 +57,7 @@ updated: ""
 | `layout` | Optional layout for the rendered view: `document`, `slides`, or an HTML file relative to the template. It says what the view looks like, not whether it is made. See [Give a template its own view](#give-a-template-its-own-view). |
 | `view` | Optional. Whether this template's view is made: `always`, `offer` or `never`. A team's or user's `view` wins over it. Set `always` when the view is the deliverable, as `pitch-deck` does for its slides. |
 
-`template`, `version` and `layout` stay in the finished document, as does any field you add for a view to show. The other fields stay out.
+`template` and `version` stay in the finished document, as does any field you add for a view to show. The other fields stay out.
 
 A method catalog has the header `category,method,name,description,key_questions`, with the key questions separated by `|`. The shipped `security-review` template uses one for the OWASP Top 10 and STRIDE:
 

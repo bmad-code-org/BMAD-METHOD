@@ -618,6 +618,17 @@ def test_the_teams_style_beats_the_templates(tmp_path, capsys):
     )
 
 
+def test_an_extensions_bad_value_is_named_and_the_templates_kept(tmp_path):
+    (tmp_path / "t.md").write_text(template("t", extra="mode: fast\norder: fixed\n"))
+    (tmp_path / "e.md").write_text(extension("t", "mode: quick\norder: true\n"))
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert (found["mode"], found["order"]) == ("fast", "fixed")
+    assert found["order_problems"] == [
+        f"`mode` in {tmp_path / 'e.md'} is `quick`, not one of step-by-step, freeform, fast, so it is ignored",
+        f"`order` in {tmp_path / 'e.md'} is `true`, not one of fixed, so it is ignored",
+    ]
+
+
 def test_an_order_other_than_fixed_is_named_and_cleared(tmp_path, capsys):
     found = listed_view(tmp_path, capsys, front="order: true\n")
     assert found["order"] == ""

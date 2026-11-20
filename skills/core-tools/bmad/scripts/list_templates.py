@@ -80,6 +80,7 @@ FIELDS = (
 CLEARABLE = ("mode", "order")
 MODES = ("step-by-step", "freeform", "fast")
 VIEWS = ("offer", "always", "never")
+ALLOWED = {"mode": MODES, "view": VIEWS, "order": ("fixed",)}
 SECTION = re.compile(r"^##[ \t]+(.+?)[ \t#]*$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 NOT_REQUIRED = re.compile(r"^\s*<!--\s*(optional|include when)\b", re.IGNORECASE)
@@ -322,6 +323,13 @@ def scan(sources: list[str]) -> dict:
         for key in FIELDS:
             # An empty `mode` or `order` clears the template's, so only a missing key leaves it be.
             sets = [e for e in adding if (e[key] is not None if key in CLEARABLE else e[key])]
+            if key in ALLOWED:
+                bad = [e for e in sets if e[key] and e[key] not in ALLOWED[key]]
+                template.setdefault("_extension_problems", []).extend(
+                    f"`{key}` in {e['file']} is `{e[key]}`, not one of {', '.join(ALLOWED[key])}, so it is ignored"
+                    for e in bad
+                )
+                sets = [e for e in sets if e not in bad]
             template[key] = sets[0][key] if sets else template[key]
         own, order = template["_headings"], list(template["facilitation_order"])
         template["facilitation_order"] = order
@@ -357,6 +365,7 @@ def scan(sources: list[str]) -> dict:
             )
         if template.pop("_bad_order") and not template["facilitation_order"]:
             template["order_problems"] = ["`facilitation_order` must be a one-line list, such as `[problem, scope]`"]
+        template["order_problems"] += template.pop("_extension_problems", [])
         template["order_problems"] += [
             f"`facilitation_order` in {file} is ignored: it must be a one-line list, such as `[problem, scope]`"
             for file in template.pop("_bad_extension_orders", [])

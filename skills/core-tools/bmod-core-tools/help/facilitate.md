@@ -11,7 +11,7 @@ It coaches the user through one document from a template, and later updates or v
 - A template with `order: fixed` runs a request for freeform step-by-step, and fast keeps its order, because its order is the point; each section's comment sets the voice and stance for that part. Shipped: Mary's PRFAQ and opportunity, John's pitch, the experiment card they both offer, Method's postmortem, and Nadia's co-founder agreement, startup diagnostic and positioning.
 - Each message that asks something opens with a progress line, such as `PRFAQ · Customer FAQ (2 of 4)` or `PRD · 6 of 24 done`, counted against the template's facilitation order.
 - Every section is settled before the end, in every mode: required ones filled, optional ones offered, include-when ones checked against their condition. Asking for fast never drops a section quietly.
-- Fast asks what the template requires plus up to three high-impact questions, drafts the rest with each guess tagged `[ASSUMPTION]` in the document, then offers to walk the user through those.
+- Fast asks what the template requires, topped up with high-impact questions to three in all, drafts the rest with each guess tagged `[ASSUMPTION]` in the document, then offers to walk the user through those.
 - It skips questions only when the user says headless or autonomous, or hands over material and asks for the document. It then fills gaps with best guesses, tagged as assumptions.
 - Unfinished runs resume in a new chat from the document itself. A finished run leaves the document, its companions and its view; working files go to the system temp folder and are deleted at the end.
 - With no fitting template it builds a structure for the document type, says so, and at close offers to make it a template.
@@ -19,7 +19,7 @@ It coaches the user through one document from a template, and later updates or v
 
 ## Templates the modules ship
 
-Core tools ships no templates. Each module's templates are in `templates` in `knowledge.py`'s output once it is installed, so recommend a module when the user wants one it holds:
+Core tools ships only the template for writing templates. Each module's templates are in `templates` in `knowledge.py`'s output once it is installed, so recommend a module when the user wants one it holds:
 
 | id | Module | Recommend when |
 |---|---|---|
@@ -27,8 +27,8 @@ Core tools ships no templates. Each module's templates are in `templates` in `kn
 | `postmortem` | Method | Something went wrong and the team needs causes and actions, blamelessly. The timeline is drawn as a diagram, and it also writes a customer notice when customers were told. |
 | `security-review` | Method | Reviewing a system against the OWASP Top 10 or STRIDE. The standard's items drive the questions; another standard needs its rows added to the catalog first. |
 | `proposal` | Founder | Asking for money, time or approval: a grant, a bid, an internal request. The reader's own guidelines replace its headings. |
-| `pitch-deck` | Founder | A talk or pitch that needs a story and slides. It always renders as an HTML slide view unless the team turned views off. |
-| `character` | Creative Intelligence Suite 0.4.0 and later | A fictional character for a story, game or campaign. The coach proposes options, and each character gets its own one-page HTML sheet unless the team turned views off. |
+| `pitch-deck` | Founder | A talk or pitch that needs a story and slides. It always renders as an HTML slide view unless the team's or user's `view` setting says otherwise. |
+| `character` | Creative Intelligence Suite 0.4.0 and later | A fictional character for a story, game or campaign. The coach proposes options, and each character gets its own one-page HTML sheet unless the team's or user's `view` setting says otherwise. |
 
 Method also ships John's planning templates and Mary's analysis templates, which Method's own help covers.
 
