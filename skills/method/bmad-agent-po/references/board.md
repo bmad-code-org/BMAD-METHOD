@@ -29,7 +29,7 @@ On the repo store, approval commits (Conventions in `workflow.md`) and `publicat
 
 Publish to a tracker through `write`:
 
-- Write the leaf's file first (`tickets.py pull` if none); send its body without the frontmatter, the `# <title>` line, or the `## Description` heading, since the tracker shows the title and labels the description. References lists each covered requirement as `covers — <its Requirements line in the parent, verbatim>`.
+- Write the leaf's file first (`tickets.py pull` if none); send its body without the frontmatter, the `# <title>` line, or the `## Description` heading, since the tracker shows the title and labels the description. What is sent adds to References each covered requirement as `covers — <its Requirements line in the parent, verbatim>`; the file keeps its own form.
 - Create parents and prerequisites first, adding local prerequisites to the scope. An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's remote item; `epic-<slug>` is the epic's.
 - A type mapped to `""` is never sent; its children attach to the nearest published ancestor. Say so once.
 - Offer `setup` at first publish, or when the tracker lacks something the maps or `fields` name.
@@ -69,7 +69,7 @@ After every `write`, and after the `query` before a board view, run `tickets.py 
 - `after` holds tracker ids as strings; an empty string removes a key's line.
 - A tracker leaf missing from the tree, even one a known ticket's `after` names, comes back under `unmatched`: add an `[[entry]]` to the parent's `tickets.toml` (the folder's `next_id`, the item's type and title, a one-sentence description), mirror again with that `ref`, and put the item's body in the pulled file.
 - Query published containers with their leaves; `mirror` reports them under `containers`, never `unmatched`; tell the user when one's tracker status differs from its file's, and close one only through the closure check.
-- A body that differs from the file: show both and ask.
+- A body that differs from what Publish would send from the file: show both and ask.
 - Move a ticket the tracker shows under another parent per Close, drop, move, then mirror again.
 - A failed store call: tell the user what blocks it, confirm the setup, and ask them to authenticate if that is the cause. An empty verb field you cannot infer: ask, and offer to record it per `store-setup.md`.
 
