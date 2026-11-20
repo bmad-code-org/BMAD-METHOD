@@ -1,14 +1,14 @@
 ---
 title: ""
 template: lean-canvas
-version: 1.0.0
+version: 1.1.0
 description: "The whole business model on one page, with its riskiest assumption named."
 not_for: "Hard questions on whether the demand is real (`startup-diagnostic`); the first group of customers to win (`ideal-customer`); the one-liner and what customers compare against (`positioning`)."
 facilitation_order: [customer-segments, problem, existing-alternatives, unique-value, solution, channels, revenue, costs, key-metric, unfair-advantage, riskiest-assumption]
 guidance: guidance-planning
 rubric: rubric-planning
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -27,7 +27,7 @@ updated: ""
 
 <!-- done when: One segment, every box holds a specific claim or says it is unknown, and the riskiest assumption is named with the cheapest test that would show it false. -->
 
-<!-- view: The canvas in its classic grid on one landscape page, readable at a glance, with the riskiest assumption called out beneath it and the boxes it rests on highlighted. -->
+<!-- layout: The canvas in its classic grid on one landscape page, readable at a glance, with the riskiest assumption called out beneath it and the boxes it rests on highlighted. -->
 
 # {title}
 

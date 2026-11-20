@@ -1,13 +1,13 @@
 ---
 title: ""
 template: document-template
-version: 1.0.0
+version: 1.1.0
 description: "A new document template: the coaching for a document people talk through."
 not_for: "Changing a template that exists (`bmad-customize`); one document, written once (run the closest template, or none)."
-facilitation_order: [purpose-and-reader, sections, inputs, stance, done-when, writing, identity, rubric?, companions?, view?, next?]
+facilitation_order: [purpose-and-reader, sections, inputs, stance, done-when, writing, identity, rubric, companions, view, next]
 rubric: rubric-document-template.md
 output: "{project-root}/_bmad/custom/facilitate-templates/template-{slug}.md"
-html_view: never
+view: never
 status: draft
 created: ""
 updated: ""
@@ -46,10 +46,10 @@ updated: ""
 <!-- The `purpose` comment: the job or decision the document serves, and the reader who acts on it without the conversation. Ask who reads it and what they do next; a document with two readers is two templates, or one with a companion for the second. Done when one sentence says what the reader can do with it. -->
 
 ## Inputs
-<!-- The `inputs` comment: what the coach must ask, records to ask for before anything is reconstructed from memory, and the facts only the user can know. Each one listed is asked on every path unless the user already gave it, so list only what must be asked. -->
+<!-- The `inputs` comment: what the coach must ask, records to ask for before anything is reconstructed from memory, and the facts only the user can know. Each one listed is asked in every mode but headless unless the user already gave it, so list only what must be asked. Then the `opening` comment, when the expert's first questions are not what the user is making and who it is for: at most two, the ones whose answers change how the rest is coached, such as which kind of case this is. -->
 
 ## Sections
-<!-- The document's `##` headings, in the order the reader reads them, each with one comment: a line on what goes in, then how to coach it where the expert would: when to press and on what, when to ease off, what to ask for first. A comment can limit the answer: "The user must pick exactly one of: ..." or a list in a named file. `diagram:` and a Mermaid kind goes on a section a picture carries. A section not every document needs starts its comment `optional.` or `include when: <condition>.` Then `facilitation_order`: every heading's id (lowercased, punctuation dropped, spaces as hyphens) in the order the coach takes them up, which may differ from the reader's order (a summary sits first and comes up last), with `?` on each not required. Set `paced: true` only when walking the sections one at a time matters as much as the document, as in a rehearsal or an intake; then each section comment is the coach's brief for that part, in its voice. A long document gets a bare `## Table of Contents` right after the title. Done when the user agrees each section is one a reader needs and the coaching in it is what an expert would do. -->
+<!-- The document's `##` headings, in the order the reader reads them, each with one comment: a line on what goes in, then how to coach it where the expert would: when to press and on what, when to ease off, what to ask for first. A comment can limit the answer: "The user must pick exactly one of: ..." or a list in a named file. `diagram:` and a Mermaid kind goes on a section a picture carries. A section not every document needs starts its comment `optional.` or `include when: <condition>.` A section assembled from the others, such as a summary or a glossary, starts its comment `built:` and comes after them in the order, because nothing can be asked for it until they settle. Then `facilitation_order`: every heading's id (lowercased, punctuation dropped, spaces as hyphens) in the order the coach takes them up, which may differ from the reader's order (a summary sits first and comes up last). Set `order: fixed` only when an earlier section must be settled before a later one is worked, as in a rehearsal, or appetite before solution; a request for freeform then runs step-by-step. Set `mode: freeform` only when the sections are independent and a brain dump usually fills several at once; without it a run starts step-by-step. A section comment that gives the coach a voice or method for that part is followed while the section is open. A long document gets a bare `## Table of Contents` right after the title. Done when the user agrees each section is one a reader needs and the coaching in it is what an expert would do. -->
 
 ## Stance
 <!-- The `stance` comment: how the coach behaves across the document, from where the expert says people go wrong. One to three lines. -->
@@ -67,7 +67,7 @@ updated: ""
 <!-- optional. The `companions` comment: another file to write beside each document, for a different reader, when, and what it holds. -->
 
 ## View
-<!-- optional. How the HTML view looks: `view: slides` for slides, an HTML file beside the template with slots for a fixed layout, or a `view` comment that briefs a page written for each document; `html_view: always` when the view is the deliverable. Most templates set none. -->
+<!-- optional. How the HTML view looks: `layout: slides` for slides, an HTML file beside the template with slots for a fixed layout, or a `layout` comment that briefs a page written for each document; `view: always` when the view is the deliverable. Most templates set none. -->
 
 ## Next
 <!-- optional. The `next` comment: what the coach offers or does once a document is done, such as the template or skill that comes after it. -->

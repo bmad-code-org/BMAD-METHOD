@@ -88,7 +88,7 @@ Talk to John (`bmad-agent-pm`):
 John, let's create a PRD for text message appointment reminders.
 ```
 
-John coaches the PRD as usual, and tells you up front that your project adds rules to it. On the fast path he raises both rules in his first batch of questions; when coaching, he raises each as the conversation reaches it. When the conversation reaches Success metrics, he offers metrics from your catalog, such as no-show rate. Propose one the catalog lacks, such as "patient happiness", and he says it is not in the catalog and records an open question for its owner instead of defining it himself. After MVP scope he asks who leads Support for the launch, then walks you through the first week of tickets. Answer "Support will figure it out" and he presses for the answers.
+John coaches the PRD as usual. In fast mode he raises both rules in his first batch of questions; otherwise he raises each as the conversation reaches its section. When the conversation reaches Success metrics, he offers metrics from your catalog, such as no-show rate. Propose one the catalog lacks, such as "patient happiness", and he says it is not in the catalog and records an open question for its owner instead of defining it himself. After MVP scope he asks who leads Support for the launch, then walks you through the first week of tickets. Answer "Support will figure it out" and he presses for the answers.
 
 ## Step 4: See What the Coach Read
 
@@ -157,7 +157,10 @@ your-project/
 | Add a section to every PRD | A new heading in an `extends: prd` file, with a comment that places it and says what to ask |
 | Change how an existing section is coached | The same heading in the extension, with a comment that adds to or replaces the template's |
 | Remove a section | List the order in the extension's `facilitation_order` and leave the section out |
-| Make HTML views by default for PRDs | `html_view: always` in the extension's frontmatter |
+| Make HTML views by default for PRDs | `view: always` in the extension's frontmatter |
+| Start every document in one mode | Ask `bmad-customize` to set `mode` (`step-by-step`, `freeform` or `fast`) for `bmad-facilitate`: in `_bmad/custom/bmad-facilitate.toml` for the team, or `bmad-facilitate.user.toml` for you alone. It wins over each template's own `mode`, and anyone can still switch in a run |
+| Start one document in another mode | `mode: freeform` (or another mode) in the extension's frontmatter |
+| Make one document always run in order | `order: fixed` in the extension's frontmatter; `order: ""` clears it on a template that sets it |
 | Give one team its own document | A copy with a new `template` id, `description`, `not_for` and `agents` |
 | Check what a run reads | Ask `bmad-customize` to show the merged template |
 

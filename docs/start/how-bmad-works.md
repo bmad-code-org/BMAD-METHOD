@@ -136,7 +136,7 @@ word things differently.
 Size decides how many build sessions the work needs. Stakes, from a hobby
 project to regulated or contracted work, decide how heavy the planning gets.
 A large hobby project keeps planning light; a small change to a regulated
-system may not. [Write a PRD](../plan/write-a-prd.md#2-choose-the-path) lists
+system may not. [Write a PRD](../plan/write-a-prd.md#2-choose-the-mode) lists
 what each level changes. Risk, unclear requirements, broad architectural
 reach, or several people involved push work up from one session even when it
 is small.

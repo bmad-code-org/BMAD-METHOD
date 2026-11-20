@@ -12,7 +12,7 @@ A template alone has no approach and no registration: its name is the template i
 
 ## Writing it
 
-Invoke `bmad-facilitate` for a `document-template` run, passing the document and its reader, what discovery settled as inputs, the output file `<folder below>/template-<id>.md`, the skills that offer it for `agents:`, and the fast path when you are on yours; headless only when nobody is present. Never write the template yourself; the engine writes any rubric beside it.
+Invoke `bmad-facilitate` for a `document-template` run, passing the document and its reader, what discovery settled as inputs, the output file `<folder below>/template-<id>.md`, the skills that offer it for `agents:`, and `mode` fast when you are on your fast path; headless only when nobody is present. Never write the template yourself; the engine writes any rubric beside it.
 
 ## Where it goes
 
@@ -26,7 +26,7 @@ The agent adds a persona and domain knowledge; the engine does the facilitation,
 
 - Create, update and validate invoke `bmad-facilitate` with:
   - the persona, the intent, and the document or inputs in play;
-  - every template of its that fits, not its pick unless the user named one: `uv run {project-root}/_bmad/scripts/list_templates.py {project-root}/_bmad/custom/facilitate-templates ~/.bmad/facilitate-templates <its libraries> --root <each skills folder the host has active> --agent <skill> --brief`;
+  - every template of its that fits, not its pick unless the user named one: `uv run {project-root}/_bmad/scripts/list_templates.py --libraries-of <bmad-facilitate's folder> <its libraries> --project-root {project-root} --root <each skills folder the host has active> --agent <skill> --brief`;
   - its libraries: its `assets/` and resolved `[workflow] template_libraries`, when it has either;
   - headless when it is, and the next steps to name at close.
 - With a `bmod.toml`, `bmad-facilitate` is in `required_skills`; not installed, the agent offers `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-facilitate`.

@@ -6,6 +6,7 @@ All through Nadia (`bmad-founder-agent-advisor`).
 - About to talk to customers, or interviews produced only compliments → `customer-interview-script`.
 - "It's for everyone", or outreach gets no replies → `ideal-customer`.
 - About to build without proof anyone will pay → `validation-experiment`.
+- The whole business model on one page, or which assumption is riskiest → `lean-canvas`.
 - Can't say what it is in one sentence → `positioning`. Names → `bmad-brainstorming`.
 - Interviews done → Nadia, Customers.
 - Market size or competitors → Nadia, who uses `bmad-deep-recon`.

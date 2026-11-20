@@ -1,14 +1,15 @@
 ---
 title: ""
 template: validation-experiment
-version: 1.0.0
+version: 1.1.0
 description: "A founder's test of whether people will pay or act, with the pass mark set first."
 not_for: "A guide for discovery conversations (`customer-interview-script`); hard questions that pick what to test (`startup-diagnostic`)."
-facilitation_order: [assumption, test, who-sees-it, pass-mark, cost-and-time, what-participants-are-told?, result?]
+facilitation_order: [assumption, test, who-sees-it, pass-mark, cost-and-time, what-participants-are-told, result]
 guidance: guidance-planning
 rubric: rubric-planning
 agents: [bmad-founder-agent-advisor]
-html_view: always
+order: fixed
+view: always
 status: draft
 created: ""
 updated: ""
@@ -28,7 +29,7 @@ updated: ""
 
 <!-- next: Once it has run, write Result through an Update, against the pass mark as written; a pass mark moved after the results is a new test. -->
 
-<!-- view: A test card: the assumption, the test, the pass mark drawn as a visible threshold, and the date. Once results are in, the result plotted against the pass mark so pass or fail reads in a second. -->
+<!-- layout: A test card: the assumption, the test, the pass mark drawn as a visible threshold, and the date. Once results are in, the result plotted against the pass mark so pass or fail reads in a second. -->
 
 # {title}
 
