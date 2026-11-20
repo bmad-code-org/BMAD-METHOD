@@ -18,14 +18,6 @@ Verify `{plan_file}` resolves to a non-empty path and the file exists on disk. I
 
 Capture `baseline_revision` (current HEAD, or `NO_VCS` if version control is unavailable) into `{plan_file}` frontmatter before making any changes. When `baseline_revision` already holds a value (resuming or repairing this run), preserve it.
 
-{% if workflow.before_implement | trim %}
-### Before Implement
-
-Follow these instructions before any code change when this run just captured `baseline_revision` or a review loopback just reverted the code, substituting the runtime placeholders (e.g. `{plan_file}`). Skip them on any other resumed run.
-
-{{ workflow.before_implement }}
-
-{% endif %}
 ### Implement
 
 Change `{plan_file}` status to `in-progress` in the frontmatter before starting implementation. Execute only the matching route below, then continue with Both routes.

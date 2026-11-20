@@ -23,12 +23,6 @@ If intent gaps remain, present each as a numbered question with its options and 
 
 Capture `baseline_revision` (current HEAD, or `NO_VCS` if version control is unavailable) into `{plan_file}` frontmatter before making any changes. If `baseline_revision` already holds a value (resumed run), preserve it.
 
-{% if workflow.before_implement | trim %}
-If this run just captured `baseline_revision`, follow these instructions before any code change, substituting the runtime placeholders (e.g. `{plan_file}`). If the value was preserved, a resumed run already followed them: skip them.
-
-{{ workflow.before_implement }}
-
-{% endif %}
 Build the change from `{plan_file}`. The Intent section is what you implement. As you work, add notes to `## Implementation Notes`: decisions you made, files you changed, surprises.
 
 When you are done, run the commands in `{plan_file}`'s `## Verification` section, if present, and fix any that fail.

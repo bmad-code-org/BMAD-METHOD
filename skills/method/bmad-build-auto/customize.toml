@@ -43,23 +43,6 @@ If the change touches more than five files and is not simple or mechanical,
 consider upgrading to full.
 """
 
-# Instruction run before implementation starts: after planning, once
-# `baseline_revision` is captured, before any code change. It runs again after
-# a review loopback reverts the code; any other resumed run skips it.
-# Empty means nothing runs.
-#
-# Example: acceptance tests first (ATDD) with the TEA module installed.
-# before_implement = """
-# When {plan_file} names a `ticket`, run bmad-tea-automate in red mode for
-# that ticket. It saves each acceptance test skipped. Add the test files to
-# the plan's Code Map, a task that unskips each test and sees it fail before
-# the code it covers is written, and a command to Verification that runs
-# them. A oneshot plan has no Code Map or tasks: add the Verification command
-# and unskip each test the same way while implementing.
-# """
-
-before_implement = ""
-
 # Instruction run by HALT after writing the terminal result.
 # Empty means no extra terminal behavior.
 

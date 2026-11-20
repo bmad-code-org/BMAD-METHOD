@@ -232,24 +232,6 @@ review depth. The build skills default to `quick` and code review to
 review = "thorough"
 ```
 
-Both build skills also expose `before_implement`, an instruction that runs
-after planning and before any code changes. With the TEA module installed,
-this makes every build of a ticket write failing acceptance tests first
-(ATDD):
-
-```toml
-# _bmad/custom/bmad-build.toml (and bmad-build-auto.toml)
-[workflow]
-before_implement = """
-When {plan_file} names a `ticket`, run bmad-tea-automate in red mode for
-that ticket. It saves each acceptance test skipped. Add the test files to
-the plan's Code Map, a task that unskips each test and sees it fail before
-the code it covers is written, and a command to Verification that runs
-them. A oneshot plan has no Code Map or tasks: add the Verification command
-and unskip each test the same way while implementing.
-"""
-```
-
 Read a workflow's `customize.toml` to see the fields it exposes. If the
 field you need is not there, use `activation_steps_*` and
 `persistent_facts`, or open an issue asking for a customization point.
@@ -265,6 +247,30 @@ sequence, so you know when each hook fires:
 6. Run `activation_steps_append`.
 
 The workflow body begins after step 6.
+
+### Run acceptance tests before implementation
+
+With the TEA module installed, set `route = "full"` under `[workflow]` in
+`_bmad/custom/bmad-build.toml` or `_bmad/custom/bmad-build-auto.toml`.
+The full route runs `implementation_handoff` after planning.
+
+Copy the default `implementation_handoff` from the skill's `customize.toml`
+into the same `[workflow]` table, or use your team's existing override.
+Insert these instructions at the start of the handoff string, before it
+dispatches implementation:
+
+```text
+If {plan_file} names a `ticket`, do the following before dispatch:
+
+1. Run bmad-tea-automate in red mode for the ticket. Reuse existing test
+   scaffolds on resume and regenerate any a review loopback removed.
+2. List the test files in the plan's Code Map and add their run command to
+   Verification.
+3. For each scaffold, add or update a task to activate the skipped test,
+   confirm it fails for the missing behavior, then make it pass.
+
+Leave the frozen intent unchanged.
+```
 
 ## Override one rendered invocation
 
