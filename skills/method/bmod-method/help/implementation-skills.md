@@ -11,7 +11,7 @@ Read this when the question is about `bmad-build` or `bmad-build-auto`. For runn
 - Writes: a ticket's plan beside `tickets.toml`, or in `backlog/` for a backlog ticket, at the path `tickets.py find` returns, with `ticket` and a `status` it moves as far as `built`; the user marks the ticket done. Other work gets `{output_folder}/{active_initiative}/plan-<slug>.md`. Deferred goals go in `{output_folder}/{active_initiative}/deferred-work.md`. With no initiative active, both go in `{output_folder}/`.
 
 **`bmad-build-auto`** — one unattended build of one ticket, for a loop or script that dispatches it.
-- Do not offer it for attended work. It never asks: anything unclear halts it as `blocked` with a named reason written into the plan. It needs subagents. Its input is a ticket from the tree, one run per ticket; free text or an intent file also work. Where version control is present it also needs a clean working tree on a branch that fits the work.
+- Do not offer it for attended work, except to build a finished prototype plan or light PRD in one go. It never asks: anything unclear halts it as `blocked` with a named reason written into the plan. It needs subagents. Its input is a ticket from the tree, one run per ticket; free text or an intent file also work. Where version control is present it also needs a clean working tree on a branch that fits the work.
 - Fits when: decisions and patterns are stable and the tickets are well specified.
 - Writes: the same plans as `bmad-build`.
 
