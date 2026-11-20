@@ -1667,6 +1667,100 @@ def cmd_note(args) -> dict:
     return {"ticket": ref_name(t, tree), "file": str(path), "note": note}
 
 
+ENTRY_TEXT = ("title", "description", "verify", "unknown")
+ENTRY_LISTS = ("covers", "references", "notes")
+ENTRY_FLAGS = ("hitl", "refine", "plan_checkpoint", "done_checkpoint")
+ENTRY_KEYS = ("type", "title", "description", "verify", "covers", "after", "hitl", "risk", "estimate", "unknown",
+              "references", "notes", "refine", "plan_checkpoint", "done_checkpoint")  # fmt: skip
+
+
+def entry_block(n: int, item, where: str) -> str:
+    """An `[[entry]]` table for `tickets.toml` from a JSON object, its keys in the template's order."""
+    if not isinstance(item, dict):
+        raise TicketError(f"{where}: stdin must be one JSON object")
+    unknown = sorted(set(item) - set(ENTRY_KEYS))
+    if unknown:
+        raise TicketError(f"{where}: unknown keys {', '.join(unknown)}; the id is assigned, never given")
+    _one_of(item.get("type", ""), LEAF_TYPES, where, "type")
+    if not item.get("type") or not isinstance(item.get("title"), str) or not item["title"].strip():
+        raise TicketError(f"{where}: an entry needs a `type` and a `title`")
+    _one_of(item.get("risk", ""), ("low", "medium", "high"), where, "risk")
+    lines = ["[[entry]]", f"id = {n}"]
+    for key in ENTRY_KEYS:
+        if key not in item:
+            continue
+        v = item[key]
+        if key in ENTRY_TEXT or key in ("type", "risk"):
+            ok = isinstance(v, str)
+        elif key in ENTRY_LISTS:
+            ok = isinstance(v, list) and all(isinstance(x, str) for x in v)
+        elif key == "after":
+            ok = isinstance(v, list) and all(
+                isinstance(x, str) or (isinstance(x, int) and not isinstance(x, bool)) for x in v
+            )
+        elif key in ENTRY_FLAGS:
+            ok = isinstance(v, bool)
+        else:  # estimate
+            ok = isinstance(v, (int, float, str)) and not isinstance(v, bool)
+        if not ok:
+            raise TicketError(f"{where}: `{key}` has the wrong type")
+        if isinstance(v, list):
+            text = list_text(v, toml=True)
+        elif isinstance(v, bool):
+            text = "true" if v else "false"
+        else:
+            text = json.dumps(v, ensure_ascii=False)
+        lines.append(f"{key} = {text}")
+    block = "\n".join(lines) + "\n"
+    try:
+        same = tomllib.loads(block)["entry"][0] == {"id": n, **item}
+    except tomllib.TOMLDecodeError:
+        same = False
+    if not same:
+        raise TicketError(f"{where}: the values cannot be written to TOML as given")
+    return block
+
+
+def cmd_add(args) -> dict:
+    """Append an entry to a folder's `tickets.toml` from a JSON object on stdin."""
+    folder = locate_dir(args, args.dir)
+    tree = load_tree(folder)
+    if tree["scope"] is None:
+        raise TicketError(f"{folder.name} holds epics, not entries")
+    where = f"{shown(folder)}/{BREAKDOWN}"
+    try:
+        item = json.loads(sys.stdin.read())
+    except json.JSONDecodeError as e:
+        raise TicketError(f"stdin is not JSON: {e}") from e
+    n = next_id(tree, folder.name)
+    block = entry_block(n, item, where)
+    path = tickets_dir(folder) / BREAKDOWN
+    old = path.read_bytes() if path.is_file() else None
+    text = read_text(path) if old is not None else ""
+    # Encoded before the file is opened, so text that cannot be written leaves the file as it was.
+    data = ((text.rstrip("\n") + "\n\n" if text.strip() else "") + block).encode("utf-8")
+    made = not path.parent.is_dir()  # an epic with no breakdown yet has no tickets/ folder
+    path.parent.mkdir(exist_ok=True)
+    path.write_bytes(data)
+    try:
+        load_tree(folder)  # an `after` naming nothing, or a cycle, leaves the file as it was
+    except (TicketError, ValueError) as e:
+        if old is None:
+            path.unlink()
+            if made:
+                path.parent.rmdir()
+        else:
+            path.write_bytes(old)
+        raise TicketError(f"nothing was added: {e}") from e
+    epic_id = tree["epic_ids"].get(folder.name)
+    return {
+        "folder": folder.name,
+        "id": n,
+        "ref": f"{epic_id}.{n}" if epic_id is not None else str(n),
+        "entry": tomllib.loads(block)["entry"][0],
+    }
+
+
 def cmd_move(args) -> dict:
     """Move an entry, with its leaf file and plan, to another folder, rewriting ids and every `after` that names it."""
     src, dest = locate_dir(args, args.src), locate_dir(args, args.to)
@@ -1982,6 +2076,20 @@ leaf file's `## Notes`, which is added when missing. A ticket with a status is r
 already read the ticket.
 
 Output: `ticket`, `file` (the file written), and `note`.""",
+    "add": f"""Append an entry to a folder's `tickets.toml`.
+
+<dir> is an epic folder, a backlog folder, or an initiative folder with no epics: a path, or a folder's
+name as for the other commands. Stdin is one JSON object with the entry's keys, as the skill's
+`assets/tickets-template.toml` describes them: `type` ({", ".join(LEAF_TYPES)}) and `title` are required;
+`description`, `verify`, `unknown`, and `risk` (low, medium, high) are strings; `covers`, `references`,
+and `notes` lists of strings; `after` a list whose numbers are sibling ids and whose strings are any
+other prerequisite form; `hitl`, `refine`, `plan_checkpoint`, and `done_checkpoint` booleans; `estimate`
+a number or a string. Any other key, `id` included, is refused.
+
+The entry takes the folder's next id (as status reports `next_id`) and goes last, its keys in the
+template's order. An `after` naming nothing, or one that makes a cycle, writes nothing.
+
+Output: `folder`, `id`, `ref` (as find on the initiative resolves it), and `entry`, the table written.""",
     "move": f"""Move an entry to another folder, with its leaf file and plan.
 
 <from> and <to> are folders as <dir> is for the other commands; <ref> names an entry in <from>.
@@ -2065,6 +2173,11 @@ def main() -> int:
     p.add_argument("ref")
     p.add_argument("text")
     p.set_defaults(func=cmd_note)
+    p = sub.add_parser(
+        "add", help="append an entry to a folder's tickets.toml", description=HELP["add"], formatter_class=raw
+    )
+    p.add_argument("dir")
+    p.set_defaults(func=cmd_add)
     p = sub.add_parser(
         "move",
         help="move an entry, its leaf file, and its plan to another folder",
