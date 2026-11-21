@@ -56,3 +56,26 @@ def test_dump_preserves_order_unicode_and_long_text():
     assert long_text in yaml_text
     assert list(frontmatter.load(yaml_text).items()) == list(fields.items())
     assert yaml.safe_load(yaml_text) == fields
+
+
+def test_set_fields_rewrites_named_entries_and_keeps_the_rest_as_written():
+    text = (
+        "# kept comment\n"
+        "title: 'Quoted'\n"
+        "agents:\n- a\n- b\n"
+        "notes: |\n  one\n\n  two\n"
+        '"mode": fast  # inline\n'
+        "after: [x, y]"
+    )
+    result = frontmatter.set_fields(text, {"agents": ["c"], "mode": "", "new": "Fix #42: x"})
+    assert result == (
+        "# kept comment\n"
+        "title: 'Quoted'\n"
+        "agents:\n- c\n"
+        "notes: |\n  one\n\n  two\n"
+        "mode: ''\n"
+        "after: [x, y]\n"
+        "new: 'Fix #42: x'\n"
+    )
+    assert frontmatter.load(result)["notes"] == "one\n\ntwo\n"
+    assert frontmatter.set_fields("", {"a": "1"}) == "a: '1'\n"

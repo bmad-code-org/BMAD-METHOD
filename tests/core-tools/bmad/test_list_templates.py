@@ -14,9 +14,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-_SPEC = importlib.util.spec_from_file_location(
-    "list_templates", Path(__file__).resolve().parents[3] / "skills/core-tools/bmad/scripts/list_templates.py"
-)
+SCRIPTS = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad/scripts"
+sys.path.insert(0, str(SCRIPTS))
+_SPEC = importlib.util.spec_from_file_location("list_templates", SCRIPTS / "list_templates.py")
 list_templates = importlib.util.module_from_spec(_SPEC)
 sys.modules["list_templates"] = list_templates
 _SPEC.loader.exec_module(list_templates)
@@ -310,7 +310,7 @@ def test_values_a_template_sets_come_through(tmp_path):
 
 
 def test_a_placeholder_path_is_left_for_the_agent(tmp_path):
-    (tmp_path / "t.md").write_text(template("a", extra="style: {project-root}/brand.css\n"))
+    (tmp_path / "t.md").write_text(template("a", extra='style: "{project-root}/brand.css"\n'))
     assert list_templates.scan([str(tmp_path)])["templates"][0]["style"] == "{project-root}/brand.css"
 
 
@@ -470,7 +470,7 @@ def test_an_optional_section_an_extension_adds_joins_the_order_by_its_id(tmp_pat
 
 
 def test_a_question_mark_left_on_an_id_is_an_order_problem(tmp_path):
-    (tmp_path / "t.md").write_text(ORDERED.replace("vision, summary]", "vision?, summary]"))
+    (tmp_path / "t.md").write_text(ORDERED.replace("vision, summary]", "'vision?', summary]"))
     assert list_templates.scan([str(tmp_path)])["templates"][0]["order_problems"] == [
         "`vision?`: drop the `?`; a section's comment says whether it is required"
     ]
@@ -527,7 +527,7 @@ def test_an_extension_clears_order_with_an_empty_value_and_the_merge_says_so(tmp
     (custom / "e.md").write_text(extension("t", 'order: ""\n'))
     list_templates.main([str(custom), str(lib), "--template", "t", "--merge", str(tmp_path / "m.md")])
     assert json.loads(capsys.readouterr().out)["templates"][0]["order"] == ""
-    assert 'order: ""' in (tmp_path / "m.md").read_text().split("---")[1]
+    assert list_templates.read_fields((tmp_path / "m.md").read_text())["order"] == ""
 
 
 def test_an_extension_without_order_keeps_the_templates(tmp_path):
@@ -560,7 +560,7 @@ def listed_mode(tmp_path, capsys, front: str = "", team: str | None = None, user
         ["--libraries-of", str(skill), "--project-root", str(tmp_path), "--template", "t", "--merge", str(merge)]
     )
     found = json.loads(capsys.readouterr().out)["templates"][0]
-    assert list_templates.frontmatter(merge.read_text())["mode"] == found["mode"]
+    assert list_templates.read_fields(merge.read_text())["mode"] == found["mode"]
     return found
 
 
@@ -734,11 +734,13 @@ def test_merge_writes_one_file_with_the_customizations_first(tmp_path, capsys):
     text = (run / ".template.md").read_text()
     assert result["merged"] == str(run / ".template.md")
     assert "_text" not in result["templates"][0]
-    front = text.split("---")[1]
-    assert 'view: "always"' in front
-    assert "facilitation_order: [codename, problem, summary]" in front
-    assert f'rubric: "{(lib / "r.md").resolve().as_posix()}"' in front
+    front = list_templates.read_fields(text)
+    assert front["view"] == "always"
+    assert front["facilitation_order"] == ["codename", "problem", "summary"]
+    assert front["rubric"] == (lib / "r.md").resolve().as_posix()
     assert "extends" not in front
+    assert text.startswith("---\ntemplate: t\nrubric: "), "a changed value stays where it was"
+    assert '\ndescription: "Use it."\n' in text, "untouched lines keep their quoting"
     assert (
         text.index("Ask for a codename first.")
         < text.index(f"The template, from {lib / 't.md'}")
@@ -763,13 +765,30 @@ def test_a_shorter_fence_inside_a_longer_one_does_not_close_it():
     assert list_templates.section_ids(text) == ["problem"]
 
 
-def test_an_order_that_is_not_a_one_line_list_is_reported(tmp_path):
+def test_an_order_written_as_a_block_list_is_read(tmp_path):
     (tmp_path / "t.md").write_text(
         "---\ntemplate: t\ndescription: x\nfacilitation_order:\n  - problem\n---\n\n## Problem\n"
     )
     found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert (found["facilitation_order"], found["order_problems"]) == (["problem"], [])
+
+
+def test_an_order_that_is_not_a_list_is_reported(tmp_path):
+    (tmp_path / "t.md").write_text("---\ntemplate: t\ndescription: x\nfacilitation_order: problem\n---\n\n## Problem\n")
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
     assert found["facilitation_order"] == []
-    assert found["order_problems"] == ["`facilitation_order` must be a one-line list, such as `[problem, scope]`"]
+    assert found["order_problems"] == ["`facilitation_order` must be a list of section ids, such as `[problem, scope]`"]
+
+
+def test_frontmatter_that_is_not_yaml_is_reported_and_one_that_never_closes_is_no_template(tmp_path):
+    (tmp_path / "bad.md").write_text("---\ntemplate: bad\nfacilitation_order: [goal, scope?]\n---\n")
+    (tmp_path / "open.md").write_text("---\ntemplate: open\n\n# Body\n")
+    (tmp_path / "crlf.md").write_text(template("crlf").replace("\n", "\r\n"))
+    result = list_templates.scan([str(tmp_path)])
+    assert ids(result) == ["crlf"]
+    assert [(u["source"], u["reason"].split(":")[0]) for u in result["unreachable"]] == [
+        (str(tmp_path / "bad.md"), "its frontmatter is not YAML")
+    ]
 
 
 def test_project_root_fills_the_placeholder_in_each_source(tmp_path, capsys):
@@ -808,13 +827,13 @@ def test_libraries_of_reads_a_skills_template_libraries_and_its_overrides(tmp_pa
     assert found[0]["extensions"] == [str(custom / "e.md")]
 
 
-def test_an_extension_order_that_is_not_a_one_line_list_is_reported_beside_a_good_one(tmp_path):
+def test_an_extension_order_that_is_not_a_list_is_reported_beside_a_good_one(tmp_path):
     (tmp_path / "t.md").write_text(ORDERED)
-    (tmp_path / "e.md").write_text("---\nextends: t\nfacilitation_order:\n  - problem\n---\n\n## Extra\n")
+    (tmp_path / "e.md").write_text("---\nextends: t\nfacilitation_order: problem\n---\n\n## Extra\n")
     found = list_templates.scan([str(tmp_path)])["templates"][0]
     assert found["facilitation_order"][:4] == ["problem", "what-makes-it-different", "vision", "summary"]
     assert found["order_problems"] == [
-        f"`facilitation_order` in {tmp_path / 'e.md'} is ignored: it must be a one-line list, such as `[problem, scope]`"
+        f"`facilitation_order` in {tmp_path / 'e.md'} is ignored: it must be a list of section ids, such as `[problem, scope]`"
     ]
 
 

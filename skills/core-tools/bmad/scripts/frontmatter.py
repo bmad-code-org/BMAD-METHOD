@@ -33,5 +33,40 @@ def load(text: str) -> dict:
 
 def dump(fields: dict) -> str:
     """Return a fenced YAML block ending in a newline."""
-    text = yaml.safe_dump(fields, sort_keys=False, allow_unicode=True, width=float("inf"))
-    return f"---\n{text}---\n"
+    return f"---\n{_yaml(fields)}---\n"
+
+
+def set_fields(text: str, fields: dict) -> str:
+    """Return the YAML text with each field's top-level entry rewritten and new fields appended.
+
+    Every other line, comments included, is kept as written.
+    """
+    entries: list[str] = []
+    for line in text.splitlines(keepends=True):
+        if entries and (not line.strip() or line[0] in " \t-"):
+            entries[-1] += line
+        else:
+            entries.append(line)
+    out, written = [], set()
+    for entry in entries:
+        key = _key(entry)
+        if key in fields:
+            out.append(_yaml({key: fields[key]}))
+            written.add(key)
+        else:
+            out.append(entry if entry.endswith("\n") else entry + "\n")
+    out += [_yaml({key: value}) for key, value in fields.items() if key not in written]
+    return "".join(out)
+
+
+def _key(entry: str) -> str | None:
+    if entry.startswith("#"):
+        return None
+    try:
+        return next(iter(load(entry)), None)
+    except ValueError:
+        return None
+
+
+def _yaml(fields: dict) -> str:
+    return yaml.safe_dump(fields, sort_keys=False, allow_unicode=True, width=float("inf"))
