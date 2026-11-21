@@ -18,10 +18,21 @@ from datetime import date
 from pathlib import Path
 from unittest import mock
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-deep-recon/scripts"))
+SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-deep-recon/scripts/recon_kit.py"
+FRONTMATTER = SCRIPT.parents[2] / "bmad" / "scripts" / "frontmatter.py"
+sys.path.insert(0, str(SCRIPT.parent))
 
-import recon_kit
-from recon_kit import add_months, main, parse_date, slugify
+import recon_kit  # noqa: E402
+from recon_kit import add_months, parse_date, slugify  # noqa: E402
+
+PROJECT = tempfile.TemporaryDirectory()  # a project with the shared scripts installed, as bmad setup leaves it
+(Path(PROJECT.name) / "_bmad" / "scripts").mkdir(parents=True)
+shutil.copy2(FRONTMATTER, Path(PROJECT.name) / "_bmad" / "scripts")
+
+
+def main(argv):
+    return recon_kit.main(["--project-root", PROJECT.name, *argv])
+
 
 REPORT = """---
 title: 'market research: widgets'
@@ -139,6 +150,26 @@ class TallyTest(unittest.TestCase):
             result = run(["tally", str(log)])[1]
         self.assertEqual(result["claims"], {"verified": 1, "unverified": 1})
         self.assertEqual(result["claims_total"], 2)
+
+    def test_a_field_holding_three_dashes_is_not_read_as_the_fence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            log = Path(tmp) / "claims.md"
+            log.write_text(
+                "---\ntopic: kilns --- a study\nnotes: |\n  - (claim) status=verified not an entry\n---\n\n"
+                "- (claim) ref=[1] status=unverified a\n",
+                encoding="utf-8",
+            )
+            result = run(["tally", str(log)])[1]
+            state = run(["ledger", tmp])[1]
+        self.assertEqual((result["entries"], result["claims"]), (1, {"unverified": 1}))
+        self.assertEqual((state["fields"]["topic"], state["entries"]), ("kilns --- a study", 1))
+
+    def test_a_ledger_without_frontmatter_is_all_entries(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            log = Path(tmp) / "claims.md"
+            log.write_text("- (claim) ref=[1] status=verified a\n", encoding="utf-8")
+            self.assertEqual(run(["tally", str(log)])[1]["entries"], 1)
+            self.assertEqual(run(["ledger", tmp])[1]["fields"], {})
 
 
 OLD_LEDGER = """---
@@ -271,6 +302,30 @@ class LedgerTest(unittest.TestCase):
         code, err = run_err(["log", str(self.folder), "--type", "claim", "--text", good, "--text", "ref=[2] no status"])
         self.assertEqual(code, 2, "one bad claim refuses the whole call")
         self.assertEqual(self.entries(), [])
+
+    def test_entries_are_appended_and_the_frontmatter_is_never_rewritten(self):
+        run(["ledger", str(self.folder), "--field", "topic=kilns", "--field", "decision=build or adopt"])
+        before = self.ledger.read_text(encoding="utf-8")
+        self.assertRegex(before, r"^---\ntopic: kilns\ndecision: build or adopt\ncreated: [\d:T-]+\n---\n\n$")
+        run(["log", str(self.folder), "--type", "event", "--text", "one", "--text", "two"])
+        self.assertEqual(self.ledger.read_text(encoding="utf-8"), before + "- (event) one\n- (event) two\n")
+
+    def test_malformed_frontmatter_is_reported(self):
+        self.folder.mkdir()
+        self.ledger.write_text("---\ntopic: a: b\n---\n", encoding="utf-8")
+        code, err = run_err(["ledger", str(self.folder)])
+        self.assertEqual(code, 2)
+        self.assertIn("not YAML fields", err)
+
+    def test_a_project_without_the_shared_scripts_is_told_to_run_setup(self):
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT), "--project-root", str(self.folder), "ledger", str(self.folder)],
+            capture_output=True,
+            text=True,
+        )
+        missing = self.folder / "_bmad" / "scripts" / "frontmatter.py"
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(result.stderr.splitlines(), [f"error: {missing} is missing. Run bmad setup for this project."])
 
     def test_an_entry_type_the_tally_does_not_know_is_refused(self):
         run(["ledger", str(self.folder), "--field", "topic=kilns"])
