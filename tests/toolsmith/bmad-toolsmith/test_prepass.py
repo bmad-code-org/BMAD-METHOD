@@ -1,7 +1,6 @@
 """Tests for prepass.py: the JSON contract and the shape inference."""
 
 import json
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -9,10 +8,6 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/toolsmith/bmad-toolsmith/scripts/prepass.py"
-FRONTMATTER = SCRIPT.parents[3] / "core-tools" / "bmad" / "scripts" / "frontmatter.py"
-PROJECT = tempfile.TemporaryDirectory()  # a project with the shared scripts installed, as bmad setup leaves it
-(Path(PROJECT.name) / "_bmad" / "scripts").mkdir(parents=True)
-shutil.copy2(FRONTMATTER, Path(PROJECT.name) / "_bmad" / "scripts")
 
 KEYS = {
     "skill",
@@ -52,9 +47,7 @@ def make_skill(root: Path, name="bmad-demo", body="Read `references/a.md`.", fil
 
 
 def prepass(skill: Path):
-    res = subprocess.run(
-        [sys.executable, str(SCRIPT), "--project-root", PROJECT.name, str(skill)], capture_output=True, text=True
-    )
+    res = subprocess.run([sys.executable, str(SCRIPT), str(skill)], capture_output=True, text=True)
     assert res.returncode == 0, res.stderr
     return json.loads(res.stdout)
 

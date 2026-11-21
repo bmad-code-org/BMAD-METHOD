@@ -26,9 +26,8 @@ Usage:
     [--project-root DIR] [--harness HARNESS.json | --harness-name NAME ...] [--runs-per-query N] [--threshold 0.5]
     [--timeout SECS] [--workers N] [--quiet]
 
-MATRIX.json is a list of {"query": "...", "expect": "<skill name>" | null, "also_ok": ["<name>", ...]}. The
-project, given or found, must have BMad set up: its _bmad/scripts/frontmatter.py reads and writes the skills'
-frontmatter.
+MATRIX.json is a list of {"query": "...", "expect": "<skill name>" | null, "also_ok": ["<name>", ...]}. The bmad
+skill installed beside this one carries the frontmatter module that reads and writes the skills' frontmatter.
 
 Output, also written to matrix-result.json: each query with every skill that loaded and its
 rate, and `confusion`, which for each expected skill counts the queries where another skill
@@ -237,8 +236,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     harness_name = args.harness_name[0] if args.harness_name else None
 
-    project_root = args.project_root.resolve() if args.project_root else find_project_root(args.skills[0].resolve())
-    if not load_shared(project_root):
+    if not load_shared():
         return 2
     try:
         skills = discover([root.resolve() for root in args.skills])
@@ -247,6 +245,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {e}", file=sys.stderr)
         return 2
 
+    project_root = args.project_root.resolve() if args.project_root else find_project_root(args.skills[0].resolve())
     try:
         harness, harness_note = resolve_harness(project_root, args.harness, harness_name)
     except (ValueError, json.JSONDecodeError) as e:

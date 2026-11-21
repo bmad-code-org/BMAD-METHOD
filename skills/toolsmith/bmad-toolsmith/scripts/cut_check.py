@@ -10,10 +10,7 @@ skill taken before the rewrite with the same file after it. Judging whether a ru
 Checker's work; this catches only what a string comparison can.
 
 Usage:
-  cut_check.py --project-root <project> <before-folder> <after-folder> [--protect <path>[#<heading>] ...]
-               [--protect-text <file> ...]
-
---project-root names the project with BMad set up.
+  cut_check.py <before-folder> <after-folder> [--protect <path>[#<heading>] ...] [--protect-text <file> ...]
 
 --protect-text names a file of passages, separated by blank lines, that must survive verbatim. Each passage is
 looked up in the before copy and must still appear in the same file after the rewrite.
@@ -35,7 +32,6 @@ shrank (null when before is 0).
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import re
 import sys
@@ -46,6 +42,7 @@ sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from count_tokens import count_tokens, read_text  # noqa: E402
+from init_skill import shared_frontmatter  # noqa: E402
 
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$", re.MULTILINE)
 JINJA_RE = re.compile(r"\{\{.*?\}\}|\{%.*?%\}", re.DOTALL)
@@ -205,7 +202,6 @@ def main(argv: list[str] | None = None) -> int:
     global frontmatter
 
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
     p.add_argument("before", type=Path, help="copy of the skill folder taken before the rewrite")
     p.add_argument("after", type=Path, help="the skill folder now")
     p.add_argument("--protect", action="append", default=[], help="file, or file#heading, relative to the skill")
@@ -218,13 +214,9 @@ def main(argv: list[str] | None = None) -> int:
         help="file of passages, separated by blank lines, each kept verbatim",
     )
     args = p.parse_args(argv)
-    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
-    if not path.is_file():
-        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+    frontmatter = shared_frontmatter()
+    if frontmatter is None:
         return 2
-    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-    frontmatter = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(frontmatter)
 
     for folder in (args.before, args.after):
         if not folder.is_dir():

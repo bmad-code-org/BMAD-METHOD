@@ -20,9 +20,7 @@ shape_hint is inferred, first match wins:
   plain-skill          everything else; "unknown" when there is no SKILL.md or customize.toml does not parse
 
 Usage:
-  prepass.py --project-root <project> <skill-folder>
-
---project-root names the project with BMad set up.
+  prepass.py <skill-folder>
 
 Output, one JSON object on stdout:
   {"skill", "shape_hint", "files": [{"path", "tokens", "kind"}], "skill_md_tokens", "total_tokens", "token_method",
@@ -425,10 +423,9 @@ def build(root: Path) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
     p.add_argument("skill", type=Path, help="skill folder to analyze")
     args = p.parse_args(argv)
-    if not load_shared(args.project_root):
+    if not load_shared():
         return 2
     root = args.skill.expanduser().resolve()
     if not root.is_dir():

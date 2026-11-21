@@ -11,18 +11,18 @@ from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/toolsmith/bmad-toolsmith/scripts/init_skill.py"
 FRONTMATTER = SCRIPT.parents[3] / "core-tools" / "bmad" / "scripts" / "frontmatter.py"
-PROJECT = tempfile.TemporaryDirectory()  # a project with the shared scripts installed, as bmad setup leaves it
-(Path(PROJECT.name) / "_bmad" / "scripts").mkdir(parents=True)
-shutil.copy2(FRONTMATTER, Path(PROJECT.name) / "_bmad" / "scripts")
 sys.path.insert(0, str(FRONTMATTER.parent))
 import frontmatter  # noqa: E402
 
 GOOD_DESCRIPTION = "Counts things in a folder. Use when the user asks how big a skill is."
+NO_BMAD_SKILL = (
+    "error: the bmad skill, which carries scripts/frontmatter.py, is not installed beside this skill. "
+    "Install it: npx skills add bmad-code-org/BMAD-METHOD --skill bmad"
+)
 
 
-def run(*args, project=PROJECT.name):
-    argv = [sys.executable, str(SCRIPT), "--project-root", project, *[str(a) for a in args]]
-    res = subprocess.run(argv, capture_output=True, text=True)
+def run(*args, script=SCRIPT):
+    res = subprocess.run([sys.executable, str(script), *[str(a) for a in args]], capture_output=True, text=True)
     data = json.loads(res.stdout) if res.stdout.strip().startswith("{") else None
     return res.returncode, data, res.stderr
 
@@ -78,13 +78,24 @@ class CreateTest(unittest.TestCase):
             code, data, _ = run("--check", Path(tmp) / "bmad-demo")
             self.assertEqual(code, 0, data)
 
-    def test_a_project_without_the_shared_scripts_is_told_to_run_setup(self):
+    def test_the_frontmatter_module_comes_from_the_bmad_skill_installed_beside_it(self):
         with tempfile.TemporaryDirectory() as tmp:
-            code, data, err = run("--name", "bmad-demo", "--dest", tmp, "--shape", "plain-skill", project=tmp)
-            missing = Path(tmp) / "_bmad" / "scripts" / "frontmatter.py"
+            skills = Path(tmp) / "skills"
+            shutil.copytree(SCRIPT.parents[1], skills / "bmad-toolsmith")
+            script = skills / "bmad-toolsmith" / "scripts" / "init_skill.py"
+            code, data, err = run("--name", "bmad-demo", "--dest", tmp, "--shape", "plain-skill", script=script)
             self.assertEqual((code, data), (2, None))
-            self.assertEqual(err.splitlines(), [f"error: {missing} is missing. Run bmad setup for this project."])
+            self.assertEqual(
+                err.splitlines(),
+                [NO_BMAD_SKILL],
+            )
             self.assertFalse((Path(tmp) / "bmad-demo").exists())
+
+            (skills / "bmad" / "scripts").mkdir(parents=True)
+            shutil.copy2(FRONTMATTER, skills / "bmad" / "scripts")
+            code, data, err = run("--name", "bmad-demo", "--dest", tmp, "--shape", "plain-skill", script=script)
+            self.assertEqual(code, 0, err)
+            self.assertTrue((Path(tmp) / "bmad-demo" / "SKILL.md").is_file())
 
     def test_doc_templates_dir(self):
         with tempfile.TemporaryDirectory() as tmp:

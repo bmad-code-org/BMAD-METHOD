@@ -28,8 +28,8 @@ Usage:
     [--project-root DIR] [--harness HARNESS.json | --harness-name NAME ...] [--runs-per-query N] [--threshold 0.5]
     [--timeout SECS] [--workers N] [--quiet]
 
-QUERIES.json is a list of {"query": "...", "should_trigger": true|false}. The project, given or found, must
-have BMad set up: its _bmad/scripts/frontmatter.py reads and writes the skills' frontmatter.
+QUERIES.json is a list of {"query": "...", "should_trigger": true|false}. The bmad skill installed beside this
+one carries the frontmatter module that reads and writes the skills' frontmatter.
 
 Exit 0 when every query was measured, 1 when any attempt failed or the command was not
 found, 2 on a usage error, 3 when no harness is recorded. A query failing its threshold is a
@@ -65,21 +65,25 @@ sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts 
 CANARY_PREFIX = "TRIGGER-LOADED-"
 
 
-def load_shared(project_root: Path | None) -> bool:
-    """Load the project's shared frontmatter module; say how to set it up and return False when it is missing."""
+def load_shared() -> bool:
+    """Load the frontmatter module the `bmad` skill carries, from the skill beside this one (a source checkout groups
+    them, so there it is one folder further up); say how to install it and return False when it is missing."""
     global frontmatter
 
-    if project_root is None:
-        print("error: no project with _bmad/ found; pass --project-root", file=sys.stderr)
-        return False
-    path = project_root / "_bmad" / "scripts" / "frontmatter.py"
-    if not path.is_file():
-        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
-        return False
-    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-    frontmatter = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(frontmatter)
-    return True
+    skill = Path(__file__).resolve().parents[1]
+    for folder in (skill.parent / "bmad", *sorted(skill.parent.parent.glob("*/bmad"))):
+        path = folder / "scripts" / "frontmatter.py"
+        if path.is_file():
+            spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+            frontmatter = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(frontmatter)
+            return True
+    print(
+        "error: the bmad skill, which carries scripts/frontmatter.py, is not installed beside this skill. "
+        "Install it: npx skills add bmad-code-org/BMAD-METHOD --skill bmad",
+        file=sys.stderr,
+    )
+    return False
 
 
 def parse_skill_md(skill_path: Path) -> tuple[str, str]:
@@ -187,7 +191,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     project_root = args.project_root.resolve() if args.project_root else find_project_root(skill_path)
-    if not load_shared(project_root):
+    if not load_shared():
         return 2
     skill_name, description = parse_skill_md(skill_path)
     queries = read_json(queries_file)

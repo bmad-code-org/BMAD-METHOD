@@ -4,7 +4,7 @@ Wrap one or more existing skills into a module so `bmad` sets them up, answers h
 
 ## Read what exists
 
-For each skill the user points at, alone or in a folder, run `uv run "{skill-root}/scripts/prepass.py" --project-root "{project-root}" <skill>`. Read raw files only for what it does not give: the `[agent]` block in `customize.toml`, each path or value the skill hardcodes or reads from config, and the skills it invokes.
+For each skill the user points at, alone or in a folder, run `uv run "{skill-root}/scripts/prepass.py" <skill>`. Read raw files only for what it does not give: the `[agent]` block in `customize.toml`, each path or value the skill hardcodes or reads from config, and the skills it invokes.
 
 A skill whose `bmod.toml` carries `[skill]` without `[bmod]` belongs to another module: it can be a dependency here, not a member. Say so.
 

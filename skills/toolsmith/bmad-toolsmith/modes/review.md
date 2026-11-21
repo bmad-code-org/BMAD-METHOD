@@ -6,7 +6,7 @@ Set `{target}` to the skill folder. `{reports_folder}` was set at activation; if
 
 ## Pre-pass
 
-`uv run "{skill-root}/scripts/prepass.py" --project-root "{project-root}" "{target}"` gives one JSON. Every lens reads it first, then every prompt file of the skill.
+`uv run "{skill-root}/scripts/prepass.py" "{target}"` gives one JSON. Every lens reads it first, then every prompt file of the skill.
 
 ## Lenses
 

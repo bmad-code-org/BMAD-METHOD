@@ -5,8 +5,6 @@
 # ///
 """init_skill: scaffold a new skill folder, or check an existing one.
 
-`--project-root <project>`, the project with BMad set up, goes with either form.
-
 Create:
   init_skill.py --name <kebab> --dest <folder> --shape <shape> [--dirs references,scripts,assets]
                 [--bmod <record-folder-name>] [--source <update_source>] [--description "..."]
@@ -92,18 +90,30 @@ def toml_string(value: str) -> str:
 # --- frontmatter ---------------------------------------------------------------
 
 
-def load_shared(project_root: Path) -> bool:
-    """Load the project's shared frontmatter module; say how to set it up and return False when it is missing."""
-    global frontmatter
+def shared_frontmatter():
+    """The frontmatter module the `bmad` skill carries, from the skill beside this one (a source checkout groups
+    them, so there it is one folder further up); say how to install it and return None when it is missing."""
+    skill = Path(__file__).resolve().parents[1]
+    for folder in (skill.parent / "bmad", *sorted(skill.parent.parent.glob("*/bmad"))):
+        path = folder / "scripts" / "frontmatter.py"
+        if path.is_file():
+            spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return module
+    print(
+        "error: the bmad skill, which carries scripts/frontmatter.py, is not installed beside this skill. "
+        "Install it: npx skills add bmad-code-org/BMAD-METHOD --skill bmad",
+        file=sys.stderr,
+    )
+    return None
 
-    path = project_root / "_bmad" / "scripts" / "frontmatter.py"
-    if not path.is_file():
-        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
-        return False
-    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-    frontmatter = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(frontmatter)
-    return True
+
+def load_shared() -> bool:
+    """Load the shared frontmatter module for this script's functions; False when it is missing."""
+    global frontmatter
+    frontmatter = shared_frontmatter()
+    return frontmatter is not None
 
 
 def frontmatter_block(content: str) -> tuple[str | None, str]:
@@ -371,7 +381,6 @@ def check(skill_dir: Path, any_name: bool) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
     p.add_argument("--check", type=Path, metavar="SKILL", help="check this skill folder instead of creating one")
     p.add_argument("--any-name", action="store_true", help="with --check: accept any kebab-case name")
     p.add_argument("--name", help="skill name, kebab-case")
@@ -382,7 +391,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--source", help="update_source for the [skill] or [bmod] table")
     p.add_argument("--description", help="frontmatter description; a [TODO: ...] placeholder when omitted")
     args = p.parse_args(argv)
-    if not load_shared(args.project_root):
+    if not load_shared():
         return 2
 
     if args.check:

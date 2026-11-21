@@ -18,10 +18,14 @@ FRONTMATTER = SCRIPTS_DIR.parents[2] / "core-tools" / "bmad" / "scripts" / "fron
 sys.path.insert(0, str(FRONTMATTER.parent))
 import frontmatter  # noqa: E402
 
-run_triggers.frontmatter = frontmatter  # main() loads the project's copy; the unit tests call past it
+run_triggers.frontmatter = frontmatter  # main() loads the bmad skill's copy; the unit tests call past it
 
 RUNNER = SCRIPTS_DIR / "run_triggers.py"
 FAKE = Path(__file__).resolve().parent / "fake_harness.py"
+NO_BMAD_SKILL = (
+    "error: the bmad skill, which carries scripts/frontmatter.py, is not installed beside this skill. "
+    "Install it: npx skills add bmad-code-org/BMAD-METHOD --skill bmad"
+)
 
 
 def write(path: Path, text: str) -> None:
@@ -29,16 +33,10 @@ def write(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
-def set_up_bmad(project: Path) -> None:
-    (project / "_bmad" / "scripts").mkdir(parents=True)
-    shutil.copy2(FRONTMATTER, project / "_bmad" / "scripts")
-
-
 class TriggerRunTest(unittest.TestCase):
     def test_canary_scores_queries_and_leaves_failed_ones_unmeasured(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            set_up_bmad(root)  # found from the skill path: no --project-root
             skill = root / "skills" / "greet"
             write(
                 skill / "SKILL.md",
@@ -97,7 +95,6 @@ class TriggerRunTest(unittest.TestCase):
     def test_no_harness_exits_3(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            set_up_bmad(root)
             skill = root / "greet"
             write(skill / "SKILL.md", "---\nname: greet\ndescription: Greets.\n---\n")
             queries = root / "triggers.json"
@@ -110,22 +107,27 @@ class TriggerRunTest(unittest.TestCase):
             self.assertEqual(res.returncode, 3, res.stderr)
             self.assertEqual(json.loads(res.stdout)["summary"]["unmeasured"], 1)
 
-    def test_a_project_without_the_shared_scripts_is_told_to_run_setup(self):
+    def test_the_frontmatter_module_comes_from_the_bmad_skill_installed_beside_it(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
+            shutil.copytree(SCRIPTS_DIR.parent, root / "skills" / "bmad-eval")
             write(root / "greet" / "SKILL.md", "---\nname: greet\ndescription: Greets.\n---\n")
             write(root / "triggers.json", json.dumps([{"query": "hi", "should_trigger": True}]))
-            res = subprocess.run(
-                [sys.executable, str(RUNNER), "--skill-path", str(root / "greet"), "--queries",
-                 str(root / "triggers.json"), "--output-dir", str(root / "out"), "--project-root", str(root)],
-                capture_output=True, text=True,
-            )  # fmt: skip
-            missing = root.resolve() / "_bmad" / "scripts" / "frontmatter.py"
+            argv = [sys.executable, str(root / "skills" / "bmad-eval" / "scripts" / "run_triggers.py"),
+                    "--skill-path", str(root / "greet"), "--queries", str(root / "triggers.json"),
+                    "--output-dir", str(root / "out"), "--project-root", str(root), "--quiet"]  # fmt: skip
+            res = subprocess.run(argv, capture_output=True, text=True)
             self.assertEqual(res.returncode, 2)
             self.assertEqual(
-                res.stderr.splitlines(), [f"error: {missing} is missing. Run bmad setup for this project."]
+                res.stderr.splitlines(),
+                [NO_BMAD_SKILL],
             )
             self.assertFalse((root / "out").exists())
+
+            (root / "skills" / "bmad" / "scripts").mkdir(parents=True)
+            shutil.copy2(FRONTMATTER, root / "skills" / "bmad" / "scripts")
+            res = subprocess.run(argv, capture_output=True, text=True)
+            self.assertEqual(res.returncode, 3, res.stderr)  # past the frontmatter: no harness is recorded
 
 
 class ParseSkillTest(unittest.TestCase):
