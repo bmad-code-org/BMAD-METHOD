@@ -13,6 +13,7 @@ from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/method/bmad-agent-po/scripts/tickets.py"
 CONFIG_UTILS = SCRIPT.parents[3] / "core-tools" / "bmad" / "scripts" / "config_utils.py"
+FRONTMATTER = CONFIG_UTILS.with_name("frontmatter.py")
 
 
 def ticket(
@@ -97,6 +98,8 @@ class TreeCase(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
         (self.root / "_bmad" / "custom").mkdir(parents=True)
+        (self.root / "_bmad" / "scripts").mkdir()
+        shutil.copy(FRONTMATTER, self.root / "_bmad" / "scripts" / "frontmatter.py")
         self.initiative = self.root / "out" / "initiative-checkout"
         self.initiative.mkdir(parents=True)
         (self.initiative / "initiative-checkout.md").write_text("---\ntype: initiative\n---\n# Checkout\n")
@@ -1571,7 +1574,8 @@ covers = ["R2", "R3"]
         folder = Path(outside.name) / "epic-cart"
         folder.mkdir()
         (folder / "story-scaffold.md").write_text(ticket("", 1))
-        self.assertEqual(json.loads(run("next", str(folder)).stdout)["store"], "repo")
+        r = run("next", str(folder), cwd=outside.name)
+        self.assertEqual((r.returncode, json.loads(r.stderr)["error"].split(";")[1]), (1, " pass --project-root"))
         r = run("--project-root", str(self.root), "next", str(folder))
         self.assertEqual(r.returncode, 2)
         r = run("--project-root", str(self.root), "mark", str(folder), "1", "done")
@@ -2057,7 +2061,6 @@ class ActiveInitiativeTests(TreeCase):
 
     def setUp(self):
         super().setUp()
-        (self.root / "_bmad" / "scripts").mkdir()
         shutil.copy(CONFIG_UTILS, self.root / "_bmad" / "scripts" / "config_utils.py")
         self.configure("initiative-checkout")
         self.seed()
@@ -2287,6 +2290,9 @@ def load_tickets():
     spec = importlib.util.spec_from_file_location("tickets_under_test", SCRIPT)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    spec = importlib.util.spec_from_file_location("frontmatter_under_test", FRONTMATTER)
+    module.frontmatter = importlib.util.module_from_spec(spec)  # main() loads the project's copy
+    spec.loader.exec_module(module.frontmatter)
     return module
 
 
@@ -2325,28 +2331,36 @@ class FrontmatterTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "plan.md"
             path.write_text("---\nstatus: 'blocked' # was\nblocked_reason: x\nnotes: keep # me\n---\n")
-            self.t.edit_frontmatter(path, {"status": "done", "blocked_reason": "", "assignee": '"a"'})
+            self.t.edit_frontmatter(path, {"status": "done", "blocked_reason": "", "assignee": self.t.quoted("a")})
             self.assertEqual(path.read_text(), '---\nstatus: done\nnotes: keep # me\nassignee: "a"\n---\n')
 
-    def test_an_edit_it_cannot_make_cleanly_is_refused_unwritten(self):
-        for block, values in (
-            ("status: blocked\nblocked_reason: |\n  first\n\n  second", {"status": "done", "blocked_reason": ""}),
-            ('status: blocked\n"blocked_reason": x', {"blocked_reason": ""}),
-            ("assignee: &owner alex\nblocked_reason: *owner", {"assignee": ""}),
-            ("after:\n- 1\n- 2", {"after": "[3]"}),
-            ("status: x", {"status": "a: b"}),
+    def test_an_edit_replaces_a_whole_field_however_it_is_written(self):
+        for block, values, expected in (
+            ("status: blocked\nblocked_reason: |\n  first\n\n  second", {"blocked_reason": ""}, "status: blocked\n"),
+            ('status: blocked\n"blocked_reason": x', {"blocked_reason": ""}, "status: blocked\n"),
+            ("after:\n- 1\n- 2\nrisk: low", {"after": [3, self.t.quoted("x")]}, 'after: [3, "x"]\nrisk: low\n'),
+            ("status: x", {"status": "a: b"}, "status: 'a: b'\n"),
         ):
             with self.subTest(block=block), tempfile.TemporaryDirectory() as tmp:
                 path = Path(tmp) / "plan.md"
-                path.write_text(f"---\n{block}\n---\n")
-                with self.assertRaisesRegex(self.t.TicketError, "by hand"):
-                    self.t.edit_frontmatter(path, values)
-                self.assertEqual(path.read_text(), f"---\n{block}\n---\n")
+                path.write_bytes(f"\ufeff---\n{block}\n---\n# x\n".replace("\n", "\r\n").encode())
+                self.t.edit_frontmatter(path, values)
+                written = f"\ufeff---\n{expected}---\n# x\n".replace("\n", "\r\n").encode()
+                self.assertEqual(path.read_bytes(), written)
+
+    def test_an_edit_the_other_fields_do_not_survive_is_refused_unwritten(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "plan.md"
+            path.write_text("---\nassignee: &owner alex\nblocked_reason: *owner\n---\n")
+            with self.assertRaisesRegex(self.t.TicketError, "by hand"):
+                self.t.edit_frontmatter(path, {"assignee": ""})
+            self.assertEqual(path.read_text(), "---\nassignee: &owner alex\nblocked_reason: *owner\n---\n")
 
     def test_a_quoted_value_reads_back_exactly(self):
         for value in ("a   # b", "line\x85break\u2028and\u2029more", "del\x7f c1\x9f", 'it\'s "x" \\ y'):
             with self.subTest(value=value):
-                self.assertEqual(self.parse(f"reason: {self.t.quoted(value)}"), {"reason": value})
+                text = self.t.frontmatter.dump({"reason": self.t.quoted(value)})
+                self.assertEqual(self.t.parse_frontmatter(text, "x.md"), {"reason": value})
 
 
 class TitleSlugTests(unittest.TestCase):

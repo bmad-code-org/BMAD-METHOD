@@ -31,6 +31,22 @@ def test_load_keeps_scalars_as_text_inside_collections():
     assert fields == {"flag": "yes", "zero": "001", "date": "2026-11-19", "items": ["false", "null"]}
 
 
+def test_typed_load_types_only_plain_booleans_whole_numbers_and_null():
+    fields = frontmatter.load(
+        "id: 6\nq: '6'\nhitl: true\nyes: yes\nn:\nv: 1.10\nd: 2026-11-19\nl: [010, -2]\n", typed=True
+    )
+    assert fields == {
+        "id": 6,
+        "q": "6",
+        "hitl": True,
+        "yes": "yes",
+        "n": None,
+        "v": "1.10",
+        "d": "2026-11-19",
+        "l": ["010", -2],
+    }
+
+
 def test_load_accepts_empty_frontmatter_and_rejects_non_mappings():
     assert frontmatter.load("# no fields\n") == {}
     with pytest.raises(ValueError, match="must be a YAML mapping"):

@@ -18,10 +18,26 @@ def split(text: str) -> tuple[str, str]:
     return text[opening.end() : closing.start()], text[closing.end() :]
 
 
-def load(text: str) -> dict:
-    """Load a YAML mapping with scalar values kept as text. Raise ValueError on invalid input."""
+class _TypedLoader(yaml.SafeLoader):
+    pass
+
+
+_TypedLoader.yaml_implicit_resolvers = {
+    first: [(tag, rx) for tag, rx in resolvers if tag == "tag:yaml.org,2002:null"]
+    for first, resolvers in yaml.SafeLoader.yaml_implicit_resolvers.items()
+}
+_TypedLoader.add_implicit_resolver("tag:yaml.org,2002:bool", re.compile(r"^(?:true|false)$"), list("tf"))
+_TypedLoader.add_implicit_resolver("tag:yaml.org,2002:int", re.compile(r"^-?(?:0|[1-9][0-9]*)$"), list("-0123456789"))
+
+
+def load(text: str, typed: bool = False) -> dict:
+    """Load a YAML mapping with scalar values kept as text. Raise ValueError on invalid input.
+
+    With `typed`, unquoted `true`, `false`, whole numbers and null read as bool, int and None: `1.10` and a
+    date stay the text they were written as. The ValueError of invalid YAML is raised from the YAMLError.
+    """
     try:
-        fields = yaml.load(text, Loader=yaml.BaseLoader)
+        fields = yaml.load(text, Loader=_TypedLoader if typed else yaml.BaseLoader)
     except yaml.YAMLError as exc:
         raise ValueError(str(exc)) from exc
     if fields is None:
