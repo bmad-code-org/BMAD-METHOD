@@ -1,6 +1,6 @@
 # Slicing
 
-An initiative is sliced into epics; an epic is refined, then planning it writes all its stories. When the user has a split in mind, use it and say where the rules below would cut differently.
+The level comes from the work itself, never from team size or time: one story is a story; more than one story of one capability is an epic; several capabilities that share outcomes, invariants or nouns are an initiative; several initiatives are a program, a parent initiative. An initiative is sliced into epics; an epic is refined, then planning it writes all its stories. When the user has a split in mind, or the initiative's PRD carries an epic map, use it and say where the rules below would cut differently.
 
 {{ workflow.tickets_before }}
 
@@ -8,19 +8,17 @@ An initiative is sliced into epics; an epic is refined, then planning it writes 
 
 1. **Envelope.** A document in the folder is an input, not the container; a missing container is written from its input per `spec.md`.
 2. **Requirements.** Unwritten spec sections are written per The Operation in `spec.md` from an input; an epic's are written when it is refined.
-3. **Complete the container**: known unknowns in Notes, Outcome and `Done when` re-read against Requirements and Constraints. When the container was just written, confirm its scope with the user before slicing.
+3. **Complete the container**: known unknowns in Notes, Outcome and `Done when` re-read against Requirements and Constraints. When the container was just written, confirm its scope with the user before slicing, unless it was written from a PRD the user has just finished.
 
 ## Read the code
 
-On an existing codebase, read enough code to see where deployment splits and which stories would touch the same code.
+Before planning an epic's stories on an existing codebase, read enough code to see which stories would touch the same code.
 
 Where the code contradicts a Requirements line, add a `Source conflict:` line (the template's format) to the Notes of the container that owns the line, tell the user, and offer the correction through `spec.md`.
 
 ## One message, then revise
 
-Before the draft is revised, one message holds what the spec and code show, each question that changes the split (first demo, least certain part, the team's epic rule) with your pick, and the draft in build order. Revise it in place until approved.
-
-Offer to save a stated team rule as `slice_to_epics` (customize.toml).
+Before the draft is revised, one message holds what the spec and code show, each question that changes the split (first demo, least certain part) with your pick, and the draft in build order. Revise it in place until approved. A split taken from a PRD's epic map carries no questions: show it once for confirmation.
 
 Record each slicing choice, declined suggestions included, as a dated `Decision:` line in the container's Notes as it is made.
 
@@ -34,23 +32,16 @@ On approval, create each child as its own `initiative-<slug>/` beside the parent
 
 Revise or drop existing epics per `board.md`; add only when the user confirms the need.
 
-{% if workflow.slice_to_epics %}
-Draw boundaries by the team's own rule:
+When the initiative's PRD carries an epic map, the split is settled: one epic per entry, in the map's order, its description from the outcome the entry names and its `after` from what the entry needs from another epic.
 
-{{ workflow.slice_to_epics }}
-{% else %}
-- An epic is one source capability, or a tightly coupled pair, delivered and deployed together; two epics need at most a contract between them.
-- A module, service, or bounded context is an epic boundary only when it is also a deployment boundary.
-{% endif %}
+Otherwise the epics are the initiative's cohesive capabilities: each is something a person could see working by itself, and one that takes an "and" joining two things which each stand alone is two.
 
-Under either rule:
+Either way:
 
-- One epic unless a distinct outcome or an early-usable part splits it. Offer to split an epic whose stories would run past the count in Epic into stories.
 - A unit the work only consumes or configures is a touch point: list it in the initiative's Boundaries with its owning epic.
-- The platform baseline (scaffold, CI, deployment) is the opening epic or the first stories of the first epic.
 - Every epic delivers to production; its `Done when` includes integrated verification.
 
-Draft the set as the initiative's `tickets/tickets.toml` from `{{ workflow.tickets_template }}`: one `[[epic]]` per epic in build order, each with an `id`, a `description` of what is true when it is done, the parent ids it `covers`, and an `after` naming what it needs from which epic; `after` on an epic file only for a whole-epic gate. Run the tree check in `validate.md`, then present the draft in build order, naming the rule that cut it, with each epic's boundary, the tracer path, touch points with owners, and decisions several epics share.
+Draft the set as the initiative's `tickets/tickets.toml` from `{{ workflow.tickets_template }}`: one `[[epic]]` per epic in build order, each with an `id`, a `description` of what is true when it is done, the parent ids it `covers`, and an `after` naming what it needs from which epic; `after` on an epic file only for a whole-epic gate. Run the tree check in `validate.md`, then present the draft in build order, saying whether it came from the PRD's map or is your own cut, with each epic's boundary, the tracer path, touch points with owners, and decisions several epics share.
 
 On approval, create each new epic's folder in the initiative's `tickets/` folder and its file from `{{ workflow.ticket_template }}`, written thin: Description, Outcome, Boundaries, `Done when` as far as known, References to the parent, `covers` and `after`, with `refined: false` and no Requirements. Commit (on a tracker, publish) per `board.md`.
 
@@ -60,13 +51,13 @@ Stop here unless the user wants to refine an epic now.
 
 ## Refining an epic
 
-An epic with `refined: false` has its scope agreed, not its detail; refine it on request or before planning its stories. Read the epic file and the initiative Requirements lines it covers. In one message, scaled to the initiative (on a small one, a single question: does the epic need anything before stories?):
+An epic with `refined: false` has its scope agreed, not its detail; refine it on request or before planning its stories.
 
-- What the epic, the initiative and their companions already settle for its stories.
-- Each thing its stories would have to agree on that is still open, with your pick: settle it with the user now, plan a spike first when only code can answer it, or leave it to the stories.
-- A reminder that the user can flesh the epic out further: more intent, as their own notes or a document from John (`bmad-agent-pm`) on the epic; more design, as `bmad-ux` or `bmad-architecture` on the epic; or research with `bmad-deep-recon`.
+An epic with open product questions the initiative and its companions do not answer (how it works for the user, its rules, what to measure) gets its own PRD: invoke John (`bmad-agent-pm`) for the epic PRD (`prd-epic`), naming the epic file, the initiative's PRD when there is one, and the epic's folder as the output. The document lands in the epic's folder and SPEC adopts it as a companion. More design is `bmad-ux` or `bmad-architecture` on the epic, and research is `bmad-deep-recon`; each lands in the epic's folder the same way.
 
-A UX, architecture or John run the user chooses lands in the epic's folder, and SPEC adopts what it produces as a companion. Fill the epic in from the initiative's lines alone only when the user says to, or when it needs nothing more. Then write its Requirements per `spec.md`, re-read Outcome and `Done when`, set `refined: true`, and commit (on a tracker, publish) per `board.md`.
+With none open, or when the user says to, fill the epic in from the initiative's lines and what the PRD's epic map saved for this epic, and say why it needs no PRD.
+
+Either way, write its Requirements per `spec.md`, re-read Outcome and `Done when`, set `refined: true`, and commit (on a tracker, publish) per `board.md`.
 
 ## Epic into stories
 
@@ -74,19 +65,14 @@ After the epic file, read its breakdown, child tickets, and results. Each blocki
 
 What makes a good story:
 
-- One step toward the epic's `Done when`, sized for one agent session; it need not be user-visible. Too small when setup outweighs the work: merge. A one-session epic gets one story.
-- {{ workflow.tickets_tracer_bullet }}
-- Stories touching the same code form one ordered lane; an interface two lanes share gets a stub as its own early story.
+- A story is one complete capability a person can see working end to end and verify in one sitting. It is large on purpose: an epic may have one story, or a few. The steps inside it, such as a migration, an endpoint, a screen or its tests, are not stories: the build plans those itself, and they are never tickets.
+- Too small when it cannot be verified as an outcome by itself: merge it into the story it serves.
+- Stories touching the same code form one ordered lane.
 - Done is one runnable check.
 - Split, never shrink: "for now", "placeholder", "simplified", "wired later" is a second story.
-- Setup and each hitl step go on the first story that needs them, initiative-wide setup in the opening epic. Tests go in every story; the only test story is the closing end-to-end suite.
-- {{ workflow.tickets_story_count }}
+- Each hitl step goes on the first story that needs it. Setup, the platform baseline included, is part of the first story that needs it and production delivery part of the last; neither is a story of its own. Tests go in every story; the only test story is the closing end-to-end suite.
 
-What opens and closes the breakdown:
-
-- Offer an opening refactor when code quality calls for one.
-- {{ workflow.tickets_refactor_sweep }}
-- Offer a closing end-to-end suite after the sweep if the source has a test plan or the user asks.
+Offer a closing end-to-end suite if the source has a test plan or the user asks.
 
 Draft the breakdown as the epic's `tickets/tickets.toml` from `{{ workflow.tickets_template }}`, run the set check in `validate.md`, and revise it in place with the user until approved. Beyond the template:
 
@@ -95,7 +81,7 @@ Draft the breakdown as the epic's `tickets/tickets.toml` from `{{ workflow.ticke
 - When the user says the epic will build unattended, ask for `plan_checkpoint` and `done_checkpoint` per entry, proposing `plan_checkpoint` on risky ones.
 - Each touch point this epic owns is an entry or part of one.
 
-With the draft, name the tracer bullet, parallel work, and deferred scope; record the tracer bullet as a dated `Decision:` line in the epic's Notes.
+With the draft, name parallel work and deferred scope.
 
 A split while planning adds an epic (folder, envelope, `[[epic]]` with its `after`) and moves its covers ids and entries; no file is renamed.
 

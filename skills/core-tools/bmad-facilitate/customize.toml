@@ -62,6 +62,10 @@ template_libraries = [
 # empty leaves it to the template, else the default styles.
 style = ""
 
+# How far documents go in showing instead of telling: one instruction, used wherever a template
+# does not say otherwise. Replace it to change the forms used, or to hold documents to text and tables.
+visuals = "Wherever a reader would take in a picture faster than the paragraph it replaces, make the picture: a flow, a sequence, a timeline, a structure, a comparison, figures with a trend or a split. A table or a Mermaid diagram covers most of these. Draw an SVG yourself for what they show poorly: a scale with its thresholds marked, a two-by-two, before-and-after bars, nested sizes, a rough sketch of a screen or a layout. Use a generated image when a tool for one is available and the picture is of a thing, not of data. Leave out any picture that only decorates or restates a point one sentence makes."
+
 # Whether a finished document gets its rendered view: "offer", "always" or "never", over each
 # template's own `view`; empty leaves it to the template, else "offer".
 view = ""

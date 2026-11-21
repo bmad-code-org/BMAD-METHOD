@@ -31,7 +31,7 @@ Larkspur's product lead wants two changes to every PRD:
 | Change | Kind | What the coach does |
 | --- | --- | --- |
 | A **Support readiness** section | A new section | Asks who leads Support for the launch and which questions customers will ask first, and refuses "Support will figure it out" |
-| **Success metrics** taken from the company's metrics catalog | A change to a section John's PRD already has | Reads the catalog before asking, and logs an open question instead of inventing a metric |
+| **OKRs** measured only with metrics from the company's catalog | A change to a section John's PRD already has | Reads the catalog before asking, and logs an open question instead of inventing a metric |
 
 ## Step 1: Give the Coach a Catalog to Read
 
@@ -52,11 +52,12 @@ The metrics rule points at a file your team keeps. For this tutorial, create `do
 Run the `bmad-customize` skill and say what you want in plain words:
 
 ```text
-Every PRD at Larkspur needs a Support readiness section after MVP scope: who leads
+Every PRD at Larkspur needs a Support readiness section after Scope and non-goals: who leads
 Support for the launch, the first three questions customers will ask with their
 answers, known issues, and where tickets escalate. Don't accept "Support will
-figure it out". Also, success metrics must come from docs/metrics-catalog.md with
-the owner it names, and a metric that isn't there becomes an open question.
+figure it out". Also, every key result in the OKRs must use a metric from
+docs/metrics-catalog.md with the owner it names, and a metric that isn't there
+becomes an open question.
 ```
 
 You do not need to know that John's PRD runs through `bmad-facilitate`. `bmad-customize` finds the `prd` template, decides this is an extension because you are adding to the PRD rather than rebuilding it, and shows you a file like this before writing it:
@@ -67,16 +68,16 @@ extends: prd
 ---
 
 ## Support readiness
-<!-- After MVP scope. What Support needs on launch day. Ask who leads Support for this launch, then ask the user to picture the first week of tickets: the three questions customers will ask first, and the answer to each. Add known issues and where a ticket escalates. Push back on "Support will figure it out": a launch with no answers ready is not ready. -->
+<!-- After Scope and non-goals. What Support needs on launch day. Ask who leads Support for this launch, then ask the user to picture the first week of tickets: the three questions customers will ask first, and the answer to each. Add known issues and where a ticket escalates. Push back on "Support will figure it out": a launch with no answers ready is not ready. -->
 
-## Success metrics
-<!-- Adds to the template's Success metrics. Every metric comes from `docs/metrics-catalog.md` and names the owner it lists; read the catalog before asking. When the user proposes a metric the catalog lacks, say so and log an open question for its owner instead of inventing a definition. -->
+## OKRs
+<!-- Adds to the template's OKRs. Every key result's metric comes from `docs/metrics-catalog.md` and names the owner it lists; read the catalog before asking. When the user proposes a metric the catalog lacks, say so and log an open question for its owner instead of inventing a definition. -->
 ```
 
 Each comment is a facilitation instruction:
 
-- **Support readiness** is a new heading, so it is added to every PRD. Its comment places it ("After MVP scope"), says what to ask and in what order, and says when to push back. It is required, because the comment does not start with `optional` or `include when`.
-- **Success metrics** has the same heading as a section John's PRD already has, so it changes that section. "Adds to" keeps John's own instructions for the section and adds Larkspur's. A comment that said "Replaces the template's Success metrics" would use Larkspur's alone.
+- **Support readiness** is a new heading, so it is added to every PRD. Its comment places it ("After Scope and non-goals"), says what to ask and in what order, and says when to push back. It is required, because the comment does not start with `optional` or `include when`.
+- **OKRs** has the same heading as a section John's PRD already has, so it changes that section. "Adds to" keeps John's own instructions for the section and adds Larkspur's. A comment that said "Replaces the template's OKRs" would use Larkspur's alone.
 
 Say yes, and `bmad-customize` saves it in `_bmad/custom/facilitate-templates/`, under a name such as `prd-larkspur.md`, then shows the merged PRD: Support readiness is now in the facilitation order as a required section. Commit the file so your whole team gets it.
 
@@ -88,7 +89,7 @@ Talk to John (`bmad-agent-pm`):
 John, let's create a PRD for text message appointment reminders.
 ```
 
-John coaches the PRD as usual. In fast mode he raises both rules in his first batch of questions; otherwise he raises each as the conversation reaches its section. When the conversation reaches Success metrics, he offers metrics from your catalog, such as no-show rate. Propose one the catalog lacks, such as "patient happiness", and he says it is not in the catalog and records an open question for its owner instead of defining it himself. After MVP scope he asks who leads Support for the launch, then walks you through the first week of tickets. Answer "Support will figure it out" and he presses for the answers.
+John coaches the PRD as usual. In fast mode he raises both rules in his first batch of questions; otherwise he raises each as the conversation reaches its section. When the conversation reaches OKRs, he offers metrics from your catalog, such as no-show rate. Propose one the catalog lacks, such as "patient happiness", and he says it is not in the catalog and records an open question for its owner instead of defining it himself. After Scope and non-goals he asks who leads Support for the launch, then walks you through the first week of tickets. Answer "Support will figure it out" and he presses for the answers.
 
 ## Step 4: See What the Coach Read
 

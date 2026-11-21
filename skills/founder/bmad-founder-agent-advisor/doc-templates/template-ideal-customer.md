@@ -1,7 +1,7 @@
 ---
 title: ""
 template: ideal-customer
-version: 1.1.0
+version: 1.2.0
 description: "The first narrow group of customers to win, why them, and how to reach them."
 not_for: "The one-liner and what customers compare against (`positioning`); the whole business on one page (`lean-canvas`); the guide for talking to these customers (`customer-interview-script`); taking a product to market (`launch-plan`)."
 facilitation_order: [beachhead, profile, why-them-first, not-the-customer-yet, how-many, where-to-find-them, how-to-reach-them, next-group]
@@ -21,6 +21,7 @@ updated: ""
 <!-- inputs: `company.md` gives the venture, stage and dated metrics; customer files in `people/` show who has bought or talked so far. Only the founder knows which customers were easiest to win, which were hard, and which groups they can reach through their own network. -->
 
 <!-- writing:
+  - One page.
   - The beachhead is one sentence someone else could use to say yes or no to a single prospect.
   - Counts and prices carry their source or basis; a missing one stays an open question.
 -->
@@ -31,8 +32,6 @@ updated: ""
 
 # {title}
 
-## Table of Contents
-
 ## Beachhead
 <!-- The first group, in one sentence: who they are, the situation they are in, and the problem that makes them want this now. Done when the founder could hand a list of prospects to someone and they could sort each one in or out from this sentence. -->
 
@@ -40,7 +39,7 @@ updated: ""
 <!-- What marks one of them: for a business, industry, size, location, the tools they use, who buys, who uses and who signs; for a person, the situation, the habits and the moment that makes them look for a fix. Ask what the best current customers or warmest interviews have in common. -->
 
 ## Why them first
-<!-- Why this group before any other: the pain is sharpest, they can pay, they are reachable, and they talk to each other. Each reason carries its evidence, such as who has paid, signed up or asked for it. You are the investor asking "why this group, and how do you know?"; when the answer is a preference, ask what customers did that points here. Done when every reason names what someone did, or is marked as a guess to test. -->
+<!-- Why this group before any other: the pain is sharpest, they can pay, they are reachable, and they talk to each other. Each reason carries its evidence, such as who has paid, signed up or asked for it. You are the investor asking "why this group, and how do you know?"; when the answer is a preference, ask what customers did that points here. When several groups were weighed, show them in a table against those four reasons. Done when every reason names what someone did, or is marked as a guess to test. -->
 
 ## Not the customer yet
 <!-- The groups left out for now, including ones that look attractive, and why. Founders resist this; ask which group they would be tempted to say yes to, and what saying yes would cost the beachhead. Done when at least one tempting group is named and turned down. -->

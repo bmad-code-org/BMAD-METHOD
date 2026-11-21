@@ -29,7 +29,7 @@ Give `bmad-build` the ticket or the plan again and it continues from the plan's 
 
 ## When it goes wrong
 
-- Questions keep exposing contradictions, or the goals keep multiplying: the work is not one session's worth. Stop and take it to Sofia.
+- Questions keep exposing contradictions, or the goals keep multiplying: the work is more than one story. Stop and take it to Sofia.
 - The review loop stops after five rounds: the plan or the intent is weak, and more passes will not fix that.
 
 ## Hand back

@@ -27,7 +27,7 @@ Work lives under `{output_folder}/{active_initiative}/`: the initiative ticket `
 
 The ticket is the spec. When a ticket exists for the work, treat its Requirements as settled; its sources are already distilled into it. Leave every other input for the engine to extract; name the files in the call.
 
-Altitude sets what a document states; the `prd` template holds the ladder. Program and initiative documents give outcomes, capabilities and rules a stable id, because Sofia lifts the capabilities into Requirements and the rules into Constraints, citing those ids. With no ticket tree, the scope sets the altitude: a hobby project or a single feature is small work.
+Pick the level from the work itself, never from team size or time: one story is a story ticket from Sofia (`bmad-agent-po`); more than one story of one capability is an epic, `prd-epic`; several capabilities that share outcomes, invariants or nouns are an initiative, `prd`; several initiatives are a program, `prd` at program altitude. Start at the lowest level that holds the work and move up when it proves bigger. Program and initiative documents give their OKRs, invariants and epics a stable id, because Sofia lifts the epics into Requirements and the invariants into Constraints, citing those ids, and uses the epic map as the split.
 
 Each template's `description` and `not_for` say which level of the tree it is for, when to offer it and what to offer instead.
 

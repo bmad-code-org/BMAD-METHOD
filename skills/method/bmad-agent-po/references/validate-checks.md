@@ -19,10 +19,8 @@ Every entry in the epic's `tickets.toml`, draft or committed, pulled or not.
 
 - Tickets cover every Requirements line not deferred with the user; each `covers` id exists there; tickets sharing an id say which part each delivers.
 - UX, architecture, constraint and integration work is covered without ids; results satisfy `Done when`; citing an id alone is not coverage.
-- Every `after`, cross-epic too, is a real prerequisite, not restated order; once `tickets.toml` exists, `tickets.py status` on the epic shows no cycle, `drift`, `unpinned_after`, `undeclared_after`, or `order_conflict`; the epic's Notes hold a dated `Decision:` line naming the tracer bullet, and the sequencing decisions.
+- Every `after`, cross-epic too, is a real prerequisite, not restated order; once `tickets.toml` exists, `tickets.py status` on the epic shows no cycle, `drift`, `unpinned_after`, `undeclared_after`, or `order_conflict`; the epic's Notes hold a dated `Decision:` line for each sequencing decision.
 - A builder could write each story's acceptance criteria from the epic, entry, and references; if not, fix the epic, not the one-sentence `description` and `verify`.
-- Tracer bullet, as rendered in `slice.md`: {{ workflow.tickets_tracer_bullet }}
-- Refactor sweep, as rendered in `slice.md`: {{ workflow.tickets_refactor_sweep }}
 
 {% if workflow.checks.set %}
 {{ workflow.checks.set }}
@@ -37,7 +35,7 @@ The initiative, its `tickets.toml`, draft or committed, and the epic files once 
 - Every source id on a Requirements line exists in a `sources:` file, every parent id in the parent's Requirements; every adopted design or architecture document is in `companions:`.
 - Every unit the source touches is an epic, out of scope, or a touch point (consumed or configured only, named in the initiative's Boundaries with its owner).
 - Each decision several epics adopt has one home: an architecture spine section, or an opening-epic entry (first `[[epic]]`) the others wait on.
-- Every written epic file has Outcome, `Done when` (including production delivery), Boundaries, its `covers`, and references; one with `refined: false` needs no Requirements or breakdown yet; the initiative's `tickets.toml` lists every epic in build order, each `after` naming what it needs, and `tickets.py status` on the initiative shows no cycle or `order_conflict`; it opens with a platform-baseline epic, or its first epic's first stories, or a `Decision:` line saying why not.
+- Every written epic file has Outcome, `Done when` (including production delivery), Boundaries, its `covers`, and references; one with `refined: false` needs no Requirements or breakdown yet; the initiative's `tickets.toml` lists every epic in build order, each `after` naming what it needs, and `tickets.py status` on the initiative shows no cycle or `order_conflict`.
 - A parent initiative's `tickets.toml` lists every child in build order, each `after` naming what it needs; every child's `sources:` lists the parent's file; `tickets.py status` on the parent shows no `order_conflict`.
 - The initiative's `tickets.toml` lists child initiatives, epics, or entries, one kind only; with epics, no leaf sits in the initiative's `tickets/` folder.
 

@@ -1,7 +1,7 @@
 ---
 title: ""
 template: security-review
-version: 1.2.0
+version: 1.3.0
 description: "Reviewing a system against a standard such as the OWASP Top 10 or STRIDE."
 not_for: "An incident that has happened (`postmortem`)."
 facilitation_order: [scope-and-system, architecture-and-data-flows, key-request-flows, findings, risk-decisions, remediation-plan, open-questions]
@@ -17,7 +17,7 @@ updated: ""
 
 <!-- stance: A reviewer walking the standard with the system's owner: take the catalog rows the user picks, or every row of the standard they name, a row at a time, and ask how this system handles each and where that is enforced. "The framework handles it" is not an answer until they say where. In fast mode, ask once for the evidence the user already has and mark every other row `unverified`. -->
 
-<!-- opening: The system under review and its boundary, and which standard or catalog rows to walk. -->
+<!-- opening: The system under review and its boundary, and which standard or catalog rows to walk. No brain dump: ask for the evidence already in hand, such as architecture documents, test and scan results, known issues and accepted risks, to read before the first row. -->
 
 <!-- inputs: The system, its scope and data flows; the standard or rows to cover; existing controls, test and scan results, known issues and accepted risks, which only the user can give. -->
 
@@ -45,7 +45,7 @@ updated: ""
 <!-- include when: a gap will not be fixed now. The risk, who accepted it, why, and when it is revisited. -->
 
 ## Remediation plan
-<!-- Each gap to fix: action, owner, priority, target date or milestone. -->
+<!-- A table of each gap to fix: action, owner, priority, target date or milestone. A gap with no owner is not planned; ask who, or move it to Risk decisions. -->
 
 ## Open questions
 <!-- What could not be checked, and who can answer. -->

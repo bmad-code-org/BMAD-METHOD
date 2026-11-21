@@ -205,3 +205,23 @@ def test_missing_file_exits_2(tmp_path, capsys):
     captured = capsys.readouterr()
     assert captured.out == ""
     assert "not found" in captured.err
+
+
+EPIC_DOC = """# Epic
+
+- **E02-FR-01**: The owner is emailed 60 days ahead.
+- **E02-FR-02**: The owner can snooze once.
+- **E02-FR-03**: A snooze never passes the deadline.
+
+Covered by E02-FR-01 to E02-FR-03, and by E02-FR-09.
+"""
+
+
+def test_an_id_carrying_its_epic_is_read_whole():
+    found = report(EPIC_DOC)
+    assert found["counts"]["E02-FR"]["defined"] == 3
+    assert list(found["undefined"]) == ["E02-FR-09"]
+
+
+def test_a_range_of_zero_padded_ids_keeps_the_padding():
+    assert report(EPIC_DOC.replace(", and by E02-FR-09", ""))["undefined"] == {}

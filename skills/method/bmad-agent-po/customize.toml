@@ -112,8 +112,6 @@ spike_template = "{skill-root}/assets/spike-template.md"
 tickets_template = "{skill-root}/assets/tickets-template.toml"
 # Tracker publishing: at_inception (whole breakdown) or on_start (each ticket); user can override; other values halt the render; on the repo store, approval commits and this key does not apply. Lands in references/board.md, Publish.
 publication = "at_inception"
-# Epic boundary rule (team text or a readable pointer) replacing the one in references/slice.md. Lands in references/slice.md, Initiative into epics.
-slice_to_epics = ""
 # Team checks, appended to their section in references/validate-checks.md.
 checks.ticket = []
 checks.set = []  # every entry in an epic's breakdown
@@ -132,22 +130,8 @@ Before presenting any create or update, run two passes.
 Record each pass's verdict to `.memlog.md` (`append --type event`); mention a pass to the user only when it changed something they approved.\
 """
 
-# Epic's first entry; the Set check asserts it as rendered and slicing records it as a `Decision:` line in the epic's Notes. Lands in references/slice.md, Epic into stories.
-tickets_tracer_bullet = """
-The first entry is the tracer bullet: the thinnest path through every layer the epic touches. Its setup, including any starter the user runs, is a hitl step. It and any demoable entry say what someone sees running when done. Next is the story the user is least sure of.\
-"""
-
-# Epic's closing story; the Set check asserts it as rendered. Lands in references/slice.md, Epic into stories.
-tickets_refactor_sweep = """
-An epic of more than three entries closes with a story "Refactor sweep" that waits on every other entry except a closing end-to-end suite. Its scope, set at its start from plans and review findings the epic deferred, is cleanup only; scope pushed out of another story is a new story. Propose it by default; if declined, record a `Decision:` line in the epic's Notes.\
-"""
-
 # Closing a container. Lands in references/board.md, Close, drop, move.
 board_closure = """
 Closing every child does not close the parent. For an epic with no `epic-<slug>-retrospective.md` in its folder, offer `bmad-retrospective` first. Run the closure check in `validate.md` against its requirements and `Done when`; the user confirms completion.\
 """
 
-# Epic sizing norm. Lands in references/slice.md, Epic into stories.
-tickets_story_count = """
-Eight to twelve stories is typical, not a limit. Past that, offer a split first; the user decides.\
-"""

@@ -33,23 +33,27 @@ Where it's decided: [commit b284c68](https://github.com/bmad-code-org/BMAD-METHO
 
 Sofia sizes new work first and says which path it takes: one bug or story on
 its own, one epic, an initiative of several epics, or a parent initiative when
-the work is more than one initiative's worth. Work that fits one epic stays one
-epic unless a distinct outcome or an early-usable part splits it. Epics are
-split by outcome, deployment and slice size, not by who builds them. An epic
-typically holds eight to twelve stories; past that, Sofia offers a split
-first, and you decide.
+the work is more than one initiative's worth. The level comes from the work
+itself: one story is a story, more than one story of one capability is an
+epic, and several capabilities are an initiative. Epics are the initiative's
+cohesive capabilities, not a split by who builds them.
 
 Where it's decided: [PR #2932](https://github.com/bmad-code-org/BMAD-METHOD/pull/2932), [commit 49fd27e](https://github.com/bmad-code-org/BMAD-METHOD/commit/49fd27e452021a0e64cccab3c76110c1d1777ce1), [commit f6ffa35](https://github.com/bmad-code-org/BMAD-METHOD/commit/f6ffa3533b8667dcd38d88d9c828c6128d9f6d53).
 
-## One Story, One Build Session
+## One Story, One Capability
 
-A story is sized for one agent session: one goal, roughly 500 changed lines,
-started in a fresh chat from its ticket. The build aims its plan at 900 to
-1,600 tokens, because a shorter plan risks ambiguity and a longer one
-risks context rot in the agent that implements it; a second goal is offered
-as a split. A story too small to repay its setup is merged
-into another. A story that would leave work for now, as a placeholder, or
-wired later is split, never shrunk.
+A story is one complete capability a person can see working end to end and
+verify in one sitting. It is large on purpose: an epic may have one story, or
+a few. Small stories were a way to coordinate people typing; they hide the
+whole behavior from a coding agent and tire out the person reviewing.
+
+The steps inside a story, such as a migration, an endpoint, a screen and its
+tests, are the build's own plan. They are never tickets and never reach a
+tracker. One session holds one goal, roughly 500 changed lines, started in a
+fresh chat; a story larger than that is built from the same plan over several
+sessions. A second, independent goal is offered as a split. A story that
+would leave work for now, as a placeholder, or wired later is split, never
+shrunk.
 
 Where it's decided: [PR #1807](https://github.com/bmad-code-org/BMAD-METHOD/pull/1807), [PR #2884](https://github.com/bmad-code-org/BMAD-METHOD/pull/2884), [PR #2916](https://github.com/bmad-code-org/BMAD-METHOD/pull/2916), [commit 2522f6a](https://github.com/bmad-code-org/BMAD-METHOD/commit/2522f6ac5d4fb5015b8192b7dfaa23f12af09a4b).
 

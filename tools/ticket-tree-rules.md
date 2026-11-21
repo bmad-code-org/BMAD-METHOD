@@ -6,6 +6,19 @@ This page is for people and agents who change those skills. No skill loads it: e
 
 External modules restate the identity rules for their own artifacts. The Test Architect module (TEA) does so in `skills/bmod-tea/contracts/story-identity.md` in `bmad-code-org/bmad-method-test-architecture-enterprise`. When a rule about ticket identity, `find`, or re-keying changes here, open an issue or PR there too.
 
+## Which level
+
+John (`bmad-agent-pm`) and Sofia (`bmad-agent-po`) each state this rule in their own files, and the method module's `help/help.md` states it for the `bmad` help agent.
+
+The level comes from the work itself, never from team size or time:
+
+- One story, one end-to-end behavior: a story.
+- More than one story of one capability: an epic.
+- Several capabilities that share outcomes, invariants or nouns: an initiative.
+- Several initiatives: a program, a parent initiative.
+
+Work starts at the lowest level that holds it and moves up when it proves bigger.
+
 ## Finding the tree
 
 - The tree is `{output_folder}/{active_initiative}`: `output_folder` and `active_initiative` from `[core]` in the merged BMad config.

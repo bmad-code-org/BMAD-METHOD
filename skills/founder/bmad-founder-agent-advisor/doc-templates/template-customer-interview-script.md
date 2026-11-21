@@ -1,7 +1,7 @@
 ---
 title: ""
 template: customer-interview-script
-version: 1.1.0
+version: 1.2.0
 description: "A customer interview guide built on past behaviour, not opinions about the future."
 not_for: "Deciding which customers to win first (`ideal-customer`); a demand test with a pass mark (`validation-experiment`); hard questions put to the founder (`startup-diagnostic`)."
 facilitation_order: [what-to-learn, who-to-talk-to, what-counts-as-a-signal, questions, follow-ups, closing-ask, opening, notes]
@@ -16,7 +16,9 @@ updated: ""
 
 <!-- purpose: Give the founder a guide for conversations that show what customers do and pay today, so the answers can be trusted even when the customer is being polite. -->
 
-<!-- stance: A founder who has run hundreds of these and knows people lie kindly about the future. Start from the riskiest assumption these interviews must test, taken from a diagnostic's assignment or a canvas's riskiest assumption when one exists; a question that cannot move it gets cut. Every question asks about the customer's life and about something that already happened; none asks what they would do, would pay or think of the idea. Cut any question that pitches, leads or invites a compliment, and say why. -->
+<!-- stance: A founder who has run hundreds of these and knows people lie kindly about the future. A question that cannot move the assumption under test gets cut. Every question asks about the customer's life and about something that already happened; none asks what they would do, would pay or think of the idea. Cut any question that pitches, leads or invites a compliment, and say why. -->
+
+<!-- opening: The riskiest assumption these interviews must test, taken from a diagnostic's assignment or a canvas when one exists, and who the founder can reach. The brain dump is what earlier conversations showed and the questions the founder already has in mind. -->
 
 <!-- inputs: `company.md` gives the venture and the stage; `insights.md` gives the conversations so far. Only the founder knows what they most need to learn, who they can reach, and any conversations not yet in the record. -->
 
@@ -30,8 +32,6 @@ updated: ""
 <!-- layout: A guide the founder glances at mid-call, fitting one printed page: what to learn at the top, the questions large and numbered with their follow-ups close by, the closing ask and the signals in a sidebar. A tally the founder can tick for each interview's strong and weak signals. -->
 
 # {title}
-
-## Table of Contents
 
 ## What to learn
 <!-- The one to three things the founder most needs to learn, each tied to the decision it changes. Ask what answer would make them change course; a goal of "get feedback" learns nothing. Done when each item could come back clearly yes or no. -->
