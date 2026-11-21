@@ -4,7 +4,7 @@
 # ///
 """check-ids — find broken id cross-references and a stale table of contents.
 
-An id is a token like FR-3, UJ-12 or CAP-4. It is defined where it opens a heading, a table
+An id is a token like FR-3, UJ-12 or CAP-4, or one carrying its epic, like E02-FR-07. It is defined where it opens a heading, a table
 row's first cell, or a table cell, list item or line in bold. An unbolded list item or line
 defines it only when punctuation follows (`- FR-3: ...`, `FR-3 (withdrawn)`). An id that opens
 a list of ids (`FR-1, FR-2`, `FR-1 to FR-8`) is not a definition. Every other occurrence is a
@@ -36,7 +36,7 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-ID = r"(?<![A-Za-z0-9-])[A-Z][A-Z0-9]{0,5}-\d+(?![A-Za-z0-9])"
+ID = r"(?<![A-Za-z0-9-])(?:E\d+-)?[A-Z][A-Z0-9]{0,5}-\d+(?![A-Za-z0-9])"
 TOKEN = re.compile(ID)
 FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
@@ -206,8 +206,9 @@ def scan(files: list[tuple[str, str]]) -> dict:
             for m in RANGE.finditer(line):
                 (prefix, low), (other, high) = split_id(m.group(1)), split_id(m.group(2))
                 if prefix == other and 0 < high - low <= MAX_RANGE:
+                    width = len(m.group(1).rsplit("-", 1)[1])  # FR-01 to FR-03 names FR-02, not FR-2
                     for n in range(low + 1, high):
-                        referenced[f"{prefix}-{n}"].append(where)
+                        referenced[f"{prefix}-{n:0{width}d}"].append(where)
         close_table()
 
     prefixes = {split_id(token)[0] for token in defined}

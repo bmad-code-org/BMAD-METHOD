@@ -4,7 +4,7 @@ For plans, requirements and cases for a decision. These rules add to the skill's
 
 ## Opening
 
-When the document plans work the ticket tree will hold, an initiative is active or a ticket is in play, and neither the caller nor the ticket gives the altitude, the first opening question asks which level of the tree the document is for: the program, the initiative or one of its epics. The answer sets what the document decides. A template's second opening question then waits for the read-back.
+When the document plans work the ticket tree will hold, an initiative is active or a ticket is in play, and neither the caller nor the ticket gives the altitude, the opening asks first which level of the tree the document is for: the program, the initiative or one of its epics. The answer sets what the document decides.
 
 ## Stakes
 

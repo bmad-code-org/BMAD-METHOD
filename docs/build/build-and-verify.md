@@ -30,7 +30,7 @@ Named directly, a story is built whether or not it is ready: the build does
 not check its `after` or a pending refinement. Ask Sofia `what's next?` first,
 or run `bmad-build` with nothing else to take the first ready story.
 
-A story is sized for one session. If the build finds two independent goals
+A story is one goal, built from its plan over as many sessions as it needs. If the build finds two independent goals
 in it, it offers to split, and if you accept it writes the rest to
 `deferred-work.md`, as in
 [Build a Change](./build-a-change.md#deferred-work).

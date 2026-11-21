@@ -48,15 +48,15 @@ The BMad Method also ships the planning templates for John, the Product Manager 
 | Brief | Mary | Before an initiative | Why to build a product, or pitching it, in a page or two |
 | Business case | Mary | Initiative | A funding decision: cost, expected return, go or no-go |
 | Strategy narrative | Mary | Program | A written argument for leadership to decide a strategy or annual plan |
-| PRD, light PRD | John | Any | Requirements a team builds from; the light one for a very simple project |
+| PRD | John | Program or initiative | Outcomes, guardrails and the epic map for work with several capabilities |
+| Epic PRD | John | Epic | One capability's requirements: journeys, numbered requirements, rules and how it is measured |
 | Shape Up pitch | John | Initiative or epic | A shaped, time-boxed proposal for teams that bet fixed cycles |
 | Program charter | Mary or John | Program | One mandate, benefits, scope, and governance across several initiatives |
 | Requirements specification | John | Initiative | Traceable, verifiable requirements for regulated or contracted work |
 | Business requirements document | Mary | Initiative | What the business requires and signs for, when a separate party builds, a sponsor signs, or a regulator or contract expects it |
-| Spec for a coding agent | John | One feature | A feature outside the ticket tree, with tests and acceptance |
 | Launch plan | John | Initiative | Coordinating a built feature's release across teams |
 
-The first seven come before you commit, in Clarify; the rest plan and ship the work. Each is walked one section at a time by default, except the launch plan, which starts freeform, and the agent spec, which starts fast; the PRFAQ, the experiment card, the opportunity assessment and the pitch keep their order even when you ask for freeform. A brief from Mary feeds the PRD, but neither requires the other. A business case or strategy narrative stays in prose and ends with a `## For requirements` list of ids, so Sofia can write the initiative from it without a PRD.
+The first seven come before you commit, in Clarify; the rest plan and ship the work. Each is walked one section at a time by default, except the launch plan, which starts freeform; the PRFAQ, the experiment card, the opportunity assessment and the pitch keep their order even when you ask for freeform. A brief from Mary feeds the PRD, but neither requires the other. A business case or strategy narrative stays in prose and ends with a `## For requirements` list of ids, so Sofia can write the initiative from it without a PRD.
 
 ## What a template can do
 

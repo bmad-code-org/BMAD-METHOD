@@ -36,6 +36,17 @@ This document should be enough to route the user and say what to do next. Each t
 | `help/review-choices.md` | Review depth, skipping review, another review pass, when to stop, slow reviews, customizing review. |
 | `help/project-context.md` | `bmad-project-context` in depth: what belongs in `AGENTS.md`, why the block is small, its intents, removing a rule. |
 
+## Which level
+
+The level comes from the work itself, never from team size or time. Start at the lowest level that holds the work and move up when it proves bigger.
+
+| The work is | Level | Written as | By |
+|---|---|---|---|
+| One story: one end-to-end behavior | Story | A story ticket | Sofia (`bmad-agent-po`) |
+| More than one story of one capability | Epic | The epic PRD (`prd-epic`), with or without a parent | John (`bmad-agent-pm`) |
+| Several capabilities that share outcomes, invariants or nouns | Initiative | The PRD (`prd`), thin, with its epic map | John |
+| Several initiatives | Program | The PRD at program level, or a charter when governance is the question | John, or Mary (`bmad-agent-analyst`) for the charter |
+
 ## Routing
 
 Every "what next" is answered by the state of the spec at its altitude: the initiative file, then each epic file. Upstream skills exist to feed it.
@@ -120,12 +131,12 @@ One line per skill: what it is for and what it writes. Paths are in the active i
 | `bmad-agent-analyst` | Mary the Business Analyst brainstorms and researches with the user, then coaches a document that decides whether and why to go ahead out of them: a brief (a 1-2 page account of a product the user believes in; it does not judge the idea), a PRFAQ (tests whether a concept survives scrutiny: press release, hard FAQs, researched claims, a verdict), an opportunity assessment, a business case, a strategy narrative or a business requirements document. She shares the experiment card and the program charter with John. | `<id>-<slug>/<id>-<slug>.md`, such as `brief-<slug>/brief-<slug>.md` |
 | **Planning** (`help/planning-skills.md`) | | |
 | `bmad-agent-po` | Sofia the Product Owner. Writes a ticket's Requirements and Constraints from any input, with a stable `R<n>` id per line naming its source, naming the gaps and walking them with the user, or recording each as an Open question line, when the input is sparse, and updates them when the input changes. Slices initiatives into thin epics and epics into stories, refines an epic or a story, runs the board (start, block, close, drop), validates, replans a change mid-flight, and connects a tracker. Stories are entries in `tickets.toml`; a file is written only when one is reviewed, refined, or published. A bug is a `backlog/` file or an entry in its epic. | The ticket file, with `.memlog.md` and companions beside it; the ticket tree under `{output_folder}/{active_initiative}/`, plus `{output_folder}/backlog/` |
-| `bmad-agent-pm` | John the Product Manager coaches a document that defines what gets built or how it ships out of the user, picked by altitude and sized to the stakes: a PRD, light PRD, prototype plan, spec for a coding agent, Shape Up pitch, requirements specification or launch plan. He shares the experiment card and the program charter with Mary. He also updates and validates them. Either writes any of these when the user asks them to. | `<id>-<slug>/<id>-<slug>.md`, such as `prd-<slug>/prd-<slug>.md` |
+| `bmad-agent-pm` | John the Product Manager coaches a document that defines what gets built or how it ships out of the user, picked by altitude and sized to the stakes: a PRD for several capabilities, a PRD for one epic, prototype plan, Shape Up pitch, requirements specification or launch plan. He shares the experiment card and the program charter with Mary. He also updates and validates them. Either writes any of these when the user asks them to. | `<id>-<slug>/<id>-<slug>.md`, such as `prd-<slug>/prd-<slug>.md` |
 | `bmad-ux` | How the product looks and works. May lead, follow, or stand alone. Can produce mocks and wireframes. | `ux-<slug>/` with `DESIGN.md`, `EXPERIENCE.md`, and `ux-<slug>.md` naming them |
 | `bmad-architecture` | Settles only the decisions that keep separately built parts consistent. Coaches a user with no architecture knowledge, recommends a current starter, and covers hosting and deployment. | `architecture-<slug>/architecture-<slug>.md` |
 | **Implementation** (`help/implementation-skills.md`) | | |
 | `bmad-build` | One session of delivery: clarifies intent, plans, implements, reviews, commits. The default for any real change. Takes free text, a ticket from the tree (nothing means the next ready one), or any file as intent. Reads a ticket in full with its epic. | A ticket's plan beside `tickets.toml`, or `plan-<slug>.md`; `deferred-work.md` |
-| `bmad-build-auto` | One unattended build of one ticket, dispatched by a loop or script; with a user present, only to build a finished prototype plan or light PRD. | The same plans as `bmad-build` |
+| `bmad-build-auto` | One unattended build of one ticket, dispatched by a loop or script; with a user present, only to build a finished prototype plan. | The same plans as `bmad-build` |
 | **Validation** (`help/validation-skills.md`) | | |
 | `bmad-code-review` | Agent review of any diff, PR, or branch, with triaged findings; with no argument it offers the tickets in review. Redundant right after a thorough `bmad-build` review of the same change. | A dated block in the plan's `## Code Review` section, or chat |
 | `bmad-walkthrough` | The human reviews a change block by block, guided. Also a way to learn unfamiliar code. | `walkthrough-<slug>/` with the narrative and a `-log.md` |

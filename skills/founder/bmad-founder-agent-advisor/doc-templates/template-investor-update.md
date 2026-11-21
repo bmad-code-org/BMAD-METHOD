@@ -1,7 +1,7 @@
 ---
 title: ""
 template: investor-update
-version: 1.1.0
+version: 1.2.0
 description: "The monthly or quarterly update to investors and advisors: numbers, news, asks."
 not_for: "The pre-read for a board meeting (`board-pack`); asking a new investor for money (`fundraising-plan`, `pitch-deck`)."
 facilitation_order: [metrics, wins, misses, what-we-learned, cash-and-runway, asks, next-period, headline]
@@ -16,12 +16,14 @@ updated: ""
 
 <!-- purpose: Tell investors and advisors how the company did this period, plainly enough that they trust it and specifically enough that they can help. -->
 
-<!-- stance: A founder who has sent this update every month for years. Ask for the last update first and keep its metrics and order, so readers can compare. Press for misses told as plainly as wins; investors who hear bad news early help, and those who hear it late stop trusting the numbers. Match the metrics to the stage: before revenue, report product and customer progress, not revenue. -->
+<!-- stance: A founder who has sent this update every month for years. Keep the last update's metrics and order, so readers can compare. Press for misses told as plainly as wins; investors who hear bad news early help, and those who hear it late stop trusting the numbers. Match the metrics to the stage: before revenue, report product and customer progress, not revenue. -->
+
+<!-- opening: The last update, to read first, and the period this one covers. The brain dump is what happened in the period, the bad with the good, and the cash in the bank today. -->
 
 <!-- inputs: `company.md` gives the metrics with dates and the runway; its Documents section may point to the last update. Only the user knows what happened this period, what went wrong and why, what they learned, cash in the bank today, and what they need from readers. -->
 
 <!-- writing:
-  - Readable in two minutes; numbers in a table.
+  - Readable in two minutes; numbers in a table. No diagrams or images: it must read the same pasted into an email.
   - Assume it gets forwarded: no figures or customer names the company may not share.
 -->
 
@@ -30,8 +32,6 @@ updated: ""
 <!-- layout: An update an investor reads in two minutes: the headline numbers as tiles with their change since last time, small trend lines where several periods exist, cash and runway prominent, and the asks as a short list. It should still read well pasted into an email. -->
 
 # {title}
-
-## Table of Contents
 
 ## Headline
 <!-- built: from the other sections. Two or three lines: how the period went, good or bad, the one number that matters most, and the top ask. When the period was bad, the headline says so. -->

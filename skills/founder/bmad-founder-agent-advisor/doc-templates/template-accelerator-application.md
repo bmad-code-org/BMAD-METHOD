@@ -1,7 +1,7 @@
 ---
 title: ""
 template: accelerator-application
-version: 1.1.0
+version: 1.2.0
 description: "An application to an accelerator such as YC, Techstars or Antler, in its own questions."
 not_for: "A written ask to a funder, grant or client (`proposal`); the deck (`pitch-deck`); planning the whole raise (`fundraising-plan`); testing whether the idea has demand at all (`startup-diagnostic`)."
 facilitation_order: [company, problem, progress, founders, insight-and-competition, business-model, funding-and-structure, why-this-program, founder-video]
@@ -16,7 +16,9 @@ updated: ""
 
 <!-- purpose: Answer one program's application so a reviewer skimming hundreds of them understands the company and wants to meet the founders. -->
 
-<!-- stance: Before drafting, get the program's current question list, character limits, video rules and deadline, from the user or the program's site. Its questions become the `##` headings, word for word, in its order; the sections below are the usual questions, so map each onto the program's and take up any extra ones in the program's order. A former reviewer for the program: press for the plain, specific answer, and cut anything a reviewer cannot check. Judge progress against the stage: a founder with no product shows what was built, who they talked to and what they learned, and is not pressed for revenue. -->
+<!-- stance: The program's questions become the `##` headings, word for word, in its order; the sections below are the usual questions, so map each onto the program's and take up any extra ones in the program's order. A former reviewer for the program: press for the plain, specific answer, and cut anything a reviewer cannot check. Judge progress against the stage: a founder with no product shows what was built, who they talked to and what they learned, and is not pressed for revenue. -->
+
+<!-- opening: Which program and which intake, and its current question list with character limits, video rules and deadline, pasted in or fetched from the program's site, because its questions replace the headings below. The brain dump is whatever the founders have already written for this program or another one. -->
 
 <!-- inputs: `company.md` gives the venture, stage, metrics and money raised; `founder.md` gives the founders' background. Only the user knows the program's questions if they have not shared them, how the founders met and how long they have worked together, the insight others miss, why this program, and the founders' own words for what they do. -->
 
@@ -24,6 +26,7 @@ updated: ""
   - The first sentence of each answer answers the question; reviewers often read only that.
   - The founder's voice, first person, in their own words; plain language, no claims a reviewer cannot check such as "revolutionary" or "the first".
   - Every figure matches `company.md` with its date; stay under each character limit, and record each question's limit under its heading.
+  - No pictures or tables: each answer is pasted into a form field as text.
 -->
 
 <!-- done when: Every question the program asks is answered within its limit, each answer opens with the direct answer, every figure matches the record, and a reviewer reading only first sentences knows what the company does, for whom, and how far it has got. -->
@@ -31,8 +34,6 @@ updated: ""
 <!-- layout: The answers in the program's order, each with its character count against the limit and easy to copy, so the founder can paste them straight into the form. -->
 
 # {title}
-
-## Table of Contents
 
 ## Company
 <!-- What the company makes and for whom, in one sentence a stranger could repeat. When the answer needs a second sentence to say what the product is, keep working it. Done when someone outside the industry could say back what the company does. -->

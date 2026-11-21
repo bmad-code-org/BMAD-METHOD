@@ -1,7 +1,7 @@
 ---
 title: ""
 template: positioning
-version: 1.1.0
+version: 1.2.0
 description: "Positioning and the one-liner: alternatives, unique value, best-fit customer, category."
 not_for: "The first narrow group to win and how to reach them (`ideal-customer`); the message, channels and weeks of a launch (`launch-plan`); one page on the whole business (`lean-canvas`)."
 facilitation_order: [competitive-alternatives, unique-value, best-fit-customer, market-category, positioning-statement, one-liner]
@@ -19,9 +19,12 @@ updated: ""
 
 <!-- stance: Positioning comes from what customers do and say, not from what the founder hopes. Work in order from the alternatives; the one-liner comes last. With no customers yet, the positioning is a guess to test, and the document says so. -->
 
+<!-- opening: Whether there are customers yet, which decides if the positioning rests on what they did or is a guess to test, and any interview notes or sales calls to read for their own words. The brain dump is what customers used before and what they said when they chose this. -->
+
 <!-- inputs: The record supplies the venture, stage and customers. Only the user knows what customers used before, what they compared against when buying, and which customers value it most and why; read any interview notes or sales calls the user points to for the customers' own words. -->
 
 <!-- writing:
+  - One page.
   - No claim that an alternative could also make.
   - The one-liner uses the customer's words, and category jargon only when customers use it.
 -->
@@ -32,10 +35,8 @@ updated: ""
 
 # {title}
 
-## Table of Contents
-
 ## Competitive alternatives
-<!-- What the best-fit customer would do if the product did not exist: a competitor, a spreadsheet, hiring someone, doing it by hand, or nothing. Ask what customers used before and what they compared against when buying; when the user names only startups in the same space, ask what most customers do today. Done when the list matches what real customers would say. -->
+<!-- What the best-fit customer would do if the product did not exist: a competitor, a spreadsheet, hiring someone, doing it by hand, or nothing. Ask what customers used before and what they compared against when buying; when the user names only startups in the same space, ask what most customers do today. A table: each alternative, why a customer picks it, and where it falls short. Done when the list matches what real customers would say. -->
 
 ## Unique value
 <!-- What the product has or does that the alternatives do not, what each lets the customer achieve, and the proof: a number, a customer quote, a result. When a claim comes back that any alternative could make ("easy to use", "saves time"), ask what is true only of this product. Done when each claim is unique, stated as what the customer gets, and has proof or is tagged. -->

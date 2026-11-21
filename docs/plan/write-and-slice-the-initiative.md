@@ -33,8 +33,8 @@ initiative active, she creates `initiative-<slug>/` and records it as the
 active initiative.
 
 She writes the initiative's Requirements, one line each under a stable `R<n>`
-id naming its source, such as `R1 (FR-1)`, and its Constraints, each citing
-its source id, such as `(RULE-1)`. From a PRD, each capability becomes a
+id naming its source, such as `R1 (E01)`, and its Constraints, each citing
+its source id, such as `(INV-1)`. From a PRD, each capability becomes a
 Requirements line and each rule a Constraints line, citing its id. The
 input's non-goals go to Boundaries. On a new initiative she also writes its
 Description, Outcome, and Done when: three to six checks at the level of your
@@ -75,20 +75,22 @@ Ask for the cut, and tell her the split if you already have one in mind:
 /bmad-agent-po split this initiative into epics
 ```
 
-Before cutting epics, she asks you to confirm the scope. She proposes the
-epics, their build order, and what each needs from the ones before, and
-records the agreed order in the initiative's `tickets/tickets.toml`. Each
+When the initiative came from a PRD with an epic map, that map is the split:
+she shows it once for you to confirm. Otherwise she asks you to confirm the
+scope, then proposes the epics, their build order, and what each needs from
+the ones before. Either way she records the agreed order in the initiative's
+`tickets/tickets.toml`. Each
 epic is written thin: its description, outcome, boundaries, and done-when as
 far as they are known, marked `refined: false`.
-Its requirements come later, when you refine it.
+Its requirements come later, when you refine it: an epic with open product
+questions gets its own PRD from John, and Sofia fills in one that needs
+nothing more.
 
-An epic is one capability, or a tightly coupled pair, delivered and deployed
-together, and typically eight to twelve stories once planned. A service or
-module is an epic only when it is also a deployment boundary. A unit the work
-only consumes or configures gets no epic: Sofia lists it in the initiative's
-Boundaries as a touch point, with the epic that owns it. If your team cuts
-epics by its own rule, tell Sofia and she offers to save it to
-`_bmad/custom/bmad-agent-po.toml`.
+An epic is one cohesive capability: something a person could see working by
+itself. When describing one takes an "and" that joins two things which each
+stand alone, it is two. A unit the work only consumes or configures gets no
+epic: Sofia lists it in the initiative's Boundaries as a touch point, with the
+epic that owns it.
 
 She then lists the decisions more than one epic must adopt, such as a
 contract, a data format, or a shared value list, and offers `bmad-architecture`
@@ -105,28 +107,26 @@ In the [room booker](../start/how-bmad-works.md#the-example-app), an office's me
 ```text wrap
 /bmad-agent-po write the initiative from prd-check-in/
 ```
-**Sofia:** Wrote `initiative-check-in.md`: 4 requirements and 1 constraint,
+**Sofia:** Wrote `initiative-check-in.md`: 2 requirements and 1 constraint,
 and my check passed. One assumption is open: the 15-minute no-show window,
 for facilities to confirm.
 
 ```markdown wrap
 ## Requirements
-R1 (FR-1): A room freed for a no-show can be booked by anyone.
-R2 (FR-2): Freeing one day of a recurring booking leaves the rest of the series booked.
-R3 (FR-3): A person checks in at their room's door tablet.
-R4 (FR-4): A door tablet shows its room's bookings for the day.
+R1 (E01): A person checks in at their room's door tablet, which shows the room's bookings for the day.
+R2 (E02): A room nobody checks into is freed and can be booked by anyone; freeing one day of a recurring booking leaves the rest of the series booked.
 
 ## Constraints
-- A booked room nobody checks into within 15 minutes of its start is freed (RULE-1).
+- A booked room nobody checks into within 15 minutes of its start is freed (INV-1).
 
 ## Notes
-- Assumption: the 15-minute window in RULE-1 is unconfirmed; facilities to confirm.
+- Assumption: the 15-minute window in INV-1 is unconfirmed; facilities to confirm.
 ```
 
 **You:** Facilities confirmed 15 minutes. Split this initiative into epics.
 
-**Sofia:** Two epics, since they are two distinct outcomes: 1 Door check-in,
-then 2 Free no-show rooms, which needs check-ins to exist. Both depend on
+**Sofia:** Two epics, taken from the PRD's epic map: 1 Door check-in, then
+2 Free no-show rooms, which needs check-ins to exist. Both depend on
 where the no-show timer runs. Settle that with `bmad-architecture`?
 :::
 

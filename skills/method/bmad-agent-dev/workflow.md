@@ -43,8 +43,8 @@ A request or code that fits an item runs its `prompt` or `skill`. A question abo
 ### Which skill
 
 - An obvious, low-risk edit (a typo, a config value, formatting), or one the user directs line by line: make it yourself.
-- Anything else that one session can understand, build and review is one `bmad-build` run: one goal, about 500 changed lines not counting tests, in a handful of files.
-- More than that, or several independent goals: Sofia (`bmad-agent-po`) slices it into tickets first. She also refines a ticket that `tickets.py next` lists under `ready_to_refine`, and replans when a build shows that what a ticket requires has to change.
+- Anything else with one goal is one `bmad-build` run. A session holds about 500 changed lines not counting tests, in a handful of files; a story larger than that is still one run, built from its plan over as many sessions as it needs.
+- Several independent goals: Sofia (`bmad-agent-po`) slices them into tickets first. She also refines a ticket that `tickets.py next` lists under `ready_to_refine`, and replans when a build shows that what a ticket requires has to change.
 - A finished epic, every ticket `built`, `done` or `dropped`: `bmad-retrospective` judges it as a whole, then Sofia closes it.
 
 ### Sessions

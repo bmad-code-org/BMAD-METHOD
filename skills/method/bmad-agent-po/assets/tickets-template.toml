@@ -9,12 +9,12 @@
 [[entry]]
 id = 1 # leaf file's `id:`
 type = "story" # story | spike | bug
-title = "Cart service scaffold"
-description = "Stands up the cart service with one add-item path through UI, API, and store."
-verify = "A shopper adds one item on the deployed site and sees it in the cart."
-covers = ["R1"] # epic Requirements ids
+title = "Shoppers build a cart"
+description = "A shopper adds, changes and removes items and the total follows, on the cart service this story stands up and deploys."
+verify = "On the deployed site a shopper adds two items, changes a quantity, removes one, and the total is right each time."
+covers = ["R1", "R2", "R3"] # epic Requirements ids
 after = [] # prerequisites only, not sequence
-hitl = true # a person runs the starter
+hitl = true # a person does part of the work
 risk = "low" # low | medium | high
 # estimate = 2 # only if the user gives one
 # unknown = "..." # one-sentence user question; `tickets.py next` blocks the entry until removed
@@ -27,10 +27,10 @@ risk = "low" # low | medium | high
 [[entry]]
 id = 2
 type = "story"
-title = "Apply and refuse discount codes"
-description = "Adds code validation to the pricing call and shows the refusal reason."
-verify = "A valid code lowers the total; an expired one is refused with its reason."
-covers = ["R2", "R3"]
+title = "Shoppers pay less with codes and offers"
+description = "Discount codes and automatic offers change the cart total through the pricing call, and a refused code says why."
+verify = "A valid code and a qualifying offer each lower the total; an expired code is refused with its reason."
+covers = ["R4", "R5", "R6"]
 after = [1, "1.3"] # sibling id; "<epic id>.<entry id>"; "epic-<slug>"
 hitl = false
 risk = "medium"

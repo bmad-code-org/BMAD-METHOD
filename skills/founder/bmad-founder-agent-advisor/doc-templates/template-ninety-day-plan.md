@@ -1,7 +1,7 @@
 ---
 title: ""
 template: ninety-day-plan
-version: 1.1.0
+version: 1.2.0
 description: "The next ninety days: two or three goals, a metric each, owners and check-in dates."
 not_for: "Testing whether demand is real (`startup-diagnostic`, `validation-experiment`); the plan for a raise (`fundraising-plan`); reporting the last period to investors (`investor-update`); taking a product to market (`launch-plan`)."
 facilitation_order: [starting-point, goals, not-doing, check-ins, risks]
@@ -18,9 +18,12 @@ updated: ""
 
 <!-- stance: Press the user down to three goals at most, and ask which one matters if only one gets done. Fit the goals to the stage the company is at: before there is a product, goals are about evidence of demand, such as interviews held or preorders taken, not revenue. -->
 
+<!-- opening: What the user wants to be true ninety days from now, before anything about how. The brain dump is everything on their plate, which gets sorted into the goals and what is not being done. -->
+
 <!-- inputs: The record supplies the stage, metrics with dates, runway and the last check-in. Only the user knows what they want to be true in ninety days, who is available to do the work, and what they are willing to drop. -->
 
 <!-- writing:
+  - One page, two at most.
   - Each goal has one metric with its current value, its target and the date it was measured.
   - Owners and dates come from the user.
 -->
@@ -30,8 +33,6 @@ updated: ""
 <!-- layout: The plan on one page: the goals as large cards with their measures, the weeks as a timeline, and what is not being done listed plainly. -->
 
 # {title}
-
-## Table of Contents
 
 ## Starting point
 <!-- Where the company is today: stage, the metrics that matter with their dates, runway in months, and what the last ninety days produced. Take these from the record and ask the user to confirm any figure older than a month. -->

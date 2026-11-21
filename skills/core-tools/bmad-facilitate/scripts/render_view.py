@@ -7,7 +7,9 @@
 The markdown travels in the page as JSON and is rendered in the browser by marked, with
 mermaid drawing every mermaid code block; both load from jsDelivr at pinned versions. With
 no network the page still shows the raw markdown in <pre> blocks. Raw HTML in the markdown
-is shown as text and javascript:, vbscript: and non-image data: links are dropped.
+is shown as text and javascript:, vbscript: and non-image data: links are dropped. An image the
+markdown links by a relative path (svg, png, jpg, gif, webp) inside the document's folder is
+inlined, so the page is still one file; any other image keeps its link.
 
   --layout document   the whole document as one readable page (default)
   --layout slides     the `# ` title is slide 1, then one slide per `## ` section. A bold
@@ -30,6 +32,7 @@ exits 2 when the document is missing.
 from __future__ import annotations
 
 import argparse
+import base64
 import html
 import json
 import re
@@ -47,6 +50,13 @@ H1 = re.compile(r"^# +(.+?)[ \t#]*$")
 H2 = re.compile(r"^## +(.+?)[ \t#]*$")
 QUOTE = re.compile(r"^ {0,3}> ?")
 BOLD_LINE = re.compile(r"^(\*\*|__)(.+)\1[ \t]*$")
+
+IMAGE = re.compile(r'(!\[[^\]\n]*\]\(\s*)(<[^>\n]+>|[^)\s]+)((?:\s+"[^"\n]*")?\s*\))')
+IMAGE_TYPES = {
+    ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+    ".gif": "image/gif", ".webp": "image/webp",
+}  # fmt: skip
+MAX_IMAGE_BYTES = 5_000_000
 
 LAYOUTS = ("document", "slides")
 SLOT_ATTRS = {"data-section", "data-field", "data-rest", "data-body"}
@@ -86,6 +96,30 @@ def strip_comments(text: str) -> str:
     if prose:
         out.append(COMMENT.sub("", "\n".join(prose)))
     return "\n".join(out)
+
+
+def inline_images(text: str, folder: Path) -> str:
+    """Replace each linked image file inside `folder` with a data: URI, outside fenced code blocks."""
+    root = folder.resolve()
+
+    def data_uri(m: re.Match) -> str:
+        target = m.group(2).strip("<>")
+        kind = IMAGE_TYPES.get(Path(target).suffix.lower())
+        if not kind or re.match(r"[a-zA-Z][a-zA-Z0-9+.\-]*:|/|#", target):
+            return m.group(0)
+        path = (root / target).resolve()
+        try:
+            if not path.is_relative_to(root) or not path.is_file() or path.stat().st_size > MAX_IMAGE_BYTES:
+                return m.group(0)
+            encoded = base64.b64encode(path.read_bytes()).decode("ascii")
+        except OSError:
+            return m.group(0)
+        return f"{m.group(1)}data:{kind};base64,{encoded}{m.group(3)}"
+
+    lines = text.split("\n")
+    return "\n".join(
+        line if in_code else IMAGE.sub(data_uri, line) for line, in_code in zip(lines, code_mask(lines), strict=True)
+    )
 
 
 def split_frontmatter(text: str) -> tuple[str, str]:
@@ -380,7 +414,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"render_view: {doc} not found", file=sys.stderr)
         return 2
     out = Path(args.out) if args.out else doc.with_suffix(".html")
-    text = doc.read_text(encoding="utf-8-sig")
+    text = inline_images(doc.read_text(encoding="utf-8-sig"), doc.parent)
     if args.layout in LAYOUTS:
         page = render(text, args.layout, load_style(args.style), doc.stem)
     else:
@@ -650,15 +684,17 @@ JS = r"""
   function escapeHtml(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
-  function unsafeUrl(href) {
+  // An SVG shown through <img> runs no script, so an image may be one; a link to one could.
+  function unsafeUrl(href, image) {
     var h = String(href || '').replace(/[\s\u0000-\u001f]/g, '').toLowerCase();
-    return /^(javascript|vbscript):/.test(h) || (/^data:/.test(h) && !/^data:image\/(png|gif|jpe?g|webp);/.test(h));
+    var kinds = image ? /^data:image\/(png|gif|jpe?g|webp|svg\+xml);/ : /^data:image\/(png|gif|jpe?g|webp);/;
+    return /^(javascript|vbscript):/.test(h) || (/^data:/.test(h) && !kinds.test(h));
   }
   function harden() {
     window.marked.use({ renderer: {
       html: function (h) { return escapeHtml(h); },
-      link: function (href, title, text) { return unsafeUrl(href) ? text : false; },
-      image: function (href, title, text) { return unsafeUrl(href) ? escapeHtml(text) : false; }
+      link: function (href, title, text) { return unsafeUrl(href, false) ? text : false; },
+      image: function (href, title, text) { return unsafeUrl(href, true) ? escapeHtml(text) : false; }
     } });
   }
 
