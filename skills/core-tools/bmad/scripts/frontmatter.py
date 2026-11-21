@@ -31,15 +31,20 @@ def load(text: str) -> dict:
     return fields
 
 
-def dump(fields: dict) -> str:
-    """Return a fenced YAML block ending in a newline."""
-    return f"---\n{_yaml(fields)}---\n"
+class Quoted(str):
+    """Text that `dump` and `set_fields` write in double quotes."""
 
 
-def set_fields(text: str, fields: dict) -> str:
-    """Return the YAML text with each field's top-level entry rewritten and new fields appended.
+def dump(fields: dict, flow_lists: bool = False) -> str:
+    """Return a fenced YAML block ending in a newline, each list on one line when `flow_lists`."""
+    return f"---\n{_yaml(fields, _FlowLists if flow_lists else _Dumper)}---\n"
 
-    Every other line, comments included, is kept as written.
+
+def set_fields(text: str, fields: dict, remove: tuple[str, ...] = ()) -> str:
+    """Return the YAML text with each field's top-level entry rewritten and `remove` dropped.
+
+    A new field goes after the field listed before it in `fields`, or at the end. Every other line,
+    comments included, is kept as written. A list is written on one line.
     """
     entries: list[str] = []
     for line in text.splitlines(keepends=True):
@@ -47,15 +52,24 @@ def set_fields(text: str, fields: dict) -> str:
             entries[-1] += line
         else:
             entries.append(line)
+    present = {_key(entry) for entry in entries}
+    order = list(fields)
     out, written = [], set()
     for entry in entries:
         key = _key(entry)
-        if key in fields:
-            out.append(_yaml({key: fields[key]}))
-            written.add(key)
-        else:
+        if key in remove:
+            continue
+        if key not in fields:
             out.append(entry if entry.endswith("\n") else entry + "\n")
-    out += [_yaml({key: value}) for key, value in fields.items() if key not in written]
+            continue
+        out.append(_yaml({key: fields[key]}, _FlowLists))
+        written.add(key)
+        for new in order[order.index(key) + 1 :]:
+            if new in present:
+                break
+            out.append(_yaml({new: fields[new]}, _FlowLists))
+            written.add(new)
+    out += [_yaml({key: value}, _FlowLists) for key, value in fields.items() if key not in written]
     return "".join(out)
 
 
@@ -68,5 +82,23 @@ def _key(entry: str) -> str | None:
         return None
 
 
-def _yaml(fields: dict) -> str:
-    return yaml.safe_dump(fields, sort_keys=False, allow_unicode=True, width=float("inf"))
+class _Dumper(yaml.SafeDumper):
+    pass
+
+
+_Dumper.add_representer(
+    Quoted, lambda dumper, value: dumper.represent_scalar("tag:yaml.org,2002:str", str(value), style='"')
+)
+
+
+class _FlowLists(_Dumper):
+    pass
+
+
+_FlowLists.add_representer(
+    list, lambda dumper, value: dumper.represent_sequence("tag:yaml.org,2002:seq", value, flow_style=True)
+)
+
+
+def _yaml(fields: dict, dumper: type) -> str:
+    return yaml.dump(fields, Dumper=dumper, sort_keys=False, allow_unicode=True, width=float("inf"))

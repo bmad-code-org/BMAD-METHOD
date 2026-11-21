@@ -31,9 +31,9 @@ import sys
 import tomllib
 from pathlib import Path, PurePosixPath
 
-import yaml
-
 sys.dont_write_bytecode = True
+
+import frontmatter  # noqa: E402
 
 
 def _load_setup():
@@ -559,7 +559,9 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         else:
             shutil.move(spec_memlog, memlog)
     elif not memlog.is_file():
-        write_text(memlog, f"---\ntopic: {spec['title']}\nupdated: {datetime.datetime.now():%Y-%m-%dT%H:%M}\n---\n")
+        write_text(
+            memlog, frontmatter.dump({"topic": spec["title"], "updated": f"{datetime.datetime.now():%Y-%m-%dT%H:%M}"})
+        )
     entries = [f"- (note) {name}, from {folder.name}: {value}" for name, value in spec["kept"]]
     entries.append(
         f"- (event) folded {folder.name}/ into {ticket.name}"
@@ -641,8 +643,8 @@ def read_for_fold(path: Path, project_root: Path) -> str:
 def yaml_checked(text: str, path: Path, project_root: Path) -> str:
     """`text`, once its frontmatter reads as YAML, so a bad one stops the fold before anything changes."""
     try:
-        yaml.load("\n".join(split_frontmatter(text)[0]), Loader=yaml.BaseLoader)
-    except yaml.YAMLError as error:
+        frontmatter.load(split_frontmatter(text)[0])
+    except ValueError as error:
         raise FoldProblem(f"{relative(path, project_root)} has invalid frontmatter: {error}") from error
     return text
 
@@ -746,19 +748,18 @@ def prose(section: str) -> str:
     return " ".join(line[2:].strip() if line.startswith("- ") else line for line in lines)
 
 
-def split_frontmatter(text: str) -> tuple[list[str], str]:
-    lines = text.splitlines()
-    if not lines or lines[0].strip() != "---":
-        return [], text
-    end = next((i for i in range(1, len(lines)) if lines[i].strip() == "---"), None)
-    if end is None:
-        return [], text
-    return lines[1:end], "\n".join(lines[end + 1 :])
+def split_frontmatter(text: str) -> tuple[str, str]:
+    """The YAML text and the body's lines joined by newlines; no frontmatter is empty YAML."""
+    try:
+        meta, body = frontmatter.split(text)
+    except ValueError:
+        return "", text
+    return meta, "\n".join(body.splitlines())
 
 
-def frontmatter_list(meta: list[str], key: str) -> list[str]:
+def frontmatter_list(meta: str, key: str) -> list[str]:
     """The items of list `key`, as text."""
-    value = (yaml.load("\n".join(meta), Loader=yaml.BaseLoader) or {}).get(key) or []
+    value = frontmatter.load(meta).get(key) or []
     return [item for item in (value if isinstance(value, list) else [value]) if item]
 
 
@@ -854,31 +855,12 @@ def folded_ticket_text(
         [f"- Assumption: {line}" for line in spec["assumptions"]]
         + [f"- Open question: {line}" for line in spec["questions"]],
     )
-    meta = with_list(meta, "sources", sources)
-    meta = with_list(meta, "companions", companions)
-    if any(re.match(r"\Atype\s*:\s*initiative\b", line) for line in meta):
-        meta = [line for line in meta if not re.match(r"\Acovers\s*:", line)]
-    front = "---\n" + "\n".join(meta) + "\n---\n" if meta else ""
+    lists = {"sources": sources, "companions": companions}
+    updates = {key: list(dict.fromkeys(frontmatter_list(meta, key) + items)) for key, items in lists.items() if items}
+    remove = ("covers",) if frontmatter.load(meta).get("type") == "initiative" else ()
+    meta = frontmatter.set_fields(meta, updates, remove)
+    front = f"---\n{meta}---\n" if meta else ""
     return front + join_sections(head, sections)
-
-
-def with_list(meta: list[str], key: str, items: list[str]) -> list[str]:
-    """The frontmatter with `key` holding its existing items plus `items`, the line added after `sources:` or at the end."""
-    if not items:
-        return meta
-    index = next((i for i, line in enumerate(meta) if re.match(rf"\A{key}\s*:", line)), None)
-    merged = list(dict.fromkeys((frontmatter_list(meta, key) if index is not None else []) + items))
-    line = f"{key}: {yaml.safe_dump(merged, default_flow_style=True, width=float('inf')).strip()}"
-    if index is not None:
-        # A block list's `- item` lines go with the key line they continue.
-        end = index + 1
-        while end < len(meta) and meta[end].lstrip().startswith("- "):
-            end += 1
-        return [*meta[:index], line, *meta[end:]]
-    after = next((i for i, line in enumerate(meta) if re.match(r"\Asources\s*:", line)), None)
-    if after is None or key == "sources":
-        return [*meta, line]
-    return [*meta[: after + 1], line, *meta[after + 1 :]]
 
 
 def story_text(
@@ -890,11 +872,14 @@ def story_text(
     sources: list[str],
     companions: list[str],
 ) -> str:
-    used = [
-        int(match.group(1))
-        for path in sorted(home.glob("*.md"))
-        if (match := re.search(r"(?m)^id:\s*(\d+)\s*$", path.read_text(encoding="utf-8")))
-    ]
+    used = []
+    for path in sorted(home.glob("*.md")):
+        try:
+            ticket_id = frontmatter.load(frontmatter.split(path.read_text(encoding="utf-8"))[0]).get("id")
+        except ValueError:
+            continue
+        if isinstance(ticket_id, str) and ticket_id.isdigit():
+            used.append(int(ticket_id))
     # `next_id` at the top of the folder's tickets.toml keeps a moved-out id from being reused.
     floor = 0
     breakdown = home / "tickets.toml"
@@ -906,19 +891,19 @@ def story_text(
         if isinstance(floor, bool) or not isinstance(floor, int):
             floor = 0
     title = spec["title"] or slug.replace("-", " ")
-    meta = [
-        f"id: {max(max(used, default=0) + 1, floor)}",
-        "type: story",
-        f'title: "{title.replace(chr(34), chr(39))}"',
-        "parent: none",
-        "covers: []",
-        f"sources: [{', '.join(sources)}]",
-        f"companions: [{', '.join(companions)}]",
-        "after: []",
-        "refined: false",
-        "hitl: false",
-        "risk: low",
-    ]
+    meta = {
+        "id": max(max(used, default=0) + 1, floor),
+        "type": "story",
+        "title": frontmatter.Quoted(title),
+        "parent": "none",
+        "covers": [],
+        "sources": sources,
+        "companions": companions,
+        "after": [],
+        "refined": False,
+        "hitl": False,
+        "risk": "low",
+    }
     sections: list[tuple[str, str]] = [("Description", spec["why"] or title)]
     add_lines(sections, "Requirements", requirements)
     add_lines(sections, "Constraints", [f"- {line}" for line in spec["constraints"]])
@@ -930,7 +915,7 @@ def story_text(
         [f"- Assumption: {line}" for line in spec["assumptions"]]
         + [f"- Open question: {line}" for line in spec["questions"]],
     )
-    return "---\n" + "\n".join(meta) + "\n---\n\n" + join_sections(f"# {title}", sections)
+    return frontmatter.dump(meta, flow_lists=True) + "\n" + join_sections(f"# {title}", sections)
 
 
 def companion_references(

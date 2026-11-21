@@ -67,15 +67,24 @@ def test_set_fields_rewrites_named_entries_and_keeps_the_rest_as_written():
         '"mode": fast  # inline\n'
         "after: [x, y]"
     )
-    result = frontmatter.set_fields(text, {"agents": ["c"], "mode": "", "new": "Fix #42: x"})
+    result = frontmatter.set_fields(
+        text, {"agents": ["c", "d: e"], "mode": "", "new": "Fix #42: x"}, remove=("title", "absent")
+    )
     assert result == (
-        "# kept comment\n"
-        "title: 'Quoted'\n"
-        "agents:\n- c\n"
-        "notes: |\n  one\n\n  two\n"
-        "mode: ''\n"
-        "after: [x, y]\n"
-        "new: 'Fix #42: x'\n"
+        "# kept comment\nagents: [c, 'd: e']\nnotes: |\n  one\n\n  two\nmode: ''\nnew: 'Fix #42: x'\nafter: [x, y]\n"
     )
     assert frontmatter.load(result)["notes"] == "one\n\ntwo\n"
+    placed = frontmatter.set_fields("a: 1\nsources:\n  - x\nz: 2\n", {"sources": ["x", "y"], "companions": ["c"]})
+    assert placed == "a: 1\nsources: [x, y]\ncompanions: [c]\nz: 2\n"
+
+
+def test_quoted_text_is_written_in_double_quotes():
+    title = frontmatter.Quoted('Login: the "magic" link')
+    assert (
+        frontmatter.set_fields("", {"title": title, "plain": "x"}) == 'title: "Login: the \\"magic\\" link"\nplain: x\n'
+    )
+    assert frontmatter.load(frontmatter.split(frontmatter.dump({"title": title}))[0]) == {"title": title}
+    assert frontmatter.dump({"title": title, "after": [1, "x"]}, flow_lists=True) == (
+        '---\ntitle: "Login: the \\"magic\\" link"\nafter: [1, x]\n---\n'
+    )
     assert frontmatter.set_fields("", {"a": "1"}) == "a: '1'\n"
