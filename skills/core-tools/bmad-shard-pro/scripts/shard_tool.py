@@ -7,6 +7,8 @@
 
 Every subcommand prints one JSON object to stdout; diagnostics go to stderr.
 Exit codes: 0 = done or clean, 1 = check failures, 2 = usage or input error.
+`--project-root DIR`, the project with BMad set up, goes before the subcommand; it defaults to the
+current folder.
 
 Subcommands:
   outline SOURCE [--depth N] [--from L --to L] [--ids]
@@ -44,6 +46,7 @@ Plan JSON: see `build --help`.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import re
@@ -52,7 +55,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-import yaml
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 
 PLAN_HELP = """Plan JSON:
   {
@@ -110,11 +113,12 @@ def read_lines(path: Path) -> list[str]:
 
 def frontmatter_end(lines: list[str]) -> int:
     """Number of lines taken by YAML frontmatter at the top (0 when none)."""
-    if lines and lines[0].strip() == "---":
-        for i in range(1, len(lines)):
-            if lines[i].strip() == "---":
-                return i + 1
-    return 0
+    text = "\n".join(lines)
+    try:
+        _, body = frontmatter.split(text)
+    except ValueError:
+        return 0
+    return len(text[: len(text) - len(body)].splitlines())
 
 
 def block_spans(lines: list[str]) -> list[tuple[int, int, str]]:
@@ -321,8 +325,7 @@ def shard_header(s: dict, group: str, main_name: str) -> list[str]:
     data = {"part_of": f"./{main_name}", "title": s["title"], "summary": s["summary"], "group": group}
     if s.get("related"):
         data["related"] = [f"./{plain_name(x)}" for x in s["related"]]
-    text = yaml.safe_dump(data, sort_keys=False, allow_unicode=True, width=1_000_000)
-    return ["---", *text.splitlines(), "---", ""]
+    return [*frontmatter.dump(data).splitlines(), ""]
 
 
 def body_start(lines: list[str]) -> int:
@@ -338,17 +341,17 @@ def shards_in(folder: Path, main: Path) -> tuple[list[dict], list[dict]]:
     for p in sorted(folder.glob("*.md")):
         if p.name == main.name:
             continue
-        lines = read_lines(p)
-        n = frontmatter_end(lines)
-        if not n:
+        try:
+            block, _ = frontmatter.split(p.read_text(encoding="utf-8"))
+        except ValueError:
             continue
         try:
-            data = yaml.safe_load("\n".join(lines[1 : n - 1])) or {}
-        except yaml.YAMLError as e:
+            data = frontmatter.load(block)
+        except ValueError as e:
             first = str(e).splitlines()[0]
             broken.append({"check": "frontmatter", "file": p.name, "text": f"frontmatter does not parse: {first}"})
             continue
-        part_of = data.get("part_of") if isinstance(data, dict) else None
+        part_of = data.get("part_of")
         if not isinstance(part_of, str) or plain_name(part_of) != main.name:
             continue
         related = data.get("related") or []
@@ -1167,7 +1170,12 @@ def cmd_check(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    global frontmatter
+
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument(
+        "--project-root", type=Path, default=Path(), help="project folder with _bmad/scripts (default: current folder)"
+    )
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("outline", help="measure a text file and propose a cut")
     p.add_argument("source")
@@ -1206,6 +1214,14 @@ def main(argv: list[str] | None = None) -> int:
         "--all", action="store_true", help="check every sharded folder and contents list under the target folder"
     )
     args = ap.parse_args(argv)
+    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+        return 2
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
+
     try:
         return {
             "outline": cmd_outline,
