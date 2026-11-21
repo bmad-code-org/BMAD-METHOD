@@ -13,16 +13,31 @@ behavior is not tested.
 import importlib.util
 import json
 import re
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
-_SPEC = importlib.util.spec_from_file_location(
-    "render_view",
-    Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-facilitate/scripts/render_view.py",
-)
+import pytest
+
+SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-facilitate/scripts/render_view.py"
+FRONTMATTER = SCRIPT.parents[2] / "bmad" / "scripts" / "frontmatter.py"
+_SPEC = importlib.util.spec_from_file_location("render_view", SCRIPT)
 render_view = importlib.util.module_from_spec(_SPEC)
 sys.modules["render_view"] = render_view
 _SPEC.loader.exec_module(render_view)
+sys.path.insert(0, str(FRONTMATTER.parent))
+import frontmatter  # noqa: E402
+
+render_view.frontmatter = frontmatter  # main() loads the project's copy; the rendering tests call past it
+
+
+@pytest.fixture
+def project(tmp_path):
+    root = tmp_path / "project"
+    (root / "_bmad" / "scripts").mkdir(parents=True)
+    shutil.copy2(FRONTMATTER, root / "_bmad" / "scripts")
+    return ["--project-root", str(root)]
 
 
 DECK = """---
@@ -78,10 +93,23 @@ def test_comments_inside_code_fences_kept():
 
 
 def test_title_quotes_unwrapped():
-    assert render_view.frontmatter_title('title: "A \\"quoted\\" title"') == 'A "quoted" title'
-    assert render_view.frontmatter_title("title: 'It''s here'") == "It's here"
-    assert render_view.frontmatter_title("title: plain") == "plain"
-    assert render_view.frontmatter_title("template: x") == ""
+    def title(fields):
+        return render_view.prepare(f"---\n{fields}\n---\n# Heading\n")[0]
+
+    assert title('title: "A \\"quoted\\" title"') == 'A "quoted" title'
+    assert title("title: 'It''s here'") == "It's here"
+    assert title("title: plain") == "plain"
+    assert title("template: x") == ""
+    assert title("title: >\n  Folded --- over\n  two lines") == "Folded --- over two lines"
+
+
+def test_plain_markdown_and_unreadable_frontmatter_keep_the_h1_title():
+    assert "<title>Plain</title>" in render_view.render("# Plain\n\n---\n\ntext\n", "document")
+    page = render_view.render("---\ntitle: a: b\n---\n# From the heading\n", "document")
+    assert "<title>From the heading</title>" in page
+    assert "title: a: b" not in page
+    _, body = render_view.prepare("---\ntitle: never closed\n# Heading\n")
+    assert body.startswith("---\ntitle: never closed")
 
 
 def test_page_title_falls_back_to_h1_then_filename():
@@ -174,26 +202,26 @@ def test_empty_style_is_no_style(capsys):
     assert capsys.readouterr().err == ""
 
 
-def test_default_output_path_and_stdout(tmp_path, capsys):
+def test_default_output_path_and_stdout(tmp_path, project, capsys):
     doc = tmp_path / "pm-1-deck.md"
     doc.write_text(DECK, encoding="utf-8")
-    assert render_view.main([str(doc), "--layout", "slides"]) == 0
+    assert render_view.main([*project, str(doc), "--layout", "slides"]) == 0
     out = tmp_path / "pm-1-deck.html"
     assert capsys.readouterr().out == f"{out}\n"
     assert payload(out.read_text(encoding="utf-8"))["layout"] == "slides"
 
 
-def test_out_option_creates_parent(tmp_path, capsys):
+def test_out_option_creates_parent(tmp_path, project, capsys):
     doc = tmp_path / "doc.md"
     doc.write_text("# T\n", encoding="utf-8")
     out = tmp_path / "views" / "view.html"
-    assert render_view.main([str(doc), "--out", str(out)]) == 0
+    assert render_view.main([*project, str(doc), "--out", str(out)]) == 0
     assert out.is_file()
     assert capsys.readouterr().out == f"{out}\n"
 
 
-def test_missing_document_exits_2(tmp_path, capsys):
-    assert render_view.main([str(tmp_path / "absent.md")]) == 2
+def test_missing_document_exits_2(tmp_path, project, capsys):
+    assert render_view.main([*project, str(tmp_path / "absent.md")]) == 2
     captured = capsys.readouterr()
     assert captured.out == ""
     assert "not found" in captured.err
@@ -329,21 +357,33 @@ def test_css_style_goes_into_a_view(tmp_path):
     assert page.index("hotpink") < page.index("</head>")
 
 
-def test_view_file_layout_writes_the_page(tmp_path, capsys):
+def test_view_file_layout_writes_the_page(tmp_path, project, capsys):
     doc = tmp_path / "character-wren.md"
     doc.write_text(SHEET, encoding="utf-8")
     view = tmp_path / "sheet.html"
     view.write_text('<body><div data-section="Concept"></div></body>', encoding="utf-8")
-    assert render_view.main([str(doc), "--layout", str(view)]) == 0
+    assert render_view.main([*project, str(doc), "--layout", str(view)]) == 0
     captured = capsys.readouterr()
     assert "no slot in sheet.html for: Secrets, Relationships" in captured.err
     assert "A smuggler" in (tmp_path / "character-wren.html").read_text(encoding="utf-8")
 
 
-def test_unknown_layout_exits_2(tmp_path, capsys):
+def test_a_project_without_the_shared_scripts_is_told_to_run_setup(tmp_path):
     doc = tmp_path / "doc.md"
     doc.write_text("# T\n", encoding="utf-8")
-    assert render_view.main([str(doc), "--layout", "poster"]) == 2
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--project-root", str(tmp_path), str(doc)], capture_output=True, text=True
+    )
+    missing = tmp_path / "_bmad" / "scripts" / "frontmatter.py"
+    assert result.returncode == 2
+    assert result.stderr.splitlines() == [f"error: {missing} is missing. Run bmad setup for this project."]
+    assert not (tmp_path / "doc.html").exists()
+
+
+def test_unknown_layout_exits_2(tmp_path, project, capsys):
+    doc = tmp_path / "doc.md"
+    doc.write_text("# T\n", encoding="utf-8")
+    assert render_view.main([*project, str(doc), "--layout", "poster"]) == 2
     assert "not a layout or an .html view file" in capsys.readouterr().err
 
 
@@ -390,10 +430,10 @@ def test_an_image_with_code_in_its_alt_text_is_inlined(tmp_path):
     assert out.endswith(") and `y`.")
 
 
-def test_the_page_carries_the_inlined_image(tmp_path, capsys):
+def test_the_page_carries_the_inlined_image(tmp_path, project, capsys):
     (tmp_path / "flow.svg").write_text(SVG, encoding="utf-8")
     doc = tmp_path / "doc.md"
     doc.write_text("# T\n\n![The flow](flow.svg)\n", encoding="utf-8")
-    assert render_view.main([str(doc)]) == 0
+    assert render_view.main([*project, str(doc)]) == 0
     capsys.readouterr()
     assert "data:image/svg+xml;base64," in payload((tmp_path / "doc.html").read_text(encoding="utf-8"))["markdown"]

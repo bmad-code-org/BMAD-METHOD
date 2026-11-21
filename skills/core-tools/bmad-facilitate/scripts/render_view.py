@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """render-view — turn a finished markdown document into one self-contained HTML view.
 
@@ -25,8 +26,8 @@ inlined, so the page is still one file; any other image keeps its link.
                       element. With no `data-rest`, a section with no slot is named on stderr.
 
 Frontmatter and <!-- comments --> are stripped. `--style` inlines a .css file after the
-default CSS; any other file is ignored with a warning. Prints the output path on success;
-exits 2 when the document is missing.
+default CSS; any other file is ignored with a warning. `--project-root` names the project with
+BMad set up. Prints the output path on success; exits 2 when the document is missing.
 """
 
 from __future__ import annotations
@@ -34,18 +35,20 @@ from __future__ import annotations
 import argparse
 import base64
 import html
+import importlib.util
 import json
 import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
 
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+
 MARKED = "https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"
 MERMAID = "https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"
 
 FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
-FRONTMATTER = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*(?:\n|\Z)", re.DOTALL)
 H1 = re.compile(r"^# +(.+?)[ \t#]*$")
 H2 = re.compile(r"^## +(.+?)[ \t#]*$")
 QUOTE = re.compile(r"^ {0,3}> ?")
@@ -129,40 +132,33 @@ def inline_images(text: str, folder: Path) -> str:
     )
 
 
-def split_frontmatter(text: str) -> tuple[str, str]:
-    """Return (frontmatter block without fences, body). No frontmatter: ("", text)."""
-    m = FRONTMATTER.match(text)
-    if not m:
-        return "", text
-    return m.group(1), text[m.end() :]
+def split_frontmatter(text: str) -> tuple[dict, str]:
+    """Return (frontmatter fields, body). No frontmatter: ({}, text); fields that are not YAML: ({}, body)."""
+    try:
+        front, body = frontmatter.split(text)
+    except ValueError:
+        return {}, text
+    try:
+        return frontmatter.load(front), body
+    except ValueError:
+        return {}, body
 
 
-def frontmatter_value(frontmatter: str, key: str) -> str:
-    m = re.search(rf"^{re.escape(key)}:[ \t]*(.*?)[ \t]*$", frontmatter, re.MULTILINE)
-    if not m:
-        return ""
-    value = m.group(1)
-    if len(value) >= 2 and value[0] == value[-1] == '"':
-        return value[1:-1].replace('\\"', '"')
-    if len(value) >= 2 and value[0] == value[-1] == "'":
-        return value[1:-1].replace("''", "'")
-    return value
+def frontmatter_value(fields: dict, key: str) -> str:
+    value = fields.get(key, "")
+    return value.strip() if isinstance(value, str) else ""
 
 
-def frontmatter_title(frontmatter: str) -> str:
-    return frontmatter_value(frontmatter, "title")
-
-
-def clean(text: str) -> tuple[str, str]:
-    """Strip comments. Returns (frontmatter block, markdown body)."""
-    frontmatter, body = split_frontmatter(strip_comments(text.replace("\r\n", "\n")).lstrip())
-    return frontmatter, body.strip("\n") + "\n"
+def clean(text: str) -> tuple[dict, str]:
+    """Strip comments. Returns (frontmatter fields, markdown body)."""
+    fields, body = split_frontmatter(strip_comments(text.replace("\r\n", "\n")).lstrip())
+    return fields, body.strip("\n") + "\n"
 
 
 def prepare(text: str) -> tuple[str, str]:
     """Strip comments and frontmatter. Returns (title from frontmatter, markdown body)."""
-    frontmatter, body = clean(text)
-    return frontmatter_title(frontmatter), body
+    fields, body = clean(text)
+    return frontmatter_value(fields, "title"), body
 
 
 def first_h1(body: str) -> str:
@@ -278,7 +274,7 @@ class SlotElements(HTMLParser):
 
 def fill_view(view: str, markdown_text: str) -> tuple[str, list[str], list[str]]:
     """Fill a view's slots. Returns (page, markdown for the browser to render, sections with no slot)."""
-    frontmatter, body = clean(markdown_text)
+    fields, body = clean(markdown_text)
     sections = {
         heading.lower(): (heading, "\n".join(lines).strip())
         for heading, lines in h2_groups(body)[1:]
@@ -314,7 +310,7 @@ def fill_view(view: str, markdown_text: str) -> tuple[str, list[str], list[str]]
         key = element["attrs"].get("data-field")
         if key is None:
             continue
-        value = frontmatter_value(frontmatter, key.strip()) or (first_h1(body) if key.strip() == "title" else "")
+        value = frontmatter_value(fields, key.strip()) or (first_h1(body) if key.strip() == "title" else "")
         if value:
             edits.append((element["inner"], element["close"], html.escape(value)))
         else:
@@ -409,12 +405,22 @@ def render(markdown_text: str, layout: str, style_css: str = "", name: str = "do
 
 
 def main(argv: list[str] | None = None) -> int:
+    global frontmatter
+
     ap = argparse.ArgumentParser(description="Render a markdown document as a self-contained HTML view.")
+    ap.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
     ap.add_argument("document", help="the markdown document")
     ap.add_argument("--layout", default="document", help="document, slides, or an .html view file")
     ap.add_argument("--style", help="a .css file to inline; any other file is ignored")
     ap.add_argument("--out", help="output path (default: the document path with .html)")
     args = ap.parse_args(argv)
+    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+        return 2
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
 
     doc = Path(args.document)
     if not doc.is_file():
