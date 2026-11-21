@@ -1,7 +1,7 @@
 ---
 title: ""
 template: first-hire
-version: 1.1.0
+version: 1.2.0
 description: "Deciding whether to hire now, and the scorecard, cost and test for the role."
 not_for: "Agreeing roles and equity between co-founders (`cofounder-agreement`); the company's goals for the next quarter (`ninety-day-plan`)."
 facilitation_order: [why-now, alternatives, cost, decision, scorecard, finding-candidates, testing-candidates, questions-for-a-lawyer-or-accountant]
@@ -19,9 +19,12 @@ updated: ""
 
 <!-- stance: Settle whether to hire before shaping the role. A first hire spends runway and equity that are hard to get back, so press for the work that is not getting done and what that costs today; "we're busy" is not a reason. Not hiring yet is a good outcome when the case does not hold. -->
 
+<!-- opening: The role in mind and what set it off now. The brain dump is the work that is not getting done and who does it today. A founder who has already decided to hire is told the document takes that question first, and why. -->
+
 <!-- inputs: The record supplies the stage, metrics and runway. Only the user knows the work piling up, what they can pay in cash and equity, who they already have in mind, and how they work with people. -->
 
 <!-- writing:
+  - About two pages.
   - Scorecard outcomes are results with a number or a date, never duties.
   - Every cost figure comes from the user or the record, and the total is also shown in months of runway.
 -->
@@ -31,8 +34,6 @@ updated: ""
 <!-- layout: The case for the hire up top, its cost in runway shown before and after, and the role laid out as a job description the founder can share. -->
 
 # {title}
-
-## Table of Contents
 
 ## Decision
 <!-- Hire now, hire later when a named condition is met, or do not hire; the role; the start date wanted. Settle it once the cost is clear and before the role is shaped. -->
@@ -47,7 +48,7 @@ updated: ""
 <!-- include when: the decision is to hire, now or later. The role's purpose in one sentence; three to five outcomes the person must deliver in their first 90 days, each with a number or a date; and the few skills those outcomes need. When a duty comes back ("manage social media"), ask what result it should produce by day 90. Done when the founder could tell at day 90, from this list alone, whether the hire worked. -->
 
 ## Cost
-<!-- Salary or rate, employer taxes and benefits, equity offered with its vesting, recruiting costs and tools, as a yearly total and in months of runway, against the runway in the record. Never estimate a salary or equity figure; when the user has none, mark it open and offer research on market rates for the role and location. Done when the user has seen the runway left after the hire. -->
+<!-- Salary or rate, employer taxes and benefits, equity offered with its vesting, recruiting costs and tools, as a yearly total and in months of runway, against the runway in the record. Never estimate a salary or equity figure; when the user has none, mark it open and offer research on market rates for the role and location. Done when the user has seen the runway left after the hire. diagram: two bars you draw, the runway in months before and after the hire -->
 
 ## Finding candidates
 <!-- include when: the decision is to hire, now or later. Where candidates will come from, in order of what is expected to work: the founders' own network and referrals first, then named communities, job boards or a recruiter; who reaches out and by when. -->

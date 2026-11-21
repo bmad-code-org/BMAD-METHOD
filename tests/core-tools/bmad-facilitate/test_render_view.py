@@ -345,3 +345,55 @@ def test_unknown_layout_exits_2(tmp_path, capsys):
     doc.write_text("# T\n", encoding="utf-8")
     assert render_view.main([str(doc), "--layout", "poster"]) == 2
     assert "not a layout or an .html view file" in capsys.readouterr().err
+
+
+SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="10" height="10"/></svg>'
+
+
+def test_a_linked_image_beside_the_document_is_inlined(tmp_path):
+    (tmp_path / "flow.svg").write_text(SVG, encoding="utf-8")
+    text = render_view.inline_images('Before ![The flow](flow.svg "Flow") after.', tmp_path)
+    assert text.startswith("Before ![The flow](data:image/svg+xml;base64,")
+    assert text.endswith(' "Flow") after.')
+    encoded = re.search(r"base64,([A-Za-z0-9+/=]+)", text).group(1)
+    assert render_view.base64.b64decode(encoded).decode("utf-8") == SVG
+
+
+def test_images_the_folder_does_not_hold_keep_their_links(tmp_path):
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "secret.png").write_bytes(b"\x89PNG")
+    (tmp_path / "docs" / "notes.txt").write_text("x", encoding="utf-8")
+    text = "![a](../secret.png) ![b](https://example.com/x.png) ![c](absent.svg) ![d](notes.txt)"
+    assert render_view.inline_images(text, tmp_path / "docs") == text
+
+
+def test_an_image_inside_a_code_fence_is_left_alone(tmp_path):
+    (tmp_path / "flow.svg").write_text(SVG, encoding="utf-8")
+    text = "```\n![The flow](flow.svg)\n```\n"
+    assert render_view.inline_images(text, tmp_path) == text
+
+
+def test_an_image_inside_inline_code_is_left_alone(tmp_path):
+    (tmp_path / "flow.svg").write_text(SVG, encoding="utf-8")
+    text = "Write `![The flow](flow.svg)` or ``![The flow](flow.svg)`` to show ![The flow](flow.svg) here."
+    out = render_view.inline_images(text, tmp_path)
+    assert out.startswith(
+        "Write `![The flow](flow.svg)` or ``![The flow](flow.svg)`` to show ![The flow](data:image/svg+xml;base64,"
+    )
+    assert out.endswith(") here.")
+
+
+def test_an_image_with_code_in_its_alt_text_is_inlined(tmp_path):
+    (tmp_path / "states.svg").write_text(SVG, encoding="utf-8")
+    out = render_view.inline_images("See `x`: ![The `Booking` states](states.svg) and `y`.", tmp_path)
+    assert out.startswith("See `x`: ![The `Booking` states](data:image/svg+xml;base64,")
+    assert out.endswith(") and `y`.")
+
+
+def test_the_page_carries_the_inlined_image(tmp_path, capsys):
+    (tmp_path / "flow.svg").write_text(SVG, encoding="utf-8")
+    doc = tmp_path / "doc.md"
+    doc.write_text("# T\n\n![The flow](flow.svg)\n", encoding="utf-8")
+    assert render_view.main([str(doc)]) == 0
+    capsys.readouterr()
+    assert "data:image/svg+xml;base64," in payload((tmp_path / "doc.html").read_text(encoding="utf-8"))["markdown"]

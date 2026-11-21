@@ -93,9 +93,9 @@ Headless or autonomous: do not stop to ask; gaps become `Open question:` lines a
         .memlog.md
         tickets/
           tickets.toml                        # every planned entry, pulled or not
-          story-cart-service-scaffold.md        # pulled; its id is in its frontmatter
-          story-cart-service-scaffold-plan.md   # the build's plan, with the ticket's status
-          story-apply-discount-codes-plan.md    # a plan for an entry with no file
+          story-shoppers-build-a-cart.md        # pulled; its id is in its frontmatter
+          story-shoppers-build-a-cart-plan.md   # the build's plan, with the ticket's status
+          story-shoppers-pay-less-plan.md       # a plan for an entry with no file
           spike-discount-engine-latency.md
   backlog/
     bug-checkout-total-ignores-discount-codes.md

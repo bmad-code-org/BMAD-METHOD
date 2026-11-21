@@ -153,7 +153,7 @@ Above the first heading, give each of these keys its own comment, a line or two.
 | --- | --- |
 | `purpose` | The decision or job the document serves. |
 | `stance` | How to coach for this document, including how a mode should run. |
-| `opening` | Up to two questions asked before the brain dump, the ones whose answers change how the rest is coached. Without it the skill asks what the user is making and who it is for. Either way, a question the request already answers is skipped. |
+| `opening` | How a run starts. It can hold the questions whose answers change how the rest is coached, records to ask for first, what the brain dump should cover, or a cold start with no brain dump, as for a questionnaire taken one question at a time. Unless it rules the brain dump out, the skill invites one in the same message. Without an `opening`, the skill asks nothing first and only invites the brain dump. Either way, a question the request already answers is skipped. |
 | `inputs` | What must be asked, and which of it only the user knows. Each one is asked in every mode but headless unless the user already gave it, so list only what you want asked. |
 | `writing` | Rules specific to this document. |
 | `companions` | Other files to write beside the document, when, and what each holds. A file for a different reader belongs here, not overflow from the document. |
@@ -163,7 +163,7 @@ Above the first heading, give each of these keys its own comment, a line or two.
 
 Add `layout: slides` to the frontmatter for a slide view, or name an HTML view file; without it the HTML view is one page. In the document body, `{title}` is the only placeholder.
 
-Each section has one comment: a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A section that is not required starts its comment with `optional` or `include when:` and a condition. A section assembled from the others, such as a summary or a glossary, starts its comment with `built:`. The skill asks nothing for it up front, drafts it once the sections it draws on are settled, and shows it for correction; the template list reports one placed ahead of a section that is not built.
+Each section has one comment: a line on what goes in the section, then `diagram:` when a picture carries the meaning, with a Mermaid kind (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey, pie) or a line saying what to draw. A section that is not required starts its comment with `optional` or `include when:` and a condition. A section assembled from the others, such as a summary or a glossary, starts its comment with `built:`. The skill asks nothing for it up front, drafts it once the sections it draws on are settled, and shows it for correction; the template list reports one placed ahead of a section that is not built.
 
 ### Order the sections
 
@@ -185,7 +185,7 @@ Set `order: fixed` when an earlier section must be settled before a later one is
 
 Each section comment is the brief for that part of the session. A voice, stance or method it sets, such as "you are now a skeptical customer", replaces the skill's defaults until the section closes, so write it as instructions to the coach rather than only a description of the content. These shipped templates set `order: fixed`: Mary's `prfaq` and `opportunity`, John's `pitch`, the `experiment` card they both offer, the module's `postmortem`, and Nadia's `cofounder-agreement`, `startup-diagnostic`, `positioning`, `first-hire` and `validation-experiment`.
 
-Every run shows a progress line on the messages that ask something: `PRFAQ · Customer FAQ (2 of 4)` step-by-step, `PRD · 6 of 23 done` otherwise. The total is every section in the facilitation order, and a section counts once it is settled, so the total stays the same for the whole run.
+Every run shows a progress line on the messages that ask something: `PRFAQ · Customer FAQ (2 of 4)` step-by-step, `PRD · 3 of 8 done` otherwise. The total is every section in the facilitation order, and a section counts once it is settled, so the total stays the same for the whole run.
 
 Put a bare `## Table of Contents` heading right after the title of any template whose documents run long. Agents often read only the top of a file to judge it, so the skill fills this with a linked entry per section and a short phrase of its key terms, then checks it against the final headings. It gets no slide in a slide view.
 
@@ -258,9 +258,22 @@ When extensions conflict, the first in search order wins. Use a copy only to reb
 
 Rules for every document, whatever the template, go in `persistent_facts`, `doc_standards` and `finalize_reviewers` under `[workflow]` instead.
 
+## Set how much documents show in pictures
+
+By default the skill shows whatever has a shape as a picture in place of the paragraph it would take: a flow, a sequence, a timeline, a comparison, figures with a trend. A table or a Mermaid diagram covers most of these; it draws an SVG for what they show poorly, such as a scale with thresholds marked, a two-by-two or a rough sketch, and uses a generated image when the host has a tool for one. An SVG or image is saved beside the document and linked from it. A picture holds only what the document's text holds.
+
+The `visuals` setting under `[workflow]` is that instruction in one sentence. Replace it to change the forms used or to hold documents to text and tables:
+
+```toml
+[workflow]
+visuals = "Tables and Mermaid diagrams only. No image files."
+```
+
+A template's own comments win over the setting: a section's `diagram:` names the picture it carries, and a `writing` rule can ban pictures, as a form answer or an email must.
+
 ## Set the look of rendered views
 
-At close the skill can render the document as one HTML file, diagrams included. The page loads its Markdown and diagram renderers from jsDelivr when opened, so a reader with no network sees the plain text instead. Raw HTML in the document shows as text, and script links are dropped.
+At close the skill can render the document as one HTML file, with its diagrams drawn and the image files it links inlined. The page loads its Markdown and diagram renderers from jsDelivr when opened, so a reader with no network sees the plain text instead. Raw HTML in the document shows as text, and script links are dropped.
 
 ```toml
 [workflow]

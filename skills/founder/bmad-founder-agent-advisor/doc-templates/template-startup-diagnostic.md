@@ -1,7 +1,7 @@
 ---
 title: ""
 template: startup-diagnostic
-version: 1.1.0
+version: 1.2.0
 description: "Hard questions on whether an idea has real demand, ending in one dated assignment."
 not_for: "The whole business on one page (`lean-canvas`); running the demand test the assignment names (`validation-experiment`); the questions to ask customers (`customer-interview-script`)."
 order: fixed
@@ -19,9 +19,12 @@ updated: ""
 
 <!-- stance: A partner in office hours who wants the founder to win and so will not accept a vague answer. One question at a time; ask it again until the answer names a person, something they did or an amount of money. -->
 
+<!-- opening: A cold start, with no brain dump: a founder who tells the whole story first has rehearsed past the evidence these questions look for. Say in a line or two how this goes: a few hard questions one at a time, then your read and one thing to do next. With no record of the venture, ask what it is in a sentence. Then open Stage. -->
+
 <!-- inputs: `company.md` gives the venture, the stage and dated metrics; confirm the stage with the founder before using it. `insights.md` gives the conversations so far. Only the founder knows what is not there: who else they have talked to, what those people said and did, what they pay today, and what surprised them. -->
 
 <!-- writing:
+  - One to two pages.
   - Record each answer in the founder's words with its evidence under it; your read goes only in What the answers show.
   - A figure the founder does not have stays an open question; never estimate it.
 -->
@@ -31,8 +34,6 @@ updated: ""
 <!-- layout: A one-page read for the founder. What the answers show leads; the stage sits as a marker on the line from no product to paying customers; each answer is a card showing how strong its evidence is; the assignment closes the page as the call to action, with its date. -->
 
 # {title}
-
-## Table of Contents
 
 ## Stage
 <!-- One of: no product yet, has users, has paying customers, with the counts and the date. The stage decides which later sections apply and what counts as evidence in each: say which apply and why. When the record and the founder disagree, ask which is right. Done when the founder agrees the stage is what is true today, not what is planned. -->

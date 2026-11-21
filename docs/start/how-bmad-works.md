@@ -76,12 +76,12 @@ Tracked work lives in a ticket tree with three levels:
 
 | Level          | What it is                                                                                             | Holds                                      |
 | -------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
-| Initiative     | An outcome bigger than one epic, such as a new product or a feature set                                | Its epics, in build order                  |
-| Epic           | One capability, or a tightly coupled pair, delivered and deployed together over several build sessions | Its stories, in build order                |
-| Story          | One build session's worth of work; also a spike or a bug                                               | Nothing; a build plan records its progress |
+| Initiative     | Several capabilities toward one outcome, such as a new product or a feature set                                | Its epics, in build order                  |
+| Epic           | One cohesive capability: something a person could see working by itself | Its stories, in build order                |
+| Story          | One complete capability a person can verify end to end; also a spike or a bug                                               | Nothing; a build plan records its progress |
 
 Each initiative and epic file is the spec at its level. Its Requirements are
-lines with stable ids, such as `R1 (FR-1)`, each naming where it came from,
+lines with stable ids, such as `R1 (E01)`, each naming where it came from,
 and its Constraints cite their sources too. A requirement is what the work
 delivers; a constraint is what it must obey, whichever part it touches. The
 file also says what done looks like (Done when), what is out of scope
@@ -143,7 +143,7 @@ is small.
 
 ![Four nested paths reuse the same unit: edit directly, run one Build, repeat Build across an epic, or repeat epic paths across a project](/diagrams/development-paths.svg)
 
-Every size builds the same way: one build session per story. Epics are cut by
+Every size builds the same way: one build per story, over as many sessions as its plan needs. Epics are cut by
 outcome and deployment, not by who will build them. Once cut, one developer
 usually owns each, and BMad doesn't record who. Larger work adds shared
 context around each build session and repeats it; it does not switch to a
@@ -154,13 +154,13 @@ different way of delivering.
 | Piece | Size | When it is too big or too small |
 | --- | --- | --- |
 | Build session | One goal: roughly 500 changed lines, not counting tests, in a handful of files, started in a fresh chat | The build offers to split a request with two independent goals; on a split it writes the rest to `deferred-work.md` |
-| Story | One step toward the epic's Done when, sized for one build session; it need not be something a user sees | Sofia merges a story whose setup outweighs its work, and splits rather than shrinks one that would leave something as a placeholder |
-| Epic | One capability, delivered and deployed together; typically eight to twelve stories | Past that, Sofia offers to split the epic; an epic one session can build gets one story |
+| Story | One complete capability a person can see working end to end; an epic may have one, or a few | Sofia merges one that cannot be verified as an outcome by itself; setup and production delivery are part of a story, not stories of their own; the steps inside a story are the build's plan, never tickets |
+| Epic | One cohesive capability: something a person could see working by itself | One that takes an "and" joining two things which each stand alone is two epics; an epic may have a single story |
 | Initiative | Several epics toward one outcome | Work bigger than one initiative gets a parent initiative over several initiatives, not epics inside epics |
 
 Sofia sizes stories and epics by judgment, and `tickets.py` checks no size. A
 story that turns out too big usually surfaces when the build offers a split.
-[Why BMad Works This Way](./why-bmad-works-this-way.md#one-story-one-build-session)
+[Why BMad Works This Way](./why-bmad-works-this-way.md#one-story-one-capability)
 gives the reasons.
 
 ## You Make the Calls

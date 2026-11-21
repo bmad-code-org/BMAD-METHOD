@@ -1,11 +1,11 @@
 ---
 title: ""
 template: prd
-version: 1.2.0
-description: "Requirements a team builds from, at any altitude."
-not_for: "Deciding whether to build (`opportunity`) or writing down why (`brief`); a very simple project (`prd-light`); a hobby project, or an idea to try before committing (`prototype-plan`); one feature for a coding agent (`agent-spec`); a regulated or contracted baseline (`srs`); what a business signs for when the builder is a separate party (`brd`)."
+version: 1.3.0
+description: "Outcomes, guardrails and the epic map for work with several capabilities."
+not_for: "One capability's detailed requirements (`prd-epic`); deciding whether to build (`opportunity`) or writing down why (`brief`); a hobby project, or an idea to try before committing (`prototype-plan`); a regulated or contracted baseline (`srs`); what a business signs for when the builder is a separate party (`brd`)."
 agents: [bmad-agent-pm]
-facilitation_order: [document-purpose, vision, users-and-journeys, features-and-requirements, rules, non-goals, mvp-scope, success-metrics, quality-and-constraints, change-boundary, ai-behavior-and-evaluation, experience-and-platform, stakeholders-risks-and-rollout, integrations-and-operations, data-and-compliance, api-contract-and-versioning, slos-and-performance-budgets, consumer-migration, developer-experience, hardware-and-deployment, decisions, open-questions, glossary]
+facilitation_order: [problem-and-users, journeys, epic-map, scope-and-non-goals, okrs, invariants, shared-nouns-and-seams, deferred-decisions-and-risks]
 guidance: guidance-planning
 rubric: rubric-planning
 status: draft
@@ -13,92 +13,46 @@ created: ""
 updated: ""
 ---
 
-<!-- purpose: Requirements a team, human or AI, builds from. -->
+<!-- purpose: The contract several epics build under: what the work is for, how success is graded, what none of them may break, and how it splits. People, architects and coding agents read it in ten to fifteen minutes. -->
 
-<!-- stance: This template is expert prior knowledge, not a checklist. Required here means the default: drop a section only for a reason a reviewer would accept, reorder and combine for readability, and never include one just because it appears. Drop or downscale journeys for a single-operator internal tool, a regulatory-only update, hobby work or a purely technical PRD. Otherwise journeys are captured, not authored: the user narrates a real session with a named protagonist with a life of their own, not "the user", covering what the person does, in what order and where it lands; you structure it into UJ-N form and confirm. Unless the run is fast, ask in the read-back which entry fits, because it sets the section order: Vision + Features (capability-first, for enterprise, developer products, internal tools and anyone who thinks in features), Journey-led (user-first, for consumer, UX-heavy and multi-stakeholder products), or let you suggest from what you heard.
+<!-- stance: This document stays thin. Sort every detail by how far a change to it would reach: what several epics must agree on belongs here, and what touches one epic is saved for that epic and kept out of every other section. In the read-back, before any section is worked, propose the provisional epics, the cohesive capabilities in the journey the user just walked, each a name and a line, and let the user confirm or reshuffle them. They are how you both decide what belongs here, and they stay open to change until the end. From then on, when the user gives a detail that belongs to one epic, never turn it away and never expand it here: write it in their words under that epic's `Saved for this epic` in the Epic map and say where it went. When only one capability comes out, or the user says this is for one epic, say so and offer `prd-epic` in its place. When the capabilities share no outcome, invariant or noun, say this looks like more than one initiative and ask which to take first. Journeys are captured, not authored: the user narrates and you structure. When a section outgrows its budget, look first for what in it belongs to an epic. Stop when the document is ready to slice; going deeper is each epic's job.
 
-Altitude sets what this document decides: keep a line when the level below would decide wrongly without it, and leave it out when that level would decide better with more information. A program PRD states outcomes, the initiatives and their order, and the rules over all of them, with no requirements. An initiative PRD states the problem and who has it, the outcome and its measures, capabilities with one checkable result each, rules, non-goals, known risks and the questions only the user can answer; how each capability behaves, screens, architecture, story order and the edge cases an epic will meet stay below it. An epic PRD states testable requirements, edge cases and failure states, what is in and out for this slice and what stays unchanged; it cites its parent's ids rather than restating them, and leaves data model, APIs and story scenarios below it. Non-goals and known rabbit holes take detail at every altitude, because they stop invention below. -->
+At program altitude the map's entries are initiatives, each with its own PRD, and the OKRs and invariants are the ones over all of them. -->
 
-<!-- opening: Whether this is a new product or a change to an existing one, which decides the Change boundary and how much of what exists the document must respect. -->
+<!-- opening: Whether this is a new product or a change to an existing one, which decides how much of what exists the document must respect. The brain dump runs uninterrupted: why this exists, who it is for and the rough arc from start to finish, with any brief, research, notes or code to read. -->
 
-<!-- inputs: Form factor if the sources do not say. A business requirements document among the sources: keep its ids. Only the user knows who it is for, what is out, and what success looks like. -->
+<!-- inputs: Under a program, read its PRD first and ask only for what differs here. For a change to an existing product, read the code or its architecture document before asking anything it answers. A business requirements document among the sources: keep its ids. Only the user knows who it is for, what is out and what success looks like. -->
 
-<!-- writing: Capabilities, not implementation. Ids (UJ-N, FR-N, RULE-N, SM-N, OQ-N) are global; no traceability matrix. Domain nouns are used exactly as the glossary defines them. Ceilings: about 3,000 words at program or initiative altitude, 2,000 at epic altitude, two pages for hobby and solo work. A document past its ceiling pushes detail to the level below or splits; padding to look thorough is the failure. -->
+<!-- writing: Outcomes and guardrails, not behavior, and no requirement lists: an FR belongs to its epic's PRD. Ids (OKR-N, INV-N, UJ-N, OQ-N, and E01, E02 for epics) are global, and a child document cites them rather than restating them. Shared nouns are used exactly as defined. Budgets: Problem and users half a page, an epic three to five lines, the whole about 2,000 words, 3,000 at most for a program. Padding to look thorough is the failure. -->
 
-<!-- done when: Below program altitude, every FR can be checked at its altitude and traces to a journey or need, and every journey beat that needs the product has an FR; non-goals and out-of-scope items are explicit; above hobby stakes, success metrics name their counter-metrics; the shape fits the product (journeys carry a consumer, multi-stakeholder or UX-heavy product, a single-operator tool reads as a capability spec, a regulatory update traces its constraints, hobby work stays light); the user remembers making every decision in it, and nothing was invented to fill a section. -->
+<!-- done when: The document is ready to slice, not complete: the OKRs are agreed, each with its three bands and how production measures it; the invariants and shared nouns are settled enough that the first epic will not corner the second; every decision put off names the epic or person who will make it; the epic map is agreed and the first epic is chosen. The user remembers making every decision in it, and nothing was invented to fill a section. -->
 
-<!-- next: At close, say the PRD is revisited after each epic lands: what was learned retires assumptions and open questions through an Update. -->
+<!-- next: At close, say what comes next: Sofia (`bmad-agent-po`) writes the initiative and its epics from this map; an epic with open product questions then gets its own `prd-epic`, when its turn comes and not before. The PRD is revisited after each epic lands: what was learned changes the nouns, invariants and OKRs through an Update. -->
 
 # {title}
 
 ## Table of Contents
 
-## Document purpose
-<!-- Who reads it, and the inputs it builds on (ticket, brief, UX work) with where they live, instead of repeating them. -->
+## Problem and users
+<!-- Half a page at most. One line on who reads this and the inputs it builds on, with where they live. Then the problem and who has it, what this is, why it matters, and why now when timing matters; and who it serves, with their jobs, and the non-users when the boundary is not obvious. Ask who has the problem worst and what it costs them. -->
 
-## Vision
-<!-- Two or three paragraphs, compelling enough to stand alone: what this is, for whom, why it matters, and why now when timing matters. -->
+## OKRs
+<!-- What the delivery must prove, graded before anything is built. Ask what the user wants shown or proven when this ships, and who will judge it, in a message that proposes nothing, so their answer is not anchored on yours. Once they have answered, propose the key results with all three bands filled in, grounded in this domain and in what the journeys and epics suggest, each marked as your proposal for the user to react to and sharpen: most people freeze when asked for graded numbers from a blank page. A key result is a business outcome, or a quality the product must show, such as speed, reliability, accuracy, cost or adoption. One to three objectives, each an outcome in a sentence, with its key results in a table: OKR-N, the measure, where it stands today when known, then a column for each of three bands, Passable (the floor to ship: below it the release is held or rolled back), Good (the target for this delivery) and Excellent (the long-horizon stretch, which shows where the design must leave room), how production will measure it and when it is read, and the epics that move it. No key result stands until it names how it will be measured; one nobody can measure is cut or becomes an open question. A band the user has not reacted to stays tagged as yours. Press when the three sit so close they are one target, when Passable is where things already stand, or when every key result counts output shipped and none counts what changed for the user. Then the counter-metrics, each naming the key result it keeps honest. Done when the user could grade the finished delivery Passable, Good or Excellent from this table alone. -->
 
-## Users and journeys
-<!-- Who it serves and their jobs (emotional, social, functional, contextual, whichever apply); non-users when the audience boundary is not obvious; UJ-N journeys, each titled with what the person gets: a named protagonist with their situation in a line, where they start, three to five beats that each say what they do and what the product shows them, the climax where value lands with the real values they see, the resolution, optionally one failure or edge case, ending with the FRs that realize it. Use the user's own people and product. Each beat forces specificity the team would otherwise leave implicit: auth assumptions, screen order, what tells the user value landed. One sentence each at low stakes; add a flow and edge cases when it feeds UX or architecture. -->
+## Scope and non-goals
+<!-- Crisp bullets, settled before the metrics and seams drift: in now; later, each with what would bring it in; and never, what this is not and will not become, so no epic adds the nearby thing. Ask what a builder or a stakeholder would assume is in and is not, and which request the user expects in the first review and will turn down. When the work changes an existing product, add a table of what stays as it is, what changes, what is added and what must not change, and ask what users of the current product rely on that nobody wrote down. Then weigh the epic map against the team and the date: when it looks ambitious, say so in your own words, name the epics that could wait and why, and make the case for a first release small enough to finish, test fully and win with. Press hardest on an idea being tested and ease off where a mandate or regulation fixes the scope. The call is the user's: what they keep stays. Headless, list the candidates as an open question and cut nothing. -->
 
-## Glossary
-<!-- built: once the other sections are settled, from the terms they use: domain nouns, the user's own jargon, and any word a reader or coding agent could take two ways, each defined once with its relationships and its cardinality where relevant. Show the list and ask only which definitions are wrong or missing. -->
+## Invariants
+<!-- INV-N, one line each, pass or fail with nothing graded, and inherited by every epic: who may see what, isolation between customers, encryption, an audit trail, a legal or contractual obligation. Coach it as a workout: ask what must always or never hold before you propose any, and never open with a drafted list. A quality that can be better or worse is an OKR, not an invariant: when it also needs a floor, the invariant cites the OKR-N and takes its Passable band, so each number lives in one place. No generic non-functional list. A rule from a `brd` or a parent document keeps its id. -->
 
-## Features and requirements
-<!-- Coach it as a workout: draw out what the user sees before you propose any, and never open with a drafted list. At program altitude, list the initiatives in their order, with no FRs. By feature: its behavior and the journeys it realizes, then nested FR-N: "[Actor] can [capability] [under conditions]" and out-of-scope bounds. At epic altitude each FR adds testable consequences; at initiative altitude, one checkable result per capability, the edge cases left to the epics. Add each FR's id to the end of the journeys it realizes. Parity features from research are candidates for the user to keep, cut or change, not requirements until they choose them. How the work is sliced into epics belongs to the ticket tree's slicing, not here. Add a feature's own NFRs when they apply only to it. -->
+## Shared nouns and seams
+<!-- A table of the five to fifteen nouns more than one epic touches: what each is, its major states, and which system holds its record. Draft it from what the user has said and ask which are wrong, missing or owned elsewhere; a noun only one epic uses is left to that epic. diagram: er, when three or more of the nouns relate; state, for a noun whose lifecycle several epics move. Then the seams: each system or contract outside this work that it touches, what crosses, and who owns the other side. diagram: flowchart of those systems and what moves between them. -->
 
-## Rules
-<!-- include when: program or initiative altitude, where it is required; below that, when a rule spans the FRs and no parent states it. Coach it as a workout: ask what must always or never hold before you propose any, and never open with a drafted list. RULE-N, one line each: what everything below must obey, whichever feature it touches. A rule from a `brd` or a parent document keeps its id. -->
+## Journeys
+<!-- The few end-to-end flows, UJ-N, each with a named person, where they start, what they get, and the steps between at the level of capabilities, with the epic that carries each step. No screens, filters or error messages, which belong to the epics. Structure them from the user's own telling and confirm. diagram: a flowchart for a journey that branches or passes between people or systems, in place of walking it in prose. -->
 
-## Non-goals
-<!-- What this is not and will not become, so no level below adds the nearby thing. -->
+## Epic map
+<!-- Proposed in the read-back and revised until the end. The epics are this initiative's cohesive capabilities, taken from the journey the user walked: each is something a person could see working by itself. When describing one takes an "and" that joins two things which each stand alone, it is two. Put a split the user brings to the same test. At program altitude the entries are initiatives. Each gets a `###` with its id, E01 onward, and name, then three to five lines: what it delivers and for whom, one outcome someone could check when it is done, the OKRs it moves, and what it needs from another epic. No requirement list. Under it, `Saved for this epic:` holds the single-epic details the user gave, in their words, one line each. Name the epic to take up first and why, and ask which the user is least sure of. Done when the user would defend the split and the first epic is chosen. -->
 
-## MVP scope
-<!-- In scope; out of scope, with a one-line reason where it matters. Anything deferred names its target release, or says a later version when what the first one teaches will decide. Once the requirements are out and before settling this section, step back and coach leanness from what you know: how much was asked for against the team and the date, and whether this proves out an idea, delivers a clear mandate or meets a regulation. When it looks ambitious, say so in your own words, name what could wait and why, and make the case for a first version small enough to finish, test fully and win with, then a next one built on what that teaches. Press hardest on an idea being tested, ease off where a mandate or regulation fixes the scope, and skip this when the work is already lean. The call is the user's: what they keep stays. Headless, list the candidates as an open question and cut nothing. -->
-
-## Success metrics
-<!-- SM-N with the current value where known, the target and the FRs they validate, at program altitude the initiatives; counter-metrics naming the metric they balance. One sentence is enough at hobby stakes. -->
-
-## Quality and constraints
-<!-- include when: performance, security, reliability, privacy or cost matter product-wide. RULE-N ids continuing the Rules numbering, each with a threshold and the user outcome it protects; no generic non-functional list. -->
-
-## Change boundary
-<!-- include when: the work changes an existing product. What stays as it is, what changes, what is added and what must not change. -->
-
-## AI behavior and evaluation
-<!-- include when: a model decides or generates what users see. What it must never do; failure modes taken from real outputs, a prototype's where one exists; eval thresholds to ship and to roll back; fallback on refusal, timeout, tool failure and low confidence. -->
-
-## Experience and platform
-<!-- include when: a consumer or branded product. Tone, information architecture, platforms, monetization. -->
-
-## Stakeholders, risks and rollout
-<!-- include when: several teams or an enterprise. Sign-offs, risks and mitigations, rollout with an owner and needed-by date per gate, each checked against the launch date, change management. diagram: gantt -->
-
-## Integrations and operations
-<!-- include when: it depends on existing systems or carries service levels. -->
-
-## Data and compliance
-<!-- include when: personal or regulated data, or a regulation the user names. Residency, retention, audit, each named obligation. -->
-
-## API contract and versioning
-<!-- include when: a developer product. Public surface, breaking-change and deprecation policy. -->
-
-## SLOs and performance budgets
-<!-- include when: consumers depend on latency, throughput or availability. -->
-
-## Consumer migration
-<!-- include when: existing consumers must move. -->
-
-## Developer experience
-<!-- include when: developers adopt it. Onboarding, documentation, errors, samples. -->
-
-## Hardware and deployment
-<!-- include when: embedded or hardware. Memory, power, form factor, updates, environment. -->
-
-
-## Decisions
-<!-- optional. One line per decision: what was chosen, why, and the alternative it beat. A decision deferred on purpose names what would trigger making it. There is no addendum: a decision worth its own record goes to `decision-record`, a technical one to `bmad-architecture`, an edge case to the epic that meets it. -->
-
-## Open questions
-<!-- OQ-N, each with an owner, when it is needed and the FRs or gates it blocks. Each becomes a ticket or research. -->
+## Deferred decisions and risks
+<!-- This is the section for open questions. A table of what is deliberately not decided here: each decision or question (OQ-N), the epic that will settle it or the person who owns it, and when it is needed. Then the risks to the whole, each with what is being done; a risk inside one epic is saved for that epic. When several teams, a dated launch or users who must move are involved, the gates, each with an owner and a needed-by date. diagram: gantt, when the user gave the dates. -->

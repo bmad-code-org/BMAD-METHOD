@@ -373,6 +373,7 @@ output_folder = "/shared/org-bmad-output"
 |---|---|
 | Add MCP tool calls to every dev workflow | Per-skill: `_bmad/custom/bmad-agent-dev.toml` `persistent_facts` |
 | Add a menu item to an agent | Per-skill: `_bmad/custom/bmad-agent-<role>.toml` `[[agent.menu]]` |
+| Add, replace or remove a walkthrough move | Per-skill: `_bmad/custom/bmad-walkthrough.toml` `[[workflow.moves]]` |
 | Swap a workflow's output template | Per-skill: `_bmad/custom/<workflow>.toml` scalar override |
 | Add, replace or extend a `bmad-facilitate` template, including John's planning templates | A template file in `_bmad/custom/facilitate-templates/`; see [Write a Document Template](./write-a-document-template.md) |
 | Rebrand an agent's public descriptor | Central: `_bmad/custom/config.toml` `[agents.<code>]` |

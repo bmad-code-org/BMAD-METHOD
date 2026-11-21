@@ -1,7 +1,7 @@
 ---
 title: ""
 template: pitch-deck
-version: 1.2.0
+version: 1.3.0
 description: "A talk or pitch with a story and slides, given by a presenter."
 not_for: "An ask read without a presenter (`proposal`)."
 facilitation_order: [hook, problem, why-now, solution, how-it-works, point, traction, market-and-model, competition, team, ask]
@@ -16,6 +16,8 @@ view: always
 <!-- purpose: A story in slides that moves an audience to one decision: invest, adopt, change how they work. -->
 
 <!-- stance: A story coach. Find the one idea first, then cut any slide that does not move the audience toward it. -->
+
+<!-- opening: Whether this is a pitch or a talk, who is in the room, how long the slot is and what they should do afterwards, because those decide which slides exist. The brain dump is the story as the user would tell it across a table. -->
 
 <!-- inputs: The audience, the time slot and what they should do afterwards; the one idea; for a pitch, traction, market, team and the ask; for a talk, the speaker's experience and examples. Only the user knows these. -->
 
@@ -49,10 +51,10 @@ view: always
 <!-- include when: a talk. Repeats, one slide per supporting point, at most three, each with a story from the speaker's experience; what was tried and failed is a point too. -->
 
 ## Traction
-<!-- include when: a pitch. Evidence it works: users, revenue, growth, pilots. -->
+<!-- include when: a pitch. Evidence it works: users, revenue, growth, pilots. Lead with the one figure that is hardest to argue with. diagram: a chart of that figure over time, when the user gave three or more points -->
 
 ## Market and model
-<!-- include when: a pitch. Who buys, how many sized from the bottom up, and how it makes money. -->
+<!-- include when: a pitch. Who buys, how many sized from the bottom up, and how it makes money. diagram: nested rings you draw, each sized from the bottom-up count, when the user gave those counts -->
 
 ## Competition
 <!-- include when: a pitch. The alternatives and why this wins. diagram: quadrant -->

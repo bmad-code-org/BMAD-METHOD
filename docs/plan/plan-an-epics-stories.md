@@ -5,8 +5,8 @@ sidebar:
   order: 5
 ---
 
-Use Sofia, the Product Owner (`bmad-agent-po`), to turn one epic into stories
-an agent can build one session at a time. Plan only the epic you will build
+Use Sofia, the Product Owner (`bmad-agent-po`), to turn one epic into a few large stories,
+each a capability an agent builds and a person verifies. Plan only the epic you will build
 next; later epics stay thin until their turn, so what the first one teaches
 can still change them.
 
@@ -24,25 +24,21 @@ Name the epic:
 /bmad-agent-po refine the door check-in epic
 ```
 
-Sofia reads the epic and the initiative lines it covers, then answers in one
-message sized to the initiative. On a small initiative, the message is a single
-question: does this epic need anything before its stories? On a larger one,
-she says what is already settled for its stories and names each open point
-with her pick: settle it with you now, plan a spike when only code can answer
-it, or leave it to the stories.
-
-She also reminds you that you can flesh the epic out first: your own notes, a
-PRD from John on the epic, a `bmad-ux` or `bmad-architecture` run on the epic,
-or research with `bmad-deep-recon`. A run you choose lands in the epic's
-folder and becomes its companion.
+Sofia reads the epic and the initiative lines it covers. When the epic still
+has open product questions, such as how it works for the user, its rules, or
+what to measure, she hands to John for the epic PRD, which lands in the epic's
+folder and becomes its companion. When nothing is open, or when you tell her
+to, she fills the epic in from the initiative's lines and what the PRD saved
+for the epic.
 
 If the epic still has open screen or flow questions, Sally runs `bmad-ux` on
-it first; if it has open technical questions, Winston runs `bmad-architecture`
+it; if it has open technical questions, Winston runs `bmad-architecture`
 after her. Ask each to cover only what is new or different, before Sofia
-plans the stories.
+plans the stories. Research is `bmad-deep-recon`. Each run lands in the
+epic's folder the same way.
 
 Sofia then writes the epic's Requirements, each citing the initiative line it
-comes from, such as `R1 (parent R3)`, and marks the epic `refined: true`.
+comes from, such as `R1 (parent R1)`, and marks the epic `refined: true`.
 
 ### 2. Plan the Stories
 
@@ -60,24 +56,21 @@ has no loops, and that no prerequisite is missing, such as collisions, shared
 setup, and handoffs. Adjust size, order, and prerequisites until you approve;
 the check runs again when you add, remove, or reorder stories.
 
-Each story is one step toward the epic's Done when, sized for one build
-session; it need not be something a user sees. Sofia merges a story whose
-setup outweighs its work, and splits rather than shrinks: a story that would
-leave something for now, as a placeholder, or wired later becomes two.
-Stories that touch the same code form one ordered lane, and an interface two
-lanes share gets a stub as its own early story. Tests go in every story; the
+Each story is one complete capability a person can see working end to end
+and verify in one sitting. It is large on purpose: an epic may have one
+story, or a few. The steps inside it are the build's own plan and never
+become tickets. Sofia merges a story that cannot be verified as an outcome by
+itself, and splits rather than shrinks: a story that would leave something
+for now, as a placeholder, or wired later becomes two. Setup is part of the
+first story that needs it, and production delivery part of the last. Stories
+that touch the same code form one ordered lane. Tests go in every story; the
 only test story is a closing end-to-end suite.
 
-The first story is the tracer bullet: the thinnest path through every layer
-the epic touches, with its setup as a `hitl` step. The story you are least
-sure of comes next. An epic of more than three stories closes with a
-"Refactor sweep" story that waits on the others and only cleans up what the
-epic deferred; decline it and Sofia records why.
-
-Eight to twelve stories is a typical epic, not a limit. Past that, Sofia
-offers to split the epic first, and you decide. A team that sizes epics
-differently can change the guideline with `tickets_story_count` under
-`[workflow]` in `_bmad/custom/bmad-agent-po.toml`.
+The first story proves the riskiest path. Inside a large story the build
+usually starts with a tracer bullet, the thinnest path through every layer
+the story touches, and widens it from there; that is the build's plan, not a
+story. Cleanup the epic deferred is not a story either: the retrospective
+Sofia offers when the epic closes reports it.
 
 The stories become entries in the epic's `tickets/tickets.toml`, in build
 order. No story file is written: a build plans each story's acceptance
@@ -111,10 +104,9 @@ In the [room booker](../start/how-bmad-works.md#the-example-app), an office's me
 ```text wrap
 /bmad-agent-po refine the door check-in epic, then plan its stories
 ```
-**Sofia:** 8 stories in build order, every requirement covered, no unknowns.
-Story 1.1 is the tracer bullet. It needs a person, since facilities mounts and
-pairs the tablets, so I marked it `hitl`. The last, 1.8, is the Refactor
-sweep. Approve?
+**Sofia:** 3 stories in build order, every requirement covered, no unknowns.
+Story 1.1 needs a person, since facilities mounts and pairs the tablets, so I
+marked it `hitl`. Approve?
 
 **You:** Approve.
 

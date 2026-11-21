@@ -1,9 +1,9 @@
 ---
 title: ""
 template: prototype-plan
-version: 1.2.0
+version: 1.3.0
 description: "A quick build to test an idea, some options or a look and feel; the first offer for a hobby project."
-not_for: "Committed work that needs requirements (`prd`, `prd-light`); measuring a change with real users (`experiment`); writing down why to build (`brief`); one feature for a coding agent (`agent-spec`)."
+not_for: "Committed work that needs requirements (`prd-epic` for one capability, `prd` for several); measuring a change with real users (`experiment`); writing down why to build (`brief`)."
 agents: [bmad-agent-pm]
 facilitation_order: [ask-and-goal, timebox, where-to-build, platform-and-technology, existing-ground-truth, options-to-compare, look-and-feel, validation, decisions, build, outcome]
 guidance: guidance-planning
@@ -29,8 +29,6 @@ updated: ""
 
 # {title}
 
-## Table of Contents
-
 ## Ask and goal
 <!-- What to build, in the user's words; the one question it must answer; and the result that would make the user drop the idea, written before anything is built, because a bar set after the results flatters them. -->
 
@@ -47,7 +45,7 @@ updated: ""
 <!-- include when: it builds on a large existing codebase. What must hold true about the code, from reading it or from a `bmad-deep-recon` run on a specific question, and where that research lives. -->
 
 ## Options to compare
-<!-- include when: proving out a few options. Each option and what decides between them. -->
+<!-- include when: proving out a few options. A table: each option, what building it would show, and what decides between them. -->
 
 ## Look and feel
 <!-- include when: testing how a running app looks and feels. The feel to try, any references, and what the user wants to click through. -->
