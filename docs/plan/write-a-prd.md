@@ -152,7 +152,8 @@ written, run Sofia again with it; see
 
 `prd-<slug>/prd-<slug>.md` in the active initiative's folder, for Sofia to
 lift into the initiative's Requirements and Constraints and to use as the
-split into epics.
+split into epics. An epic's PRD lands in its own folder inside that epic's
+folder, where Sofia refines the epic from it.
 
 ### The PRD for several capabilities
 

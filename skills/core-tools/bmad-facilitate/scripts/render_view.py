@@ -51,13 +51,16 @@ H2 = re.compile(r"^## +(.+?)[ \t#]*$")
 QUOTE = re.compile(r"^ {0,3}> ?")
 BOLD_LINE = re.compile(r"^(\*\*|__)(.+)\1[ \t]*$")
 
-IMAGE = re.compile(r'(!\[[^\]\n]*\]\(\s*)(<[^>\n]+>|[^)\s]+)((?:\s+"[^"\n]*")?\s*\))')
+# Whichever starts first wins: code in an image's alt text stays part of the image, an image inside code stays code.
+CODE_OR_IMAGE = re.compile(
+    r"(?P<code>(?<!`)(?P<ticks>`+)(?!`).*?(?<!`)(?P=ticks)(?!`))"
+    r'|(?P<head>!\[[^\]\n]*\]\(\s*)(?P<target><[^>\n]+>|[^)\s]+)(?P<tail>(?:\s+"[^"\n]*")?\s*\))'
+)
 IMAGE_TYPES = {
     ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
     ".gif": "image/gif", ".webp": "image/webp",
 }  # fmt: skip
 MAX_IMAGE_BYTES = 5_000_000
-CODE_SPAN = re.compile(r"(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)")
 
 LAYOUTS = ("document", "slides")
 SLOT_ATTRS = {"data-section", "data-field", "data-rest", "data-body"}
@@ -104,7 +107,9 @@ def inline_images(text: str, folder: Path) -> str:
     root = folder.resolve()
 
     def data_uri(m: re.Match) -> str:
-        target = m.group(2).strip("<>")
+        if m.group("code"):
+            return m.group(0)
+        target = m.group("target").strip("<>")
         kind = IMAGE_TYPES.get(Path(target).suffix.lower())
         if not kind or re.match(r"[a-zA-Z][a-zA-Z0-9+.\-]*:|/|#", target):
             return m.group(0)
@@ -115,18 +120,12 @@ def inline_images(text: str, folder: Path) -> str:
             encoded = base64.b64encode(path.read_bytes()).decode("ascii")
         except OSError:
             return m.group(0)
-        return f"{m.group(1)}data:{kind};base64,{encoded}{m.group(3)}"
-
-    def outside_code_spans(line: str) -> str:
-        out, pos = [], 0
-        for span in CODE_SPAN.finditer(line):
-            out += [IMAGE.sub(data_uri, line[pos : span.start()]), span.group(0)]
-            pos = span.end()
-        return "".join(out) + IMAGE.sub(data_uri, line[pos:])
+        return f"{m.group('head')}data:{kind};base64,{encoded}{m.group('tail')}"
 
     lines = text.split("\n")
     return "\n".join(
-        line if in_code else outside_code_spans(line) for line, in_code in zip(lines, code_mask(lines), strict=True)
+        line if in_code else CODE_OR_IMAGE.sub(data_uri, line)
+        for line, in_code in zip(lines, code_mask(lines), strict=True)
     )
 
 

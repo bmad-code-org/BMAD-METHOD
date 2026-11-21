@@ -10,11 +10,11 @@
 id = 1 # leaf file's `id:`
 type = "story" # story | spike | bug
 title = "Shoppers build a cart"
-description = "A shopper adds, changes and removes items and the total follows, on the cart service this story stands up and deploys."
+description = "A shopper adds, changes and removes items and the total follows, on the cart service this story stands up and deploys; a person creates the hosting account first."
 verify = "On the deployed site a shopper adds two items, changes a quantity, removes one, and the total is right each time."
 covers = ["R1", "R2", "R3"] # epic Requirements ids
 after = [] # prerequisites only, not sequence
-hitl = true # a person does part of the work
+hitl = true # a person does part of the work; the description names it
 risk = "low" # low | medium | high
 # estimate = 2 # only if the user gives one
 # unknown = "..." # one-sentence user question; `tickets.py next` blocks the entry until removed

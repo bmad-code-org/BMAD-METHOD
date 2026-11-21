@@ -383,6 +383,13 @@ def test_an_image_inside_inline_code_is_left_alone(tmp_path):
     assert out.endswith(") here.")
 
 
+def test_an_image_with_code_in_its_alt_text_is_inlined(tmp_path):
+    (tmp_path / "states.svg").write_text(SVG, encoding="utf-8")
+    out = render_view.inline_images("See `x`: ![The `Booking` states](states.svg) and `y`.", tmp_path)
+    assert out.startswith("See `x`: ![The `Booking` states](data:image/svg+xml;base64,")
+    assert out.endswith(") and `y`.")
+
+
 def test_the_page_carries_the_inlined_image(tmp_path, capsys):
     (tmp_path / "flow.svg").write_text(SVG, encoding="utf-8")
     doc = tmp_path / "doc.md"
