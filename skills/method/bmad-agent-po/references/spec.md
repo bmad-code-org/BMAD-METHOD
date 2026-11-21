@@ -18,13 +18,13 @@ On a container, SPEC is the only writer of the derived lines; a change goes to t
 
 Writes go through `{skill-root}/scripts/memlog.py`:
 
-- `uv run {skill-root}/scripts/memlog.py init --workspace <ticket folder> --field topic="<the ticket's title>"` — once, at create.
-- `uv run {skill-root}/scripts/memlog.py append --workspace <ticket folder> --type <decision|constraint|requirement|assumption|question|direction|note|event> --text "<one-line gist, reason included>"` — one per line; batch them in one shell call per section.
+- `uv run "{skill-root}/scripts/memlog.py" --project-root {project-root} init --workspace <ticket folder> --field topic="<the ticket's title>"` — once, at create.
+- `uv run "{skill-root}/scripts/memlog.py" --project-root {project-root} append --workspace <ticket folder> --type <decision|constraint|requirement|assumption|question|direction|note|event> --text "<one-line gist, reason included>"` — one per line; batch them in one shell call per section.
 - Terminal moments (a validation verdict, "spec finalized") are `--type event` entries; the memlog has no status field.
 
 ## The Operation
 
-Read the input and what it links. With a `.memlog.md`, this is an update: read the memlog, the authority on decisions and requirement ids, and re-read every file in `sources:`; preserve the ids and give new requirements the next unused `R<n>`. A ticket with Requirements lines and no memlog is also an update: `memlog.py init`, then append each existing derived line as its own entry, ids kept. Otherwise this is a create. An epic whose refinement settled that its parent's lines are its only input (the ids its `covers` names) gets one line per parent id, `R<n> (parent R<m>)`, in the parent's words, with no elicitation, self-validate or memlog; when the parent changes, its lines are re-rendered from the parent, ids kept.
+Read the input and what it links. With a `.memlog.md`, this is an update: read the memlog, the authority on decisions and requirement ids, and re-read every file in `sources:`; preserve the ids and give new requirements the next unused `R<n>`. A ticket with Requirements lines and no memlog is also an update. Use the init command above, then append each existing derived line as its own entry, ids kept. Otherwise this is a create. An epic whose refinement settled that its parent's lines are its only input (the ids its `covers` names) gets one line per parent id, `R<n> (parent R<m>)`, in the parent's words, with no elicitation, self-validate or memlog; when the parent changes, its lines are re-rendered from the parent, ids kept.
 
 Pre-sorted input (a PRD, a brief from an upstream BMad skill): keep its separation; lift each requirement and constraint into its line with the source's id in parentheses (`R1 (FR-2, FR-5)`), overflow into companions. A program or initiative document from John states capabilities and rules rather than detailed requirements: each capability becomes a Requirements line and each rule a Constraints line, citing its id. Mixed input: sort each claim by the test in Load-bearing into a Requirements or Constraints line or a companion.
 
