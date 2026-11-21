@@ -5,7 +5,7 @@
 # ///
 """Deterministic Skill Validator
 
-Validates 12 deterministic rules across skill directories.
+Validates 13 deterministic rules across skill directories.
 Acts as a fast first-pass complement to the inference-based skill validator.
 
 What it checks:
@@ -19,6 +19,7 @@ What it checks:
 - SKILL-08: SKILL.md frontmatter parses as a YAML mapping with string name and description
 - PATH-02: no installed_path variable
 - PATH-06: script calls use {skill-root}, not a bare scripts/ path
+- PATH-07: {project-root} and {skill-root} arguments in uv run calls are double-quoted
 - SEQ-02: no time estimates
 - TPL-01: template files must not contain render-time {{ config.* }} / {{ workflow.* }} / {{ agent.* }} expressions
 
@@ -63,6 +64,14 @@ TEMPLATE_FILENAME_REGEX = re.compile(r"template", re.I)
 COMPILE_TIME_SUB_REGEX = re.compile(r"\{\{-?\s*(?:(?:config|workflow|agent)\.|initiative_folder\b)[^}]*\}\}")
 INSTALLED_PATH_RE = re.compile(r"installed_path", re.I)
 BARE_SCRIPT_RE = re.compile(r"\buv\s+run\b[^`]*?\s(?:\./)?scripts/")
+UV_RUN_RE = re.compile(r"\buv\s+run\b")
+ROOT_ANCHOR_RE = re.compile(r"\{(?:project-root|skill-root)\}")
+CODE_FENCE_RE = re.compile(
+    r"^(?P<indent>[ \t]*)(?P<fence>`{3,}|~{3,})(?P<info>[^\r\n]*)\r?\n(?P<body>.*?)^(?P=indent)(?P=fence)[ \t]*(?:\r?\n|\Z)",
+    re.MULTILINE | re.DOTALL,
+)
+INLINE_CODE_RE = re.compile(r"`([^`\r\n]+)`")
+SHELL_FENCE_LANGS = {"", "bash", "sh", "zsh", "shell", "console", "pwsh", "powershell", "cmd"}
 USE_WHEN_RE = re.compile(r"use\s+when\b", re.I)
 USE_IF_RE = re.compile(r"use\s+if\b", re.I)
 DEPRECATED_RE = re.compile(r"^\s*deprecated\b", re.I)
@@ -243,6 +252,135 @@ def _blank(match: re.Match[str]) -> str:
 
 def strip_code_blocks(content: str) -> str:
     return re.sub(r"```.*?```", _blank, content, flags=re.DOTALL)
+
+
+def _is_double_quoted(text: str) -> bool:
+    if len(text) < 2 or not (text.startswith('"') and text.endswith('"')):
+        return False
+    i = 1
+    end = len(text) - 1
+    while i < end:
+        if text[i] == "\\" and i + 1 < end:
+            i += 2
+            continue
+        if text[i] == '"':
+            return False
+        i += 1
+    return True
+
+
+def _is_quoted_root_arg(token: str) -> bool:
+    if _is_double_quoted(token):
+        return True
+    if "=" in token:
+        key, val = token.split("=", 1)
+        if not ROOT_ANCHOR_RE.search(key) and _is_double_quoted(val):
+            return True
+    return False
+
+
+def _unquoted_root_tokens(cmd: str) -> list[tuple[int, str]]:
+    """Return (offset, token) for each {project-root}/{skill-root} token in a uv run command not double-quoted."""
+    bad: list[tuple[int, str]] = []
+    n = len(cmd)
+    i = 0
+    while i < n:
+        ch = cmd[i]
+        if ch in " \t\r\n|;&()[]":
+            i += 1
+            continue
+        if ch == "\\" and i + 1 < n and cmd[i + 1] in "\r\n":
+            i += 2
+            if i < n and cmd[i - 1] == "\r" and cmd[i] == "\n":
+                i += 1
+            continue
+        if ch == "#":
+            while i < n and cmd[i] != "\n":
+                i += 1
+            continue
+        start = i
+        in_double = False
+        in_single = False
+        while i < n:
+            c = cmd[i]
+            if in_double:
+                if c == "\\" and i + 1 < n:
+                    i += 2
+                elif c == '"':
+                    in_double = False
+                    i += 1
+                else:
+                    i += 1
+            elif in_single:
+                if c == "'":
+                    in_single = False
+                i += 1
+            else:
+                if c == '"':
+                    in_double = True
+                    i += 1
+                elif c == "'":
+                    in_single = True
+                    i += 1
+                elif c == "\\" and i + 1 < n:
+                    if cmd[i + 1] in "\r\n":
+                        break
+                    i += 2
+                elif c in " \t\r\n|;&()[]":
+                    break
+                else:
+                    i += 1
+        tok = cmd[start:i]
+        if ROOT_ANCHOR_RE.search(tok) and not _is_quoted_root_arg(tok):
+            bad.append((start, tok))
+    return bad
+
+
+def find_unquoted_root_in_uv_run(content: str) -> list[tuple[int, str]]:
+    """Return (1-based line, token) for unquoted {project-root}/{skill-root} arguments in uv run commands."""
+    hits: list[tuple[int, str]] = []
+
+    def check_span(span: str, base_offset: int) -> None:
+        if not UV_RUN_RE.search(span) or not ROOT_ANCHOR_RE.search(span):
+            return
+        for local_offset, tok in _unquoted_root_tokens(span):
+            line = content.count("\n", 0, base_offset + local_offset) + 1
+            hits.append((line, tok))
+
+    def scan_non_fenced(segment: str, base_offset: int) -> None:
+        for im in INLINE_CODE_RE.finditer(segment):
+            check_span(im.group(1), base_offset + im.start(1))
+        blanked = INLINE_CODE_RE.sub(_blank, segment)
+        pos = 0
+        for line in blanked.splitlines(keepends=True):
+            if UV_RUN_RE.search(line):
+                check_span(line, base_offset + pos)
+            pos += len(line)
+
+    pos = 0
+    for fm in CODE_FENCE_RE.finditer(content):
+        scan_non_fenced(content[pos : fm.start()], pos)
+        info_tokens = fm.group("info").strip().split()
+        lang = info_tokens[0].lower() if info_tokens else ""
+        if lang in SHELL_FENCE_LANGS:
+            body = fm.group("body")
+            body_offset = fm.start("body")
+            lines = body.splitlines(keepends=True)
+            idx = 0
+            line_pos = 0
+            while idx < len(lines):
+                group_start = line_pos
+                parts = [lines[idx]]
+                line_pos += len(lines[idx])
+                while parts[-1].rstrip("\r\n").endswith("\\") and idx + 1 < len(lines):
+                    idx += 1
+                    parts.append(lines[idx])
+                    line_pos += len(lines[idx])
+                check_span("".join(parts), body_offset + group_start)
+                idx += 1
+        pos = fm.end()
+    scan_non_fenced(content[pos:], pos)
+    return hits
 
 
 # --- Skill Discovery ---
@@ -546,10 +684,23 @@ def validate_skill(skill_dir: str) -> list[dict]:
                         "HIGH",
                         rel_file,
                         "`uv run scripts/...` resolves from the working directory, not the skill.",
-                        "Call the script as `uv run {skill-root}/scripts/...`.",
+                        'Call the script as `uv run "{skill-root}/scripts/..."`.',
                         line=i + 1,
                     )
                 )
+
+        for line_num, tok in find_unquoted_root_in_uv_run(content):
+            findings.append(
+                _finding(
+                    "PATH-07",
+                    "Quote Path Arguments in Shell Commands",
+                    "HIGH",
+                    rel_file,
+                    f"`{tok}` in a `uv run` call is not wrapped in double quotes; paths with spaces will split.",
+                    'Wrap the complete `{project-root}` or `{skill-root}` argument in double quotes, e.g. `"{skill-root}/scripts/..."` or `"{project-root}"`.',
+                    line=line_num,
+                )
+            )
 
     for file_path in all_files:
         ext = os.path.splitext(file_path)[1]

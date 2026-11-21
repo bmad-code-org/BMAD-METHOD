@@ -234,6 +234,18 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Detection:** Deterministic. Flags `scripts/` or `./scripts/` as a separate argument after `uv run`, whatever options come before it.
 - **Fix:** `uv run "{skill-root}/scripts/tool.py"`.
 
+### PATH-07 — Quote Path Arguments in Shell Commands
+
+- **Severity:** HIGH
+- **Applies to:** all scanned files, code blocks included
+- **Rule:** Assume any path inserted into a shell command can contain spaces and must stay a single argument.
+  - Wrap `{project-root}` and `{skill-root}` arguments — including any path suffix — in double quotes (`"{project-root}/..."`, `"{skill-root}/..."`, `"{project-root}"`, `"{skill-root}"`).
+  - Apply the same double-quoting to any other single path variable or placeholder in a shell command (`"{doc_workspace}"`, `"{output_folder}"`, `"{target}"`, `"<ticket folder>"`, `"<folder>"`). Leave multi-argument lists (such as `{workflow.template_libraries}` or `<each library>`) unquoted as a group so each path remains its own argument.
+- **Detection:**
+  - **Deterministic (`uv run`):** Scans inline backtick commands and fenced code blocks (joining `\` line continuations) for `uv run` invocations, flagging any `{project-root}` or `{skill-root}` argument that is not wrapped in double quotes as a complete argument (catches unquoted, single-quoted, and partially quoted forms such as `"{skill-root}"/scripts/tool.py`).
+  - **Inference:** Checks all shell commands (including non-`uv run` invocations and non-root path variables or placeholders) for unquoted single-path arguments that would split on spaces.
+- **Fix:** Wrap the complete path argument in double quotes — e.g. `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`.
+
 ---
 
 ### STEP-04 — Halt Before Menu

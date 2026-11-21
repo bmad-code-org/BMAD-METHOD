@@ -18,6 +18,7 @@ The contract a built skill meets; the canon covers the prose.
 
 - `{project-root}` is the nearest folder holding `_bmad/`, `{skill-root}` the skill's folder.
 - A skill's own script runs as `uv run "{skill-root}/scripts/<name>.py"`, a runtime script as `uv run "{project-root}/_bmad/scripts/<name>.py"`. Never a bare `scripts/` call, which resolves from the working directory, and never `python`, `python3` or `pip`: `uv run` reads the script's PEP 723 header for its dependencies.
+- Assume any path inserted into a shell command can contain spaces and must stay a single argument: wrap `{project-root}`, `{skill-root}` (including any path suffix), and every other single path variable or placeholder (`"{doc_workspace}"`, `"{target}"`, `"<folder>"`) in double quotes. Leave multi-argument lists unquoted as a group so each path stays its own argument.
 - Every backticked path resolves to a real file. Never a path into another skill: write "invoke the `<name>` skill".
 - Never `module.yaml`, `module-help.csv` or `_bmad/config.yaml`, the old format.
 - Config is read with `resolve_config.py --key core.<key>` or `--key modules.<code>.<key>`, customization with `resolve_customization.py --key workflow` or `--key agent`. Config values already hold `{project-root}`; never prefix them.

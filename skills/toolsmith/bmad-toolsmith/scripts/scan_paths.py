@@ -6,7 +6,9 @@
 
 Rules, each a `rule` value in the findings:
   bare-script-call   `uv run scripts/x.py` or `uv run ./scripts/x.py`; a skill's own scripts run as
-                     `uv run {skill-root}/scripts/x.py` because the agent's working directory is the project
+                     `uv run "{skill-root}/scripts/x.py"` because the agent's working directory is the project
+  unquoted-root-path a `{project-root}` or `{skill-root}` argument in a `uv run` command that is not wrapped
+                     in double quotes as a complete argument (paths with spaces would split)
   installed-path     `{installed_path}` or an `installed_path` definition, a pre-skill leftover
   absolute-path      /Users/, /home/ or C:\\ paths, which do not travel between machines; a `~/` path names the
                      user's own home and is allowed (eval cases refuse it, see below)
@@ -62,6 +64,14 @@ EXAMPLE_DIR = "assets"
 EXAMPLE_PREFIX = "sample-"
 
 BARE_SCRIPT_RE = re.compile(r"\buv\s+run\b[^`\n]*?\s(?:\./)?scripts/\S+")
+UV_RUN_RE = re.compile(r"\buv\s+run\b")
+ROOT_ANCHOR_RE = re.compile(r"\{(?:project-root|skill-root)\}")
+CODE_FENCE_RE = re.compile(
+    r"^(?P<indent>[ \t]*)(?P<fence>`{3,}|~{3,})(?P<info>[^\r\n]*)\r?\n(?P<body>.*?)^(?P=indent)(?P=fence)[ \t]*(?:\r?\n|\Z)",
+    re.MULTILINE | re.DOTALL,
+)
+INLINE_CODE_RE = re.compile(r"`([^`\r\n]+)`")
+SHELL_FENCE_LANGS = {"", "bash", "sh", "zsh", "shell", "console", "pwsh", "powershell", "cmd"}
 INSTALLED_PATH_RE = re.compile(r"\{installed_path\}|\binstalled_path\s*[:=]")
 ABS_PATH_RE = re.compile(r"(?:/Users/|/home/|\b[A-Za-z]:[\\/])\S*")
 OLD_FORMAT_RE = re.compile(r"\bmodule\.yaml\b|\bmodule-help\.csv\b")
@@ -83,6 +93,7 @@ SKILL_DIR_RE = re.compile(r"(?:^|/)(?:skills|\.claude/skills|\.agents/skills|_bm
 # Runtime folders under _bmad that are not skills.
 RULES = {
     "bare-script-call",
+    "unquoted-root-path",
     "installed-path",
     "absolute-path",
     "cross-skill-ref",
@@ -127,7 +138,7 @@ def is_example(rel: Path) -> bool:
 def scan_regex_rules(content: str, rel: str) -> list[dict]:
     findings = []
     for regex, rule, fix in (
-        (BARE_SCRIPT_RE, "bare-script-call", "write `uv run {skill-root}/scripts/<name>.py`"),
+        (BARE_SCRIPT_RE, "bare-script-call", 'write `uv run "{skill-root}/scripts/<name>.py"`'),
         (INSTALLED_PATH_RE, "installed-path", "remove installed_path; use a path relative to this file"),
         (ABS_PATH_RE, "absolute-path", "use {project-root}, {skill-root} or a config value"),
         (OLD_FORMAT_RE, "old-module-format", "describe the module in bmod.toml; see the migrate mode"),
@@ -160,6 +171,135 @@ def line_text(content: str, offset: int) -> str:
     start = content.rfind("\n", 0, offset) + 1
     end = content.find("\n", offset)
     return content[start : end if end != -1 else len(content)]
+
+
+def _is_double_quoted(text: str) -> bool:
+    if len(text) < 2 or not (text.startswith('"') and text.endswith('"')):
+        return False
+    i = 1
+    end = len(text) - 1
+    while i < end:
+        if text[i] == "\\" and i + 1 < end:
+            i += 2
+            continue
+        if text[i] == '"':
+            return False
+        i += 1
+    return True
+
+
+def _is_quoted_root_arg(token: str) -> bool:
+    if _is_double_quoted(token):
+        return True
+    if "=" in token:
+        key, val = token.split("=", 1)
+        if not ROOT_ANCHOR_RE.search(key) and _is_double_quoted(val):
+            return True
+    return False
+
+
+def _unquoted_root_tokens(cmd: str) -> list[tuple[int, str]]:
+    bad: list[tuple[int, str]] = []
+    n = len(cmd)
+    i = 0
+    while i < n:
+        ch = cmd[i]
+        if ch in " \t\r\n|;&()[]":
+            i += 1
+            continue
+        if ch == "\\" and i + 1 < n and cmd[i + 1] in "\r\n":
+            i += 2
+            if i < n and cmd[i - 1] == "\r" and cmd[i] == "\n":
+                i += 1
+            continue
+        if ch == "#":
+            while i < n and cmd[i] != "\n":
+                i += 1
+            continue
+        start = i
+        in_double = False
+        in_single = False
+        while i < n:
+            c = cmd[i]
+            if in_double:
+                if c == "\\" and i + 1 < n:
+                    i += 2
+                elif c == '"':
+                    in_double = False
+                    i += 1
+                else:
+                    i += 1
+            elif in_single:
+                if c == "'":
+                    in_single = False
+                i += 1
+            else:
+                if c == '"':
+                    in_double = True
+                    i += 1
+                elif c == "'":
+                    in_single = True
+                    i += 1
+                elif c == "\\" and i + 1 < n:
+                    if cmd[i + 1] in "\r\n":
+                        break
+                    i += 2
+                elif c in " \t\r\n|;&()[]":
+                    break
+                else:
+                    i += 1
+        tok = cmd[start:i]
+        if ROOT_ANCHOR_RE.search(tok) and not _is_quoted_root_arg(tok):
+            bad.append((start, tok))
+    return bad
+
+
+def scan_unquoted_root_paths(content: str, rel: str) -> list[dict]:
+    """Flag unquoted {project-root} or {skill-root} arguments in uv run commands."""
+    findings: list[dict] = []
+    fix = 'wrap the complete `{project-root}` or `{skill-root}` argument in double quotes, e.g. `"{skill-root}/scripts/..."`'
+
+    def check_span(span: str, base_offset: int) -> None:
+        normalized = span.replace('\\"', '"') if rel == "customize.toml" else span
+        if not UV_RUN_RE.search(normalized) or not ROOT_ANCHOR_RE.search(normalized):
+            return
+        for local_offset, tok in _unquoted_root_tokens(normalized):
+            findings.append(finding(rel, line_of(content, base_offset + local_offset), "unquoted-root-path", tok, fix))
+
+    def scan_non_fenced(segment: str, base_offset: int) -> None:
+        for im in INLINE_CODE_RE.finditer(segment):
+            check_span(im.group(1), base_offset + im.start(1))
+        blanked = INLINE_CODE_RE.sub(lambda m: re.sub(r"[^\r\n]", "", m.group(0)), segment)
+        pos = 0
+        for line in blanked.splitlines(keepends=True):
+            if UV_RUN_RE.search(line):
+                check_span(line, base_offset + pos)
+            pos += len(line)
+
+    pos = 0
+    for fm in CODE_FENCE_RE.finditer(content):
+        scan_non_fenced(content[pos : fm.start()], pos)
+        info_tokens = fm.group("info").strip().split()
+        lang = info_tokens[0].lower() if info_tokens else ""
+        if lang in SHELL_FENCE_LANGS:
+            body = fm.group("body")
+            body_offset = fm.start("body")
+            lines = body.splitlines(keepends=True)
+            idx = 0
+            line_pos = 0
+            while idx < len(lines):
+                group_start = line_pos
+                parts = [lines[idx]]
+                line_pos += len(lines[idx])
+                while parts[-1].rstrip("\r\n").endswith("\\") and idx + 1 < len(lines):
+                    idx += 1
+                    parts.append(lines[idx])
+                    line_pos += len(lines[idx])
+                check_span("".join(parts), body_offset + group_start)
+                idx += 1
+        pos = fm.end()
+    scan_non_fenced(content[pos:], pos)
+    return findings
 
 
 def scan_skill_root_paths(content: str, rel: Path, skill_root: Path) -> list[dict]:
@@ -337,6 +477,7 @@ def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
         rel = path.relative_to(skill_root)
         content = path.read_text(encoding="utf-8", errors="replace")
         findings.extend(scan_regex_rules(content, rel.as_posix()))
+        findings.extend(scan_unquoted_root_paths(content, rel.as_posix()))
         findings.extend(scan_references(content, rel, skill_root))
         findings.extend(scan_skill_root_paths(content, rel, skill_root))
         findings.extend(scan_retired(content, rel.as_posix(), retired))
@@ -346,6 +487,7 @@ def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
         rel = Path("customize.toml")
         content = strip_comments(customize.read_text(encoding="utf-8", errors="replace"))
         findings.extend(scan_regex_rules(content, rel.as_posix()))
+        findings.extend(scan_unquoted_root_paths(content, rel.as_posix()))
         findings.extend(scan_references(content, rel, skill_root))
         findings.extend(scan_skill_root_paths(content, rel, skill_root))
         findings.extend(scan_retired(content, rel.as_posix(), retired))
