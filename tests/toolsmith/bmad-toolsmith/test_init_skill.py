@@ -1,6 +1,7 @@
 """Tests for init_skill.py: scaffolding each shape and checking skills for the frontmatter and bmod rules."""
 
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -9,12 +10,19 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/toolsmith/bmad-toolsmith/scripts/init_skill.py"
+FRONTMATTER = SCRIPT.parents[3] / "core-tools" / "bmad" / "scripts" / "frontmatter.py"
+PROJECT = tempfile.TemporaryDirectory()  # a project with the shared scripts installed, as bmad setup leaves it
+(Path(PROJECT.name) / "_bmad" / "scripts").mkdir(parents=True)
+shutil.copy2(FRONTMATTER, Path(PROJECT.name) / "_bmad" / "scripts")
+sys.path.insert(0, str(FRONTMATTER.parent))
+import frontmatter  # noqa: E402
 
 GOOD_DESCRIPTION = "Counts things in a folder. Use when the user asks how big a skill is."
 
 
-def run(*args):
-    res = subprocess.run([sys.executable, str(SCRIPT), *[str(a) for a in args]], capture_output=True, text=True)
+def run(*args, project=PROJECT.name):
+    argv = [sys.executable, str(SCRIPT), "--project-root", project, *[str(a) for a in args]]
+    res = subprocess.run(argv, capture_output=True, text=True)
     data = json.loads(res.stdout) if res.stdout.strip().startswith("{") else None
     return res.returncode, data, res.stderr
 
@@ -56,6 +64,27 @@ class CreateTest(unittest.TestCase):
             code, data, _ = run("--check", skill)
             self.assertEqual(code, 0, data)
             self.assertEqual(data["bmod"], "ok")
+
+    def test_a_multiline_description_is_written_and_read_back_whole(self):
+        description = "Counts things --- carefully.\nUse when the user asks: how big is it?"
+        with tempfile.TemporaryDirectory() as tmp:
+            code, _, err = run(
+                "--name", "bmad-demo", "--dest", tmp, "--shape", "plain-skill", "--description", description
+            )
+            self.assertEqual(code, 0, err)
+            fields, body = frontmatter.split((Path(tmp) / "bmad-demo" / "SKILL.md").read_text(encoding="utf-8"))
+            self.assertEqual(frontmatter.load(fields), {"name": "bmad-demo", "description": description})
+            self.assertEqual(body, "\n# bmad-demo\n")
+            code, data, _ = run("--check", Path(tmp) / "bmad-demo")
+            self.assertEqual(code, 0, data)
+
+    def test_a_project_without_the_shared_scripts_is_told_to_run_setup(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, data, err = run("--name", "bmad-demo", "--dest", tmp, "--shape", "plain-skill", project=tmp)
+            missing = Path(tmp) / "_bmad" / "scripts" / "frontmatter.py"
+            self.assertEqual((code, data), (2, None))
+            self.assertEqual(err.splitlines(), [f"error: {missing} is missing. Run bmad setup for this project."])
+            self.assertFalse((Path(tmp) / "bmad-demo").exists())
 
     def test_doc_templates_dir(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -186,6 +215,15 @@ class CheckTest(unittest.TestCase):
             self.assertEqual(code, 0, data)
             self.assertEqual(data, {"ok": True, "skill": "bmad-good", "bmod": "ok", "findings": []})
 
+    def test_a_block_description_is_measured_without_its_final_newline(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            description = "Use when asked. " + "x" * 1008
+            skill = self.write_skill(
+                tmp, "bmad-block", f"---\nname: bmad-block\ndescription: |\n  {description}\n---\n\nBody.\n"
+            )
+            code, data, _ = run("--check", skill)
+            self.assertEqual((len(description), code), (1024, 0), data)
+
     def test_every_rule(self):
         with tempfile.TemporaryDirectory() as tmp:
             skill = self.write_skill(
@@ -239,6 +277,14 @@ class CheckTest(unittest.TestCase):
             )
             code, data, _ = run("--check", listed)
             self.assertEqual(rules(data), ["frontmatter-missing"])
+            for text in (
+                "---\nname: bmad-open\ndescription: 'Never closed. Use when asked.'\n\nBody.\n",
+                "---\nname: bmad-open\ndescription: Use when: asked\n---\n\nBody.\n",
+            ):
+                (Path(tmp) / "bmad-open").mkdir(exist_ok=True)
+                (Path(tmp) / "bmad-open" / "SKILL.md").write_text(text, encoding="utf-8")
+                code, data, _ = run("--check", Path(tmp) / "bmad-open", "--any-name")
+                self.assertEqual(rules(data), ["frontmatter-missing"], text)
 
     def test_todo_markers_about_the_marker_do_not_count(self):
         with tempfile.TemporaryDirectory() as tmp:

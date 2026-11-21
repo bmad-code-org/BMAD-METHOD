@@ -5,6 +5,8 @@
 # ///
 """init_skill: scaffold a new skill folder, or check an existing one.
 
+`--project-root <project>`, the project with BMad set up, goes with either form.
+
 Create:
   init_skill.py --name <kebab> --dest <folder> --shape <shape> [--dirs references,scripts,assets]
                 [--bmod <record-folder-name>] [--source <update_source>] [--description "..."]
@@ -45,6 +47,7 @@ Exit 0 on success or a clean check, 1 on a failed check or a refused create, 2 o
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import io
 import json
 import re
@@ -53,7 +56,7 @@ import tokenize
 import tomllib
 from pathlib import Path
 
-import yaml
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 
 SHAPES = (
     "plain-skill",
@@ -89,28 +92,38 @@ def toml_string(value: str) -> str:
 # --- frontmatter ---------------------------------------------------------------
 
 
+def load_shared(project_root: Path) -> bool:
+    """Load the project's shared frontmatter module; say how to set it up and return False when it is missing."""
+    global frontmatter
+
+    path = project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+        return False
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
+    return True
+
+
 def frontmatter_block(content: str) -> tuple[str | None, str]:
-    """Return (frontmatter text or None, body)."""
-    text = content.lstrip()
-    if not text.startswith("---"):
+    """Return (frontmatter text or None, body); with no frontmatter the whole file is the body."""
+    try:
+        return frontmatter.split(content)
+    except ValueError:
         return None, content
-    end = text.find("\n---", 3)
-    if end == -1:
-        return None, content
-    after = text[end + 4 :]
-    if after and not after.startswith(("\n", "\r")):
-        return None, content
-    return text[3:end].strip("\r\n"), after
 
 
 def parse_frontmatter(content: str) -> tuple[dict | None, str]:
     """Return (frontmatter as a dict, or None when missing, not a YAML mapping, or name or description is not text; body)."""
     block, body = frontmatter_block(content)
     try:
-        meta = (yaml.load(block, Loader=yaml.BaseLoader) or {}) if block is not None else None
-    except yaml.YAMLError:
+        meta = frontmatter.load(block) if block is not None else None
+    except ValueError:
         meta = None
     ok = isinstance(meta, dict) and all(isinstance(meta.get(k, ""), str) for k in ("name", "description"))
+    if ok and "description" in meta:
+        meta["description"] = meta["description"].rstrip("\n")  # a block scalar's final newline is not part of it
     return (meta if ok else None), body
 
 
@@ -118,8 +131,7 @@ def parse_frontmatter(content: str) -> tuple[dict | None, str]:
 
 
 def skill_md(name: str, description: str) -> str:
-    meta = {"name": name, "description": description}
-    return f"---\n{yaml.safe_dump(meta, sort_keys=False, allow_unicode=True, width=float('inf'))}---\n\n# {name}\n"
+    return f"{frontmatter.dump({'name': name, 'description': description})}\n# {name}\n"
 
 
 def bmod_toml(shape: str, name: str, bmod: str | None, source: str | None) -> str:
@@ -357,6 +369,7 @@ def check(skill_dir: Path, any_name: bool) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
     p.add_argument("--check", type=Path, metavar="SKILL", help="check this skill folder instead of creating one")
     p.add_argument("--any-name", action="store_true", help="with --check: accept any kebab-case name")
     p.add_argument("--name", help="skill name, kebab-case")
@@ -367,6 +380,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--source", help="update_source for the [skill] or [bmod] table")
     p.add_argument("--description", help="frontmatter description; a [TODO: ...] placeholder when omitted")
     args = p.parse_args(argv)
+    if not load_shared(args.project_root):
+        return 2
 
     if args.check:
         if not args.check.is_dir():

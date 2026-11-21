@@ -6,7 +6,7 @@ Outcome: the skill at `{target}` has been through the lenses and improved from t
 
 `{reports_folder}` was set at activation; if this session no longer holds it, run that step again. When the conversation no longer holds the execution plan, read it from `{reports_folder}/<name>-build/plan.md`.
 
-Run `uv run "{skill-root}/scripts/prepass.py" "{target}"`, for a module on the record and on each member; the sections below read its JSON.
+Run `uv run "{skill-root}/scripts/prepass.py" --project-root "{project-root}" "{target}"`, for a module on the record and on each member; the sections below read its JSON.
 
 ## Manifest
 

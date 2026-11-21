@@ -20,7 +20,9 @@ shape_hint is inferred, first match wins:
   plain-skill          everything else; "unknown" when there is no SKILL.md or customize.toml does not parse
 
 Usage:
-  prepass.py <skill-folder>
+  prepass.py --project-root <project> <skill-folder>
+
+--project-root names the project with BMad set up.
 
 Output, one JSON object on stdout:
   {"skill", "shape_hint", "files": [{"path", "tokens", "kind"}], "skill_md_tokens", "total_tokens", "token_method",
@@ -67,7 +69,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from difflib import SequenceMatcher  # noqa: E402
 
 from count_tokens import count_tokens, iter_text_files, read_text  # noqa: E402
-from init_skill import USE_WHEN_RE, parse_frontmatter  # noqa: E402
+from init_skill import USE_WHEN_RE, load_shared, parse_frontmatter  # noqa: E402
 from scan_paths import scan_skill  # noqa: E402
 from scan_scripts import scan_scripts  # noqa: E402
 
@@ -425,8 +427,11 @@ def build(root: Path) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
     p.add_argument("skill", type=Path, help="skill folder to analyze")
     args = p.parse_args(argv)
+    if not load_shared(args.project_root):
+        return 2
     root = args.skill.expanduser().resolve()
     if not root.is_dir():
         p.error(f"not a directory: {args.skill}")
