@@ -6,7 +6,7 @@ Convert an old-format module into a bmod in place, its packaging and the config 
 
 `{target}` is the folder holding the member skills and the setup skill, or a one-skill module's own folder.
 
-Run `uv run {skill-root}/scripts/scan_legacy_module.py {target}` and read its JSON.
+Run `uv run "{skill-root}/scripts/scan_legacy_module.py" "{target}"` and read its JSON.
 
 Ask the user only for `update_source`, the pushed `github:<owner>/<repo>` or `github:<owner>/<repo>/<path>`.
 

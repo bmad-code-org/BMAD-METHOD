@@ -26,4 +26,4 @@ A later second skill turns this into `shapes/multi-skill-module/shape.md`, whose
 - `{bmad_version}` is `bmad.version` from `uv run "{skill-root}/scripts/registry.py" --project-root "{project-root}"`; ask the user when it is null.
 - `update_source` is where `npx skills add` fetches the skill from, `github:<owner>/<repo>` or `github:<owner>/<repo>/<path>`; ask when it is not in the conversation.
 
-Fill a template with `uv run {skill-root}/scripts/process_template.py <template> -o <dest> --var key=value ... --true <condition> ...`; a `{if-X}...{/if-X}` block survives only when `--true X` is given, and `{project-root}` passes through untouched.
+Fill a template with `uv run "{skill-root}/scripts/process_template.py" <template> -o <dest> --var key=value ... --true <condition> ...`; a `{if-X}...{/if-X}` block survives only when `--true X` is given, and `{project-root}` passes through untouched.

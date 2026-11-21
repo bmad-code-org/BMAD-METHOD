@@ -6,6 +6,6 @@ A script does work that has one right answer per input: parsing, counting, resol
 
 How a script is written: Python with a PEP 723 header (`requires-python = ">=3.11"`, dependencies listed), `--help`, JSON on stdout when the agent reads the result, a non-zero exit with a reason rather than an error left for the agent to notice, standard library first. A `unittest` test sits outside the skill, under `tests/` at the repository root in a folder mirroring the skill's path below `skills/`, so it never ships. No model ids anywhere; users run any model. No network unless the docstring says why.
 
-How a script is run: always `uv run <path>`, with the skill's own scripts as `uv run {skill-root}/scripts/<name>.py` and the project's runtime scripts as `uv run "{project-root}/_bmad/scripts/<name>.py"`. Never `python`, `python3` or `pip`; `uv run` reads the header and provides the dependencies, so the user installs nothing. Never a bare `scripts/x.py`, which resolves from wherever the agent happens to be.
+How a script is run: always `uv run <path>`, with the skill's own scripts as `uv run "{skill-root}/scripts/<name>.py"` and the project's runtime scripts as `uv run "{project-root}/_bmad/scripts/<name>.py"`. Never `python`, `python3` or `pip`; `uv run` reads the header and provides the dependencies, so the user installs nothing. Never a bare `scripts/x.py`, which resolves from wherever the agent happens to be.
 
 Tests assert what a script produced, never what a model wrote or what a prompt file says.

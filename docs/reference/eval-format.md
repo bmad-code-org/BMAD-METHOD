@@ -124,7 +124,7 @@ Agents run these for you. They are listed for reading a run or running one by ha
 Baseline, variant, and quality:
 
 ```bash
-uv run {skill-root}/scripts/run_evals.py \
+uv run "{skill-root}/scripts/run_evals.py" \
   --cases <cases-file> --skill-path <skill> --output-dir <dir> \
   --mode quality|baseline|variant [--variant-path <skill>] \
   --label <skill-name>-<mode> [--runs N]
@@ -133,7 +133,7 @@ uv run {skill-root}/scripts/run_evals.py \
 Trigger:
 
 ```bash
-uv run {skill-root}/scripts/run_triggers.py \
+uv run "{skill-root}/scripts/run_triggers.py" \
   --skill-path <skill> --queries <queries-file> --output-dir <dir> \
   [--runs-per-query N]
 ```
@@ -141,7 +141,7 @@ uv run {skill-root}/scripts/run_triggers.py \
 Trigger matrix, given the folders that hold the install's skills:
 
 ```bash
-uv run {skill-root}/scripts/run_matrix.py \
+uv run "{skill-root}/scripts/run_matrix.py" \
   --skills <folder> [--skills <folder> ...] --queries <trigger-matrix.json> --output-dir <dir> \
   [--runs-per-query N]
 ```
@@ -149,13 +149,13 @@ uv run {skill-root}/scripts/run_matrix.py \
 Aggregate the time, tokens, and tool calls of repeated runs into mean, sample standard deviation, min, max, and delta:
 
 ```bash
-uv run {skill-root}/scripts/aggregate_benchmark.py --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>
+uv run "{skill-root}/scripts/aggregate_benchmark.py" --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>
 ```
 
 Convert a skill-creator file, or add `--to skill-creator` to reverse it:
 
 ```bash
-uv run {skill-root}/scripts/convert_cases.py <evals.json> --output <cases.json>
+uv run "{skill-root}/scripts/convert_cases.py" <evals.json> --output <cases.json>
 ```
 
 | Exit code | Meaning |

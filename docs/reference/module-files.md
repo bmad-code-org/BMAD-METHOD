@@ -175,7 +175,7 @@ A module ships a migration beside its `bmod.toml`, and `bmad migrate` runs them 
 In a repository with `skills/*/bmod.toml`:
 
 ```bash
-uv run "{project-root}/_bmad/scripts/validate_manifests.py" --project-root <repo>
+uv run "{project-root}/_bmad/scripts/validate_manifests.py" --project-root "<repo>"
 ```
 
 It covers manifests, membership, versions, retired names, help topics, and the roster.

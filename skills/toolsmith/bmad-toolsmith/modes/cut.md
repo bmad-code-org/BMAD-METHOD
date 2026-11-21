@@ -14,7 +14,7 @@ Ask once what else to protect, decisions included. When the work comes from a ti
 
 ## The Smithy execution plan
 
-Copy `{target}` to `{reports_folder}/<YYYYMMDD-HHMMSS>-<skill>-before/`, the old version every later step reads. Run `uv run {skill-root}/scripts/cut_check.py <copy> {target}`; its `tokens` lists every prompt file with its count. Leave protected files and those under about 150 tokens uncut.
+Copy `{target}` to `{reports_folder}/<YYYYMMDD-HHMMSS>-<skill>-before/`, the old version every later step reads. Run `uv run "{skill-root}/scripts/cut_check.py" <copy> "{target}"`; its `tokens` lists every prompt file with its count. Leave protected files and those under about 150 tokens uncut.
 
 Show the execution plan in chat: each file with its tokens, the files not cut, the protected passages, the decisions. Then wait for the user's go.
 
@@ -26,13 +26,13 @@ Before the cutters run, take each worked example (a sample artifact, a filled-in
 
 Launch one subagent per file, in parallel, with the Cutter prompt from `modes/cut-roles.md`, filled with the file, its protected passages, and the decisions.
 
-Then run `uv run {skill-root}/scripts/cut_check.py <copy> {target} [--protect ...] [--protect-text <file>]` and restore, from the copy, every item it lists under a file's `lost` and every file under `missing`.
+Then run `uv run "{skill-root}/scripts/cut_check.py" <copy> "{target}" [--protect ...] [--protect-text <file>]` and restore, from the copy, every item it lists under a file's `lost` and every file under `missing`.
 
 Then one subagent per rewritten file runs the Checker. Restore each loss and meaning change it lists as the shortest sentence that states it, and apply the shorter wordings you agree with.
 
 Run the commands under Checks in `modes/validate.md` and fix until clean.
 
-When `SKILL.md` calls `render_skill.py`, render the skill with `uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill {target}`, once as shipped and once per allowed value of each selector with `--set workflow.<key>=<value>`; each render finishes without error. Where that script does not exist, report the render as not run.
+When `SKILL.md` calls `render_skill.py`, render the skill with `uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{target}"`, once as shipped and once per allowed value of each selector with `--set workflow.<key>=<value>`; each render finishes without error. Where that script does not exist, report the render as not run.
 
 ## Hand over
 

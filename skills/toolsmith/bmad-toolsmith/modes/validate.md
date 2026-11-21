@@ -12,11 +12,11 @@ A folder holding `module.yaml`, `module-help.csv` or a `<code>-setup` skill is t
 
 Run them all, then report.
 
-- When `uv run "{skill-root}/scripts/registry.py" --project-root "{project-root}"` lists `records`: `uv run "{project-root}/_bmad/scripts/validate_manifests.py" --project-root <repo>`. It covers manifests, membership, versions, retired names, help topics and the roster.
-- For each skill: `uv run {skill-root}/scripts/init_skill.py --check <skill>`, with `--any-name` outside BMAD-METHOD (frontmatter, name, description, `[TODO:` left behind, `bmod.toml` parses, `customize-invalid` for a `customize.toml` that does not parse, `memory-script-stale` for a memory agent's `<skill>/scripts/wake.py` or `<skill>/scripts/init-sanctum.py` that differs from Smithy's template).
-- For each skill: `uv run {skill-root}/scripts/scan_paths.py <skill>` (paths that do not resolve, bare `scripts/` calls, references into another skill, old-format names, skill names an installed module retired).
-- For each skill with scripts: `uv run {skill-root}/scripts/scan_scripts.py <skill>`, then run its tests.
-- For a module: `uv run {skill-root}/scripts/scan_config_reads.py <module-folder>`, the folder holding the `bmod-<code>/` record and its members, or a single-skill module's own folder. `unasked` is a config value a member reads that no `[[bmod.config_questions]]` asks; `unread` is a question no member reads.
+- When `uv run "{skill-root}/scripts/registry.py" --project-root "{project-root}"` lists `records`: `uv run "{project-root}/_bmad/scripts/validate_manifests.py" --project-root "<repo>"`. It covers manifests, membership, versions, retired names, help topics and the roster.
+- For each skill: `uv run "{skill-root}/scripts/init_skill.py" --check <skill>`, with `--any-name` outside BMAD-METHOD (frontmatter, name, description, `[TODO:` left behind, `bmod.toml` parses, `customize-invalid` for a `customize.toml` that does not parse, `memory-script-stale` for a memory agent's `<skill>/scripts/wake.py` or `<skill>/scripts/init-sanctum.py` that differs from Smithy's template).
+- For each skill: `uv run "{skill-root}/scripts/scan_paths.py" <skill>` (paths that do not resolve, bare `scripts/` calls, references into another skill, old-format names, skill names an installed module retired).
+- For each skill with scripts: `uv run "{skill-root}/scripts/scan_scripts.py" <skill>`, then run its tests.
+- For a module: `uv run "{skill-root}/scripts/scan_config_reads.py" <module-folder>`, the folder holding the `bmod-<code>/` record and its members, or a single-skill module's own folder. `unasked` is a config value a member reads that no `[[bmod.config_questions]]` asks; `unread` is a question no member reads.
 
 Judge what the tools do not check:
 

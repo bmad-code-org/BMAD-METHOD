@@ -10,7 +10,7 @@ An agent is a persona with a menu: one character the user talks to, whose capabi
 | `{target}/customize.toml` | `shapes/agent/assets/customize-template.toml` | `[agent]`: identity, activation hooks, persistent facts, persona fields, `[[agent.menu]]` |
 | `{target}/references/<capability>.md` | `shapes/agent/assets/capability-template.md` | one internal capability each, only where there is know-how to hold; `shapes/agent/assets/sample-capability.md` is a finished one |
 
-Fill each template with `uv run {skill-root}/scripts/process_template.py {skill-root}/shapes/agent/assets/<template> -o {target}/<file> --var <token>=<value> ...`, passing `{skill}` (the folder name), `{name}`, `{title}`, `{icon}`, `{description}`, the persona and menu fields, and `{config-keys}` (a ` --key modules.<code>.<key>` per module setting the agent reads, or empty). Then write by hand each `{...}` left that is not a run-time token; `{project-root}`, `{skill-root}`, `{agent.*}` and config values stay for run time. The activation steps stay as the template has them.
+Fill each template with `uv run "{skill-root}/scripts/process_template.py" "{skill-root}/shapes/agent/assets/<template>" -o "{target}/<file>" --var <token>=<value> ...`, passing `{skill}` (the folder name), `{name}`, `{title}`, `{icon}`, `{description}`, the persona and menu fields, and `{config-keys}` (a ` --key modules.<code>.<key>` per module setting the agent reads, or empty). Then write by hand each `{...}` left that is not a run-time token; `{project-root}`, `{skill-root}`, `{agent.*}` and config values stay for run time. The activation steps stay as the template has them.
 
 ## Capabilities
 
