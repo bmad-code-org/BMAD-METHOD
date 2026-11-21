@@ -35,7 +35,7 @@ updated: ""
 
 <!-- companions: When the rubric part calls for one, also write `rubric-{slug}.md` beside the template. Nothing else goes beside it. -->
 
-<!-- done when: The template lists with no `order_problems` (`uv run {project-root}/_bmad/scripts/list_templates.py <its folder> --template <id>`), every heading has a comment saying what goes in, and a coach reading it alone would ask what an expert in the document asks. -->
+<!-- done when: The template lists with no `order_problems` (`uv run "{project-root}/_bmad/scripts/list_templates.py" "<its folder>" --template <id>`), every heading has a comment saying what goes in, and a coach reading it alone would ask what an expert in the document asks. -->
 
 <!-- next: Offer to try it: a run of the new template on a real case, then a change to the template from what the run showed. When an agent should offer it, name the agent in `agents:` and say the agent's owner wires it in. -->
 

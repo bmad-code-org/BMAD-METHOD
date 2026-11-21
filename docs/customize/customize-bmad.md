@@ -389,15 +389,15 @@ will use:
 
 ```bash
 # Resolve the full agent block
-uv run {project-root}/_bmad/scripts/resolve_customization.py \
-  --skill /abs/path/to/bmad-agent-pm \
-  --project-root {project-root} \
+uv run "{project-root}/_bmad/scripts/resolve_customization.py" \
+  --skill "/abs/path/to/bmad-agent-pm" \
+  --project-root "{project-root}" \
   --key agent
 
 # Resolve a single field
-uv run {project-root}/_bmad/scripts/resolve_customization.py \
-  --skill /abs/path/to/bmad-agent-pm \
-  --project-root {project-root} \
+uv run "{project-root}/_bmad/scripts/resolve_customization.py" \
+  --skill "/abs/path/to/bmad-agent-pm" \
+  --project-root "{project-root}" \
   --key agent.icon
 
 # Full dump: omit --key

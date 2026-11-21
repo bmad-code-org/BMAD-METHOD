@@ -25,7 +25,7 @@ The lens set is whatever `{workflow.lenses}` resolves to, not a fixed list — o
 
 ## Execution
 
-1. **Resolve customization:** `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`.
+1. **Resolve customization:** `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`.
    - Script not found: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - Any other failure: read `{skill-root}/customize.toml` directly and use defaults.
 

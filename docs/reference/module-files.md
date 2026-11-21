@@ -129,7 +129,7 @@ post_install_message = ""
 A skill reads a setup answer with one call, listing every key it needs.
 
 ```bash
-uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key modules.acme.release_folder
+uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key modules.acme.release_folder
 ```
 
 ## `roster.toml`
@@ -175,7 +175,7 @@ A module ships a migration beside its `bmod.toml`, and `bmad migrate` runs them 
 In a repository with `skills/*/bmod.toml`:
 
 ```bash
-uv run {project-root}/_bmad/scripts/validate_manifests.py --project-root <repo>
+uv run "{project-root}/_bmad/scripts/validate_manifests.py" --project-root "<repo>"
 ```
 
 It covers manifests, membership, versions, retired names, help topics, and the roster.

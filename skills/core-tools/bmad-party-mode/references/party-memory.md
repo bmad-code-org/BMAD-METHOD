@@ -10,7 +10,7 @@ One file per party: `{workflow.memory_dir}/{active}/memory.md`, where `{active}`
 
 ## Read it on entry — distill, don't dump
 
-Find it first: `uv run {skill-root}/scripts/party_memory.py recall --dir {workflow.memory_dir} --party {active}`. `"exists": false` means this party has no memory yet.
+Find it first: `uv run "{skill-root}/scripts/party_memory.py" recall --dir "{workflow.memory_dir}" --party {active}`. `"exists": false` means this party has no memory yet.
 
 The file is append-only and grows every session, so don't pull it raw into the party. Hand a reader subagent the `path` it returned and have it return a compact brief — a few hundred tokens of *where things stand now*, ready to play in character.
 
@@ -36,8 +36,8 @@ When a character shows up who isn't in the party's roster — cast from an open-
 ## Write it
 
 ```
-uv run {skill-root}/scripts/party_memory.py remember \
-  --dir {workflow.memory_dir} --party {active} \
+uv run "{skill-root}/scripts/party_memory.py" remember \
+  --dir "{workflow.memory_dir}" --party {active} \
   --type <dynamic|moment|callback|outcome> \
   --text "<one succinct line, in the room's own read of it>"
 ```

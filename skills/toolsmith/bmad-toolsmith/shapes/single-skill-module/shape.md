@@ -17,13 +17,13 @@ A later second skill turns this into `shapes/multi-skill-module/shape.md`, whose
 
 - `code` is the config namespace and what the user types in `bmad setup <code>`: short, lowercase, not a module the user already has.
 - The folder name is free, because `bmad` finds a module by the `[bmod]` table.
-- The skill reads every answer with `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key modules.<code>.<key>`. Nothing a question could hold is hardcoded.
+- The skill reads every answer with `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key modules.<code>.<key>`. Nothing a question could hold is hardcoded.
 - A question has only `key`, `prompt`, `default` and optional `scope = "team"|"user"`.
 - `key` is not the code and does not start with `<code>.`, since the namespace already says it.
 - `scope = "user"` is for a personal preference; a path the team shares stays team.
 - Defaults keep `{project-root}` literal.
 - `required_skills` lists `{ skill = "bmad", version = "{bmad_version}", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" }`, because the skill runs `_bmad/scripts`, plus any other skill it invokes.
-- `{bmad_version}` is `bmad.version` from `uv run {skill-root}/scripts/registry.py --project-root {project-root}`; ask the user when it is null.
+- `{bmad_version}` is `bmad.version` from `uv run "{skill-root}/scripts/registry.py" --project-root "{project-root}"`; ask the user when it is null.
 - `update_source` is where `npx skills add` fetches the skill from, `github:<owner>/<repo>` or `github:<owner>/<repo>/<path>`; ask when it is not in the conversation.
 
-Fill a template with `uv run {skill-root}/scripts/process_template.py <template> -o <dest> --var key=value ... --true <condition> ...`; a `{if-X}...{/if-X}` block survives only when `--true X` is given, and `{project-root}` passes through untouched.
+Fill a template with `uv run "{skill-root}/scripts/process_template.py" <template> -o <dest> --var key=value ... --true <condition> ...`; a `{if-X}...{/if-X}` block survives only when `--true X` is given, and `{project-root}` passes through untouched.

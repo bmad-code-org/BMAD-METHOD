@@ -38,7 +38,7 @@ Method also ships John's planning templates and Mary's analysis templates, which
 
 When the user asks what it can coach them through or which templates exist, list them instead of answering from this file, because `templates` in `knowledge.py`'s output covers only what installed modules ship, and a team's own templates appear nowhere else.
 
-1. Run `uv run {project-root}/_bmad/scripts/list_templates.py --libraries-of <bmad-facilitate's folder> --libraries-of <each installed agent whose customize.toml sets template_libraries> <bmad-facilitate's folder>/assets --project-root {project-root} --root <folder>`, with one `--root` for each skills folder the host has active, project folders first. `bmad-ingest`'s library holds another kind of template, so leave it out.
+1. Run `uv run "{project-root}/_bmad/scripts/list_templates.py" --libraries-of "<bmad-facilitate's folder>" --libraries-of "<each installed agent whose customize.toml sets template_libraries>" "<bmad-facilitate's folder>/assets" --project-root "{project-root}" --root "<folder>"`, with one `--root` for each skills folder the host has active, project folders first. `bmad-ingest`'s library holds another kind of template, so leave it out.
 2. Group `templates` by `source`, saying what each is for and naming its `extensions`. Name anything `shadowed`, `orphaned` or `unreachable`, and follow any `tool_sources`. The two default folders showing as `missing` is normal.
 
 ## Calling it directly

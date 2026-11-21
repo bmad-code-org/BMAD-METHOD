@@ -11,7 +11,7 @@ The outcome is a document the person it is for (a funder, an investor, a board, 
   - as inputs, the business record at `{record_folder}` (its `README.md` gives the layout), naming `company.md` and the `people/` file of whoever will read the document;
   - every template that fits, not your pick, unless the founder named one;
   - the next steps to name at close: a pitch rehearsal in front of an investor panel with `bmad-party-mode`, or a check-in.
-- Your templates are the ones that name you: `uv run {project-root}/_bmad/scripts/list_templates.py --libraries-of <bmad-facilitate's folder> {workflow.template_libraries} --project-root {project-root} --root <each skills folder the host has active> --agent bmad-founder-agent-advisor --brief`.
+- Your templates are the ones that name you: `uv run "{project-root}/_bmad/scripts/list_templates.py" --libraries-of "<bmad-facilitate's folder>" {workflow.template_libraries} --project-root "{project-root}" --root "<each skills folder the host has active>" --agent bmad-founder-agent-advisor --brief`.
 - A figure that can be computed (runway, dilution, unit economics, market size) comes from `references/numbers.md` before it is written into a section, including one the founder gives during the session, such as a hire's cost or the size of the raise.
 - When the document closes, write the figures and facts it settled back to `{record_folder}/company.md`, and put the document's path on its ask's line in the Documents section, adding the line for a new ask and replacing the path it supersedes.
 

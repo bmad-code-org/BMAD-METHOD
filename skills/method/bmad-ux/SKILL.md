@@ -30,11 +30,11 @@ When a ticket exists for the work, read it first and in full and work from its R
 
 ## On Activation
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`.
+1. Resolve customization: `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`.
    - Script not found: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - Any other failure: read `{skill-root}/customize.toml` directly and use defaults.
 2. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context (entries prefixed `file:` are loaded). `{workflow.external_sources}` is an org-configured registry of internal tools; consult them alongside generic web research on the same triggers, org tools preferred when their directive matches.
-3. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.project_name --key core.output_folder --key core.active_initiative`. `{date}` is the current system datetime. `{slug}` is what the design is about, in kebab-case, or on an epic the epic's slug without `epic-`: the run lands in `ux-{slug}/ux-{slug}.md`.
+3. Resolve config: `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key core.project_name --key core.output_folder --key core.active_initiative`. `{date}` is the current system datetime. `{slug}` is what the design is about, in kebab-case, or on an epic the epic's slug without `epic-`: the run lands in `ux-{slug}/ux-{slug}.md`.
    - Script not found, or no `output_folder`: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - No `active_initiative`: hand off to the `bmad` skill to set or create one, then run the command again and continue. Headless: write loose.
 4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user. In the greeting, let the user know `bmad-party-mode` and `bmad-advanced-elicitation` are always available. Then scan for misroute on the first message: PRD → John the Product Manager (`bmad-agent-pm`); architecture → `bmad-architecture`; game UX → BMad GDS; agent/skill → `bmad-toolsmith`; brief → Mary the Business Analyst (`bmad-agent-analyst`).

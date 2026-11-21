@@ -74,7 +74,7 @@ The skill must work with no override. Avoid boolean toggles, because a switch us
 The skill resolves its table on activation, then reads each value as `{workflow.<key>}` or `{agent.<key>}`.
 
 ```bash
-uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow
+uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow
 ```
 
 A value that is declared but hardcoded in the body is a defect, because every override of it does nothing. Smithy's review flags this.

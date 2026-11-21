@@ -42,7 +42,7 @@ A request or code that fits an item runs its `prompt` or `skill` (skill not inst
 
 The ticket at the altitude asked about (the initiative's, an epic's, a leaf's) is the spec; a leaf is its file when pulled, else its entry and its epic file. Read it first and in full on every request about it, before `tickets.py next` or `status` and before any file but the item's reference. Its sources were distilled into it (Source, under Terms); open a companion only when the step needs it. A status or "what's next" answer also lists the initiative folder (a `<type>-<slug>/` absent from `sources:` and `companions:` is an input not yet folded in; do not open them) and reports the file's state (open questions and assumptions, not sliced, epics not refined, entries ready, blocked), naming the next step without starting it. A start request is exempt from the full read: `find` it, confirm it is unassigned, hand off; the builder reads the ticket.
 
-`tickets.py` is `uv run {skill-root}/scripts/tickets.py --project-root {project-root}`. Resolve a leaf with `tickets.py find [<folder>] <ref>`; an epic by its `id` or `slug` in the `epics` of `tickets.py status`. On the repo store, readiness comes from `tickets.py next` or `status`. Open `{{ rendered("references/board.md") }}` to act on a row, when `problems`, `drift`, `unpinned_after`, `undeclared_after`, or `order_conflict` is non-empty, or first on a tracker.
+`tickets.py` is `uv run "{skill-root}/scripts/tickets.py" --project-root "{project-root}"`. Resolve a leaf with `tickets.py find [<folder>] <ref>`; an epic by its `id` or `slug` in the `epics` of `tickets.py status`. On the repo store, readiness comes from `tickets.py next` or `status`. Open `{{ rendered("references/board.md") }}` to act on a row, when `problems`, `drift`, `unpinned_after`, `undeclared_after`, or `order_conflict` is non-empty, or first on a tracker.
 
 ### Intake
 
@@ -69,7 +69,7 @@ Headless or autonomous: do not stop to ask; gaps become `Open question:` lines a
 
 ### Store operations
 
-`uv run {skill-root}/scripts/read_store.py --project-root {project-root} -k verbs.<name>` (repeat `-k`) returns a verb to follow. Before the first verb in a session, run it with `-k tickets`; `tickets.py` rows carry `store`. Shared rules: `{{ rendered("references/board.md") }}`.
+`uv run "{skill-root}/scripts/read_store.py" --project-root "{project-root}" -k verbs.<name>` (repeat `-k`) returns a verb to follow. Before the first verb in a session, run it with `-k tickets`; `tickets.py` rows carry `store`. Shared rules: `{{ rendered("references/board.md") }}`.
 
 | Verb | For |
 |---|---|

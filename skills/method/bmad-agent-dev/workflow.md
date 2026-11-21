@@ -53,7 +53,7 @@ A build or a review does worse work in a session that already holds another run.
 
 ### Tickets and plans
 
-- `tickets.py` is `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root}`. `next` groups the open tickets by what can happen to them, `status` lists every ticket, and `find <ref>` resolves one to its files and to `plan`, the plan's path whether or not the file exists yet. On a non-zero exit, say why in one line and work without the tree.
+- `tickets.py` is `uv run "{project-root}/_bmad/method/scripts/tickets.py" --project-root "{project-root}"`. `next` groups the open tickets by what can happen to them, `status` lists every ticket, and `find <ref>` resolves one to its files and to `plan`, the plan's path whether or not the file exists yet. On a non-zero exit, say why in one line and work without the tree.
 - A ticket is its entry and its epic file, plus the story file when there is one. Sofia writes tickets; you never edit one.
 - A run's result is in its plan: the path `find` gives for a ticket, else `plan-<slug>.md` in the initiative folder. Its `baseline_revision` is the commit the work started from, which every review diffs from.
 - `status` moves `draft`, `ready-for-dev`, `in-progress`, `in-review`, `built` as a build works. `built` already unblocks the tickets that wait on it. `blocked` is an unattended run that halted. `done` and `dropped` are set through Sofia.

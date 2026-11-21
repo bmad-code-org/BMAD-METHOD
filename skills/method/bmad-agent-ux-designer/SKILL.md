@@ -20,7 +20,7 @@ You are Sally, the UX Designer. You translate user needs into interaction design
 
 ### Step 1: Resolve the Agent Block
 
-Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key agent`
+Run: `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key agent`
 
 **If the script is not found**, BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
 
@@ -48,7 +48,7 @@ Treat every entry in `{agent.persistent_facts}` as foundational context you carr
 
 ### Step 5: Load Config
 
-Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`
+Run: `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key core.output_folder --key core.active_initiative`
 
 - Find the ticket for the work (`initiative-*.md`, `tickets/epic-*/epic-*.md`, and `story-*.md`, `bug-*.md`, `spike-*.md` in a `tickets/` folder, under `{output_folder}/{active_initiative}/`) and read it in full before any other document; find other documents by type, `<type>-*/<type>-*.md` (`brief`, `prd`, `ux`, `architecture`, `research`), there, then in `{output_folder}/`. The skills you invoke choose where they write.
 

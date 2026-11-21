@@ -26,7 +26,7 @@ The agent adds a persona and domain knowledge; the engine does the facilitation,
 
 - Create, update and validate invoke `bmad-facilitate` with:
   - the persona, the intent, and the document or inputs in play;
-  - every template of its that fits, not its pick unless the user named one: `uv run {project-root}/_bmad/scripts/list_templates.py --libraries-of <bmad-facilitate's folder> <its libraries> --project-root {project-root} --root <each skills folder the host has active> --agent <skill> --brief`;
+  - every template of its that fits, not its pick unless the user named one: `uv run "{project-root}/_bmad/scripts/list_templates.py" --libraries-of "<bmad-facilitate's folder>" <its libraries> --project-root "{project-root}" --root "<each skills folder the host has active>" --agent <skill> --brief`;
   - its libraries: its `assets/` and resolved `[workflow] template_libraries`, when it has either;
   - headless when it is, and the next steps to name at close.
 - With a `bmod.toml`, `bmad-facilitate` is in `required_skills`; not installed, the agent offers `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-facilitate`.
@@ -35,4 +35,4 @@ The agent adds a persona and domain knowledge; the engine does the facilitation,
 
 ## Check
 
-`uv run {project-root}/_bmad/scripts/list_templates.py <its folder> --template <id>` reports no `order_problems`. A module member's templates list with `--root <skills folder> --agent <skill>`; an outside agent's with `<agent folder>/assets --agent <skill>`.
+`uv run "{project-root}/_bmad/scripts/list_templates.py" "<its folder>" --template <id>` reports no `order_problems`. A module member's templates list with `--root <skills folder> --agent <skill>`; an outside agent's with `<agent folder>/assets --agent <skill>`.

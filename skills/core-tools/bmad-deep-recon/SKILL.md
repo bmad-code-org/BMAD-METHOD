@@ -23,8 +23,8 @@ Three services, freely combined — each detailed in its reference: **Draft** a 
 - **A claim is a sentence with a source.** Publisher, publication date, access date. No naked numbers.
 - **Report what is real.** Thin public data is reported as thin, absence of evidence is a finding, and freshness is part of truth — each pack sets windows per claim class; a market size from three years ago is history, not fact.
 - **Fast by default.** Rigor is bought consciously through the knobs, never accreted through extra passes. One gate, light checkpoints, no ceremony.
-- **`claims.md` is the run's ledger and process memory.** Every decision, source batch, load-bearing claim, plan change, and assumption is one line in `{doc_workspace}/claims.md`, added through the script and never edited: `uv run {skill-root}/scripts/recon_kit.py log {doc_workspace} --type <decision|source|claim|assumption|question|event> --text "…"`, repeating `--text` to add several entries of one type in one call.
-- **Open the ledger whenever you bind a run folder, new or existing:** `uv run {skill-root}/scripts/recon_kit.py ledger {doc_workspace} --field <key>="<value>" …`, with the fields the mode names. It creates `claims.md` when the folder has none; a ledger already there is left as it is, and its fields and entry count come back.
+- **`claims.md` is the run's ledger and process memory.** Every decision, source batch, load-bearing claim, plan change, and assumption is one line in `{doc_workspace}/claims.md`, added through the script and never edited: `uv run "{skill-root}/scripts/recon_kit.py" log "{doc_workspace}" --type <decision|source|claim|assumption|question|event> --text "…"`, repeating `--text` to add several entries of one type in one call.
+- **Open the ledger whenever you bind a run folder, new or existing:** `uv run "{skill-root}/scripts/recon_kit.py" ledger "{doc_workspace}" --field <key>="<value>" …`, with the fields the mode names. It creates `claims.md` when the folder has none; a ledger already there is left as it is, and its fields and entry count come back.
 - Web access is required for Run. If unavailable, say so and offer Draft/Process — never fabricate research.
 
 ## Resolution rules
@@ -38,12 +38,12 @@ Three services, freely combined — each detailed in its reference: **Draft** a 
 
 **Forwarded activation:** if a caller invoked you with a stated intent, research type, or pre-resolved customization fields (the legacy research shims and Mary's menu do), honor them verbatim — skip your own inference for those values and resolve only the rest.
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`.
+1. Resolve customization: `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`.
    - Script not found: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - Any other failure: read `{skill-root}/customize.toml` and use defaults.
 
    Run `{workflow.activation_steps_prepend}`, then `{workflow.activation_steps_append}`.
-2. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`. `{date}` is the current system datetime.
+2. Resolve config: `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key core.output_folder --key core.active_initiative`. `{date}` is the current system datetime.
    - Script not found, or no `output_folder`: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - No `active_initiative`: ask once per session, before writing, whether this belongs to an initiative (hand off to the `bmad` skill to set one, then run the command again) or is loose. Loose work drops `/{active_initiative}` from every path.
 3. Headless (no interactive user) → see `## Headless Mode`. Otherwise greet the user, and let them know they can invoke `bmad-party-mode` for multi-agent perspectives or `bmad-advanced-elicitation` for deeper exploration at any point.
@@ -87,4 +87,4 @@ When invoked headless, do not ask. A codebase ask (step 4) is reported as `"inte
 }
 ```
 
-Omit keys for artifacts not produced; the `claims` counts come from `uv run {skill-root}/scripts/recon_kit.py tally {doc_workspace}/claims.md`, never hand-counted: copy its `claims` object as it prints. Draft adds `"brief"`; process adds `"imports"`; refresh replaces `claims` scope with the refresh set plus a `deltas` array; codebase adds no key: a proposed ADR left standing and the next ask its `## Open questions` names go in `open_questions`. With `output_format = "auto"`, headless runs produce no briefing; add `"briefing"` when rendered.
+Omit keys for artifacts not produced; the `claims` counts come from `uv run "{skill-root}/scripts/recon_kit.py" tally "{doc_workspace}/claims.md"`, never hand-counted: copy its `claims` object as it prints. Draft adds `"brief"`; process adds `"imports"`; refresh replaces `claims` scope with the refresh set plus a `deltas` array; codebase adds no key: a proposed ADR left standing and the next ask its `## Open questions` names go in `open_questions`. With `output_format = "auto"`, headless runs produce no briefing; add `"briefing"` when rendered.

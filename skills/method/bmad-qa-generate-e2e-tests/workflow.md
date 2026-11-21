@@ -4,7 +4,7 @@
 
 ## Conventions
 
-- Run `tickets.py` as `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} <verb>`. A non-zero exit prints an error that names what is missing; show it and work without the tree.
+- Run `tickets.py` as `uv run "{project-root}/_bmad/method/scripts/tickets.py" --project-root "{project-root}" <verb>`. A non-zero exit prints an error that names what is missing; show it and work without the tree.
 
 ## On activation
 

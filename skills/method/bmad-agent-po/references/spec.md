@@ -18,8 +18,8 @@ On a container, SPEC is the only writer of the derived lines; a change goes to t
 
 Writes go through `{skill-root}/scripts/memlog.py`:
 
-- `uv run "{skill-root}/scripts/memlog.py" --project-root {project-root} init --workspace <ticket folder> --field topic="<the ticket's title>"` — once, at create.
-- `uv run "{skill-root}/scripts/memlog.py" --project-root {project-root} append --workspace <ticket folder> --type <decision|constraint|requirement|assumption|question|direction|note|event> --text "<one-line gist, reason included>"` — one per line; batch them in one shell call per section.
+- `uv run "{skill-root}/scripts/memlog.py" --project-root "{project-root}" init --workspace "<ticket folder>" --field topic="<the ticket's title>"` — once, at create.
+- `uv run "{skill-root}/scripts/memlog.py" --project-root "{project-root}" append --workspace "<ticket folder>" --type <decision|constraint|requirement|assumption|question|direction|note|event> --text "<one-line gist, reason included>"` — one per line; batch them in one shell call per section.
 - Terminal moments (a validation verdict, "spec finalized") are `--type event` entries; the memlog has no status field.
 
 ## The Operation

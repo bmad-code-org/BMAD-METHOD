@@ -28,7 +28,7 @@ Field semantics:
 
 For trigger cases the shape is lighter: a `query` and a `should_trigger` boolean, because there is no artifact to grade, only whether the skill fired.
 
-A skill-creator `evals.json` converts with `uv run {skill-root}/scripts/convert_cases.py <evals.json> --output <cases.json>`; `--to skill-creator` reverses it.
+A skill-creator `evals.json` converts with `uv run "{skill-root}/scripts/convert_cases.py" <evals.json> --output <cases.json>`; `--to skill-creator` reverses it.
 
 ## state_prefix: turn simulation in one shot
 
@@ -93,7 +93,7 @@ Generate near-miss should-trigger and should-not-trigger queries that share keyw
 Baseline runs every case with the skill staged and with nothing staged; variant runs the skill against the one at `--variant-path`; quality runs one config.
 
 ```
-uv run {skill-root}/scripts/run_evals.py \
+uv run "{skill-root}/scripts/run_evals.py" \
   --cases <cases-file> --skill-path <skill> --output-dir <dir> \
   --mode quality|baseline|variant [--variant-path <skill>] \
   --label <skill-name>-<mode> [--runs N]
@@ -103,7 +103,7 @@ uv run {skill-root}/scripts/run_evals.py \
 
 For quality, spawn the grader in `references/grader.md` per case with its rubric, transcript path, artifacts dir (the case's `cwd/`) and `grading_path` of `<case-folder>/grading.json`. Relay its rubric feedback. If a grader errors, mark the case `grading_error`, never a default verdict.
 
-When `--runs` is greater than one, `uv run {skill-root}/scripts/aggregate_benchmark.py --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>` gives mean, sample standard deviation, min, max and delta (`--runs <run-dir>/<config>` for one config).
+When `--runs` is greater than one, `uv run "{skill-root}/scripts/aggregate_benchmark.py" --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>` gives mean, sample standard deviation, min, max and delta (`--runs <run-dir>/<config>` for one config).
 
 ## Getting a skill to behave non-interactively
 
