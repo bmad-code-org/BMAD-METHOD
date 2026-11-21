@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """lint-spine — the mechanical half of spine decision-integrity, done deterministically.
 
@@ -17,18 +18,21 @@ It reads the spine, `<folder name>.md`, from a workspace and reports, as compact
 
 Fenced code blocks are blanked (replaced with equal-count blank lines) before scanning, so
 mermaid and source trees don't trip false positives AND reported line numbers still line up
-with the real file. Reported lines are absolute file lines (frontmatter offset added). Exit
-code is always 0 — findings travel in the JSON; the caller (Reviewer Gate / rubric walker)
-decides what to do with them.
+with the real file. Reported lines are absolute file lines (frontmatter offset added). Once
+`--project-root` names a project with BMad set up, the exit code is always 0 — findings travel in
+the JSON; the caller (Reviewer Gate / rubric walker) decides what to do with them.
 """
 
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import re
 import sys
 from pathlib import Path
+
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 
 AD_HEADING = re.compile(r"^#{2,4}\s*AD-(\d+)\b(.*)$", re.MULTILINE)
 HEADING = re.compile(r"^#{1,6}\s", re.MULTILINE)
@@ -41,19 +45,13 @@ TEMPLATE_TOKEN = re.compile(r"\{[a-z_][a-z0-9_ /.-]*\}")
 def split_frontmatter(text: str) -> tuple[str, str, int]:
     """Return (frontmatter, body, body_line_offset).
 
-    Frontmatter is the content between the first two lines that are *exactly* `---`
-    (line-exact — a `---` inside a value or a body thematic break never
-    truncates it). body_line_offset is the number of file lines before the body begins, so a
-    body-relative line number plus the offset gives the absolute file line. Absent frontmatter
-    → ('', text, 0)."""
-    lines = text.split("\n")
-    if lines and lines[0] == "---":
-        for i in range(1, len(lines)):
-            if lines[i] == "---":
-                fm = "\n".join(lines[1:i])
-                body = "\n".join(lines[i + 1 :])
-                return fm, body, i + 1
-    return "", text, 0
+    body_line_offset is the number of file lines before the body begins, so a body-relative
+    line number plus the offset gives the absolute file line. Absent frontmatter → ('', text, 0)."""
+    try:
+        fm, body = frontmatter.split(text)
+    except ValueError:
+        return "", text, 0
+    return fm, body, text[: len(text) - len(body)].count("\n")
 
 
 def blank_fences(text: str) -> str:
@@ -89,7 +87,7 @@ def find_placeholders(body: str, offset: int, name: str) -> list[dict]:
     return findings
 
 
-def find_frontmatter_placeholders(frontmatter: str, name: str) -> list[dict]:
+def find_frontmatter_placeholders(fm: str, name: str) -> list[dict]:
     """Catch unfilled tokens left in frontmatter (e.g. paradigm/scope/date) — part of the
     spine contract, but outside the body that find_placeholders scans."""
     findings: list[dict] = []
@@ -97,13 +95,13 @@ def find_frontmatter_placeholders(frontmatter: str, name: str) -> list[dict]:
         (PLACEHOLDER_WORD, "placeholder marker", "high"),
         (TEMPLATE_TOKEN, "possible unfilled template token (verify)", "low"),
     ):
-        for m in rx.finditer(frontmatter):
+        for m in rx.finditer(fm):
             findings.append(
                 {
                     "category": "placeholder",
                     "severity": severity,
                     "detail": f"frontmatter {label}: {m.group(0)!r}",
-                    "location": f"{name} frontmatter (line {1 + line_of(frontmatter, m.start())})",
+                    "location": f"{name} frontmatter (line {1 + line_of(fm, m.start())})",
                 }
             )
     return findings
@@ -220,9 +218,9 @@ def _table_cells(row: str) -> list[str]:
 
 
 def lint(text: str, name: str = "spine") -> dict:
-    frontmatter, body, offset = split_frontmatter(text)
+    fm, body, offset = split_frontmatter(text)
     findings: list[dict] = []
-    findings += find_frontmatter_placeholders(frontmatter, name)
+    findings += find_frontmatter_placeholders(fm, name)
     findings += find_placeholders(body, offset, name)
     findings += find_ad_issues(body, offset, name)
     findings += find_unpinned_stack(body, offset, name)
@@ -239,10 +237,20 @@ def lint(text: str, name: str = "spine") -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
+    global frontmatter
+
     ap = argparse.ArgumentParser(description="Lint an architecture spine for mechanical integrity.")
+    ap.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
     ap.add_argument("--workspace", required=True, help="run folder containing the spine, named after the folder")
     ap.add_argument("-o", "--output", help="write JSON here instead of stdout")
     args = ap.parse_args(argv)
+    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+        return 2
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
 
     workspace = Path(args.workspace).resolve()
     spine_path = workspace / f"{workspace.name}.md"
