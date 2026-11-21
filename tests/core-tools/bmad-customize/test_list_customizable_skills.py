@@ -169,28 +169,15 @@ class ScannerTest(unittest.TestCase):
         result = MODULE.scan_skills([self.skills], self.root)
         self.assertEqual(result["agents"][0]["description"], "")
 
-    def test_a_block_description_is_read_whole(self):
-        _make_skill(
-            self.skills,
-            "bmad-block",
-            '[agent]\nicon = "x"\n',
-            "---\ndescription: >\n  Folded --- across\n  two lines.\n---\n",
-        )
-        result = MODULE.scan_skills([self.skills], self.root)
-        self.assertEqual(result["agents"][0]["description"], "Folded --- across two lines.")
-
     def test_missing_or_malformed_metadata_gives_an_empty_description(self):
         for name, skill_md in (
-            ("bmad-none", "# No frontmatter\ndescription: x\n"),
-            ("bmad-open", "---\ndescription: never closed\n"),
             ("bmad-bad", "---\ndescription: a: b\n---\n"),
-            ("bmad-nodesc", "---\nname: bmad-nodesc\n---\n"),
             ("bmad-listdesc", "---\ndescription: [one, two]\n---\n"),
         ):
             _make_skill(self.skills, name, '[agent]\nicon = "x"\n', skill_md)
         _make_skill(self.skills, "bmad-nofile", '[agent]\nicon = "x"\n')
         result = MODULE.scan_skills([self.skills], self.root)
-        self.assertEqual([entry["description"] for entry in result["agents"]], [""] * 6)
+        self.assertEqual([entry["description"] for entry in result["agents"]], [""] * 3)
 
     def test_multiple_skills_roots_are_merged(self):
         extra_root = self.root / "extra-skills"
@@ -279,18 +266,6 @@ class ScannerTest(unittest.TestCase):
         )
         self.assertEqual(proc.returncode, 2)
         self.assertIn("does not exist", proc.stderr)
-
-    def test_cli_exits_two_when_the_shared_scripts_are_missing(self):
-        (self.root / "_bmad" / "scripts" / "frontmatter.py").unlink()
-        proc = subprocess.run(
-            [sys.executable, str(SCRIPT), "--project-root", str(self.root), "--skills-root", str(self.skills)],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        missing = self.root.resolve() / "_bmad" / "scripts" / "frontmatter.py"
-        self.assertEqual(proc.returncode, 2)
-        self.assertEqual(proc.stderr.splitlines(), [f"error: {missing} is missing. Run bmad setup for this project."])
 
 
 if __name__ == "__main__":

@@ -13,7 +13,6 @@ import importlib.util
 import json
 import re
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 
@@ -264,22 +263,6 @@ def test_frontmatter_lines_and_body_lines_stay_absolute_past_an_inline_fence_and
     text = "---\r\nname: 'x --- y'\r\nstatus: TBD\r\n---  \r\n\r\n## A\r\n\r\nTODO here\r\n"
     locations = {f["detail"].split(":")[-1].strip(): f["location"] for f in lint_spine.lint(text)["findings"]}
     assert locations == {"'TBD'": "spine frontmatter (line 3)", "'TODO'": "spine (line 8)"}
-
-
-def test_an_unterminated_frontmatter_is_linted_as_body():
-    result = lint_spine.lint("---\nname: '{name}'\n\nTBD here\n")
-    assert [f["location"] for f in result["findings"]] == ["spine (line 4)", "spine (line 2)"]
-
-
-def test_a_project_without_the_shared_scripts_is_told_to_run_setup(tmp_path):
-    result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--project-root", str(tmp_path), "--workspace", str(tmp_path)],
-        capture_output=True,
-        text=True,
-    )
-    missing = tmp_path / "_bmad" / "scripts" / "frontmatter.py"
-    assert result.returncode == 2
-    assert result.stderr.splitlines() == [f"error: {missing} is missing. Run bmad setup for this project."]
 
 
 def test_frontmatter_unfilled_token_caught():

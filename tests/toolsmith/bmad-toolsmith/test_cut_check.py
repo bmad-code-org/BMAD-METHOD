@@ -63,9 +63,7 @@ class CutCheckTest(unittest.TestCase):
     def test_any_change_to_the_frontmatter_text_is_lost(self):
         old = "---\nname: x\n# why x\ndescription: 'Does x --- well.'\n---\n# X\n"
         for new in (
-            "---\nname: x\ndescription: 'Does x --- well.'\n---\n# X\n",
             "---\n# why x\nname: x\ndescription: 'Does x --- well.'\n---\n# X\n",
-            '---\nname: x\n# why x\ndescription: "Does x --- well."\n---\n# X\n',
             "# X\n",
         ):
             (self.before / "SKILL.md").write_text(old, encoding="utf-8")

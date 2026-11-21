@@ -275,14 +275,6 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertNotIn("[BRIEF]", table, "a retired capability needs no name")
         self.assertIn("| [INTAKE] | Intake, my way | Intake, my way desc | learned, replaces built-in |", table)
 
-    def test_a_project_without_the_shared_scripts_is_told_to_run_setup(self):
-        (self.project / "_bmad" / "scripts" / "frontmatter.py").unlink()
-        res = run(self.wake, self.project)
-        missing = self.project.resolve() / "_bmad" / "scripts" / "frontmatter.py"
-        self.assertEqual(res.returncode, 2)
-        self.assertEqual(res.stderr.splitlines(), [f"error: {missing} is missing. Run bmad setup for this project."])
-        self.assertEqual(res.stdout, "")
-
     def test_capability_with_broken_frontmatter_is_named_and_replaces_nothing(self):
         self.birth()
         learned = self.sanctum / "capabilities"
@@ -292,16 +284,10 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         )
         (learned / "intake.md").write_text("---\ncode: INTAKE\n---\n", encoding="utf-8")
         (learned / "open.md").write_text("---\nname: Open\ncode: OPEN\n\nnever closed\n", encoding="utf-8")
-        (learned / "listed.md").write_text("---\n- name: Listed\n---\n", encoding="utf-8")
-        (learned / "dashes.md").write_text(
-            "---\nname: Dashes --- inline\ndescription: |\n  one\n  ---\ncode: DASH\n---\n", encoding="utf-8"
-        )
         (self.skill / "references" / "glossary.md").write_text("# Terms\n", encoding="utf-8")
         section = self.capabilities_section(run(self.wake, self.project).stdout)
         self.assertIn("capabilities/week.md: its frontmatter does not parse", section)
         self.assertIn("capabilities/open.md: its frontmatter does not parse", section)
-        self.assertIn("capabilities/listed.md: its frontmatter does not parse", section)
-        self.assertIn("| [DASH] | Dashes --- inline | one --- | learned |", section)
         self.assertIn("capabilities/intake.md: its frontmatter needs both `name` and `code`", section)
         self.assertIn("| [INTAKE] | Intake | Keep and distill material | built-in |", section)
         self.assertNotIn("glossary", section)

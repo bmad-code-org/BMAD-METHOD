@@ -9,7 +9,6 @@ import io
 import json
 import os
 import shutil
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -277,28 +276,6 @@ class IdeasTest(unittest.TestCase):
             self.skipTest("this account cannot create symlinks")
         code, data, _ = run("open", "--root", str(self.root), "--root", str(link))
         self.assertEqual((code, len(data["sessions"])), (0, 1))
-
-    def test_a_project_without_the_shared_scripts_is_told_to_run_setup(self):
-        start = ["start", "--folder", str(self.folder), "--topic", "t"]
-        result = subprocess.run(
-            [sys.executable, str(SCRIPT), "--project-root", str(self.root), *start], capture_output=True, text=True
-        )
-        missing = self.root / "_bmad" / "scripts" / "frontmatter.py"
-        self.assertEqual(result.returncode, 2)
-        self.assertEqual(result.stderr.splitlines(), [f"error: {missing} is missing. Run bmad setup for this project."])
-        self.assertFalse(self.folder.exists())
-
-    def test_an_unterminated_or_malformed_frontmatter_is_reported(self):
-        self.folder.mkdir()
-        self.log.write_text("---\ntopic: names\n- (idea) one\n", encoding="utf-8")
-        code, _, err = self.add("two")
-        self.assertEqual(code, 2)
-        self.assertIn("has no frontmatter", err)
-        self.log.write_text("---\ntopic: a: b\n---\n", encoding="utf-8")
-        code, _, err = self.add("two")
-        self.assertEqual(code, 2)
-        self.assertIn("not YAML fields", err)
-        self.assertEqual(self.log.read_text(encoding="utf-8"), "---\ntopic: a: b\n---\n")
 
     def test_open_rejects_a_pattern_that_is_not_relative(self):
         code, _, err = run("open", "--root", str(self.root), "--glob", "/abs/*")

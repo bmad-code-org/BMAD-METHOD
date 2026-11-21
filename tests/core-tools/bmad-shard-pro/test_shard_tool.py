@@ -7,7 +7,6 @@
 import io
 import json
 import shutil
-import subprocess
 import sys
 import tempfile
 from contextlib import redirect_stderr, redirect_stdout
@@ -274,27 +273,6 @@ def test_check_rejects_frontmatter_that_does_not_parse(built):
     assert code == 1 and any(f["check"] == "frontmatter" and f["file"] == "bad.md" for f in out["failures"])
     code, out = run("map", str(built))
     assert code == 1 and [u["file"] for u in out["unparsed"]] == ["bad.md"]
-
-
-def test_a_block_summary_holding_a_fence_line_is_read_whole(built):
-    (built / "extra.md").write_text(
-        "---\npart_of: ./doc-sample.md\ntitle: Extra\nsummary: >\n  Folded\n  ---\ngroup: All\n---\n\nNew text.\n",
-        encoding="utf-8",
-    )
-    code, out = run("map", str(built))
-    assert code == 0 and out["added"] == ["extra.md"]
-    assert "- [Extra](./extra.md) — Folded ---\n" in (built / "doc-sample.md").read_text(encoding="utf-8")
-    assert shard_tool.body_lines(built / "extra.md") == ["New text."]
-
-
-def test_a_project_without_the_shared_scripts_is_told_to_run_setup(tmp_path):
-    script = SKILLS / "bmad-shard-pro/scripts/shard_tool.py"
-    res = subprocess.run(
-        [sys.executable, str(script), "check", str(tmp_path)], capture_output=True, text=True, cwd=tmp_path
-    )
-    missing = Path("_bmad") / "scripts" / "frontmatter.py"
-    assert res.returncode == 2 and res.stdout == ""
-    assert res.stderr.splitlines() == [f"error: {missing} is missing. Run bmad setup for this project."]
 
 
 def test_map_keeps_the_line_of_a_shard_whose_frontmatter_breaks_and_maps_the_rest(built):

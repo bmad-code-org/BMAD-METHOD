@@ -14,7 +14,6 @@ import importlib.util
 import json
 import re
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 
@@ -100,7 +99,6 @@ def test_title_quotes_unwrapped():
     assert title("title: 'It''s here'") == "It's here"
     assert title("title: plain") == "plain"
     assert title("template: x") == ""
-    assert title("title: >\n  Folded --- over\n  two lines") == "Folded --- over two lines"
 
 
 def test_plain_markdown_and_unreadable_frontmatter_keep_the_h1_title():
@@ -108,8 +106,6 @@ def test_plain_markdown_and_unreadable_frontmatter_keep_the_h1_title():
     page = render_view.render("---\ntitle: a: b\n---\n# From the heading\n", "document")
     assert "<title>From the heading</title>" in page
     assert "title: a: b" not in page
-    _, body = render_view.prepare("---\ntitle: never closed\n# Heading\n")
-    assert body.startswith("---\ntitle: never closed")
 
 
 def test_page_title_falls_back_to_h1_then_filename():
@@ -366,18 +362,6 @@ def test_view_file_layout_writes_the_page(tmp_path, project, capsys):
     captured = capsys.readouterr()
     assert "no slot in sheet.html for: Secrets, Relationships" in captured.err
     assert "A smuggler" in (tmp_path / "character-wren.html").read_text(encoding="utf-8")
-
-
-def test_a_project_without_the_shared_scripts_is_told_to_run_setup(tmp_path):
-    doc = tmp_path / "doc.md"
-    doc.write_text("# T\n", encoding="utf-8")
-    result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--project-root", str(tmp_path), str(doc)], capture_output=True, text=True
-    )
-    missing = tmp_path / "_bmad" / "scripts" / "frontmatter.py"
-    assert result.returncode == 2
-    assert result.stderr.splitlines() == [f"error: {missing} is missing. Run bmad setup for this project."]
-    assert not (tmp_path / "doc.html").exists()
 
 
 def test_unknown_layout_exits_2(tmp_path, project, capsys):

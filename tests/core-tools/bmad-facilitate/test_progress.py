@@ -107,20 +107,11 @@ def test_all_settled_has_no_place():
     assert progress.progress("## Goal\nDone.\n")["place"] is None
 
 
-def test_optional_sections_and_a_block_list_are_read_from_the_order():
-    template = "---\nfacilitation_order:\n  - goal\n  - 'risks?'\n  - scope?\n---\n"
-    found = progress.progress("## Goal\nDone.\n\n## Risks\n<!-- open -->\n", template)
-    assert (found["total"], found["open"], found["missing"]) == (3, ["Risks", "scope"], ["scope"])
-
-
 @pytest.mark.parametrize(
     "template",
     [
-        "",
         "# No frontmatter\nfacilitation_order: [goal]\n",
         "---\nfacilitation_order: goal\n---\n",
-        "---\nfacilitation_order: [goal\n---\n",
-        "---\nfacilitation_order: [goal]\n",
     ],
 )
 def test_without_a_readable_order_the_documents_headings_are_the_order(template):

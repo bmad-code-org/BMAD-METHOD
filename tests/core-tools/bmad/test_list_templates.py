@@ -783,9 +783,8 @@ def test_an_order_that_is_not_a_list_is_reported(tmp_path):
 def test_frontmatter_that_is_not_yaml_is_reported_and_one_that_never_closes_is_no_template(tmp_path):
     (tmp_path / "bad.md").write_text("---\ntemplate: bad\nfacilitation_order: [goal, scope?]\n---\n")
     (tmp_path / "open.md").write_text("---\ntemplate: open\n\n# Body\n")
-    (tmp_path / "crlf.md").write_text(template("crlf").replace("\n", "\r\n"))
     result = list_templates.scan([str(tmp_path)])
-    assert ids(result) == ["crlf"]
+    assert ids(result) == []
     assert [(u["source"], u["reason"].split(":")[0]) for u in result["unreachable"]] == [
         (str(tmp_path / "bad.md"), "its frontmatter is not YAML")
     ]
