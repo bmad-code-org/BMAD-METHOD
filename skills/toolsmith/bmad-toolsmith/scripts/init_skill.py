@@ -118,9 +118,11 @@ def parse_frontmatter(content: str) -> tuple[dict | None, str]:
     """Return (frontmatter as a dict, or None when missing, not a YAML mapping, or name or description is not text; body)."""
     block, body = frontmatter_block(content)
     try:
-        meta = frontmatter.load(block) if block is not None else None
+        meta = frontmatter.load(block, typed=True) if block is not None else None
     except ValueError:
         meta = None
+    if meta is not None:  # typed, so `name: 123` is not text; an absent value is empty text
+        meta = {key: "" if value is None else value for key, value in meta.items()}
     ok = isinstance(meta, dict) and all(isinstance(meta.get(k, ""), str) for k in ("name", "description"))
     if ok and "description" in meta:
         meta["description"] = meta["description"].rstrip("\n")  # a block scalar's final newline is not part of it

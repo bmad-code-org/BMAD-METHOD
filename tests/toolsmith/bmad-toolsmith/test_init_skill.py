@@ -278,6 +278,7 @@ class CheckTest(unittest.TestCase):
             code, data, _ = run("--check", listed)
             self.assertEqual(rules(data), ["frontmatter-missing"])
             for text in (
+                "---\nname: 123\ndescription: 'A number. Use when asked.'\n---\n\nBody.\n",
                 "---\nname: bmad-open\ndescription: 'Never closed. Use when asked.'\n\nBody.\n",
                 "---\nname: bmad-open\ndescription: Use when: asked\n---\n\nBody.\n",
             ):
