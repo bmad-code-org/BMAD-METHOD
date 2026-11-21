@@ -43,9 +43,10 @@ npm test                   # Run the site tests
 ```
 
 The site is the only part of the repository that uses Node; everything else
-runs on `uv`. `validate-sidebar`, which `npm test` also runs, reads frontmatter
-through `tools/read_frontmatter.py`, so it needs `uv` too. `tools/quality.py`
-at the repository root runs these checks together with the Python ones.
+runs on `uv`. `validate-sidebar`, which `npm test` also runs from
+`test/test-built-pages.mjs`, reads frontmatter through
+`tools/read_frontmatter.py`, so it needs `uv` too. `tools/quality.py` at the
+repository root runs these checks together with the Python ones.
 
 ## Platform Notes
 
