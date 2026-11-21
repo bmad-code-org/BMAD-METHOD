@@ -146,11 +146,9 @@ class PrepassTest(unittest.TestCase):
             skill = make_skill(
                 Path(tmp),
                 skill_md=False,
-                files={
-                    "SKILL.md": skill_md,
-                    "references/open.md": f"---\ntitle: never closed\n\n{long_paragraph}\n",
-                },
+                files={"references/open.md": f"---\ntitle: never closed\n\n{long_paragraph}\n"},
             )
+            (skill / "SKILL.md").write_bytes(skill_md.encode())  # as written, on any platform
             result = prepass(skill)
             found = [(item["path"], item["line"]) for item in result["long_paragraphs"]]
             self.assertEqual(found, [("SKILL.md", 9), ("references/open.md", 4)])
