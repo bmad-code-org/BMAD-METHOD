@@ -35,7 +35,7 @@ npm run dev                # Start dev server
 npm run build              # Build for production (validates links first)
 npm run preview            # Preview production build
 npm run validate-links     # Check site-relative links in docs/
-npm run validate-sidebar   # Check sidebar.order frontmatter
+npm run validate-sidebar   # Check sidebar.order frontmatter (needs uv)
 npm run fix-links          # Rewrite relative links to repo-relative (add --write)
 npm run lint               # ESLint over scripts/ and test/
 npm run format:check       # Prettier over scripts/ and test/
@@ -43,8 +43,9 @@ npm test                   # Run the site tests
 ```
 
 The site is the only part of the repository that uses Node; everything else
-runs on `uv`. `tools/quality.py` at the repository root runs these checks
-together with the Python ones.
+runs on `uv`. `validate-sidebar`, which `npm test` also runs, reads frontmatter
+through `tools/read_frontmatter.py`, so it needs `uv` too. `tools/quality.py`
+at the repository root runs these checks together with the Python ones.
 
 ## Platform Notes
 

@@ -7,16 +7,20 @@
  *   - Duplicate sidebar.order values within the same directory
  *   - Gaps in the ordering sequence
  *   - sidebar: block present but missing or invalid order: field
+ *   - frontmatter that does not close or is not a YAML mapping
+ *
+ * Frontmatter is read by tools/read_frontmatter.py, so this needs uv.
  *
  * Usage:
  *   node docs-site/scripts/validate-sidebar-order.js
  */
 
+const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 
 const DOCS_ROOT = path.resolve(__dirname, '../../docs');
-const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
+const READER = path.resolve(__dirname, '../../tools/read_frontmatter.py');
 const MAX_GAPS = 50;
 
 // ── Main ─────────────────────────────────────────────────────────────────
@@ -36,13 +40,13 @@ function main() {
   console.log(`English sections: ${sections.join(', ')}\n`);
 
   const allErrors = [];
+  const sectionDirs = sections.map((section) => path.join(DOCS_ROOT, section)).filter((dir) => fs.existsSync(dir));
+  const frontmatters = readFrontmatter(sectionDirs.flatMap((dir) => listMdEntries(dir).map((e) => path.join(dir, e.name))));
 
-  for (const section of sections) {
-    const sectionDir = path.join(DOCS_ROOT, section);
-    if (!fs.existsSync(sectionDir)) continue;
-
+  for (const sectionDir of sectionDirs) {
+    const section = path.basename(sectionDir);
     console.log(`\nChecking English docs/${section}/`);
-    const { issues } = checkDirectory(sectionDir);
+    const { issues } = checkDirectory(sectionDir, frontmatters);
 
     for (const issue of issues) {
       allErrors.push(issue);
@@ -76,9 +80,10 @@ function classifyDocsDirs() {
  * Validate sidebar.order values for all markdown files in a directory.
  * Detects duplicates, gaps in sequence, missing-order, and invalid-order fields.
  * @param {string} dirPath - Absolute path to the directory to scan.
+ * @param {object} frontmatters - readFrontmatter() output for the directory's files.
  * @returns {{ orderMap: Map<number, string[]>, issues: object[] }}
  */
-function checkDirectory(dirPath) {
+function checkDirectory(dirPath, frontmatters) {
   const issues = [];
   const orderMap = new Map();
   const missingOrder = [];
@@ -86,7 +91,12 @@ function checkDirectory(dirPath) {
 
   for (const entry of listMdEntries(dirPath)) {
     const fullPath = path.join(dirPath, entry.name);
-    const result = extractSidebarOrder(fs.readFileSync(fullPath, 'utf-8'));
+    const { fields, error } = frontmatters[fullPath];
+    if (error) {
+      issues.push({ level: 'error', type: 'invalid-frontmatter', file: fullPath, message: `Invalid frontmatter (${error})` });
+      continue;
+    }
+    const result = extractSidebarOrder(fields);
 
     if (!result.hasSidebar) continue;
     if (result.order === null) {
@@ -175,7 +185,8 @@ function reportIssue(issue, indent, ctxPath) {
       console.log(`${indent}[ERROR] ${issue.message}: ${rel(issue.file)}`);
       break;
     }
-    case 'invalid-order': {
+    case 'invalid-order':
+    case 'invalid-frontmatter': {
       console.log(`${indent}[ERROR] ${issue.message}: ${rel(issue.file)}`);
       break;
     }
@@ -217,44 +228,30 @@ function rel(filePath) {
 }
 
 /**
- * Extract sidebar.order from YAML frontmatter.
- * Handles block mapping (sidebar:\n  order: 5) and flow mapping (sidebar: { order: 5 }).
- * Only matches order: as a direct child of sidebar:, not from nested blocks.
- * @param {string} content - Full file contents of a markdown file.
+ * Read the frontmatter of markdown files through tools/read_frontmatter.py.
+ * @param {string[]} files - Absolute file paths.
+ * @returns {Object<string, { fields?: object, error?: string }>} Fields, every scalar as text, or an error, by path.
+ */
+function readFrontmatter(files) {
+  try {
+    return JSON.parse(execFileSync('uv', ['run', '--quiet', READER], { input: files.join('\n'), encoding: 'utf8' }));
+  } catch (error) {
+    if (error.code === 'ENOENT') console.error('Error: uv is required to read frontmatter: https://docs.astral.sh/uv/');
+    process.exit(1);
+  }
+}
+
+/**
+ * Extract sidebar.order from frontmatter fields.
+ * @param {object} fields - The file's frontmatter, every scalar as text.
  * @returns {{ hasSidebar: boolean, order?: number|null, orderInvalid?: boolean }}
  */
-function extractSidebarOrder(content) {
-  const match = content.match(FRONTMATTER_RE);
-  if (!match) return { hasSidebar: false };
-
-  const frontmatter = match[1];
-
-  // Flow mapping: sidebar: { order: 5 }
-  const inline = frontmatter.match(/^sidebar:[ \t]*\{[^}]*\border:[ \t]*(\d+)/m);
-  if (inline) return validateOrder(inline[1]);
-
-  // Block mapping: sidebar:\n  order: 5
-  if (!/^sidebar:[ \t]*$/m.test(frontmatter)) return { hasSidebar: false };
-
-  const lines = frontmatter.split(/\r?\n/);
-  const start = lines.findIndex((l) => /^sidebar:[ \t]*$/.test(l));
-  let baseIndent = null;
-
-  for (let i = start + 1; i < lines.length; i++) {
-    const line = lines[i];
-    if (/^\s*$/.test(line)) continue;
-
-    const indent = line.search(/\S/);
-    if (indent === 0) break;
-    if (baseIndent === null) baseIndent = indent;
-    if (indent < baseIndent) break;
-    if (indent > baseIndent) continue;
-
-    const m = line.match(/^\s+order:[ \t]*(\d+)/);
-    if (m) return validateOrder(m[1]);
-  }
-
-  return { hasSidebar: true, order: null };
+function extractSidebarOrder(fields) {
+  if (!('sidebar' in fields)) return { hasSidebar: false };
+  const order = fields.sidebar?.order;
+  if (order === undefined) return { hasSidebar: true, order: null };
+  if (typeof order !== 'string' || !/^\d+$/.test(order)) return { hasSidebar: true, order: null, orderInvalid: true };
+  return validateOrder(order);
 }
 
 /**

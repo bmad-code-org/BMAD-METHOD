@@ -59,6 +59,12 @@ jobs:
           cache: npm
           cache-dependency-path: docs-site/package-lock.json
 
+      - name: Setup uv
+        # validate-sidebar reads frontmatter through tools/read_frontmatter.py.
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
       - name: Install dependencies
         run: npm ci
 
