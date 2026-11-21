@@ -47,7 +47,7 @@ An initiative or epic file is the spec at its level.
 | Section | Holds | Written by |
 | --- | --- | --- |
 | Description, Outcome | What the work is, and what is true when it is done | Sofia |
-| Requirements | One line per requirement, with a stable `R<n>` id naming its source: `R1 (FR-1)`, or on an epic `R1 (parent R3)` | Sofia only |
+| Requirements | One line per requirement, with a stable `R<n>` id naming its source: `R1 (E01)`, or on an epic `R1 (parent R1)` | Sofia only |
 | Constraints | Rules the work must keep, each citing its source id; no `R<n>` of their own | Sofia only |
 | Done when | Three to six checks that show the work is finished, judged at closure and by the retrospective | Sofia |
 | Boundaries | What is out of scope, and units the work only touches | Sofia |
@@ -76,7 +76,7 @@ A refined epic, shortened:
 type: epic
 title: "Door check-in: people check in at the door"
 parent: initiative-check-in
-covers: [R3, R4]
+covers: [R1]
 risk: medium
 ---
 
@@ -84,8 +84,8 @@ risk: medium
 
 ## Requirements
 
-R1 (parent R3): A person checks in at their room's door tablet.
-R2 (parent R4): A door tablet shows its room's bookings for the day.
+R1 (parent R1): A person checks in at their room's door tablet.
+R2 (parent R1): A door tablet shows its room's bookings for the day.
 
 ## Done when
 
@@ -155,7 +155,7 @@ id = 2
 slug = "epic-free-no-show-rooms"
 title = "Free no-show rooms"
 description = "A booked room nobody checks in to is freed, and anyone can book it."
-covers = ["R1", "R2"]
+covers = ["R2"]
 after = [{ epic = 1, needs = "check-ins recorded by the door tablet" }]
 ```
 

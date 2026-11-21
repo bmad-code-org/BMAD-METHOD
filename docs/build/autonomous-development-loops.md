@@ -1,11 +1,11 @@
 ---
 title: Autonomous Development Loops
-description: Run bmad-build-auto as the unattended worker for one session-sized unit, and let an orchestrator drive many of them.
+description: Run bmad-build-auto as the unattended worker for one ticket, and let an orchestrator drive many of them.
 sidebar:
   order: 6
 ---
 
-`bmad-build-auto` is the unattended worker for one session-sized unit in the
+`bmad-build-auto` is the unattended worker for one ticket in the
 canonical [Build a Change](./build-a-change.md) implementation model. One invocation
 clarifies, plans, implements, and reviews one intent or ticket, then exposes a
 terminal status that a human or orchestrator can act on.

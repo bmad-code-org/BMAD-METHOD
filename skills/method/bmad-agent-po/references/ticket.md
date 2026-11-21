@@ -40,7 +40,7 @@ Preserve identity, `status`, `tracker_status` and assignee.
 
 ## Self-review before the user sees it
 
-Check its level (an entry: description and verification approach; refined: runnable criteria, settled prerequisites), size (one agent session), references and consistency with the ticket above. Fix, then mention fixes that change intent.
+Check its level (an entry: description and verification approach; refined: runnable criteria, settled prerequisites), size (one capability a person can verify end to end), references and consistency with the ticket above. Fix, then mention fixes that change intent.
 
 ## After approval
 

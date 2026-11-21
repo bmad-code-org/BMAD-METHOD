@@ -27,7 +27,7 @@ unfinished. Then check the stories still at `built` and mark them done, with
 one command per story:
 
 ```text wrap
-/bmad-agent-po mark story 1.8 done
+/bmad-agent-po mark story 1.3 done
 ```
 
 Then start a fresh chat and run `bmad-retrospective` on the epic,
@@ -96,7 +96,7 @@ Then Sofia updates the initiative from it.
 ```text wrap
 /bmad-agent-po this changed, what now: the no-show window is 10 minutes, see prd-check-in/
 ```
-**Sofia:** What is required changed, not how. The RULE-1 constraint keeps its
+**Sofia:** What is required changed, not how. The INV-1 constraint keeps its
 id and now says 10 minutes. Story 2.1 was built and reviewed with 15,
 and its plan records that: keep it, and add a story that changes the value?
 Story 2.2 has not started and will be built with 10.

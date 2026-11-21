@@ -347,7 +347,7 @@ first epic and plan its stories; say "Yes."
   recommends, say "Go with your picks."
 - When she proposes the stories, say "Two stories only, to keep the
   walkthrough short. Both run on my computer, with no deployment yet."
-  Without the last sentence, she may make story 2 a production deployment,
+  Without the last sentence, she may put a production deployment in story 2,
   which you can't build here.
 - When she shows the stories and asks to save them, say "Yes."
 

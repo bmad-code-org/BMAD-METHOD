@@ -128,8 +128,7 @@ so agree it as a team or assign it in your tracker. Each owner repeats steps
    /bmad-agent-architect settle the door check-in epic's open technical questions
    ```
 
-8. **Sofia splits the epic into stories,** typically eight to twelve,
-   opening with a tracer bullet and closing with a Refactor sweep. She
+8. **Sofia splits the epic into stories.** She
    validates them and publishes them to the board. On the repo store,
    approving them commits them; on a tracker, she publishes them there, as
    [Set Up the Ticket Tree](../plan/set-up-the-ticket-tree.md#configure-where-tickets-are-tracked)

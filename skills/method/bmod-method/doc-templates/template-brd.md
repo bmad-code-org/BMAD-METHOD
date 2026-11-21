@@ -1,7 +1,7 @@
 ---
 title: ""
 template: brd
-version: 1.2.0
+version: 1.3.0
 description: "What the business requires and signs for in an initiative a separate party builds."
 not_for: "Product work inside one organization (`opportunity`, `prd`); a funding decision (`business-case`); what the system shall do, line by line (`srs`)."
 agents: [bmad-agent-analyst]
@@ -16,6 +16,8 @@ updated: ""
 <!-- purpose: A baseline of what the business requires, signed by its sponsor, that a separate builder, vendor or delivery team plans and is held to. -->
 
 <!-- stance: Stakes are usually contracted or regulated. Stay on the business side of the line: once a statement names a screen, a field or an API it has started designing, so move it to `prd` or `srs`. Push for an owner and a source on every requirement and rule. -->
+
+<!-- opening: Who signs for the business and who builds, the process being changed, and the documents behind it (business case, charter, contract, policy), to read first. The brain dump is what the business needs to be different once the work is done. -->
 
 <!-- inputs: The sponsor, the process being changed, and any business case, charter, contract or policy behind it. Only the user knows who signs, which rules are binding and what is out. -->
 
@@ -36,13 +38,13 @@ updated: ""
 <!-- The measurable outcomes this serves, short, citing the business case or charter when one exists. -->
 
 ## Stakeholders
-<!-- Who asks, who owns the outcome, who approves, who is affected. -->
+<!-- A table: who asks, who owns the outcome, who approves, who is affected. Ask who must live with the result and was not in the room. -->
 
 ## Scope
-<!-- In and out, each explicit. -->
+<!-- In and out, each explicit. Ask what the builder will assume is included, and what the business will assume is. -->
 
 ## Current and future process
-<!-- How the work runs today and how it should run after, in business terms. diagram: flowchart -->
+<!-- How the work runs today and how it should run after, in business terms: who does what, in what order, and where it goes wrong today. diagram: flowchart, one for today and one for after -->
 
 ## Business requirements
 <!-- A table: BR-N, the requirement as an outcome, owner, source, priority, how it will be verified. When everything comes back as a must, ask what the business would give up first, and rank from that answer. -->

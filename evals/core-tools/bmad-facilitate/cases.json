@@ -99,13 +99,13 @@
   },
   {
     "id": "read-back-default-step-by-step",
-    "state_prefix": "[The user asked bmad-facilitate for a pilot plan with the template files/template-pilot-plan.md. You merged the template, asked what the pilot is for and who it is with, and invited a brain dump. The user pointed you at files/memo.md; you have not read it yet. You will read it, write what it gives into the open sections, and ask whether there is anything else. The user's answer to that comes next:]",
+    "state_prefix": "[The user asked bmad-facilitate for a pilot plan with the template files/template-pilot-plan.md. You merged the template and invited a brain dump. The user pointed you at files/memo.md; you have not read it yet. You will read it, write what it gives into the open sections, and ask whether there is anything else. The user's answer to that comes next:]",
     "input": "it's Pawpost, everything is in files/memo.md, read that. the walking businesses are the pilot customers. nothing else, go ahead",
     "rubric": [
       "A pilot plan document exists under _bmad-output/ whose five sections (Goal, Pilot customers, Scope, Success, Risks) each still sit under `<!-- open -->`, and Pilot customers already names Muddy Paws, Lead On and Wag Tails.",
       "The final message reads back the purpose, the reader and the stakes, says how many sections the document has, and does not list all five sections one per line.",
       "The final message names the mode as step-by-step (one section at a time, in order), says the user can switch to freeform or fast, and says the run can be stopped and resumed.",
-      "The final message asks at most two questions, each one whose answer would change more than one section or the plan's argument (such as what the pilot must prove), and does not ask for the pilot customers, the scope or the 300-report target, which memo.md gives.",
+      "The final message asks only questions whose answers would change more than one section or the plan's argument (such as what the pilot must prove), and does not ask for the pilot customers, the scope or the 300-report target, which memo.md gives.",
       "The final message opens with a progress line naming the document and the place: `Pilot plan · Opening`, or `Pilot plan · Goal (1 of 5)` when it takes up Goal. It works no section other than Goal."
     ],
     "files": [
@@ -120,13 +120,13 @@
   },
   {
     "id": "read-back-freeform",
-    "state_prefix": "[The user asked bmad-facilitate for a pilot plan with the template files/template-pilot-plan.md. You merged the template, asked what the pilot is for and who it is with, and invited a brain dump. The user pointed you at files/memo.md; you have not read it yet. You will read it, write what it gives into the open sections, and ask whether there is anything else. The user's answer to that comes next:]",
+    "state_prefix": "[The user asked bmad-facilitate for a pilot plan with the template files/template-pilot-plan.md. You merged the template and invited a brain dump. The user pointed you at files/memo.md; you have not read it yet. You will read it, write what it gives into the open sections, and ask whether there is anything else. The user's answer to that comes next:]",
     "input": "Pawpost, read files/memo.md. nothing else. and can we do it freeform, whatever order fits",
     "rubric": [
       "A pilot plan document exists under _bmad-output/ whose five sections (Goal, Pilot customers, Scope, Success, Risks) each still sit under `<!-- open -->` or are settled only after their text was shown in the final message.",
       "The final message opens with a progress line naming the document, and reads back the purpose, the reader and the stakes and how many sections the document has.",
       "The final message agrees to work freeform, in whatever order fits, and does not list all five sections one per line.",
-      "The final message asks at most two questions, each one whose answer would change more than one section or the plan's argument, and does not ask for the pilot customers, the scope or the 300-report target, which memo.md gives."
+      "The final message asks only questions whose answers would change more than one section or the plan's argument, and does not ask for the pilot customers, the scope or the 300-report target, which memo.md gives."
     ],
     "files": [
       "files/memo.md",
@@ -140,7 +140,7 @@
   },
   {
     "id": "fixed-order-refuses-freeform",
-    "state_prefix": "[The user asked bmad-facilitate for a pilot plan with the template files/template-pilot-plan-fixed-order.md. You merged the template, asked what the pilot is for and who it is with, and invited a brain dump. The user pointed you at files/memo.md; you have not read it yet. You will read it, write what it gives into the open sections, and ask whether there is anything else. The user's answer to that comes next:]",
+    "state_prefix": "[The user asked bmad-facilitate for a pilot plan with the template files/template-pilot-plan-fixed-order.md. You merged the template and invited a brain dump. The user pointed you at files/memo.md; you have not read it yet. You will read it, write what it gives into the open sections, and ask whether there is anything else. The user's answer to that comes next:]",
     "input": "Pawpost, it's all in files/memo.md. nothing else. honestly skip the one-at-a-time stuff, just do it freeform",
     "rubric": [
       "A pilot plan document exists under _bmad-output/ that names Muddy Paws, Lead On and Wag Tails.",

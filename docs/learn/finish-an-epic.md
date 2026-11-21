@@ -84,14 +84,14 @@ done. Mark them done before the retrospective; it lists any still at
   Done when; if no retrospective exists yet, she offers one first.
 
 :::note[Example: the room booker]
-In the [room booker](../start/how-bmad-works.md#the-example-app), an office's meeting-room app, epic 1 (door check-in) has all 8 stories
+In the [room booker](../start/how-bmad-works.md#the-example-app), an office's meeting-room app, epic 1 (door check-in) has all 3 stories
 built. You mark the last one done, then run the retrospective on the
 finished epic:
 
 **You:**
 
 ```text wrap
-/bmad-agent-po mark story 1.8 done
+/bmad-agent-po mark story 1.3 done
 ```
 
 ```text wrap
