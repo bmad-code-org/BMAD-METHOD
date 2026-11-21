@@ -45,7 +45,6 @@ Exit 0 on success or a clean check, 1 on a failed check or a refused create, 2 o
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import io
 import json
 import re
@@ -55,6 +54,13 @@ import tomllib
 from pathlib import Path
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+SKILLS = Path(__file__).resolve().parents[2]  # the bmad skill installs beside this one; a source checkout groups it
+sys.path[:0] = [str(SKILLS / "bmad" / "scripts"), str(SKILLS.parent / "core-tools" / "bmad" / "scripts")]
+try:
+    import frontmatter
+except ModuleNotFoundError:
+    print("error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad", file=sys.stderr)
+    sys.exit(2)
 
 SHAPES = (
     "plain-skill",
@@ -88,32 +94,6 @@ def toml_string(value: str) -> str:
 
 
 # --- frontmatter ---------------------------------------------------------------
-
-
-def shared_frontmatter():
-    """The frontmatter module the `bmad` skill carries, from the skill beside this one (a source checkout groups
-    them, so there it is one folder further up); say how to install it and return None when it is missing."""
-    skill = Path(__file__).resolve().parents[1]
-    for folder in (skill.parent / "bmad", *sorted(skill.parent.parent.glob("*/bmad"))):
-        path = folder / "scripts" / "frontmatter.py"
-        if path.is_file():
-            spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            return module
-    print(
-        "error: the bmad skill, which carries scripts/frontmatter.py, is not installed beside this skill. "
-        "Install it: npx skills add bmad-code-org/BMAD-METHOD --skill bmad",
-        file=sys.stderr,
-    )
-    return None
-
-
-def load_shared() -> bool:
-    """Load the shared frontmatter module for this script's functions; False when it is missing."""
-    global frontmatter
-    frontmatter = shared_frontmatter()
-    return frontmatter is not None
 
 
 def frontmatter_block(content: str) -> tuple[str | None, str]:
@@ -391,8 +371,6 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--source", help="update_source for the [skill] or [bmod] table")
     p.add_argument("--description", help="frontmatter description; a [TODO: ...] placeholder when omitted")
     args = p.parse_args(argv)
-    if not load_shared():
-        return 2
 
     if args.check:
         if not args.check.is_dir():

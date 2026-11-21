@@ -20,7 +20,7 @@ Output, one JSON object on stdout:
    "tokens": {"files": [{"path", "before", "after", "percent"}], "total": {"before", "after", "percent"},
               "method": "tiktoken" | "fallback"}}
 A file's lost lists each Jinja construct ({{ }} or {% %}) and {skill-root} or {project-root} path that is
-gone, "frontmatter" when the frontmatter's text changed in any way, comments and order included, "protected" or "protected: <heading>" for a --protect file
+gone, "frontmatter" when the frontmatter changed, "protected" or "protected: <heading>" for a --protect file
 or section no longer kept word for word (a heading inside a code fence does not end a section), and
 "protected text: <passage start>" for a --protect-text passage that is gone. Top-level missing and lost list
 the files with any.
@@ -42,7 +42,7 @@ sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from count_tokens import count_tokens, read_text  # noqa: E402
-from init_skill import shared_frontmatter  # noqa: E402
+from init_skill import frontmatter  # noqa: E402
 
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$", re.MULTILINE)
 JINJA_RE = re.compile(r"\{\{.*?\}\}|\{%.*?%\}", re.DOTALL)
@@ -199,8 +199,6 @@ def check(before: Path, after: Path, protect: list[str], protect_text: list[Path
 
 
 def main(argv: list[str] | None = None) -> int:
-    global frontmatter
-
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("before", type=Path, help="copy of the skill folder taken before the rewrite")
     p.add_argument("after", type=Path, help="the skill folder now")
@@ -214,9 +212,6 @@ def main(argv: list[str] | None = None) -> int:
         help="file of passages, separated by blank lines, each kept verbatim",
     )
     args = p.parse_args(argv)
-    frontmatter = shared_frontmatter()
-    if frontmatter is None:
-        return 2
 
     for folder in (args.before, args.after):
         if not folder.is_dir():

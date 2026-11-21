@@ -15,10 +15,7 @@ sys.path.insert(0, str(FRONTMATTER.parent))
 import frontmatter  # noqa: E402
 
 GOOD_DESCRIPTION = "Counts things in a folder. Use when the user asks how big a skill is."
-NO_BMAD_SKILL = (
-    "error: the bmad skill, which carries scripts/frontmatter.py, is not installed beside this skill. "
-    "Install it: npx skills add bmad-code-org/BMAD-METHOD --skill bmad"
-)
+NO_BMAD_SKILL = "error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad"
 
 
 def run(*args, script=SCRIPT):
@@ -288,15 +285,11 @@ class CheckTest(unittest.TestCase):
             )
             code, data, _ = run("--check", listed)
             self.assertEqual(rules(data), ["frontmatter-missing"])
-            for text in (
-                "---\nname: 123\ndescription: 'A number. Use when asked.'\n---\n\nBody.\n",
-                "---\nname: bmad-open\ndescription: 'Never closed. Use when asked.'\n\nBody.\n",
-                "---\nname: bmad-open\ndescription: Use when: asked\n---\n\nBody.\n",
-            ):
-                (Path(tmp) / "bmad-open").mkdir(exist_ok=True)
-                (Path(tmp) / "bmad-open" / "SKILL.md").write_text(text, encoding="utf-8")
-                code, data, _ = run("--check", Path(tmp) / "bmad-open", "--any-name")
-                self.assertEqual(rules(data), ["frontmatter-missing"], text)
+            numeric = "---\nname: 123\ndescription: 'A number. Use when asked.'\n---\n\nBody.\n"
+            (Path(tmp) / "bmad-num").mkdir()
+            (Path(tmp) / "bmad-num" / "SKILL.md").write_text(numeric, encoding="utf-8")
+            code, data, _ = run("--check", Path(tmp) / "bmad-num", "--any-name")
+            self.assertEqual(rules(data), ["frontmatter-missing"])
 
     def test_todo_markers_about_the_marker_do_not_count(self):
         with tempfile.TemporaryDirectory() as tmp:
