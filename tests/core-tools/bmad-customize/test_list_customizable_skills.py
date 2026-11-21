@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -27,6 +28,7 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-customize/scripts/list_customizable_skills.py"
+FRONTMATTER = SCRIPT.parents[2] / "bmad" / "scripts" / "frontmatter.py"
 
 
 def _load_module():
@@ -37,6 +39,10 @@ def _load_module():
 
 
 MODULE = _load_module()
+sys.path.insert(0, str(FRONTMATTER.parent))
+import frontmatter  # noqa: E402
+
+MODULE.frontmatter = frontmatter  # main() loads the project's copy; the scanner tests call past it
 
 
 def _make_skill(parent: Path, name: str, body: str, skill_md: str | None = None) -> Path:
@@ -56,6 +62,8 @@ class ScannerTest(unittest.TestCase):
         self.skills.mkdir(parents=True)
         self.custom = self.root / "_bmad" / "custom"
         self.custom.mkdir(parents=True)
+        (self.root / "_bmad" / "scripts").mkdir()
+        shutil.copy2(FRONTMATTER, self.root / "_bmad" / "scripts")
 
     def tearDown(self):
         self.tmp.cleanup()
@@ -161,6 +169,28 @@ class ScannerTest(unittest.TestCase):
         result = MODULE.scan_skills([self.skills], self.root)
         self.assertEqual(result["agents"][0]["description"], "")
 
+    def test_a_block_description_is_read_whole(self):
+        _make_skill(
+            self.skills,
+            "bmad-block",
+            '[agent]\nicon = "x"\n',
+            "---\ndescription: >\n  Folded --- across\n  two lines.\n---\n",
+        )
+        result = MODULE.scan_skills([self.skills], self.root)
+        self.assertEqual(result["agents"][0]["description"], "Folded --- across two lines.")
+
+    def test_missing_or_malformed_metadata_gives_an_empty_description(self):
+        for name, skill_md in (
+            ("bmad-none", "# No frontmatter\ndescription: x\n"),
+            ("bmad-open", "---\ndescription: never closed\n"),
+            ("bmad-bad", "---\ndescription: a: b\n---\n"),
+            ("bmad-nodesc", "---\nname: bmad-nodesc\n---\n"),
+        ):
+            _make_skill(self.skills, name, '[agent]\nicon = "x"\n', skill_md)
+        _make_skill(self.skills, "bmad-nofile", '[agent]\nicon = "x"\n')
+        result = MODULE.scan_skills([self.skills], self.root)
+        self.assertEqual([entry["description"] for entry in result["agents"]], [""] * 5)
+
     def test_multiple_skills_roots_are_merged(self):
         extra_root = self.root / "extra-skills"
         extra_root.mkdir()
@@ -248,6 +278,18 @@ class ScannerTest(unittest.TestCase):
         )
         self.assertEqual(proc.returncode, 2)
         self.assertIn("does not exist", proc.stderr)
+
+    def test_cli_exits_two_when_the_shared_scripts_are_missing(self):
+        (self.root / "_bmad" / "scripts" / "frontmatter.py").unlink()
+        proc = subprocess.run(
+            [sys.executable, str(SCRIPT), "--project-root", str(self.root), "--skills-root", str(self.skills)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        missing = self.root.resolve() / "_bmad" / "scripts" / "frontmatter.py"
+        self.assertEqual(proc.returncode, 2)
+        self.assertEqual(proc.stderr.splitlines(), [f"error: {missing} is missing. Run bmad setup for this project."])
 
 
 if __name__ == "__main__":

@@ -30,18 +30,16 @@ produced.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
-import re
 import sys
 import tomllib
 from pathlib import Path
 
-import yaml
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 
 # Top-level TOML blocks that indicate a customization surface.
 SURFACE_KEYS = ("agent", "workflow")
-
-FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 
 
 def default_skills_root() -> Path:
@@ -66,14 +64,11 @@ def read_frontmatter_description(skill_md: Path) -> str:
         text = skill_md.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):
         return ""
-    m = FRONTMATTER_RE.match(text)
-    if not m:
-        return ""
     try:
-        meta = yaml.load(m.group(1), Loader=yaml.BaseLoader)
-    except yaml.YAMLError:
+        meta = frontmatter.load(frontmatter.split(text)[0])
+    except ValueError:
         return ""
-    return meta.get("description", "") if isinstance(meta, dict) else ""
+    return meta.get("description", "").rstrip("\n")  # a block scalar's final newline is not part of it
 
 
 def load_customize(toml_path: Path) -> dict | None:
@@ -195,6 +190,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 
 def main(argv: list[str]) -> int:
+    global frontmatter
+
     args = parse_args(argv)
     project_root = Path(args.project_root).expanduser().resolve()
     if not project_root.is_dir():
@@ -203,6 +200,13 @@ def main(argv: list[str]) -> int:
             file=sys.stderr,
         )
         return 2
+    path = project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+        return 2
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
 
     primary = Path(args.skills_root).expanduser().resolve() if args.skills_root else default_skills_root()
     extras = [Path(p).expanduser().resolve() for p in args.extra_root]
