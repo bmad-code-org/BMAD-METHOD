@@ -229,6 +229,13 @@ class TestRules(ProjectCase):
             'name "bmad-other" does not match directory name "bmad-dir".',
         )
 
+    def test_skill_06_does_not_count_a_block_descriptions_final_newline(self):
+        description = ("Use when testing. " + "x" * 1024)[:1024]
+        skill = self.add_skill(
+            "bmad-block", f"---\nname: bmad-block\ndescription: |\n  {description}\n---\n\n# Body\n\nText.\n"
+        )
+        self.assertEqual(self.findings_for(skill), [])
+
     def test_skill_06_length_and_trigger_subchecks(self):
         long_desc = "Use when testing. " + ("x" * 1024)
         long_skill = self.add_skill("bmad-long", skill_md("bmad-long", long_desc))

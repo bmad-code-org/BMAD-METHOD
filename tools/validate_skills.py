@@ -152,6 +152,9 @@ def skill_frontmatter(content: str) -> tuple[dict | None, tuple[str, int | None]
         problem = getattr(cause, "problem", None) or str(cause).splitlines()[0]
         return None, (f"Frontmatter is not valid YAML: {problem}.", line)
     fields = {key: "" if value is None else value for key, value in fields.items()}
+    for key in ("name", "description"):  # a block scalar's final newline is not part of it
+        if isinstance(fields.get(key), str):
+            fields[key] = fields[key].rstrip("\n")
     for key in ("name", "description"):
         value = fields.get(key, "")
         if not isinstance(value, str):
