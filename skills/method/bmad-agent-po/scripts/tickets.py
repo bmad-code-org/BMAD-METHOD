@@ -276,10 +276,11 @@ def file_unknown(text: str) -> str:
     return "; ".join(m.group(1).strip() for m in UNKNOWN_RE.finditer(body))
 
 
-def load_folder(folder: Path, problems: list[str]) -> list[dict]:
+def load_folder(folder: Path, problems: list[str], reserved: dict[str, list] | None = None) -> list[dict]:
     """One row per ticket in a folder, in build order: every breakdown entry, joined to its
     leaf file when one exists, then leaf files the breakdown does not list. Plans then set
-    the status fields of the rows they join."""
+    the status fields of the rows they join; the ids of plans that join nothing go in `reserved`
+    under the folder's name, so `next_id` never gives one out again."""
     where, at = folder.name, shown(folder)
     rows = {}
     for e in load_breakdown(folder).get("entry", []):
@@ -369,12 +370,17 @@ def load_folder(folder: Path, problems: list[str]) -> list[dict]:
         )
         row["raw_after"] = _list(fm.get("after", []), f"{at}/{path.name}")
     out = list(rows.values()) + [unlisted[n] for n in sorted(unlisted, key=lambda n: (isinstance(n, str), n))] + stray
-    join_plans(out, plans, at, problems)
+    orphans = join_plans(out, plans, at, problems)
+    if reserved is not None:
+        reserved[where] = orphans
     return out
 
 
-def join_plans(rows: list[dict], plans: list[tuple[str, dict]], where: str, problems: list[str]) -> None:
-    """Set each plan's status fields on the one row its `ticket` names; a bad plan is a problem, not an error."""
+def join_plans(rows: list[dict], plans: list[tuple[str, dict]], where: str, problems: list[str]) -> list:
+    """Set each plan's status fields on the one row its `ticket` names; a bad plan is a problem, not an error.
+    Returns the ids of plans that name no row: a plan left behind when its entry was deleted still holds
+    that id, and a new entry given it would read the old plan's status as its own."""
+    orphans = []
     for name, fm in plans:
         ticket = fm["ticket"]
         row = None
@@ -385,6 +391,8 @@ def join_plans(rows: list[dict], plans: list[tuple[str, dict]], where: str, prob
             row = next((r for r in rows if r["file"] == f"{ticket}.md"), None)
         if row is None:
             problems.append(f"{where}/{name}: ticket {ticket!r} names no entry or leaf file in {where}; skipped")
+            if _id(ticket) is not None:
+                orphans.append(ticket)
             continue
         if "plan" in row:
             raise TicketError(f"{where}/{row['plan']} and {name} are both plans for ticket {ticket!r}")
@@ -398,6 +406,7 @@ def join_plans(rows: list[dict], plans: list[tuple[str, dict]], where: str, prob
             problems.append(f"{e}; the ticket reads as blocked until the plan is fixed")
             fields.update(status="blocked", blocked_reason=f"{name} has an unknown status {fields['status']!r}")
         row.update({"plan": name, "state": row["tracker_status"] or STATE_OF[fields["status"]], **fields})
+    return orphans
 
 
 def epic_folders(initiative: Path) -> list[Path]:
@@ -435,8 +444,9 @@ def load_tree(folder: Path) -> dict:
         if e["slug"] in epic_ids:
             raise TicketError(f"{shown(initiative)}/{BREAKDOWN}: two epics with slug {e['slug']}")
         epic_ids[e["slug"]] = e["id"]
-    problems = []
-    tickets = [t for f in folders for t in load_folder(f, problems)]
+    problems: list[str] = []
+    reserved: dict[str, list] = {}
+    tickets = [t for f in folders for t in load_folder(f, problems, reserved)]
     for t in tickets:
         t["key"] = f"{t['epic']}/{t['id']}" if t["id"] is not None else f"{t['epic']}/{t['file']}"
     tree = {
@@ -447,6 +457,7 @@ def load_tree(folder: Path) -> dict:
         "containers": {f.name: load_container(f) for f in epics},
         "tickets": tickets,
         "problems": problems,
+        "reserved_ids": reserved,
     }
     _resolve(tree)
     _check_cycles(tickets, tree["containers"])
@@ -1010,10 +1021,11 @@ def cmd_next(args) -> dict:
 
 
 def next_id(tree: dict, folder: str) -> int:
-    """The id a new ticket in the folder takes: one past the highest number its entries and leaf files use, or
-    `next_id` at the top of its `tickets.toml` when that is higher."""
-    # `6a` uses up 6: a lettered id is a split of that number.
-    used = [re.match(r"\d+", str(t["id"])) for t in tree["tickets"] if t["epic"] == folder]
+    """The id a new ticket in the folder takes: one past the highest number its entries, leaf files and plans
+    use, or `next_id` at the top of its `tickets.toml` when that is higher."""
+    # `6a` uses up 6: a lettered id is a split of that number. A plan whose ticket is gone keeps its id taken.
+    ids = [t["id"] for t in tree["tickets"] if t["epic"] == folder] + tree.get("reserved_ids", {}).get(folder, [])
+    used = [re.match(r"\d+", str(i)) for i in ids]
     # An entry moved to another folder took its id along; the counter it left keeps that id from coming back.
     floor = load_breakdown(tree["folders"][folder]).get("next_id", 0)
     return max(max((int(m.group()) for m in used if m), default=0) + 1, floor)
