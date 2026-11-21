@@ -69,7 +69,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from difflib import SequenceMatcher  # noqa: E402
 
 from count_tokens import count_tokens, iter_text_files, read_text  # noqa: E402
-from init_skill import USE_WHEN_RE, load_shared, parse_frontmatter  # noqa: E402
+from init_skill import USE_WHEN_RE, frontmatter_block, load_shared, parse_frontmatter  # noqa: E402
 from scan_paths import scan_skill  # noqa: E402
 from scan_scripts import scan_scripts  # noqa: E402
 
@@ -168,12 +168,10 @@ def bmod_kind(root: Path) -> str:
 
 def prose_lines(text: str):
     """(line number, stripped line) for each prose line: frontmatter, fences, headings and tables skipped."""
-    lines = text.splitlines()
-    start = 0
-    if lines and lines[0].strip() == "---":
-        start = next((i for i, line in enumerate(lines[1:], 2) if line.strip() == "---"), 0)
+    _, body = frontmatter_block(text)
+    start = len(text[: len(text) - len(body)].splitlines())
     fence = ""
-    for number, line in enumerate(lines[start:], start + 1):
+    for number, line in enumerate(body.splitlines(), start + 1):
         stripped = line.strip()
         marker = FENCE_RE.match(stripped)
         if fence:
