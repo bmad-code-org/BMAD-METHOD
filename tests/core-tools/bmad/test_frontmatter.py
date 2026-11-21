@@ -94,6 +94,11 @@ def test_set_fields_rewrites_named_entries_and_keeps_the_rest_as_written():
     assert placed == "a: 1\nsources: [x, y]\ncompanions: [c]\nz: 2\n"
 
 
+def test_set_fields_keeps_a_comment_inside_a_block_list_with_its_field():
+    text = "agents:\n  - a\n# reason\n  - b\n# kept\nmode: fast\n"
+    assert frontmatter.set_fields(text, {"agents": ["c"]}) == "agents: [c]\n# kept\nmode: fast\n"
+
+
 def test_quoted_text_is_written_in_double_quotes():
     title = frontmatter.Quoted('Login: the "magic" link')
     assert (

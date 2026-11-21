@@ -65,6 +65,9 @@ def set_fields(text: str, fields: dict, remove: tuple[str, ...] = ()) -> str:
     entries: list[str] = []
     for line in text.splitlines(keepends=True):
         if entries and (not line.strip() or line[0] in " \t-"):
+            if line.strip() and len(entries) > 1 and _key(entries[-1]) is None:
+                comment = entries.pop()  # a comment inside a block list belongs to that field
+                entries[-1] += comment
             entries[-1] += line
         else:
             entries.append(line)
