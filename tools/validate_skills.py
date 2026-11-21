@@ -286,7 +286,7 @@ def _unquoted_root_tokens(cmd: str) -> list[tuple[int, str]]:
     i = 0
     while i < n:
         ch = cmd[i]
-        if ch in " \t\r\n|;&()[]":
+        if ch in " \t\r\n|;&()[]<>":
             i += 1
             continue
         if ch == "\\" and i + 1 < n and cmd[i + 1] in "\r\n":
@@ -326,7 +326,7 @@ def _unquoted_root_tokens(cmd: str) -> list[tuple[int, str]]:
                     if cmd[i + 1] in "\r\n":
                         break
                     i += 2
-                elif c in " \t\r\n|;&()[]":
+                elif c in " \t\r\n|;&()[]<>":
                     break
                 else:
                     i += 1

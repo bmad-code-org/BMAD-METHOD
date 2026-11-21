@@ -10,9 +10,9 @@ Before running inference-based validation, run the deterministic validator:
 uv run --python 3.11 tools/validate_skills.py --json path/to/skill-dir
 ```
 
-This checks 12 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, SKILL-08, PATH-02, PATH-06, SEQ-02, TPL-01.
+This checks 13 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, SKILL-08, PATH-02, PATH-06, PATH-07 (`uv run` root-path quoting), SEQ-02, TPL-01.
 
-Review its JSON output. Skip any rule that produced zero findings — it is already verified. A rule that produced findings still gets reviewed (SKILL-06's what-and-when check benefits from judgment). The 10 rules that need judgment are PATH-01, PATH-03, PATH-04, PATH-05, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03.
+Review its JSON output. Skip any purely deterministic rule that produced zero findings — it is already verified. A rule that produced findings still gets reviewed (SKILL-06's what-and-when check benefits from judgment), and PATH-07 still needs inference review for non-`uv run` shell commands and non-root path variables or placeholders even when deterministic checks pass. The 11 rules that need judgment are PATH-01, PATH-03, PATH-04, PATH-05, PATH-07, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03.
 
 ## How to Use
 

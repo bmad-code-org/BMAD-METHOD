@@ -406,6 +406,25 @@ class ScanPathsTest(unittest.TestCase):
             code, data = scan(skill)
             self.assertEqual(code, 0, data)
 
+    def test_unquoted_root_path_handles_redirections(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                {
+                    "SKILL.md": (
+                        'Ok: `uv run "{skill-root}/scripts/go.py" <"{project-root}/in.json" >"{project-root}/out.json" 2>"{project-root}/err.log"`.\n'
+                        'Bad: `uv run "{skill-root}/scripts/go.py" >{project-root}/out.json`.\n'
+                    ),
+                    "scripts/go.py": "print(1)\n",
+                },
+            )
+            code, data = scan(skill)
+            self.assertEqual(code, 1)
+            self.assertEqual(
+                [(f["line"], f["rule"], f["text"]) for f in data["findings"]],
+                [(2, "unquoted-root-path", "{project-root}/out.json")],
+            )
+
     def test_not_a_directory(self):
         res = subprocess.run([sys.executable, str(SCRIPT), "/nonexistent"], capture_output=True, text=True)
         self.assertEqual(res.returncode, 2)

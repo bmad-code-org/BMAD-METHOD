@@ -417,6 +417,7 @@ class TestRules(ProjectCase):
                         "Single quotes fail on Windows: `uv run '{skill-root}/scripts/tool.py'`.",
                         'Partial quotes split suffixes: `uv run "{project-root}"/_bmad/scripts/resolve_config.py`.',
                         'Piped: `uv run "{project-root}/_bmad/scripts/a.py" | uv run {skill-root}/scripts/b.py`.',
+                        'Redirected: `uv run "{skill-root}/scripts/tool.py" >{project-root}/out.json`.',
                         "```bash",
                         'uv run "{project-root}/_bmad/scripts/resolve_customization.py" \\',
                         "  --skill {skill-root} \\",
@@ -437,8 +438,9 @@ class TestRules(ProjectCase):
                 (2, "HIGH"),
                 (3, "HIGH"),
                 (4, "HIGH"),
-                (7, "HIGH"),
+                (5, "HIGH"),
                 (8, "HIGH"),
+                (9, "HIGH"),
             ],
         )
 
@@ -450,6 +452,7 @@ class TestRules(ProjectCase):
                     [
                         'Run `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`.',
                         'Flag equals: `uv run "{skill-root}/scripts/tool.py" --project-root="{project-root}"`.',
+                        'Redirects: `uv run "{skill-root}/scripts/tool.py" <"{project-root}/in.json" >"{project-root}/out.json" 2>"{project-root}/err.log"`.',
                         "Prose via `uv run`: read `{skill-root}/customize.toml` or `{project-root}/_bmad/custom/x.toml`.",
                         "```bash",
                         'uv run "{project-root}/_bmad/scripts/resolve_customization.py" \\',
