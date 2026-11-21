@@ -28,7 +28,7 @@ Apply without asking what changes no behavior: a defect against the standards or
 
 When a high or critical finding was fixed, rerun the pre-pass and the lenses once more; stop after two rounds.
 
-Then run `uv run "{skill-root}/scripts/cut_check.py" <copy> "{target}"`, adding `--protect-text` with the `<YYYYMMDD-HHMMSS>-<skill>-protected.txt` file in `{reports_folder}` when the execution plan named passages to keep word for word. Restore, from the copy, each item under `lost` that no finding meant to remove. One subagent per changed prose file runs the Checker from `modes/cut-roles.md`, with `<protected>` as none, since the script compared them, and the plan's decisions; restore each loss and meaning change it lists as the shortest sentence that states it.
+Then run `uv run "{skill-root}/scripts/cut_check.py" --project-root "{project-root}" <copy> "{target}"`, adding `--protect-text` with the `<YYYYMMDD-HHMMSS>-<skill>-protected.txt` file in `{reports_folder}` when the execution plan named passages to keep word for word. Restore, from the copy, each item under `lost` that no finding meant to remove. One subagent per changed prose file runs the Checker from `modes/cut-roles.md`, with `<protected>` as none, since the script compared them, and the plan's decisions; restore each loss and meaning change it lists as the shortest sentence that states it.
 
 Last, say in chat what changed, one line per file; the token table from `cut_check.py`'s `tokens` (before, after and percent per file, and the total); and what was left for the user, with its why.
 

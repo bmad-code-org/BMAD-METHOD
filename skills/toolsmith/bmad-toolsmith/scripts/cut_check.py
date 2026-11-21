@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["tiktoken"]
+# dependencies = ["pyyaml>=6.0.2,<7", "tiktoken"]
 # ///
 """cut_check: what a rewrite dropped that must survive character for character.
 
@@ -10,7 +10,10 @@ skill taken before the rewrite with the same file after it. Judging whether a ru
 Checker's work; this catches only what a string comparison can.
 
 Usage:
-  cut_check.py <before-folder> <after-folder> [--protect <path>[#<heading>] ...] [--protect-text <file> ...]
+  cut_check.py --project-root <project> <before-folder> <after-folder> [--protect <path>[#<heading>] ...]
+               [--protect-text <file> ...]
+
+--project-root names the project with BMad set up.
 
 --protect-text names a file of passages, separated by blank lines, that must survive verbatim. Each passage is
 looked up in the before copy and must still appear in the same file after the rewrite.
@@ -20,7 +23,7 @@ Output, one JSON object on stdout:
    "tokens": {"files": [{"path", "before", "after", "percent"}], "total": {"before", "after", "percent"},
               "method": "tiktoken" | "fallback"}}
 A file's lost lists each Jinja construct ({{ }} or {% %}) and {skill-root} or {project-root} path that is
-gone, "frontmatter" when the frontmatter changed, "protected" or "protected: <heading>" for a --protect file
+gone, "frontmatter" when the frontmatter's text changed in any way, comments and order included, "protected" or "protected: <heading>" for a --protect file
 or section no longer kept word for word (a heading inside a code fence does not end a section), and
 "protected text: <passage start>" for a --protect-text passage that is gone. Top-level missing and lost list
 the files with any.
@@ -32,17 +35,18 @@ shrank (null when before is 0).
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import re
 import sys
 from collections import Counter
 from pathlib import Path
 
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from count_tokens import count_tokens, read_text  # noqa: E402
 
-FRONTMATTER_RE = re.compile(r"\A---\n.*?\n---\n", re.DOTALL)
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$", re.MULTILINE)
 JINJA_RE = re.compile(r"\{\{.*?\}\}|\{%.*?%\}", re.DOTALL)
 ROOT_PATH_RE = re.compile(r"\{(?:skill-root|project-root)\}[^\s`'\"()<>\[\],;]*")
@@ -129,14 +133,22 @@ def token_table(before: Path, after: Path, files: list[str]) -> dict:
     }
 
 
+def raw_frontmatter(text: str) -> str | None:
+    """The frontmatter's YAML text as written, or None when the file has none."""
+    try:
+        return frontmatter.split(text)[0]
+    except ValueError:
+        return None
+
+
 def lost_in(before: str, after: str, protects: list[str | None]) -> list[str]:
     jinja = Counter(" ".join(m.split()) for m in JINJA_RE.findall(before))
     jinja -= Counter(" ".join(m.split()) for m in JINJA_RE.findall(after))
     lost = list(jinja.elements())
     after_paths = {p.rstrip(".:") for p in ROOT_PATH_RE.findall(after)}
     lost += sorted({p.rstrip(".:") for p in ROOT_PATH_RE.findall(before)} - after_paths)
-    fm_before, fm_after = FRONTMATTER_RE.match(before), FRONTMATTER_RE.match(after)
-    if fm_before and (not fm_after or fm_before.group(0) != fm_after.group(0)):
+    fm_before = raw_frontmatter(before)
+    if fm_before is not None and fm_before != raw_frontmatter(after):
         lost.append("frontmatter")
     for heading in protects:
         if heading is None:
@@ -190,7 +202,10 @@ def check(before: Path, after: Path, protect: list[str], protect_text: list[Path
 
 
 def main(argv: list[str] | None = None) -> int:
+    global frontmatter
+
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
     p.add_argument("before", type=Path, help="copy of the skill folder taken before the rewrite")
     p.add_argument("after", type=Path, help="the skill folder now")
     p.add_argument("--protect", action="append", default=[], help="file, or file#heading, relative to the skill")
@@ -203,6 +218,14 @@ def main(argv: list[str] | None = None) -> int:
         help="file of passages, separated by blank lines, each kept verbatim",
     )
     args = p.parse_args(argv)
+    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+        return 2
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
+
     for folder in (args.before, args.after):
         if not folder.is_dir():
             p.error(f"not a directory: {folder}")

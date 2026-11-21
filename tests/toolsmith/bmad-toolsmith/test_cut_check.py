@@ -1,6 +1,7 @@
 """Tests for cut_check.py: what a rewrite dropped, file by file."""
 
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -8,6 +9,10 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/toolsmith/bmad-toolsmith/scripts/cut_check.py"
+FRONTMATTER = SCRIPT.parents[3] / "core-tools" / "bmad" / "scripts" / "frontmatter.py"
+PROJECT = tempfile.TemporaryDirectory()  # a project with the shared scripts installed, as bmad setup leaves it
+(Path(PROJECT.name) / "_bmad" / "scripts").mkdir(parents=True)
+shutil.copy2(FRONTMATTER, Path(PROJECT.name) / "_bmad" / "scripts")
 
 OLD = (
     "---\nname: x\ndescription: 'Does x.'\n---\n# X\n\n"
@@ -16,8 +21,9 @@ OLD = (
 )
 
 
-def run(*args):
-    return subprocess.run([sys.executable, str(SCRIPT), *map(str, args)], capture_output=True, text=True)
+def run(*args, project=PROJECT.name):
+    argv = [sys.executable, str(SCRIPT), "--project-root", project, *map(str, args)]
+    return subprocess.run(argv, capture_output=True, text=True)
 
 
 class CutCheckTest(unittest.TestCase):
@@ -59,6 +65,26 @@ class CutCheckTest(unittest.TestCase):
             ['{{ rendered("a.md") }}', "{skill-root}/scripts/x.py", "frontmatter", "protected: Keep"],
         )
         self.assertEqual((data["lost"], data["missing"]), (["SKILL.md"], ["references/r.md"]))
+
+    def test_any_change_to_the_frontmatter_text_is_lost(self):
+        old = "---\nname: x\n# why x\ndescription: 'Does x --- well.'\n---\n# X\n"
+        for new in (
+            "---\nname: x\ndescription: 'Does x --- well.'\n---\n# X\n",
+            "---\n# why x\nname: x\ndescription: 'Does x --- well.'\n---\n# X\n",
+            '---\nname: x\n# why x\ndescription: "Does x --- well."\n---\n# X\n',
+            "# X\n",
+        ):
+            (self.before / "SKILL.md").write_text(old, encoding="utf-8")
+            (self.after / "SKILL.md").write_text(new, encoding="utf-8")
+            self.assertEqual({f["path"]: f["lost"] for f in self.check()["files"]}["SKILL.md"], ["frontmatter"], new)
+        (self.after / "SKILL.md").write_text(old.replace("# X", "# Y"), encoding="utf-8")
+        self.assertEqual(self.check()["lost"], [], "a body change is not a frontmatter change")
+
+    def test_a_project_without_the_shared_scripts_is_told_to_run_setup(self):
+        res = run(self.before, self.after, project=self._tmp.name)
+        missing = Path(self._tmp.name) / "_bmad" / "scripts" / "frontmatter.py"
+        self.assertEqual(res.returncode, 2)
+        self.assertEqual(res.stderr.splitlines(), [f"error: {missing} is missing. Run bmad setup for this project."])
 
     def test_whole_protected_file_must_match(self):
         (self.after / "references" / "r.md").write_text("Some reference, reworded.\n", encoding="utf-8")
