@@ -32,7 +32,7 @@ Greet the user. A change to a document, even one naming its skill or agent, goes
 ## Step 2: Discovery
 
 ```
-uv run {skill-root}/scripts/list_customizable_skills.py --project-root {project-root}
+uv run "{skill-root}/scripts/list_customizable_skills.py" --project-root "{project-root}"
 ```
 
 Use `--extra-root <path>` (repeatable) if the user has skills installed in additional locations.
@@ -77,7 +77,7 @@ Overrides are sparse: only the fields being changed. Never copy the whole `custo
 
 Every document `bmad-facilitate` writes, John's (`bmad-agent-pm`) and Mary's (`bmad-agent-analyst`) included, comes from a markdown template, not from TOML. The format is at `https://docs.bmad-method.org/customize/write-a-document-template/`.
 
-1. Find the template: `uv run {project-root}/_bmad/scripts/list_templates.py --libraries-of <bmad-facilitate's folder> --libraries-of <each installed agent whose customize.toml sets template_libraries> <bmad-facilitate's folder>/assets --project-root {project-root} --root <folder> --brief`, one `--root` per skills folder. Match the user's words to a template id; when more than one fits, such as `prd` and `prd-epic`, ask which, or both. When none is close to the document the user wants, a new document type, invoke the `bmad-facilitate` skill to write one with its `document-template` template instead of copying one; the steps below are for changing a template that exists.
+1. Find the template: `uv run "{project-root}/_bmad/scripts/list_templates.py" --libraries-of <bmad-facilitate's folder> --libraries-of <each installed agent whose customize.toml sets template_libraries> <bmad-facilitate's folder>/assets --project-root "{project-root}" --root <folder> --brief`, one `--root` per skills folder. Match the user's words to a template id; when more than one fits, such as `prd` and `prd-epic`, ask which, or both. When none is close to the document the user wants, a new document type, invoke the `bmad-facilitate` skill to write one with its `document-template` template instead of copying one; the steps below are for changing a template that exists.
 2. Sort each change. About this document type → a template file: a section to add, one made required or optional, the order, an input to ask for, a writing or review rule, its rubric, its view's `layout`, whether its HTML view is made (`view`), the mode its runs start in (`mode`: `step-by-step`, `freeform` or `fast`), or whether its sections must run in order (`order: fixed`); an empty value clears the template's `mode` or `order`. For every document → `bmad-facilitate.toml` through Steps 4–6: `view` (`offer`, `always` or `never`), `style` and `mode` (`step-by-step`, `freeform` or `fast`), each over every template's own, `doc_standards`, reviewers, output. When it could be either, ask, offering this document type first.
 3. Extend by default: `{project-root}/_bmad/custom/facilitate-templates/<id>-<purpose>.md`, or the user's existing extension of that id, updated. Read the template first, its `file` from the listing with `--template <id>`, then write only the change under `extends: <id>` frontmatter:
    - A `##` section with a comment saying where it goes and what to ask. It is required unless the comment starts `optional` or `include when`. To replace a template section, use its heading and say so in the comment.
@@ -103,7 +103,7 @@ Default by character (policy → team, personal → user), confirm before writin
 3. Write. Create `{project-root}/_bmad/custom/` if needed.
 4. Verify:
    ```
-   uv run {project-root}/_bmad/scripts/resolve_customization.py --skill <install-path> --project-root {project-root} --key <agent-or-workflow>
+   uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill <install-path> --project-root "{project-root}" --key <agent-or-workflow>
    ```
    Show the merged output, point out the changed fields.
 

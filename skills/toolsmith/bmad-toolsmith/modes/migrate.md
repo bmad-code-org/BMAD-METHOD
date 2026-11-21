@@ -22,7 +22,7 @@ Files, old to new:
 - `help_rows` to `help/help.md`: one entry per skill from its rows, what it gives and when to recommend it; preceded-by and followed-by become what to offer next. A skill with many rows gets a `help/<skill>.md` topic named in `help.md`.
 - Each skill: a `bmod.toml` with `[skill]` (`bmod`, `source`) and `scripts` when it ships any.
 
-Config, old to new, one row per `legacy_reads` entry and per `legacy_placeholders` entry, each with its v7 form. A skill reads every key it uses in one `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key ...` call at activation; placeholders of the keys it reads, such as `{output_folder}`, stay as they are.
+Config, old to new, one row per `legacy_reads` entry and per `legacy_placeholders` entry, each with its v7 form. A skill reads every key it uses in one `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key ...` call at activation; placeholders of the keys it reads, such as `{output_folder}`, stay as they are.
 
 - `output_folder` is `core.output_folder`.
 - `planning_artifacts` and `implementation_artifacts` become the initiative folder, `{output_folder}/{active_initiative}`, read with `--key core.output_folder --key core.active_initiative` and without `/{active_initiative}` when it is unset. A document goes in `<type>-<slug>/<type>-<slug>.md` under it; a skill that ships `customize.toml` declares that path as `<type>_output_path`.

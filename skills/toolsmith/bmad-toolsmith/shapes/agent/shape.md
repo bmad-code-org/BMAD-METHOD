@@ -16,7 +16,7 @@ Fill each template with `uv run {skill-root}/scripts/process_template.py {skill-
 
 A menu item is exactly one of `skill = "<installed skill>"` or `prompt = "..."`. The prompt is the whole instruction in a sentence or two, or `Read `{skill-root}/references/<capability>.md` fully and follow it.` when a file has to hold the know-how.
 
-What is installed: list the folder beside `{skill-root}`; `uv run {project-root}/_bmad/scripts/roster.py --skill {skill-root} --project-root {project-root}` names agents and their modules.
+What is installed: list the folder beside `{skill-root}`; `uv run "{project-root}/_bmad/scripts/roster.py" --skill "{skill-root}" --project-root "{project-root}"` names agents and their modules.
 
 For each thing the agent does:
 

@@ -54,8 +54,8 @@ When the description is revised from failures, change its contexts and anchors, 
 
 See what is installed:
 
-- Agents: `uv run {project-root}/_bmad/scripts/roster.py --skill {skill-root} --project-root {project-root}`.
-- Modules and their help: `uv run {project-root}/_bmad/scripts/knowledge.py --root <skills root>`.
+- Agents: `uv run "{project-root}/_bmad/scripts/roster.py" --skill "{skill-root}" --project-root "{project-root}"`.
+- Modules and their help: `uv run "{project-root}/_bmad/scripts/knowledge.py" --root <skills root>`.
 - Everything else: list the user's agent's skills folder; open a `SKILL.md` only when the name is unclear.
 
 From the discovery, decide for each installed skill: `required_skills` when the new skill invokes it, `recommended_skills` when it helps beside it, nothing otherwise.

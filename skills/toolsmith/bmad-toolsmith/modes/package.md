@@ -26,6 +26,6 @@ Show one Smithy execution plan and wait for a yes or changes:
 
 On approval set `{target}` to the folder holding the record and its members, the skill folder itself for a single-skill module. Load `shapes/single-skill-module/shape.md` or `shapes/multi-skill-module/shape.md` and emit its files.
 
-Then rewrite each skill's config reads to `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key modules.<code>.<key>`, one call per skill with every key it needs, dropping the hardcoded value each replaces. Touch nothing else in the skills.
+Then rewrite each skill's config reads to `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key modules.<code>.<key>`, one call per skill with every key it needs, dropping the hardcoded value each replaces. Touch nothing else in the skills.
 
 Load `ship.md`.
