@@ -26,7 +26,9 @@ Usage:
     [--project-root DIR] [--harness HARNESS.json | --harness-name NAME ...] [--runs-per-query N] [--threshold 0.5]
     [--timeout SECS] [--workers N] [--quiet]
 
-MATRIX.json is a list of {"query": "...", "expect": "<skill name>" | null, "also_ok": ["<name>", ...]}.
+MATRIX.json is a list of {"query": "...", "expect": "<skill name>" | null, "also_ok": ["<name>", ...]}. The
+project, given or found, must have BMad set up: its _bmad/scripts/frontmatter.py reads and writes the skills'
+frontmatter.
 
 Output, also written to matrix-result.json: each query with every skill that loaded and its
 rate, and `confusion`, which for each expected skill counts the queries where another skill
@@ -48,6 +50,7 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import run_triggers
 from eval_common import (
     DEFAULT_SKILL_DIR,
     account_transcript,
@@ -125,9 +128,8 @@ def stage_all(skills_dir: Path, skills: dict[str, str]) -> dict[str, str]:
         canaries[token] = name
         root = skills_dir / name
         root.mkdir(parents=True, exist_ok=True)
-        indented = "\n  ".join(description.split("\n"))
         (root / "SKILL.md").write_text(
-            f"---\nname: {name}\ndescription: |\n  {indented}\n---\n\n"
+            run_triggers.frontmatter.dump({"name": name, "description": description}) + "\n"
             f"Reply with only the exact token `{token}` and stop.\n",
             encoding="utf-8",
         )
