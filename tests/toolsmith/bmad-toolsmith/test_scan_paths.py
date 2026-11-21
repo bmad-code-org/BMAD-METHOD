@@ -266,6 +266,27 @@ class ScanPathsTest(unittest.TestCase):
             )
             self.assertEqual(res.returncode, 2)
 
+    def test_backticks_in_prose_do_not_hide_a_dead_reference_and_tilde_fences_do(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                {
+                    "SKILL.md": (
+                        "Open a snippet with a ``` line.\n"
+                        "Then read `references/does-not-exist.md` before going on.\n"
+                        "Close the snippet with a ``` line.\n"
+                        "~~~text\nRead `references/only-an-example.md`.\n~~~\n"
+                    ),
+                    "references/present.md": "Here.\n",
+                },
+            )
+            code, data = scan(skill)
+            self.assertEqual(code, 1)
+            self.assertEqual(
+                [(f["line"], f["rule"], f["text"]) for f in data["findings"]],
+                [(2, "missing-file", "references/does-not-exist.md")],
+            )
+
     def test_skill_root_paths_resolve_in_prose_commands_fences_and_customize(self):
         with tempfile.TemporaryDirectory() as tmp:
             skill = make_skill(

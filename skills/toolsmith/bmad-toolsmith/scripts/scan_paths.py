@@ -98,9 +98,28 @@ def finding(path: str, line: int, rule: str, text: str, fix: str) -> dict:
     return {"path": path, "line": line, "rule": rule, "text": text.strip()[:200], "fix": fix}
 
 
+FENCE_LINE_RE = re.compile(r"^\s*(`{3,}|~{3,})")  # a fence opens or closes only at the start of a line
+
+
 def blank_fences(content: str) -> str:
-    """Blank fenced code blocks but keep their newlines so line numbers stay aligned."""
-    return re.sub(r"```.*?```", lambda m: re.sub(r"[^\n]", "", m.group(0)), content, flags=re.DOTALL)
+    """Blank fenced code blocks but keep their newlines so line numbers stay aligned.
+
+    Fences pair CommonMark-style: a line starting with three or more backticks or tildes opens a block, which
+    closes only on a line of the same character, at least as long, with nothing after it. A ``` mentioned
+    mid-sentence opens nothing, so prose between two such mentions is still scanned."""
+    lines, open_fence = [], None
+    for ln in content.split("\n"):
+        fence = FENCE_LINE_RE.match(ln)
+        if open_fence is None:
+            if fence:
+                open_fence = (fence.group(1)[0], len(fence.group(1)))
+            lines.append("" if fence else ln)
+            continue
+        marker = fence.group(1) if fence else ""
+        if marker[:1] == open_fence[0] and len(marker) >= open_fence[1] and ln.strip() == marker:
+            open_fence = None
+        lines.append("")
+    return "\n".join(lines)
 
 
 def line_of(content: str, offset: int) -> int:
