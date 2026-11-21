@@ -2767,6 +2767,39 @@ class BmadConfigScopeTests(unittest.TestCase):
                 user_text + '\n[modules.alpha]\nnote_style = "prose"\n',
             )
 
+    def test_keys_a_new_template_adds_keep_the_comments_and_layout_of_the_team_file(self):
+        # A release that adds a key to config.template.toml used to re-render every project's committed
+        # config.toml, dropping its comments and reordering its tables.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project, skill = self.fixture(root)
+            self.answer_all(project, skill)
+            team_file = project / "_bmad" / "custom" / ".." / "config.toml"
+            team_text = (
+                "# the team's own notes\n"
+                + team_file.read_text(encoding="utf-8")
+                + "\n# the table after alpha\n[modules.zeta]\nother = 1  # keep me\n"
+            )
+            write(team_file, team_text)
+            write(
+                skill / "assets" / "config.template.toml",
+                MINIMAL_CONFIG.replace(
+                    "[agents.bmad-agent-pm]",
+                    'review_language = "English"\nstrict = true\n\n[agents.bmad-agent-pm]',
+                )
+                + '\n[agents.bmad-agent-new]\nname = "Nia"\n',
+            )
+
+            self.assertEqual(setup_report(self, project, skill)["config"], "updated")
+
+            expected = team_text.replace(
+                'output_folder = "{project-root}/_bmad-output"\n',
+                'output_folder = "{project-root}/_bmad-output"\nreview_language = "English"\nstrict = true\n',
+            )
+            expected += '\n[agents.bmad-agent-new]\nname = "Nia"\n'
+            self.assertEqual(team_file.read_text(encoding="utf-8"), expected)
+            self.assertEqual(setup_report(self, project, skill)["config"], "current")
+
     def test_a_table_that_cannot_be_placed_by_text_is_rendered_with_every_value_kept(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             project, skill = self.fixture(Path(temp_dir))
