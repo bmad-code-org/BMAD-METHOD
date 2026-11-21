@@ -34,7 +34,7 @@ The skill under test is the directory holding `SKILL.md`. The project root is th
 Trigger:
 
 ```
-uv run "{skill-root}/scripts/run_triggers.py" \
+uv run "{skill-root}/scripts/run_triggers.py" --project-root "{project-root}" \
   --skill-path <skill> --queries <queries-file> --output-dir <dir> \
   [--runs-per-query N]
 ```
@@ -42,7 +42,7 @@ uv run "{skill-root}/scripts/run_triggers.py" \
 Matrix, with the folders that hold the install's skills (the repository's `skills/`, or the skills folders the user's tool loads):
 
 ```
-uv run "{skill-root}/scripts/run_matrix.py" \
+uv run "{skill-root}/scripts/run_matrix.py" --project-root "{project-root}" \
   --skills <folder> [--skills <folder> ...] --queries <trigger-matrix.json> --output-dir <dir> \
   [--runs-per-query N]
 ```

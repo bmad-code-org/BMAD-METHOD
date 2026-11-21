@@ -28,7 +28,8 @@ Usage:
     [--project-root DIR] [--harness HARNESS.json | --harness-name NAME ...] [--runs-per-query N] [--threshold 0.5]
     [--timeout SECS] [--workers N] [--quiet]
 
-QUERIES.json is a list of {"query": "...", "should_trigger": true|false}.
+QUERIES.json is a list of {"query": "...", "should_trigger": true|false}. The project, given or found, must
+have BMad set up: its _bmad/scripts/frontmatter.py reads and writes the skills' frontmatter.
 
 Exit 0 when every query was measured, 1 when any attempt failed or the command was not
 found, 2 on a usage error, 3 when no harness is recorded. A query failing its threshold is a
@@ -38,14 +39,13 @@ result, not an error.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
-import re
 import sys
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-import yaml
 from eval_common import (
     DEFAULT_SKILL_DIR,
     account_transcript,
@@ -60,20 +60,40 @@ from eval_common import (
     write_json,
 )
 
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+
 CANARY_PREFIX = "TRIGGER-LOADED-"
+
+
+def load_shared(project_root: Path | None) -> bool:
+    """Load the project's shared frontmatter module; say how to set it up and return False when it is missing."""
+    global frontmatter
+
+    if project_root is None:
+        print("error: no project with _bmad/ found; pass --project-root", file=sys.stderr)
+        return False
+    path = project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+        return False
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
+    return True
 
 
 def parse_skill_md(skill_path: Path) -> tuple[str, str]:
     """Return (name, description) from SKILL.md frontmatter."""
     text = (skill_path / "SKILL.md").read_text(encoding="utf-8")
-    m = re.match(r"^---\s*\n(.*?)\n---\s*\n", text, re.DOTALL)
-    if not m:
-        raise ValueError(f"SKILL.md at {skill_path} is missing frontmatter")
-    fields = yaml.load(m.group(1), Loader=yaml.BaseLoader) or {}
+    try:
+        block, _ = frontmatter.split(text)
+    except ValueError:
+        raise ValueError(f"SKILL.md at {skill_path} is missing frontmatter") from None
+    fields = frontmatter.load(block)
     name = fields.get("name", "")
     if not name:
         raise ValueError(f"SKILL.md at {skill_path} has no name")
-    return name, fields.get("description", "")
+    return name, fields.get("description", "").rstrip("\n")  # a block scalar's final newline is not part of it
 
 
 # --- synthetic skill and detection -------------------------------------------
@@ -84,9 +104,8 @@ def write_synthetic_skill(skills_dir: Path, skill_name: str, description: str, t
     clean_name = f"{skill_name}-trig-{token[len(CANARY_PREFIX) :]}"
     root = skills_dir / clean_name
     root.mkdir(parents=True, exist_ok=True)
-    indented = "\n  ".join(description.split("\n"))
     (root / "SKILL.md").write_text(
-        f"---\nname: {clean_name}\ndescription: |\n  {indented}\n---\n\n"
+        frontmatter.dump({"name": clean_name, "description": description}) + "\n"
         f"# {skill_name}\n\nThis skill handles: {description}\n\n"
         f"Begin your reply with the exact token `{token}`, then continue.\n",
         encoding="utf-8",
@@ -167,13 +186,15 @@ def main(argv: list[str] | None = None) -> int:
         print(f"queries file not found: {queries_file}", file=sys.stderr)
         return 2
 
+    project_root = args.project_root.resolve() if args.project_root else find_project_root(skill_path)
+    if not load_shared(project_root):
+        return 2
     skill_name, description = parse_skill_md(skill_path)
     queries = read_json(queries_file)
     if not isinstance(queries, list):
         print("queries file must be a JSON list", file=sys.stderr)
         return 2
 
-    project_root = args.project_root.resolve() if args.project_root else find_project_root(skill_path)
     try:
         harness, harness_note = resolve_harness(project_root, args.harness, harness_name)
     except (ValueError, json.JSONDecodeError) as e:

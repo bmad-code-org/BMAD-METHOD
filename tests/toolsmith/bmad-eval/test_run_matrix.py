@@ -11,10 +11,15 @@ SCRIPTS_DIR = Path(__file__).resolve().parents[3] / "skills/toolsmith/bmad-eval/
 RUNNER = SCRIPTS_DIR / "run_matrix.py"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
+import run_triggers  # noqa: E402
 from run_matrix import discover, score  # noqa: E402
 
 FAKE = Path(__file__).resolve().parent / "fake_harness.py"
 RESOLVER = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad/scripts"
+sys.path.insert(0, str(RESOLVER))
+import frontmatter  # noqa: E402
+
+run_triggers.frontmatter = frontmatter  # main() loads the project's copy; discover() is called past it
 
 
 def write(path: Path, text: str) -> None:
@@ -32,6 +37,7 @@ class MatrixTest(unittest.TestCase):
         self.addCleanup(tmp.cleanup)
         self.root = Path(tmp.name)
         self.skills = self.root / "skills"
+        write(self.root / "_bmad" / "scripts" / "frontmatter.py", (RESOLVER / "frontmatter.py").read_text())
         for name in ("alpha", "beta", "gamma"):
             skill(self.skills / "mod", name, f"Does {name} things. Use when the user says {name}.")
         write(self.skills / "mod" / "beta" / "assets" / "sample" / "SKILL.md", "---\nname: sample\n---\n")
@@ -109,7 +115,7 @@ class MatrixTest(unittest.TestCase):
     def named_project(self) -> Path:
         project = self.root / "project"
         (project / "_bmad" / "scripts").mkdir(parents=True)
-        for name in ("resolve_customization.py", "config_utils.py"):
+        for name in ("resolve_customization.py", "config_utils.py", "frontmatter.py"):
             (project / "_bmad" / "scripts" / name).write_bytes((RESOLVER / name).read_bytes())
         fake = json.dumps([sys.executable, str(FAKE), "{prompt}", "{cwd}"])
         write(

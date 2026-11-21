@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Trigger matrix: with every skill of an install staged at once, which one does each query load?
 
@@ -60,7 +61,7 @@ from eval_common import (
     utc_now_iso,
     write_json,
 )
-from run_triggers import parse_skill_md
+from run_triggers import load_shared, parse_skill_md
 
 CANARY_PREFIX = "ROUTED-"
 NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
@@ -234,6 +235,9 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     harness_name = args.harness_name[0] if args.harness_name else None
 
+    project_root = args.project_root.resolve() if args.project_root else find_project_root(args.skills[0].resolve())
+    if not load_shared(project_root):
+        return 2
     try:
         skills = discover([root.resolve() for root in args.skills])
         queries = read_queries(args.queries.resolve(), skills)
@@ -241,7 +245,6 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {e}", file=sys.stderr)
         return 2
 
-    project_root = args.project_root.resolve() if args.project_root else find_project_root(args.skills[0].resolve())
     try:
         harness, harness_note = resolve_harness(project_root, args.harness, harness_name)
     except (ValueError, json.JSONDecodeError) as e:

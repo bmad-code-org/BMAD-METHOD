@@ -1,6 +1,7 @@
 """run_triggers.py against the fake harness: canary detection, unmeasured queries, exit codes."""
 
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -10,7 +11,14 @@ from pathlib import Path
 SCRIPTS_DIR = Path(__file__).resolve().parents[3] / "skills/toolsmith/bmad-eval/scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
+import run_triggers  # noqa: E402
 from run_triggers import CANARY_PREFIX, detect_load, parse_skill_md, write_synthetic_skill  # noqa: E402
+
+FRONTMATTER = SCRIPTS_DIR.parents[2] / "core-tools" / "bmad" / "scripts" / "frontmatter.py"
+sys.path.insert(0, str(FRONTMATTER.parent))
+import frontmatter  # noqa: E402
+
+run_triggers.frontmatter = frontmatter  # main() loads the project's copy; the unit tests call past it
 
 RUNNER = SCRIPTS_DIR / "run_triggers.py"
 FAKE = Path(__file__).resolve().parent / "fake_harness.py"
@@ -21,10 +29,16 @@ def write(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
+def set_up_bmad(project: Path) -> None:
+    (project / "_bmad" / "scripts").mkdir(parents=True)
+    shutil.copy2(FRONTMATTER, project / "_bmad" / "scripts")
+
+
 class TriggerRunTest(unittest.TestCase):
     def test_canary_scores_queries_and_leaves_failed_ones_unmeasured(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
+            set_up_bmad(root)  # found from the skill path: no --project-root
             skill = root / "skills" / "greet"
             write(
                 skill / "SKILL.md",
@@ -70,12 +84,20 @@ class TriggerRunTest(unittest.TestCase):
                 self.assertTrue((attempt / name).is_file(), name)
             staged = list((attempt / "cwd" / ".agents" / "skills").glob("greet-trig-*/SKILL.md"))
             self.assertEqual(len(staged), 1, "the workspace with the staged skill comes back")
-            self.assertIn("user's friends", staged[0].read_text())
+            staged_text = staged[0].read_text()
+            self.assertIn("user's friends", staged_text)
+            fields, body = frontmatter.split(staged_text)
+            self.assertEqual(
+                frontmatter.load(fields),
+                {"name": staged[0].parent.name, "description": "Greets the user's friends. Use when greeting."},
+            )
+            self.assertIn("This skill handles: Greets the user's friends. Use when greeting.", body)
             self.assertEqual(json.loads((attempt / "timing.json").read_text())["loaded"], True)
 
     def test_no_harness_exits_3(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
+            set_up_bmad(root)
             skill = root / "greet"
             write(skill / "SKILL.md", "---\nname: greet\ndescription: Greets.\n---\n")
             queries = root / "triggers.json"
@@ -88,6 +110,23 @@ class TriggerRunTest(unittest.TestCase):
             self.assertEqual(res.returncode, 3, res.stderr)
             self.assertEqual(json.loads(res.stdout)["summary"]["unmeasured"], 1)
 
+    def test_a_project_without_the_shared_scripts_is_told_to_run_setup(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write(root / "greet" / "SKILL.md", "---\nname: greet\ndescription: Greets.\n---\n")
+            write(root / "triggers.json", json.dumps([{"query": "hi", "should_trigger": True}]))
+            res = subprocess.run(
+                [sys.executable, str(RUNNER), "--skill-path", str(root / "greet"), "--queries",
+                 str(root / "triggers.json"), "--output-dir", str(root / "out"), "--project-root", str(root)],
+                capture_output=True, text=True,
+            )  # fmt: skip
+            missing = root.resolve() / "_bmad" / "scripts" / "frontmatter.py"
+            self.assertEqual(res.returncode, 2)
+            self.assertEqual(
+                res.stderr.splitlines(), [f"error: {missing} is missing. Run bmad setup for this project."]
+            )
+            self.assertFalse((root / "out").exists())
+
 
 class ParseSkillTest(unittest.TestCase):
     def test_quoted_and_block_descriptions(self):
@@ -98,10 +137,22 @@ class ParseSkillTest(unittest.TestCase):
                 "description: |\n  Block one.\n  Block two.\n": "Block one.\nBlock two.",
                 "description: 'Spans\n  two lines.'\n": "Spans two lines.",
                 "description: Plain. Use when x.\n": "Plain. Use when x.",
+                "description: Plain --- dashed. Use when x.\n": "Plain --- dashed. Use when x.",
             }
             for frontmatter, expected in cases.items():
                 write(Path(tmp) / "SKILL.md", f"---\nname: s\n{frontmatter}---\nBody.\n")
                 self.assertEqual(parse_skill_md(Path(tmp)), ("s", expected), frontmatter)
+
+    def test_missing_frontmatter_or_name_is_an_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for text, message in (
+                ("# No frontmatter\n", "missing frontmatter"),
+                ("---\nname: s\ndescription: never closed\n", "missing frontmatter"),
+                ("---\ndescription: Nameless.\n---\n", "has no name"),
+            ):
+                write(Path(tmp) / "SKILL.md", text)
+                with self.assertRaisesRegex(ValueError, message):
+                    parse_skill_md(Path(tmp))
 
 
 class CanaryTest(unittest.TestCase):
@@ -110,11 +161,13 @@ class CanaryTest(unittest.TestCase):
             token = CANARY_PREFIX + "abcd1234"
             name = write_synthetic_skill(Path(tmp), "greet", "Greets people.\nUse when greeting.", token)
             text = (Path(tmp) / name / "SKILL.md").read_text()
-            frontmatter = text.split("---")[1]
-            self.assertNotIn(token, frontmatter)
+            fields, _ = frontmatter.split(text)
+            self.assertNotIn(token, fields)
             self.assertNotIn(token, name)
             self.assertIn(f"token `{token}`", text)
-            self.assertIn("  Use when greeting.", frontmatter)
+            self.assertEqual(
+                frontmatter.load(fields), {"name": name, "description": "Greets people.\nUse when greeting."}
+            )
 
     def test_detection_needs_the_token(self):
         token = CANARY_PREFIX + "abcd1234"
