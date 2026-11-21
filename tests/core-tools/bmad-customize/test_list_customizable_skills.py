@@ -185,11 +185,12 @@ class ScannerTest(unittest.TestCase):
             ("bmad-open", "---\ndescription: never closed\n"),
             ("bmad-bad", "---\ndescription: a: b\n---\n"),
             ("bmad-nodesc", "---\nname: bmad-nodesc\n---\n"),
+            ("bmad-listdesc", "---\ndescription: [one, two]\n---\n"),
         ):
             _make_skill(self.skills, name, '[agent]\nicon = "x"\n', skill_md)
         _make_skill(self.skills, "bmad-nofile", '[agent]\nicon = "x"\n')
         result = MODULE.scan_skills([self.skills], self.root)
-        self.assertEqual([entry["description"] for entry in result["agents"]], [""] * 5)
+        self.assertEqual([entry["description"] for entry in result["agents"]], [""] * 6)
 
     def test_multiple_skills_roots_are_merged(self):
         extra_root = self.root / "extra-skills"

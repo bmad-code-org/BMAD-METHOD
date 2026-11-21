@@ -68,7 +68,8 @@ def read_frontmatter_description(skill_md: Path) -> str:
         meta = frontmatter.load(frontmatter.split(text)[0])
     except ValueError:
         return ""
-    return meta.get("description", "").rstrip("\n")  # a block scalar's final newline is not part of it
+    description = meta.get("description", "")
+    return description.rstrip("\n") if isinstance(description, str) else ""  # a block's final newline is not part of it
 
 
 def load_customize(toml_path: Path) -> dict | None:
