@@ -1386,6 +1386,8 @@ covers = ["R2", "R3"]
             json.loads(run("find", str(self.epic), "2").stdout)["notes"], ["Reuse the grid.", 'A "quoted" note.']
         )
         self.assertEqual(json.loads(run("find", str(self.epic), "4").stdout)["notes"], [])
+        long_note = "x" * 300  # too long for a file name, so it is not mistaken for one
+        self.assertEqual(run("note", str(self.epic), "4", long_note).returncode, 0)
 
         run("pull", str(self.epic), "1")
         leaf = tk(self.epic) / "story-scaffold.md"

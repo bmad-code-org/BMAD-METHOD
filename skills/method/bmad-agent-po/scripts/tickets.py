@@ -807,6 +807,14 @@ def public(t: dict, tree: dict, blocks: dict | None = None) -> dict:
 # ---------------------------------------------------------------- store
 
 
+def is_path(value: str) -> bool:
+    """Whether an argument names an existing file or folder; a note or reason too long for a path does not."""
+    try:
+        return Path(value).exists()
+    except (OSError, ValueError):
+        return False
+
+
 def load_shared(args) -> None:
     """Load the project's frontmatter module: from `--project-root`, else the project holding a folder given,
     else the working directory."""
@@ -814,7 +822,7 @@ def load_shared(args) -> None:
     if args.project_root:
         root = Path(args.project_root).resolve()
     else:
-        given = [Path(v).resolve() for v in vars(args).values() if isinstance(v, str) and Path(v).exists()]
+        given = [Path(v).resolve() for v in vars(args).values() if isinstance(v, str) and is_path(v)]
         root = next(filter(None, map(find_project_root, [*given, Path.cwd()])), None)
     if root is None:
         raise TicketError("no project root found: no _bmad/ at or above the working directory; pass --project-root")
