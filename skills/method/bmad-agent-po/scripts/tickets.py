@@ -1769,14 +1769,14 @@ def edit_frontmatter(path: Path, values: dict) -> str:
     head = text[: text.index("\n") + 1]
     closing = text[len(head) + len(block) : len(text) - len(body)]
     changed = {k: v for k, v in values.items() if v != ""}
-    block = frontmatter.set_fields(block, {}, tuple(k for k in values if k not in changed))
-    for key, value in changed.items():  # one at a time, so a new field goes last
-        block = frontmatter.set_fields(block, {key: value})
-    text = head + block + closing + body
     # An edit the other fields do not survive, such as removing an anchor another field names, is refused.
     try:
+        block = frontmatter.set_fields(block, {}, tuple(k for k in values if k not in changed))
+        for key, value in changed.items():  # one at a time, so a new field goes last
+            block = frontmatter.set_fields(block, {key: value})
+        text = head + block + closing + body
         ok = parse_frontmatter(text, path.name) == {k: v for k, v in before.items() if k not in values} | changed
-    except TicketError:
+    except (ValueError, TicketError):
         ok = False
     if not ok:
         raise TicketError(f"{path.name}: {', '.join(values)} cannot be edited in place; edit the frontmatter by hand")

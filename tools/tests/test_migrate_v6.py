@@ -861,6 +861,18 @@ class FoldSpecsTests(unittest.TestCase):
         self.assertIn("epic-ball/epic-ball.md has invalid frontmatter", problem["problem"])
         self.assertEqual(snapshot(self.project), before)
 
+    def test_a_ticket_whose_frontmatter_cannot_be_rewritten_is_reported_and_nothing_changes(self):
+        epic = self.write_epic_with_spec()
+        write(epic / "epic-ball.md", "---\n{title: Ball, type: epic}\n---\n\n# Ball\n")
+        before = snapshot(self.project)
+
+        report = self.fold()
+
+        self.assertEqual(report["folded"], [])
+        (problem,) = report["problems"]
+        self.assertIn("epic-ball.md: frontmatter cannot be rewritten field by field", problem["problem"])
+        self.assertEqual(snapshot(self.project), before)
+
     def test_a_parent_folded_on_a_later_run_leaves_the_folded_childs_ids_alone(self):
         epic = self.write_epic_with_spec()
         write(

@@ -526,8 +526,6 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     for path in (home / MEMLOG, folder / MEMLOG):
         if path.is_file():
             read_for_fold(path, project_root)
-    for path, text in writes.items():
-        path.write_text(text, encoding="utf-8")
     rewritten = [relative(path, project_root) for path in writes]
 
     references, unresolved = companion_references(spec["companions"], folder, home, project_root, store)
@@ -538,7 +536,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         text = story_text(spec, home, slug, requirements, references, sources, companions)
     else:
         text = folded_ticket_text(
-            ticket.read_text(encoding="utf-8"),
+            writes[ticket] if ticket in writes else ticket.read_text(encoding="utf-8"),
             ticket,
             spec,
             requirements,
@@ -547,6 +545,9 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
             companions,
             replace_requirements,
         )
+    # The ticket is computed before anything is written, so a ticket that cannot be rewritten stops the fold here.
+    for path, changed in writes.items():
+        path.write_text(changed, encoding="utf-8")
     home.mkdir(parents=True, exist_ok=True)
     write_text(ticket, text)
 
@@ -858,7 +859,10 @@ def folded_ticket_text(
     lists = {"sources": sources, "companions": companions}
     updates = {key: list(dict.fromkeys(frontmatter_list(meta, key) + items)) for key, items in lists.items() if items}
     remove = ("covers",) if frontmatter.load(meta).get("type") == "initiative" else ()
-    meta = frontmatter.set_fields(meta, updates, remove)
+    try:
+        meta = frontmatter.set_fields(meta, updates, remove)
+    except ValueError as error:
+        raise FoldProblem(f"{ticket.name}: {error}") from error
     front = f"---\n{meta}---\n" if meta else ""
     return front + join_sections(head, sections)
 

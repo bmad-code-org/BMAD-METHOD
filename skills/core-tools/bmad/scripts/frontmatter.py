@@ -60,7 +60,8 @@ def set_fields(text: str, fields: dict, remove: tuple[str, ...] = ()) -> str:
     """Return the YAML text with each field's top-level entry rewritten and `remove` dropped.
 
     A new field goes after the field listed before it in `fields`, or at the end. Every other line,
-    comments included, is kept as written. A list is written on one line.
+    comments included, is kept as written. A list is written on one line. Raise ValueError when the
+    text cannot be rewritten entry by entry, as with a flow mapping or an alias to another entry.
     """
     entries: list[str] = []
     for line in text.splitlines(keepends=True):
@@ -89,7 +90,14 @@ def set_fields(text: str, fields: dict, remove: tuple[str, ...] = ()) -> str:
             out.append(_yaml({new: fields[new]}, _FlowLists))
             written.add(new)
     out += [_yaml({key: value}, _FlowLists) for key, value in fields.items() if key not in written]
-    return "".join(out)
+    result = "".join(out)
+    try:
+        after = load(result)
+    except ValueError:
+        after = None
+    if after is None or any(key not in after for key in fields) or any(key in after for key in remove):
+        raise ValueError("frontmatter cannot be rewritten field by field")
+    return result
 
 
 def _key(entry: str) -> str | None:

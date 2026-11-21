@@ -99,6 +99,18 @@ def test_set_fields_keeps_a_comment_inside_a_block_list_with_its_field():
     assert frontmatter.set_fields(text, {"agents": ["c"]}) == "agents: [c]\n# kept\nmode: fast\n"
 
 
+@pytest.mark.parametrize(
+    ("text", "fields", "remove"),
+    [
+        ("{type: epic, sources: [a]}\n", {"sources": ["a", "b"]}, ()),
+        ("defaults: &d {state: open}\ncopy: *d\n", {}, ("copy",)),
+    ],
+)
+def test_set_fields_refuses_text_it_cannot_rewrite_entry_by_entry(text, fields, remove):
+    with pytest.raises(ValueError, match="field by field"):
+        frontmatter.set_fields(text, fields, remove)
+
+
 def test_quoted_text_is_written_in_double_quotes():
     title = frontmatter.Quoted('Login: the "magic" link')
     assert (

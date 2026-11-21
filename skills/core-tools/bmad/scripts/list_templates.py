@@ -577,8 +577,13 @@ def main(argv: list[str]) -> int:
             return 1
         if args.merge:
             out = Path(args.merge).expanduser()
+            try:
+                text = merged(result["templates"][0])
+            except ValueError as e:  # frontmatter set_fields cannot rewrite, such as a flow mapping
+                print(json.dumps({"error": f"cannot merge `{args.template}`: {e}"}, indent=2))
+                return 1
             out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(merged(result["templates"][0]), encoding="utf-8")
+            out.write_text(text, encoding="utf-8")
             result["merged"] = str(out)
     for template in result["templates"]:
         for key in [k for k in template if k.startswith("_")]:
