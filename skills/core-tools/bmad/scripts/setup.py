@@ -21,6 +21,8 @@ import urllib.request
 from pathlib import Path, PurePosixPath
 from typing import NamedTuple
 
+import session_start_hook
+
 sys.dont_write_bytecode = True
 
 MANIFEST_NAME = "bmod.toml"
@@ -340,6 +342,9 @@ def setup(
     if not output.exists() and not output.is_symlink():
         changed = True
     ensure_dir(output)
+    # After materialize, so the hook's script is in _bmad/scripts before any tool can run it.
+    session_start = session_start_hook.apply(project_root, roots, session_start_hook.answer(merged))
+    changed = changed or bool(session_start["changed"])
 
     unmet = unmet_requirements(installation, skill_root, module=None if selected is None else selected.module)
     recommended = unmet_recommendations(installation, skill_root, module=None if selected is None else selected.module)
@@ -374,6 +379,7 @@ def setup(
         ],
         "answers": current_answers(scoped, merged, user_merged),
         "pending_questions": [question_json(question) for question in remaining],
+        "session_start": session_start,
         "unmet_requirements": unmet,
         "unmet_recommendations": recommended,
         "missing_module_records": list(installation.missing_records),
@@ -1753,8 +1759,10 @@ def status_report(
     gitignore_state = custom_gitignore_state(project_root)
     problems.extend(custom_gitignore_problems(gitignore_state))
     retirement = retirement_report(project_root, skill_root, installation, retired_skills(scoped, installation.modules))
+    session_start = session_start_hook.report(project_root, roots, session_start_hook.answer(_merged))
     setup_owed = (
         not bmad.is_dir()
+        or bool(session_start["owed"])
         or shared_state != "current"
         or team_config_state(project_root, existing_text, base_text) != "current"
         or not (custom.exists() or custom.is_symlink())
@@ -1784,6 +1792,7 @@ def status_report(
         "missing_module_records": list(installation.missing_records),
         "duplicate_skills": duplicates_json(installation.duplicates, project_root),
         "pending_questions": [question_json(question) for question in pending],
+        "session_start": session_start,
         "unmet_requirements": unmet,
         "unmet_recommendations": unmet_recommendations(installation, skill_root, module=code),
         "problems": problems,
