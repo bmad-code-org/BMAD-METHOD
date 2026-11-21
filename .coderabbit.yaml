@@ -73,13 +73,13 @@ reviews:
     - '!**/validation-report-*.html'
     - '!CHANGELOG.md'
   path_instructions:
-    - path: src/**
+    - path: skills/**
       instructions: |
         Source changed. Check whether docs/ needs a matching update — new
         features, changed behavior, renamed concepts, altered CLI flags, or
         modified configuration options should all be reflected in the relevant
         doc pages. Flag missing or outdated docs.
-    - path: src/*-skills/**
+    - path: skills/**/*.md
       instructions: |
         Skill file. This is prompt text read by an agent at runtime, not
         executable code. Confine review to claims checkable against the
@@ -91,7 +91,7 @@ reviews:
         for SKILL.md metadata, workflow constraints, step file structure, path
         references, variable resolution, sequential execution, and skill
         invocation syntax.
-    - path: src/bmm-skills/agents/**
+    - path: skills/*/*-agent-*/**
       instructions: |
         Agent skill. The persona is configured in customize.toml under [agent]:
         check that every {agent.*} placeholder the SKILL.md interpolates has a
@@ -105,9 +105,9 @@ reviews:
       instructions: |
         Build script/tooling. Check error handling and that failures exit
         non-zero.
-    - path: src/scripts/**
+    - path: skills/**/scripts/**
       instructions: |
-        Build script/tooling. Check error handling and that failures exit
+        Skill script/tooling. Check error handling and that failures exit
         non-zero.
 
 knowledge_base:
