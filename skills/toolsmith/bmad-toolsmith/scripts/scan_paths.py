@@ -67,7 +67,7 @@ BARE_SCRIPT_RE = re.compile(r"\buv\s+run\b[^`\n]*?\s(?:\./)?scripts/\S+")
 UV_RUN_RE = re.compile(r"\buv\s+run\b")
 ROOT_ANCHOR_RE = re.compile(r"\{(?:project-root|skill-root)\}")
 CODE_FENCE_RE = re.compile(
-    r"^(?P<indent>[ \t]*)(?P<fence>`{3,}|~{3,})(?P<info>[^\r\n]*)\r?\n(?P<body>.*?)^(?P=indent)(?P=fence)[ \t]*(?:\r?\n|\Z)",
+    r"^[ \t]*(?P<fence>(?P<fence_char>`|~)(?P=fence_char){2,})(?P<info>[^\r\n]*)\r?\n(?P<body>.*?)^[ \t]*(?P=fence)(?P=fence_char)*[ \t]*(?:\r?\n|\Z)",
     re.MULTILINE | re.DOTALL,
 )
 INLINE_CODE_RE = re.compile(r"`([^`\r\n]+)`")
@@ -269,7 +269,7 @@ def scan_unquoted_root_paths(content: str, rel: str) -> list[dict]:
     def scan_non_fenced(segment: str, base_offset: int) -> None:
         for im in INLINE_CODE_RE.finditer(segment):
             check_span(im.group(1), base_offset + im.start(1))
-        blanked = INLINE_CODE_RE.sub(lambda m: re.sub(r"[^\r\n]", "", m.group(0)), segment)
+        blanked = INLINE_CODE_RE.sub(lambda m: re.sub(r"[^\r\n]", " ", m.group(0)), segment)
         pos = 0
         for line in blanked.splitlines(keepends=True):
             if UV_RUN_RE.search(line):

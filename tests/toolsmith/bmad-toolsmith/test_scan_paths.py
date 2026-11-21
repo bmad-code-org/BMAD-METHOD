@@ -425,6 +425,28 @@ class ScanPathsTest(unittest.TestCase):
                 [(2, "unquoted-root-path", "{project-root}/out.json")],
             )
 
+    def test_unquoted_root_path_preserves_lines_and_closing_fences(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                {
+                    "SKILL.md": (
+                        "See `abcdefghijklmnopqrstuvwxyz` first.\n"
+                        "uv run {project-root}/_bmad/scripts/resolve_config.py\n"
+                        "```toml\n"
+                        "prompt = 'uv run {skill-root}/scripts/go.py'\n"
+                        "  ````\n"
+                    ),
+                    "scripts/go.py": "print(1)\n",
+                },
+            )
+            code, data = scan(skill)
+            self.assertEqual(code, 1)
+            self.assertEqual(
+                [(f["line"], f["rule"], f["text"]) for f in data["findings"]],
+                [(2, "unquoted-root-path", "{project-root}/_bmad/scripts/resolve_config.py")],
+            )
+
     def test_not_a_directory(self):
         res = subprocess.run([sys.executable, str(SCRIPT), "/nonexistent"], capture_output=True, text=True)
         self.assertEqual(res.returncode, 2)

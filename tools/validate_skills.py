@@ -67,7 +67,7 @@ BARE_SCRIPT_RE = re.compile(r"\buv\s+run\b[^`]*?\s(?:\./)?scripts/")
 UV_RUN_RE = re.compile(r"\buv\s+run\b")
 ROOT_ANCHOR_RE = re.compile(r"\{(?:project-root|skill-root)\}")
 CODE_FENCE_RE = re.compile(
-    r"^(?P<indent>[ \t]*)(?P<fence>`{3,}|~{3,})(?P<info>[^\r\n]*)\r?\n(?P<body>.*?)^(?P=indent)(?P=fence)[ \t]*(?:\r?\n|\Z)",
+    r"^[ \t]*(?P<fence>(?P<fence_char>`|~)(?P=fence_char){2,})(?P<info>[^\r\n]*)\r?\n(?P<body>.*?)^[ \t]*(?P=fence)(?P=fence_char)*[ \t]*(?:\r?\n|\Z)",
     re.MULTILINE | re.DOTALL,
 )
 INLINE_CODE_RE = re.compile(r"`([^`\r\n]+)`")
@@ -247,7 +247,7 @@ def safe_read_file(file_path: str, findings: list[dict], rel_file: str | None) -
 
 
 def _blank(match: re.Match[str]) -> str:
-    return re.sub(r"[^\r\n]", "", match.group(0))
+    return re.sub(r"[^\r\n]", " ", match.group(0))
 
 
 def strip_code_blocks(content: str) -> str:

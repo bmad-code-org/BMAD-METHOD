@@ -462,6 +462,9 @@ class TestRules(ProjectCase):
                         "```toml",
                         'output_folder = "{project-root}/_bmad-output"',
                         "```",
+                        "```toml",
+                        "prompt = 'uv run {skill-root}/scripts/tool.py'",
+                        "  ````",
                         "Non-uv shell command stays for inference: `cd {project-root}`.",
                     ]
                 )
@@ -469,6 +472,22 @@ class TestRules(ProjectCase):
             },
         )
         self.assertEqual(findings_by_rule(self.findings_for(skill), "PATH-07"), [])
+
+    def test_path_07_preserves_line_numbers_after_inline_code(self):
+        skill = self.valid(
+            "bmad-line-offset",
+            {
+                "notes.md": "\n".join(
+                    [
+                        "See `abcdefghijklmnopqrstuvwxyz` first.",
+                        "uv run {project-root}/_bmad/scripts/resolve_config.py",
+                    ]
+                )
+                + "\n"
+            },
+        )
+        findings = findings_by_rule(self.findings_for(skill), "PATH-07")
+        self.assertEqual([(f["line"], f["severity"]) for f in findings], [(2, "HIGH")])
 
     def test_seq_02_patterns_one_per_line_and_eta_case(self):
         skill = self.valid(
