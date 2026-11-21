@@ -38,7 +38,7 @@ Several engineers can each take an epic at once. An epic-level spine inherits th
 
 Epics are an initiative's cohesive capabilities, each something a person could see working by itself, not a split by who builds them.
 
-Slicing writes each epic thin. Before its stories are planned, talk to Sofia the Product Owner to refine it ("refine the booking epic"): she names what is still open, with her pick for each. On a large initiative, the user may flesh an epic out with a PRD from John, or a `bmad-ux` or `bmad-architecture` run on the epic, or `bmad-deep-recon`. Those runs land in the epic's folder and become its companions.
+Slicing writes each epic thin. Before its stories are planned, talk to Sofia the Product Owner to refine it ("refine the booking epic"): an epic with open product questions gets its own PRD from John, and one with none she fills in from the initiative's lines. The user may also add a `bmad-ux` or `bmad-architecture` run on the epic, or `bmad-deep-recon`. Those runs land in the epic's folder and become its companions.
 
 When the work is more than one initiative's worth, talk to Sofia the Product Owner to propose a parent initiative. It holds the Requirements and decisions its children share and the order between them, and no epics or stories. Each child is an ordinary initiative, planned and built as usual, that names the parent in `sources:`. Set the active initiative to the child being worked, or to the parent to see the whole.
 

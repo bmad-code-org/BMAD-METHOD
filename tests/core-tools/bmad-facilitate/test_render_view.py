@@ -373,6 +373,16 @@ def test_an_image_inside_a_code_fence_is_left_alone(tmp_path):
     assert render_view.inline_images(text, tmp_path) == text
 
 
+def test_an_image_inside_inline_code_is_left_alone(tmp_path):
+    (tmp_path / "flow.svg").write_text(SVG, encoding="utf-8")
+    text = "Write `![The flow](flow.svg)` or ``![The flow](flow.svg)`` to show ![The flow](flow.svg) here."
+    out = render_view.inline_images(text, tmp_path)
+    assert out.startswith(
+        "Write `![The flow](flow.svg)` or ``![The flow](flow.svg)`` to show ![The flow](data:image/svg+xml;base64,"
+    )
+    assert out.endswith(") here.")
+
+
 def test_the_page_carries_the_inlined_image(tmp_path, capsys):
     (tmp_path / "flow.svg").write_text(SVG, encoding="utf-8")
     doc = tmp_path / "doc.md"

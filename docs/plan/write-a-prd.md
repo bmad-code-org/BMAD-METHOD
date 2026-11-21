@@ -77,7 +77,7 @@ thorough has failed.
 
 ### 3. Keep the First Version Small
 
-Once the requirements are out, and before he settles the scope, John
+Once the epic map is proposed, and before he settles the scope, John
 steps back and weighs what was asked for against the team and the date. When
 it looks ambitious, he says so, names what could wait and why, and argues for
 a first version small enough to finish, test, and learn from. He presses

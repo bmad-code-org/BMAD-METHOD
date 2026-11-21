@@ -79,7 +79,7 @@ flowchart TD
     F1 & F2 --> F
     F -->|sliced, epics remain| H
 
-    H{"State of each epic file"} -->|refined: false| S7["Talk to Sofia the Product Owner to refine the epic, scaled to the initiative<br/>each open point settled now, spiked, or left to the stories; the user may add a PRD from John, or a bmad-ux, bmad-architecture or bmad-deep-recon run on the epic"]
+    H{"State of each epic file"} -->|refined: false| S7["Talk to Sofia the Product Owner to refine the epic<br/>with open product questions it gets a PRD from John, with none she fills it in; the user may add a bmad-ux, bmad-architecture or bmad-deep-recon run on the epic"]
     H -->|refined, no entries| S3["Talk to Sofia the Product Owner to plan the epic's stories: entries in tickets.toml"]
     H -->|an entry needs criteria first: a bug, refine = true| S5["Talk to Sofia the Product Owner to refine it"]
     H -->|entries ready| I["bmad-build per entry<br/>bmad-build-auto when no one is present"]

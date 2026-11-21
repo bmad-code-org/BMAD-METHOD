@@ -57,6 +57,7 @@ IMAGE_TYPES = {
     ".gif": "image/gif", ".webp": "image/webp",
 }  # fmt: skip
 MAX_IMAGE_BYTES = 5_000_000
+CODE_SPAN = re.compile(r"(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)")
 
 LAYOUTS = ("document", "slides")
 SLOT_ATTRS = {"data-section", "data-field", "data-rest", "data-body"}
@@ -99,7 +100,7 @@ def strip_comments(text: str) -> str:
 
 
 def inline_images(text: str, folder: Path) -> str:
-    """Replace each linked image file inside `folder` with a data: URI, outside fenced code blocks."""
+    """Replace each linked image file inside `folder` with a data: URI, outside fenced code blocks and inline code."""
     root = folder.resolve()
 
     def data_uri(m: re.Match) -> str:
@@ -116,9 +117,16 @@ def inline_images(text: str, folder: Path) -> str:
             return m.group(0)
         return f"{m.group(1)}data:{kind};base64,{encoded}{m.group(3)}"
 
+    def outside_code_spans(line: str) -> str:
+        out, pos = [], 0
+        for span in CODE_SPAN.finditer(line):
+            out += [IMAGE.sub(data_uri, line[pos : span.start()]), span.group(0)]
+            pos = span.end()
+        return "".join(out) + IMAGE.sub(data_uri, line[pos:])
+
     lines = text.split("\n")
     return "\n".join(
-        line if in_code else IMAGE.sub(data_uri, line) for line, in_code in zip(lines, code_mask(lines), strict=True)
+        line if in_code else outside_code_spans(line) for line, in_code in zip(lines, code_mask(lines), strict=True)
     )
 
 

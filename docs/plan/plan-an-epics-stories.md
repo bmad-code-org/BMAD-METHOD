@@ -28,7 +28,8 @@ Sofia reads the epic and the initiative lines it covers. When the epic still
 has open product questions, such as how it works for the user, its rules, or
 what to measure, she hands to John for the epic PRD, which lands in the epic's
 folder and becomes its companion. When nothing is open, or when you tell her
-to, she fills the epic in from the initiative's lines alone.
+to, she fills the epic in from the initiative's lines and what the PRD saved
+for the epic.
 
 If the epic still has open screen or flow questions, Sally runs `bmad-ux` on
 it; if it has open technical questions, Winston runs `bmad-architecture`

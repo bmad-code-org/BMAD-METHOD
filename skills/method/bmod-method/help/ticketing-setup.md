@@ -29,7 +29,7 @@ Copy a brief, PRD, UX design, or architecture into the initiative folder as `<ty
 | Say | Result |
 |---|---|
 | "Split this initiative into epics" | Proposes epic boundaries and records the agreed order in the initiative's `tickets.toml`. Each epic file is written thin, with `refined: false`. |
-| "Refine the booking epic" | In one message, scaled to the initiative: what is already settled for its stories, and each open point with her pick (settle it now, spike it, or leave it to the stories). She reminds the user they can add more intent, design or research to the epic. The epic then gets its Requirements and `refined: true`. |
+| "Refine the booking epic" | With open product questions she hands to John for the epic's PRD; with none she fills the epic in from the initiative's lines and says why it needs no PRD. The user can add design or research to the epic. The epic then gets its Requirements and `refined: true`. |
 | "Plan the first epic's stories" | Plans the whole epic into entries in the epic's `tickets.toml`, in build order, each with an `id` that names it under the epic. No story file is written. |
 | "Refine story 1.2", "review the stories" | Pulls the story's file from its entry if it has none, then reviews and improves it with the user. Full acceptance criteria are written only for a bug, a ticket with no epic, or when the user asks. |
 | "File a bug: ..." | One ticket straight into `backlog/`, with no epic. |

@@ -25,7 +25,7 @@ updated: ""
 
 <!-- done when: Every FR can be checked and traces to a journey or a rule; every journey step that needs the product has an FR; the failure cases a builder would otherwise guess are written down; what proves the target band is named; nothing restates the parent; and the user remembers making every decision in it. -->
 
-<!-- next: At close, say whether Changes to the parent calls for an Update of the parent PRD, and offer it. Then the technical design (`bmad-architecture`) against the live code, and Sofia (`bmad-agent-po`) cuts the epic into stories, each citing the FRs it satisfies, with every FR covered. -->
+<!-- next: At close, say whether Changes to the parent calls for an Update of the parent PRD, and offer it. Then the technical design (`bmad-architecture`) against the live code, and Sofia (`bmad-agent-po`) cuts the epic into stories, each citing the requirements it satisfies, with every FR covered. -->
 
 # {title}
 
