@@ -21,11 +21,12 @@ Work starts at the lowest level that holds it and moves up when it proves bigger
 
 ## Finding the tree
 
-- The tree is `{output_folder}/{active_initiative}`: `output_folder` and `active_initiative` from `[core]` in the merged BMad config.
-- Each container (initiative or epic) keeps its own file, `.memlog.md`, other skills' run folders and its retrospective at the top of its folder, and its breakdown in a `tickets/` folder inside it: `tickets.toml`, the child epic folders, the leaf files and plans. `backlog/` has no `tickets/` folder. `tickets.py` folder arguments name the container, and it refuses the earlier layout with an error naming `bmad migrate`.
+- The tree is `{output_folder}/{active_initiative}`: `output_folder` and `active_initiative` from `[core]` in the merged BMad config. `active_initiative` accepts top-level `program-*`, `initiative-*`, or `epic-*`, or `{output_folder}`-relative nested paths such as `program-shop/tickets/initiative-checkout`.
+- Top-level containers under `{output_folder}` may start at any altitude (`program-<slug>/`, `initiative-<slug>/`, or standalone `epic-<slug>/`). Each container (`program`, `initiative`, or `epic`) keeps its own file (`<type>-<slug>.md`), `.memlog.md`, other skills' run folders, and its retrospective at the top of its folder, and its breakdown in a `tickets/` folder inside it: `tickets.toml`, child container folders (`initiative-*` in a program, `epic-*` in an initiative), and leaf files and plans. `backlog/` has no `tickets/` folder. `tickets.py` folder arguments name the container, and it refuses the earlier layout (including misnested `program-*`, `initiative-*`, or `epic-*` beside `<folder>.md`) with an error naming `bmad migrate`.
+- Programs (`type: program`) nest child `initiative-*` folders under `tickets/` (listed via `[[initiative]]` in `tickets.toml`, or unlisted `tickets/initiative-*` folders) and reject `[[epic]]` or `[[entry]]` in their `tickets.toml`. Parent initiatives (`type: initiative` with `[[initiative]]` in `tickets.toml`) check nested `tickets/initiative-*` first and preserve backward-compatible reads of legacy sibling `../initiative-*` folders.
 - `tickets.py` is installed at `{project-root}/_bmad/method/scripts/tickets.py`. `bmad-agent-po` declares it in its `bmod.toml`. Other skills run it from there and never open `bmad-agent-po`'s folder.
 - Called with no folder, `tickets.py next`, `status`, `find`, `mark`, and `mirror` resolve the active initiative themselves; `next` and `status` then also report `backlog/`. When no initiative is set, they exit with an error that names the missing key, and the calling skill works without the tree.
-- On a parent initiative, `find`, `pull`, `mark`, `mirror` and `move` exit with an error naming its children, and `next` and `status` list the children; a build needs a child as the active initiative.
+- On a program or parent initiative, `find`, `pull`, `mark`, `mirror`, `note`, `add`, and `move` exit with an error stating it holds initiatives (naming its children when present). `next` lists `initiatives`, `order_conflict`, and `ready`. `status` preserves the same `initiatives[]` rows and recursively rolls up existing children into aggregate `counts`, `unrefined_epics` (`<child>/<epic>`), `ready_entries` (`<child>/<ref>`), and `open_questions_count` (`done`/`dropped` children contribute only to `counts`; `waiting_on`-blocked children are also excluded from `ready_entries`). A build needs a child as the active initiative.
 - A ticket is read through `tickets.py find`: its entry's fields, its epic file, its story file when one was pulled, and its plan path, whether or not the plan exists yet. The build's input is the entry and its epic, plus the story file when there is one. No skill writes a ticket file to start work. A build may add a one-line note to a later ticket of the same epic with `tickets.py note`, which writes the entry's `notes` or the leaf file's `## Notes`, on the repo store only, and refuses a ticket with a plan or a status.
 
 ## The plan file
@@ -50,6 +51,18 @@ Work starts at the lowest level that holds it and moves up when it proves bigger
 
 - An open ticket follows its type's template. A done or dropped ticket and its plan are the record: no skill reshapes them to a newer template.
 - No skill moves a ticket past `built`: the build's last status, meaning the build finished and nobody has called it done. When the user tells a skill that a ticket is done, the skill runs `mark` for them. `bmad-code-review` never changes `status`.
+
+### Container status metadata
+
+`tickets.py status` emits seven factual, template-agnostic metadata fields on every container (and `backlog/`), leaving `next` unchanged:
+
+- `container_type`: `"program"`, `"initiative"`, `"epic"`, or `null` (`backlog/`).
+- `has_spec`: `true` when `<folder>.md` exists, `refined` is not `false`, and `## Requirements` has non-empty content after HTML comment removal.
+- `unadopted_runs`: container-local `[{path, template, status}]` for non-reserved, non-container run folders with a frontmatter `.md` not yet listed in `sources:` or `companions:`. `template` comes verbatim from frontmatter `template:` (falling back to the run-folder prefix, never a hardcoded template enum); `status` falls back to sibling `DESIGN.md` when the wrapper's `status` is empty.
+- `companions`: `[{path, template}]` from frontmatter `companions:`, keeping `path` verbatim and reading `template` from the `.md` file, its sibling primary `.md` doc, or prefix fallback (`""` for URLs or unprefixed/missing files).
+- `unrefined_epics`: open epic slugs with `refined: false` (`[<folder>]` on an unrefined epic; rolled up as `<child>/<epic>` on programs and parent initiatives).
+- `ready_entries`: ready-to-start entry refs (`<child>/<ref>` on program/parent rollup; rewritten to `file` inside `backlog` under active `status`).
+- `open_questions_count`: count of active `Open question:` / `Unknown:` lines on the container (plus open child epics on an initiative) and open in-scope tickets' `unknown` items, excluding HTML comments and `done`/`dropped` items.
 
 ## Baseline
 
