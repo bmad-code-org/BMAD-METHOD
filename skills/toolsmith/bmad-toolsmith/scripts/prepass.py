@@ -382,7 +382,11 @@ def build(root: Path) -> dict:
     meta = parse_frontmatter(skill_text)[0] if skill_text is not None else None
     description = (meta or {}).get("description", "")
     frontmatter_ok = bool(
-        meta and meta.get("name") == root.name and description and set(meta) <= {"name", "description"}
+        meta
+        and meta.get("name") == root.name
+        and description
+        and set(meta) <= {"name", "description", "disable-model-invocation"}
+        and ("disable-model-invocation" not in meta or meta["disable-model-invocation"] in (True, "true"))
     )
 
     scripts_result = scan_scripts(root)

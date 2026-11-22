@@ -165,7 +165,7 @@ Six named experts, each owning a phase and staying in the conversation across tu
 | Sofia, product owner — `bmad-agent-po` | Planning | Write a ticket's requirements from whatever exists, slice it into epics and stories, run the board, and replan a change mid-flight. Say what you want, or ask what she can do. |
 | Sally, UX designer — `bmad-agent-ux-designer` | Planning | Work out how the product looks and behaves. |
 | Winston, architect — `bmad-agent-architect` | Planning | Settle the technical decisions that keep the parts consistent, and check readiness. |
-| Mason, developer — `bmad-agent-dev` | Implementation and validation | Choose the development skill and its options, and run ready tickets unattended. |
+| Amelia, developer — `bmad-agent-dev` | Implementation and validation | Choose the development skill and its options, and run ready tickets unattended. |
 
 An agent and its skills are two ways into the same work: a skill run directly does the job, and an agent adds a guide who knows the whole phase. `bmad-party-mode` brings the agents together in one discussion and offers the `product-team` room.
 

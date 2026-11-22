@@ -327,6 +327,25 @@ class PrepassTest(unittest.TestCase):
             (skill / "SKILL.md").write_text("---\nname: s\ndescription: [Use when asked]\n---\n\nBody\n")
             self.assertFalse(prepass(skill)["frontmatter_ok"])
 
+    def test_disable_model_invocation_frontmatter(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ok_skill = make_skill(
+                Path(tmp),
+                name="bmad-manual",
+                files={
+                    "SKILL.md": "---\nname: bmad-manual\ndescription: 'Manual skill.'\ndisable-model-invocation: true\n---\n\nBody\n"
+                },
+            )
+            self.assertTrue(prepass(ok_skill)["frontmatter_ok"])
+            bad_skill = make_skill(
+                Path(tmp),
+                name="bmad-manual-false",
+                files={
+                    "SKILL.md": "---\nname: bmad-manual-false\ndescription: 'Manual skill.'\ndisable-model-invocation: false\n---\n\nBody\n"
+                },
+            )
+            self.assertFalse(prepass(bad_skill)["frontmatter_ok"])
+
 
 if __name__ == "__main__":
     unittest.main()

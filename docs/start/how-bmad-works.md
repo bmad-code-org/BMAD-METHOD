@@ -39,7 +39,7 @@ Each role on a team has an agent to work through.
 | Product owner      | Sofia (`bmad-agent-po`)          | Writes the initiative, its epics, and their stories; runs the board                                                                                                                                      |
 | UX designer        | Sally (`bmad-agent-ux-designer`) | Runs `bmad-ux`                                                                                                                                                                                           |
 | Architect          | Winston (`bmad-agent-architect`) | Runs `bmad-architecture`                                                                                                                                                                                 |
-| Developer          | Mason (`bmad-agent-dev`)        | Knows the development skills and picks the one that fits; runs `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-walkthrough`, `bmad-qa-generate-e2e-tests`, and `bmad-retrospective`           |
+| Developer          | Amelia (`bmad-agent-dev`)       | Knows the development skills and picks the one that fits; runs `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-walkthrough`, `bmad-qa-generate-e2e-tests`, and `bmad-retrospective`           |
 
 Each agent runs the skills named, and calling a skill directly does the same
 work. Say what you want in plain words. Ask an agent what it can do and it
