@@ -791,3 +791,52 @@ def test_toc_add_then_remove_leaves_the_file_identical(tmp_path, text):
     code, out = run("toc", str(f), "--remove")
     assert code == 0, out
     assert f.read_bytes() == original
+
+
+def test_a_source_without_a_final_newline_rebuilds_byte_for_byte(tmp_path):
+    src = tmp_path / "sample.md"
+    src.write_bytes("\n".join(ODD_LINES).encode("utf-8"))
+    run("build", str(faithful_plan(tmp_path, src, len(ODD_LINES), [7])))
+    folder = tmp_path / "doc-sample"
+    assert (folder / "part-1.md").read_bytes().endswith(b"\n")
+    assert (folder / "part-2.md").read_bytes().endswith(b"\nlast")
+    assert run("check", str(folder), "--rebuild")[0] == 0
+
+
+def test_rebuild_check_fails_when_a_shard_loses_its_final_newline(tmp_path):
+    src = tmp_path / "sample.md"
+    src.write_bytes(("\n".join(ODD_LINES) + "\n").encode("utf-8"))
+    run("build", str(faithful_plan(tmp_path, src, len(ODD_LINES), [6])))  # part-1 ends on a line of text
+    folder = tmp_path / "doc-sample"
+    part = folder / "part-1.md"
+    assert part.read_bytes().endswith(b"e\n")
+    part.write_bytes(part.read_bytes()[:-1])  # same lines, one newline fewer
+    code, out = run("check", str(folder), "--rebuild")
+    assert code == 1
+    assert any(f["check"] == "rebuild" for f in out["failures"]), out
+
+
+def test_map_and_lookup_rows_saved_with_crlf_still_check_clean(built):
+    # An editor that saves the lines it touched with CRLF leaves the map and the lookup with mixed endings.
+    for name in ("doc-sample.md", shard_tool.LOOKUP_FILE):
+        path = built / name
+        data = path.read_bytes()
+        cut = data.index(b"](./part-2.md)") if name == "doc-sample.md" else data.index(b"| FR-AB-003 |")
+        end = data.index(b"\n", cut)
+        path.write_bytes(data[:end] + b"\r" + data[end:])
+    code, out = run("check", str(built))
+    assert code == 0, out
+
+
+def test_toc_on_a_mixed_ending_file_checks_clean(tmp_path):
+    f = tmp_path / "doc.md"
+    f.write_bytes(b"# T\r\n\r\nIntro\n\n## One\r\nbody\n\n## Two\r\nmore\n")
+    original = f.read_bytes()
+    plan = {"groups": [{"heading": "All", "shards": [{"start": 5, "title": "One"}, {"start": 8, "title": "Two"}]}]}
+    (tmp_path / "toc.json").write_text(json.dumps(plan), encoding="utf-8")
+    assert run("toc", str(f), "--plan", str(tmp_path / "toc.json"))[0] == 0
+    code, out = run("check", str(f))
+    assert code == 0, out
+    assert run("toc", str(f))[0] == 0  # a refresh re-finds both sections by their first line
+    assert run("toc", str(f), "--remove")[0] == 0
+    assert f.read_bytes() == original

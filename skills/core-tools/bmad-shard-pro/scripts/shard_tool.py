@@ -122,7 +122,9 @@ def read_doc(path: Path) -> tuple[list[str], str, bool]:
 
 
 def read_lines(path: Path) -> list[str]:
-    return read_doc(path)[0]
+    """A file's lines for reading what they say: a `\\r` a mixed-ending file leaves at a line's end is dropped.
+    Code that copies or compares bytes uses `read_doc`."""
+    return [line.removesuffix("\r") for line in read_doc(path)[0]]
 
 
 def write_doc(path: Path, lines: list[str], eol: str = "\n", final: bool = True) -> None:
@@ -533,7 +535,7 @@ def cmd_build(args) -> int:
         src = folder / ".source" / src.name
     if not src.is_file():
         return fail(f"source not found: {src}")
-    lines, eol, _ = read_doc(src)
+    lines, eol, final = read_doc(src)
     if toc_lines(lines):
         return fail(
             f"{src.name} carries a shard-pro contents list; remove it with `toc {src} --remove`, then outline and plan again"
@@ -562,7 +564,8 @@ def cmd_build(args) -> int:
             a = max(s["start"], fm + 1)
             header = shard_header(s, g["heading"], f"{folder.name}.md")
             body = lines[a - 1 : s["end"]]
-            write_doc(folder / s["file"], header + body, eol)
+            # Only the shard that ends the source may end without a newline, as the source does.
+            write_doc(folder / s["file"], header + body, eol, final or s["end"] < len(lines))
             written.append({"file": s["file"], "chars": sum(len(x) + 1 for x in body)})
     has_lookup = bool(plan.get("lookup"))
     text, subs = main_text(plan, front, folder, has_lookup)
@@ -709,15 +712,18 @@ def cmd_map(args) -> int:
     return emit(out, 1 if broken else 0)
 
 
-def join_difference(folder: Path, plan: dict, source: list[str], eol: str = "\n") -> int | None:
+def join_difference(folder: Path, plan: dict, source: list[str], eol: str = "\n", final: bool = True) -> int | None:
     """First source line the built shards no longer reproduce, or None when they join back byte for byte."""
     joined = source[: plan.get("frontmatter_lines", 0)]
     for s in all_shards(plan):
         if (folder / s["file"]).exists():
-            lines, shard_eol, _ = read_doc(folder / s["file"])
+            lines, shard_eol, shard_final = read_doc(folder / s["file"])
             if lines and shard_eol != eol:
                 return len(joined) + 1  # same text, other line endings: not the source's bytes
             joined += lines[body_start(lines) :]
+            # A shard ends with a newline, except the last when the source does not: anything else changes the bytes.
+            if lines and shard_final != (final or len(joined) < len(source)):
+                return min(len(joined), len(source))
     if joined == source:
         return None
     return next(
@@ -731,7 +737,7 @@ def edits_since_build(folder: Path, plan: dict) -> str | None:
     source = folder / plan["source"]
     if not source.exists():
         return None
-    first = join_difference(folder, plan, *read_doc(source)[:2])
+    first = join_difference(folder, plan, *read_doc(source))
     if first is not None:
         return f"the shards were edited after build (they differ from the source at line {first})"
     cut = {
@@ -862,12 +868,12 @@ def cmd_toc(args) -> int:
             return fail("no shard-pro contents list for this file; pass --plan to create one")
         # Each section is re-found by the text of its first line, which survives edits elsewhere.
         stored = json.loads(sidecar(path).read_text(encoding="utf-8"))
-        twice = ambiguous_anchors(stored, body)
+        twice = ambiguous_anchors(stored, [x.removesuffix("\r") for x in body])
         if twice:
             return emit({"ok": False, "file": str(path), "ambiguous": twice}, 1)
         items, pos, lost, added = [], 0, [], []
         for item in stored:
-            idx = next((i for i in range(pos, len(body)) if body[i] == item["anchor"]), None)
+            idx = next((i for i in range(pos, len(body)) if body[i].removesuffix("\r") == item["anchor"]), None)
             if idx is None:
                 lost.append(item)
                 continue
@@ -907,7 +913,7 @@ def cmd_toc(args) -> int:
             e["start"] += 1
     for i, e in enumerate(items):
         e["end"] = items[i + 1]["start"] - 1 if i + 1 < len(items) else len(body)
-    anchors = [body[e["start"] - 1] for e in items]
+    anchors = [body[e["start"] - 1].removesuffix("\r") for e in items]
     block = toc_block(items, 0)
     block = toc_block(items, len(block) + 1)
     new = body[:at] + [""] + block + body[at:]
@@ -1111,11 +1117,11 @@ def check_folder(folder: Path, rebuild: bool) -> tuple[list, list]:
             )
         return fails, warns
     source_path = folder / plan["source"]
-    source, eol, _ = read_doc(source_path) if source_path.exists() else (None, "\n", True)
+    source, eol, final = read_doc(source_path) if source_path.exists() else (None, "\n", True)
     if source is None:
         fails.append({"check": "source", "file": plan["source"], "text": "the frozen original is missing"})
     if rebuild and source is not None:
-        first = join_difference(folder, plan, source, eol)
+        first = join_difference(folder, plan, source, eol, final)
         if first is not None:
             fails.append(
                 {
