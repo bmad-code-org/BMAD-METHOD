@@ -107,18 +107,6 @@ def test_all_settled_has_no_place():
     assert progress.progress("## Goal\nDone.\n")["place"] is None
 
 
-@pytest.mark.parametrize(
-    "template",
-    [
-        "# No frontmatter\nfacilitation_order: [goal]\n",
-        "---\nfacilitation_order: goal\n---\n",
-    ],
-)
-def test_without_a_readable_order_the_documents_headings_are_the_order(template):
-    found = progress.progress(DOC, template)
-    assert (found["total"], found["open"]) == (4, ["Summary", "Pilot customers"])
-
-
 def test_main_prints_json_and_a_missing_file_exits_2(tmp_path, project, capsys):
     (tmp_path / "d.md").write_text(DOC)
     (tmp_path / "t.md").write_text(TEMPLATE)

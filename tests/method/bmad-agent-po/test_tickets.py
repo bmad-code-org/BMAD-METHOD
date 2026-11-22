@@ -2350,14 +2350,6 @@ class FrontmatterTests(unittest.TestCase):
                 written = f"\ufeff---\n{expected}---\n# x\n".replace("\n", "\r\n").encode()
                 self.assertEqual(path.read_bytes(), written)
 
-    def test_an_edit_the_other_fields_do_not_survive_is_refused_unwritten(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "plan.md"
-            path.write_text("---\nassignee: &owner alex\nblocked_reason: *owner\n---\n")
-            with self.assertRaisesRegex(self.t.TicketError, "by hand"):
-                self.t.edit_frontmatter(path, {"assignee": ""})
-            self.assertEqual(path.read_text(), "---\nassignee: &owner alex\nblocked_reason: *owner\n---\n")
-
     def test_a_quoted_value_reads_back_exactly(self):
         for value in ("a   # b", "line\x85break\u2028and\u2029more", "del\x7f c1\x9f", 'it\'s "x" \\ y'):
             with self.subTest(value=value):

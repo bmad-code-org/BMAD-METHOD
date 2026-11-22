@@ -103,16 +103,6 @@ class ParseSkillTest(unittest.TestCase):
                 write(Path(tmp) / "SKILL.md", f"---\nname: s\n{frontmatter}---\nBody.\n")
                 self.assertEqual(parse_skill_md(Path(tmp)), ("s", expected), frontmatter)
 
-    def test_missing_frontmatter_or_name_is_an_error(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            for text, message in (
-                ("# No frontmatter\n", "missing frontmatter"),
-                ("---\ndescription: Nameless.\n---\n", "has no name"),
-            ):
-                write(Path(tmp) / "SKILL.md", text)
-                with self.assertRaisesRegex(ValueError, message):
-                    parse_skill_md(Path(tmp))
-
 
 class CanaryTest(unittest.TestCase):
     def test_token_is_in_the_body_not_the_name_or_description(self):

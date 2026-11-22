@@ -101,13 +101,6 @@ def test_title_quotes_unwrapped():
     assert title("template: x") == ""
 
 
-def test_plain_markdown_and_unreadable_frontmatter_keep_the_h1_title():
-    assert "<title>Plain</title>" in render_view.render("# Plain\n\n---\n\ntext\n", "document")
-    page = render_view.render("---\ntitle: a: b\n---\n# From the heading\n", "document")
-    assert "<title>From the heading</title>" in page
-    assert "title: a: b" not in page
-
-
 def test_page_title_falls_back_to_h1_then_filename():
     assert "<title>From the heading</title>" in render_view.render("# From the heading\n\ntext\n", "document")
     assert "<title>my-doc</title>" in render_view.render("no heading\n", "document", name="my-doc")

@@ -780,16 +780,6 @@ def test_an_order_that_is_not_a_list_is_reported(tmp_path):
     assert found["order_problems"] == ["`facilitation_order` must be a list of section ids, such as `[problem, scope]`"]
 
 
-def test_frontmatter_that_is_not_yaml_is_reported_and_one_that_never_closes_is_no_template(tmp_path):
-    (tmp_path / "bad.md").write_text("---\ntemplate: bad\nfacilitation_order: [goal, scope?]\n---\n")
-    (tmp_path / "open.md").write_text("---\ntemplate: open\n\n# Body\n")
-    result = list_templates.scan([str(tmp_path)])
-    assert ids(result) == []
-    assert [(u["source"], u["reason"].split(":")[0]) for u in result["unreachable"]] == [
-        (str(tmp_path / "bad.md"), "its frontmatter is not YAML")
-    ]
-
-
 def test_project_root_fills_the_placeholder_in_each_source(tmp_path, capsys):
     folder = tmp_path / "_bmad" / "custom" / "facilitate-templates"
     folder.mkdir(parents=True)

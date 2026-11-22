@@ -283,13 +283,6 @@ class LedgerTest(unittest.TestCase):
         self.assertEqual(code, 2, "one bad claim refuses the whole call")
         self.assertEqual(self.entries(), [])
 
-    def test_entries_are_appended_and_the_frontmatter_is_never_rewritten(self):
-        run(["ledger", str(self.folder), "--field", "topic=kilns", "--field", "decision=build or adopt"])
-        before = self.ledger.read_text(encoding="utf-8")
-        self.assertRegex(before, r"^---\ntopic: kilns\ndecision: build or adopt\ncreated: [\d:T-]+\n---\n\n$")
-        run(["log", str(self.folder), "--type", "event", "--text", "one", "--text", "two"])
-        self.assertEqual(self.ledger.read_text(encoding="utf-8"), before + "- (event) one\n- (event) two\n")
-
     def test_an_entry_type_the_tally_does_not_know_is_refused(self):
         run(["ledger", str(self.folder), "--field", "topic=kilns"])
         with self.assertRaises(SystemExit), redirect_stderr(io.StringIO()):

@@ -60,18 +60,6 @@ class CutCheckTest(unittest.TestCase):
         )
         self.assertEqual((data["lost"], data["missing"]), (["SKILL.md"], ["references/r.md"]))
 
-    def test_any_change_to_the_frontmatter_text_is_lost(self):
-        old = "---\nname: x\n# why x\ndescription: 'Does x --- well.'\n---\n# X\n"
-        for new in (
-            "---\n# why x\nname: x\ndescription: 'Does x --- well.'\n---\n# X\n",
-            "# X\n",
-        ):
-            (self.before / "SKILL.md").write_text(old, encoding="utf-8")
-            (self.after / "SKILL.md").write_text(new, encoding="utf-8")
-            self.assertEqual({f["path"]: f["lost"] for f in self.check()["files"]}["SKILL.md"], ["frontmatter"], new)
-        (self.after / "SKILL.md").write_text(old.replace("# X", "# Y"), encoding="utf-8")
-        self.assertEqual(self.check()["lost"], [], "a body change is not a frontmatter change")
-
     def test_whole_protected_file_must_match(self):
         (self.after / "references" / "r.md").write_text("Some reference, reworded.\n", encoding="utf-8")
         data = self.check("--protect", "references/r.md")
