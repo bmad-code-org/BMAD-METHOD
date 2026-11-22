@@ -11,11 +11,8 @@ SCRIPTS_DIR = Path(__file__).resolve().parents[3] / "skills/toolsmith/bmad-eval/
 RUNNER = SCRIPTS_DIR / "run_matrix.py"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-import run_triggers  # noqa: E402
-from run_matrix import discover, score, stage_all  # noqa: E402
+from run_matrix import discover, frontmatter, score, stage_all  # noqa: E402
 
-run_triggers.load_shared()  # main() does this; discover() and stage_all() are called past it
-frontmatter = run_triggers.frontmatter
 FAKE = Path(__file__).resolve().parent / "fake_harness.py"
 RESOLVER = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad/scripts"
 

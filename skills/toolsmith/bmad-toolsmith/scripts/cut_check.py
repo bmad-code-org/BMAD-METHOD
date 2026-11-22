@@ -41,8 +41,8 @@ from pathlib import Path
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import init_skill  # noqa: E402
 from count_tokens import count_tokens, read_text  # noqa: E402
+from init_skill import NO_BMAD, frontmatter  # noqa: E402
 
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$", re.MULTILINE)
 JINJA_RE = re.compile(r"\{\{.*?\}\}|\{%.*?%\}", re.DOTALL)
@@ -133,7 +133,7 @@ def token_table(before: Path, after: Path, files: list[str]) -> dict:
 def raw_frontmatter(text: str) -> str | None:
     """The frontmatter's YAML text as written, or None when the file has none."""
     try:
-        return init_skill.frontmatter.split(text)[0]
+        return frontmatter.split(text)[0]
     except ValueError:
         return None
 
@@ -212,7 +212,8 @@ def main(argv: list[str] | None = None) -> int:
         help="file of passages, separated by blank lines, each kept verbatim",
     )
     args = p.parse_args(argv)
-    if not init_skill.load_shared():
+    if frontmatter is None:
+        print(NO_BMAD, file=sys.stderr)
         return 2
 
     for folder in (args.before, args.after):

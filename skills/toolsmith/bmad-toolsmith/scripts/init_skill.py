@@ -57,21 +57,22 @@ from pathlib import Path
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 
 
-def load_shared() -> bool:
-    """Load the frontmatter module of the bmad skill installed beside this one (in a source checkout, under
-    core-tools); say how to install it and return False when it is missing."""
-    global frontmatter
-
+def shared_frontmatter():
+    """The frontmatter module of the bmad skill installed beside this one (in a source checkout, under core-tools),
+    or None when it is not installed."""
     skills = Path(__file__).resolve().parents[2]
     for folder in (skills / "bmad", skills.parent / "core-tools" / "bmad"):
         path = folder / "scripts" / "frontmatter.py"
         if path.is_file():
             spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-            frontmatter = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(frontmatter)
-            return True
-    print("error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad", file=sys.stderr)
-    return False
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return module
+    return None
+
+
+frontmatter = shared_frontmatter()
+NO_BMAD = "error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad"
 
 
 SHAPES = (
@@ -108,19 +109,14 @@ def toml_string(value: str) -> str:
 # --- frontmatter ---------------------------------------------------------------
 
 
-def frontmatter_block(content: str) -> tuple[str | None, str]:
-    """Return (frontmatter text or None, body); with no frontmatter the whole file is the body."""
-    try:
-        return frontmatter.split(content)
-    except ValueError:
-        return None, content
-
-
 def parse_frontmatter(content: str) -> tuple[dict | None, str]:
     """Return (frontmatter as a dict, or None when missing, not a YAML mapping, or name or description is not text; body)."""
-    block, body = frontmatter_block(content)
     try:
-        meta = frontmatter.load(block, typed=True) if block is not None else None
+        block, body = frontmatter.split(content)
+    except ValueError:
+        return None, content  # with no frontmatter the whole file is the body
+    try:
+        meta = frontmatter.load(block, typed=True)
     except ValueError:
         meta = None
     if meta is not None:  # typed, so `name: 123` is not text; an absent value is empty text
@@ -383,7 +379,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--source", help="update_source for the [skill] or [bmod] table")
     p.add_argument("--description", help="frontmatter description; a [TODO: ...] placeholder when omitted")
     args = p.parse_args(argv)
-    if not load_shared():
+    if frontmatter is None:
+        print(NO_BMAD, file=sys.stderr)
         return 2
 
     if args.check:

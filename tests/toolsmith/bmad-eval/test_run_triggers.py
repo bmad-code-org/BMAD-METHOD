@@ -10,11 +10,7 @@ from pathlib import Path
 SCRIPTS_DIR = Path(__file__).resolve().parents[3] / "skills/toolsmith/bmad-eval/scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-import run_triggers  # noqa: E402
-from run_triggers import CANARY_PREFIX, detect_load, parse_skill_md, write_synthetic_skill  # noqa: E402
-
-run_triggers.load_shared()  # main() does this; the unit tests call past it
-frontmatter = run_triggers.frontmatter
+from run_triggers import CANARY_PREFIX, detect_load, frontmatter, parse_skill_md, write_synthetic_skill  # noqa: E402
 
 RUNNER = SCRIPTS_DIR / "run_triggers.py"
 FAKE = Path(__file__).resolve().parent / "fake_harness.py"
