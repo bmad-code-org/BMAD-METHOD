@@ -197,6 +197,18 @@ def test_exclude_matches_num_and_alias_like_show(lib):
     assert "Pre-mortem Analysis" not in {r["method_name"] for r in pick_methods.exclude(aliased, ["premortem"])}
 
 
+def test_exclude_resolves_names_against_the_whole_catalog(lib):
+    catalog = rows(lib) + [
+        pick_methods.normalize(
+            {"method_name": "Edge Walk", "description": "d", "form": "f", "aliases": "Assumption Audit"}
+        )
+    ]
+    pool = pick_methods.filter_rows(catalog, ["custom"])
+    # `show "Assumption Audit"` picks the shipped method, so excluding it must not drop the custom one.
+    kept = pick_methods.exclude(pool, ["Assumption Audit"], catalog)
+    assert [r["method_name"] for r in kept] == ["Edge Walk"]
+
+
 def test_cli_random_never_draws_an_excluded_num(lib, capsys):
     code, out, _ = run(["random", "-n", "99", "--exclude", "2", "--exclude", "4"], lib, capsys)
     assert code == 0

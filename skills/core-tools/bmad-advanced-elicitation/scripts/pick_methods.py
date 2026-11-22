@@ -226,11 +226,16 @@ def find(rows: list[dict], names: list[str]) -> tuple[list[dict], list[str]]:
     return found, missing
 
 
-def exclude(rows: list[dict], names: list[str] | None) -> list[dict]:
-    """Drop the methods named, matched as `show` matches them: by name, alias or num."""
+def exclude(rows: list[dict], names: list[str] | None, catalog: list[dict] | None = None) -> list[dict]:
+    """Drop the methods named, matched as `show` matches them: by name, alias or num.
+
+    Names resolve against CATALOG (default ROWS), so a pool already narrowed by
+    direction or tier drops the method `show` would pick, not another one an
+    alias happens to reach within the pool.
+    """
     if not names:
         return rows
-    found, _ = find(rows, names)
+    found, _ = find(rows if catalog is None else catalog, names)
     skip = {id(r) for r in found}
     return [r for r in rows if id(r) not in skip]
 
@@ -360,7 +365,7 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         print(fmt_rows(found, args.json, full=True))
     elif args.cmd == "random":
-        pool = exclude(filter_rows(rows, args.direction, args.tier), args.exclude)
+        pool = exclude(filter_rows(rows, args.direction, args.tier), args.exclude, rows)
         if not pool:
             print("# no methods match", file=sys.stderr)
             return 1
