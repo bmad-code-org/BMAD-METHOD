@@ -48,6 +48,10 @@ class WordMetricsTest(unittest.TestCase):
     def test_cjk_punctuation_is_not_a_word(self):
         self.assertEqual(word_count("我爱你。你好！"), 5)
         self.assertEqual(word_count("我们，他们、「你们」"), 6)
+
+    def test_katakana_punctuation_is_not_a_word(self):
+        self.assertEqual(word_count("コーヒー・紅茶"), 6)  # the middle dot separates; ー is part of the word
+        self.assertEqual(word_count("ニュー゠ヨーク"), 6)
         self.assertEqual(word_count("これはテストです。"), 8)
         self.assertEqual(word_count("一\u3000二"), 2)  # ideographic space
 

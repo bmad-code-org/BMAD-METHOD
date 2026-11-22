@@ -27,14 +27,14 @@ from pathlib import Path
 HEADING = re.compile(r"^(#{1,6})\s+(\S.*)$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 CJK = re.compile(r"[぀-ヿ㐀-䶿一-鿿豈-﫿ｦ-ﾟ]")
-# CJK punctuation and the ideographic space, from the CJK Symbols and Punctuation
-# and Halfwidth and Fullwidth Forms blocks: they separate words, like ASCII
-# punctuation next to a space, so they become spaces before counting. Marks those
-# blocks hold that are part of a word (々, 〇) and fullwidth letters and digits are
-# not punctuation, so they stay.
+# CJK punctuation and the ideographic space, from the CJK Symbols and Punctuation,
+# Katakana (・, ゠) and Halfwidth and Fullwidth Forms blocks: they separate words,
+# like ASCII punctuation next to a space, so they become spaces before counting.
+# Marks those blocks hold that are part of a word (々, 〇, ー) and fullwidth
+# letters and digits are not punctuation, so they stay.
 CJK_SEPARATORS = {
     cp: " "
-    for block in (range(0x3000, 0x3040), range(0xFF00, 0xFFF0))
+    for block in (range(0x3000, 0x3040), range(0x30A0, 0x3100), range(0xFF00, 0xFFF0))
     for cp in block
     if unicodedata.category(chr(cp))[0] in "PZ"
 }
