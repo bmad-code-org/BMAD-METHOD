@@ -3782,6 +3782,27 @@ class BmadRetiredSkillTests(unittest.TestCase):
         self.assertEqual([problem["kind"] for problem in report["problems"]], ["retired-file"])
         self.assertEqual(report["retired_skills"], [])
 
+    def test_an_old_founder_record_left_by_an_upgrade_is_retired_and_removed(self):
+        # The founder module's record moved from bmod-founder into bmad-founder-agent-advisor.
+        shutil.copytree(
+            REPO_ROOT / "skills" / "founder" / "bmad-founder-agent-advisor",
+            self.installed / "bmad-founder-agent-advisor",
+        )
+        write_bmod(self.installed, "bmod-founder", "founder", update_source=BMAD_SOURCE)
+
+        report = status_report(self, self.project, self.skill)
+        self.assertEqual(
+            [(problem["kind"], problem["folder"], problem["kept"]) for problem in report["problems"]],
+            [("duplicate-module", "bmod-founder", "bmad-founder-agent-advisor")],
+        )
+        self.assertEqual([entry["skill"] for entry in report["retired_skills"]], ["bmod-founder"])
+
+        removal = setup_report(self, self.project, self.skill, "--remove-retired", "bmod-founder")
+        self.assertEqual(removal["removed"], [".agents/skills/bmod-founder"])
+        report = status_report(self, self.project, self.skill)
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(report["retired_skills"], [])
+
     def test_bad_retired_lists_are_rejected(self):
         setup = load_setup()
         for extra, message in (
