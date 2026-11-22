@@ -137,6 +137,37 @@ class CitationsEdgeTest(unittest.TestCase):
         self.assertEqual(result["dangling_markers"], [2])
         self.assertEqual(code, 1)
 
+    def test_an_escaped_backtick_does_not_open_inline_code(self):
+        text = "Fact [1]. Literal \\` [2] \\`.\n\n| [n] | Supports |\n| --- | --- |\n| [1] | x |\n"
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], [1, 2])
+        self.assertEqual(result["dangling_markers"], [2])
+        self.assertEqual(code, 1)
+
+    def test_a_backslash_inside_inline_code_still_closes_it(self):
+        text = "Path `C:\\dir\\[2]\\` then [1].\n\n| [n] | Supports |\n| --- | --- |\n| [1] | x |\n"
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], [1])
+        self.assertTrue(result["ok"])
+
+    def test_inline_code_wrapping_onto_the_next_line_is_not_a_citation(self):
+        text = "Uses `rows\n[2]` then cites [1].\n\n| [n] | Supports |\n| --- | --- |\n| [1] | a |\n| [2] | b |\n"
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], [1])
+        self.assertEqual(result["orphaned_rows"], [2])
+        self.assertEqual(code, 1)
+
+    def test_inline_code_never_spans_a_paragraph_or_block_break(self):
+        text = (
+            "A stray ` here [1].\n\nNext paragraph ` and [2].\n"
+            "- item with ` tick [3]\n- next item ` tick [4]\n"
+            "# Heading ` [5]\nBody ` [6]\n\n"
+            "| [n] | Supports |\n| --- | --- |\n| [1] | a |\n| [2] | b |\n| [3] | c |\n| [4] | d |\n| [5] | e |\n| [6] | f |\n"
+        )
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], [1, 2, 3, 4, 5, 6])
+        self.assertTrue(result["ok"])
+
     def test_a_repeated_appendix_id_is_reported(self):
         text = (
             "Fact [1].\n\n| # | Source |\n|---|---|\n"

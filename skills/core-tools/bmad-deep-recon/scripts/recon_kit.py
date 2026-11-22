@@ -77,6 +77,9 @@ BARE_URL_RE = re.compile(r"https?://(?:[^\s()|\]]|\([^\s()]*\))+")
 ROW_ID_RE = re.compile(r"\[(\d+)\]")  # appendix row id: [n], never a bare number
 FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")  # any indent: fences nest in list items
 BACKTICKS_RE = re.compile(r"`+")
+# A line that opens a new block, so an inline code span never continues across it.
+BLOCK_START_RE = re.compile(r"\s*(?:#{1,6}(?:\s|$)|>|\||(?:[-*+]|\d{1,9}[.)])(?:\s|$))")
+SINGLE_LINE_BLOCK_RE = re.compile(r"\s*(?:#{1,6}(?:\s|$)|\|)")  # a heading or a table row
 
 
 def out(payload: dict, exit_code: int) -> int:
@@ -113,26 +116,56 @@ def strip_fences(text: str) -> str:
     return "\n".join(lines)
 
 
-def strip_code_spans(line: str) -> str:
+def strip_code_spans(text: str) -> str:
     """Blank out inline code spans, so `argv[2]` never counts as a marker.
 
-    A span opens on a backtick run and closes on the next run of the same
-    length, as in CommonMark; a run with no closer is literal text.
+    As in CommonMark, a span opens on a backtick run and closes on the next
+    run of the same length; a run with no closer is literal text. A backslash
+    escapes the first backtick of an opening run, but inside a span it is
+    literal, so it never stops a run from closing one. TEXT is one paragraph:
+    a span may wrap onto its next line.
     """
-    runs = list(BACKTICKS_RE.finditer(line))
+    runs = [(m.start(), m.end()) for m in BACKTICKS_RE.finditer(text)]
     parts, start, i = [], 0, 0
     while i < len(runs):
-        opener = runs[i]
-        closer = next((j for j in range(i + 1, len(runs)) if len(runs[j].group()) == len(opener.group())), None)
-        if closer is None:
+        opens, end = runs[i]
+        backslashes = opens - len(text[:opens].rstrip("\\"))
+        if backslashes % 2:
+            opens += 1  # an escaped backtick is literal; the rest of the run may still open a span
+        size = end - opens
+        closer = next((j for j in range(i + 1, len(runs)) if runs[j][1] - runs[j][0] == size), None)
+        if not size or closer is None:
             i += 1
             continue
-        parts.append(line[start : opener.start()])
+        parts.append(text[start:opens])
         parts.append(" ")
-        start = runs[closer].end()
+        start = runs[closer][1]
         i = closer + 1
-    parts.append(line[start:])
+    parts.append(text[start:])
     return "".join(parts)
+
+
+def paragraphs(lines: list[str]) -> list[str]:
+    """Group lines into the blocks an inline code span can wrap within."""
+    blocks: list[str] = []
+    group: list[str] = []
+
+    def flush() -> None:
+        if group:
+            blocks.append("\n".join(group))
+            group.clear()
+
+    for ln in lines:
+        if not ln.strip():
+            flush()
+            continue
+        if BLOCK_START_RE.match(ln):
+            flush()
+        group.append(ln)
+        if SINGLE_LINE_BLOCK_RE.match(ln):
+            flush()
+    flush()
+    return blocks
 
 
 def table_cells(line: str) -> list[str]:
@@ -168,13 +201,16 @@ def cmd_citations(args) -> int:
     ids = {n for n, _ in rows}
     duplicates = duplicate_ids(rows)
     markers: set[int] = set()
+    lines = []
     for ln in text.splitlines():
         stripped = ln.strip()
         if stripped.startswith("|"):
             cells = table_cells(stripped)
             if cells and ROW_ID_RE.fullmatch(cells[0]):
-                continue  # an appendix row is not a citation of itself
-        markers.update(int(n) for n in MARKER_RE.findall(strip_code_spans(ln)))
+                ln = ""  # an appendix row is not a citation of itself
+        lines.append(ln)
+    for block in paragraphs(lines):
+        markers.update(int(n) for n in MARKER_RE.findall(strip_code_spans(block)))
     dangling = sorted(markers - ids)
     orphaned = sorted(ids - markers)
     ok = not dangling and not orphaned and not duplicates
