@@ -797,6 +797,54 @@ class FoldSpecsTests(unittest.TestCase):
         )
         self.assertTrue((backlog / "story-caddie-DESIGN.md").is_file())
 
+    def test_a_loose_storys_bare_and_memlog_links_resolve_after_the_rename(self):
+        loose = self.store / "spec-caddie"
+        write(loose / "spec-caddie.md", spec_frontmatter(companions="[notes.md]", sources="[]") + SPEC_BODY)
+        write(loose / ".memlog.md", MEMLOG_BALL)
+        write(
+            loose / "notes.md",
+            "See [the design](DESIGN.md), [the plan](plans/plan.md) and [the log](./.memlog.md). My notes stay notes.\n",
+        )
+        write(loose / "DESIGN.md", "design\n")
+        write(loose / "plans" / "plan.md", "plan\n")
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        backlog = self.store / "backlog"
+        notes = (backlog / "story-caddie-notes.md").read_text(encoding="utf-8")
+        self.assertEqual(
+            notes,
+            "See [the design](story-caddie-DESIGN.md), [the plan](story-caddie-plans/plan.md) and "
+            "[the log](story-caddie.memlog.md). My notes stay notes.\n",
+        )
+        for target in ("story-caddie-DESIGN.md", "story-caddie-plans/plan.md", "story-caddie.memlog.md"):
+            self.assertTrue((backlog / target).is_file(), msg=target)
+
+    def test_a_loose_storys_memlog_name_taken_by_another_storys_companion_is_reported(self):
+        pay = self.store / "spec-pay"
+        write(pay / "spec-pay.md", spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY)
+        write(pay / "ship.memlog.md", "pay's own notes\n")
+        ship = self.store / "spec-pay-ship"
+        write(ship / "spec-pay-ship.md", spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY)
+        write(ship / ".memlog.md", MEMLOG_BALL)
+
+        report = self.fold()
+
+        self.assertEqual([fold["spec"] for fold in report["folded"]], ["_bmad-output/spec-pay"])
+        self.assertEqual(
+            report["problems"],
+            [
+                {
+                    "spec": "_bmad-output/spec-pay-ship",
+                    "problem": "_bmad-output/backlog/story-pay-ship.memlog.md already exists",
+                }
+            ],
+        )
+        companion = self.store / "backlog" / "story-pay-ship.memlog.md"
+        self.assertEqual(companion.read_text(encoding="utf-8"), "pay's own notes\n")
+        self.assertEqual((ship / ".memlog.md").read_text(encoding="utf-8"), MEMLOG_BALL)
+
     def test_a_loose_story_takes_the_backlog_next_id_when_it_is_higher(self):
         loose = self.store / "spec-caddie"
         write(loose / "spec-caddie.md", spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY)

@@ -454,6 +454,8 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         memlog = home / f"story-{slug}{MEMLOG}"
         if ticket.exists():
             raise FoldProblem(f"{relative(ticket, project_root)} already exists")
+        if memlog.exists():  # another story's companion can carry this name; never append to it
+            raise FoldProblem(f"{relative(memlog, project_root)} already exists")
     else:
         home = folder.parent
         ticket = home / f"{home.name}.md"
@@ -617,14 +619,19 @@ LINK_TOKEN = re.compile(r"[^\s()\[\]<>\"'`,|=:]+")
 def rebase_links(text: str, file: Path, folder: Path, home: Path, ticket: Path, prefix: str = "") -> str:
     """A companion's links as they read once it moves from the spec folder to `home`: a `./` or `../` path that
     leaves the folder, or that names a sibling a `prefix` renames, is recomputed from the new place, and a path to the
-    spec itself names the ticket."""
+    spec itself names the ticket. With a `prefix`, a bare relative path (`DESIGN.md`, `plans/plan.md`) that names a
+    file of the folder is recomputed too; a bare word with no `/` or extension is prose and stays."""
     spec = (folder / f"{folder.name}.md").resolve()
     new_parent = moved_path(file.resolve(), folder, home, prefix).parent
 
     def swap(match: re.Match[str]) -> str:
         path, hash_, anchor = match.group(0).partition("#")
         if not path.startswith(("./", "../")) and path != spec.name:
-            return match.group(0)
+            if not prefix or path.startswith("/") or not ("/" in path or "." in path.rsplit("/", 1)[-1].strip(".")):
+                return match.group(0)
+            target = (file.parent / path).resolve()
+            if not target.is_relative_to(folder.resolve()) or not target.exists():
+                return match.group(0)
         target = (file.parent / path).resolve()
         if target == spec:
             target = ticket.resolve()
@@ -987,6 +994,10 @@ def moved_path(target: Path, folder: Path, home: Path, prefix: str = "") -> Path
         parts = target.relative_to(folder.resolve()).parts
         if not parts:
             return home.resolve()
+        if prefix and parts == (MEMLOG,):
+            return (
+                home.resolve() / f"{prefix.removesuffix('-')}{MEMLOG}"
+            )  # the story's own memlog, as fold_spec names it
         return home.resolve() / (prefix + parts[0]) / Path(*parts[1:])
     return target
 
