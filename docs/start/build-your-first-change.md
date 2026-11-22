@@ -13,7 +13,7 @@ change you want, and it will make it happen.
 
 Otherwise, start here. You will make a working Python program in an empty
 project. This tutorial follows the
-[one-session planning path](../plan/choose-a-planning-path.md): one
+[one-session planning path](./how-bmad-works.md#size-and-stakes): one
 coherent request goes directly to the `bmad-build` skill.
 
 :::note[Before You Start]
@@ -30,15 +30,12 @@ mkdir bmad-first-project
 cd bmad-first-project
 ```
 
-:::caution[V7 Preview Alpha]
-This tutorial uses v7 of BMad, which is in preview alpha and changes often. It suits solo or small teams that can pivot before beta; the v7 release ETA is October 16, 2026, and it might be sooner. If you need stability, run `npx bmad-method install` for the v6.12 release, frozen aside from bug fixes, and follow the [V6.12 documentation](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12/docs/start).
-:::
-
 Install BMad Method with the skills CLI, then let the `bmad` skill set up the
 project:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD
+npx skills add bmad-code-org/BMAD-METHOD/skills/core-tools --skill '*'
+npx skills add bmad-code-org/BMAD-METHOD/skills/method --skill '*'
 ```
 
 Open your coding tool in this directory. For Claude Code, run:
@@ -123,7 +120,11 @@ the program, and checked its work before showing you the result.
 1. [Install BMad in your own repository](./install-bmad.md), then run
    the `bmad-build` skill with a short description of a small change.
    See [Build a Change](../build/build-a-change.md) for the attended path.
-2. Continue to [Getting Deeper](../existing-codebases/getting-deeper.md) for a small change in a
+2. [Walk through three routes](./walk-through-three-routes.md) on new
+   projects: a quick build, Sofia's route, and the full planning route.
+   Then [walk through an existing codebase](./walk-through-an-existing-codebase.md):
+   the same app, inherited, changed three ways.
+3. Continue to [Getting Deeper](../existing-codebases/getting-deeper.md) for a small change in a
    mature codebase, followed by a larger change using a written spec.
-3. Use [Choose a Planning Path](../plan/choose-a-planning-path.md) when
+4. Use [How BMad Works](./how-bmad-works.md) when
    your next change may need several implementation sessions or multiple epics.

@@ -35,21 +35,27 @@ export default defineConfig({
     '/explanation/adversarial-review': `${basePath}build/review-a-change/`,
     '/reference/testing': `${basePath}build/test-completed-work/`,
     '/reference/build-auto': `${basePath}build/autonomous-development-loops/`,
-    '/reference/workflow-map': `${basePath}plan/choose-a-planning-path/`,
+    '/reference/workflow-map': `${basePath}start/how-bmad-works/`,
     '/reference/agents': `${basePath}reference/skills-and-agents/`,
     '/reference/commands': `${basePath}reference/skills-and-agents/`,
     '/reference/core-tools': `${basePath}reference/skills-and-agents/`,
     '/explanation/advanced-elicitation': `${basePath}reference/skills-and-agents/`,
-    '/how-to/choose-a-development-path': `${basePath}plan/choose-a-planning-path/`,
-    '/explanation/analysis-phase': `${basePath}plan/explore-and-validate-an-idea/`,
-    '/explanation/brainstorming': `${basePath}plan/explore-and-validate-an-idea/`,
-    '/explanation/forge-idea': `${basePath}plan/explore-and-validate-an-idea/`,
-    '/how-to/pressure-test-an-idea': `${basePath}plan/explore-and-validate-an-idea/`,
-    '/explanation/deep-recon': `${basePath}plan/research-a-decision/`,
+    '/how-to/choose-a-development-path': `${basePath}start/how-bmad-works/`,
+    '/explanation/analysis-phase': `${basePath}clarify/clarify-the-idea/`,
+    '/explanation/brainstorming': `${basePath}clarify/clarify-the-idea/`,
+    '/explanation/forge-idea': `${basePath}clarify/clarify-the-idea/`,
+    '/how-to/pressure-test-an-idea': `${basePath}clarify/clarify-the-idea/`,
+    '/explanation/deep-recon': `${basePath}clarify/clarify-the-idea/`,
     '/explanation/why-solutioning-matters': `${basePath}plan/design-ux-and-architecture/`,
     '/explanation/preventing-agent-conflicts': `${basePath}plan/design-ux-and-architecture/`,
-    '/explanation/sprint-planning': `${basePath}plan/break-work-into-stories-and-track-it/`,
-    '/explanation/retrospective': `${basePath}build/finish-an-epic/`,
+    '/explanation/sprint-planning': `${basePath}plan/plan-an-epics-stories/`,
+    '/explanation/retrospective': `${basePath}learn/finish-an-epic/`,
+    '/plan/choose-a-planning-path': `${basePath}start/how-bmad-works/`,
+    '/plan/explore-and-validate-an-idea': `${basePath}clarify/clarify-the-idea/`,
+    '/plan/research-a-decision': `${basePath}clarify/clarify-the-idea/`,
+    '/plan/define-requirements-and-a-specification': `${basePath}plan/write-and-slice-the-initiative/`,
+    '/plan/break-work-into-stories-and-track-it': `${basePath}plan/plan-an-epics-stories/`,
+    '/build/finish-an-epic': `${basePath}learn/finish-an-epic/`,
     '/how-to/established-projects': `${basePath}existing-codebases/start-in-an-existing-codebase/`,
     '/explanation/established-projects-faq': `${basePath}existing-codebases/start-in-an-existing-codebase/`,
     '/how-to/project-context': `${basePath}existing-codebases/set-and-maintain-project-context/`,
@@ -140,6 +146,14 @@ export default defineConfig({
               slug: 'index',
             },
             {
+              label: 'How BMad Works',
+              slug: 'start/how-bmad-works',
+            },
+            {
+              label: 'Why BMad Works This Way',
+              slug: 'start/why-bmad-works-this-way',
+            },
+            {
               label: 'Install BMad',
               slug: 'start/install-bmad',
             },
@@ -148,15 +162,101 @@ export default defineConfig({
               slug: 'start/build-your-first-change',
             },
             {
+              label: 'Walk Through Three Routes',
+              slug: 'start/walk-through-three-routes',
+            },
+            {
+              label: 'Walk Through an Existing Codebase',
+              slug: 'start/walk-through-an-existing-codebase',
+            },
+            {
               label: 'Get Answers About BMad',
               slug: 'start/get-answers-about-bmad',
             },
           ],
         },
         {
-          label: 'Build',
+          label: 'Scenarios',
           collapsed: false,
           items: [
+            {
+              label: 'Make a Small Change',
+              slug: 'scenarios/make-a-small-change',
+            },
+            {
+              label: 'Build from a Conversation',
+              slug: 'scenarios/build-from-a-conversation',
+            },
+            {
+              label: 'Turn a Prototype into a Product',
+              slug: 'scenarios/turn-a-prototype-into-a-product',
+            },
+            {
+              label: 'Plan a Feature as a Team',
+              slug: 'scenarios/plan-a-feature-as-a-team',
+            },
+            {
+              label: 'Change an Existing Codebase',
+              slug: 'scenarios/change-an-existing-codebase',
+            },
+          ],
+        },
+        {
+          label: 'Clarify',
+          collapsed: false,
+          items: [
+            {
+              label: 'Clarify the Idea',
+              slug: 'clarify/clarify-the-idea',
+            },
+          ],
+        },
+        {
+          label: 'Plan',
+          collapsed: false,
+          items: [
+            {
+              label: 'Plan the Work',
+              slug: 'plan/plan-the-work',
+            },
+            {
+              label: 'Write a PRD',
+              slug: 'plan/write-a-prd',
+            },
+            {
+              label: 'Write and Slice the Initiative',
+              slug: 'plan/write-and-slice-the-initiative',
+            },
+            {
+              label: 'Design UX and Architecture',
+              slug: 'plan/design-ux-and-architecture',
+            },
+            {
+              label: "Plan an Epic's Stories",
+              slug: 'plan/plan-an-epics-stories',
+            },
+            {
+              label: 'Plan Inside an Organization',
+              slug: 'plan/plan-inside-an-organization',
+            },
+            {
+              label: 'Set Up the Ticket Tree',
+              slug: 'plan/set-up-the-ticket-tree',
+            },
+            {
+              label: 'Prepare Long Documents for Agents',
+              slug: 'plan/prepare-long-documents-for-agents',
+            },
+          ],
+        },
+        {
+          label: 'Build and Verify',
+          collapsed: false,
+          items: [
+            {
+              label: 'Build and Verify',
+              slug: 'build/build-and-verify',
+            },
             {
               label: 'Build a Change',
               slug: 'build/build-a-change',
@@ -174,50 +274,22 @@ export default defineConfig({
               slug: 'build/test-completed-work',
             },
             {
-              label: 'Finish an Epic',
-              slug: 'build/finish-an-epic',
-            },
-            {
               label: 'Autonomous Development Loops',
               slug: 'build/autonomous-development-loops',
             },
           ],
         },
         {
-          label: 'Plan Larger Work',
-          collapsed: true,
+          label: 'Learn and Adjust',
+          collapsed: false,
           items: [
             {
-              label: 'Choose a Planning Path',
-              slug: 'plan/choose-a-planning-path',
+              label: 'Learn and Adjust',
+              slug: 'learn/learn-and-adjust',
             },
             {
-              label: 'Plan Inside an Organization',
-              slug: 'plan/plan-inside-an-organization',
-            },
-            {
-              label: 'Explore and Validate an Idea',
-              slug: 'plan/explore-and-validate-an-idea',
-            },
-            {
-              label: 'Research a Decision',
-              slug: 'plan/research-a-decision',
-            },
-            {
-              label: 'Define Requirements and a Specification',
-              slug: 'plan/define-requirements-and-a-specification',
-            },
-            {
-              label: 'Design UX and Architecture',
-              slug: 'plan/design-ux-and-architecture',
-            },
-            {
-              label: 'Break Work into Stories and Track It',
-              slug: 'plan/break-work-into-stories-and-track-it',
-            },
-            {
-              label: 'Set Up the Ticket Tree',
-              slug: 'plan/set-up-the-ticket-tree',
+              label: 'Finish an Epic',
+              slug: 'learn/finish-an-epic',
             },
           ],
         },
@@ -263,6 +335,18 @@ export default defineConfig({
               label: 'Run Multi-Agent Discussions',
               slug: 'customize/run-multi-agent-discussions',
             },
+            {
+              label: 'How Document Templates Work',
+              slug: 'customize/how-document-templates-work',
+            },
+            {
+              label: 'Customize a Document for Your Team',
+              slug: 'customize/customize-a-document-for-your-team',
+            },
+            {
+              label: 'Write a Document Template',
+              slug: 'customize/write-a-document-template',
+            },
           ],
         },
         {
@@ -270,11 +354,18 @@ export default defineConfig({
           collapsed: true,
           items: [
             { label: 'Toolsmith', slug: 'toolsmith/toolsmith' },
+            { label: 'Build Your First Skill', slug: 'toolsmith/build-your-first-skill' },
             { label: 'Ways to Build a Skill', slug: 'toolsmith/approaches' },
             { label: 'Shapes of a Skill', slug: 'toolsmith/shapes' },
             { label: 'Work on an Existing Skill', slug: 'toolsmith/modes' },
-            { label: 'Eval Runner', slug: 'toolsmith/bmad-eval' },
+            { label: 'Write a Good Skill', slug: 'toolsmith/write-a-good-skill' },
+            { label: 'Subagent Patterns', slug: 'toolsmith/subagent-patterns' },
+            { label: 'Make a Skill Customizable', slug: 'toolsmith/make-a-skill-customizable' },
+            { label: 'Agents with Memory', slug: 'toolsmith/agents-with-memory' },
+            { label: 'Modules and Registration', slug: 'toolsmith/modules' },
+            { label: 'Distribute Your Module', slug: 'toolsmith/distribute-your-module' },
             { label: 'Migrate an Old Module', slug: 'toolsmith/migrate-an-old-module' },
+            { label: 'Eval Runner', slug: 'toolsmith/bmad-eval' },
           ],
         },
         {

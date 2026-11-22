@@ -1,0 +1,4 @@
+[skill]
+bmod = "bmod-toolsmith"
+source = "github:bmad-code-org/BMAD-METHOD/skills/toolsmith"
+required_skills = ["bmad-eval", { skill = "bmad-facilitate", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" }]

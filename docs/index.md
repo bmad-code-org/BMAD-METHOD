@@ -29,34 +29,25 @@ building with no planning at all.
 
 Every path runs the same loop. Bigger work enters it earlier and goes round it
 more often; it does not become a different way of delivering.
+[How BMad Works](./start/how-bmad-works.md) explains the loop and the ticket
+that carries the spec through it.
 
-**You are not sure how much process the change needs.**
-[Choose a Planning Path](./plan/choose-a-planning-path.md).
+| You have | Start at |
+| --- | --- |
+| Nothing yet, and you want to see it work | [Build Your First Change](./start/build-your-first-change.md), one build in an empty project |
+| A change one session can build | [Make a Small Change](./scenarios/make-a-small-change.md): run `bmad-build` and describe it |
+| A small new app, such as a to-do list | One `bmad-build` run: [Build Your First Change](./start/build-your-first-change.md) |
+| A clear idea bigger than one session, and no initiative yet | [Write and Slice the Initiative](./plan/write-and-slice-the-initiative.md): Sofia, the Product Owner (`bmad-agent-po`), sizes it and writes the initiative or epic |
+| A decision made in a conversation or a brainstorm, and one person who decides | [Build from a Conversation](./scenarios/build-from-a-conversation.md) |
+| A feature several people must agree on | [Plan a Feature as a Team](./scenarios/plan-a-feature-as-a-team.md), with a PRD from John, the Product Manager (`bmad-agent-pm`) |
+| A quick prototype that proved an idea | [Turn a Prototype into a Product](./scenarios/turn-a-prototype-into-a-product.md) |
+| Code that works but has no written decisions | [Change an Existing Codebase](./scenarios/change-an-existing-codebase.md) |
+| Raw notes, a vague idea, or doubts that it is worth building | [Clarify the Idea](./clarify/clarify-the-idea.md) |
+| A team with its own rules and practices | [Customize BMad](./customize/customize-bmad.md) and [Adopt BMad Across a Team](./customize/adopt-bmad-across-a-team.md) |
 
-**You want to see it work.**
-[Build Your First Change](./start/build-your-first-change.md) walks through one build in an
-empty project.
-
-**You know exactly what needs to change, and it is small.**
-Run `bmad-build` and describe the change. See [Build a Change](./build/build-a-change.md).
-
-**You are working in an existing codebase.**
-Consider running `bmad-project-context`, then build as usual. See
-[Start in an Existing Codebase](./existing-codebases/start-in-an-existing-codebase.md) and
-[Set and Maintain Project Context](./existing-codebases/set-and-maintain-project-context.md).
-
-**You are building a larger feature or a whole product.**
-If you can give Sofia, the Product Owner (`bmad-agent-po`), a complete intent,
-start there. If you need to go through the ideation/planning paces first,
-choose a path in [Choose a Planning Path](./plan/choose-a-planning-path.md).
-
-**Your idea is still vague, or you are not sure it is a good one.**
-Generate options or [pressure-test the idea](./plan/explore-and-validate-an-idea.md),
-then gather evidence with [Deep Recon](./plan/research-a-decision.md).
-
-**You want BMad to follow your team's own rules and practices.**
-See [Customize BMad](./customize/customize-bmad.md) and
-[Adopt BMad Across a Team](./customize/adopt-bmad-across-a-team.md).
+[Pick a Route](./start/how-bmad-works.md#pick-a-route) lists more routes, and
+the same page describes [the example app](./start/how-bmad-works.md#the-example-app)
+that these pages share.
 
 :::tip[Unsure where to start?]
 Run `bmad`. If that is not enough, see

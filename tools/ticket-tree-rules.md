@@ -1,8 +1,23 @@
 # Rules for skills that use the ticket tree
 
-Every skill that takes work from the tree, builds it, reviews it, or looks back on it follows these rules: `bmad-agent-po`, `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-retrospective`, and `bmad migrate`.
+Every skill that takes work from the tree, builds it, reviews it, or looks back on it follows these rules: `bmad-agent-po`, `bmad-agent-dev`, `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-retrospective`, and `bmad migrate`.
 
 This page is for people and agents who change those skills. No skill loads it: each one states the rules it acts on in its own files. When a rule changes here, change it in every skill that states it.
+
+External modules restate the identity rules for their own artifacts. The Test Architect module (TEA) does so in `skills/bmod-tea/contracts/story-identity.md` in `bmad-code-org/bmad-method-test-architecture-enterprise`. When a rule about ticket identity, `find`, or re-keying changes here, open an issue or PR there too.
+
+## Which level
+
+John (`bmad-agent-pm`) and Sofia (`bmad-agent-po`) each state this rule in their own files, and the method module's `help/help.md` states it for the `bmad` help agent.
+
+The level comes from the work itself, never from team size or time:
+
+- One story, one end-to-end behavior: a story.
+- More than one story of one capability: an epic.
+- Several capabilities that share outcomes, invariants or nouns: an initiative.
+- Several initiatives: a program, a parent initiative.
+
+Work starts at the lowest level that holds it and moves up when it proves bigger.
 
 ## Finding the tree
 
@@ -11,7 +26,7 @@ This page is for people and agents who change those skills. No skill loads it: e
 - `tickets.py` is installed at `{project-root}/_bmad/method/scripts/tickets.py`. `bmad-agent-po` declares it in its `bmod.toml`. Other skills run it from there and never open `bmad-agent-po`'s folder.
 - Called with no folder, `tickets.py next`, `status`, `find`, `mark`, and `mirror` resolve the active initiative themselves; `next` and `status` then also report `backlog/`. When no initiative is set, they exit with an error that names the missing key, and the calling skill works without the tree.
 - On a parent initiative, `find`, `pull`, `mark`, `mirror` and `move` exit with an error naming its children, and `next` and `status` list the children; a build needs a child as the active initiative.
-- A ticket is read through `tickets.py find`: its entry's fields, its epic file, its story file when one was pulled, and its plan path, whether or not the plan exists yet. The build's input is the entry and its epic, plus the story file when there is one. No skill writes a ticket file to start work.
+- A ticket is read through `tickets.py find`: its entry's fields, its epic file, its story file when one was pulled, and its plan path, whether or not the plan exists yet. The build's input is the entry and its epic, plus the story file when there is one. No skill writes a ticket file to start work. A build may add a one-line note to a later ticket of the same epic with `tickets.py note`, which writes the entry's `notes` or the leaf file's `## Notes`, on the repo store only, and refuses a ticket with a plan or a status.
 
 ## The plan file
 

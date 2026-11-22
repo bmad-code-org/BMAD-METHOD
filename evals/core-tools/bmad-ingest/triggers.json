@@ -1,0 +1,74 @@
+[
+  {
+    "query": "ingest this: ~/Downloads/kickoff-call.vtt",
+    "should_trigger": true
+  },
+  {
+    "query": "I've got a six hour meeting transcript (offsite.vtt), turn it into something my coding agents can actually look things up in",
+    "should_trigger": true
+  },
+  {
+    "query": "can you process this transcript from yesterday's client call and keep the original around? it's in recordings/acme-call.txt",
+    "should_trigger": true
+  },
+  {
+    "query": "what came out of this meeting? notes are in standup-2026-10-30.md, I missed it",
+    "should_trigger": true
+  },
+  {
+    "query": "here's the whole #launch-planning slack export folder, make notes from this thread so I know where things landed",
+    "should_trigger": true
+  },
+  {
+    "query": "I dictated a voice memo on my walk about the onboarding redesign, it's memo.m4a.txt, turn it into notes with my to-dos",
+    "should_trigger": true
+  },
+  {
+    "query": "we're starting the PRD for the billing revamp and I have the discovery workshop transcript, pull the decisions and action items from it first so the PRD can link the note",
+    "should_trigger": true
+  },
+  {
+    "query": "forward-from-legal.eml is a 40 message email thread about the vendor contract, can you make notes from this thread with who owes what",
+    "should_trigger": true
+  },
+  {
+    "query": "run our retro transcript through the retrospective template and drop the note in the epic's sources folder",
+    "should_trigger": true
+  },
+  {
+    "query": "this PRD is 400 pages and agents choke on it, shard it into pieces they can navigate",
+    "should_trigger": false
+  },
+  {
+    "query": "make tickets from this transcript, break the work into stories for the sprint",
+    "should_trigger": false
+  },
+  {
+    "query": "process this research report from Gemini Deep Research into something decision-ready",
+    "should_trigger": false
+  },
+  {
+    "query": "summarize this paragraph in one sentence: The quarterly numbers came in flat as expected.",
+    "should_trigger": false
+  },
+  {
+    "query": "review this meeting notes template I wrote for my team and tell me what's missing",
+    "should_trigger": false
+  },
+  {
+    "query": "transcribe this audio file to text, it's interview.mp3",
+    "should_trigger": false
+  },
+  {
+    "query": "write the minutes template for our board meetings as a doc we can reuse",
+    "should_trigger": false
+  },
+  {
+    "query": "run a retrospective on the finished payments epic",
+    "should_trigger": false
+  },
+  {
+    "query": "add a table of contents to the architecture doc so agents can find sections",
+    "should_trigger": false
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "query": "this PRD is like 400 pages and our agents keep choking on it, can you shard it? it's prd-fleet/prd-fleet.md",
+    "should_trigger": true
+  },
+  {
+    "query": "I've got a six hour meeting transcript (offsite.vtt) — turn it into something my coding agents can actually look things up in",
+    "should_trigger": false
+  },
+  {
+    "query": "our employee handbook is a 90 page handbook.docx and the support bot can't read it all, make it navigable for the bot",
+    "should_trigger": true
+  },
+  {
+    "query": "add a table of contents with line ranges to architecture.md so agents can jump straight to the section they need",
+    "should_trigger": true
+  },
+  {
+    "query": "I exported our #product-mobile slack channel (folder slack-export/), can you turn it into a wiki our agents can use",
+    "should_trigger": false
+  },
+  {
+    "query": "split this compressor service manual into smaller files with a map — the headings are just numbers like 3-4 and C-2 so a plain split is useless",
+    "should_trigger": true
+  },
+  {
+    "query": "update the sharded PRD in prd-fleet/: add a requirement that admins can force SSO for all users",
+    "should_trigger": true
+  },
+  {
+    "query": "the architecture doc in architecture-acme/ has grown to 90k words. is it worth breaking up for agents or should I leave it?",
+    "should_trigger": true
+  },
+  {
+    "query": "here's a folder of 15 weekly project notes from three different note takers, organise them into one wiki agents can navigate",
+    "should_trigger": false
+  },
+  {
+    "query": "specs/riverton-rfp.pdf is way too long for agents to work from, do something about it",
+    "should_trigger": true
+  },
+  {
+    "query": "add a table of contents to the README so it renders nicely on GitHub",
+    "should_trigger": false
+  },
+  {
+    "query": "summarise this 40 page PRD into one page for the exec team meeting tomorrow",
+    "should_trigger": false
+  },
+  {
+    "query": "break this PRD down into epics and stories for the sprint",
+    "should_trigger": false
+  },
+  {
+    "query": "review the architecture document for gaps and risks before we start building",
+    "should_trigger": false
+  },
+  {
+    "query": "create a PRD for our fleet maintenance app, I have notes from the customer calls",
+    "should_trigger": false
+  },
+  {
+    "query": "process this research report into something the team can decide from",
+    "should_trigger": false
+  },
+  {
+    "query": "this python file is 3000 lines, split it into smaller modules",
+    "should_trigger": false
+  },
+  {
+    "query": "split users.csv into files of 1000 rows each",
+    "should_trigger": false
+  },
+  {
+    "query": "translate this meeting transcript into Spanish for the Madrid team",
+    "should_trigger": false
+  },
+  {
+    "query": "fix the broken links in our docs wiki after the folder rename",
+    "should_trigger": false
+  }
+]
