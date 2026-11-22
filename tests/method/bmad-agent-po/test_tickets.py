@@ -2571,13 +2571,30 @@ class FractalStoreAndMetadataTests(TreeCase):
         self.fails(run("status", str(self_parent)), "cycle")
 
     def test_program_symlink_cycle_exits_1(self):
+        real_init = self.make_container(self.root / "out" / "initiative-real", "initiative")
+        real_epic = self.make_container(real_init / "tickets" / "epic-real", "epic")
+        (tk(real_epic) / "tickets.toml").write_text('[[entry]]\nid = 1\ntype = "story"\ntitle = "Symlinked"\n')
+        (tk(real_init) / "tickets.toml").write_text('[[epic]]\nid = 1\nslug = "epic-real"\n')
+
+        prog_ok = self.make_container(self.root / "out" / "program-symlink", "program")
+        (prog_ok / "tickets").mkdir()
+        alias = prog_ok / "tickets" / "initiative-alias"
+        try:
+            alias.symlink_to(real_init)
+        except OSError:
+            self.skipTest("symlinks unavailable")
+        st_ok = self.ok(run("status", str(prog_ok)))
+        self.assertEqual(st_ok["initiatives"][0]["slug"], "initiative-alias")
+        self.assertEqual(st_ok["initiatives"][0]["folder"], "initiative-alias")
+        self.assertEqual(st_ok["counts"], {"total": 1, "planned": 1})
+        self.assertEqual(st_ok["ready_entries"], ["initiative-alias/1.1"])
+        nxt_ok = self.ok(run("next", str(prog_ok)))
+        self.assertEqual(nxt_ok["ready"], ["initiative-alias"])
+
         prog = self.make_container(self.root / "out" / "program-loop", "program")
         (prog / "tickets").mkdir()
         loop_link = prog / "tickets" / "initiative-loop"
-        try:
-            loop_link.symlink_to(prog)
-        except OSError:
-            self.skipTest("symlinks unavailable")
+        loop_link.symlink_to(prog)
         self.fails(run("status", str(prog)), "cycle")
 
     def test_program_rollup_gating_for_done_dropped_and_waiting_on(self):
@@ -2686,17 +2703,22 @@ class FractalStoreAndMetadataTests(TreeCase):
     def test_program_ignores_sibling_initiatives_and_empty_nested_tickets_dir(self):
         # out/initiative-checkout already exists from TreeCase.setUp(), sibling to program-shop
         prog = self.make_container(self.root / "out" / "program-isolated", "program")
-        (tk(prog) / "tickets.toml").write_text('[[initiative]]\nid = 1\nslug = "initiative-checkout"\ntitle = "C"\n')
-        # Empty placeholder tickets/initiative-empty/tickets/ with no .md or tickets.toml must not fail
+        (tk(prog) / "tickets.toml").write_text(
+            '[[initiative]]\nid = 1\nslug = "initiative-checkout"\ntitle = "C"\n\n'
+            '[[initiative]]\nid = 2\nslug = "initiative-placeholder"\ntitle = "P"\n'
+        )
+        # Empty placeholder dirs (unlisted and listed) with no .md or tickets.toml must not fail
         (prog / "tickets" / "initiative-empty" / "tickets").mkdir(parents=True)
+        (prog / "tickets" / "initiative-placeholder").mkdir(parents=True)
 
         st = self.ok(run("status", str(prog)))
-        self.assertEqual(len(st["initiatives"]), 1)
+        self.assertEqual(len(st["initiatives"]), 2)
         self.assertIsNone(st["initiatives"][0]["folder"])
+        self.assertIsNone(st["initiatives"][1]["folder"])
         self.assertEqual(st["counts"], {"total": 0})
         nxt = self.ok(run("next", str(prog)))
         self.assertEqual(nxt["initiatives"], st["initiatives"])
-        self.assertEqual(nxt["ready"], ["initiative-checkout"])
+        self.assertEqual(nxt["ready"], ["initiative-checkout", "initiative-placeholder"])
 
         # A nested parent initiative must not fall back to a sibling inside the program's tickets/ dir
         self.make_container(prog / "tickets" / "initiative-a", "initiative")
@@ -2739,13 +2761,31 @@ class FractalStoreAndMetadataTests(TreeCase):
         self.assertEqual(pricing_st["unrefined_epics"], [])
         self.assertEqual(pricing_st["open_questions_count"], 0)
 
-        # Invalid root type or status exits 1
+        # Invalid root type or status exits 1 on status, and on program-* for all commands
         bad = self.make_container(self.root / "out" / "epic-bad", "story")
         self.fails(run("status", str(bad)), "not one of program, initiative, epic")
-        self.fails(run("next", str(bad)), "not one of program, initiative, epic")
-        self.fails(run("find", str(bad), "1"), "not one of program, initiative, epic")
+        bad_prog = self.make_container(self.root / "out" / "program-bad", "story")
+        self.fails(run("status", str(bad_prog)), "not one of program, initiative, epic")
+        self.fails(run("next", str(bad_prog)), "not one of program, initiative, epic")
+        self.fails(run("find", str(bad_prog), "1"), "not one of program, initiative, epic")
         bad_status = self.make_container(self.root / "out" / "epic-bad-st", "epic", status="waiting")
         self.fails(run("status", str(bad_status)), "in-progress, done, dropped")
+
+        # Existing initiatives with non-canonical status or missing type still run find/mark/next cleanly
+        for slug, init_md, status_err in (
+            ("initiative-planned", "---\ntype: initiative\nstatus: planned\n---\n", "in-progress, done, dropped"),
+            ("initiative-untyped", "# Untyped Container\n", "not one of program, initiative, epic"),
+        ):
+            leg = self.root / "out" / slug
+            leg_ep = self.make_container(leg / "tickets" / "epic-work", "epic")
+            (leg / f"{slug}.md").write_text(init_md)
+            (tk(leg_ep) / "tickets.toml").write_text('[[entry]]\nid = 1\ntype = "story"\ntitle = "Active"\n')
+            (tk(leg) / "tickets.toml").write_text('[[epic]]\nid = 1\nslug = "epic-work"\n')
+            self.assertEqual(self.ok(run("find", str(leg), "1.1"))["title"], "Active")
+            self.assertEqual(self.ok(run("next", str(leg)))["ready_to_start"][0]["id"], 1)
+            self.ok(run("mark", str(leg), "1.1", "in-progress"))
+            self.assertEqual(self.ok(run("next", str(leg)))["in_progress"][0]["id"], 1)
+            self.fails(run("status", str(leg)), status_err)
 
         # Misnested container dirs beside <folder>.md fail with earlier-layout error
         for sub_name in ("program-sub", "initiative-sub", "epic-sub"):
@@ -2780,6 +2820,7 @@ class FractalStoreAndMetadataTests(TreeCase):
         (epic / "plain-dir" / "notes.md").write_text("# No frontmatter here\n")
         (epic / "imposter-dir").mkdir()
         (epic / "imposter-dir" / "imposter-dir.md").write_text("---\ntype: epic\n---\n")
+        (epic / "imposter-dir" / "DESIGN.md").write_text("---\nstatus: final\n---\n")
 
         st = self.ok(run("status", str(epic)))
         self.assertEqual(
@@ -2837,11 +2878,21 @@ class FractalStoreAndMetadataTests(TreeCase):
         (broken / "ux-broken.md").write_text("---\ntemplate: ux-custom\n---\n")
         (broken / "bad.md").write_bytes(b"---\ntemplate: x\n---\n\xff")
 
+        # Existing non-md in a run folder with no sibling .md still resolves prefix fallback
+        arch_raw = epic / "arch-raw"
+        arch_raw.mkdir()
+        (arch_raw / "contract.yaml").write_text("openapi: 3.0.0\n")
+
+        # Existing plain hyphenated file directly in container must not guess "api" from stem
+        (epic / "api-spec.md").write_text("# API Spec\n")
+
         companions = [
             "ux-epic-cart/EXPERIENCE.md#checkout",
             "{project-root}/docs/arch-epic-cart/contract.yaml",
             "https://example.com/spec#auth",
             "ux-broken/bad.md",
+            "arch-raw/contract.yaml",
+            "api-spec.md",
             "{project-root}/contract.yaml",
             "{project-root}/missing-prefix/doc.md",
             "missing-prefix/doc.md",
@@ -2851,7 +2902,7 @@ class FractalStoreAndMetadataTests(TreeCase):
             "---\ntype: epic\ncompanions:\n" + "".join(f'  - "{c}"\n' for c in companions) + "---\n"
         )
         st = self.ok(run("--project-root", str(self.root), "status", str(epic)))
-        # ux-epic-cart and ux-broken were adopted via #fragment and bad.md
+        # ux-epic-cart, ux-broken, and arch-raw were adopted via companions:
         self.assertEqual(st["unadopted_runs"], [])
         self.assertEqual(
             st["companions"],
@@ -2860,9 +2911,11 @@ class FractalStoreAndMetadataTests(TreeCase):
                 {"path": "{project-root}/docs/arch-epic-cart/contract.yaml", "template": "arch-epic"},
                 {"path": "https://example.com/spec#auth", "template": ""},
                 {"path": "ux-broken/bad.md", "template": "ux-custom"},
+                {"path": "arch-raw/contract.yaml", "template": "arch"},
+                {"path": "api-spec.md", "template": ""},
                 {"path": "{project-root}/contract.yaml", "template": ""},
-                {"path": "{project-root}/missing-prefix/doc.md", "template": "missing"},
-                {"path": "missing-prefix/doc.md", "template": "missing"},
+                {"path": "{project-root}/missing-prefix/doc.md", "template": ""},
+                {"path": "missing-prefix/doc.md", "template": ""},
                 {"path": "plain.md", "template": ""},
             ],
         )
@@ -3033,6 +3086,31 @@ class FractalStoreAndMetadataTests(TreeCase):
         self.assertEqual(prog_st["unrefined_epics"], [])
         self.assertEqual(prog_st["ready_entries"], [])
         self.assertEqual(prog_st["open_questions_count"], 0)
+
+        # 4. Open initiative & program exclude done/dropped epic entries from ready_entries while keeping counts & next
+        open_prog = self.make_container(self.root / "out" / "program-mixed-epics", "program")
+        mixed_init = self.make_container(open_prog / "tickets" / "initiative-mixed", "initiative")
+        ep_done = self.make_container(mixed_init / "tickets" / "epic-done", "epic", status="done")
+        ep_drop = self.make_container(mixed_init / "tickets" / "epic-dropped", "epic", status="dropped")
+        ep_open = self.make_container(mixed_init / "tickets" / "epic-open", "epic")
+        for ep, title in ((ep_done, "Done S"), (ep_drop, "Drop S"), (ep_open, "Open S")):
+            (tk(ep) / "tickets.toml").write_text(f'[[entry]]\nid = 1\ntype = "story"\ntitle = "{title}"\n')
+        (tk(mixed_init) / "tickets.toml").write_text(
+            '[[epic]]\nid = 1\nslug = "epic-done"\n\n'
+            '[[epic]]\nid = 2\nslug = "epic-dropped"\n\n'
+            '[[epic]]\nid = 3\nslug = "epic-open"\n'
+        )
+        (tk(open_prog) / "tickets.toml").write_text('[[initiative]]\nid = 1\nslug = "initiative-mixed"\n')
+
+        mixed_st = self.ok(run("status", str(mixed_init)))
+        self.assertEqual(mixed_st["counts"], {"total": 3, "planned": 3})
+        self.assertEqual(mixed_st["ready_entries"], ["3.1"])
+        mixed_nxt = self.ok(run("next", str(mixed_init)))
+        self.assertEqual([r["ref"] for r in mixed_nxt["ready_to_start"]], ["1.1", "2.1", "3.1"])
+
+        open_prog_st = self.ok(run("status", str(open_prog)))
+        self.assertEqual(open_prog_st["counts"], {"total": 3, "planned": 3})
+        self.assertEqual(open_prog_st["ready_entries"], ["initiative-mixed/3.1"])
 
 
 if __name__ == "__main__":

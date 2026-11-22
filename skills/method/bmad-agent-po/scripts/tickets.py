@@ -432,25 +432,35 @@ def epic_folders(initiative: Path) -> list[Path]:
     )
 
 
+def _child_container_target(child: Path) -> Path | None:
+    if not child.is_dir():
+        return None
+    if child.is_symlink():
+        if (child / f"{child.name}.md").is_file():
+            return child
+        target = child.resolve()
+        if (target / f"{target.name}.md").is_file() or (tickets_dir(target) / BREAKDOWN).is_file():
+            return target
+        return None
+    if (child / f"{child.name}.md").is_file() or (tickets_dir(child) / BREAKDOWN).is_file():
+        return child
+    return None
+
+
 def initiative_folders(parent: Path) -> list[Path]:
     td = tickets_dir(parent)
     if not td.is_dir():
         return []
-    return sorted(
-        d
-        for d in td.glob("initiative-*")
-        if d.is_dir()
-        and (
-            (d / f"{d.name}.md").is_file()
-            or (d.is_symlink() and (d / f"{d.resolve().name}.md").is_file())
-            or (tickets_dir(d) / BREAKDOWN).is_file()
-        )
-    )
+    return sorted(d for d in td.glob("initiative-*") if _child_container_target(d) is not None)
 
 
-def load_tree(folder: Path) -> dict:
+def load_tree(folder: Path, *, validate_root: bool = False) -> dict:
     """The folder asked about plus every epic its tickets can name."""
-    root = load_container(folder) if is_container(folder) else None
+    if validate_root and is_container(folder):
+        root = load_container(folder)
+    else:
+        rtype = _root_type(folder)
+        root = load_container(folder) if rtype == "program" else None
     breakdown = load_breakdown(folder)
     if root and root["type"] == "program" and ("epic" in breakdown or "entry" in breakdown):
         raise TicketError(f"{shown(folder)}/{BREAKDOWN}: a program holds initiatives, not epics or entries")
@@ -995,10 +1005,23 @@ def next_view(folder: Path) -> dict:
     }
 
 
+def _root_type(folder: Path) -> str | None:
+    if not is_container(folder):
+        return None
+    if folder.name.startswith("program-"):
+        return load_container(folder)["type"]
+    fm = _safe_frontmatter(folder / f"{folder.name}.md")
+    rtype = fm.get("type") if fm else None
+    if rtype == "program":
+        return load_container(folder)["type"]
+    return rtype
+
+
 def is_parent(folder: Path) -> bool:
-    root = load_container(folder) if is_container(folder) else None
+    rtype = _root_type(folder)
     breakdown = load_breakdown(folder)
-    if root and root["type"] == "program":
+    if rtype == "program":
+        load_container(folder)
         if "epic" in breakdown or "entry" in breakdown:
             raise TicketError(f"{shown(folder)}/{BREAKDOWN}: a program holds initiatives, not epics or entries")
         return True
@@ -1086,12 +1109,7 @@ def _unadopted_runs(folder: Path, project_root: Path | None, adopted_refs: list[
     adopted_cands = [cand for raw in adopted_refs for cand in _expand_ref_candidates(raw, folder, project_root)]
     runs = []
     for d in sorted(folder.iterdir(), key=lambda p: p.name):
-        if (
-            not d.is_dir()
-            or d.name in (TICKETS, "backlog")
-            or d.name.startswith((".", "_"))
-            or CONTAINER_DIR_RE.match(d.name)
-        ):
+        if not d.is_dir() or d.name in (TICKETS, "backlog") or d.name.startswith((".", "_")) or _is_container_dir(d):
             continue
         primary = _primary_doc(d)
         if primary is None:
@@ -1118,37 +1136,39 @@ def _companion_template(raw: str, folder: Path, project_root: Path | None) -> st
         return ""
     cands = _expand_ref_candidates(raw, folder, project_root)
     resolved = next((c for c in cands if c.exists()), None)
+    if resolved is None:
+        return ""
     folder_res = folder.resolve()
-    if resolved is not None:
-        if resolved.is_dir():
-            primary = _primary_doc(resolved)
-            if primary is not None:
-                t = str(primary[1].get("template", "") or "").strip()
-                if t:
-                    return t
-            return _prefix_template(resolved.name)
-        if resolved.is_file() and resolved.suffix == ".md":
-            fm = _safe_frontmatter(resolved)
-            if fm is not None:
-                t = str(fm.get("template", "") or "").strip()
-                if t:
-                    return t
-        parent = resolved.parent
-        is_run_parent = (
-            parent != folder_res
-            and parent.name not in (TICKETS, "backlog")
-            and not parent.name.startswith((".", "_"))
-            and not _is_container_dir(parent)
-        )
-        if is_run_parent:
-            primary = _primary_doc(parent)
-            if primary is not None:
-                t = str(primary[1].get("template", "") or "").strip()
-                if t:
-                    return t
-                return _prefix_template(parent.name)
-    p_clean = Path(clean)
-    return _prefix_template(p_clean.stem) or _prefix_template(p_clean.parent.name)
+    root_res = project_root.resolve() if project_root is not None else None
+    if resolved.is_dir():
+        primary = _primary_doc(resolved)
+        if primary is not None:
+            t = str(primary[1].get("template", "") or "").strip()
+            if t:
+                return t
+        return _prefix_template(resolved.name)
+    if resolved.is_file() and resolved.suffix == ".md":
+        fm = _safe_frontmatter(resolved)
+        if fm is not None:
+            t = str(fm.get("template", "") or "").strip()
+            if t:
+                return t
+    parent = resolved.parent
+    is_run_parent = (
+        parent != folder_res
+        and (root_res is None or parent != root_res)
+        and parent.name not in (TICKETS, "backlog")
+        and not parent.name.startswith((".", "_"))
+        and not _is_container_dir(parent)
+    )
+    if is_run_parent:
+        primary = _primary_doc(parent)
+        if primary is not None:
+            t = str(primary[1].get("template", "") or "").strip()
+            if t:
+                return t
+        return _prefix_template(parent.name)
+    return ""
 
 
 def file_open_questions(path: Path) -> int:
@@ -1200,7 +1220,11 @@ def container_metadata(
             "open_questions_count": 0 if closed else container_oq,
         }
 
-    ready_entries = [row_ref(t, tree) or t["key"] for t in classify(tree)["ready_to_start"]]
+    ready_entries = [
+        row_ref(t, tree) or t["key"]
+        for t in classify(tree)["ready_to_start"]
+        if tree["containers"].get(t["epic"], {}).get("status") not in ("done", "dropped")
+    ]
     if ctype == "epic":
         unrefined_epics = [folder.name] if not root["refined"] and root["status"] not in ("done", "dropped") else []
     elif ctype == "initiative" and tree["scope"] is None:
@@ -1265,7 +1289,7 @@ def _parent_data(folder: Path, seen: set[Path] | None = None) -> tuple[dict, dic
     rows = []
     child_paths: dict[str, Path] = {}
 
-    def load_child_row(row: dict, child: Path, child_c: dict | None = None) -> None:
+    def load_child_row(row: dict, child: Path, child_c: dict | None = None, folder_name: str | None = None) -> None:
         if child.resolve() in seen:
             raise TicketError(f"{folder.name}: cycle in nested initiatives")
         child_c = load_container(child) if child_c is None else child_c
@@ -1273,7 +1297,7 @@ def _parent_data(folder: Path, seen: set[Path] | None = None) -> tuple[dict, dic
             _, child_counts, _, _ = _parent_data(child, seen)
         else:
             child_counts = counts(load_tree(child)["tickets"])
-        row.update(folder=child.name, status=child_c["status"], counts=child_counts)
+        row.update(folder=folder_name or child.name, status=child_c["status"], counts=child_counts)
         child_paths[row["slug"]] = child
 
     allow_sibling = not (root and root["type"] == "program") and folder.parent.name != TICKETS
@@ -1289,16 +1313,20 @@ def _parent_data(folder: Path, seen: set[Path] | None = None) -> tuple[dict, dic
         row = {"id": c["id"], "slug": c["slug"], "title": str(c.get("title", "")), "after": after, "folder": None}
         nested = td / c["slug"]
         child = nested if nested.is_dir() or not allow_sibling else folder.parent / c["slug"]
-        if child.is_dir():
-            load_child_row(row, child)
+        target = _child_container_target(child)
+        if target is not None:
+            load_child_row(row, target, folder_name=child.name)
         rows.append(row)
 
     for d in initiative_folders(folder):
         if d.name in ids:
             continue
-        if d.resolve() in seen:
+        target = _child_container_target(d)
+        if target is None:
+            continue
+        if target.resolve() in seen:
             raise TicketError(f"{folder.name}: cycle in nested initiatives")
-        child_c = load_container(d)
+        child_c = load_container(target)
         row = {
             "id": None,
             "slug": d.name,
@@ -1306,7 +1334,7 @@ def _parent_data(folder: Path, seen: set[Path] | None = None) -> tuple[dict, dic
             "after": [],
             "folder": None,
         }
-        load_child_row(row, d, child_c)
+        load_child_row(row, target, child_c, folder_name=d.name)
         rows.append(row)
 
     graph = {r["slug"]: [a["initiative"] for a in r["after"]] for r in rows}
@@ -1411,7 +1439,7 @@ def counts(tickets: list[dict]) -> dict:
 
 
 def status_view(folder: Path, project_root: Path | None = None) -> dict:
-    tree = load_tree(folder)
+    tree = load_tree(folder, validate_root=True)
     declared = declared_after(tree)
     tickets = in_scope(tree)
     blocks = {}
