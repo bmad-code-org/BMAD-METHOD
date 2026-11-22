@@ -45,6 +45,7 @@ Exit 0 on success or a clean check, 1 on a failed check or a refused create, 2 o
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import io
 import json
 import re
@@ -54,13 +55,24 @@ import tomllib
 from pathlib import Path
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
-SKILLS = Path(__file__).resolve().parents[2]  # the bmad skill installs beside this one; a source checkout groups it
-sys.path[:0] = [str(SKILLS / "bmad" / "scripts"), str(SKILLS.parent / "core-tools" / "bmad" / "scripts")]
-try:
-    import frontmatter
-except ModuleNotFoundError:
+
+
+def load_shared() -> bool:
+    """Load the frontmatter module of the bmad skill installed beside this one (in a source checkout, under
+    core-tools); say how to install it and return False when it is missing."""
+    global frontmatter
+
+    skills = Path(__file__).resolve().parents[2]
+    for folder in (skills / "bmad", skills.parent / "core-tools" / "bmad"):
+        path = folder / "scripts" / "frontmatter.py"
+        if path.is_file():
+            spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+            frontmatter = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(frontmatter)
+            return True
     print("error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad", file=sys.stderr)
-    sys.exit(2)
+    return False
+
 
 SHAPES = (
     "plain-skill",
@@ -371,6 +383,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--source", help="update_source for the [skill] or [bmod] table")
     p.add_argument("--description", help="frontmatter description; a [TODO: ...] placeholder when omitted")
     args = p.parse_args(argv)
+    if not load_shared():
+        return 2
 
     if args.check:
         if not args.check.is_dir():

@@ -67,7 +67,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from difflib import SequenceMatcher  # noqa: E402
 
 from count_tokens import count_tokens, iter_text_files, read_text  # noqa: E402
-from init_skill import USE_WHEN_RE, frontmatter_block, parse_frontmatter  # noqa: E402
+from init_skill import USE_WHEN_RE, frontmatter_block, load_shared, parse_frontmatter  # noqa: E402
 from scan_paths import scan_skill  # noqa: E402
 from scan_scripts import scan_scripts  # noqa: E402
 
@@ -425,6 +425,8 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("skill", type=Path, help="skill folder to analyze")
     args = p.parse_args(argv)
+    if not load_shared():
+        return 2
     root = args.skill.expanduser().resolve()
     if not root.is_dir():
         p.error(f"not a directory: {args.skill}")

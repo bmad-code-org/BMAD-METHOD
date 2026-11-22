@@ -38,6 +38,7 @@ result, not an error.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import sys
 import uuid
@@ -59,13 +60,24 @@ from eval_common import (
 )
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
-SKILLS = Path(__file__).resolve().parents[2]  # the bmad skill installs beside this one; a source checkout groups it
-sys.path[:0] = [str(SKILLS / "bmad" / "scripts"), str(SKILLS.parent / "core-tools" / "bmad" / "scripts")]
-try:
-    import frontmatter
-except ModuleNotFoundError:
+
+
+def load_shared() -> bool:
+    """Load the frontmatter module of the bmad skill installed beside this one (in a source checkout, under
+    core-tools); say how to install it and return False when it is missing."""
+    global frontmatter
+
+    skills = Path(__file__).resolve().parents[2]
+    for folder in (skills / "bmad", skills.parent / "core-tools" / "bmad"):
+        path = folder / "scripts" / "frontmatter.py"
+        if path.is_file():
+            spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+            frontmatter = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(frontmatter)
+            return True
     print("error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad", file=sys.stderr)
-    sys.exit(2)
+    return False
+
 
 CANARY_PREFIX = "TRIGGER-LOADED-"
 
@@ -158,6 +170,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--quiet", action="store_true")
     args = p.parse_args(argv)
+    if not load_shared():
+        return 2
     if args.runs_per_query < 1:
         print("--runs-per-query must be at least 1", file=sys.stderr)
         return 2
