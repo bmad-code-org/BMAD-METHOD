@@ -687,6 +687,67 @@ class FoldSpecsTests(unittest.TestCase):
         self.assertEqual(fold["companions"], ["_bmad-output/initiative-golf/epic-ball/glossary.md"])
         self.assertFalse((epic / "spec-ball").exists())
 
+    def test_hidden_and_tmp_files_move_beside_the_ticket(self):
+        epic = self.write_epic_with_spec()
+        write(epic / "spec-ball" / ".working" / "mock.html", "mock\n")
+        write(epic / "spec-ball" / ".draft-notes.md", "draft\n")
+        write(epic / "spec-ball" / "plan.md.tmp", "partial\n")
+
+        report = self.fold()
+
+        (fold,) = report["folded"]
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(
+            fold["companions"],
+            [
+                "_bmad-output/initiative-golf/epic-ball/.draft-notes.md",
+                "_bmad-output/initiative-golf/epic-ball/.working",
+                "_bmad-output/initiative-golf/epic-ball/glossary.md",
+                "_bmad-output/initiative-golf/epic-ball/plan.md.tmp",
+            ],
+        )
+        self.assertEqual((epic / ".working" / "mock.html").read_text(encoding="utf-8"), "mock\n")
+        self.assertEqual((epic / ".draft-notes.md").read_text(encoding="utf-8"), "draft\n")
+        self.assertEqual((epic / "plan.md.tmp").read_text(encoding="utf-8"), "partial\n")
+        self.assertFalse((epic / "spec-ball").exists())
+
+    def test_a_hidden_file_whose_name_is_taken_is_reported_and_nothing_moves(self):
+        epic = self.write_epic_with_spec()
+        write(epic / "spec-ball" / ".draft-notes.md", "the spec's draft\n")
+        write(epic / ".draft-notes.md", "the epic's own\n")
+        before = snapshot(self.project)
+
+        report = self.fold()
+
+        self.assertEqual(report["folded"], [])
+        self.assertEqual(
+            report["problems"],
+            [
+                {
+                    "spec": "_bmad-output/initiative-golf/epic-ball/spec-ball",
+                    "problem": ".draft-notes.md already exist(s) beside the ticket",
+                }
+            ],
+        )
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_loose_spec_folders_holding_os_files_all_fold(self):
+        for slug in ("caddie", "putter"):
+            loose = self.store / f"spec-{slug}"
+            write(loose / f"spec-{slug}.md", spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY)
+            write(loose / ".DS_Store", "")
+            write(loose / "Thumbs.db", "")
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(len(report["folded"]), 2, msg=report)
+        backlog = self.store / "backlog"
+        self.assertTrue((backlog / "story-caddie.md").is_file())
+        self.assertTrue((backlog / "story-putter.md").is_file())
+        self.assertFalse((backlog / ".DS_Store").exists())
+        self.assertFalse((backlog / "Thumbs.db").exists())
+
     def test_a_loose_spec_folder_becomes_a_backlog_story(self):
         loose = self.store / "spec-caddie"
         write(
