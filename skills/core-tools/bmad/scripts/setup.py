@@ -2303,11 +2303,11 @@ def fill_team_config(text: str, project_root: Path) -> str:
 
 
 def output_folder(config_text: str) -> str:
+    """Return the output folder relative to the project root, resolving it as render_skill does."""
     folder = tomllib.loads(config_text).get("core", {}).get("output_folder", "_bmad-output")
-    prefix = "{project-root}/"
-    if folder.startswith(prefix):
-        folder = folder[len(prefix) :]
-    return folder or "_bmad-output"
+    if "{project-root}" not in folder:
+        return folder or "_bmad-output"
+    return folder.replace("{project-root}", "").lstrip("/\\") or "."
 
 
 def materialize_bmad(
