@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-field="title">Product brief</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #ecefec; --paper: #ffffff; --ink: #1c2321; --muted: #5f6b67; --rule: #d8dfdc;
+  --accent: #2c6e5a; --lead: #f3f7f5; --ask: #fff6e0; --ask-rule: #d9a521;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--page); }
+body { margin: 0; padding: 2rem 1rem 3rem; font: 16px/1.6 var(--sans); color: var(--ink); }
+main { max-width: 52rem; margin: 0 auto; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 0.25rem 1.5rem rgb(0 0 0 / 6%); padding: 2.25rem 2.5rem 2.5rem; }
+header { padding-bottom: 1rem; border-bottom: 2px solid var(--ink); }
+.kicker { margin: 0 0 0.3rem; font: 700 0.72rem/1.2 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+h1 { margin: 0; font: 700 2.1rem/1.15 var(--serif); letter-spacing: -0.01em; }
+.meta { margin: 0.4rem 0 0; font-size: 0.85rem; color: var(--muted); }
+.meta span + span::before { content: " · "; }
+.lead { margin-top: 1.5rem; padding: 1.25rem 1.5rem; background: var(--lead); border-left: 4px solid var(--accent); font: 1.08rem/1.6 var(--serif); }
+.lead p { margin: 0 0 0.85rem; }
+.lead > div > :last-child > :last-child { margin-bottom: 0; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem 1.75rem; margin-top: 1.75rem; }
+.grid section { min-width: 0; }
+.grid .wide { grid-column: 1 / -1; }
+section > h2 { margin: 0 0 0.5rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--rule); font: 700 0.78rem/1.2 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+section p, section ul, section ol { margin: 0 0 0.75rem; }
+section ul, section ol { padding-left: 1.2rem; }
+section h3 { margin: 0.9rem 0 0.3rem; font-size: 0.95rem; }
+.ask { margin-top: 1.75rem; padding: 1.1rem 1.4rem; background: var(--ask); border: 1px solid var(--ask-rule); border-radius: 0.35rem; }
+.ask > h2 { border: 0; padding: 0; color: #86630c; }
+.vision { margin-top: 1.75rem; font: italic 1.02rem/1.6 var(--serif); color: var(--muted); }
+.vision > h2 { font-style: normal; }
+.rest { margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); font-size: 0.95rem; }
+.rest h2 { margin: 0 0 0.5rem; font: 700 0.78rem/1.2 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+table { width: 100%; border-collapse: collapse; margin: 0 0 1rem; font-size: 0.88rem; }
+th, td { padding: 0.35rem 0.5rem; border: 1px solid var(--rule); text-align: left; vertical-align: top; }
+pre { white-space: pre-wrap; font: 0.9rem/1.5 var(--sans); margin: 0; }
+a { color: var(--accent); }
+@media (max-width: 40rem) {
+  body { padding: 1rem 0.75rem 2rem; }
+  main { padding: 1.5rem 1.25rem; }
+  h1 { font-size: 1.65rem; }
+  .grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media print {
+  html { background: none; }
+  body { padding: 0; }
+  main { border: 0; box-shadow: none; padding: 0; max-width: none; }
+  .grid section { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="kicker">Product brief</p>
+    <h1 data-field="title"></h1>
+    <p class="meta"><span data-field="updated"></span><span data-field="status"></span></p>
+  </header>
+  <section class="lead" data-section="Executive summary"><div data-body></div></section>
+  <div class="grid">
+    <section class="wide" data-section="Problem"><h2>Problem</h2><div data-body></div></section>
+    <section data-section="Solution"><h2>Solution</h2><div data-body></div></section>
+    <section data-section="What makes it different"><h2>What makes it different</h2><div data-body></div></section>
+    <section data-section="Who it serves"><h2>Who it serves</h2><div data-body></div></section>
+    <section data-section="Success criteria"><h2>Success criteria</h2><div data-body></div></section>
+    <section class="wide" data-section="Scope"><h2>Scope</h2><div data-body></div></section>
+  </div>
+  <section class="ask" data-section="The ask"><h2>The ask</h2><div data-body></div></section>
+  <section class="vision" data-section="Vision"><h2>Vision</h2><div data-body></div></section>
+  <section class="rest" data-rest></section>
+</main>
+</body>
+</html>

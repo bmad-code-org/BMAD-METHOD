@@ -1,0 +1,300 @@
+[
+  {
+    "query": "help me come up with names for my bakery",
+    "expect": "bmad-brainstorming"
+  },
+  {
+    "query": "let's generate a bunch of feature ideas for our habit tracker app",
+    "expect": "bmad-brainstorming"
+  },
+  {
+    "query": "I have an idea for an app that matches dog walkers with retirees. poke holes in it",
+    "expect": "bmad-forge-idea"
+  },
+  {
+    "query": "I have a half-baked idea for a hot sauce subscription box. help me think it through",
+    "expect": "bmad-forge-idea",
+    "also_ok": [
+      "bmad-agent-analyst"
+    ]
+  },
+  {
+    "query": "I've got a rough idea for a podcast. can we work on it together?",
+    "expect": "bmad-forge-idea",
+    "also_ok": [
+      "bmad-brainstorming"
+    ]
+  },
+  {
+    "query": "stress-test my thinking on moving our product to usage-based pricing",
+    "expect": "bmad-forge-idea",
+    "also_ok": [
+      "bmad-founder-agent-advisor"
+    ]
+  },
+  {
+    "query": "get a few different perspectives on my plan for a four-day work week at our startup",
+    "expect": "bmad-party-mode",
+    "also_ok": [
+      "bmad-forge-idea"
+    ]
+  },
+  {
+    "query": "I want the architect, the PM and the UX designer to argue about this feature",
+    "expect": "bmad-party-mode"
+  },
+  {
+    "query": "do a pre-mortem on this launch plan",
+    "expect": null,
+    "also_ok": [
+      "bmad-forge-idea"
+    ]
+  },
+  {
+    "query": "red team my go-to-market plan",
+    "expect": null,
+    "also_ok": [
+      "bmad-forge-idea"
+    ]
+  },
+  {
+    "query": "run advanced elicitation on the PRD",
+    "expect": "bmad-advanced-elicitation"
+  },
+  {
+    "query": "do some market research on AI note-taking apps",
+    "expect": "bmad-deep-recon",
+    "also_ok": [
+      "bmad-agent-analyst"
+    ]
+  },
+  {
+    "query": "who are the main competitors to Notion and how do they price?",
+    "expect": "bmad-deep-recon",
+    "also_ok": [
+      "bmad-agent-analyst"
+    ]
+  },
+  {
+    "query": "what are users saying about Linear on reddit?",
+    "expect": "bmad-deep-recon"
+  },
+  {
+    "query": "research how authentication works in this codebase",
+    "expect": "bmad-deep-recon"
+  },
+  {
+    "query": "help me choose between Postgres and DynamoDB for the event store",
+    "expect": "bmad-deep-recon",
+    "also_ok": [
+      "bmad-architecture",
+      "bmad-agent-architect"
+    ]
+  },
+  {
+    "query": "I need to analyze our churn numbers and figure out what's going on",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "review my PRD for gaps",
+    "expect": "bmad-review",
+    "also_ok": [
+      "bmad-agent-pm"
+    ]
+  },
+  {
+    "query": "walk me through what changed in this PR",
+    "expect": null,
+    "also_ok": [
+      "bmad-walkthrough"
+    ]
+  },
+  {
+    "query": "use bmad-walkthrough on the last commit",
+    "expect": "bmad-walkthrough"
+  },
+  {
+    "query": "write a PRD for the notifications feature",
+    "expect": "bmad-agent-pm"
+  },
+  {
+    "query": "write a product brief for my idea",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "help me write a PRFAQ for the new dashboard",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "write a business case for replacing our billing system",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "is this problem worth pursuing? I need an opportunity assessment",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "write a strategy narrative for next year's plan",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "write the BRD for the vendor who is building our portal",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "write an experiment card for the new onboarding flow",
+    "expect": "bmad-agent-analyst",
+    "also_ok": [
+      "bmad-agent-pm"
+    ]
+  },
+  {
+    "query": "draft a program charter for the platform migration",
+    "expect": "bmad-agent-pm",
+    "also_ok": [
+      "bmad-agent-analyst"
+    ]
+  },
+  {
+    "query": "shape a pitch for the next six-week cycle",
+    "expect": "bmad-agent-pm"
+  },
+  {
+    "query": "plan the launch of the new checkout across teams",
+    "expect": "bmad-agent-pm",
+    "also_ok": [
+      "bmad-founder-agent-advisor"
+    ]
+  },
+  {
+    "query": "write a spec I can hand to a coding agent for the export feature",
+    "expect": "bmad-agent-pm",
+    "also_ok": [
+      "bmad-agent-po"
+    ]
+  },
+  {
+    "query": "write a requirements specification for our regulated billing feature",
+    "expect": "bmad-agent-pm"
+  },
+  {
+    "query": "write a prototype plan to try this idea quickly",
+    "expect": "bmad-agent-pm"
+  },
+  {
+    "query": "turn this PRD into epics and stories",
+    "expect": "bmad-agent-po"
+  },
+  {
+    "query": "create a spec for password reset",
+    "expect": "bmad-agent-po"
+  },
+  {
+    "query": "what's ready to build?",
+    "expect": "bmad-agent-po",
+    "also_ok": [
+      "bmad"
+    ]
+  },
+  {
+    "query": "create the architecture for this",
+    "expect": "bmad-architecture",
+    "also_ok": [
+      "bmad-agent-architect"
+    ]
+  },
+  {
+    "query": "lets plan the UX for the onboarding flow",
+    "expect": "bmad-ux",
+    "also_ok": [
+      "bmad-agent-ux-designer"
+    ]
+  },
+  {
+    "query": "what should I do next?",
+    "expect": "bmad"
+  },
+  {
+    "query": "where do I start with BMad?",
+    "expect": "bmad"
+  },
+  {
+    "query": "update my BMad install",
+    "expect": "bmad"
+  },
+  {
+    "query": "implement story 1.3",
+    "expect": "bmad-build"
+  },
+  {
+    "query": "fix the bug where login redirects to a blank page",
+    "expect": "bmad-build"
+  },
+  {
+    "query": "add end-to-end tests for the checkout flow",
+    "expect": "bmad-qa-generate-e2e-tests"
+  },
+  {
+    "query": "what does this function do?",
+    "expect": null
+  },
+  {
+    "query": "rename this variable to camelCase",
+    "expect": null
+  },
+  {
+    "query": "commit these changes",
+    "expect": null
+  },
+  {
+    "query": "set up the AGENTS.md for this repo",
+    "expect": null,
+    "also_ok": [
+      "bmad-project-context"
+    ]
+  },
+  {
+    "query": "build a skill that turns meeting notes into action items",
+    "expect": "bmad-toolsmith"
+  },
+  {
+    "query": "check whether my skill's description triggers when it should",
+    "expect": "bmad-eval"
+  },
+  {
+    "query": "change the PRD template so it asks about compliance",
+    "expect": "bmad-customize"
+  },
+  {
+    "query": "make John always ask about the target market first",
+    "expect": "bmad-customize"
+  },
+  {
+    "query": "process this meeting transcript into notes",
+    "expect": "bmad-ingest"
+  },
+  {
+    "query": "this design doc is 4000 lines, make it easier for agents to navigate",
+    "expect": "bmad-shard-pro"
+  },
+  {
+    "query": "run a retrospective on epic 2",
+    "expect": "bmad-retrospective"
+  },
+  {
+    "query": "help me with the pitch deck for our seed round",
+    "expect": "bmad-founder-agent-advisor"
+  },
+  {
+    "query": "what's our runway if we hire two engineers?",
+    "expect": "bmad-founder-agent-advisor"
+  },
+  {
+    "query": "size the market for our pitch deck",
+    "expect": "bmad-founder-agent-advisor",
+    "also_ok": [
+      "bmad-deep-recon",
+      "bmad-agent-analyst"
+    ]
+  }
+]

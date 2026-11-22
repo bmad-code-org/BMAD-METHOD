@@ -2,7 +2,7 @@
 title: Eval Format
 description: 'The files bmad-eval reads and writes: cases, trigger queries, rubric expectations, runner commands, harness keys, and run folders.'
 sidebar:
-  order: 3
+  order: 5
 ---
 
 Use this page for the exact formats `bmad-eval` reads and writes. For when to run which mode, see [Eval Runner](../toolsmith/bmad-eval.md).
@@ -10,13 +10,22 @@ Use this page for the exact formats `bmad-eval` reads and writes. For when to ru
 ## File Layout
 
 ```text
-<skill>/
-└── evals/
-    ├── cases.json        # baseline, variant, and quality cases
-    └── triggers.json     # trigger queries
+<repository or project root>/
+├── evals/
+│   ├── suites/
+│   │   └── <suite-name>/
+│   │       └── trigger-matrix.json   # queries across a whole install
+│   └── <module>/
+│       └── <skill-name>/
+│           ├── cases.json      # baseline, variant, and quality cases
+│           ├── triggers.json   # trigger queries
+│           └── files/          # fixtures the cases name
+└── skills/
+    └── <module>/
+        └── <skill-name>/
 ```
 
-`bmad-eval` looks for cases in the file you name, then `<skill>/evals/`, then `<project-root>/evals/<skill-name>/`, then anywhere under `<project-root>/evals/`.
+Evals sit outside the skill, so installing the skill never copies them. `bmad-eval` looks for cases in the file you name, then the skill's folder under `evals/` in the nearest folder above the skill holding one, mirroring its path below `skills/` (`evals/core-tools/bmad-brainstorming/`), then `<skill>/evals/` for a skill built elsewhere, then anywhere under `<project-root>/evals/`. A run never stages the skill's own `evals/` folder, so the model under test cannot read its rubric.
 
 ## Cases
 
@@ -68,6 +77,20 @@ Only a case where the conversation itself is the deliverable needs real multiple
 
 Aim for about twenty queries, roughly half of each kind, varied in form. Make the should-not queries near misses that share keywords and domain with the real ones.
 
+## Trigger Matrix
+
+A suite that spans skills lives in `evals/suites/<suite-name>/`. Its `trigger-matrix.json` is a JSON array of `{query, expect, also_ok}` records: `expect` is the skill that should load, or `null` for none, and `also_ok` names skills that may load instead.
+
+```json
+[
+  { "query": "help me come up with names for my bakery", "expect": "bmad-brainstorming" },
+  { "query": "do some market research on AI note-taking apps", "expect": "bmad-deep-recon", "also_ok": ["bmad-agent-analyst"] },
+  { "query": "rename this variable to camelCase", "expect": null }
+]
+```
+
+Every skill of the install is staged at once, each with its real description, so a query fails when another skill loads in its place. Write queries where two descriptions could both claim the request, and keep `also_ok` to skills that would serve it as well.
+
 ## Strong and Weak Expectations
 
 A wrong output must not be able to pass an expectation. A weak one is worse than none, because a passing check reads as proof.
@@ -85,7 +108,7 @@ A wrong output must not be able to pass an expectation. A weak one is worse than
 | Negative assertions | "does not introduce content from unrelated sections" |
 | Frontmatter | "frontmatter contains title, status, created, updated" |
 | Bounded output | "the final message contains a JSON object with intent='create'" |
-| Side artifacts | ".memlog.md captures the pricing decision with its rejected alternative" |
+| Side artifacts | "the Decisions section records the pricing decision with its rejected alternative" |
 | Tool calls | "the transcript contains a call invoking bmad-editorial-review-prose" |
 | Phase order | "the polish call occurs after the brief Write and before the final JSON block" |
 | Read-only inputs | "the input is byte-identical to the fixture" |
@@ -101,7 +124,7 @@ Agents run these for you. They are listed for reading a run or running one by ha
 Baseline, variant, and quality:
 
 ```bash
-uv run {skill-root}/scripts/run_evals.py \
+uv run "{skill-root}/scripts/run_evals.py" \
   --cases <cases-file> --skill-path <skill> --output-dir <dir> \
   --mode quality|baseline|variant [--variant-path <skill>] \
   --label <skill-name>-<mode> [--runs N]
@@ -110,26 +133,34 @@ uv run {skill-root}/scripts/run_evals.py \
 Trigger:
 
 ```bash
-uv run {skill-root}/scripts/run_triggers.py \
+uv run "{skill-root}/scripts/run_triggers.py" \
   --skill-path <skill> --queries <queries-file> --output-dir <dir> \
+  [--runs-per-query N]
+```
+
+Trigger matrix, given the folders that hold the install's skills:
+
+```bash
+uv run "{skill-root}/scripts/run_matrix.py" \
+  --skills <folder> [--skills <folder> ...] --queries <trigger-matrix.json> --output-dir <dir> \
   [--runs-per-query N]
 ```
 
 Aggregate the time, tokens, and tool calls of repeated runs into mean, sample standard deviation, min, max, and delta:
 
 ```bash
-uv run {skill-root}/scripts/aggregate_benchmark.py --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>
+uv run "{skill-root}/scripts/aggregate_benchmark.py" --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>
 ```
 
 Convert a skill-creator file, or add `--to skill-creator` to reverse it:
 
 ```bash
-uv run {skill-root}/scripts/convert_cases.py <evals.json> --output <cases.json>
+uv run "{skill-root}/scripts/convert_cases.py" <evals.json> --output <cases.json>
 ```
 
 | Exit code | Meaning |
 | --- | --- |
-| 0 | The run completed. A trigger query failing its threshold is a result, not an error |
+| 0 | The run completed. A trigger or matrix query failing its threshold is a result, not an error |
 | 1 | A case errored or timed out, or the command was not found |
 | 2 | Usage error |
 | 3 | No harness is recorded |
@@ -153,6 +184,16 @@ command = ["claude", "-p", "{prompt}", "--output-format", "stream-json", "--verb
 skill_dir = ".claude/skills"
 env = { USER = "" }
 home_files = ["Library/Keychains"]
+```
+
+Further harnesses, one per tool or model to compare, are named tables with the same keys. Pass `--harness-name <name>` to any runner to run through one; repeat it to run once per name. Each name gets its own run folder, and the output is one JSON object keyed by name.
+
+```toml
+[workflow.harnesses.codex]
+command = ["codex", "exec", "--json", "--ephemeral", "--skip-git-repo-check", "--dangerously-bypass-approvals-and-sandbox", "{prompt}"]
+skill_dir = ".agents/skills"
+env = { CODEX_HOME = "~/.codex" }
+home_files = [".codex/auth.json"]
 ```
 
 ## Run Folders

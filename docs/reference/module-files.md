@@ -2,7 +2,7 @@
 title: Module Files
 description: 'The files that make a BMad module: bmod.toml, roster.toml, retired.toml, migration files, and help, with every key and rule.'
 sidebar:
-  order: 2
+  order: 4
 ---
 
 Use this page for the exact keys in a module's files. For what a module is and how to choose a registration, see [Modules and Registration](../toolsmith/modules.md). Smithy writes these files for you, and `validate_manifests.py` checks them.
@@ -76,7 +76,7 @@ A plain name is a skill from the same source. A table names a skill from elsewhe
 ```toml
 required_skills = [
   "acme-release-notes",
-  { skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills" },
+  { skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
 ]
 ```
 
@@ -92,7 +92,7 @@ code = "acme"
 version = "1.0.0"
 update_source = "github:acme/skills/skills"
 skills = ["acme-release-notes", "acme-agent-scout"]
-required_skills = [{ skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills" }]
+required_skills = [{ skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" }]
 pre_install_message = ""
 post_install_message = ""
 
@@ -117,7 +117,7 @@ A single-skill module:
 code = "acme"
 version = "0.1.0"
 update_source = "github:acme/acme-release-notes/skills"
-required_skills = [{ skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills" }]
+required_skills = [{ skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" }]
 pre_install_message = ""
 post_install_message = ""
 
@@ -129,7 +129,7 @@ post_install_message = ""
 A skill reads a setup answer with one call, listing every key it needs.
 
 ```bash
-uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key modules.acme.release_folder
+uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key modules.acme.release_folder
 ```
 
 ## `roster.toml`
@@ -175,7 +175,7 @@ A module ships a migration beside its `bmod.toml`, and `bmad migrate` runs them 
 In a repository with `skills/*/bmod.toml`:
 
 ```bash
-uv run {project-root}/_bmad/scripts/validate_manifests.py --project-root <repo>
+uv run "{project-root}/_bmad/scripts/validate_manifests.py" --project-root "<repo>"
 ```
 
 It covers manifests, membership, versions, retired names, help topics, and the roster.

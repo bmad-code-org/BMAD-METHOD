@@ -1,0 +1,4 @@
+[skill]
+bmod = "bmod-method"
+source = "github:bmad-code-org/BMAD-METHOD/skills/method"
+scripts = ["scripts/tickets.py"]

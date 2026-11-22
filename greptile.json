@@ -8,7 +8,7 @@
   "excludeAuthors": [
     "dependabot[bot]"
   ],
-  "ignorePatterns": "greptile.json\ndocs-site/eslint.config.mjs\n.claude/**\n.codex/**\n.agent/**\n.agentvibes/**\n.kiro/**\n.roo/**\n.github/chatmodes/**\ndist/**\nbuild/**\ncoverage/**\n.bundler-temp/**\n**/node_modules/**\n**/*.min.js\n**/*.generated.*\n**/*.bundle.md\ndocs-site/package-lock.json\n**/*.png\n**/*.jpg\n**/*.svg\ntest/fixtures/**\ntools/tests/fixtures/**\ntest/template-test-generator/**\ntools/template-test-generator/test-scenarios/**\n_bmad*/**\nwebsite/public/**\nwebsite/diagrams/**\nz*/**\nsample-project/**\ntest-project-install/**\n**/validation-report-*.html\nCHANGELOG.md",
+  "ignorePatterns": "greptile.json\ndocs-site/eslint.config.mjs\n.claude/**\n.codex/**\n.agent/**\n.agentvibes/**\n.kiro/**\n.roo/**\n.github/chatmodes/**\ndist/**\nbuild/**\ncoverage/**\n.bundler-temp/**\n**/node_modules/**\n**/*.min.js\n**/*.generated.*\n**/*.bundle.md\ndocs-site/package-lock.json\n**/*.png\n**/*.jpg\n**/*.svg\ntest/fixtures/**\ntools/tests/fixtures/**\ntest/template-test-generator/**\ntools/template-test-generator/test-scenarios/**\n_bmad*/**\ndocs-site/public/**\ndocs-site/diagrams/**\nz*/**\nsample-project/**\ntest-project-install/**\n**/validation-report-*.html\nCHANGELOG.md",
   "instructions": "Most of this repo's source is prompt text read by agents at runtime, not executable code. Confine review of it to claims that can be checked against the repository: file paths and cross-references that do not resolve, invocation syntax that does not match the referenced skill, instructions that contradict another file, documented behavior that the code does not implement, and violations of the conventions in AGENTS.md. Do not comment on prompt wording, tone, phrasing, length, or how thorough an instruction feels — those are authoring decisions and are not yours to judge.",
   "customContext": {
     "files": [
@@ -20,8 +20,7 @@
         "path": "tools/skill-validator.md",
         "description": "Authoritative rule catalog for skills — SKILL.md metadata, workflow constraints, step file structure, path references, variable resolution, sequential execution, skill invocation syntax. Apply the whole catalog to changed skill files.",
         "scope": [
-          "src/bmm-skills/**",
-          "src/core-skills/**"
+          "skills/**"
         ]
       },
       {
@@ -37,7 +36,7 @@
         "id": "docs-follow-source",
         "rule": "Source changed. Check whether docs/ needs a matching update — new features, changed behavior, renamed concepts, altered CLI flags, or modified configuration options should all be reflected in the relevant doc pages. Flag missing or outdated docs.",
         "scope": [
-          "src/**"
+          "skills/**"
         ],
         "severity": "medium"
       },
@@ -45,7 +44,7 @@
         "id": "agent-skill-shape",
         "rule": "Agent skill. The persona is configured in customize.toml under [agent]: check that every {agent.*} placeholder the SKILL.md interpolates has a corresponding key there, and that menu entries name skills that exist in this repo.",
         "scope": [
-          "src/bmm-skills/agents/**"
+          "skills/*/*-agent-*/**"
         ],
         "severity": "high"
       },
@@ -62,7 +61,7 @@
         "rule": "Build and tooling script. Check error handling and that failures exit non-zero.",
         "scope": [
           "tools/**",
-          "src/scripts/**"
+          "skills/**/scripts/**"
         ],
         "severity": "medium"
       }

@@ -56,7 +56,7 @@ your-repo/
 └── LICENSE
 ```
 
-A single-skill module is one folder under `skills/`, with its `help/` folder inside and no `bmod-<code>` folder. A repository can hold several modules, but `validate_manifests.py` requires all their records to share one version, and every folder under `skills/` to have a `bmod.toml`.
+A single-skill module is one folder under `skills/`, with its `help/` folder inside and no `bmod-<code>` folder. A repository can hold several modules. Give each one its own folder, `skills/<code>/`, and point its `update_source` at that folder; then `npx skills add owner/repo/skills/<code>` installs the whole module. `validate_manifests.py` requires all the records in a repository to share one version, and every skill folder to have a `bmod.toml`.
 
 ### 3. Validate
 
@@ -79,6 +79,8 @@ npx skills add your-org/your-repo
 ```
 
 Then they ask `bmad` to run `bmad setup acme`. Users can pin to a tag with `your-org/your-repo#v1.2.0`. See [Add Modules](../customize/add-modules.md).
+
+The repository does not have to be on GitHub: `npx skills add` takes any Git URL. For update checks from another host, set `update_source` to the `https://` address of the folder holding your skill folders, served as raw files. A public repository appears on [skills.sh](https://skills.sh/) once people install it with the Skills CLI. A module that ships inside a plugin sets `update_source = "plugin:<name>"`, and its updates come through that plugin's marketplace.
 
 ### 6. Ship Updates
 

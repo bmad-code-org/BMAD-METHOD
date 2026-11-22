@@ -1,0 +1,7 @@
+[skill]
+bmod = "bmod-method"
+source = "github:bmad-code-org/BMAD-METHOD/skills/method"
+recommended_skills = [
+  "bmad-architecture",
+  "bmad-agent-po",
+]

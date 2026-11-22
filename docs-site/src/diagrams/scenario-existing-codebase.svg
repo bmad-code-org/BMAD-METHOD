@@ -1,0 +1,27 @@
+<svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 88" role="img" aria-labelledby="scenario-existing-codebase-title scenario-existing-codebase-desc">
+<title id="scenario-existing-codebase-title">Change an Existing Codebase, step by step</title>
+<desc id="scenario-existing-codebase-desc">Give agents a project context, learn the code if nobody knows it, make a small change with bmad-build first, then take the route the larger change needs.</desc>
+<defs>
+<marker id="scenario-existing-codebase-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+<marker id="scenario-existing-codebase-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+</defs>
+<text class="k" x="1" y="17">ANY TIME</text>
+<rect class="node hot" x="1" y="24" width="170" height="50" rx="2"/>
+<text class="n" x="86" y="46">bmad-project-context</text>
+<text class="sub mid" x="86" y="63">rules agents must follow</text>
+<text class="k" x="197" y="17">CLARIFY · optional</text>
+<rect class="node" x="197" y="24" width="170" height="50" rx="2"/>
+<text class="n" x="282" y="46">Learn the code</text>
+<text class="sub mid" x="282" y="63">if nobody knows it</text>
+<path class="edge soft" d="M171 49 H196" marker-end="url(#scenario-existing-codebase-arrow-soft)"/>
+<text class="k" x="393" y="17">BUILD</text>
+<rect class="node" x="393" y="24" width="170" height="50" rx="2"/>
+<text class="n" x="478" y="46">bmad-build</text>
+<text class="sub mid" x="478" y="63">a small change first</text>
+<path class="edge" d="M367 49 H392" marker-end="url(#scenario-existing-codebase-arrow)"/>
+<text class="k" x="589" y="17">NEXT</text>
+<rect class="node" x="589" y="24" width="170" height="50" rx="2"/>
+<text class="n" x="674" y="46">The next route</text>
+<text class="sub mid" x="674" y="63">for a larger change</text>
+<path class="edge" d="M563 49 H588" marker-end="url(#scenario-existing-codebase-arrow)"/>
+</svg>
