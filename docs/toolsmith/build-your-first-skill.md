@@ -57,7 +57,7 @@ Smithy asks only for what your request left out, each question with the answer i
 - Whether the output can be checked
 - Whether this skill stands alone or more are planned
 
-The question about other skills matters. When more skills are planned, Smithy settles a module code and prefix now, so nothing needs renaming later.
+The question about other skills matters. When more skills are planned, Smithy settles a module code and prefix now, so nothing needs renaming later. If you describe several skills at once, Smithy plans the whole module first. See [Modules and Registration](modules.md#three-ways-to-register).
 
 ## Step 3: Approve the Execution Plan
 
@@ -79,7 +79,7 @@ Use a prefix of your own, not `bmad-`, which marks skills that BMad ships. A pre
 
 After you approve, Smithy writes the skill and shows you the draft and description before going further. When you have a real input, Smithy runs the skill on it once and reads how the run went, then fixes what the run shows.
 
-Five review lenses then read every file. Smithy fixes the defects they find, cuts what a capable model would do unasked, validates the skill, and tells you what changed.
+Five review lenses then read every file. Smithy fixes the defects they find, cuts what a capable model would do unasked, validates the skill, and tells you what changed. Before Smithy applies a finding that changes what the skill does or how it sounds, it shows you the list and asks.
 
 ## Step 5: Set Up and Try the Skill
 

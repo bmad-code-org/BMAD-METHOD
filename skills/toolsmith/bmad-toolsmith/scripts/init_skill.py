@@ -1,0 +1,390 @@
+#!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
+# ///
+"""init_skill: scaffold a new skill folder, or check an existing one.
+
+Create:
+  init_skill.py --name <kebab> --dest <folder> --shape <shape> [--dirs references,scripts,assets]
+                [--bmod <record-folder-name>] [--source <update_source>] [--description "..."]
+
+  Shapes: plain-skill, script-utility, rendered-skill, rendered-agent, agent, memory-agent,
+  single-skill-module, multi-skill-module. Writes <dest>/<name>/SKILL.md (frontmatter `name` and `description`, the given
+  description or a [TODO: ...] placeholder, and an empty body heading), the requested dirs, and bmod.toml
+  when --bmod is given or the shape is a module:
+    - with --bmod: a [skill] table carrying `bmod` and `source`
+    - single-skill-module: [bmod] with code (the name without its bmad- prefix), version = "0.1.0" and
+      update_source, plus an empty [skill]
+    - multi-skill-module: the module record, a bmod- folder with [bmod] only (code, version, update_source,
+      skills = []) and the fixed record description
+  Never writes module.yaml or a setup skill. Refuses a target folder that already exists.
+
+Check:
+  init_skill.py --check <skill-folder> [--any-name]
+
+  Verifies SKILL.md exists, the frontmatter has only `name` and `description`, the name matches the folder
+  and the bmad regex (bmod- for a module record; any kebab name with --any-name), the description is at
+  most 1024 characters and contains "Use when" or "Use if" (a record carries the fixed text instead), the
+  body is not empty, no `[TODO:` is left in any text file, bmod.toml, when present, parses and carries
+  [skill] or [bmod], and customize.toml, when present, parses. A `[TODO:` inside a Markdown code span or
+  fence, or in a Python string rather than a comment, is text about the marker and does not count.
+  A memory agent's scripts/wake.py and scripts/init-sanctum.py must equal the shape templates in
+  shapes/memory-agent/assets/ of the Toolsmith skill holding this script, byte for byte apart from line endings.
+  "bmod" in the output is absent, ok or invalid.
+
+  Rules: skill-md-missing, frontmatter-missing, frontmatter-keys, name-missing, name-folder-mismatch,
+  name-format, description-missing, description-length, description-trigger, body-empty, todo-left,
+  bmod-invalid, bmod-tables, customize-invalid, memory-script-stale.
+
+Output: one JSON object on stdout. Create: {"ok", "skill", "dir", "shape", "created": [...]}.
+Check: {"ok", "skill", "bmod", "findings": [{"path", "line", "rule", "text", "fix"}, ...]}.
+Exit 0 on success or a clean check, 1 on a failed check or a refused create, 2 on a usage error.
+"""
+
+from __future__ import annotations
+
+import argparse
+import io
+import json
+import re
+import sys
+import tokenize
+import tomllib
+from pathlib import Path
+
+import yaml
+
+SHAPES = (
+    "plain-skill",
+    "script-utility",
+    "rendered-skill",
+    "rendered-agent",
+    "agent",
+    "memory-agent",
+    "single-skill-module",
+    "multi-skill-module",
+)
+KNOWN_DIRS = ("references", "scripts", "assets", "help", "doc-templates")
+KEBAB_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+BMAD_NAME_RE = re.compile(r"^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$")
+RECORD_NAME_RE = re.compile(r"^bmod-[a-z0-9]+(?:-[a-z0-9]+)*$")
+RECORD_DESCRIPTION = "Required bmod metadata. Never invoke this skill."
+USE_WHEN_RE = re.compile(r"\buse\s+(?:when|if)\b", re.IGNORECASE)
+TODO_RE = re.compile(r"\[TODO:")
+TEXT_SUFFIXES = {".md", ".toml", ".py", ".json", ".yaml", ".yml", ".txt", ".html", ".csv"}
+DESCRIPTION_PLACEHOLDER = "[TODO: five-to-eight-word summary. Use when the user says '<phrase>' or '<phrase>'.]"
+FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")
+CODE_SPAN_RE = re.compile(r"(`+)(?!`).*?(?<!`)\1(?!`)")
+SHAPE_ASSETS = Path(__file__).resolve().parent.parent / "shapes" / "memory-agent" / "assets"
+# The memory-agent shape copies these templates byte for byte; a built agent's copy that differs is stale
+# (line endings aside: a CRLF checkout holds the same script).
+MEMORY_SCRIPTS = {"wake.py": "wake-template.py", "init-sanctum.py": "init-sanctum-template.py"}
+
+
+def toml_string(value: str) -> str:
+    return json.dumps(value)
+
+
+# --- frontmatter ---------------------------------------------------------------
+
+
+def frontmatter_block(content: str) -> tuple[str | None, str]:
+    """Return (frontmatter text or None, body)."""
+    text = content.lstrip()
+    if not text.startswith("---"):
+        return None, content
+    end = text.find("\n---", 3)
+    if end == -1:
+        return None, content
+    after = text[end + 4 :]
+    if after and not after.startswith(("\n", "\r")):
+        return None, content
+    return text[3:end].strip("\r\n"), after
+
+
+def parse_frontmatter(content: str) -> tuple[dict | None, str]:
+    """Return (frontmatter as a dict, or None when missing, not a YAML mapping, or name or description is not text; body)."""
+    block, body = frontmatter_block(content)
+    try:
+        meta = (yaml.load(block, Loader=yaml.BaseLoader) or {}) if block is not None else None
+    except yaml.YAMLError:
+        meta = None
+    ok = isinstance(meta, dict) and all(isinstance(meta.get(k, ""), str) for k in ("name", "description"))
+    return (meta if ok else None), body
+
+
+# --- create --------------------------------------------------------------------
+
+
+def skill_md(name: str, description: str) -> str:
+    meta = {"name": name, "description": description}
+    return f"---\n{yaml.safe_dump(meta, sort_keys=False, allow_unicode=True, width=float('inf'))}---\n\n# {name}\n"
+
+
+def bmod_toml(shape: str, name: str, bmod: str | None, source: str | None) -> str:
+    source_value = toml_string(source) if source else toml_string("[TODO: update_source, e.g. github:org/repo/skills]")
+    if shape == "multi-skill-module":
+        code = name.removeprefix("bmod-")
+        return f'[bmod]\ncode = {toml_string(code)}\nversion = "0.1.0"\nupdate_source = {source_value}\nskills = []\n'
+    if shape == "single-skill-module":
+        code = name.removeprefix("bmad-")
+        return (
+            f'[bmod]\ncode = {toml_string(code)}\nversion = "0.1.0"\nupdate_source = {source_value}\n\n'
+            "# The record is in this same file, so the skill table needs no bmod or source.\n[skill]\n"
+        )
+    lines = ["[skill]"]
+    if bmod:
+        lines.append(f"bmod = {toml_string(bmod)}")
+    if source:
+        lines.append(f"source = {toml_string(source)}")
+    return "\n".join(lines) + "\n"
+
+
+def create(args) -> dict:
+    name = args.name
+    if not KEBAB_RE.match(name) or len(name) > 64:
+        raise ValueError(f"name {name!r} must be kebab-case (lowercase, digits, single hyphens), at most 64 characters")
+    if args.shape == "multi-skill-module" and not RECORD_NAME_RE.match(name):
+        raise ValueError("a multi-skill-module record is named bmod-<code>")
+    dirs = [d.strip() for d in (args.dirs or "").split(",") if d.strip()]
+    unknown = [d for d in dirs if d not in KNOWN_DIRS]
+    if unknown:
+        raise ValueError(f"unknown dirs {', '.join(unknown)}; known: {', '.join(KNOWN_DIRS)}")
+    skill_dir = Path(args.dest) / name
+    if skill_dir.exists():
+        raise FileExistsError(f"{skill_dir} already exists")
+
+    description = args.description or DESCRIPTION_PLACEHOLDER
+    if args.shape == "multi-skill-module":
+        description = RECORD_DESCRIPTION
+
+    skill_dir.mkdir(parents=True)
+    created = []
+    emitted = [("SKILL.md", skill_md(name, description))]
+    if args.bmod or args.shape in ("single-skill-module", "multi-skill-module"):
+        emitted.append(("bmod.toml", bmod_toml(args.shape, name, args.bmod, args.source)))
+    for rel, text in emitted:
+        (skill_dir / rel).write_text(text, encoding="utf-8")
+        created.append(rel)
+    for d in dirs:
+        (skill_dir / d).mkdir()
+        created.append(d + "/")
+    return {"ok": True, "skill": name, "dir": str(skill_dir), "shape": args.shape, "created": created}
+
+
+# --- check ---------------------------------------------------------------------
+
+
+def finding(path: str, line: int, rule: str, text: str, fix: str) -> dict:
+    return {"path": path, "line": line, "rule": rule, "text": text[:200], "fix": fix}
+
+
+def read_bmod(skill_dir: Path, findings: list[dict]) -> tuple[dict | None, str]:
+    """Return (parsed bmod.toml or None, status): status is absent, ok or invalid."""
+    path = skill_dir / "bmod.toml"
+    if not path.is_file():
+        return None, "absent"
+    try:
+        data = tomllib.loads(path.read_text(encoding="utf-8"))
+    except (tomllib.TOMLDecodeError, UnicodeDecodeError) as err:
+        findings.append(finding("bmod.toml", 1, "bmod-invalid", str(err), "fix the TOML"))
+        return None, "invalid"
+    if "skill" not in data and "bmod" not in data:
+        findings.append(finding("bmod.toml", 1, "bmod-tables", "neither [skill] nor [bmod]", "add a [skill] table"))
+        return data, "invalid"
+    return data, "ok"
+
+
+def markdown_marker_lines(text: str) -> list[int]:
+    """Lines with a marker outside fences and code spans."""
+    found = []
+    fence = ""
+    for number, line in enumerate(text.splitlines(), 1):
+        marker = FENCE_RE.match(line)
+        if fence:
+            if (
+                marker
+                and marker[1][0] == fence[0]
+                and len(marker[1]) >= len(fence)
+                and not line.strip()[len(marker[1]) :]
+            ):
+                fence = ""
+            continue
+        if marker:
+            fence = marker[1]
+            continue
+        if TODO_RE.search(CODE_SPAN_RE.sub("", line)):
+            found.append(number)
+    return found
+
+
+def python_marker_lines(text: str) -> list[int]:
+    """Lines with a marker in a comment; a string holding one is code that writes or matches it."""
+    try:
+        tokens = list(tokenize.generate_tokens(io.StringIO(text).readline))
+    except (tokenize.TokenError, SyntaxError):
+        return [n for n, line in enumerate(text.splitlines(), 1) if TODO_RE.search(line)]
+    return sorted({t.start[0] for t in tokens if t.type == tokenize.COMMENT and TODO_RE.search(t.string)})
+
+
+def marker_lines(path: Path, text: str) -> list[int]:
+    if path.suffix == ".md":
+        return markdown_marker_lines(text)
+    if path.suffix == ".py":
+        return python_marker_lines(text)
+    return [n for n, line in enumerate(text.splitlines(), 1) if TODO_RE.search(line)]
+
+
+def error_line(err: Exception) -> int:
+    # Python 3.11's TOMLDecodeError carries the line only in its message.
+    match = re.search(r"at line (\d+)", str(err))
+    return int(match.group(1)) if match else 1
+
+
+def check_customize(skill_dir: Path, findings: list[dict]) -> None:
+    path = skill_dir / "customize.toml"
+    if not path.is_file():
+        return
+    try:
+        tomllib.loads(path.read_text(encoding="utf-8"))
+    except (tomllib.TOMLDecodeError, UnicodeDecodeError) as err:
+        findings.append(finding("customize.toml", error_line(err), "customize-invalid", str(err), "fix the TOML"))
+
+
+def lf_bytes(path: Path) -> bytes:
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
+def check_memory_scripts(skill_dir: Path, findings: list[dict]) -> None:
+    """Only a memory agent, whose SKILL.md wakes from `_bmad/memory/`, carries the shape's scripts."""
+    skill_md = skill_dir / "SKILL.md"
+    if not skill_md.is_file() or "_bmad/memory" not in skill_md.read_text(encoding="utf-8", errors="replace"):
+        return
+    for name, template in MEMORY_SCRIPTS.items():
+        copy, source = skill_dir / "scripts" / name, SHAPE_ASSETS / template
+        if copy.is_file() and source.is_file() and lf_bytes(copy) != lf_bytes(source):
+            findings.append(
+                finding(
+                    f"scripts/{name}",
+                    1,
+                    "memory-script-stale",
+                    f"differs from shapes/memory-agent/assets/{template}",
+                    f"copy shapes/memory-agent/assets/{template} over it unchanged",
+                )
+            )
+
+
+def check(skill_dir: Path, any_name: bool) -> dict:
+    findings: list[dict] = []
+    bmod, bmod_status = read_bmod(skill_dir, findings)
+    is_record = bool(bmod) and "bmod" in bmod and "skill" not in bmod
+
+    skill_path = skill_dir / "SKILL.md"
+    if not skill_path.is_file():
+        findings.append(finding("SKILL.md", 1, "skill-md-missing", "no SKILL.md", "create SKILL.md"))
+    else:
+        content = skill_path.read_text(encoding="utf-8", errors="replace")
+        meta, body = parse_frontmatter(content)
+        if meta is None:
+            findings.append(
+                finding("SKILL.md", 1, "frontmatter-missing", content[:80], "open with --- name/description ---")
+            )
+        else:
+            extra = sorted(set(meta) - {"name", "description"})
+            if extra:
+                findings.append(
+                    finding("SKILL.md", 1, "frontmatter-keys", ", ".join(extra), "keep only name and description")
+                )
+            name = meta.get("name", "")
+            if not name:
+                findings.append(finding("SKILL.md", 1, "name-missing", "", "add name: <folder name>"))
+            else:
+                if name != skill_dir.name:
+                    findings.append(
+                        finding("SKILL.md", 2, "name-folder-mismatch", name, f"name must equal {skill_dir.name}")
+                    )
+                regex = KEBAB_RE if any_name else (RECORD_NAME_RE if is_record else BMAD_NAME_RE)
+                if not regex.match(name):
+                    findings.append(finding("SKILL.md", 2, "name-format", name, f"name must match {regex.pattern}"))
+            desc = meta.get("description", "")
+            if not desc:
+                findings.append(
+                    finding("SKILL.md", 1, "description-missing", "", "add a description with a Use when clause")
+                )
+            else:
+                if len(desc) > 1024:
+                    findings.append(
+                        finding("SKILL.md", 3, "description-length", f"{len(desc)} chars", "cut to 1024 or fewer")
+                    )
+                if is_record:
+                    if desc != RECORD_DESCRIPTION:
+                        findings.append(
+                            finding(
+                                "SKILL.md",
+                                3,
+                                "description-trigger",
+                                desc,
+                                f"a record's description is {RECORD_DESCRIPTION!r}",
+                            )
+                        )
+                elif not USE_WHEN_RE.search(desc):
+                    findings.append(finding("SKILL.md", 3, "description-trigger", desc, 'add a "Use when ..." clause'))
+            if not body.strip():
+                findings.append(finding("SKILL.md", 1, "body-empty", "", "write the skill body after the frontmatter"))
+
+    check_customize(skill_dir, findings)
+    check_memory_scripts(skill_dir, findings)
+
+    for path in sorted(skill_dir.rglob("*")):
+        rel = path.relative_to(skill_dir)
+        if not path.is_file() or path.suffix not in TEXT_SUFFIXES or any(p.startswith(".") for p in rel.parts):
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        lines = text.splitlines()
+        for number in marker_lines(path, text):
+            findings.append(
+                finding(
+                    rel.as_posix(), number, "todo-left", lines[number - 1].strip(), "fill in or remove the placeholder"
+                )
+            )
+
+    return {"ok": not findings, "skill": skill_dir.name, "bmod": bmod_status, "findings": findings}
+
+
+# --- cli -----------------------------------------------------------------------
+
+
+def main(argv: list[str] | None = None) -> int:
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--check", type=Path, metavar="SKILL", help="check this skill folder instead of creating one")
+    p.add_argument("--any-name", action="store_true", help="with --check: accept any kebab-case name")
+    p.add_argument("--name", help="skill name, kebab-case")
+    p.add_argument("--dest", type=Path, help="parent folder the skill folder is created under")
+    p.add_argument("--shape", choices=SHAPES, help="skill shape")
+    p.add_argument("--dirs", default="", help=f"comma-separated folders to create: {', '.join(KNOWN_DIRS)}")
+    p.add_argument("--bmod", help="record folder name for the [skill] table, e.g. bmod-method")
+    p.add_argument("--source", help="update_source for the [skill] or [bmod] table")
+    p.add_argument("--description", help="frontmatter description; a [TODO: ...] placeholder when omitted")
+    args = p.parse_args(argv)
+
+    if args.check:
+        if not args.check.is_dir():
+            p.error(f"not a directory: {args.check}")
+        result = check(args.check, args.any_name)
+        print(json.dumps(result, indent=2))
+        return 0 if result["ok"] else 1
+
+    if not (args.name and args.dest and args.shape):
+        p.error("--name, --dest and --shape are required to create a skill (or use --check)")
+    try:
+        result = create(args)
+    except (ValueError, FileExistsError) as err:
+        print(json.dumps({"ok": False, "error": str(err)}))
+        return 1
+    print(json.dumps(result, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

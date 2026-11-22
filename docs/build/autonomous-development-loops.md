@@ -1,11 +1,11 @@
 ---
 title: Autonomous Development Loops
-description: Run bmad-build-auto as the unattended worker for one session-sized unit, and let an orchestrator drive many of them.
+description: Run bmad-build-auto as the unattended worker for one ticket, and let an orchestrator drive many of them.
 sidebar:
   order: 6
 ---
 
-`bmad-build-auto` is the unattended worker for one session-sized unit in the
+`bmad-build-auto` is the unattended worker for one ticket in the
 canonical [Build a Change](./build-a-change.md) implementation model. One invocation
 clarifies, plans, implements, and reviews one intent or ticket, then exposes a
 terminal status that a human or orchestrator can act on.
@@ -56,7 +56,7 @@ Supported intent shapes include:
 ### Tickets from the Tree
 
 Build Auto reads the tree through `{project-root}/_bmad/method/scripts/tickets.py`,
-the script `bmad setup` installs from Sofia's skill, [`bmad-agent-po`](../plan/break-work-into-stories-and-track-it.md).
+the script `bmad setup` installs from Sofia's skill, [`bmad-agent-po`](../reference/ticket-tree.md#the-script).
 This page describes the repo store, where a ticket's status lives in its plan.
 On a tracker store, `tickets.py mark` refuses to run, so move the ticket on
 the tracker through Sofia (`bmad-agent-po`).
@@ -111,7 +111,9 @@ An AI coding session can act as the orchestrator, dispatch one Build Auto
 worker per ticket, inspect the resulting evidence, and revise later tickets
 when the epic or its entries no longer fit what implementation revealed.
 The orchestrating session remains responsible for keeping those revisions
-consistent with the larger intent.
+consistent with the larger intent. This is a little less predictable and
+costs more tokens than deterministic orchestrators.
+Mason (`bmad-agent-dev`) knows how to do this.
 
 ### Coordinate parallel epic streams
 

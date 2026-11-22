@@ -19,7 +19,7 @@ from test_bmad_setup import (
     write_skill,
 )
 
-MIGRATE_V6_PY = REPO_ROOT / "skills" / "bmad" / "scripts" / "migrate_v6.py"
+MIGRATE_V6_PY = REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts" / "migrate_v6.py"
 
 
 class MigrateV6Tests(unittest.TestCase):
@@ -825,6 +825,18 @@ class FoldSpecsTests(unittest.TestCase):
         self.assertEqual(report["folded"], [])
         (problem,) = report["problems"]
         self.assertIn("spec-ball/.memlog.md cannot be read", problem["problem"])
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_a_ticket_whose_frontmatter_is_not_yaml_is_reported_and_nothing_changes(self):
+        epic = self.write_epic_with_spec()
+        write(epic / "epic-ball.md", "---\ntitle: Ball: flight\n---\n\n# Ball\n")
+        before = snapshot(self.project)
+
+        report = self.fold()
+
+        self.assertEqual(report["folded"], [])
+        (problem,) = report["problems"]
+        self.assertIn("epic-ball/epic-ball.md has invalid frontmatter", problem["problem"])
         self.assertEqual(snapshot(self.project), before)
 
     def test_a_parent_folded_on_a_later_run_leaves_the_folded_childs_ids_alone(self):

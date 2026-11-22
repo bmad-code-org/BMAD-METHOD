@@ -1,0 +1,48 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# The {title}. `name` is its hardcoded name; empty means the agent names
+# itself at First Breath. Its persona, values and
+# capabilities live in its sanctum, {project-root}/_bmad/memory/{skill}/,
+# which is the surface to shape. Override files for the fields below:
+#   {project-root}/_bmad/custom/{skill}.toml       (committed)
+#   {project-root}/_bmad/custom/{skill}.user.toml  (ignored by git)
+
+[agent]
+# non-configurable skill frontmatter, create a custom agent if you need a new name/title
+name = "{name}"
+title = "{title}"
+
+# --- Configurable below. Overrides merge per BMad structural rules: ---
+#   scalars: override wins • arrays (persistent_facts, activation_steps_*): append
+#   dominion: entries merge by `id`; an override with the same id replaces it
+
+icon = "{icon}"
+
+# Steps to run before the standard activation (facts, wake).
+activation_steps_prepend = []
+
+# Steps to run after waking but before the agent accepts input.
+activation_steps_append = []
+
+# Standing context for the whole session: literal sentences, or `file:` paths and globs
+# under {project-root}. Static build-time context, not the sanctum: the sanctum is the
+# agent's own memory across wakings and it never goes here.
+persistent_facts = []
+
+# The areas outside the sanctum this agent owns or tends: the facts of the work, kept where
+# people and other agents can read them and where they outlive the sanctum. Empty means the
+# agent keeps everything in its sanctum. Ship only areas whose path is the same in every
+# install. First Breath writes the owner's areas to _bmad/custom/{skill}.toml when the
+# repository is private to the owner, or to {skill}.user.toml, which git ignores, when it is
+# shared. An override with an area's id replaces the whole entry; retired = true drops it.
+# Paths are relative to {project-root} unless absolute or `~`; "." is the whole workspace.
+# access: "write" (the agent maintains it) or "read" (it consults it). private = true asks
+# other agents to keep out.
+#
+# [[agent.dominion]]
+# id = "journal"
+# path = "journal/"
+# access = "write"
+# private = true
+# about = "The owner's diary"
+dominion = []

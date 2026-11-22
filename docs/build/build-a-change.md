@@ -2,7 +2,7 @@
 title: 'Build a Change'
 description: Use bmad-build to turn a request, issue, spec, or ticket into implemented and reviewed code.
 sidebar:
-  order: 1
+  order: 2
 ---
 
 The core implementation skill is `bmad-build`. It takes any expression of
@@ -17,7 +17,7 @@ Use the smallest amount of BMad that safely fits the change. A typical
 session is one goal: about 500 lines of code added or changed (not counting
 tests) in a small handful of files. If it fits, give it to `bmad-build`. If it
 doesn't, plan that bigger piece of work first — see
-[Choose a Planning Path](../plan/choose-a-planning-path.md). You
+[How BMad Works](../start/how-bmad-works.md). You
 often cannot tell until you try; if you aren't sure, ask `bmad`.
 
 For a trivial edit you are willing to review yourself, skip the process
@@ -195,8 +195,8 @@ decisions may set patterns for later work. Once those patterns are stable,
 | `bmad-build`          | Implement and review one direct intent or ticket with human checkpoints (this page)                                                                           | Plan + code                                                        |
 | `bmad-build-auto`     | Implement and review one ticket unattended for a caller or orchestrator ([Autonomous Development Loops](./autonomous-development-loops.md))                   | Plan + code + terminal status                                      |
 | `bmad-code-review`    | Review any code change with several independent reviewers ([Review a Change](./review-a-change.md))                                                           | Findings + applied patches                                         |
-| `bmad-agent-po`       | Replan after a significant mid-flight change: what it changes, what goes stale, what is re-sliced or dropped ([Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md)) | Updated requirements and tickets                 |
-| `bmad-retrospective`  | Review a completed epic against the evidence it left behind ([Finish an Epic](./finish-an-epic.md))                                                           | Retro document, action items, decision records, acceptance verdict |
+| `bmad-agent-po`       | Replan after a significant mid-flight change: what it changes, what goes stale, what is re-sliced or dropped ([Learn and Adjust](../learn/learn-and-adjust.md#a-change-mid-flight)) | Updated requirements and tickets                 |
+| `bmad-retrospective`  | Review a completed epic against the evidence it left behind ([Finish an Epic](../learn/finish-an-epic.md))                                                           | Retro document, action items, decision records, acceptance verdict |
 
 Clear one-session work enters `bmad-build` directly. Larger work is sliced
 into a ticket tree by Sofia, the Product Owner (`bmad-agent-po`), from its

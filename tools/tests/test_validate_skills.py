@@ -400,11 +400,94 @@ class TestRules(ProjectCase):
         skill = self.valid(
             "bmad-script-ok",
             {
-                "notes.md": "Run `uv run {skill-root}/scripts/tool.py` "
-                "and `uv run {project-root}/_bmad/scripts/memlog.py`.\n"
+                "notes.md": 'Run `uv run "{skill-root}/scripts/tool.py"` '
+                'and `uv run "{project-root}/_bmad/scripts/resolve_config.py"`.\n'
             },
         )
         self.assertEqual(findings_by_rule(self.findings_for(skill), "PATH-06"), [])
+        self.assertEqual(findings_by_rule(self.findings_for(skill), "PATH-07"), [])
+
+    def test_path_07_flags_unquoted_root_args_in_uv_run(self):
+        skill = self.valid(
+            "bmad-unquoted",
+            {
+                "notes.md": "\n".join(
+                    [
+                        "Run `uv run {skill-root}/scripts/tool.py --project-root {project-root}`.",
+                        "Single quotes fail on Windows: `uv run '{skill-root}/scripts/tool.py'`.",
+                        'Partial quotes split suffixes: `uv run "{project-root}"/_bmad/scripts/resolve_config.py`.',
+                        'Piped: `uv run "{project-root}/_bmad/scripts/a.py" | uv run {skill-root}/scripts/b.py`.',
+                        'Redirected: `uv run "{skill-root}/scripts/tool.py" >{project-root}/out.json`.',
+                        "```bash",
+                        'uv run "{project-root}/_bmad/scripts/resolve_customization.py" \\',
+                        "  --skill {skill-root} \\",
+                        "  --project-root {project-root} \\",
+                        "  --key workflow",
+                        "```",
+                    ]
+                )
+                + "\n"
+            },
+        )
+        findings = findings_by_rule(self.findings_for(skill), "PATH-07")
+        self.assertEqual(
+            [(f["line"], f["severity"]) for f in findings],
+            [
+                (1, "HIGH"),
+                (1, "HIGH"),
+                (2, "HIGH"),
+                (3, "HIGH"),
+                (4, "HIGH"),
+                (5, "HIGH"),
+                (8, "HIGH"),
+                (9, "HIGH"),
+            ],
+        )
+
+    def test_path_07_ignores_quoted_commands_prose_and_non_shell_fences(self):
+        skill = self.valid(
+            "bmad-quoted-ok",
+            {
+                "notes.md": "\n".join(
+                    [
+                        'Run `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`.',
+                        'Flag equals: `uv run "{skill-root}/scripts/tool.py" --project-root="{project-root}"`.',
+                        'Redirects: `uv run "{skill-root}/scripts/tool.py" <"{project-root}/in.json" >"{project-root}/out.json" 2>"{project-root}/err.log"`.',
+                        "Prose via `uv run`: read `{skill-root}/customize.toml` or `{project-root}/_bmad/custom/x.toml`.",
+                        "```bash",
+                        'uv run "{project-root}/_bmad/scripts/resolve_customization.py" \\',
+                        '  --skill "{skill-root}" \\',
+                        '  --project-root "{project-root}"',
+                        "```",
+                        "```toml",
+                        'output_folder = "{project-root}/_bmad-output"',
+                        "```",
+                        "```toml",
+                        "prompt = 'uv run {skill-root}/scripts/tool.py'",
+                        "  ````",
+                        "Non-uv shell command stays for inference: `cd {project-root}`.",
+                    ]
+                )
+                + "\n"
+            },
+        )
+        self.assertEqual(findings_by_rule(self.findings_for(skill), "PATH-07"), [])
+
+    def test_path_07_preserves_line_numbers_after_inline_code(self):
+        skill = self.valid(
+            "bmad-line-offset",
+            {
+                "notes.md": "\n".join(
+                    [
+                        "See `abcdefghijklmnopqrstuvwxyz` first.",
+                        "uv run {project-root}/_bmad/scripts/resolve_config.py",
+                    ]
+                )
+                + "\n"
+            },
+        )
+        findings = findings_by_rule(self.findings_for(skill), "PATH-07")
+        self.assertEqual([(f["line"], f["severity"]) for f in findings], [(2, "HIGH")])
 
     def test_seq_02_patterns_one_per_line_and_eta_case(self):
         skill = self.valid(

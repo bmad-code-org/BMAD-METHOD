@@ -10,9 +10,9 @@ Before running inference-based validation, run the deterministic validator:
 uv run --python 3.11 tools/validate_skills.py --json path/to/skill-dir
 ```
 
-This checks 12 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, SKILL-08, PATH-02, PATH-06, SEQ-02, TPL-01.
+This checks 13 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, SKILL-08, PATH-02, PATH-06, PATH-07 (`uv run` root-path quoting), SEQ-02, TPL-01.
 
-Review its JSON output. Skip any rule that produced zero findings — it is already verified. A rule that produced findings still gets reviewed (SKILL-06's what-and-when check benefits from judgment). The 10 rules that need judgment are PATH-01, PATH-03, PATH-04, PATH-05, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03.
+Review its JSON output. Skip any purely deterministic rule that produced zero findings — it is already verified. A rule that produced findings still gets reviewed (SKILL-06's what-and-when check benefits from judgment), and PATH-07 still needs inference review for non-`uv run` shell commands and non-root path variables or placeholders even when deterministic checks pass. The 11 rules that need judgment are PATH-01, PATH-03, PATH-04, PATH-05, PATH-07, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03.
 
 ## How to Use
 
@@ -130,7 +130,7 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Rule:** The `name` value must be the canonical root skill `bmad`, or start with `bmad-` and use only lowercase letters, numbers, and single hyphens between segments.
 - **Detection:** Regex test: `^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$`.
 - **Fix:** Rename to comply with the format (e.g., `bmad-my-skill`).
-- **Module record:** A folder whose `bmod.toml` has a `[bmod]` table and no `[skill]` table is a module record, which nobody runs. Its `name` must start with `bmod-` instead: `^bmod-[a-z0-9]+(?:-[a-z0-9]+)*$`. That the rest of the name is the module code is checked by `skills/bmad/scripts/validate_manifests.py`.
+- **Module record:** A folder whose `bmod.toml` has a `[bmod]` table and no `[skill]` table is a module record, which nobody runs. Its `name` must start with `bmod-` instead: `^bmod-[a-z0-9]+(?:-[a-z0-9]+)*$`. That the rest of the name is the module code is checked by `skills/core-tools/bmad/scripts/validate_manifests.py`.
 
 ### SKILL-05 — `name` Must Match Directory Name
 
@@ -232,7 +232,19 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Applies to:** all scanned files, code blocks included
 - **Rule:** A skill runs its own scripts through `{skill-root}`. The agent's working directory is the project, so `uv run scripts/tool.py` does not find the script.
 - **Detection:** Deterministic. Flags `scripts/` or `./scripts/` as a separate argument after `uv run`, whatever options come before it.
-- **Fix:** `uv run {skill-root}/scripts/tool.py`.
+- **Fix:** `uv run "{skill-root}/scripts/tool.py"`.
+
+### PATH-07 — Quote Path Arguments in Shell Commands
+
+- **Severity:** HIGH
+- **Applies to:** all scanned files, code blocks included
+- **Rule:** Assume any path inserted into a shell command can contain spaces and must stay a single argument.
+  - Wrap `{project-root}` and `{skill-root}` arguments — including any path suffix — in double quotes (`"{project-root}/..."`, `"{skill-root}/..."`, `"{project-root}"`, `"{skill-root}"`).
+  - Apply the same double-quoting to any other single path variable or placeholder in a shell command (`"{doc_workspace}"`, `"{output_folder}"`, `"{target}"`, `"<ticket folder>"`, `"<folder>"`). Leave multi-argument lists (such as `{workflow.template_libraries}` or `<each library>`) unquoted as a group so each path remains its own argument.
+- **Detection:**
+  - **Deterministic (`uv run`):** Scans inline backtick commands and fenced code blocks (joining `\` line continuations) for `uv run` invocations, flagging any `{project-root}` or `{skill-root}` argument that is not wrapped in double quotes as a complete argument (catches unquoted, single-quoted, and partially quoted forms such as `"{skill-root}"/scripts/tool.py`).
+  - **Inference:** Checks all shell commands (including non-`uv run` invocations and non-root path variables or placeholders) for unquoted single-path arguments that would split on spaces.
+- **Fix:** Wrap the complete path argument in double quotes — e.g. `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`.
 
 ---
 

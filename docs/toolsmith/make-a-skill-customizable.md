@@ -5,7 +5,7 @@ sidebar:
   order: 8
 ---
 
-Use a `customize.toml` to let a team change your skill's behavior without forking it. This page is for authors. To change a skill someone else wrote, see [Customize BMad](../customize/customize-bmad.md).
+Use a `customize.toml` to let a team change your skill's behavior without forking it. A skill only you run needs none; add one when other people or teams will run it. This page is for authors. To change a skill someone else wrote, see [Customize BMad](../customize/customize-bmad.md).
 
 Every value you expose is a promise. Teams will pin values to it and commit overrides, and later releases must respect it. Expose what really varies between your users, and nothing else.
 
@@ -41,7 +41,7 @@ Ask three questions of each candidate. Expose it only if it passes all three.
 
 Tell Smithy during discovery what teams will change, or use [edit mode](modes.md#edit) on a skill you already have. Smithy writes the `customize.toml` and connects each value to the skill.
 
-A skill uses a `[workflow]` table and an agent uses `[agent]`. Do not mix them. Persona fields in `[workflow]` suggest the skill should be an agent.
+A skill uses a `[workflow]` table and an agent uses `[agent]` for its persona, menu, and activation steps. An agent's own settings go in a `[workflow]` table beside `[agent]`, resolved in the same call. Persona fields in `[workflow]` suggest the skill should be an agent.
 
 | Key | Use it for |
 | --- | --- |
@@ -74,12 +74,12 @@ The skill must work with no override. Avoid boolean toggles, because a switch us
 The skill resolves its table on activation, then reads each value as `{workflow.<key>}` or `{agent.<key>}`.
 
 ```bash
-uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow
+uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow
 ```
 
 A value that is declared but hardcoded in the body is a defect, because every override of it does nothing. Smithy's review flags this.
 
-A skill never writes its own overrides, never merges TOML itself, and never carries a second code path for when BMad is absent. `resolve_customization.py` reads, and `bmad-customize` writes. Where users will change a value, the skill says so in one line: invoke `bmad-customize`, naming the key.
+A skill never writes its own overrides, never merges TOML itself, and never carries a second code path for when BMad is absent. The one exception is a memory agent writing its own `[[agent.dominion]]` entries to its own override file. `resolve_customization.py` reads, and `bmad-customize` writes. Where users will change a value, the skill says so in one line: invoke `bmad-customize`, naming the key.
 
 ### 6. Test an Override
 
@@ -96,4 +96,3 @@ Run `bmad-customize` and change one value. It writes `_bmad/custom/<skill>.toml`
 - Give each item in an array of tables a `code` or an `id`, or the resolver can only append it.
 - Keep project-wide values, such as the output folder, in core config. Read them with `resolve_config.py`.
 - For an agent, `name` and `title` are fixed. A team that wants a new name or title creates a new agent.
-- When teams differ in which steps run, a [rendered skill](shapes.md#rendered-skill) may fit better.

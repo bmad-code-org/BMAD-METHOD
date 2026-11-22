@@ -20,6 +20,8 @@ that the merged result contains your change. Use it for any per-skill
 change. The rest of this page describes what each surface exposes and how
 the pieces combine.
 
+It also changes the documents agents write, such as a section every PRD must have or HTML by default, by writing an extension of that document's template; you do not need to know which skill writes it. See [Write a Document Template](./write-a-document-template.md#extend-a-template).
+
 There are two surfaces:
 
 | Surface | File | Shapes |
@@ -157,15 +159,15 @@ matching code replaces the shipped item and a new code appends. Each item
 has exactly one of `skill` or `prompt`:
 
 ```toml
-# Replace the shipped CE item with your own skill
+# Replace the shipped VALIDATE item with your own skill
 [[agent.menu]]
-code = "CE"
-description = "Create Epics using our delivery framework"
-skill = "custom-create-epics"
+code = "VALIDATE"
+description = "Review a planning document against our delivery standards"
+skill = "custom-validate-plan"
 
 # Add a new item
 [[agent.menu]]
-code = "RC"
+code = "COMPLIANCE"
 description = "Run compliance pre-check"
 prompt = """
 Read {project-root}/_bmad/custom/compliance-checklist.md
@@ -194,7 +196,7 @@ persistent_facts = [
 ## Customize a workflow
 
 Workflows — skills that drive a multi-step process, such as
-`bmad-product-brief` — use the same files and rules. Their surface lives
+`bmad-facilitate` — use the same files and rules. Their surface lives
 under `[workflow]`. The baseline fields every customizable workflow
 exposes are the same hooks and facts as agents plus `on_complete`. For
 workflows, a `persistent_facts` entry is a literal sentence, a `file:`
@@ -203,7 +205,7 @@ knowledge. `on_complete` is a string, or an array of instructions run in
 order, that runs once the workflow finishes its main output:
 
 ```toml
-# _bmad/custom/bmad-product-brief.toml
+# _bmad/custom/bmad-facilitate.toml
 
 [workflow]
 activation_steps_prepend = [
@@ -211,11 +213,11 @@ activation_steps_prepend = [
 ]
 
 persistent_facts = [
-  "All briefs must include an explicit regulatory-risk section.",
-  "file:{project-root}/docs/compliance/product-brief-checklist.md",
+  "Every planning document names its regulatory risks.",
+  "file:{project-root}/docs/compliance/document-checklist.md",
 ]
 
-on_complete = "Summarize the brief in three bullets and offer to email it via the gws-gmail-send skill."
+on_complete = "Summarize the document in three bullets and offer to email it via the gws-gmail-send skill."
 ```
 
 Individual workflows add fields on top — output paths, templates, toggles —
@@ -245,6 +247,30 @@ sequence, so you know when each hook fires:
 6. Run `activation_steps_append`.
 
 The workflow body begins after step 6.
+
+### Run acceptance tests before implementation
+
+With the TEA module installed, set `route = "full"` under `[workflow]` in
+`_bmad/custom/bmad-build.toml` or `_bmad/custom/bmad-build-auto.toml`.
+The full route runs `implementation_handoff` after planning.
+
+Copy the default `implementation_handoff` from the skill's `customize.toml`
+into the same `[workflow]` table, or use your team's existing override.
+Insert these instructions at the start of the handoff string, before it
+dispatches implementation:
+
+```text
+If {plan_file} names a `ticket`, do the following before dispatch:
+
+1. Run bmad-tea-automate in red mode for the ticket. Reuse existing test
+   scaffolds on resume and regenerate any a review loopback removed.
+2. List the test files in the plan's Code Map and add their run command to
+   Verification.
+3. For each scaffold, add or update a task to activate the skipped test,
+   confirm it fails for the missing behavior, then make it pass.
+
+Leave the frozen intent unchanged.
+```
 
 ## Override one rendered invocation
 
@@ -347,7 +373,9 @@ output_folder = "/shared/org-bmad-output"
 |---|---|
 | Add MCP tool calls to every dev workflow | Per-skill: `_bmad/custom/bmad-agent-dev.toml` `persistent_facts` |
 | Add a menu item to an agent | Per-skill: `_bmad/custom/bmad-agent-<role>.toml` `[[agent.menu]]` |
+| Add, replace or remove a walkthrough move | Per-skill: `_bmad/custom/bmad-walkthrough.toml` `[[workflow.moves]]` |
 | Swap a workflow's output template | Per-skill: `_bmad/custom/<workflow>.toml` scalar override |
+| Add, replace or extend a `bmad-facilitate` template, including John's planning templates | A template file in `_bmad/custom/facilitate-templates/`; see [Write a Document Template](./write-a-document-template.md) |
 | Rebrand an agent's public descriptor | Central: `_bmad/custom/config.toml` `[agents.<code>]` |
 | Add a custom or fictional agent to the roster | Central: `_bmad/custom/config.*.toml` new `[agents.<code>]` |
 | Set shared team defaults | Central: `_bmad/custom/config.toml` `[modules.<code>]` or `[core]` |
@@ -361,15 +389,15 @@ will use:
 
 ```bash
 # Resolve the full agent block
-uv run {project-root}/_bmad/scripts/resolve_customization.py \
-  --skill /abs/path/to/bmad-agent-pm \
-  --project-root {project-root} \
+uv run "{project-root}/_bmad/scripts/resolve_customization.py" \
+  --skill "/abs/path/to/bmad-agent-pm" \
+  --project-root "{project-root}" \
   --key agent
 
 # Resolve a single field
-uv run {project-root}/_bmad/scripts/resolve_customization.py \
-  --skill /abs/path/to/bmad-agent-pm \
-  --project-root {project-root} \
+uv run "{project-root}/_bmad/scripts/resolve_customization.py" \
+  --skill "/abs/path/to/bmad-agent-pm" \
+  --project-root "{project-root}" \
   --key agent.icon
 
 # Full dump: omit --key
