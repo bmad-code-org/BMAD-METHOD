@@ -13,48 +13,57 @@ _spec = importlib.util.spec_from_file_location("bmad_setup", SCRIPTS_SRC / "setu
 setup = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(setup)
 
+PLACEHOLDER_SPELLINGS = (
+    "{project-root}",
+    "{project-root}/",
+    "{project-root}/_bmad-output",
+    "{project-root}/a/b",
+    "{project-root}\\docs",
+    "{project-root}-output",
+)
+
 
 def config(value: str) -> str:
     return f"[core]\noutput_folder = {setup.toml_string(value)}\n"
 
 
 class OutputFolderTests(unittest.TestCase):
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.project = Path(temp.name).resolve() / "demo"
+        self.project.mkdir()
+
     def test_a_missing_key_uses_the_default_folder(self):
-        self.assertEqual(setup.output_folder("[core]\n"), "_bmad-output")
+        self.assertEqual(setup.output_folder("[core]\n", self.project), self.project / "_bmad-output")
 
     def test_an_empty_value_uses_the_default_folder(self):
-        self.assertEqual(setup.output_folder(config("")), "_bmad-output")
+        self.assertEqual(setup.output_folder(config(""), self.project), self.project / "_bmad-output")
 
-    def test_the_project_root_prefix_is_removed(self):
-        self.assertEqual(setup.output_folder(config("{project-root}/_bmad-output")), "_bmad-output")
-        self.assertEqual(setup.output_folder(config("{project-root}/docs/out")), "docs/out")
+    def test_a_plain_relative_value_is_under_the_project(self):
+        self.assertEqual(setup.output_folder(config("docs"), self.project), self.project / "docs")
 
-    def test_a_plain_relative_value_is_kept(self):
-        self.assertEqual(setup.output_folder(config("docs")), "docs")
+    def test_a_project_root_path_is_under_the_project(self):
+        self.assertEqual(
+            setup.output_folder(config("{project-root}/docs/out"), self.project), self.project / "docs/out"
+        )
 
     def test_the_bare_project_root_is_the_project_root_itself(self):
-        self.assertEqual(setup.output_folder(config("{project-root}")), ".")
+        self.assertEqual(setup.output_folder(config("{project-root}"), self.project), self.project)
 
     def test_the_project_root_with_a_trailing_slash_is_the_project_root_itself(self):
-        self.assertEqual(setup.output_folder(config("{project-root}/")), ".")
-
-    def test_a_windows_separator_after_the_project_root_is_removed(self):
-        self.assertEqual(setup.output_folder(config("{project-root}\\docs")), "docs")
+        self.assertEqual(setup.output_folder(config("{project-root}/"), self.project), self.project)
 
     def test_setup_and_render_agree_on_where_the_folder_is(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project = Path(temp_dir).resolve()
-            for value in ("{project-root}", "{project-root}/", "{project-root}/_bmad-output", "{project-root}/a/b"):
-                with self.subTest(value=value):
-                    created = project / setup.output_folder(config(value))
-                    rendered = Path(rs._resolve_config_value(value, "output_folder", project))
-                    self.assertEqual(created.resolve(), rendered.resolve())
+        for value in PLACEHOLDER_SPELLINGS:
+            with self.subTest(value=value):
+                created = setup.output_folder(config(value), self.project)
+                rendered = Path(rs._resolve_config_value(value, "output_folder", self.project))
+                self.assertEqual(created, rendered)
 
     def test_the_bare_project_root_creates_no_literal_placeholder_folder(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project = Path(temp_dir)
-            setup.ensure_dir(project / setup.output_folder(config("{project-root}")))
-            self.assertEqual(list(project.iterdir()), [])
+        setup.ensure_dir(setup.output_folder(config("{project-root}"), self.project))
+        self.assertEqual(list(self.project.iterdir()), [])
 
 
 if __name__ == "__main__":

@@ -75,6 +75,8 @@ output_folder = "{project-root}/_bmad-initiative-store"
 
 `{project-root}` is the folder that holds `_bmad/`. In the layout above, that is `rooms-workspace/`.
 
+Set `output_folder = "{project-root}"` to write straight into that folder. Leaving `output_folder` unset or empty uses `{project-root}/_bmad-output`.
+
 ### 3. Name the active initiative
 
 Set the initiative you are working on in `_bmad/custom/config.user.toml`, which is personal and not committed:
