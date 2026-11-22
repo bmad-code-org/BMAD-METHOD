@@ -3782,6 +3782,24 @@ class BmadRetiredSkillTests(unittest.TestCase):
         self.assertEqual([problem["kind"] for problem in report["problems"]], ["retired-file"])
         self.assertEqual(report["retired_skills"], [])
 
+    def test_a_module_record_left_in_its_old_folder_is_retired_and_removed(self):
+        write_bmod(self.installed, "bmod-demo", "demo", skills=("bmod-demo",), skill={"bmod": "bmod-demo"})
+        write(self.installed / "bmod-demo" / "retired.toml", retired_toml((), ("demo-old",)))
+        write_bmod(self.installed, "demo-old", "demo", update_source=BMAD_SOURCE)
+
+        report = status_report(self, self.project, self.skill)
+        self.assertEqual(
+            [(problem["kind"], problem["folder"], problem["kept"]) for problem in report["problems"]],
+            [("duplicate-module", "demo-old", "bmod-demo")],
+        )
+        self.assertEqual([entry["skill"] for entry in report["retired_skills"]], ["demo-old"])
+
+        removal = setup_report(self, self.project, self.skill, "--remove-retired", "demo-old")
+        self.assertEqual(removal["removed"], [".agents/skills/demo-old"])
+        report = status_report(self, self.project, self.skill)
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(report["retired_skills"], [])
+
     def test_bad_retired_lists_are_rejected(self):
         setup = load_setup()
         for extra, message in (
