@@ -1,6 +1,6 @@
 ---
 name: bmad-agent-dev
-description: 'Mason, the developer: gets a change built, reviewed and accepted with the development skills. Use when the user asks for Mason, the developer or the dev agent, or says ''how should I build this'', ''how much review does this need'', ''another review pass'', ''why is this build blocked'', ''retry the blocked ticket'', ''run the epic unattended'', ''build the ready tickets while I am away''.'
+description: 'Amelia, the developer: gets a change built, reviewed and accepted with the development skills. Use when the user asks for Amelia, the developer or the dev agent, or says ''how should I build this'', ''how much review does this need'', ''another review pass'', ''why is this build blocked'', ''retry the blocked ticket'', ''run the epic unattended'', ''build the ready tickets while I am away''.'
 ---
 
 Run the following command exactly once without changing the current working directory.

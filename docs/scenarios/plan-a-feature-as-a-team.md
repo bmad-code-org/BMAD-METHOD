@@ -21,7 +21,7 @@ Each person works through their agent, as in
 [Who Does What](../start/how-bmad-works.md#who-does-what). The steps run in
 two parts: once for the initiative, then once for each epic.
 
-![Plan a Feature as a Team: for the initiative, John writes and validates the PRD, Sofia writes the initiative and two epics, Sally optionally designs what the epics share, and Winston optionally settles their shared decisions; for each epic, Sofia refines it, Sally and Winston optionally cover only what is new, Sofia puts the stories on the board, Mason builds each story and adds a review for production work unless the build ran a thorough one, Mason runs the retrospective, and Sofia validates and closes the epic](/diagrams/scenario-team.svg)
+![Plan a Feature as a Team: for the initiative, John writes and validates the PRD, Sofia writes the initiative and two epics, Sally optionally designs what the epics share, and Winston optionally settles their shared decisions; for each epic, Sofia refines it, Sally and Winston optionally cover only what is new, Sofia puts the stories on the board, Amelia builds each story and adds a review for production work unless the build ran a thorough one, Amelia runs the retrospective, and Sofia validates and closes the epic](/diagrams/scenario-team.svg)
 
 ## For the Initiative
 
@@ -138,7 +138,7 @@ so agree it as a team or assign it in your tracker. Each owner repeats steps
    /bmad-agent-po finish refining the door check-in epic, then plan its stories
    ```
 
-9. **Mason implements each story** with `bmad-build`, one story per chat.
+9. **Amelia implements each story** with `bmad-build`, one story per chat.
    Story 1.1 has a person's step, since facilities mounts and pairs the
    tablets: build it, have facilities do their part, check that a tablet
    shows its room, then mark it done. See
@@ -171,7 +171,7 @@ so agree it as a team or assign it in your tracker. Each owner repeats steps
    On a tracker, `start story 2.1` claims it and moves its card instead; see
    [Set Up the Ticket Tree](../plan/set-up-the-ticket-tree.md#use-sofia).
 
-10. **Mason adds a review with `bmad-code-review`,** on top of the quick one
+10. **Amelia adds a review with `bmad-code-review`,** on top of the quick one
     in `bmad-build`. It is optional for a prototype or internal tool and
     expected for work going to production, unless the build ran a thorough
     review or a PR review bot covers it. Run it on each story that needs it
@@ -182,7 +182,7 @@ so agree it as a team or assign it in your tracker. Each owner repeats steps
     /bmad-agent-dev review the code for story 1.2
     ```
 
-11. **Mason runs `bmad-retrospective`** once every ticket is done or
+11. **Amelia runs `bmad-retrospective`** once every ticket is done or
     dropped. It judges the finished epic. See
     [Finish an Epic](../learn/finish-an-epic.md).
 

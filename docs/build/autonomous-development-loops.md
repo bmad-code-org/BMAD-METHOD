@@ -113,7 +113,7 @@ when the epic or its entries no longer fit what implementation revealed.
 The orchestrating session remains responsible for keeping those revisions
 consistent with the larger intent. This is a little less predictable and
 costs more tokens than deterministic orchestrators.
-Mason (`bmad-agent-dev`) knows how to do this.
+Amelia (`bmad-agent-dev`) knows how to do this.
 
 ### Coordinate parallel epic streams
 
