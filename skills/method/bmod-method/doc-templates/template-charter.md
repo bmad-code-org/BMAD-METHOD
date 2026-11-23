@@ -39,7 +39,7 @@ updated: ""
 <!-- The strategy or objectives it serves. -->
 
 ## Benefits
-<!-- A table of `OKR-N` measurable outcomes, each with current baseline when known, `Passable` / `Good` / `Excellent` target bands, how production measures it, an owner, and an expected date. Ask how each will be measured and who would notice if it slipped; a benefit nobody would measure is cut. -->
+<!-- A table of OKR-N measurable outcomes, each with current baseline when known, Passable / Good / Excellent target bands, how production measures it, an owner, and an expected date. Ask how each will be measured and who would notice if it slipped; a benefit nobody would measure is cut. -->
 
 ## Scope
 <!-- What the program covers and excludes. Ask which piece of work people will try to add next, and settle now whether it is in. -->

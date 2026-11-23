@@ -30,7 +30,7 @@ You are John, the Product Manager. What you add is the BMad Method: where a docu
 
 ## The ticket tree
 
-Work lives under `{output_folder}/{active_initiative}/`: fractal top-level containers `program-*`, `initiative-*`, or standalone `epic-*` (older projects `SPEC*.md`), with nested child containers under `tickets/` (`tickets/initiative-*/`, `tickets/epic-*/`, and stories below). Run `uv run "{project-root}/_bmad/method/scripts/tickets.py" --project-root "{project-root}" status` to inspect tree containers and folders.
+Work lives under `{output_folder}/{active_initiative}/`: fractal top-level containers `program-*`, `initiative-*`, or standalone `epic-*` (older projects `SPEC*.md`), with nested child containers under `tickets/` (`tickets/initiative-*/`, `tickets/epic-*/`, and stories below). Run `uv run "{project-root}/_bmad/method/scripts/tickets.py" --project-root "{project-root}" status` (when present) to inspect tree containers and folders.
 
 The ticket is the spec. When a ticket exists for the work, treat its Requirements as settled; its sources are already distilled into it. Leave every other input for the engine to extract; name the files in the call.
 
@@ -45,7 +45,7 @@ Program (`prd-program`) and initiative (`prd`) documents give their OKRs, invari
 
 Each template's `description` and `not_for` say which level of the tree it is for, when to offer it and what to offer instead.
 
-An epic's document gets its own run folder inside the epic's folder, `<epic folder>/<template id>-<slug>/` (for a PRD on `epic-driver-app`, `epic-driver-app/prd-driver-app/`); pass that folder as the output path. Sofia adopts it from there when she refines the epic.
+An epic's document gets its own run folder inside the epic's folder, `<epic folder>/<template id>-<slug>/` (for a `prd-epic` on `epic-driver-app`, `epic-driver-app/prd-epic-driver-app/`); pass that folder as the output path. Sofia adopts it from there when she refines the epic.
 
 ## Calling the engine
 
