@@ -30,7 +30,11 @@ State the sequence in one sentence, then run all nine steps in order (including 
 
 Set `updated` and `status: final` unless a blocking open question keeps `status: draft` (name the blocker). Once `status: final`, strip all `<!-- settled out: ... -->` sections and redo step 6 if a table of contents exists.
 
-Unless `{doc}` targeted a standalone `.md` file, render the HTML view when merged `view` (fallback `{workflow.view}`, else `offer`) is `always` or `offer` with user consent. If the template carries a `layout` comment, have a subagent write self-contained HTML at `{doc}` with `.html` replacing `.md` (inlining linked images, using any `layout` file as starter, inventing zero facts); otherwise run `uv run "{skill-root}/scripts/render_view.py" --project-root "{project-root}" "{doc}" --layout "<layout or document>" --style "<style or {workflow.style}>"`, staging any URL `layout`/`style` into `{scratch}` first.
+Unless `{doc}` targeted a standalone `.md` file, build the visual view when merged `view` (fallback `{workflow.view}`, else `offer`) is `always`, or `offer` with user consent. Whenever the host environment provides a native interactive artifact or preview tool, offer to present it there alongside saving `{doc}` with `.html` replacing `.md`.
+
+Run `uv run "{skill-root}/scripts/render_view.py" --project-root "{project-root}" "{doc}" --layout "<layout>" --style "<style or {workflow.style}>"` (staging URL files into `{scratch}` first) only when the template pins a strict fixed layout: `slides`, `document`, or an `.html` slot file without a `layout` comment.
+
+Otherwise, delegate to a fresh subagent reading `{doc}`, companions, linked local images, any `layout` starter or comment, and any CSS guide. Have it write a tailored, interactive, self-contained HTML artifact (CSS, JS, and local images inlined; zero external requests) whose visual design fits this document's domain and readers. Keep strict full fidelity — every section, id, metric, table, rule, and open question preserved, zero facts invented — and present it in the host's native artifact surface when chosen.
 
 Delete `{scratch}`. Report every produced file path (`{doc}`, companions, HTML view) and any omitted sections with their reasons; when no template governed the run, offer `document-template` to capture the structure.
 

@@ -164,7 +164,7 @@ Above the first heading, give each of these keys its own comment, a line or two.
 | `layout` | The brief for an HTML page written for each document. See [Give a template its own view](#give-a-template-its-own-view). |
 | `next` | What to offer or do once the document is done, such as handing it to a build. |
 
-Add `layout: slides` to the frontmatter for a slide view, or name an HTML view file; without it the HTML view is one page. In the document body, `{title}` is the only placeholder.
+By default Close builds a bespoke, full-fidelity HTML artifact; add a `layout` comment to steer its design, or set `layout: slides`, `layout: document`, or an HTML slot file only when you want strict script rendering. In the document body, `{title}` is the only placeholder.
 
 Each section has one comment: a line on what goes in the section, then `diagram:` when a picture carries the meaning, with a Mermaid kind (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey, pie) or a line saying what to draw. A section that is not required starts its comment with `optional` or `include when:` and a condition. A section assembled from the others, such as a summary or a glossary, starts its comment with `built:`. The skill asks nothing for it up front, drafts it once the sections it draws on are settled, and shows it for correction; the template list reports one placed ahead of a section that is not built.
 
@@ -292,9 +292,10 @@ A template stays markdown, and so does the document the skill writes, because th
 
 | You want | In the template | What happens |
 | --- | --- | --- |
-| The same layout every time, such as a form headed for PDF | `layout: invoice.html` | A script fills the file's slots. Nothing is interpreted. |
+| The same layout every time, such as a form headed for PDF | `layout: invoice.html`, `slides`, or `document` | A script fills the fixed layout. Nothing is interpreted. |
 | A shared structure that adapts to each document | `layout: character-sheet.html` and a `layout` comment | A subagent uses the file as a starter and follows the comment. |
-| A page invented for each document, with no template | A `layout` comment alone | A subagent writes it from the comment. |
+| A bespoke, tailored artifact steered by a brief | A `layout` comment alone | A subagent writes a full-fidelity interactive HTML page following the comment. |
+| A bespoke, tailored artifact with no template brief (default) | Nothing set (omit `layout`) | A subagent writes a creative, full-fidelity interactive HTML artifact tailored to the document. |
 
 The `layout` comment sits above the first heading with the other comments, and says what the page should do:
 
@@ -302,7 +303,7 @@ The `layout` comment sits above the first heading with the other comments, and s
 <!-- layout: The sheet is the deliverable. `character-sheet.html` is a starter: keep to one printable page, and let this character's world set the look. -->
 ```
 
-A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless `view` is `always`, from the template or the team's or user's settings, which win over the template's. Use the script for anything regulated or signed, where the page must not vary. `view = "never"` in those settings stops all three.
+A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless `view` is `always`, from the template or the team's or user's settings, which win over the template's. Use the script for anything regulated or signed, where the page must not vary. `view = "never"` in those settings stops any view.
 
 ### Slots for a filled view
 

@@ -83,7 +83,7 @@ Write 3 to 5 numbered dimensions rated strong, adequate, thin, or broken against
 <!-- optional. Frontmatter `companions: [...]` declares expected sibling files tracked at Resume, Progress, and Finalize; add a `companions` comment explaining when each file is written and what it holds. -->
 
 ## View
-<!-- optional. How the HTML view looks: `layout: slides` for slides, an HTML file beside the template with slots for a fixed layout, or a `layout` comment that briefs a page written for each document; `view: always` when the view is the deliverable. Most templates set none. -->
+<!-- optional. How the HTML view looks: by default Close builds a bespoke, full-fidelity interactive HTML artifact, steered by any `layout` comment you write. Set `layout: <file.html>`, `slides`, or `document` only for a strict script-rendered layout (plus a `layout` comment if a subagent should adapt the HTML file); set `view: always` when the view is the deliverable. -->
 
 ## Next
 <!-- optional. The `next` comment: what the coach offers or does once a document is done, such as the template or skill that comes after it. -->
