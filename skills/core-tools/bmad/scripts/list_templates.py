@@ -150,9 +150,35 @@ def beside(file: str, value: str) -> str:
     return urljoin(file, value) if "://" in file else str(Path(file).parent / value)
 
 
+COMMAND_RUNNERS = frozenset({
+    "uv", "python", "python3", "py", "node", "npx", "bash", "sh", "zsh", "fish",
+    "pwsh", "powershell", "ruby", "perl", "deno", "bun", "go", "cargo", "make",
+    "just", "ruff", "pytest", "npm", "pnpm", "yarn", "cmd",
+})  # fmt: skip
+LINT_SCRIPT_SUFFIXES = frozenset({".py", ".sh", ".bash", ".zsh", ".js", ".mjs", ".cjs", ".ts", ".rb", ".pl", ".ps1"})
+
+
+def is_lint_script_path(value: str, base_file: str = "") -> bool:
+    """Whether `value` names a local/URL script path rather than a shell command string."""
+    if not value or "://" in value or value.startswith("{") or not Path(value).suffix:
+        return False
+    if any(ch in value for ch in ('"', "'", "{", "}", "|", ";", "&")) or re.search(r"\s--?[A-Za-z0-9]", value):
+        return False
+    if not any(c.isspace() for c in value):
+        return True
+    if base_file and "://" not in base_file and (Path(base_file).parent / value).is_file():
+        return True
+    if Path(value).expanduser().is_file():
+        return True
+    first = value.split(None, 1)[0].lower()
+    if first in COMMAND_RUNNERS:
+        return False
+    return Path(value).suffix.lower() in LINT_SCRIPT_SUFFIXES or "/" in value or "\\" in value
+
+
 def beside_lint(file: str, value: str) -> str:
-    """Resolve `lint:` relative to `file` when it is a file path; leave command strings verbatim."""
-    if not value or any(c.isspace() for c in value):
+    """Resolve `lint:` relative to `file` when it is a script path; leave command strings verbatim."""
+    if not is_lint_script_path(value, base_file=file):
         return value
     return beside(file, value)
 
@@ -452,8 +478,8 @@ def absolute(value: str) -> str:
 
 
 def absolute_lint(value: str) -> str:
-    """Make a file-path `lint:` absolute; leave command strings verbatim."""
-    if not value or any(c.isspace() for c in value):
+    """Make a script-path `lint:` absolute; leave command strings verbatim."""
+    if not is_lint_script_path(value):
         return value
     return absolute(value)
 

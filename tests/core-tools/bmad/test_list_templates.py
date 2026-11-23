@@ -867,13 +867,36 @@ def test_companions_forbid_id_prefixes_and_relative_lint_resolve_and_merge(tmp_p
 def test_lint_command_string_stays_verbatim_in_scan_and_merge(tmp_path, capsys):
     lib, run = tmp_path / "lib", tmp_path / "run"
     lib.mkdir()
-    cmd = 'uv run "{project-root}/scripts/lint.py" "{doc}"'
-    (lib / "t.md").write_text(template("a", extra=f"lint: {json.dumps(cmd)}\n"))
-    list_templates.main([str(lib), "--template", "a", "--merge", str(run / "template.md")])
-    found = json.loads(capsys.readouterr().out)["templates"][0]
-    assert found["lint"] == cmd
-    merged_meta = list_templates.read_fields((run / "template.md").read_text())
-    assert merged_meta["lint"] == cmd
+    for cmd in ('uv run "{project-root}/scripts/lint.py" "{doc}"', "uv run scripts/lint.py"):
+        (lib / "t.md").write_text(template("a", extra=f"lint: {json.dumps(cmd)}\n"))
+        list_templates.main([str(lib), "--template", "a", "--merge", str(run / "template.md")])
+        found = json.loads(capsys.readouterr().out)["templates"][0]
+        assert found["lint"] == cmd
+        merged_meta = list_templates.read_fields((run / "template.md").read_text())
+        assert merged_meta["lint"] == cmd
+
+
+def test_spaced_lint_script_and_spaced_relative_library_resolve_and_merge(tmp_path, monkeypatch, capsys):
+    lib = tmp_path / "my templates"
+    checks = lib / "checks"
+    checks.mkdir(parents=True)
+    script_spaced = checks / "check ids.py"
+    script_spaced.write_text("# lint\n")
+    (lib / "a.md").write_text(template("a", extra='lint: "checks/check ids.py"\n'))
+    (lib / "b.md").write_text(template("b", extra="lint: lint_b.py\n"))
+
+    run = tmp_path / "run"
+    monkeypatch.chdir(tmp_path)
+
+    list_templates.main(["my templates", "--template", "a", "--merge", str(run / "a.md")])
+    found_a = json.loads(capsys.readouterr().out)["templates"][0]
+    assert found_a["lint"] == str(Path("my templates") / "checks" / "check ids.py")
+    assert list_templates.read_fields((run / "a.md").read_text())["lint"] == script_spaced.resolve().as_posix()
+
+    list_templates.main(["my templates", "--template", "b", "--merge", str(run / "b.md")])
+    found_b = json.loads(capsys.readouterr().out)["templates"][0]
+    assert found_b["lint"] == str(Path("my templates") / "lint_b.py")
+    assert list_templates.read_fields((run / "b.md").read_text())["lint"] == (lib / "lint_b.py").resolve().as_posix()
 
 
 def test_extension_can_override_preserve_or_clear_companions_prefixes_and_lint(tmp_path, capsys):

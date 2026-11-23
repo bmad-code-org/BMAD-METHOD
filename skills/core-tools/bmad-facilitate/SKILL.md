@@ -29,7 +29,7 @@ Read only the branch your call needs, leaving later phases unloaded until reache
 - **Headless or autonomous:** read `references/headless.md` before starting.
 - **Update, Validate, or a document with no template:** read `references/update-validate.md`.
 - **Create:** follow the sections below.
-- **Review, Finalize, and Close:** do not read `references/finalize.md` on turn 1. Load `references/finalize.md` only when `progress.py` emits `next_phase: "finalize"` (all sections settled).
+- **Review, Finalize, and Close:** do not read `references/finalize.md` on turn 1. Load `references/finalize.md` only when `progress.py` emits `next_phase: "finalize"` (or, when reader headings replaced template headings, once zero `<!-- open -->` markers remain in `{doc}`).
 
 ## Choose and merge the template
 
@@ -77,7 +77,7 @@ Coach in the user's words without exposing markers, scratch paths, or template k
 
 Before every message that asks the user something or closes a section (unless headless), run `uv run "{skill-root}/scripts/progress.py" --project-root "{project-root}" "{doc}" "{scratch}/template.md"` and open with a one-line status after any caller icon. Never compute counts from memory; when reader headings caused `missing`/`extra` mismatches, count the document's open markers directly.
 
-Format the status line by state: `Title · Opening` before section 1, `Title · Section (2 of 4)` in step-by-step, `Title · 3 of 8 done · open: Scope, Risks` otherwise, plus item counts (`question 2 of 5`) only for fixed batches. Check `companions` if reported; the moment `progress.py` emits `next_phase: "finalize"`, load `references/finalize.md` and execute `required_sequence` in order.
+Format the status line by state: `Title · Opening` before section 1, `Title · Section (2 of 4)` in step-by-step, `Title · 3 of 8 done · open: Scope, Risks` otherwise, plus item counts (`question 2 of 5`) only for fixed batches. Check `companions` if reported; the moment `progress.py` emits `next_phase: "finalize"` — or, on `missing`/`extra` reader-heading fallback, once zero `<!-- open -->` markers remain in `{doc}` — load `references/finalize.md` and execute `required_sequence` in order.
 
 ## Writing and visuals
 
