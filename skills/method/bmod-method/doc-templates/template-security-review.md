@@ -5,8 +5,8 @@ version: 1.3.0
 description: "Reviewing a system against a standard such as the OWASP Top 10 or STRIDE."
 not_for: "An incident that has happened (`postmortem`)."
 facilitation_order: [scope-and-system, architecture-and-data-flows, key-request-flows, findings, risk-decisions, remediation-plan, open-questions]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 methods: methods-security.csv
 status: draft
 created: ""

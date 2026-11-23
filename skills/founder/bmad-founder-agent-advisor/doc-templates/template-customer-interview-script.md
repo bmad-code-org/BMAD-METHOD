@@ -5,7 +5,7 @@ version: 1.2.0
 description: "A customer interview guide built on past behaviour, not opinions about the future."
 not_for: "Deciding which customers to win first (`ideal-customer`); a demand test with a pass mark (`validation-experiment`); hard questions put to the founder (`startup-diagnostic`)."
 facilitation_order: [what-to-learn, who-to-talk-to, what-counts-as-a-signal, questions, follow-ups, closing-ask, opening, notes]
-guidance: guidance-planning
+guidance: guidance-planning.md
 rubric: rubric-customer-interview-script.md
 agents: [bmad-founder-agent-advisor]
 view: always

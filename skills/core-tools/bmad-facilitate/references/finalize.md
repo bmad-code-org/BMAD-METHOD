@@ -1,0 +1,37 @@
+# Review, Finalize, and Close
+
+Load this reference when `progress.py` emits `next_phase: "finalize"`, or when Update/Validate reaches Review and Finalize. Keep conventions local: `{project-root}` holds `_bmad/`, `{skill-root}` is `bmad-facilitate`, `{run}` holds `{doc}` and companions, and `{scratch}` is the temp directory from `{doc}`'s absolute path hash.
+
+## Review
+
+Pick reviewers scaled to the stakes, name them to the user, and allow changes before running; at the lowest stakes, check `done when` yourself in one line and skip subagents.
+
+- **Rubric walker:** evaluates `{doc}` and companions against the caller's rubric, else the template's `rubric` (bare `rubric-general` means `{skill-root}/references/rubric-general.md`, default `rubric-general`), plus the template's `done when`.
+- **Fresh reader:** reads only `{doc}` and companions, reporting what still blocks acting on it without this conversation (ranked, skipping nitpicks; "nothing important left" is valid).
+- **Configured and domain reviewers:** every `{workflow.finalize_reviewers}` entry plus any specialist lens the stakes warrant; never run `{workflow.doc_standards}` here, since they edit during Finalize step 5.
+
+Run reviewers in parallel subagents told the stakes and depth, each writing `{scratch}/review-<lens>.md` and returning verdict, top findings, and file path (run sequentially when subagents are unavailable). Lead with a one-sentence verdict and top three fixes, walk critical/high findings one by one (treat unconfirmed user attribution as high), and summarize lower counts by file; fix, discuss, defer to open questions, or drop each finding without inflating scope.
+
+## Finalize
+
+State the sequence in one sentence, then run all nine steps in order (including in fast mode):
+
+1. **Deterministic checks & lint:** confirm zero `<!-- open -->` markers remain and every expected `companions:` file exists in `{run}`. Run `uv run "{skill-root}/scripts/check_ids.py" "{doc}"` plus each companion and `--forbid-prefix <PREFIX>` for every `forbid_id_prefixes:` item, fixing `undefined`, `duplicate`, `withdrawn`, `non_monotonic`, `forbidden_prefix`, and placeholder hits. If `lint:` is set, execute it (run `.py` paths via `uv run "<lint>" "{doc}"` + companions, or run the command with `{doc}`, `{run}`, `{project-root}` expanded) and resolve findings.
+2. **Reconciliation:** run one subagent per user-supplied source to report dropped points, tone, or intent, and surface gaps to the user (skip at lowest stakes unless requested).
+3. **Review:** name the chosen reviewers, run the Review phase above, and settle findings.
+4. **Triage:** walk standing `[ASSUMPTION]` tags and open questions; resolve blocking items one at a time and defer non-blockers with owner and revisit condition (flag many blockers as a finding).
+5. **Polish:** apply `{workflow.doc_standards}` in order — structural clarity before prose, succinctness pass cutting filler without losing facts, and tables/diagrams where prose walks flows or comparisons. Invoke `skill:` standards (skipped only at lowest stakes) and apply `file:` or text rules directly, adding no unsupported claims. On headless runs or after blanket approvals, move remaining `[ASSUMPTION]` tags into the template's assumptions section or a closing `## Assumptions` list naming affected ids/sections.
+6. **TOC & re-lint:** if `## Table of Contents` exists, rebuild entries from final headings and rerun `check_ids.py` (with companions and `--forbid-prefix`) plus `lint:` until `toc` and lint issues clear.
+7. **User read:** unless headless, report settled-out sections with reasons, polish changes, and the three lowest-confidence decisions, then wait for user feedback and apply edits (repeating step 6 if headings moved).
+8. **External handoffs:** execute `{workflow.external_handoffs}`.
+9. **Close & completion:** perform Close below, then run `{workflow.on_complete}`.
+
+## Close
+
+Set `updated` and `status: final` unless a blocking open question keeps `status: draft` (name the blocker). Once `status: final`, strip all `<!-- settled out: ... -->` sections and redo step 6 if a table of contents exists.
+
+Unless `{doc}` targeted a standalone `.md` file, render the HTML view when merged `view` (fallback `{workflow.view}`, else `offer`) is `always` or `offer` with user consent. If the template carries a `layout` comment, have a subagent write self-contained HTML at `{doc}` with `.html` replacing `.md` (inlining linked images, using any `layout` file as starter, inventing zero facts); otherwise run `uv run "{skill-root}/scripts/render_view.py" --project-root "{project-root}" "{doc}" --layout "<layout or document>" --style "<style or {workflow.style}>"`, staging any URL `layout`/`style` into `{scratch}` first.
+
+Delete `{scratch}`. Report every produced file path (`{doc}`, companions, HTML view) and any omitted sections with their reasons; when no template governed the run, offer `document-template` to capture the structure.
+
+**Next-step lookup:** when subagents are available and the `bmad` skill is installed, invoke a fresh-context subagent running `bmad` Close-time lookup, passing produced paths, template id, status, `{run}`, container folder, and any status payload passed by the caller. Return its 3–5 plain lines verbatim (no JSON). Without subagents or `bmad`, print the factual status and paths and remind the user to start a fresh chat (or compact) and ask `bmad` what comes next.

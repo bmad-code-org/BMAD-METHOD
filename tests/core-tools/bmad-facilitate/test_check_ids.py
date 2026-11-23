@@ -225,3 +225,81 @@ def test_an_id_carrying_its_epic_is_read_whole():
 
 def test_a_range_of_zero_padded_ids_keeps_the_padding():
     assert report(EPIC_DOC.replace(", and by E02-FR-09", ""))["undefined"] == {}
+
+
+def test_placeholders_detected_in_frontmatter_and_body_ignoring_fences_comments_and_inline_code():
+    text = (
+        '---\ntitle: "Plan"\ncreated: "TBD"\nowner: "{owner_name}"\n---\n\n'
+        "# Plan\n\n"
+        "Status is TODO and details are FIXME or XXX.\n"
+        "Unfilled {team-name} in prose.\n"
+        "Inline `{slug}` and `/users/{id}` stay clean.\n\n"
+        "```\nTBD TODO {fenced_token}\n```\n\n"
+        "<!-- TODO {comment_token} -->\n"
+    )
+    hits = report(text)["placeholders"]
+    assert hits == [
+        {"kind": "marker", "text": "TBD", "location": "doc0.md:3"},
+        {"kind": "token", "text": "{owner_name}", "location": "doc0.md:4"},
+        {"kind": "marker", "text": "TODO", "location": "doc0.md:9"},
+        {"kind": "marker", "text": "FIXME", "location": "doc0.md:9"},
+        {"kind": "marker", "text": "XXX", "location": "doc0.md:9"},
+        {"kind": "token", "text": "{team-name}", "location": "doc0.md:10"},
+    ]
+
+
+def test_toc_line_numbers_account_for_frontmatter():
+    text = "---\ntitle: Doc\n---\n\n## Table of Contents\n\n- [Keep](#keep)\n\n## Keep\n\n## Missing\n"
+    toc = report(text)["toc"]
+    assert toc["missing"] == {"Missing": ["doc0.md:11"]}
+
+
+def test_non_monotonic_ids_flagged_while_gaps_duplicates_scopes_and_traceability_pass():
+    bad = "- **REQ-1**: First\n- **REQ-3**: Third\n- **REQ-2**: Out of order\n"
+    assert report(bad)["non_monotonic"] == [{"id": "REQ-2", "after": "REQ-3", "location": "doc0.md:3"}]
+
+    gaps = "- **REQ-1**: First\n- **REQ-2**: Second\n- **REQ-4**: Fourth\n"
+    assert report(gaps)["non_monotonic"] == []
+
+    dup = "- **REQ-1**: First\n- **REQ-3**: Third\n- **REQ-3**: Duplicate\n"
+    dup_res = report(dup)
+    assert dup_res["non_monotonic"] == []
+    assert dup_res["duplicate"] == {"REQ-3": ["doc0.md:2", "doc0.md:3"]}
+
+    scoped = "- **S01-REQ-02**: First scope\n- **S02-REQ-01**: Second scope\n"
+    assert report(scoped)["non_monotonic"] == []
+
+    trace = (
+        "| Id | Rule |\n|---|---|\n| REQ-1 | a |\n| REQ-2 | b |\n\n"
+        "| Id | Check |\n|---|---|\n| REQ-2 | c |\n| REQ-1 | d |\n"
+    )
+    assert report(trace)["non_monotonic"] == []
+
+
+def test_forbid_prefix_catches_exact_and_scoped_tokens_across_files(tmp_path, capsys):
+    doc = tmp_path / "doc.md"
+    comp = tmp_path / "companion.md"
+    doc.write_text("- **R-1**: Keep\n- **FR-1**: Leak\nRefs E01-FR-02 and FR-3 to FR-5.\n", encoding="utf-8")
+    comp.write_text("- **TASK-2**: Companion leak\n", encoding="utf-8")
+    assert check_ids.main([str(doc), str(comp), "--forbid-prefix", "FR-", "--forbid-prefix", "TASK"]) == 0
+    found = json.loads(capsys.readouterr().out)
+    assert found["forbidden_prefix"] == {
+        "FR-1": [f"{doc}:2"],
+        "FR-3": [f"{doc}:3"],
+        "FR-4": [f"{doc}:3"],
+        "FR-5": [f"{doc}:3"],
+        "E01-FR-02": [f"{doc}:3"],
+        "TASK-2": [f"{comp}:1"],
+    }
+
+
+def test_help_and_missing_args_exit_codes():
+    import pytest
+
+    with pytest.raises(SystemExit) as help_exc:
+        check_ids.main(["--help"])
+    assert help_exc.value.code == 0
+
+    with pytest.raises(SystemExit) as empty_exc:
+        check_ids.main([])
+    assert empty_exc.value.code == 2

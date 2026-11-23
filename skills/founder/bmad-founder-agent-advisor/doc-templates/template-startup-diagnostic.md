@@ -6,7 +6,7 @@ description: "Hard questions on whether an idea has real demand, ending in one d
 not_for: "The whole business on one page (`lean-canvas`); running the demand test the assignment names (`validation-experiment`); the questions to ask customers (`customer-interview-script`)."
 order: fixed
 facilitation_order: [stage, demand, status-quo, who-needs-it-most, smallest-paid-version, what-surprised-you, three-years-out, what-the-answers-show, assignment]
-guidance: guidance-planning
+guidance: guidance-planning.md
 rubric: rubric-startup-diagnostic.md
 agents: [bmad-founder-agent-advisor]
 view: always

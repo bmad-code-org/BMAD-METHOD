@@ -5,8 +5,8 @@ version: 1.2.0
 description: "Deciding whether to hire now, and the scorecard, cost and test for the role."
 not_for: "Agreeing roles and equity between co-founders (`cofounder-agreement`); the company's goals for the next quarter (`ninety-day-plan`)."
 facilitation_order: [why-now, alternatives, cost, decision, scorecard, finding-candidates, testing-candidates, questions-for-a-lawyer-or-accountant]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-planning.md
+rubric: rubric-planning.md
 agents: [bmad-founder-agent-advisor]
 order: fixed
 view: always

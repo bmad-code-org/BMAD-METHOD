@@ -6,7 +6,7 @@ description: "Co-founders agree roles, decisions, equity and leaving before a la
 not_for: "Hiring an employee (`first-hire`)."
 order: fixed
 facilitation_order: [goals, roles, decisions, deadlock, time-and-money, equity-split, vesting, if-someone-leaves, revisiting, questions-for-a-lawyer]
-guidance: guidance-planning
+guidance: guidance-planning.md
 rubric: rubric-cofounder-agreement.md
 agents: [bmad-founder-agent-advisor]
 view: always

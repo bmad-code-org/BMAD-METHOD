@@ -7,8 +7,8 @@ not_for: "A chosen solution that needs a case for building it (`brief`); a fundi
 agents: [bmad-agent-analyst]
 order: fixed
 facilitation_order: [problem, who-has-it, how-big, alternatives, why-us, why-now, getting-to-market, success-measures, critical-success-factors, recommendation]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""

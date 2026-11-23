@@ -6,8 +6,8 @@ description: "A written argument for leadership to decide a program's strategy o
 not_for: "One product idea (`brief`); funding one piece of work (`business-case`); program governance (`charter`)."
 agents: [bmad-agent-analyst]
 facilitation_order: [introduction-and-ask, goals, tenets, state-of-the-business, lessons-learned, strategic-priorities, resource-request, faq, appendix, for-requirements]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""

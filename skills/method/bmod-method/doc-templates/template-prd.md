@@ -6,8 +6,8 @@ description: "Outcomes, guardrails and the epic map for work with several capabi
 not_for: "One capability's detailed requirements (`prd-epic`); deciding whether to build (`opportunity`) or writing down why (`brief`); a hobby project, or an idea to try before committing (`prototype-plan`); a regulated or contracted baseline (`srs`); what a business signs for when the builder is a separate party (`brd`)."
 agents: [bmad-agent-pm]
 facilitation_order: [problem-and-users, journeys, epic-map, scope-and-non-goals, okrs, invariants, shared-nouns-and-seams, deferred-decisions-and-risks]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""

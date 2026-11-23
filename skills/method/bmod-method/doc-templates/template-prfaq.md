@@ -7,7 +7,7 @@ not_for: "Writing up a product the user already believes in (`brief`); testing a
 agents: [bmad-agent-analyst]
 order: fixed
 facilitation_order: [press-release, customer-faq, internal-faq, verdict]
-guidance: guidance-planning
+guidance: guidance-method.md
 rubric: rubric-prfaq.md
 layout: prfaq-view.html
 view: always

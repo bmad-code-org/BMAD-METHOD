@@ -7,8 +7,8 @@ not_for: "Open-ended requirements (`prd`); funding by estimate (`business-case`)
 agents: [bmad-agent-pm]
 order: fixed
 facilitation_order: [problem, appetite, solution, rabbit-holes, no-gos]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 layout: pitch-view.html
 view: always
 status: draft

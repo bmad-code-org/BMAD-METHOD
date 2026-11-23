@@ -25,14 +25,15 @@ adds without a list of its own is appended to the order. Each listed id must
 name a heading, no id may repeat, and every heading of the template, and of the extensions that
 set a list, must be listed; what breaks this comes back in `order_problems`. An extension's list
 may leave out a heading of the template: that section is removed and named in `removed`. `guidance`,
-`rubric`, `methods`, `style` and `layout` are relative to their file and come back resolved; a bare
-name with no extension, such as `slides`, comes back as it is.
+`rubric`, `methods`, `style`, `layout` and relative-script `lint` values are relative to their file
+and come back resolved; a bare name with no extension, such as `slides`, and command-string `lint` hooks
+come back as written. `companions` and `forbid_id_prefixes` come back as lists.
 
 `mode` is the mode a run starts in and `view` whether a rendered view is made: the first `--libraries-of`
 skill's `workflow` value when set, else the template's, else `step-by-step` and `offer`; with `order: fixed`,
 `freeform` becomes `step-by-step`. A value not allowed (`step-by-step`, `freeform` or `fast`; `offer`, `always`
 or `never`; `order` other than `fixed`) is skipped and named in `order_problems`. `style` is the customization's when set, else the
-template's. An extension's empty `mode` or `order` clears the template's.
+template's. An extension's empty `mode`, `order`, `lint`, `companions` or `forbid_id_prefixes` clears the template's.
 
 `--brief` keeps only each template's id, description, not_for, category, agents and output, for choosing
 one; `agents` there is who offers the template: those it names, else the skill whose folder holds it,
@@ -43,8 +44,8 @@ without its removed sections, with every path made absolute.
 
 Prints JSON:
   templates     id, version, description, not_for, category, agents, facilitation_order, guidance, rubric,
-                methods, output, style, layout, view, mode, order, file, source, extensions, order_problems,
-                removed, in search order
+                methods, output, style, layout, view, mode, order, companions, forbid_id_prefixes, lint,
+                file, source, extensions, order_problems, removed, in search order
   shadowed      id, file, source, kept, agents: templates hidden by an earlier one with the same id
   orphaned      extends, file, source: extensions whose template was not found
   unreachable   source, reason: sources that could not be read, and files whose frontmatter is not YAML
@@ -78,9 +79,10 @@ GITHUB = re.compile(
 MODULE_FOLDER = "doc-templates"
 FIELDS = (
     "version", "description", "not_for", "category", "agents", "facilitation_order", "guidance", "rubric", "methods", "output", "style",
-    "layout", "view", "mode", "order",
+    "layout", "view", "mode", "order", "companions", "forbid_id_prefixes", "lint",
 )  # fmt: skip
-CLEARABLE = ("mode", "order")
+LIST_CLEARABLE = ("companions", "forbid_id_prefixes")
+CLEARABLE = ("mode", "order", "lint", *LIST_CLEARABLE)
 MODES = ("step-by-step", "freeform", "fast")
 VIEWS = ("offer", "always", "never")
 ALLOWED = {"mode": MODES, "view": VIEWS, "order": ("fixed",)}
@@ -146,6 +148,13 @@ def beside(file: str, value: str) -> str:
     if not value or "://" in value or value.startswith("{") or Path(value).is_absolute() or not Path(value).suffix:
         return value
     return urljoin(file, value) if "://" in file else str(Path(file).parent / value)
+
+
+def beside_lint(file: str, value: str) -> str:
+    """Resolve `lint:` relative to `file` when it is a file path; leave command strings verbatim."""
+    if not value or any(c.isspace() for c in value):
+        return value
+    return beside(file, value)
 
 
 def module_libraries(roots: list[str], folder_name: str = MODULE_FOLDER) -> list[str]:
@@ -260,6 +269,9 @@ def fields(file: str, meta: dict) -> dict[str, object]:
         "view": scalar(meta, "view"),
         "mode": scalar(meta, "mode", None),
         "order": scalar(meta, "order", None),
+        "companions": listed(meta["companions"]) if "companions" in meta else None,
+        "forbid_id_prefixes": listed(meta["forbid_id_prefixes"]) if "forbid_id_prefixes" in meta else None,
+        "lint": beside_lint(file, scalar(meta, "lint")) if "lint" in meta else None,
     }
 
 
@@ -360,7 +372,11 @@ def scan(sources: list[str]) -> dict:
         template["_bad_extension_orders"] = [e["file"] for e in adding if e["_bad_order"]]
     for template in found.values():
         for key in CLEARABLE:
-            template[key], template["_own"][key] = template[key] or "", template["_own"][key] or ""
+            default: object = [] if key in LIST_CLEARABLE else ""
+            if template[key] is None:
+                template[key] = list(default) if isinstance(default, list) else default
+            if template["_own"][key] is None:
+                template["_own"][key] = list(default) if isinstance(default, list) else default
         own, added = template.pop("_headings"), template.pop("_extension_headings", [])
         must, template["removed"] = own + template.pop("_must_list", []), []
         if template.pop("_order_from_extension", False):
@@ -435,6 +451,13 @@ def absolute(value: str) -> str:
     return Path(value).expanduser().resolve().as_posix()
 
 
+def absolute_lint(value: str) -> str:
+    """Make a file-path `lint:` absolute; leave command strings verbatim."""
+    if not value or any(c.isspace() for c in value):
+        return value
+    return absolute(value)
+
+
 def merged_frontmatter(template: dict) -> str:
     """The template's frontmatter with every value its extensions changed, paths made absolute."""
     text = template["_text"].replace("\r\n", "\n")
@@ -442,6 +465,8 @@ def merged_frontmatter(template: dict) -> str:
     values = {key: template[key] for key in FIELDS if template[key] != own[key]}
     raw = read_fields(text)
     values.update({key: absolute(template[key]) for key in PATH_KEYS if absolute(template[key]) != scalar(raw, key)})
+    if absolute_lint(template["lint"]) != scalar(raw, "lint"):
+        values["lint"] = absolute_lint(template["lint"])
     return "---\n" + frontmatter.set_fields(frontmatter.split(text)[0], values) + "---"
 
 

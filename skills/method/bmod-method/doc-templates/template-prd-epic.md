@@ -6,8 +6,8 @@ description: "One capability's requirements, with or without a parent PRD: journ
 not_for: "Work with several capabilities, which needs its outcomes and epic map first (`prd`); a hobby project, or an idea to try before committing (`prototype-plan`); a single story, which is a story ticket from Sofia (`bmad-agent-po`); a regulated or contracted baseline (`srs`)."
 agents: [bmad-agent-pm]
 facilitation_order: [context, journeys-and-flows, rules-edge-cases-and-failure-modes, requirements, instrumentation, seams, product-specifics, changes-to-the-parent, open-questions]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""
