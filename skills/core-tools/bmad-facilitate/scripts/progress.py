@@ -37,12 +37,12 @@ FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 OPEN = re.compile(r"^\s*<!--\s*open\s*-->\s*$")
 
 FINALIZE_SEQUENCE = [
-    "1. Check draft & deterministic lint: confirm no open markers, verify expected companions exist, run check_ids.py (with any forbid_id_prefixes), and run any template lint: hook.",
+    "1. Check draft & deterministic lint: confirm no open markers, verify expected companions exist, run check_doc.py (with any forbid_id_prefixes), and run any template lint: hook.",
     "2. Reconciliation: run one subagent per user-supplied input to surface dropped points, tone, and feel.",
     "3. Review: name reviewers first (rubric walker, fresh reader, finalize_reviewers), run them, and triage findings (skip only at lowest stakes).",
     "4. Triage [ASSUMPTION] tags and open questions: resolve blockers one at a time, defer the rest.",
     "5. Polish: apply doc_standards (structure before prose, succinctness pass, skill: passes; skip skill: only at lowest stakes).",
-    "6. Rebuild Table of Contents (if present), rerun check_ids.py, and fix every toc or lint hit.",
+    "6. Rebuild Table of Contents (if present), rerun check_doc.py, and fix every toc or lint hit.",
     "7. User read: report settled-out sections, polish changes, and three lowest-confidence decisions; wait for edits (rerun step 6 if headings moved).",
     "8. External handoffs: run workflow.external_handoffs.",
     "9. Close: set status: final (unless blocked), remove settled-out markers, render view if configured, delete {scratch}, run decentralized bmad next-step lookup, and run workflow.on_complete.",

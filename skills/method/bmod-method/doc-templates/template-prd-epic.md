@@ -8,6 +8,7 @@ agents: [bmad-agent-pm]
 facilitation_order: [context, journeys-and-flows, rules-edge-cases-and-failure-modes, requirements, instrumentation, seams, product-specifics, changes-to-the-parent, chunky-story-slice-map, open-questions]
 guidance: guidance-method.md
 rubric: rubric-planning.md
+lint: ../scripts/check_ids.py
 status: draft
 created: ""
 updated: ""

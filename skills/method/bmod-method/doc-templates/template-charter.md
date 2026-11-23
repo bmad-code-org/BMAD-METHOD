@@ -8,6 +8,7 @@ agents: [bmad-agent-analyst, bmad-agent-pm]
 facilitation_order: [justification, vision, strategic-alignment, benefits, scope, initiatives, rules, stakeholders, governance, timeline, risks-and-issues]
 guidance: guidance-method.md
 rubric: rubric-planning.md
+lint: ../scripts/check_ids.py
 status: draft
 created: ""
 updated: ""
