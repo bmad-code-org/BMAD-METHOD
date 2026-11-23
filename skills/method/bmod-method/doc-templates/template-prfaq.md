@@ -9,7 +9,6 @@ order: fixed
 facilitation_order: [press-release, customer-faq, internal-faq, verdict]
 guidance: guidance-method.md
 rubric: rubric-prfaq.md
-layout: prfaq-view.html
 view: always
 status: draft
 created: ""
@@ -29,6 +28,8 @@ updated: ""
 <!-- done when: Every FAQ question has an honest, specific answer; the hardest customer objection and the question the team hopes nobody asks are both in and answered; and the verdict names what it would take to fix each weakness. -->
 
 <!-- next: Sofia (`bmad-agent-po`) writes the initiative's requirements from it, or John (`bmad-agent-pm`) comes first when the requirements still need drawing out. A verdict with serious cracks is addressed before either. -->
+
+<!-- layout: Wire-service press-release masthead and serif editorial column for the announcement, followed by distinct Customer FAQ and Internal FAQ sections with scannable Q&A cards and a highlighted verdict callout. -->
 
 # {title}
 

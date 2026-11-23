@@ -83,7 +83,7 @@ Write 3 to 5 numbered dimensions rated strong, adequate, thin, or broken against
 <!-- optional. Frontmatter `companions: [...]` declares expected sibling files tracked at Resume, Progress, and Finalize; add a `companions` comment explaining when each file is written and what it holds. -->
 
 ## View
-<!-- optional. How the HTML view looks: by default Close builds a bespoke, full-fidelity interactive HTML artifact, steered by any `layout` comment you write. Set `layout: <file.html>`, `slides`, or `document` only for a strict script-rendered layout (plus a `layout` comment if a subagent should adapt the HTML file); set `view: always` when the view is the deliverable. -->
+<!-- optional. How the HTML artifact looks: by default Close authors a creative, full-fidelity self-contained HTML view tailored to the document. Add a `layout` comment to set layout guidelines, or set `layout:`/`style:` to a reference HTML file, design-system doc, CSS, screenshot, or verbal style preference; `view: always` when the artifact is the primary deliverable. -->
 
 ## Next
 <!-- optional. The `next` comment: what the coach offers or does once a document is done, such as the template or skill that comes after it. -->

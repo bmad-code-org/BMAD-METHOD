@@ -138,7 +138,7 @@ the output.
 
 Use this when the shipped structure does not match the format your organization expects. `bmad-facilitate` searches that folder first and the installed modules last, so a file there with the same `template:` id replaces the shipped one for John, Mary and anyone who calls the engine directly.
 
-Copy the shipped brief from `bmod-method/doc-templates/template-brief.md` in your skills folder, with `brief-view.html` beside it, which its `layout` names. Keep `template: brief` and the other frontmatter keys, and edit the copy. Here the description changes:
+Copy the shipped brief from `bmod-method/doc-templates/template-brief.md` in your skills folder. Keep `template: brief` and the other frontmatter keys, and edit the copy (or adjust its `layout` comment and your team `style` preference in `bmad-facilitate.toml`). Here the description changes:
 
 ```markdown
 ---

@@ -30,11 +30,11 @@ State the sequence in one sentence, then run all nine steps in order (including 
 
 Set `updated` and `status: final` unless a blocking open question keeps `status: draft` (name the blocker). Once `status: final`, strip all `<!-- settled out: ... -->` sections and redo step 6 if a table of contents exists.
 
-Unless `{doc}` targeted a standalone `.md` file, build the visual view when merged `view` (fallback `{workflow.view}`, else `offer`) is `always`, or `offer` with user consent. Whenever the host environment provides a native interactive artifact or preview tool, offer to present it there alongside saving `{doc}` with `.html` replacing `.md`.
+Unless `{doc}` targeted a standalone `.md` file, build the visual view when merged `view` (fallback `{workflow.view}`, else `offer`) is `always`, or `offer` with user consent (`view = "never"` disables views globally). Whenever the host environment provides a native interactive artifact or preview tool, offer to present it there alongside saving `{doc}` with `.html` replacing `.md`.
 
-Run `uv run "{skill-root}/scripts/render_view.py" --project-root "{project-root}" "{doc}" --layout "<layout>" --style "<style or {workflow.style}>"` (staging URL files into `{scratch}` first) only when the template pins a strict fixed layout: `slides`, `document`, or an `.html` slot file without a `layout` comment.
+Delegate rendering to a fresh subagent reading `{doc}`, companions, linked local images, any template `layout` comment or reference file, and any `{workflow.style}` or template `style` preference (verbal direction, design-system doc, CSS, reference HTML, or screenshot). Treat any reference file as design ideas or fixed brand elements (such as a masthead or palette) to compose creatively around — never rigid value injection.
 
-Otherwise, delegate to a fresh subagent reading `{doc}`, companions, linked local images, any `layout` starter or comment, and any CSS guide. Have it write a tailored, interactive, self-contained HTML artifact (CSS, JS, and local images inlined; zero external requests) whose visual design fits this document's domain and readers. Keep strict full fidelity — every section, id, metric, table, rule, and open question preserved, zero facts invented — and present it in the host's native artifact surface when chosen.
+Have the subagent author a creative, tailored, interactive self-contained HTML artifact (CSS, JS, and local images inlined; zero external requests) fitted to the document's domain and preferences. Keep strict full fidelity — every section, id, decision, metric, table, rule, and open question preserved with zero invented facts — and present it in the host's native artifact tool when chosen.
 
 Delete `{scratch}`. Report every produced file path (`{doc}`, companions, HTML view) and any omitted sections with their reasons; when no template governed the run, offer `document-template` to capture the structure.
 

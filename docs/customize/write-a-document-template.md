@@ -56,8 +56,8 @@ updated: ""
 | `forbid_id_prefixes` | Optional one-line list of disallowed id prefixes (e.g. `[FR]`), passed as `--forbid-prefix` to `check_ids.py` during Finalize. |
 | `lint` | Optional relative script path (such as `lint_spine.py`) or command string (supporting `{doc}`, `{run}`, `{project-root}`) executed during Finalize step 1. |
 | `output` | Optional run folder for this template, or a path ending in `.md` for the document itself. It may use `{project-root}`, `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
-| `style` | Optional CSS file for this template's rendered view, relative to the template. |
-| `layout` | Optional layout for the rendered view: `document`, `slides`, or an HTML file relative to the template. It says what the view looks like, not whether it is made. See [Give a template its own view](#give-a-template-its-own-view). |
+| `style` | Optional visual style guide for this template's HTML artifact: a CSS file, design-system doc, screenshot, or verbal aesthetic preference relative to the template. |
+| `layout` | Optional layout guide or reference file (starter HTML, fixed brand elements, or sample screenshot) for the HTML artifact. It guides how the artifact looks, never whether it is made. See [Give a template its own view](#give-a-template-its-own-view). |
 | `view` | Optional. Whether this template's view is made: `always`, `offer` or `never`. A team's or user's `view` wins over it. Set `always` when the view is the deliverable, as `pitch-deck` does for its slides. |
 
 `template` and `version` stay in the finished document, as does any field you add for a view to show. The other fields stay out.
@@ -164,7 +164,7 @@ Above the first heading, give each of these keys its own comment, a line or two.
 | `layout` | The brief for an HTML page written for each document. See [Give a template its own view](#give-a-template-its-own-view). |
 | `next` | What to offer or do once the document is done, such as handing it to a build. |
 
-By default Close builds a bespoke, full-fidelity HTML artifact; add a `layout` comment to steer its design, or set `layout: slides`, `layout: document`, or an HTML slot file only when you want strict script rendering. In the document body, `{title}` is the only placeholder.
+By default Close authors a creative, full-fidelity self-contained HTML artifact; add a `layout` comment or reference file for design ideas or fixed structural elements, never rigid value injection. In the document body, `{title}` is the only placeholder.
 
 Each section has one comment: a line on what goes in the section, then `diagram:` when a picture carries the meaning, with a Mermaid kind (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey, pie) or a line saying what to draw. A section that is not required starts its comment with `optional` or `include when:` and a condition. A section assembled from the others, such as a summary or a glossary, starts its comment with `built:`. The skill asks nothing for it up front, drafts it once the sections it draws on are settled, and shows it for correction; the template list reports one placed ahead of a section that is not built.
 
@@ -288,41 +288,22 @@ view = "always"
 
 ## Give a template its own view
 
-A template stays markdown, and so does the document the skill writes, because the skill grows it section by section, reviews it and diffs it. An HTML result is a separate step at close, and all its instructions stay in the template. Choose how much freedom the page gets:
+A template stays markdown, and so does the document the skill writes, because the skill grows it section by section, reviews it and diffs it. An HTML artifact is authored separately at close from the finalized markdown and companions, preserving every section, id, metric, table, rule, and open question without inventing facts:
 
-| You want | In the template | What happens |
+| You want | In the template or config | What happens |
 | --- | --- | --- |
-| The same layout every time, such as a form headed for PDF | `layout: invoice.html`, `slides`, or `document` | A script fills the fixed layout. Nothing is interpreted. |
-| A shared structure that adapts to each document | `layout: character-sheet.html` and a `layout` comment | A subagent uses the file as a starter and follows the comment. |
-| A bespoke, tailored artifact steered by a brief | A `layout` comment alone | A subagent writes a full-fidelity interactive HTML page following the comment. |
-| A bespoke, tailored artifact with no template brief (default) | Nothing set (omit `layout`) | A subagent writes a creative, full-fidelity interactive HTML artifact tailored to the document. |
+| A creative, domain-tailored interactive HTML artifact (default) | Nothing set (omit `layout`) | A subagent designs a bespoke, full-fidelity self-contained HTML artifact fitted to the document's domain and readers. |
+| Visual and structural guidelines for every run of this template | A `layout` comment alone | A subagent composes the artifact around your visual guidelines and section emphasis. |
+| Fixed brand elements or design ideas combined with custom layout | `layout` / `style` (or global `workflow.style`) plus optional `layout` comment | A subagent treats any reference HTML, CSS, design-system doc, verbal direction, or screenshot as inspiration or fixed brand framing (masthead, palette, footer) — composing creatively around the document rather than injecting fields mechanically. |
+| Disable HTML output across your team or user settings | `view = "never"` in `bmad-facilitate.toml` / `.user.toml` | Overrides templates to skip HTML generation globally. |
 
 The `layout` comment sits above the first heading with the other comments, and says what the page should do:
 
 ```markdown
-<!-- layout: The sheet is the deliverable. `character-sheet.html` is a starter: keep to one printable page, and let this character's world set the look. -->
+<!-- layout: The sheet is the deliverable. Keep to one printable page, give key stats visual callouts, and let this character's world set the palette and typography. -->
 ```
 
-A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless `view` is `always`, from the template or the team's or user's settings, which win over the template's. Use the script for anything regulated or signed, where the page must not vary. `view = "never"` in those settings stops any view.
-
-### Slots for a filled view
-
-The view file is ordinary HTML with its CSS inline. Attributes mark where the document's content goes:
-
-| Attribute | Filled with |
-| --- | --- |
-| `data-section="Heading"` | That `##` section, rendered. Matching ignores case. |
-| `data-body` | Inside a `data-section` element, the place the section goes, so a label can sit beside it. Without one, the section replaces the element's contents. |
-| `data-field="key"` | That frontmatter value, as text. `title` falls back to the document's first heading. |
-| `data-rest` | Every section no slot names, with its heading. |
-
-```html
-<h1 data-field="title"></h1>
-<section data-section="Secrets"><h2>Secrets</h2><div data-body></div></section>
-<section data-rest></section>
-```
-
-A slot with nothing to show is removed along with its element, so a declined section leaves no empty card. Without a `data-rest` slot, a section the view does not name stays out of the page, and the render says which. The `style` setting still applies after the view's own CSS.
+An HTML artifact comes strictly from the finalized document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close (alongside native host artifact surfaces when available) unless `view` is `always`, from the template or team/user settings, which win over the template's. `view = "never"` in team or user settings disables HTML output globally.
 
 :::tip[Templates for an agent]
 An agent in a module offers the templates in the module's `doc-templates/` folder that name it in `agents`. An agent outside a module ships its templates in its `assets/` folder, and its `customize.toml` lists that folder in `template_libraries`. The agent passes the list when it runs `bmad-facilitate`, and it is searched after yours, so your copy with the same id wins. The settings in `bmad-facilitate.toml` (style, views, review and polish) still apply.

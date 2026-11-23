@@ -9,7 +9,6 @@ order: fixed
 facilitation_order: [problem, appetite, solution, rabbit-holes, no-gos]
 guidance: guidance-method.md
 rubric: rubric-planning.md
-layout: pitch-view.html
 view: always
 status: draft
 created: ""
@@ -27,6 +26,8 @@ updated: ""
 <!-- writing: One to two pages. Rough, not wireframes, leaving design room for the builders. Appetite opens with the time in bold, such as `**Six weeks, big batch.**`; each rabbit hole and each no-go is one list item. The view lays the page out from that shape. -->
 
 <!-- done when: A builder could start without asking what is in or out, and every known rabbit hole has a patch or a no-go. -->
+
+<!-- layout: Shape Up pitch sheet: header paired with a prominent Appetite badge card, focused story flow for problem and solution (including any fat-marker visuals), a warning callout for rabbit holes, and a clear boundary panel for no-gos. -->
 
 # {title}
 
