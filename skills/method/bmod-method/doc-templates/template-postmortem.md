@@ -6,8 +6,8 @@ description: "Causes and actions after something went wrong, written blamelessly
 not_for: "Judging a person's performance."
 order: fixed
 facilitation_order: [impact, timeline, detection-and-response, contributing-factors, lessons, action-items, communication, summary]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""

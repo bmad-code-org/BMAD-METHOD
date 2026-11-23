@@ -6,8 +6,8 @@ description: "An initiative's traceable, verifiable requirements for regulated o
 not_for: "Product work with no external check (`prd`); what the business requires, before system behavior (`brd`)."
 agents: [bmad-agent-pm]
 facilitation_order: [introduction, references, overall-description, functional-requirements, interface-requirements, quality-requirements, compliance-requirements, design-constraints, verification, open-questions, revision-history, definitions]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""

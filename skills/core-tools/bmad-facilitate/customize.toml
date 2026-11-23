@@ -58,14 +58,15 @@ template_libraries = [
   "~/.bmad/facilitate-templates",
 ]
 
-# A CSS file applied to every rendered view, after the default styles, over each template's own;
-# empty leaves it to the template, else the default styles.
+# Design guidance applied to every HTML view, over each template's own: a CSS file, a design-system
+# doc, a starter HTML file, a reference screenshot path, or verbal aesthetic preferences; empty
+# lets each document's domain drive the visual design.
 style = ""
 
 # How far documents go in showing instead of telling: one instruction, used wherever a template
 # does not say otherwise. Replace it to change the forms used, or to hold documents to text and tables.
 visuals = "Wherever a reader would take in a picture faster than the paragraph it replaces, make the picture: a flow, a sequence, a timeline, a structure, a comparison, figures with a trend or a split. A table or a Mermaid diagram covers most of these. Draw an SVG yourself for what they show poorly: a scale with its thresholds marked, a two-by-two, before-and-after bars, nested sizes, a rough sketch of a screen or a layout. Use a generated image when a tool for one is available and the picture is of a thing, not of data. Leave out any picture that only decorates or restates a point one sentence makes."
 
-# Whether a finished document gets its rendered view: "offer", "always" or "never", over each
-# template's own `view`; empty leaves it to the template, else "offer".
+# Global view default: "offer", "always", or "never" (setting "never" overrides templates to disable
+# HTML views everywhere). Empty leaves it to each template, else "offer".
 view = ""

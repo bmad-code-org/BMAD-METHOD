@@ -15,8 +15,10 @@ is open, and a heading the document repeats is open while any copy is. Prints JS
 no heading), `place` (the position in the order of the first open section, null when none is),
 `missing` (ids the order lists that the document has no heading for) and `extra` (the document's
 headings the order does not list). When `missing` or `extra` is not empty the count does not fit the
-document, as when a reader's headings replaced the template's. `--project-root` names the project
-with BMad set up. Exits 2 when a file is missing.
+document, as when a reader's headings replaced the template's. When `open` is empty (`total > 0`),
+also emits `next_phase`, `load`, and `required_sequence` for Finalize. When the template declares
+`companions`, emits `companions` (`expected`, `present`, `missing`). `--project-root` names the
+project with BMad set up. Exits 2 when a file is missing.
 """
 
 from __future__ import annotations
@@ -33,6 +35,27 @@ sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts 
 SECTION = re.compile(r"^##[ \t]+(.+?)[ \t#]*$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 OPEN = re.compile(r"^\s*<!--\s*open\s*-->\s*$")
+
+FINALIZE_SEQUENCE = [
+    "1. Check draft & deterministic lint: confirm no open markers, verify expected companions exist, run check_ids.py (with any forbid_id_prefixes), and run any template lint: hook.",
+    "2. Reconciliation: run one subagent per user-supplied input to surface dropped points, tone, and feel.",
+    "3. Review: name reviewers first (rubric walker, fresh reader, finalize_reviewers), run them, and triage findings (skip only at lowest stakes).",
+    "4. Triage [ASSUMPTION] tags and open questions: resolve blockers one at a time, defer the rest.",
+    "5. Polish: apply doc_standards (structure before prose, succinctness pass, skill: passes; skip skill: only at lowest stakes).",
+    "6. Rebuild Table of Contents (if present), rerun check_ids.py, and fix every toc or lint hit.",
+    "7. User read: report settled-out sections, polish changes, and three lowest-confidence decisions; wait for edits (rerun step 6 if headings moved).",
+    "8. External handoffs: run workflow.external_handoffs.",
+    "9. Close: set status: final (unless blocked), remove settled-out markers, render view if configured, delete {scratch}, run decentralized bmad next-step lookup, and run workflow.on_complete.",
+]
+
+
+def _template_fields(template: str) -> dict:
+    if not template:
+        return {}
+    try:
+        return frontmatter.load(frontmatter.split(template)[0])
+    except ValueError:
+        return {}
 
 
 def section_id(heading: str) -> str:
@@ -62,23 +85,35 @@ def sections(text: str) -> list[tuple[str, str, bool]]:
 
 
 def order_of(template: str) -> list[str]:
-    try:
-        listed = frontmatter.load(frontmatter.split(template)[0]).get("facilitation_order")
-    except ValueError:
-        return []
+    listed = _template_fields(template).get("facilitation_order")
     if not isinstance(listed, list):
         return []
     return [i.strip().rstrip("?") for i in listed if isinstance(i, str) and i.strip()]
 
 
-def progress(document: str, template: str = "") -> dict:
+def companions_of(template: str) -> list[str]:
+    raw = _template_fields(template).get("companions")
+    if not isinstance(raw, list):
+        return []
+    return [item.strip() for item in raw if isinstance(item, str) and item.strip()]
+
+
+def expand_companion(pattern: str, template: str, doc_path: Path) -> str:
+    tid_raw = _template_fields(template).get("template", "")
+    tid = tid_raw.strip() if isinstance(tid_raw, str) else ""
+    stem = doc_path.stem
+    slug = stem[len(tid) + 1 :] if tid and stem.startswith(f"{tid}-") else stem
+    return pattern.replace("{id}", tid).replace("{slug}", slug)
+
+
+def progress(document: str, template: str = "", doc_path: Path | None = None) -> dict:
     found: dict[str, tuple[str, bool]] = {}
     for i, heading, is_open in sections(document):
         first = found.get(i, (heading, False))
         found[i] = (first[0], first[1] or is_open)
     order = order_of(template) or list(found)
     still_open = [i for i in order if found.get(i, (i, True))[1]]
-    return {
+    out: dict = {
         "total": len(order),
         "settled": len(order) - len(still_open),
         "open": [found.get(i, (i, True))[0] for i in still_open],
@@ -86,14 +121,25 @@ def progress(document: str, template: str = "") -> dict:
         "missing": [i for i in order if i not in found],
         "extra": [heading for i, (heading, _) in found.items() if i not in order],
     }
+    if out["total"] > 0 and not still_open:
+        out["next_phase"] = "finalize"
+        out["load"] = "references/finalize.md"
+        out["required_sequence"] = list(FINALIZE_SEQUENCE)
+    declared = companions_of(template)
+    if declared and doc_path is not None:
+        expected = [expand_companion(p, template, doc_path) for p in declared]
+        present = [name for name in expected if (doc_path.parent / name).is_file()]
+        missing = [name for name in expected if name not in present]
+        out["companions"] = {"expected": expected, "present": present, "missing": missing}
+    return out
 
 
-def main(argv: list[str]) -> int:
+def main(argv: list[str] | None = None) -> int:
     global frontmatter
 
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
-    p.add_argument("document")
+    p.add_argument("document", help="path to the facilitated document")
     p.add_argument("template", nargs="?", help="the merged template")
     args = p.parse_args(argv)
     path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
@@ -110,7 +156,9 @@ def main(argv: list[str]) -> int:
         print(json.dumps({"error": f"missing: {', '.join(missing)}"}))
         return 2
     texts = [p.read_text(encoding="utf-8-sig") for p in paths]
-    print(json.dumps(progress(*texts), indent=2, ensure_ascii=False))
+    doc_text = texts[0]
+    tpl_text = texts[1] if len(texts) > 1 else ""
+    print(json.dumps(progress(doc_text, tpl_text, doc_path=paths[0]), indent=2, ensure_ascii=False))
     return 0
 
 

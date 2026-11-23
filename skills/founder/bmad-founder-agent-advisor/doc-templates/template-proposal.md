@@ -5,7 +5,7 @@ version: 1.3.0
 description: "Asking someone for money, time or approval, such as a grant or bid."
 not_for: "A talk with slides (`pitch-deck`); an application to an accelerator (`accelerator-application`); planning a whole raise (`fundraising-plan`)."
 facilitation_order: [need, goals-and-outcomes, approach, alternatives, team-and-track-record, evaluation, budget, risks, sustainability, deliverables-and-terms, summary]
-guidance: guidance-planning
+guidance: guidance-planning.md
 rubric: rubric-proposal.md
 agents: [bmad-founder-agent-advisor]
 view: always

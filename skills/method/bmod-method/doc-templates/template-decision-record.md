@@ -5,8 +5,8 @@ version: 1.3.0
 description: "Recording any decision: context, options, choice and consequences."
 not_for: "Asking someone to approve the choice (`proposal`)."
 facilitation_order: [context, decision-drivers, options-considered, decision, consequences, confirmation, links, status]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""

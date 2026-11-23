@@ -834,3 +834,120 @@ def test_sources_may_sit_on_both_sides_of_an_option(tmp_path, capsys):
     (second / "b.md").write_text(template("beta"))
     list_templates.main([str(first), "--project-root", str(tmp_path), str(second), "--brief"])
     assert ids(json.loads(capsys.readouterr().out)) == ["alpha", "beta"]
+
+
+def test_companions_forbid_id_prefixes_and_lint_defaults(tmp_path):
+    (tmp_path / "t.md").write_text(template("a"))
+    found = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert found["companions"] == []
+    assert found["forbid_id_prefixes"] == []
+    assert found["lint"] == ""
+
+
+def test_companions_forbid_id_prefixes_and_relative_lint_resolve_and_merge(tmp_path, capsys):
+    lib, run = tmp_path / "lib", tmp_path / "run"
+    lib.mkdir()
+    (lib / "t.md").write_text(
+        template(
+            "a",
+            extra="companions: [DESIGN.md, EXPERIENCE.md]\nforbid_id_prefixes: [FR, E01-TASK]\nlint: lint_a.py\n",
+        )
+    )
+    list_templates.main([str(lib), "--template", "a", "--merge", str(run / "template.md")])
+    found = json.loads(capsys.readouterr().out)["templates"][0]
+    assert found["companions"] == ["DESIGN.md", "EXPERIENCE.md"]
+    assert found["forbid_id_prefixes"] == ["FR", "E01-TASK"]
+    assert found["lint"] == str(lib / "lint_a.py")
+    merged_front = list_templates.read_fields((run / "template.md").read_text())
+    assert merged_front["companions"] == ["DESIGN.md", "EXPERIENCE.md"]
+    assert merged_front["forbid_id_prefixes"] == ["FR", "E01-TASK"]
+    assert merged_front["lint"] == (lib / "lint_a.py").resolve().as_posix()
+
+
+def test_lint_command_string_stays_verbatim_in_scan_and_merge(tmp_path, capsys):
+    lib, run = tmp_path / "lib", tmp_path / "run"
+    lib.mkdir()
+    for cmd in ('uv run "{project-root}/scripts/lint.py" "{doc}"', "uv run scripts/lint.py"):
+        (lib / "t.md").write_text(template("a", extra=f"lint: {json.dumps(cmd)}\n"))
+        list_templates.main([str(lib), "--template", "a", "--merge", str(run / "template.md")])
+        found = json.loads(capsys.readouterr().out)["templates"][0]
+        assert found["lint"] == cmd
+        merged_meta = list_templates.read_fields((run / "template.md").read_text())
+        assert merged_meta["lint"] == cmd
+
+
+def test_spaced_lint_script_and_spaced_relative_library_resolve_and_merge(tmp_path, monkeypatch, capsys):
+    lib = tmp_path / "my templates"
+    checks = lib / "checks"
+    checks.mkdir(parents=True)
+    script_spaced = checks / "check ids.py"
+    script_spaced.write_text("# lint\n")
+    (lib / "a.md").write_text(template("a", extra='lint: "checks/check ids.py"\n'))
+    (lib / "b.md").write_text(template("b", extra="lint: lint_b.py\n"))
+
+    run = tmp_path / "run"
+    monkeypatch.chdir(tmp_path)
+
+    list_templates.main(["my templates", "--template", "a", "--merge", str(run / "a.md")])
+    found_a = json.loads(capsys.readouterr().out)["templates"][0]
+    assert found_a["lint"] == str(Path("my templates") / "checks" / "check ids.py")
+    assert list_templates.read_fields((run / "a.md").read_text())["lint"] == script_spaced.resolve().as_posix()
+
+    list_templates.main(["my templates", "--template", "b", "--merge", str(run / "b.md")])
+    found_b = json.loads(capsys.readouterr().out)["templates"][0]
+    assert found_b["lint"] == str(Path("my templates") / "lint_b.py")
+    assert list_templates.read_fields((run / "b.md").read_text())["lint"] == (lib / "lint_b.py").resolve().as_posix()
+
+
+def test_extension_can_override_preserve_or_clear_companions_prefixes_and_lint(tmp_path, capsys):
+    lib, custom, run = tmp_path / "lib", tmp_path / "custom", tmp_path / "run"
+    lib.mkdir()
+    custom.mkdir()
+    (lib / "t.md").write_text(
+        template(
+            "a",
+            extra="companions: [A.md]\nforbid_id_prefixes: [FR]\nlint: lint_a.py\n",
+        )
+    )
+    # Omitting those keys in extension preserves base values.
+    (custom / "e.md").write_text(extension("a", "view: never\n"))
+    preserved = list_templates.scan([str(custom), str(lib)])["templates"][0]
+    assert preserved["companions"] == ["A.md"]
+    assert preserved["forbid_id_prefixes"] == ["FR"]
+    assert preserved["lint"] == str(lib / "lint_a.py")
+
+    # Explicit override replaces values.
+    (custom / "e.md").write_text(
+        extension("a", 'companions: ["{id}-{slug}-notice.md"]\nforbid_id_prefixes: [REQ]\nlint: ext_lint.py\n')
+    )
+    overridden = list_templates.scan([str(custom), str(lib)])["templates"][0]
+    assert overridden["companions"] == ["{id}-{slug}-notice.md"]
+    assert overridden["forbid_id_prefixes"] == ["REQ"]
+    assert overridden["lint"] == str(custom / "ext_lint.py")
+
+    # Explicit empty values clear base values and propagate into merged frontmatter.
+    (custom / "e.md").write_text(extension("a", 'companions: []\nforbid_id_prefixes: []\nlint: ""\n'))
+    list_templates.main([str(custom), str(lib), "--template", "a", "--merge", str(run / "template.md")])
+    cleared = json.loads(capsys.readouterr().out)["templates"][0]
+    assert cleared["companions"] == []
+    assert cleared["forbid_id_prefixes"] == []
+    assert cleared["lint"] == ""
+    merged_front = list_templates.read_fields((run / "template.md").read_text())
+    assert merged_front["companions"] == []
+    assert merged_front["forbid_id_prefixes"] == []
+    assert merged_front["lint"] == ""
+
+
+def test_brief_omits_new_fields_and_rubric_general_stays_bare(tmp_path, capsys):
+    (tmp_path / "a.md").write_text(
+        template(
+            "a",
+            extra="companions: [A.md]\nforbid_id_prefixes: [FR]\nlint: lint.py\nrubric: rubric-general\nguidance: guidance-method.md\n",
+        )
+    )
+    full = list_templates.scan([str(tmp_path)])["templates"][0]
+    assert full["rubric"] == "rubric-general"
+    assert full["guidance"] == str(tmp_path / "guidance-method.md")
+    list_templates.main([str(tmp_path), "--brief"])
+    brief = json.loads(capsys.readouterr().out)["templates"][0]
+    assert set(brief) == {"id", "description", "not_for", "category", "agents", "output"}

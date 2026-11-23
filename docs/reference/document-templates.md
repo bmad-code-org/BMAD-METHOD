@@ -68,17 +68,19 @@ The first seven come before you commit, in Clarify; the rest plan and ship the w
 | Drive questions from a catalog | `security-review`, `methods-security.csv` | The `methods` frontmatter names a CSV of key questions |
 | Walk the sections in order, each with its own voice | `prfaq` in `bmod-method/doc-templates/` | `order: fixed` in the frontmatter, and each section comment is the brief for that part |
 | Change how a mode runs | `security-review`, `stance` | The comment says what fast mode does for this document |
-| Use the shared planning rules | Any Method or Founder template | `guidance: guidance-planning` adds stakes levels, ids and testable requirements |
-| Review against its own rubric | `proposal`, `rubric-proposal.md` | The `rubric` frontmatter names the file |
+| Use shared family rules | Any Method or Founder template | `guidance: guidance-method.md` (Method) or `guidance: guidance-planning.md` (Founder) resolves beside the template |
+| Review against its own rubric | `proposal`, `rubric-proposal.md` | The `rubric` frontmatter names the file (or bare `rubric-general` for the core general rubric) |
 | Set the order and what is required | Any shipped template | `facilitation_order` lists the sections by id; a section's comment says whether it is required |
 | Include a section only when it applies | `proposal`, Alternatives | An `include when:` section comment |
 | Draw a diagram | `postmortem`, Timeline | A `diagram:` kind in the section comment |
 | Add a table of contents | `proposal` | A bare `## Table of Contents` heading after the title |
 | Always make the view | `pitch-deck` | `view: always` in the frontmatter, because the slides are the deliverable |
-| Render the same layout every time | `prfaq` in `bmod-method/doc-templates/`, `prfaq-view.html`; also `brief` and `pitch` | `layout` names an HTML file whose slots a script fills at close |
-| Have a page written for each document | `character`, `character-sheet.html` | `layout` names a starter, and a `layout` comment gives the brief |
-| Have a page written from a brief alone | Founder's templates, such as `pitch-deck` | A `layout` comment with no `layout` file says where to be creative |
+| Steer the HTML artifact with layout guidelines | `brief`, `pitch`, `prfaq` in `bmod-method/doc-templates/` | A `layout` comment sets structural guidelines while preserving full fidelity |
+| Combine fixed brand elements or ideas with custom composition | Any template with `layout` / `style` reference files | Reference HTML, CSS, design-system docs, or screenshots guide composition without mechanical value injection |
+| Have a creative artifact written from a brief alone | Founder's templates, such as `pitch-deck` | A `layout` comment with no reference file guides visual treatment |
 | Propose rather than only ask | `character`, `stance` | The comment invites proposals; one the user accepts is theirs |
-| Write several files | `postmortem`, `companions` | The comment says when to write the customer notice and what it holds |
+| Write and track several files | `postmortem` (`companions` comment); any template with `companions: [...]` frontmatter | Frontmatter `companions: [...]` tracks expected sibling files in `progress.py` and `check_ids.py`; a `companions` comment explains when and what each holds |
+| Forbid leaking id prefixes | Any multi-altitude template | `forbid_id_prefixes: [...]` passes `--forbid-prefix` to `check_ids.py` at Finalize |
+| Run a custom Finalize lint check | Any domain template | `lint:` names a relative script or command run during Finalize step 1 |
 
 No shipped template adds to another. [Extend a template](../customize/write-a-document-template.md#extend-a-template) shows how.

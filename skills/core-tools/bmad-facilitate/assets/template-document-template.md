@@ -42,16 +42,29 @@ updated: ""
 # {title}
 
 ## Identity
-<!-- The frontmatter that names the template: `template`, a kebab-case id; `version: 1.0.0`; `description`, one quoted line under about 80 characters saying what it is for, which every help listing shows; `not_for`, a quoted line naming what it is not for and the template to use instead; `agents`, the skills that offer it, when any; `guidance: guidance-planning` for plans, requirements and cases for a decision, which adds stakes levels, stable ids and pushing detail to the level below; `output` only when its documents always land in one place. Draft them from the parts settled before; the user confirms the id and the description. -->
+<!-- The frontmatter that names the template:
+  - `template`: kebab-case id; `version: 1.0.0`.
+  - `description`: one quoted line under ~80 characters for help listings.
+  - `not_for`: quoted line naming what it is not for and the template to use instead.
+  - `agents`: skills that offer it, when any; `output`: only when documents always land in one place.
+  - `guidance`: optional relative path to shared family rules; `rubric`: optional relative path or `rubric-general`.
+  - `companions`: optional one-line list of extra files beside `{doc}`; `forbid_id_prefixes`: optional list of disallowed id prefixes; `lint`: optional relative script path or command hook.
+  Draft these from the parts settled before; the user confirms the id and description. -->
 
 ## Purpose and reader
 <!-- The `purpose` comment: the job or decision the document serves, and the reader who acts on it without the conversation. Ask who reads it and what they do next; a document with two readers is two templates, or one with a companion for the second. Done when one sentence says what the reader can do with it. -->
 
 ## Inputs
-<!-- The `inputs` comment: what the coach must ask, records to ask for before anything is reconstructed from memory, and the facts only the user can know. Each one listed is asked in every mode but headless unless the user already gave it, so list only what must be asked. Then the `opening` comment: how an expert starts this conversation. It can hold the questions whose answers change how the rest is coached, such as which kind of case this is; records to ask for before anyone speaks from memory; what the brain dump should cover; or a cold start that rules the brain dump out, as for a questionnaire taken one question at a time. Leave it out when the expert would only say "tell me everything", which is what the coach does without one. -->
+<!-- The `inputs` comment: what the coach must ask, records to check before reconstructing from memory, and facts only the user knows. Every listed item is asked in interactive modes unless already supplied, so keep the list minimal.
+Then the `opening` comment: how an expert opens the conversation — routing questions that steer the session, records to request first, brain-dump cues, or a cold start. Omit `opening` when a plain invitation to share everything suffices. -->
 
 ## Sections
-<!-- The document's `##` headings, in the order the reader reads them, each with one comment: a line on what goes in, then how to coach it where the expert would: when to press and on what, when to ease off, what to ask for first. A comment can limit the answer: "The user must pick exactly one of: ..." or a list in a named file. `diagram:` goes on a section a picture carries, with a Mermaid kind or a line saying what to draw; a document that must hold no pictures, such as answers pasted into a form, says so in `writing`. A section not every document needs starts its comment `optional.` or `include when: <condition>.` A section assembled from the others, such as a summary or a glossary, starts its comment `built:` and comes after them in the order, because nothing can be asked for it until they settle. Then `facilitation_order`: every heading's id (lowercased, punctuation dropped, spaces as hyphens) in the order the coach takes them up, which may differ from the reader's order (a summary sits first and comes up last). Set `order: fixed` only when an earlier section must be settled before a later one is worked, as in a rehearsal, or appetite before solution; a request for freeform then runs step-by-step. Set `mode: freeform` only when the sections are independent and a brain dump usually fills several at once; without it a run starts step-by-step. A section comment that gives the coach a voice or method for that part is followed while the section is open. A long document gets a bare `## Table of Contents` right after the title. Done when the user agrees each section is one a reader needs and the coaching in it is what an expert would do. -->
+<!-- The document's `##` headings, in reader order, each with one coaching comment:
+  - What goes in, when to press or ease off, and any `diagram:` kind or allowed-value list (`The user must pick...` or a source file).
+  - Prefix optional or conditional comments with `optional.` or `include when: <condition>.`, and assembled summary/glossary sections with `built:` (placed after the sections they draw from).
+  - Set `facilitation_order` in frontmatter using lowercased hyphenated heading ids (punctuation dropped), `order: fixed` when sequence cannot float, and `mode: freeform` only when sections are independent.
+  - Give long documents a bare `## Table of Contents` heading after `# {title}`, and keep any section-level stance/method instructions in that section's comment.
+  Done when the user agrees each section is needed by the reader and the coaching matches an expert. -->
 
 ## Stance
 <!-- The `stance` comment: how the coach behaves across the document, from where the expert says people go wrong. One to three lines. -->
@@ -60,16 +73,17 @@ updated: ""
 <!-- The `done when` comment: the test that ends the questioning for the whole document, written as what a reader who was not there can do. A section whose own end is not obvious gets a `Done when ...` sentence in its comment. -->
 
 ## Writing
-<!-- The `writing` comment: rules specific to this document, such as its length in words, its voice, the terms it must use, what it never contains. Leave out what any good document does. -->
+<!-- The `writing` comment: rules specific to this document, such as shape cues, voice, required terms, and what never belongs. Leave out what any good document does. -->
 
 ## Rubric
-<!-- optional. The review. The shipped general rubric judges any document on purpose, usability, earned length, honesty and fit; offer a `rubric-{slug}.md` only when this document's quality turns on something it misses, such as a figure that must reconcile or a claim that needs a source. A rubric file holds three to five numbered dimensions, each rated strong, adequate, thin or broken against the document's purpose and stakes, then "Then check the template's `Done when` lines." and a last line saying the reviewer writes `review-rubric.md` with a two-sentence verdict, the three fixes that matter most, and findings by dimension with severity, location and fix. The template names it in `rubric:`. -->
+<!-- optional. The shipped `rubric-general` fits most documents; add a `rubric-{slug}.md` beside the template only when quality turns on domain checks it misses.
+Write 3 to 5 numbered dimensions rated strong, adequate, thin, or broken against purpose and stakes, followed by "Then check the template's `Done when` lines." and a `review-rubric.md` output instruction (verdict, top 3 fixes, findings by dimension). Name the file in `rubric:`. -->
 
 ## Companions
-<!-- optional. The `companions` comment: another file to write beside each document, for a different reader, when, and what it holds. -->
+<!-- optional. Frontmatter `companions: [...]` declares expected sibling files tracked at Resume, Progress, and Finalize; add a `companions` comment explaining when each file is written and what it holds. -->
 
 ## View
-<!-- optional. How the HTML view looks: `layout: slides` for slides, an HTML file beside the template with slots for a fixed layout, or a `layout` comment that briefs a page written for each document; `view: always` when the view is the deliverable. Most templates set none. -->
+<!-- optional. How the HTML artifact looks: by default Close authors a creative, full-fidelity self-contained HTML view tailored to the document. Add a `layout` comment to set layout guidelines, or set `layout:`/`style:` to a reference HTML file, design-system doc, CSS, screenshot, or verbal style preference; `view: always` when the artifact is the primary deliverable. -->
 
 ## Next
 <!-- optional. The `next` comment: what the coach offers or does once a document is done, such as the template or skill that comes after it. -->

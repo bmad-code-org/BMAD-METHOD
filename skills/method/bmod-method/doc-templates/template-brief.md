@@ -6,9 +6,8 @@ description: "Why to build a product, or pitching it, in a page or two."
 not_for: "Committed work that needs requirements (`prd`); a formal funding decision on cost and return (`business-case`); testing a problem before any solution exists (`opportunity`)."
 agents: [bmad-agent-analyst]
 facilitation_order: [problem, solution, what-makes-it-different, who-it-serves, success-criteria, scope, the-ask, vision, executive-summary]
-guidance: guidance-planning
-rubric: rubric-planning
-layout: brief-view.html
+guidance: guidance-method.md
+rubric: rubric-planning.md
 view: always
 status: draft
 created: ""
@@ -24,6 +23,8 @@ updated: ""
 <!-- writing: One to two pages. Never invent a moat, market size, quote or metric. -->
 
 <!-- done when: Someone who reads only the executive summary can say what this is, who it is for, and why it matters now. -->
+
+<!-- layout: Editorial product brief: a bold masthead with status and date metadata, a highlighted lead callout for the executive summary, a balanced multi-column grid for problem, solution, differentiation, audience, success criteria, and scope, and a distinct decision-ask footer. -->
 
 # {title}
 

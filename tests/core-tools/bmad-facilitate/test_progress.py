@@ -104,7 +104,61 @@ def test_headings_that_replaced_the_templates_are_named():
 
 
 def test_all_settled_has_no_place():
-    assert progress.progress("## Goal\nDone.\n")["place"] is None
+    found = progress.progress("## Goal\nDone.\n")
+    assert found["place"] is None
+    assert found["next_phase"] == "finalize"
+    assert found["load"] == "references/finalize.md"
+    assert len(found["required_sequence"]) == 9
+    assert found["required_sequence"][0].startswith("1.")
+    assert found["required_sequence"][-1].startswith("9.")
+
+
+def test_open_sections_omit_finalize_gate():
+    found = progress.progress(DOC, TEMPLATE)
+    assert "next_phase" not in found
+    assert "load" not in found
+    assert "required_sequence" not in found
+
+
+def test_empty_document_does_not_trigger_finalize():
+    found = progress.progress("")
+    assert found["total"] == 0
+    assert "next_phase" not in found
+
+
+def test_companions_tracked_when_declared(tmp_path, project, capsys):
+    doc = tmp_path / "brief-alpha.md"
+    doc.write_text("## Goal\nDone.\n", encoding="utf-8")
+    tpl = tmp_path / "template.md"
+    tpl.write_text(
+        '---\ntemplate: brief\nfacilitation_order: [goal]\ncompanions: [CAST.md, "{id}-{slug}-notes.md"]\n---\n',
+        encoding="utf-8",
+    )
+    (tmp_path / "CAST.md").write_text("# Cast\n", encoding="utf-8")
+    assert progress.main(["--project-root", project, str(doc), str(tpl)]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert out["next_phase"] == "finalize"
+    assert out["companions"] == {
+        "expected": ["CAST.md", "brief-alpha-notes.md"],
+        "present": ["CAST.md"],
+        "missing": ["brief-alpha-notes.md"],
+    }
+
+
+def test_companions_omitted_when_undeclared(tmp_path, project, capsys):
+    (tmp_path / "d.md").write_text("## Goal\nDone.\n", encoding="utf-8")
+    (tmp_path / "t.md").write_text("---\ntemplate: t\nfacilitation_order: [goal]\n---\n", encoding="utf-8")
+    assert progress.main(["--project-root", project, str(tmp_path / "d.md"), str(tmp_path / "t.md")]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert "companions" not in out
+
+
+def test_help_exits_zero():
+    import pytest
+
+    with pytest.raises(SystemExit) as exc:
+        progress.main(["--help"])
+    assert exc.value.code == 0
 
 
 def test_main_prints_json_and_a_missing_file_exits_2(tmp_path, project, capsys):
