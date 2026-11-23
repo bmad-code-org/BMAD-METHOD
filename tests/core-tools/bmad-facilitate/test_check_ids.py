@@ -303,3 +303,45 @@ def test_help_and_missing_args_exit_codes():
     with pytest.raises(SystemExit) as empty_exc:
         check_ids.main([])
     assert empty_exc.value.code == 2
+
+
+def test_backticked_definitions_and_references():
+    assert defined("### `FR-3` Prompts") == "FR-3"
+    assert defined("| `OKR-1` | measure |") == "OKR-1"
+    assert defined("| **`OKR-1`** | measure |") == "OKR-1"
+    assert defined("- `INV-1`: must hold") == "INV-1"
+    assert defined("- **`INV-1`**: must hold") == "INV-1"
+    assert defined("- `INV-1` — must hold") == "INV-1"
+    assert defined("**`D-1`** text") == "D-1"
+    assert defined("| Wave 1 | text | **`M-2`**: live |") == "M-2"
+    assert defined("- `OQ-7` (withdrawn)") == "OQ-7"
+
+    assert defined("- `INV-1` holds on mobile.") is None
+    assert defined("- `FR-1`, `FR-2`: grouped") is None
+    assert defined("- **`FR-1`**, **`FR-2`**: grouped") is None
+    assert defined("| `FR-1` / `FR-2` | both |") is None
+    assert defined("| Wave 1 | `IN-1` live |") is None
+    assert defined("- `FR-1 extra`: not an id") is None
+
+
+def test_backticked_ranges_withdrawn_and_end_to_end_scan():
+    range_res = report("- `BR-1`: a\n- `BR-2`: b\n- `BR-4`: d\n\nUnder `BR-1` to `BR-4`.\n")
+    assert range_res["undefined"] == {"BR-3": ["doc0.md:5"]}
+
+    withdrawn_res = report("- `OQ-7` (withdrawn)\n- `FR-1`: cites `OQ-7` and `OQ-8`.\n- `OQ-8`: open\n")
+    assert withdrawn_res["withdrawn"] == {"OQ-7": ["doc0.md:2"]}
+    assert withdrawn_res["undefined"] == {}
+    assert withdrawn_res["unknown_prefix"] == {}
+
+    full = report(
+        "| ID | Measure |\n|---|---|\n| `OKR-1` | Speed |\n| **`OKR-2`** | Uptime |\n\n"
+        "- `INV-1`: Isolation holds (`OKR-1`).\n"
+        "- **`INV-2`**: Floor matches `OKR-2`.\n"
+    )
+    assert full["undefined"] == {}
+    assert full["unknown_prefix"] == {}
+    assert full["duplicate"] == {}
+    assert full["counts"] == {
+        "INV": {"defined": 2, "referenced": 0},
+        "OKR": {"defined": 2, "referenced": 2},
+    }

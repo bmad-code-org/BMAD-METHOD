@@ -5,8 +5,8 @@
 """check-ids — find broken id cross-references, placeholders, monotonic/prefix violations, and stale TOCs.
 
 An id is a token like REQ-3, ITEM-12 or CAP-4, or one carrying a scope prefix, like S02-REQ-07. It is defined where it opens a heading, a table
-row's first cell, or a table cell, list item or line in bold. An unbolded list item or line
-defines it only when punctuation follows (`- REQ-3: ...`, `REQ-3 (withdrawn)`). An id that opens
+row's first cell, or a table cell, list item or line in bold; an id may be bare, bold, or wrapped in backticks (`REQ-3`, **`REQ-3`**). An unbolded list item or line
+defines it only when punctuation follows (`- REQ-3: ...`, ``- `REQ-3`: ...``, `REQ-3 (withdrawn)`). An id that opens
 a list of ids (`REQ-1, REQ-2`, `REQ-1 to REQ-8`) is not a definition. Every other occurrence is a
 reference, and a range such as `REQ-1 to REQ-8` references each id in it. A table most of whose
 defining ids were already defined above it, such as a traceability table, only references its ids. Fenced code blocks
@@ -52,10 +52,10 @@ TEMPLATE_TOKEN = re.compile(r"\{[a-z_][a-z0-9_ /.-]*\}")
 QUOTE = re.compile(r"^(?: {0,3}> ?)+")
 HEADING = re.compile(r"^ {0,3}#{1,6}[ \t]+")
 LIST_ITEM = re.compile(r"^[ \t]*(?:[-*+]|\d+[.)])[ \t]+(?:\[[ xX]\][ \t]+)?")
-CONNECTOR = re.compile(rf"^(?:\*\*)?\s*(?:,|/|&|and\b|or\b|to\b|through\b|[–—-])\s*(?:\*\*)?{ID}")
+CONNECTOR = re.compile(rf"^(?:\*\*|`)*\s*(?:,|/|&|and\b|or\b|to\b|through\b|[–—-])\s*(?:\*\*|`)*{ID}")
 SEPARATOR = re.compile(r"^\s*(?:[:.()/–—]|-\s)")
-RANGE = re.compile(rf"({ID})(?:\*\*)?\s*(?:to|through|[–—-])\s*(?:\*\*)?({ID})")
-WITHDRAWN = re.compile(r"^[\s*:.)(—–-]*(?:withdrawn|removed|dropped|superseded)\b", re.IGNORECASE)
+RANGE = re.compile(rf"({ID})(?:\*\*|`)*\s*(?:to|through|[–—-])\s*(?:\*\*|`)*({ID})")
+WITHDRAWN = re.compile(r"^[\s*`:.)(—–-]*(?:withdrawn|removed|dropped|superseded)\b", re.IGNORECASE)
 TITLED_HEADING = re.compile(r"^ {0,3}(#{1,6})[ \t]+(.+?)[ \t#]*$")
 TOC_LINK = re.compile(r"\[[^\]]*\]\(#([^)\s]+)\)")
 TOC_ANCHOR = "table-of-contents"
@@ -125,10 +125,19 @@ def opening_id(text: str, *, bold_only: bool = False, needs_separator: bool = Fa
     bold = text.startswith("**")
     if bold_only and not bold:
         return None
-    m = TOKEN.match(text, 2 if bold else 0)
+    pos = 2 if bold else 0
+    tick = text.startswith("`", pos)
+    if tick:
+        pos += 1
+    m = TOKEN.match(text, pos)
     if not m:
         return None
-    rest = text[m.end() :]
+    end = m.end()
+    if tick:
+        if not text.startswith("`", end):
+            return None
+        end += 1
+    rest = text[end:]
     if CONNECTOR.match(rest):
         return None
     if needs_separator and not bold and not SEPARATOR.match(rest):
