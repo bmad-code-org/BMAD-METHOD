@@ -39,12 +39,12 @@ import re
 import sys
 import tomllib
 
-import yaml
-
 sys.dont_write_bytecode = True
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_DIR = os.path.join(PROJECT_ROOT, "skills")
+sys.path.insert(0, os.path.join(SRC_DIR, "core-tools", "bmad", "scripts"))
+import frontmatter  # noqa: E402
 
 # JS RegExp#toString() forms — Python's re.Pattern repr is not load-bearing for messages.
 NAME_REGEX_DISPLAY = r"/^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$/"
@@ -124,102 +124,42 @@ def _finding(
 # --- Frontmatter Parsing ---
 
 
-def _frontmatter_block(content: str) -> str | None:
-    trimmed = content.lstrip()
-    if not trimmed.startswith("---"):
-        return None
-
-    end_index = trimmed.find(f"{os.linesep}---{os.linesep}", 3)
-    if end_index == -1:
-        if trimmed.endswith(f"{os.linesep}---"):
-            end_index = len(trimmed) - len(os.linesep) - 3
-        else:
-            return None
-
-    return trimmed[3:end_index].strip()
-
-
-def _strip_quotes(value: str) -> str:
-    if (value.startswith("'") and value.endswith("'")) or (value.startswith('"') and value.endswith('"')):
-        return value[1:-1]
-    return value
-
-
-def parse_frontmatter(content: str) -> dict[str, str] | None:
-    fm_block = _frontmatter_block(content)
-    if fm_block is None:
-        return None
-    if fm_block == "":
-        return {}
-
-    result: dict[str, str] = {}
-    for line in fm_block.split(os.linesep):
-        colon_index = line.find(":")
-        if colon_index == -1:
-            continue
-        # Skip indented lines (nested YAML values)
-        if line[:1] in (" ", "\t"):
-            continue
-        key = line[:colon_index].strip()
-        value = line[colon_index + 1 :].strip()
-        result[key] = _strip_quotes(value)
-    return result
-
-
-def parse_frontmatter_multiline(content: str) -> dict[str, str] | None:
-    fm_block = _frontmatter_block(content)
-    if fm_block is None:
-        return None
-    if fm_block == "":
-        return {}
-
-    result: dict[str, str] = {}
-    current_key: str | None = None
-    current_value = ""
-
-    for line in fm_block.split(os.linesep):
-        colon_index = line.find(":")
-        # New key: column 0 (no leading whitespace) and colon not at index 0
-        if colon_index > 0 and line[:1] not in (" ", "\t"):
-            if current_key is not None:
-                result[current_key] = _strip_quotes(current_value.strip())
-            current_key = line[:colon_index].strip()
-            current_value = line[colon_index + 1 :]
-        elif current_key is not None:
-            if line.lstrip().startswith("#"):
-                continue
-            current_value += "\n" + line
-
-    if current_key is not None:
-        result[current_key] = _strip_quotes(current_value.strip())
-    return result
-
-
-def frontmatter_yaml_error(content: str) -> tuple[str, int | None] | None:
-    """Parse the frontmatter as YAML, as the skills CLI and agents do. Return (detail, line) or None.
-
-    A file with no frontmatter block is left to SKILL-02 and SKILL-03."""
-    fm_block = _frontmatter_block(content)
-    if fm_block is None:
-        return None
+def frontmatter_fields(content: str) -> dict:
+    """The frontmatter's fields as text, or {} when there are none or they are not YAML."""
     try:
-        data = yaml.safe_load(fm_block)
-    except yaml.YAMLError as error:
-        mark = getattr(error, "problem_mark", None)
-        # _frontmatter_block strips the text around the block, so count the file lines before it.
-        first_line = content[: content.find(fm_block)].count("\n") + 1 if fm_block else 1
-        line = first_line + mark.line if mark is not None else None
-        problem = getattr(error, "problem", None) or str(error).splitlines()[0]
-        return f"Frontmatter is not valid YAML: {problem}.", line
-    except ValueError as error:  # PyYAML builds dates and times, e.g. an unquoted 2026-02-30
-        return f"Frontmatter is not valid YAML: {error}.", None
-    if not isinstance(data, dict):
-        return f"Frontmatter must be a YAML mapping, got {type(data).__name__}.", None
+        return frontmatter.load(frontmatter.split(content)[0])
+    except ValueError:
+        return {}
+
+
+def skill_frontmatter(content: str) -> tuple[dict | None, tuple[str, int | None] | None]:
+    """Read SKILL.md frontmatter as the skills CLI and agents do. Return (fields, (detail, line) or None).
+
+    Fields are typed, an absent value as ""; they are {} with no frontmatter block, which is left to SKILL-02
+    and SKILL-03, and None when the block is not a YAML mapping."""
+    try:
+        block = frontmatter.split(content)[0]
+    except ValueError:
+        return {}, None
+    try:
+        fields = frontmatter.load(block, typed=True)
+    except ValueError as error:
+        cause = error.__cause__
+        if cause is None:
+            return None, ("Frontmatter must be a YAML mapping.", None)
+        mark = getattr(cause, "problem_mark", None)
+        line = mark.line + 2 if mark is not None else None  # the block starts on the line after `---`
+        problem = getattr(cause, "problem", None) or str(cause).splitlines()[0]
+        return None, (f"Frontmatter is not valid YAML: {problem}.", line)
+    fields = {key: "" if value is None else value for key, value in fields.items()}
+    for key in ("name", "description"):  # a block scalar's final newline is not part of it
+        if isinstance(fields.get(key), str):
+            fields[key] = fields[key].rstrip("\n")
     for key in ("name", "description"):
-        value = data.get(key)
-        if value is not None and not isinstance(value, str):
-            return f"Frontmatter `{key}` must be a string, got {type(value).__name__}.", None
-    return None
+        value = fields.get(key, "")
+        if not isinstance(value, str):
+            return fields, (f"Frontmatter `{key}` must be a string, got {type(value).__name__}.", None)
+    return fields, None
 
 
 # --- Safe File Reading ---
@@ -482,8 +422,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
     skill_content = safe_read_file(skill_md_path, findings, "SKILL.md")
     if skill_content is None:
         return findings
-    skill_fm = parse_frontmatter_multiline(skill_content)
-    yaml_error = frontmatter_yaml_error(skill_content)
+    skill_fm, yaml_error = skill_frontmatter(skill_content)
     if yaml_error is not None:
         detail, line = yaml_error
         findings.append(
@@ -498,7 +437,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
             )
         )
 
-    if not skill_fm or "name" not in skill_fm:
+    if skill_fm is not None and "name" not in skill_fm:
         findings.append(
             _finding(
                 "SKILL-02",
@@ -509,7 +448,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
                 "Add `name: <skill-name>` to the frontmatter.",
             )
         )
-    elif skill_fm["name"] == "":
+    elif skill_fm and skill_fm["name"] == "":
         findings.append(
             _finding(
                 "SKILL-02",
@@ -521,7 +460,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
             )
         )
 
-    if not skill_fm or "description" not in skill_fm:
+    if skill_fm is not None and "description" not in skill_fm:
         findings.append(
             _finding(
                 "SKILL-03",
@@ -532,7 +471,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
                 "Add `description: <what it does and when to use it>` to the frontmatter.",
             )
         )
-    elif skill_fm["description"] == "":
+    elif skill_fm and skill_fm["description"] == "":
         findings.append(
             _finding(
                 "SKILL-03",
@@ -544,10 +483,12 @@ def validate_skill(skill_dir: str) -> list[dict]:
             )
         )
 
-    name = skill_fm.get("name") if skill_fm else None
-    description = skill_fm.get("description") if skill_fm else None
+    name = (skill_fm or {}).get("name")
+    name = name if isinstance(name, str) else None
+    description = (skill_fm or {}).get("description")
+    description = description if isinstance(description, str) else None
 
-    is_deprecated = isinstance(description, str) and bool(DEPRECATED_RE.search(description))
+    is_deprecated = bool(description and DEPRECATED_RE.search(description))
     is_record = is_module_record(skill_dir)
     name_regex = RECORD_NAME_REGEX if is_record else NAME_REGEX
     name_display = RECORD_NAME_REGEX_DISPLAY if is_record else NAME_REGEX_DISPLAY
@@ -613,18 +554,11 @@ def validate_skill(skill_dir: str) -> list[dict]:
                 )
             )
 
-    trimmed = skill_content.lstrip()
-    body_start = -1
-    if trimmed.startswith("---"):
-        end_idx = trimmed.find(f"{os.linesep}---{os.linesep}", 3)
-        if end_idx != -1:
-            body_start = end_idx + len(os.linesep) + 3
-        elif trimmed.endswith(f"{os.linesep}---"):
-            body_start = len(trimmed)
-    else:
-        body_start = 0
-    body = trimmed[body_start:].strip() if body_start >= 0 else ""
-    if body == "":
+    try:
+        body = frontmatter.split(skill_content)[1]
+    except ValueError as error:
+        body = "" if "not terminated" in str(error) else skill_content
+    if body.strip() == "":
         findings.append(
             _finding(
                 "SKILL-07",
@@ -646,8 +580,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
         if content is None:
             continue
 
-        fm = parse_frontmatter(content)
-        if fm and "installed_path" in fm:
+        if "installed_path" in frontmatter_fields(content):
             findings.append(
                 _finding(
                     "PATH-02",

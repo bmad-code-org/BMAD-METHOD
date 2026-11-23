@@ -67,7 +67,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from difflib import SequenceMatcher  # noqa: E402
 
 from count_tokens import count_tokens, iter_text_files, read_text  # noqa: E402
-from init_skill import USE_WHEN_RE, parse_frontmatter  # noqa: E402
+from init_skill import NO_BMAD, USE_WHEN_RE, frontmatter, parse_frontmatter  # noqa: E402
 from scan_paths import scan_skill  # noqa: E402
 from scan_scripts import scan_scripts  # noqa: E402
 
@@ -166,12 +166,10 @@ def bmod_kind(root: Path) -> str:
 
 def prose_lines(text: str):
     """(line number, stripped line) for each prose line: frontmatter, fences, headings and tables skipped."""
-    lines = text.splitlines()
-    start = 0
-    if lines and lines[0].strip() == "---":
-        start = next((i for i, line in enumerate(lines[1:], 2) if line.strip() == "---"), 0)
+    _, body = parse_frontmatter(text)
+    start = len(text[: len(text) - len(body)].splitlines())
     fence = ""
-    for number, line in enumerate(lines[start:], start + 1):
+    for number, line in enumerate(body.splitlines(), start + 1):
         stripped = line.strip()
         marker = FENCE_RE.match(stripped)
         if fence:
@@ -427,6 +425,9 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("skill", type=Path, help="skill folder to analyze")
     args = p.parse_args(argv)
+    if frontmatter is None:
+        print(NO_BMAD, file=sys.stderr)
+        return 2
     root = args.skill.expanduser().resolve()
     if not root.is_dir():
         p.error(f"not a directory: {args.skill}")

@@ -12,17 +12,30 @@ AD-n blocks missing required fields, and unpinned Stack versions.
 import importlib.util
 import json
 import re
+import shutil
 import sys
 from pathlib import Path
 
 import pytest
 
-_SPEC = importlib.util.spec_from_file_location(
-    "lint_spine", Path(__file__).resolve().parents[3] / "skills/method/bmad-architecture/scripts/lint_spine.py"
-)
+SCRIPT = Path(__file__).resolve().parents[3] / "skills/method/bmad-architecture/scripts/lint_spine.py"
+FRONTMATTER = SCRIPT.parents[3] / "core-tools" / "bmad" / "scripts" / "frontmatter.py"
+_SPEC = importlib.util.spec_from_file_location("lint_spine", SCRIPT)
 lint_spine = importlib.util.module_from_spec(_SPEC)
 sys.modules["lint_spine"] = lint_spine
 _SPEC.loader.exec_module(lint_spine)
+sys.path.insert(0, str(FRONTMATTER.parent))
+import frontmatter  # noqa: E402
+
+lint_spine.frontmatter = frontmatter  # main() loads the project's copy; the lint tests call past it
+
+
+@pytest.fixture
+def project(tmp_path_factory):
+    root = tmp_path_factory.mktemp("project")
+    (root / "_bmad" / "scripts").mkdir(parents=True)
+    shutil.copy2(FRONTMATTER, root / "_bmad" / "scripts")
+    return ["--project-root", str(root)]
 
 
 CLEAN = """---
@@ -240,10 +253,16 @@ def test_placeholder_line_number_is_absolute():
     assert n == 13
 
 
-def test_missing_spine_file_reports_error(tmp_path, capsys):
-    rc = lint_spine.main(["--workspace", str(tmp_path)])
+def test_missing_spine_file_reports_error(tmp_path, project, capsys):
+    rc = lint_spine.main([*project, "--workspace", str(tmp_path)])
     out = json.loads(capsys.readouterr().out)
     assert rc == 0 and out["ok"] is False and "not found" in out["error"]
+
+
+def test_frontmatter_lines_and_body_lines_stay_absolute_past_an_inline_fence_and_crlf():
+    text = "---\r\nname: 'x --- y'\r\nstatus: TBD\r\n---  \r\n\r\n## A\r\n\r\nTODO here\r\n"
+    locations = {f["detail"].split(":")[-1].strip(): f["location"] for f in lint_spine.lint(text)["findings"]}
+    assert locations == {"'TBD'": "spine frontmatter (line 3)", "'TODO'": "spine (line 8)"}
 
 
 def test_frontmatter_unfilled_token_caught():
@@ -263,18 +282,18 @@ def test_frontmatter_tbd_caught():
     )
 
 
-def test_findings_name_the_folder_named_spine(tmp_path, capsys):
+def test_findings_name_the_folder_named_spine(tmp_path, project, capsys):
     (tmp_path / f"{tmp_path.name}.md").write_text("---\nname: 'x'\n---\n\nTBD here\n", encoding="utf-8")
-    rc = lint_spine.main(["--workspace", str(tmp_path)])
+    rc = lint_spine.main([*project, "--workspace", str(tmp_path)])
     out = json.loads(capsys.readouterr().out)
     assert rc == 0 and out["spine"] == f"{tmp_path.name}.md"
     assert out["findings"][0]["location"].startswith(f"{tmp_path.name}.md ")
 
 
-def test_unreadable_spine_returns_error_not_crash(tmp_path, capsys):
+def test_unreadable_spine_returns_error_not_crash(tmp_path, project, capsys):
     # a spine that exists but can't be UTF-8 decoded must yield error JSON + exit 0, not a traceback
     (tmp_path / f"{tmp_path.name}.md").write_bytes(b"\xff\xfe bad bytes not utf-8")
-    rc = lint_spine.main(["--workspace", str(tmp_path)])
+    rc = lint_spine.main([*project, "--workspace", str(tmp_path)])
     out = json.loads(capsys.readouterr().out)
     assert rc == 0 and out["ok"] is False and "could not read" in out["error"]
 

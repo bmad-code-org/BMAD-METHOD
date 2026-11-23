@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """progress — where a facilitated run is, counted from its document.
 
-  uv run progress.py <document> [<merged template>]
+  uv run progress.py --project-root <project> <document> [<merged template>]
 
 Counts the sections in the merged template's `facilitation_order`, else the document's own `##`
 headings with the table of contents left out. A section is settled once its `<!-- open -->`
@@ -14,18 +15,21 @@ is open, and a heading the document repeats is open while any copy is. Prints JS
 no heading), `place` (the position in the order of the first open section, null when none is),
 `missing` (ids the order lists that the document has no heading for) and `extra` (the document's
 headings the order does not list). When `missing` or `extra` is not empty the count does not fit the
-document, as when a reader's headings replaced the template's. Exits 2 when a file is missing.
+document, as when a reader's headings replaced the template's. `--project-root` names the project
+with BMad set up. Exits 2 when a file is missing.
 """
 
 from __future__ import annotations
 
+import argparse
+import importlib.util
 import json
 import re
 import sys
 from pathlib import Path
 
-FRONTMATTER = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*(?:\n|\Z)", re.DOTALL)
-ORDER = re.compile(r"^facilitation_order:[ \t]*\[(.*)\][ \t]*$", re.MULTILINE)
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+
 SECTION = re.compile(r"^##[ \t]+(.+?)[ \t#]*$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 OPEN = re.compile(r"^\s*<!--\s*open\s*-->\s*$")
@@ -58,11 +62,13 @@ def sections(text: str) -> list[tuple[str, str, bool]]:
 
 
 def order_of(template: str) -> list[str]:
-    m = FRONTMATTER.match(template.replace("\r\n", "\n"))
-    listed = ORDER.search(m.group(1)) if m else None
-    if not listed:
+    try:
+        listed = frontmatter.load(frontmatter.split(template)[0]).get("facilitation_order")
+    except ValueError:
         return []
-    return [i.strip().strip("'\"").rstrip("?") for i in listed.group(1).split(",") if i.strip()]
+    if not isinstance(listed, list):
+        return []
+    return [i.strip().rstrip("?") for i in listed if isinstance(i, str) and i.strip()]
 
 
 def progress(document: str, template: str = "") -> dict:
@@ -83,10 +89,22 @@ def progress(document: str, template: str = "") -> dict:
 
 
 def main(argv: list[str]) -> int:
-    if not argv or len(argv) > 2:
-        print(__doc__.strip().split("\n\n")[1], file=sys.stderr)
+    global frontmatter
+
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
+    p.add_argument("document")
+    p.add_argument("template", nargs="?", help="the merged template")
+    args = p.parse_args(argv)
+    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
         return 2
-    paths = [Path(a) for a in argv]
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
+
+    paths = [Path(a) for a in (args.document, args.template) if a]
     missing = [str(p) for p in paths if not p.is_file()]
     if missing:
         print(json.dumps({"error": f"missing: {', '.join(missing)}"}))

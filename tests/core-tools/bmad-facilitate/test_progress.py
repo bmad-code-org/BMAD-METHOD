@@ -9,16 +9,31 @@ What counts as settled, which order the count follows, and the exit code for a m
 
 import importlib.util
 import json
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
-_SPEC = importlib.util.spec_from_file_location(
-    "progress",
-    Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-facilitate/scripts/progress.py",
-)
+import pytest
+
+SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-facilitate/scripts/progress.py"
+FRONTMATTER = SCRIPT.parents[2] / "bmad" / "scripts" / "frontmatter.py"
+_SPEC = importlib.util.spec_from_file_location("progress", SCRIPT)
 progress = importlib.util.module_from_spec(_SPEC)
 sys.modules["progress"] = progress
 _SPEC.loader.exec_module(progress)
+sys.path.insert(0, str(FRONTMATTER.parent))
+import frontmatter  # noqa: E402
+
+progress.frontmatter = frontmatter  # main() loads the project's copy; the counting tests call past it
+
+
+@pytest.fixture
+def project(tmp_path):
+    (tmp_path / "_bmad" / "scripts").mkdir(parents=True)
+    shutil.copy2(FRONTMATTER, tmp_path / "_bmad" / "scripts")
+    return str(tmp_path)
+
 
 DOC = """---
 title: "Pilot"
@@ -92,16 +107,28 @@ def test_all_settled_has_no_place():
     assert progress.progress("## Goal\nDone.\n")["place"] is None
 
 
-def test_main_prints_json_and_a_missing_file_exits_2(tmp_path, capsys):
+def test_main_prints_json_and_a_missing_file_exits_2(tmp_path, project, capsys):
     (tmp_path / "d.md").write_text(DOC)
     (tmp_path / "t.md").write_text(TEMPLATE)
-    assert progress.main([str(tmp_path / "d.md"), str(tmp_path / "t.md")]) == 0
+    assert progress.main(["--project-root", project, str(tmp_path / "d.md"), str(tmp_path / "t.md")]) == 0
     assert json.loads(capsys.readouterr().out)["settled"] == 2
-    assert progress.main([str(tmp_path / "nope.md")]) == 2
+    assert progress.main(["--project-root", project, str(tmp_path / "nope.md")]) == 2
 
 
-def test_a_byte_order_mark_does_not_hide_the_templates_order(tmp_path, capsys):
+def test_a_byte_order_mark_does_not_hide_the_templates_order(tmp_path, project, capsys):
     (tmp_path / "d.md").write_text(DOC, encoding="utf-8-sig")
     (tmp_path / "t.md").write_text(TEMPLATE, encoding="utf-8-sig")
-    assert progress.main([str(tmp_path / "d.md"), str(tmp_path / "t.md")]) == 0
+    assert progress.main(["--project-root", project, str(tmp_path / "d.md"), str(tmp_path / "t.md")]) == 0
     assert json.loads(capsys.readouterr().out)["place"] == 2
+
+
+def test_a_project_without_the_shared_scripts_is_told_to_run_setup(tmp_path):
+    (tmp_path / "d.md").write_text(DOC)
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--project-root", str(tmp_path), str(tmp_path / "d.md")],
+        capture_output=True,
+        text=True,
+    )
+    missing = tmp_path / "_bmad" / "scripts" / "frontmatter.py"
+    assert result.returncode == 2
+    assert result.stderr.splitlines() == [f"error: {missing} is missing. Run bmad setup for this project."]

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """list-templates — list the templates in a set of libraries, for any skill that fills templates.
 
@@ -46,7 +47,7 @@ Prints JSON:
                 removed, in search order
   shadowed      id, file, source, kept, agents: templates hidden by an earlier one with the same id
   orphaned      extends, file, source: extensions whose template was not found
-  unreachable   source, reason: sources that could not be read
+  unreachable   source, reason: sources that could not be read, and files whose frontmatter is not YAML
   missing       local paths that do not exist
   tool_sources  sentences for the agent to follow
   merged        the path written, with --merge
@@ -66,8 +67,10 @@ from urllib.parse import quote, urljoin, urlsplit
 from urllib.parse import unquote as url_unquote
 from urllib.request import Request, urlopen
 
-FRONTMATTER = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*(?:\n|\Z)", re.DOTALL)
-KEY = re.compile(r"^([A-Za-z_]+):[ \t]*(.*?)[ \t]*$", re.MULTILINE)
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+
+import frontmatter  # noqa: E402
+
 GITHUB = re.compile(
     r"^https://github\.com/(?P<owner>[^/]+)/(?P<repo>[^/@]+?)(?:\.git)?"
     r"(?:/(?:tree|blob)/(?P<tree_ref>[^/@]+)(?:/(?P<path>[^@]*?))?)?/?(?:@(?P<ref>[^/]+))?/?$"
@@ -88,17 +91,18 @@ BUILT = re.compile(r"^\s*<!--\s*built\s*:", re.IGNORECASE)
 TIMEOUT = 30
 
 
-def unquote(value: str) -> str:
-    if len(value) >= 2 and value[0] == value[-1] == '"':
-        return value[1:-1].replace('\\"', '"')
-    if len(value) >= 2 and value[0] == value[-1] == "'":
-        return value[1:-1].replace("''", "'")
-    return value
+def read_fields(text: str) -> dict:
+    """A file's frontmatter fields, empty when it has none or they are not YAML."""
+    try:
+        return frontmatter.load(frontmatter.split(text)[0])
+    except ValueError:
+        return {}
 
 
-def frontmatter(text: str) -> dict[str, str]:
-    m = FRONTMATTER.match(text.replace("\r\n", "\n"))
-    return {key: unquote(value) for key, value in KEY.findall(m.group(1))} if m else {}
+def scalar(meta: dict, key: str, default: str | None = "") -> str | None:
+    """The field's text, or default when it is absent or not text."""
+    value = meta.get(key)
+    return value if isinstance(value, str) else default
 
 
 def run_gh(args: list[str]) -> str:
@@ -160,13 +164,13 @@ def module_libraries(roots: list[str], folder_name: str = MODULE_FOLDER) -> list
     return list(libraries.values())
 
 
-def listed(value: str) -> list[str]:
-    """A one-line YAML list, `[a, 'b']`, as its items."""
-    return [unquote(name.strip()) for name in value.strip("[]").split(",") if name.strip()]
+def listed(value: object) -> list[str]:
+    """A YAML list's text items; anything else is no list."""
+    return [item.strip() for item in value if isinstance(item, str) and item.strip()] if isinstance(value, list) else []
 
 
-def unreadable_order(meta: dict[str, str]) -> bool:
-    """Whether the file has a `facilitation_order` key that is not a one-line list."""
+def unreadable_order(meta: dict) -> bool:
+    """Whether the file has a `facilitation_order` key that is not a list of ids."""
     return "facilitation_order" in meta and not listed(meta["facilitation_order"])
 
 
@@ -238,24 +242,24 @@ def order_problems(
     return problems
 
 
-def fields(file: str, meta: dict[str, str]) -> dict[str, object]:
+def fields(file: str, meta: dict) -> dict[str, object]:
     """What a template or extension sets, with its paths resolved."""
     return {
-        "version": meta.get("version", ""),
-        "description": meta.get("description", ""),
-        "not_for": meta.get("not_for", ""),
-        "category": meta.get("category", ""),
-        "agents": listed(meta.get("agents", "")),
-        "facilitation_order": listed(meta.get("facilitation_order", "")),
-        "guidance": beside(file, meta.get("guidance", "")),
-        "rubric": beside(file, meta.get("rubric", "")),
-        "methods": beside(file, meta.get("methods", "")),
-        "output": meta.get("output", ""),
-        "style": beside(file, meta.get("style", "")),
-        "layout": beside(file, meta.get("layout", "")),
-        "view": meta.get("view", ""),
-        "mode": meta.get("mode"),
-        "order": meta.get("order"),
+        "version": scalar(meta, "version"),
+        "description": scalar(meta, "description"),
+        "not_for": scalar(meta, "not_for"),
+        "category": scalar(meta, "category"),
+        "agents": listed(meta.get("agents")),
+        "facilitation_order": listed(meta.get("facilitation_order")),
+        "guidance": beside(file, scalar(meta, "guidance")),
+        "rubric": beside(file, scalar(meta, "rubric")),
+        "methods": beside(file, scalar(meta, "methods")),
+        "output": scalar(meta, "output"),
+        "style": beside(file, scalar(meta, "style")),
+        "layout": beside(file, scalar(meta, "layout")),
+        "view": scalar(meta, "view"),
+        "mode": scalar(meta, "mode", None),
+        "order": scalar(meta, "order", None),
     }
 
 
@@ -279,8 +283,15 @@ def scan(sources: list[str]) -> dict:
             unreachable.append({"source": source, "reason": str(e)})
             continue
         for file, text in files:
-            meta = frontmatter(text)
-            if meta.get("extends"):
+            try:
+                meta = frontmatter.load(frontmatter.split(text)[0])
+            except ValueError as e:
+                if text.startswith("---") and "not terminated" not in str(e):
+                    unreachable.append(
+                        {"source": file, "reason": f"its frontmatter is not YAML: {' '.join(str(e).split())}"}
+                    )
+                continue
+            if scalar(meta, "extends"):
                 extensions.setdefault(meta["extends"], []).append(
                     {
                         "file": file,
@@ -292,12 +303,12 @@ def scan(sources: list[str]) -> dict:
                     }
                 )
                 continue
-            template_id = meta.get("template")
+            template_id = scalar(meta, "template")
             if not template_id:
                 continue
             if template_id in found:
                 kept = found[template_id]["file"]
-                agents = listed(meta.get("agents", ""))
+                agents = listed(meta.get("agents"))
                 shadowed.append({"id": template_id, "file": file, "source": source, "kept": kept, "agents": agents})
                 continue
             found[template_id] = {
@@ -364,10 +375,12 @@ def scan(sources: list[str]) -> dict:
                 template["facilitation_order"], must, own + added, built, template.get("_placed", [])
             )
         if template.pop("_bad_order") and not template["facilitation_order"]:
-            template["order_problems"] = ["`facilitation_order` must be a one-line list, such as `[problem, scope]`"]
+            template["order_problems"] = [
+                "`facilitation_order` must be a list of section ids, such as `[problem, scope]`"
+            ]
         template["order_problems"] += template.pop("_extension_problems", [])
         template["order_problems"] += [
-            f"`facilitation_order` in {file} is ignored: it must be a one-line list, such as `[problem, scope]`"
+            f"`facilitation_order` in {file} is ignored: it must be a list of section ids, such as `[problem, scope]`"
             for file in template.pop("_bad_extension_orders", [])
         ]
     return {
@@ -387,8 +400,11 @@ BRIEF = ("id", "description", "not_for", "category", "agents", "output")
 def body(text: str) -> str:
     """A file's text after its frontmatter."""
     text = text.replace("\r\n", "\n")
-    m = FRONTMATTER.match(text)
-    return text[m.end() :].strip("\n") if m else text.strip("\n")
+    try:
+        text = frontmatter.split(text)[1]
+    except ValueError:
+        pass
+    return text.strip("\n")
 
 
 def drop_sections(text: str, ids: list[str]) -> str:
@@ -419,35 +435,14 @@ def absolute(value: str) -> str:
     return Path(value).expanduser().resolve().as_posix()
 
 
-def yaml_value(value: object) -> str:
-    if isinstance(value, list):
-        return "[" + ", ".join(value) + "]"
-    return json.dumps(value, ensure_ascii=False)
-
-
 def merged_frontmatter(template: dict) -> str:
     """The template's frontmatter with every value its extensions changed, paths made absolute."""
-    m = FRONTMATTER.match(template["_text"].replace("\r\n", "\n"))
-    entries: list[list[str]] = []
-    for line in m.group(1).split("\n") if m else []:
-        if KEY.match(line) or not entries:
-            entries.append([line])
-        else:
-            entries[-1].append(line)
+    text = template["_text"].replace("\r\n", "\n")
     own = template["_own"]
     values = {key: template[key] for key in FIELDS if template[key] != own[key]}
-    raw = frontmatter(template["_text"])
-    values.update({key: absolute(template[key]) for key in PATH_KEYS if absolute(template[key]) != raw.get(key, "")})
-    lines, written = [], set()
-    for entry in entries:
-        key = KEY.match(entry[0]).group(1) if KEY.match(entry[0]) else None
-        if key in values:
-            lines.append(f"{key}: {yaml_value(values[key])}")
-            written.add(key)
-        else:
-            lines.extend(entry)
-    lines += [f"{key}: {yaml_value(values[key])}" for key in FIELDS if key in values and key not in written]
-    return "---\n" + "\n".join(lines) + "\n---"
+    raw = read_fields(text)
+    values.update({key: absolute(template[key]) for key in PATH_KEYS if absolute(template[key]) != scalar(raw, key)})
+    return "---\n" + frontmatter.set_fields(frontmatter.split(text)[0], values) + "---"
 
 
 def merged(template: dict) -> str:
@@ -582,8 +577,13 @@ def main(argv: list[str]) -> int:
             return 1
         if args.merge:
             out = Path(args.merge).expanduser()
+            try:
+                text = merged(result["templates"][0])
+            except ValueError as e:  # frontmatter set_fields cannot rewrite, such as a flow mapping
+                print(json.dumps({"error": f"cannot merge `{args.template}`: {e}"}, indent=2))
+                return 1
             out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(merged(result["templates"][0]), encoding="utf-8")
+            out.write_text(text, encoding="utf-8")
             result["merged"] = str(out)
     for template in result["templates"]:
         for key in [k for k in template if k.startswith("_")]:
