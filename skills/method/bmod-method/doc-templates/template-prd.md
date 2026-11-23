@@ -1,13 +1,14 @@
 ---
 title: ""
 template: prd
-version: 1.3.0
+version: 1.4.0
 description: "Outcomes, guardrails and the epic map for work with several capabilities."
-not_for: "One capability's detailed requirements (`prd-epic`); deciding whether to build (`opportunity`) or writing down why (`brief`); a hobby project, or an idea to try before committing (`prototype-plan`); a regulated or contracted baseline (`srs`); what a business signs for when the builder is a separate party (`brd`)."
+not_for: "Multi-initiative programs (`prd-program`); one capability's detailed requirements (`prd-epic`); deciding whether to build (`opportunity`) or writing down why (`brief`); a hobby project, or an idea to try before committing (`prototype-plan`); a regulated or contracted baseline (`srs`); what a business signs for when the builder is a separate party (`brd`)."
 agents: [bmad-agent-pm]
-facilitation_order: [problem-and-users, journeys, epic-map, scope-and-non-goals, okrs, invariants, shared-nouns-and-seams, deferred-decisions-and-risks]
+facilitation_order: [problem-and-users, journeys, scope-and-non-goals, okrs, invariants, shared-nouns-and-seams, epic-map, deferred-decisions-and-risks]
 guidance: guidance-method.md
 rubric: rubric-planning.md
+forbid_id_prefixes: [FR]
 status: draft
 created: ""
 updated: ""
@@ -15,19 +16,15 @@ updated: ""
 
 <!-- purpose: The contract several epics build under: what the work is for, how success is graded, what none of them may break, and how it splits. People, architects and coding agents read it in ten to fifteen minutes. -->
 
-<!-- stance: This document stays thin. Sort every detail by how far a change to it would reach: what several epics must agree on belongs here, and what touches one epic is saved for that epic and kept out of every other section. In the read-back, before any section is worked, propose the provisional epics, the cohesive capabilities in the journey the user just walked, each a name and a line, and let the user confirm or reshuffle them. They are how you both decide what belongs here, and they stay open to change until the end. From then on, when the user gives a detail that belongs to one epic, never turn it away and never expand it here: write it in their words under that epic's `Saved for this epic` in the Epic map and say where it went. When only one capability comes out, or the user says this is for one epic, say so and offer `prd-epic` in its place. When the capabilities share no outcome, invariant or noun, say this looks like more than one initiative and ask which to take first. Journeys are captured, not authored: the user narrates and you structure. When a section outgrows its budget, look first for what in it belongs to an epic. Stop when the document is ready to slice; going deeper is each epic's job.
-
-At program altitude the map's entries are initiatives, each with its own PRD, and the OKRs and invariants are the ones over all of them. -->
+<!-- stance: This document stays thin. Sort every detail by how far a change to it would reach: what several epics must agree on belongs here, and what touches one epic is saved for that epic and kept out of every other section. In the read-back, before any section is worked, propose provisional epics — the cohesive capabilities in the journey the user just walked, each a name and a line — and let the user confirm or reshuffle them; they stay open while scope, OKRs, invariants and seams settle and are finalized second-to-last in the Epic map. From then on, when the user gives a detail that belongs to one epic, never turn it away and never expand it here: write it in their words under that epic's `Saved for this epic` in the Epic map and say where it went. When only one capability comes out, or the user says this is for one epic, say so and offer `prd-epic` in its place. When the capabilities share no outcome, invariant or noun, say this looks like more than one initiative and ask which to take first, or offer `prd-program` when they belong together under one multi-initiative program. Journeys are captured, not authored: the user narrates and you structure. Stop when the document is ready to slice; going deeper is each epic's job. -->
 
 <!-- opening: Whether this is a new product or a change to an existing one, which decides how much of what exists the document must respect. The brain dump runs uninterrupted: why this exists, who it is for and the rough arc from start to finish, with any brief, research, notes or code to read. -->
 
-<!-- inputs: Under a program, read its PRD first and ask only for what differs here. For a change to an existing product, read the code or its architecture document before asking anything it answers. A business requirements document among the sources: keep its ids. Only the user knows who it is for, what is out and what success looks like. -->
+<!-- inputs: Under a program, read its `prd-program` first and ask only for what differs here. For a change to an existing product, read the code or its architecture document before asking anything it answers. A business requirements document among the sources: keep its ids. Only the user knows who it is for, what is out and what success looks like. -->
 
-<!-- writing: Outcomes and guardrails, not behavior, and no requirement lists: an FR belongs to its epic's PRD. Ids (OKR-N, INV-N, UJ-N, OQ-N, and E01, E02 for epics) are global, and a child document cites them rather than restating them. Shared nouns are used exactly as defined. Budgets: Problem and users half a page, an epic three to five lines, the whole about 2,000 words, 3,000 at most for a program. Padding to look thorough is the failure. -->
+<!-- writing: Outcomes and guardrails, not behavior, and no requirement lists: an FR belongs to its epic's PRD. Ids (OKR-N, INV-N, UJ-N, OQ-N, and E01, E02 for epics) are global, and a child document cites them rather than restating them. Shared nouns are used exactly as defined. Shape cues: Problem and users half a page, an epic three to five lines. Padding to look thorough is the failure. -->
 
 <!-- done when: The document is ready to slice, not complete: the OKRs are agreed, each with its three bands and how production measures it; the invariants and shared nouns are settled enough that the first epic will not corner the second; every decision put off names the epic or person who will make it; the epic map is agreed and the first epic is chosen. The user remembers making every decision in it, and nothing was invented to fill a section. -->
-
-<!-- next: At close, say what comes next: Sofia (`bmad-agent-po`) writes the initiative and its epics from this map; an epic with open product questions then gets its own `prd-epic`, when its turn comes and not before. The PRD is revisited after each epic lands: what was learned changes the nouns, invariants and OKRs through an Update. -->
 
 # {title}
 
@@ -52,7 +49,7 @@ At program altitude the map's entries are initiatives, each with its own PRD, an
 <!-- The few end-to-end flows, UJ-N, each with a named person, where they start, what they get, and the steps between at the level of capabilities, with the epic that carries each step. No screens, filters or error messages, which belong to the epics. Structure them from the user's own telling and confirm. diagram: a flowchart for a journey that branches or passes between people or systems, in place of walking it in prose. -->
 
 ## Epic map
-<!-- Proposed in the read-back and revised until the end. The epics are this initiative's cohesive capabilities, taken from the journey the user walked: each is something a person could see working by itself. When describing one takes an "and" that joins two things which each stand alone, it is two. Put a split the user brings to the same test. At program altitude the entries are initiatives. Each gets a `###` with its id, E01 onward, and name, then three to five lines: what it delivers and for whom, one outcome someone could check when it is done, the OKRs it moves, and what it needs from another epic. No requirement list. Under it, `Saved for this epic:` holds the single-epic details the user gave, in their words, one line each. Name the epic to take up first and why, and ask which the user is least sure of. Done when the user would defend the split and the first epic is chosen. -->
+<!-- Proposed provisionally in the read-back and confirmed here once scope, OKRs, invariants and seams settle. The epics are this initiative's cohesive capabilities, taken from the journey the user walked: each is something a person could see working by itself. When describing one takes an "and" that joins two things which each stand alone, it is two. Put a split the user brings to the same test. Each gets a `###` with its id, E01 onward, and name, then three to five lines: what it delivers and for whom, one outcome someone could check when it is done, the OKRs it moves, and what it needs from another epic. No requirement list. Under it, `Saved for this epic:` holds the single-epic details the user gave, in their words, one line each. Name the epic to take up first and why, and ask which the user is least sure of. Done when the user would defend the split and the first epic is chosen. -->
 
 ## Deferred decisions and risks
 <!-- This is the section for open questions. A table of what is deliberately not decided here: each decision or question (OQ-N), the epic that will settle it or the person who owns it, and when it is needed. Then the risks to the whole, each with what is being done; a risk inside one epic is saved for that epic. When several teams, a dated launch or users who must move are involved, the gates, each with an owner and a needed-by date. diagram: gantt, when the user gave the dates. -->

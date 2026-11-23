@@ -4,7 +4,11 @@ For Method plans, requirements, and cases for a decision. These rules add to the
 
 ## Opening
 
-When the document plans work the ticket tree will hold, a container is active or a ticket is in play, and neither the caller, the template, nor the ticket already fixes the altitude, the opening asks first which level of the tree the document is for: the program, the initiative, or an epic. The answer sets what the document decides.
+When the document plans work the ticket tree will hold, a container is active or a ticket is in play, and neither the caller, the template, nor the ticket already fixes the altitude, the opening asks first which level of the tree the document is for: the program, the initiative, or an epic. Templates whose altitude is fixed (`prd-program`, `prd`, `prd-epic`, `charter`) already disambiguate the level, so skip that question when one of them is selected.
+
+## Parent-aware spine
+
+When a parent container or spec exists (`program-*.md`, `initiative-*.md`, or a parent PRD along with its `companions:` or `sources:`), read it first, inherit its `OKR-N`, `INV-N`, shared nouns, and `BR-N` or `RULE-N` constraints by id citation without restating them, and ask only for what this level adds or narrows. When no parent spine exists (such as a standalone `epic-*` or greenfield `prd-epic`), establish a compact strategic floor inline before diving deep: problem, non-goals, tiered `OKR-N` (`Passable` / `Good` / `Excellent`) with production measurement, binary `INV-N` invariants, and boundaries or seams.
 
 ## Stakes
 

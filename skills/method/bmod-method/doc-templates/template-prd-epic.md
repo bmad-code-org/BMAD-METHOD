@@ -1,11 +1,11 @@
 ---
 title: ""
 template: prd-epic
-version: 1.0.0
+version: 1.1.0
 description: "One capability's requirements, with or without a parent PRD: journeys, FRs, rules, measures."
 not_for: "Work with several capabilities, which needs its outcomes and epic map first (`prd`); a hobby project, or an idea to try before committing (`prototype-plan`); a single story, which is a story ticket from Sofia (`bmad-agent-po`); a regulated or contracted baseline (`srs`)."
 agents: [bmad-agent-pm]
-facilitation_order: [context, journeys-and-flows, rules-edge-cases-and-failure-modes, requirements, instrumentation, seams, product-specifics, changes-to-the-parent, open-questions]
+facilitation_order: [context, journeys-and-flows, rules-edge-cases-and-failure-modes, requirements, instrumentation, seams, product-specifics, changes-to-the-parent, chunky-story-slice-map, open-questions]
 guidance: guidance-method.md
 rubric: rubric-planning.md
 status: draft
@@ -21,11 +21,9 @@ updated: ""
 
 <!-- inputs: The parent PRD and its entry for this epic; the architecture document or the live code; tracker comments on the epic. Only the user knows the band to aim for and what this slice leaves out. -->
 
-<!-- writing: Ids carry the epic when a parent names one, such as E02-FR-01; with no parent, FR-1. Ten to twenty-five FRs: more means two epics. Each FR is one testable statement, "[Actor] can [capability] [under conditions]", with its result. Behavior, not implementation: no schema, endpoint or file, which the technical design owns. About 2,000 words. -->
+<!-- writing: Ids carry the epic when a parent names one, such as E02-FR-01; with no parent, FR-1. If requirements sprawl across multiple independent capabilities, split into separate epics rather than bloating one document. Each FR is one testable statement, "[Actor] can [capability] [under conditions]", with its result. Behavior, not implementation: no schema, endpoint or file, which the technical design owns. -->
 
-<!-- done when: Every FR can be checked and traces to a journey or a rule; every journey step that needs the product has an FR; the failure cases a builder would otherwise guess are written down; what proves the target band is named; nothing restates the parent; and the user remembers making every decision in it. -->
-
-<!-- next: At close, say whether Changes to the parent calls for an Update of the parent PRD, and offer it. Then the technical design (`bmad-architecture`) against the live code, and Sofia (`bmad-agent-po`) cuts the epic into stories, each citing the requirements it satisfies, with every FR covered. -->
+<!-- done when: Every FR can be checked and traces to a journey or a rule; every journey step that needs the product has an FR; the failure cases a builder would otherwise guess are written down; what proves the target band is named; Chunky story slice map covers 100% of FRs and instrumentation requirements; any agreed Changes to the parent have been applied inline to the parent PRD with user confirmation; nothing restates the parent; and the user remembers making every decision in it. -->
 
 # {title}
 
@@ -53,7 +51,10 @@ updated: ""
 <!-- include when: one of these holds; give each that holds its own `###` and leave the rest out. A model decides or generates what users see: what it must never do, failure modes taken from real outputs, a prototype's where one exists, eval thresholds to ship and to roll back, and the fallback on refusal, timeout, tool failure and low confidence. A consumer or branded product: tone, information architecture, platforms, monetization. Developers adopt it: onboarding, documentation, errors, samples. Embedded or hardware: memory, power, form factor, updates, environment. -->
 
 ## Changes to the parent
-<!-- include when: a parent PRD exists. Ask it last: did anything found here change a shared noun, an invariant, an OKR or another epic's entry? "None" is the usual answer and is written as that. Otherwise the exact change, and which other epics it touches. -->
+<!-- include when: a parent PRD exists. Ask before finalizing the slice map: did anything found here change a shared noun, an invariant, an OKR, another epic's entry, or a Contract Index row, or impact an architectural decision (`AD-n`)? "None" is the usual answer and is written as that. Otherwise list the exact changes, impacted sibling epics, Contract Index rows, and flagged `AD-n`s, and apply agreed parent PRD edits inline (with user confirmation) before closing. -->
+
+## Chunky story slice map
+<!-- Propose right-sized, journey-shaped chunky stories for this epic, sized by end-to-end verifiability, journey cohesion, and clean review fit — never a fixed story quota. Fold validation, error handling, setup or scaffolding, and rollout work into user journeys rather than cutting standalone setup or go-live stories unless explicitly requested. For each story give a one-line outcome and the `UJ-N` beats it delivers. Follow with a **100% FR Coverage Matrix** table mapping every `E0X-FR-xx` (or `FR-N`) and every instrumentation or measurement requirement from Instrumentation to its owning chunky story, confirming zero uncovered FRs or measurements. -->
 
 ## Open questions
 <!-- OQ-N, each with an owner, when it is needed and the FRs it blocks. A detail that belongs to another epic is listed under that epic's name, in the user's words. -->
