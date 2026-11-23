@@ -442,12 +442,15 @@ def market_size(accounts: float, annual_price: float, reachable: float = 100.0, 
 def _number(value, where: str, *, positive: bool = False, optional: bool = False) -> float | None:
     if value is None and optional:
         return None
-    require(
-        isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value),
-        f"{where} must be a number",
-    )
-    require(value > 0 if positive else value >= 0, f"{where} must be {'more than 0' if positive else '0 or more'}")
-    return float(value)
+    require(isinstance(value, (int, float)) and not isinstance(value, bool), f"{where} must be a number")
+    try:
+        number = float(value)
+    except OverflowError:
+        # json.loads keeps huge integers exact, and they do not fit a float.
+        raise InputError(f"{where} must be a number") from None
+    require(math.isfinite(number), f"{where} must be a number")
+    require(number > 0 if positive else number >= 0, f"{where} must be {'more than 0' if positive else '0 or more'}")
+    return number
 
 
 def load_cap_table(path: str) -> dict:

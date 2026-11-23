@@ -421,6 +421,15 @@ def test_non_finite_number_exits_1(capsys, argv):
     fails(capsys, *argv)
 
 
+def test_oversized_json_integer_in_a_cap_table_exits_1(tmp_path, capsys):
+    # json.loads keeps huge integers exact; converting one to float raises OverflowError.
+    path = tmp_path / "cap.json"
+    path.write_text('{"holders": [{"name": "A", "shares": -1' + "0" * 400 + "}]}")
+    fails(capsys, "safes", "--cap-table", str(path))
+    path.write_text('{"holders": [{"name": "A", "shares": 1' + "0" * 400 + "}]}")
+    fails(capsys, "safes", "--cap-table", str(path))
+
+
 def test_non_finite_amount_in_a_spec_or_cap_table_exits_1(tmp_path, capsys):
     path = tmp_path / "cap.json"
     path.write_text(json.dumps({"holders": [{"name": "A", "shares": 1000}]}))
