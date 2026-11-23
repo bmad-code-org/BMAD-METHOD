@@ -186,6 +186,14 @@ def require(condition: bool, message: str) -> None:
         raise InputError(message)
 
 
+def finite(text: str) -> float:
+    """float(text) without the inf, nan and overflow (1e309) that float() accepts."""
+    value = float(text)
+    if not math.isfinite(value):
+        raise ValueError(f"not a finite number: {text!r}")
+    return value
+
+
 def growth(pct: float, name: str) -> float:
     require(pct > -100, f"{name} must be above -100")
     return pct / 100
@@ -195,11 +203,11 @@ def growth(pct: float, name: str) -> float:
 
 
 RUNWAY_KEYS = {
-    "cash": ("cash", float),
-    "costs": ("costs", float),
-    "revenue": ("revenue", float),
-    "revenue-growth": ("revenue_growth", float),
-    "cost-growth": ("cost_growth", float),
+    "cash": ("cash", finite),
+    "costs": ("costs", finite),
+    "revenue": ("revenue", finite),
+    "revenue-growth": ("revenue_growth", finite),
+    "cost-growth": ("cost_growth", finite),
     "start": ("start", str),
     "max-months": ("max_months", int),
 }
@@ -434,7 +442,10 @@ def market_size(accounts: float, annual_price: float, reachable: float = 100.0, 
 def _number(value, where: str, *, positive: bool = False, optional: bool = False) -> float | None:
     if value is None and optional:
         return None
-    require(isinstance(value, (int, float)) and not isinstance(value, bool), f"{where} must be a number")
+    require(
+        isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value),
+        f"{where} must be a number",
+    )
     require(value > 0 if positive else value >= 0, f"{where} must be {'more than 0' if positive else '0 or more'}")
     return float(value)
 
@@ -490,7 +501,7 @@ def parse_safe(text: str) -> dict:
     for key, value in zip(("amount", "cap", "discount"), parts[1:], strict=False):
         if value:
             try:
-                entry[key] = float(value)
+                entry[key] = finite(value)
             except ValueError:
                 raise InputError(f"--safe {parts[0]!r}: {key} must be a number: {value!r}") from None
     return entry
@@ -711,7 +722,7 @@ def parse_dated(text: str, kind: str) -> tuple[str, str, float]:
     name, month, amount = parts[0].strip(), parts[1].strip(), parts[2].strip()
     parse_month(month)
     try:
-        value = float(amount)
+        value = finite(amount)
     except ValueError:
         raise InputError(f"{kind} {name!r}: amount must be a number: {amount!r}") from None
     return name, month, value
@@ -825,11 +836,11 @@ def build_parser() -> Parser:
         return sub.add_parser(name, help=summary, description=summary[0].upper() + summary[1:] + ".", **kwargs)
 
     p = command("runway", "company runway and default alive, simulated month by month")
-    p.add_argument("--cash", type=float, required=True, help="cash in the bank now")
-    p.add_argument("--costs", type=float, required=True, help="monthly gross costs: net burn plus revenue")
-    p.add_argument("--revenue", type=float, default=0.0, help="current monthly revenue (default 0)")
-    p.add_argument("--revenue-growth", type=float, default=0.0, help="monthly revenue growth in percent, 5 for 5%%")
-    p.add_argument("--cost-growth", type=float, default=0.0, help="monthly cost growth in percent, 5 for 5%%")
+    p.add_argument("--cash", type=finite, required=True, help="cash in the bank now")
+    p.add_argument("--costs", type=finite, required=True, help="monthly gross costs: net burn plus revenue")
+    p.add_argument("--revenue", type=finite, default=0.0, help="current monthly revenue (default 0)")
+    p.add_argument("--revenue-growth", type=finite, default=0.0, help="monthly revenue growth in percent, 5 for 5%%")
+    p.add_argument("--cost-growth", type=finite, default=0.0, help="monthly cost growth in percent, 5 for 5%%")
     p.add_argument("--start", help="month 1 as YYYY-MM, usually the current month; needed for zero_cash_month")
     p.add_argument("--max-months", type=int, default=60, help="months to simulate (default 60)")
     p.add_argument(
@@ -840,27 +851,27 @@ def build_parser() -> Parser:
     p.set_defaults(func=run_runway)
 
     p = command("personal-runway", "how long savings last after quitting a job, keeping a buffer")
-    p.add_argument("--savings", type=float, required=True, help="personal savings now")
-    p.add_argument("--monthly-costs", type=float, required=True, help="personal monthly costs")
-    p.add_argument("--monthly-income", type=float, default=0.0, help="monthly side income (default 0)")
-    p.add_argument("--buffer-months", type=float, default=0.0, help="months of costs to keep untouched (default 0)")
+    p.add_argument("--savings", type=finite, required=True, help="personal savings now")
+    p.add_argument("--monthly-costs", type=finite, required=True, help="personal monthly costs")
+    p.add_argument("--monthly-income", type=finite, default=0.0, help="monthly side income (default 0)")
+    p.add_argument("--buffer-months", type=finite, default=0.0, help="months of costs to keep untouched (default 0)")
     p.add_argument("--start", help="month 1 as YYYY-MM, usually the current month; needed for buffer_reached_month")
     p.set_defaults(
         func=lambda a: personal_runway(a.savings, a.monthly_costs, a.monthly_income, a.buffer_months, a.start)
     )
 
     p = command("unit-economics", "LTV, LTV:CAC and CAC payback")
-    p.add_argument("--arpa", type=float, required=True, help="monthly revenue per account")
-    p.add_argument("--gross-margin", type=float, required=True, help="gross margin in percent, 80 for 80%%")
-    p.add_argument("--cac", type=float, required=True, help="cost to acquire one account")
-    p.add_argument("--churn", type=float, required=True, help="monthly churn in percent, 3 for 3%%")
+    p.add_argument("--arpa", type=finite, required=True, help="monthly revenue per account")
+    p.add_argument("--gross-margin", type=finite, required=True, help="gross margin in percent, 80 for 80%%")
+    p.add_argument("--cac", type=finite, required=True, help="cost to acquire one account")
+    p.add_argument("--churn", type=finite, required=True, help="monthly churn in percent, 3 for 3%%")
     p.set_defaults(func=lambda a: unit_economics(a.arpa, a.gross_margin, a.cac, a.churn))
 
     p = command("market-size", "bottom-up market size from accounts times annual price")
-    p.add_argument("--accounts", type=float, required=True, help="number of accounts in the market")
-    p.add_argument("--annual-price", type=float, required=True, help="price per account per year")
-    p.add_argument("--reachable", type=float, default=100.0, help="share reachable in percent (default 100)")
-    p.add_argument("--win-rate", type=float, default=100.0, help="share of reachable won in percent (default 100)")
+    p.add_argument("--accounts", type=finite, required=True, help="number of accounts in the market")
+    p.add_argument("--annual-price", type=finite, required=True, help="price per account per year")
+    p.add_argument("--reachable", type=finite, default=100.0, help="share reachable in percent (default 100)")
+    p.add_argument("--win-rate", type=finite, default=100.0, help="share of reachable won in percent (default 100)")
     p.set_defaults(func=lambda a: market_size(a.accounts, a.annual_price, a.reachable, a.win_rate))
 
     p = command(
@@ -871,11 +882,11 @@ def build_parser() -> Parser:
         + CAP_TABLE_SCHEMA,
     )
     p.add_argument("--cap-table", required=True, help="path to the cap table JSON")
-    p.add_argument("--pre-money", type=float, help="pre-money valuation; overrides round.pre_money")
-    p.add_argument("--new-money", type=float, help="amount raised in this round; overrides round.new_money")
+    p.add_argument("--pre-money", type=finite, help="pre-money valuation; overrides round.pre_money")
+    p.add_argument("--new-money", type=finite, help="amount raised in this round; overrides round.new_money")
     p.add_argument(
         "--pool-target",
-        type=float,
+        type=finite,
         help="unallocated pool after the round in percent of post-money, 10 for 10%%; overrides round.pool_target_post",
     )
     p.add_argument("--safe", action="append", help=SAFE_HELP)
@@ -892,10 +903,10 @@ def build_parser() -> Parser:
     p.set_defaults(func=run_safes)
 
     p = command("model", "monthly operating model with dated hires and one-off costs, written to CSV")
-    p.add_argument("--cash", type=float, required=True, help="cash in the bank now")
-    p.add_argument("--revenue", type=float, default=0.0, help="current monthly revenue (default 0)")
-    p.add_argument("--revenue-growth", type=float, default=0.0, help="monthly revenue growth in percent, 5 for 5%%")
-    p.add_argument("--costs", type=float, required=True, help="monthly base costs, flat")
+    p.add_argument("--cash", type=finite, required=True, help="cash in the bank now")
+    p.add_argument("--revenue", type=finite, default=0.0, help="current monthly revenue (default 0)")
+    p.add_argument("--revenue-growth", type=finite, default=0.0, help="monthly revenue growth in percent, 5 for 5%%")
+    p.add_argument("--costs", type=finite, required=True, help="monthly base costs, flat")
     p.add_argument("--months", type=int, default=24, help="months to model (default 24)")
     p.add_argument("--start", required=True, help="month 1 as YYYY-MM, usually the current month")
     p.add_argument("--hire", action="append", help="repeatable 'role:YYYY-MM:monthly_cost', cost runs from that month")
