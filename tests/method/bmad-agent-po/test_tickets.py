@@ -2419,7 +2419,6 @@ class TitleSlugTests(unittest.TestCase):
 class FractalStoreAndMetadataTests(TreeCase):
     def setUp(self):
         super().setUp()
-        (self.root / "_bmad" / "scripts").mkdir()
         shutil.copy(CONFIG_UTILS, self.root / "_bmad" / "scripts" / "config_utils.py")
         self.configure("initiative-checkout")
 
@@ -2942,7 +2941,7 @@ class FractalStoreAndMetadataTests(TreeCase):
             ("companions: [true]", "companions"),
         ):
             (epic / "epic-cart.md").write_text(f"---\ntype: epic\n{bad_fm}\n---\n")
-            self.fails(run("status", str(epic)), field)
+            self.fails(run("--project-root", str(self.root), "status", str(epic)), field)
 
     def test_has_spec_and_open_questions_count(self):
         # 1. Frontmatter-only stub -> has_spec false

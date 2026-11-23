@@ -1035,12 +1035,9 @@ def is_parent(folder: Path) -> bool:
 
 def _safe_frontmatter(path: Path) -> dict | None:
     try:
-        text = read_text(path).replace("\r\n", "\n")
-    except (OSError, UnicodeDecodeError):
-        return None
-    if text == "---\n---" or text.startswith("---\n---\n"):
-        return {}
-    if not FRONTMATTER_RE.match(text):
+        text = read_text(path)
+        frontmatter.split(text)
+    except (OSError, UnicodeDecodeError, ValueError):
         return None
     try:
         return parse_frontmatter(text, path.name)
@@ -1180,7 +1177,7 @@ def file_open_questions(path: Path) -> int:
     if not path.is_file():
         return 0
     text = read_text(path).replace("\r\n", "\n")
-    body = COMMENT_RE.sub("", FRONTMATTER_RE.sub("", text, count=1))
+    body = COMMENT_RE.sub("", body_of(text))
     return sum(1 for _ in OPEN_QUESTION_RE.finditer(body))
 
 
@@ -1204,7 +1201,7 @@ def container_metadata(
         where = f"{folder.name}/{own.name}"
         raw_text = read_text(own).replace("\r\n", "\n")
         fm = parse_frontmatter(raw_text, where)
-        body = COMMENT_RE.sub("", FRONTMATTER_RE.sub("", raw_text, count=1))
+        body = COMMENT_RE.sub("", body_of(raw_text))
         has_spec = bool(root["refined"] and any(line.strip() for line in section_lines(body, "Requirements")))
         sources = _str_list(fm.get("sources"), where, "sources")
         raw_companions = _str_list(fm.get("companions"), where, "companions")
