@@ -7,6 +7,7 @@ description: "Reusable corporate branding package: logos, DESIGN.md tokens, BRAN
 not_for: "Single-product UI screens and state flows (`ux-system`, `ux-epic`); marketing website page structure (`website-design`); brownfield UI usability audit (`ux-audit`)."
 agents: [bmad-agent-ux-designer]
 companions: [DESIGN.md, BRAND.md]
+mode: freeform
 facilitation_order: [brand-essence-and-positioning, comp-and-aesthetic-direction, logo-and-mark-system, color-and-typography-system, voice-and-imagery, brand-applications-and-bmad-reuse, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md
@@ -22,7 +23,7 @@ updated: ""
 
 <!-- stance: Coach non-designers step by step with concrete choices rather than abstract branding buzzwords. Never impose a generic template aesthetic. Push for distinct visual character, crisp typography, verified contrast, and flat-first scalable marks that survive monochrome and 32x32 favicon rendering. -->
 
-<!-- opening: Ask what the company or brand does, who it wants to look trustworthy or exciting to, and whether any logo, site, screenshots, or colors already exist in `imports/`. If starting fresh, offer to explore real visual comps and interactive color registers before locking anything. -->
+<!-- opening: When the user brings an existing `DESIGN.md`, run `uv run "{project-root}/_bmad/method/scripts/lint_ux.py" --project-root "{project-root}" <path>` upfront so broken tokens, hexes, or section order surface immediately. Ask what the company or brand does, who it wants to look trustworthy or exciting to, whether formal accessibility standards (such as WCAG AA contrast) should be enforced across the brand system, and whether any logo, site, screenshots, or colors already exist in `imports/`. -->
 
 <!-- inputs: Company positioning, target audience feel, existing brand files/assets in `{run}/imports/`, visual comps/anti-patterns, and user picks across rendered options. -->
 

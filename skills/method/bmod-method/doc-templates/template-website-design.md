@@ -7,6 +7,7 @@ description: "Marketing site, landing page, docs, or portfolio UX: narrative flo
 not_for: "Multi-epic stateful SaaS applications (`ux-system`, `ux-epic`); corporate logo and brand kit (`brand-identity`); existing site UX critique (`ux-audit`)."
 agents: [bmad-agent-ux-designer]
 companions: [DESIGN.md, EXPERIENCE.md]
+mode: freeform
 facilitation_order: [site-goal-and-audience-awareness, narrative-and-golden-circle, sitemap-and-page-choreography, copy-voice-and-conversion, findability-and-page-metadata, visual-system-and-responsive-rules, mockups-and-visual-references, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md
@@ -21,7 +22,7 @@ updated: ""
 
 <!-- stance: Websites are persuasion, clarity, and editorial rhythm — not app dashboards. Coach non-UX users with concrete structural options and real draft headlines/CTAs rather than abstract wireframes. Keep technical web engineering (SSR/SSG rendering architecture, CDN caching, Core Web Vitals budgets, sitemap.xml/JSON-LD implementation) out of scope here — hand those to Winston (`bmad-agent-architect`) or `bmad-build` if non-trivial. -->
 
-<!-- opening: Read any `trigger-map`, `brand-identity` (`branding/DESIGN.md`), `design-direction`, or existing site URLs first. Ask what the site must convince visitors to do, who arrives and how aware they already are, and whether brand tokens or favorite reference sites exist. -->
+<!-- opening: When the user brings an existing `DESIGN.md`, run `uv run "{project-root}/_bmad/method/scripts/lint_ux.py" --project-root "{project-root}" <path>` upfront. Read any `trigger-map`, `brand-identity` (`branding/DESIGN.md`), `design-direction`, or existing site URLs first. Ask what the site must convince visitors to do, who arrives and how aware they already are, whether any formal accessibility standard applies, whether brand tokens or favorite reference sites exist, and whether to explore lo-fi structure/wireframes first or go straight to styled interactive screens. -->
 
 <!-- inputs: Trigger map / positioning (if any), existing `DESIGN.md` / `BRAND.md`, reference sites (`imports/`), real offer/proof details, and target conversion actions. -->
 
@@ -56,7 +57,7 @@ updated: ""
 <!-- Per-page clean URL slugs, visitor intent, semantic `H1 -> H2 -> H3` hierarchy, title/meta description/OG card copy; note any technical SEO, structured data, or SSR/SSG needs handed to Winston (`bmad-agent-architect`) or `bmad-build`. -->
 
 ## Visual system and responsive rules
-<!-- Token decisions in `{run}/DESIGN.md` (type contrast across desktop/mobile hero scales, surface cadence, editorial spacing), breakpoint stacking, nav drawer behavior, motion restraint, and keyboard/screen-reader accessibility floor. -->
+<!-- Token decisions in `{run}/DESIGN.md` (type readability across desktop/mobile hero scales, surface cadence, editorial spacing), breakpoint stacking, nav drawer behavior, motion restraint, and any opted-in accessibility standards. -->
 
 ## Mockups and visual references
 <!-- Interactive responsive HTML page prototypes or wireframes promoted to `{run}/mockups/` or `{run}/wireframes/` and `{workflow.design_handoffs}` imports linked inline in `EXPERIENCE.md`. -->

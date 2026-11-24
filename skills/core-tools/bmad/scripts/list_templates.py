@@ -30,8 +30,8 @@ and come back resolved; a bare name with no extension, such as `slides`, and com
 come back as written. `companions` and `forbid_id_prefixes` come back as lists.
 
 `mode` is the mode a run starts in and `view` whether a rendered view is made: the first `--libraries-of`
-skill's `workflow` value when set, else the template's, else `step-by-step` and `offer`; with `order: fixed`,
-`freeform` becomes `step-by-step`. A value not allowed (`step-by-step`, `freeform` or `fast`; `offer`, `always`
+skill's `workflow` value when set, else the template's, else `freeform` and `offer`; with `order: fixed`,
+`freeform` becomes `step-by-step`. A value not allowed (`freeform`, `step-by-step` or `fast`; `offer`, `always`
 or `never`; `order` other than `fixed`) is skipped and named in `order_problems`. `style` is the customization's when set, else the
 template's. An extension's empty `mode`, `order`, `lint`, `companions` or `forbid_id_prefixes` clears the template's.
 
@@ -83,7 +83,7 @@ FIELDS = (
 )  # fmt: skip
 LIST_CLEARABLE = ("companions", "forbid_id_prefixes")
 CLEARABLE = ("mode", "order", "lint", *LIST_CLEARABLE)
-MODES = ("step-by-step", "freeform", "fast")
+MODES = ("freeform", "step-by-step", "fast")
 VIEWS = ("offer", "always", "never")
 ALLOWED = {"mode": MODES, "view": VIEWS, "order": ("fixed",)}
 SECTION = re.compile(r"^##[ \t]+(.+?)[ \t#]*$")

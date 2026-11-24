@@ -564,12 +564,12 @@ def listed_mode(tmp_path, capsys, front: str = "", team: str | None = None, user
     return found
 
 
-def test_with_nothing_set_a_walk_is_step_by_step(tmp_path, capsys):
-    assert listed_mode(tmp_path, capsys)["mode"] == "step-by-step"
+def test_with_nothing_set_a_walk_is_freeform(tmp_path, capsys):
+    assert listed_mode(tmp_path, capsys)["mode"] == "freeform"
 
 
 def test_a_template_sets_its_own_mode(tmp_path, capsys):
-    assert listed_mode(tmp_path, capsys, front="mode: freeform\n")["mode"] == "freeform"
+    assert listed_mode(tmp_path, capsys, front="mode: step-by-step\n")["mode"] == "step-by-step"
 
 
 def test_an_extension_changes_one_templates_mode(tmp_path, capsys):
@@ -585,6 +585,7 @@ def test_the_users_mode_beats_the_teams(tmp_path, capsys):
 
 
 def test_a_fixed_order_turns_freeform_into_step_by_step_but_keeps_fast(tmp_path, capsys):
+    assert listed_mode(tmp_path / "a", capsys, front="order: fixed\n")["mode"] == "step-by-step"
     assert listed_mode(tmp_path, capsys, front="order: fixed\n", team="freeform")["mode"] == "step-by-step"
     assert listed_mode(tmp_path / "b", capsys, front="order: fixed\n", team="fast")["mode"] == "fast"
 
@@ -624,7 +625,7 @@ def test_an_extensions_bad_value_is_named_and_the_templates_kept(tmp_path):
     found = list_templates.scan([str(tmp_path)])["templates"][0]
     assert (found["mode"], found["order"]) == ("fast", "fixed")
     assert found["order_problems"] == [
-        f"`mode` in {tmp_path / 'e.md'} is `quick`, not one of step-by-step, freeform, fast, so it is ignored",
+        f"`mode` in {tmp_path / 'e.md'} is `quick`, not one of freeform, step-by-step, fast, so it is ignored",
         f"`order` in {tmp_path / 'e.md'} is `true`, not one of fixed, so it is ignored",
     ]
 
@@ -639,7 +640,7 @@ def test_an_unknown_mode_is_named_and_skipped(tmp_path, capsys):
     found = listed_mode(tmp_path, capsys, front="mode: freeform\n", team="quick")
     assert found["mode"] == "freeform"
     assert found["order_problems"] == [
-        "`mode` in the customization is `quick`, not one of step-by-step, freeform, fast, so it is ignored"
+        "`mode` in the customization is `quick`, not one of freeform, step-by-step, fast, so it is ignored"
     ]
 
 

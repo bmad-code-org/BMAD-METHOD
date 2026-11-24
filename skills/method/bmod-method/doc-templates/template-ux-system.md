@@ -20,7 +20,7 @@ updated: ""
 
 <!-- stance: Elicit and capture the user's design direction — never impose a house style or volunteer colors unless a brand/system is already confirmed. Coach non-UX users by showing concrete options via `{workflow.creative_tools}` or dissecting real examples rather than asking UX theory questions. Read `{skill-root}/references/design-md-spec.md`, `{workflow.design_md_examples}`, `{workflow.experience_md_examples}`, and `{skill-root}/references/external-design-tools.md` when external tools or imports are used. Apply the Coupling Test: system tokens, shared chrome, global interaction primitives, and accessibility floor live here; per-epic screen details, field microcopy, and epic mockups wait for `ux-epic`. -->
 
-<!-- opening: Read any active ticket (`initiative-*.md` or `program-*.md`), `trigger-map`, `branding/DESIGN.md`, `design-direction`, PRD, or existing codebase/design system before asking anything. Confirm form-factor (mobile, web, desktop, or multi-surface), whether an existing brand kit or UI library (such as shadcn, MUI, UIKit, Compose, or an internal system) is inherited, and where visual explorations (`{workflow.creative_tools}`) or external tools (`{workflow.design_handoffs}`) help. -->
+<!-- opening: When the user brings an existing `DESIGN.md` or `EXPERIENCE.md`, run `uv run "{project-root}/_bmad/method/scripts/lint_ux.py" --project-root "{project-root}" <path>` upfront so hex, section-order, contrast, or token issues surface early. Read any active ticket (`initiative-*.md` or `program-*.md`), `trigger-map`, `branding/DESIGN.md`, `design-direction`, PRD, or existing codebase/design system before asking anything. Confirm form-factor, whether a brand kit or UI library (such as shadcn or an internal system) is inherited, whether any formal accessibility standard should apply (opt-in — keep only basic human legibility if none is requested), whether to explore lo-fi structure/flows first or go straight to styled visual explorations (`{workflow.creative_tools}`), and where external tools (`{workflow.design_handoffs}`) help. -->
 
 <!-- inputs: Ticket Requirements, `trigger-map` / `design-direction`, PRD journeys and invariants, existing `branding/` kit or `imports/`, and user-confirmed aesthetic, typography, and behavioral trade-offs. -->
 
@@ -52,7 +52,7 @@ updated: ""
 <!-- Capture shared component anatomy/tokens (`DESIGN.md#components`), behavioral component rules (`EXPERIENCE.md#component-patterns`), and global empty, loading, error, offline, focus, and permission states (`EXPERIENCE.md#state-patterns`). -->
 
 ## Interaction and accessibility
-<!-- Lock shared interaction primitives, banned anti-patterns, voice/microcopy posture, and the behavioral accessibility floor (`EXPERIENCE.md#accessibility-floor` — screen-reader semantics, focus traversal, target sizes, reduced motion). -->
+<!-- Lock shared interaction primitives, banned anti-patterns, voice/microcopy posture, and baseline legibility — adding formal accessibility rules (`EXPERIENCE.md#accessibility-floor` — WCAG targets, ARIA traversal, reduced motion) only when opted in or required by stakes. -->
 
 ## Key system flows
 <!-- Named-protagonist journeys (`EXPERIENCE.md#key-flows`) covering cross-epic navigation and primary end-to-end loops with numbered steps, climax beat, and failure paths, citing ticket/PRD journey IDs verbatim. -->

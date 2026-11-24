@@ -7,6 +7,7 @@ description: "Lightweight single-flow UX spec: compact EXPERIENCE.md, states, an
 not_for: "Multi-epic shared design systems (`ux-system`); full multi-screen epic contracts under an initiative (`ux-epic`); public marketing websites (`website-design`); trivial UI edits matching existing patterns (`bmad-build`)."
 agents: [bmad-agent-ux-designer]
 companions: [EXPERIENCE.md]
+mode: fast
 facilitation_order: [goal-and-surfaces, key-flow, states-and-microcopy, visual-direction-and-mockups, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md
@@ -18,9 +19,9 @@ updated: ""
 
 <!-- purpose: Fast, focused UX contract for a single-flow feature, internal tool, CLI/dashboard panel, or clickable prototype without full system-spine overhead. -->
 
-<!-- stance: Keep the footprint proportional to a single flow. Coach with concrete options and interactive previews; inherit existing app or brand styles (`DESIGN.md` or shipped CSS) rather than inventing a new token system when modifying shipped UI. -->
+<!-- stance: Keep the footprint proportional to a single flow and stay light and fluid while exploring prototypes or rough comps. Coach with concrete options and interactive previews; inherit existing app or brand styles (`DESIGN.md` or shipped CSS) rather than inventing a new token system when modifying shipped UI, and offer to harden the settled flow into fuller durable UX contracts once the direction clicks. -->
 
-<!-- opening: Read any ticket, existing UI code, `branding/DESIGN.md`, or user sketch first. Confirm the single primary surface, target device/form-factor, whether existing app styles govern visuals, and whether an interactive HTML prototype or Excalidraw sketch helps. -->
+<!-- opening: Read any ticket, existing UI code, `branding/DESIGN.md`, or user sketch first. Confirm the single primary surface, target device/form-factor, whether existing app styles govern visuals, and whether to explore lo-fi structure/flows first or jump straight to styled interactive screens. -->
 
 <!-- inputs: Ticket or user prompt, existing UI styles/components (if brownfield), `imports/`, and desired flow/state behavior. -->
 
@@ -45,7 +46,7 @@ updated: ""
 <!-- Primary named-protagonist flow end-to-end with entry trigger, numbered steps, climax beat, and failure branch. -->
 
 ## States and microcopy
-<!-- Concise table covering empty, loading, error, and success states, exact microcopy strings, and keyboard/accessibility essentials. -->
+<!-- Concise table covering empty, loading, error, and success states plus exact microcopy strings (include keyboard/accessibility notes only if requested or inherited). -->
 
 ## Visual direction and mockups
 <!-- Existing styles inherited (or key visual picks) plus any `{workflow.creative_tools}` interactive prototype or wireframe promoted to `{run}/mockups/` or `{run}/wireframes/`. -->

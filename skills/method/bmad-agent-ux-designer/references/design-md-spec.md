@@ -1,6 +1,4 @@
-# DESIGN.md Spec — Working Reference
-
-Source of truth: [google-labs-code/design.md](https://github.com/google-labs-code/design.md) (Apache 2.0, Google Labs, April 2026). This file is a working summary; the URL wins on conflict.
+# DESIGN.md Spec
 
 ## Structure
 

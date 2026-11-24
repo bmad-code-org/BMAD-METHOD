@@ -20,7 +20,7 @@ updated: ""
 
 <!-- stance: Ground every finding in verified UI code paths, rendered screenshots, or `DESIGN.md`/`EXPERIENCE.md` mismatches — never vague taste opinions. Lead with the highest-impact user friction and broken flows first. Coach non-UX users in plain language explaining *why* each issue confuses or blocks real users. -->
 
-<!-- opening: Inspect the target frontend files, live app/screenshots (`imports/`), and any `DESIGN.md`/`EXPERIENCE.md` or `branding/` contract first. Play back what surfaces exist and ask where users struggle, hesitate, or get stuck today. -->
+<!-- opening: When the project includes `DESIGN.md` or `EXPERIENCE.md`, run `uv run "{project-root}/_bmad/method/scripts/lint_ux.py" --project-root "{project-root}" <path>` upfront so broken tokens, contrast, and order bugs surface first. Inspect the target frontend files, live app/screenshots (`imports/`), and any `branding/` contract first. Play back what surfaces exist, ask where users struggle today, and confirm whether formal WCAG/accessibility compliance is part of the audit scope. -->
 
 <!-- inputs: Shipped frontend components/routes/styles, screenshots or recordings in `imports/`, support complaints/user feedback, and governing `DESIGN.md`/`EXPERIENCE.md` (if any). -->
 

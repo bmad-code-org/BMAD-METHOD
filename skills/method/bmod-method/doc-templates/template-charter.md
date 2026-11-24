@@ -5,6 +5,7 @@ version: 1.4.0
 description: "A program's mandate, benefits, scope and governance across its initiatives."
 not_for: "A program's outcomes, guardrails, rollout strategy and initiative map (`prd-program`); a single initiative (`brief` or `prd`); funding one piece of work (`business-case`); choosing a strategy (`narrative`)."
 agents: [bmad-agent-analyst, bmad-agent-pm]
+mode: step-by-step
 facilitation_order: [justification, vision, strategic-alignment, benefits, scope, initiatives, rules, stakeholders, governance, timeline, risks-and-issues]
 guidance: guidance-method.md
 rubric: rubric-planning.md

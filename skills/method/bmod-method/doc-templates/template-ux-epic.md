@@ -7,6 +7,7 @@ description: "Epic UX design: inherits system DESIGN.md; defines epic screens, f
 not_for: "Initiative-wide design tokens and global IA (`ux-system`); public marketing site (`website-design`); a standalone small tool with no parent system (`ux-quick`); a single story fitting existing screens and tokens (`bmad-build`)."
 agents: [bmad-agent-ux-designer]
 companions: [EXPERIENCE.md]
+mode: freeform
 facilitation_order: [context-and-inherited-system, screens-and-ia, flows-and-journeys, states-and-edge-cases, component-and-visual-deltas, microcopy-and-accessibility, mockups-and-visual-references, system-impact-and-deferred, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md
@@ -20,7 +21,7 @@ updated: ""
 
 <!-- stance: Design strictly inside this epic. Inherit parent `DESIGN.md` and `ux-system` rules read-only without copying tokens or restating global IA. Coach non-UX users with interactive visual previews and concrete flow walkthroughs rather than abstract jargon. Keep per-story task lists and implementation code out — `bmad-build` plans those against live code. -->
 
-<!-- opening: Read the epic ticket (`epic-*.md`), `prd-epic` (if any), parent `ux-system` (`DESIGN.md` + `EXPERIENCE.md`, if any), `arch-spine`/`arch-epic` constraints, and affected shipped UI before asking anything. Play back what parent UX and code already settle, then focus on the screens, flows, edge states, and microcopy this epic introduces. -->
+<!-- opening: When the user brings an existing `DESIGN.md` or `EXPERIENCE.md`, run `uv run "{project-root}/_bmad/method/scripts/lint_ux.py" --project-root "{project-root}" <path>` upfront so structural, token, or order issues surface early. Read the epic ticket (`epic-*.md`), `prd-epic` (if any), parent `ux-system` (`DESIGN.md` + `EXPERIENCE.md`, if any), `arch-spine`/`arch-epic` constraints, and affected shipped UI before asking anything. Play back what parent UX and code already settle, ask whether to explore lo-fi flows/wireframes first or go straight to styled interactive screens, then focus on the screens, flows, edge states, and microcopy this epic introduces. -->
 
 <!-- inputs: Epic ticket Requirements (`R<n>`), `prd-epic` (`E0X-FR-xx`, journeys, error paths), parent `DESIGN.md` / `ux-system`, live UI components, `imports/`, and user interaction preferences. -->
 
@@ -55,7 +56,7 @@ updated: ""
 <!-- Epic-specific component behaviors (`EXPERIENCE.md#component-patterns`) and any local visual tokens or extensions referencing inherited `{path.to.token}` values (or recorded in local `DESIGN.md` delta). -->
 
 ## Microcopy and accessibility
-<!-- Specific UI copy Do/Don't examples, empty/error wording, keyboard traversal, ARIA/screen-reader announcements, and target-size/contrast notes beyond parent floor. -->
+<!-- Specific UI copy Do/Don't examples, empty/error wording, and readability notes — covering keyboard traversal, ARIA announcements, or contrast deltas only when opted in or inherited from parent standards. -->
 
 ## Mockups and visual references
 <!-- List `{workflow.creative_tools}` renders promoted to `{run}/mockups/` or `{run}/wireframes/`, user `imports/`, or `{workflow.design_handoffs}` outputs, noting which `EXPERIENCE.md` section links each. -->

@@ -13,6 +13,7 @@ One self-contained HTML/CSS/JS prototype per load-bearing screen (or a linked mu
 - **Live state switcher:** toolbar at top/corner letting the user flip cleanly between Canonical / Populated, Empty, Loading, Error/Validation, and Light/Dark modes in place.
 - **Viewport toggle:** quick switch between target mobile and desktop widths when responsive behavior is in scope.
 - **Tactile interactions & SVG craft:** working tabs, modals, filter pills, focus states, and crisp SVG icons/illustrations tailored to the domain — zero external requests, zero lorem ipsum.
+- **Responsive integrity:** confirm zero horizontal overflow, clipped text, or broken wrapping across both desktop and phone viewports before returning.
 - Annotate governing `EXPERIENCE.md` / `DESIGN.md` sections in a `<style>` header comment. Present via the host's native artifact/preview tool when available alongside saving `.html`.
 
 ## What to return

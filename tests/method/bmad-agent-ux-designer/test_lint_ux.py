@@ -84,8 +84,11 @@ def test_wcag_contrast_math_flags_error_and_warning_pairs():
         "  muted-foreground: '#AAAAAA'\n"
         "  surface: '#FFFFFF'\n"
         "  on-surface: '#777777'\n"
+        "  surface-base: '#FFFFFF'\n"
+        "  ink-secondary: '#9E9E9E'\n"
         "  surface-base-dark: '#141413'\n"
         "  ink-primary-dark: '#222222'\n"
+        "  ink-muted-dark: '#333333'\n"
         "---\n"
     )
     res = lint_ux.scan([("DESIGN.md", design)])
@@ -95,7 +98,9 @@ def test_wcag_contrast_math_flags_error_and_warning_pairs():
     assert by_pair["muted-foreground / muted"]["ratio"] < 3.0
     assert by_pair["on-surface / surface"]["severity"] == "warning"
     assert 3.0 <= by_pair["on-surface / surface"]["ratio"] < 4.5
+    assert by_pair["ink-secondary / surface-base"]["severity"] == "error"
     assert by_pair["ink-primary-dark / surface-base-dark"]["severity"] == "error"
+    assert by_pair["ink-muted-dark / surface-base-dark"]["severity"] == "error"
 
 
 def test_unresolved_tokens_and_parent_design_inheritance(tmp_path):

@@ -5,6 +5,7 @@ version: 1.4.0
 description: "What the business requires and signs for across a program or initiative a separate party builds."
 not_for: "Product work inside one organization (`opportunity`, `prd-program`, `prd`); a funding decision (`business-case`); what the system shall do, line by line (`srs`)."
 agents: [bmad-agent-analyst]
+mode: step-by-step
 facilitation_order: [objectives, stakeholders, scope, current-and-future-process, business-requirements, business-rules, constraints-and-assumptions, cost-and-benefit, traceability, open-questions, approval, summary]
 guidance: guidance-method.md
 rubric: rubric-planning.md
