@@ -109,6 +109,16 @@ def _find_closing_backticks(line: str, open_idx: int, tick_len: int) -> int:
     return -1
 
 
+def _is_escaped(line: str, pos: int) -> bool:
+    """Whether `line[pos]` is preceded by an odd number of backslashes."""
+    slashes = 0
+    idx = pos - 1
+    while idx >= 0 and line[idx] == "\\":
+        slashes += 1
+        idx -= 1
+    return slashes % 2 == 1
+
+
 def _has_closing_comment(lines: list[str], line_idx: int, col: int) -> bool:
     """Whether a bare `<!--` at (line_idx, col) has a matching `-->` later in `lines`."""
     if "-->" in lines[line_idx][col:]:
@@ -145,7 +155,7 @@ def prose_lines(text: str) -> list[str]:
                     break
                 in_comment = False
                 pos = end + 3
-            elif line[pos] == "`":
+            elif line[pos] == "`" and not _is_escaped(line, pos):
                 tick_end = pos
                 while tick_end < n and line[tick_end] == "`":
                     tick_end += 1

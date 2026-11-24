@@ -240,7 +240,7 @@ def test_sources_scalar_mapping_project_root_and_unresolved(tmp_path, capsys):
     assert scalar_res["undefined"] == {"OKR-9": [f"{child_scalar}:6"]}
     assert scalar_res["withdrawn"] == {"OQ-7": [f"{child_scalar}:6"]}
 
-    # Mapping source + unresolved local markdown path + known planning prefix catch when parent missing.
+    # Mapping source + unresolved local markdown path + locally-defined broken id check when parent missing.
     child_broken = tmp_path / "child-broken.md"
     child_broken.write_text(
         "---\n"
@@ -249,7 +249,8 @@ def test_sources_scalar_mapping_project_root_and_unresolved(tmp_path, capsys):
         '  - path: "{project-root}/out/missing-parent.md"\n'
         "  - https://example.com/spec.md\n"
         "---\n\n"
-        "- **E01-FR-01**: Cites OKR-9 and INV-7.\n",
+        "- **E01-FR-01**: Cites OKR-9 and INV-7.\n"
+        "- **E01-FR-02**: Depends on E01-FR-09.\n",
         encoding="utf-8",
     )
     assert check_ids.main([str(child_broken)]) == 0
@@ -257,9 +258,59 @@ def test_sources_scalar_mapping_project_root_and_unresolved(tmp_path, capsys):
     assert broken_res["unresolved_sources"] == [
         {"source": "{project-root}/out/missing-parent.md", "document": str(child_broken)}
     ]
-    assert broken_res["undefined"] == {
-        "INV-7": [f"{child_broken}:8"],
-        "OKR-9": [f"{child_broken}:8"],
+    assert broken_res["undefined"] == {"E01-FR-09": [f"{child_broken}:9"]}
+
+
+def test_pure_inherited_citation_table_and_transitive_sources_with_cycles(tmp_path, capsys):
+    (tmp_path / "_bmad").mkdir()
+    program = tmp_path / "program.md"
+    program.write_text(
+        "---\ntitle: Program\n---\n\n- **OKR-1**: Portfolio speed.\n- **INV-1**: Data stays isolated.\n",
+        encoding="utf-8",
+    )
+    initiative = tmp_path / "initiative.md"
+    initiative.write_text(
+        f"---\ntitle: Initiative\nsources:\n  - {program.name}\n---\n\n"
+        "- **BR-1**: Consent required.\n"
+        "- **OQ-7.** Withdrawn: resolved earlier.\n\n"
+        "| ID | Note |\n|---|---|\n| OKR-1 | Inherited from program |\n",
+        encoding="utf-8",
+    )
+    epic = tmp_path / "epic.md"
+    epic.write_text(
+        f"---\ntitle: Epic\nsources:\n  - {initiative.name}\n---\n\n"
+        "- **E01-FR-01**: Respects INV-1, advances OKR-1, and misses OKR-99.\n\n"
+        "| ID | Trace |\n|---|---|\n| BR-1 | Covered |\n| OQ-7 | Old |\n",
+        encoding="utf-8",
+    )
+
+    assert check_ids.main([str(epic)]) == 0
+    res = json.loads(capsys.readouterr().out)
+    assert res["unresolved_sources"] == []
+    assert res["duplicate"] == {}
+    assert res["undefined"] == {"OKR-99": [f"{epic}:7"]}
+    assert res["withdrawn"] == {"OQ-7": [f"{epic}:12"]}
+
+    cyc_a = tmp_path / "cyc-a.md"
+    cyc_b = tmp_path / "cyc-b.md"
+    cyc_a.write_text(f"---\nsources: {cyc_b.name}\n---\n\n- **FR-1**: A cites BR-1.\n", encoding="utf-8")
+    cyc_b.write_text(f"---\nsources: {cyc_a.name}\n---\n\n- **BR-1**: B cites FR-1.\n", encoding="utf-8")
+    assert check_ids.main([str(cyc_a)]) == 0
+    cyc_res = json.loads(capsys.readouterr().out)
+    assert cyc_res["undefined"] == {}
+    assert cyc_res["duplicate"] == {}
+
+
+def test_escaped_backticks_do_not_hide_comments():
+    text = (
+        "- **FR-1**: a\n"
+        "Escaped \\` <!-- FR-9 --> \\` in prose.\n"
+        "Doubled backslash \\\\`<!--` prefix still keeps FR-10 visible.\n"
+        "Real `code \\` <!-- FR-11 --> still strips after closing backtick (FR-12).\n"
+    )
+    assert report(text)["undefined"] == {
+        "FR-10": ["doc0.md:3"],
+        "FR-12": ["doc0.md:4"],
     }
 
 

@@ -176,6 +176,20 @@ def test_inline_backtick_and_unclosed_comment_do_not_hide_rest_of_document():
     assert res["toc"] == {"missing": {}, "stale": {}, "out_of_order": []}
 
 
+def test_escaped_backticks_do_not_preserve_hidden_comments():
+    text = (
+        "Escaped \\` <!-- TODO FR-9 --> \\` should still strip comments.\n"
+        "Escaped backslash \\\\`<!--` prefix still shows TODO.\n"
+        "Closed `span \\` <!-- TODO --> after marker TBD.\n"
+    )
+    res = report(text, forbid_prefixes=("FR",))
+    assert res["placeholders"] == [
+        {"kind": "marker", "text": "TODO", "location": "doc0.md:2"},
+        {"kind": "marker", "text": "TBD", "location": "doc0.md:3"},
+    ]
+    assert res["forbidden_prefix"] == {}
+
+
 def test_standalone_script_resolves_frontmatter_from_doc_root_and_exits_2_when_absent(tmp_path):
     isolated = tmp_path / "bin"
     isolated.mkdir()

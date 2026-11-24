@@ -16,16 +16,16 @@ list item or line defines it only when punctuation follows (`- REQ-3: ...`, ``- 
 `REQ-3 (withdrawn)`). An id that opens a list of ids (`REQ-1, REQ-2`, `REQ-1 to REQ-8`) is not a
 definition. Every other occurrence is a reference, and a range such as `REQ-1 to REQ-8` references
 each id in it. A table most of whose defining ids were already defined earlier in the target
-document(s), such as a traceability table, only references its ids. Fenced code blocks and closed
-HTML comments are skipped.
+document(s), or all of whose ids come from target or parent context (such as a traceability table),
+only references its ids. Fenced code blocks and closed HTML comments are skipped.
 
-Definitions in frontmatter `sources:` (scalar, list, or mapping `{path: ...}`) and `--context` files
-count as read-only parent context: valid citations resolve, redefinitions collide in `duplicate`,
-and unresolvable local markdown `sources:` entries appear in `unresolved_sources`. Unrecognized
-external hyphenated tokens (e.g. `UTF-8`, `UTC-5`) and out-of-order updates are not flagged.
+Definitions in transitive frontmatter `sources:` (scalar, list, or mapping `{path: ...}`) and
+`--context` files count as read-only parent context: valid citations resolve, redefinitions collide
+in `duplicate`, and unresolvable local markdown `sources:` entries appear in `unresolved_sources`.
+Unrecognized external hyphenated tokens (e.g. `UTF-8`, `UTC-5`) and out-of-order updates are not flagged.
 
 Prints JSON:
-  undefined           referenced but never defined, for defined, parent, or known planning prefixes
+  undefined           referenced but never defined, for prefixes defined in target or source files
   duplicate           defined more than once across target files or colliding with a parent context id
   withdrawn           defined as withdrawn, removed, dropped or superseded, yet still referenced
   unresolved_sources  local markdown `sources:` paths that could not be found on disk
@@ -39,7 +39,7 @@ import argparse
 import json
 import re
 import sys
-from collections import defaultdict
+from collections import defaultdict, deque
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -57,7 +57,6 @@ CONNECTOR = re.compile(rf"^(?:\*\*|`)*\s*(?:,|/|&|and\b|or\b|to\b|through\b|[–
 SEPARATOR = re.compile(r"^\s*(?:[:.()/–—]|-\s)")
 RANGE = re.compile(rf"({ID})(?:\*\*|`)*\s*(?:to|through|[–—-])\s*(?:\*\*|`)*({ID})")
 WITHDRAWN = re.compile(r"^[\s*`:.)(—–-]*(?:withdrawn|removed|dropped|superseded)\b", re.IGNORECASE)
-KNOWN_PLANNING_PREFIXES = frozenset({"AD", "BR", "CF", "CTR", "FR", "INIT", "INV", "OKR", "OQ", "REQ", "RULE", "UJ"})
 MAX_RANGE = 200
 
 
@@ -86,6 +85,16 @@ def _find_closing_backticks(line: str, open_idx: int, tick_len: int) -> int:
             return end
         pos = end
     return -1
+
+
+def _is_escaped(line: str, pos: int) -> bool:
+    """Whether `line[pos]` is preceded by an odd number of backslashes."""
+    slashes = 0
+    idx = pos - 1
+    while idx >= 0 and line[idx] == "\\":
+        slashes += 1
+        idx -= 1
+    return slashes % 2 == 1
 
 
 def _has_closing_comment(lines: list[str], line_idx: int, col: int) -> bool:
@@ -124,7 +133,7 @@ def prose_lines(text: str) -> list[str]:
                     break
                 in_comment = False
                 pos = end + 3
-            elif line[pos] == "`":
+            elif line[pos] == "`" and not _is_escaped(line, pos):
                 tick_end = pos
                 while tick_end < n and line[tick_end] == "`":
                     tick_end += 1
@@ -208,12 +217,6 @@ def split_id(token: str) -> tuple[str, int]:
     return prefix, int(number)
 
 
-def _is_known_prefix(prefix: str, active_prefixes: set[str]) -> bool:
-    if prefix in active_prefixes or prefix in KNOWN_PLANNING_PREFIXES:
-        return True
-    return "-" in prefix and prefix.rsplit("-", 1)[1] in KNOWN_PLANNING_PREFIXES
-
-
 def _project_root_for(start: Path) -> Path | None:
     cur = start if start.is_dir() else start.parent
     for root in (cur, *cur.parents):
@@ -269,14 +272,15 @@ def _resolve_source_path(raw: str, doc_path: Path) -> tuple[bool, Path | None]:
 
 
 def resolve_frontmatter_sources(file_paths: Iterable[Path]) -> tuple[list[tuple[str, str]], list[dict[str, str]]]:
-    """Read local markdown `sources:` referenced by `file_paths`; return `(contexts, unresolved)`."""
+    """Read transitive local markdown `sources:` referenced by `file_paths`, ancestors first."""
     paths = [p for p in file_paths if p.is_file()]
-    primary = {p.resolve() for p in paths}
-    seen = set(primary)
+    seen = {p.resolve() for p in paths}
+    queue: deque[tuple[Path, str, str]] = deque((p.resolve(), str(p), p.read_text(encoding="utf-8")) for p in paths)
     contexts: list[tuple[str, str]] = []
     unresolved: list[dict[str, str]] = []
-    for doc_path in paths:
-        fm_text, _, _ = split_frontmatter(doc_path.read_text(encoding="utf-8"))
+    while queue:
+        doc_path, display_path, text = queue.popleft()
+        fm_text, _, _ = split_frontmatter(text)
         if not fm_text:
             continue
         try:
@@ -284,20 +288,25 @@ def resolve_frontmatter_sources(file_paths: Iterable[Path]) -> tuple[list[tuple[
         except ValueError:
             continue
         for entry in _source_candidates(meta.get("sources")):
-            is_local_md, resolved = _resolve_source_path(entry, doc_path.resolve())
+            is_local_md, resolved = _resolve_source_path(entry, doc_path)
             if not is_local_md:
                 continue
             if resolved is None:
-                unresolved.append({"source": entry, "document": str(doc_path)})
+                unresolved.append({"source": entry, "document": display_path})
                 continue
             if resolved in seen:
                 continue
             seen.add(resolved)
-            contexts.append((str(resolved), resolved.read_text(encoding="utf-8")))
-    return contexts, unresolved
+            src_text = resolved.read_text(encoding="utf-8")
+            contexts.append((str(resolved), src_text))
+            queue.append((resolved, str(resolved), src_text))
+    return list(reversed(contexts)), unresolved
 
 
-def _index_files(files: list[tuple[str, str]]) -> tuple[dict[str, list[str]], dict[str, list[str]], set[str]]:
+def _index_files(
+    files: list[tuple[str, str]],
+    ctx_defined: set[str] | frozenset[str] = frozenset(),
+) -> tuple[dict[str, list[str]], dict[str, list[str]], set[str]]:
     defined: dict[str, list[str]] = defaultdict(list)
     referenced: dict[str, list[str]] = defaultdict(list)
     withdrawn: set[str] = set()
@@ -309,8 +318,11 @@ def _index_files(files: list[tuple[str, str]]) -> tuple[dict[str, list[str]], di
             withdrawn.add(token)
 
     def close_table() -> None:
-        # Only count ids defined earlier in the target files themselves when classifying reference tables.
-        cites = 2 * sum(token in defined for _, token, _ in table) > len(table)
+        if not table:
+            return
+        # Classify as citing if most rows are locally defined or all rows already exist in local/parent context.
+        local_hits = sum(token in defined for _, token, _ in table)
+        cites = 2 * local_hits > len(table) or all(token in defined or token in ctx_defined for _, token, _ in table)
         for where, token, rest in table:
             if cites:
                 referenced[token].append(where)
@@ -359,7 +371,7 @@ def scan(
         raw_ctx_def, _, ctx_withdrawn = _index_files(context_files)
         ctx_defined = dict(raw_ctx_def)
 
-    defined, referenced, withdrawn = _index_files(files)
+    defined, referenced, withdrawn = _index_files(files, ctx_defined=set(ctx_defined))
     all_defined = set(defined) | set(ctx_defined)
     active_prefixes = {split_id(token)[0] for token in all_defined}
     target_prefixes = {split_id(token)[0] for token in defined}
@@ -367,7 +379,7 @@ def scan(
     undefined = {
         token: list(dict.fromkeys(referenced[token]))
         for token in sorted(referenced, key=split_id)
-        if token not in all_defined and _is_known_prefix(split_id(token)[0], active_prefixes)
+        if token not in all_defined and split_id(token)[0] in active_prefixes
     }
     duplicate: dict[str, list[str]] = {}
     for token in sorted(defined, key=split_id):
@@ -418,8 +430,8 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         files.append((name, path.read_text(encoding="utf-8")))
 
-    contexts: list[tuple[str, str]] = []
     seen = {p.resolve() for p in target_paths}
+    explicit_contexts: list[tuple[str, str]] = []
     for name, path in zip(args.context, context_paths, strict=True):
         if not path.is_file():
             print(f"not found: {name}", file=sys.stderr)
@@ -427,14 +439,16 @@ def main(argv: list[str] | None = None) -> int:
         resolved = path.resolve()
         if resolved not in seen:
             seen.add(resolved)
-            contexts.append((name, resolved.read_text(encoding="utf-8")))
+            explicit_contexts.append((name, resolved.read_text(encoding="utf-8")))
 
-    source_contexts, unresolved = resolve_frontmatter_sources(target_paths)
+    source_contexts, unresolved = resolve_frontmatter_sources([*target_paths, *context_paths])
+    contexts: list[tuple[str, str]] = []
     for name, text in source_contexts:
         resolved = Path(name).resolve()
         if resolved not in seen:
             seen.add(resolved)
             contexts.append((name, text))
+    contexts.extend(explicit_contexts)
 
     print(json.dumps(scan(files, context_files=contexts, unresolved_sources=unresolved), indent=2))
     return 0
