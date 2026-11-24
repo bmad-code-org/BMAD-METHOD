@@ -311,7 +311,7 @@ initiative, then splits the work into epics.
 
 Architecture is the set of technical rules every epic follows, so parts built
 separately fit together. In a new session, ask `/bmad What's next?`. BMad
-suggests `bmad-architecture`, which Winston, the Architect, runs. Your epics
+suggests Winston (`bmad-agent-architect`), who runs `arch-spine`. Your epics
 all share the people and rooms, the booking rules, and the calendar, so they
 need agreed rules before anything is built. Say "Yes." When it asks whether to coach and
 what you need besides the document, paste:

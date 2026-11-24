@@ -108,7 +108,7 @@ Inside the initiative, each v6 document moves as a unit: its run folder with eve
 |---|---|---|
 | `prds/prd-<name>-<date>/`, or flat `prd*.md` | `prd.md` | `bmad-agent-pm` |
 | `briefs/brief-<name>-<date>/`, or flat `*brief*.md` | `brief.md` | `bmad-product-brief` |
-| `architecture/architecture-<name>-<date>/`, or flat `architecture*.md` | `ARCHITECTURE-SPINE.md` | `bmad-architecture` |
+| `architecture/architecture-<name>-<date>/`, or flat `architecture*.md` | `ARCHITECTURE-SPINE.md` | `bmad-agent-architect` |
 | `ux-designs/ux-<name>-<date>/`, or flat `ux*.md` | router beside `DESIGN.md` and `EXPERIENCE.md` | `bmad-ux` |
 | `prfaq-<name>.md` with its `-distillate.md` | `prfaq-<name>.md`; the distillate moves with it | `bmad-prfaq` |
 | `research/<type>-<topic>-<date>/`, or flat `research/*-research-<date>.md` | the run's report | `bmad-deep-recon`, v6 research |

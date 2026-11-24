@@ -2,8 +2,10 @@
 title: ""
 template: security-review
 version: 1.3.0
+category: risk-and-ops
 description: "Reviewing a system against a standard such as the OWASP Top 10 or STRIDE."
 not_for: "An incident that has happened (`postmortem`)."
+agents: [bmad-agent-architect]
 facilitation_order: [scope-and-system, architecture-and-data-flows, key-request-flows, findings, risk-decisions, remediation-plan, open-questions]
 guidance: guidance-method.md
 rubric: rubric-planning.md

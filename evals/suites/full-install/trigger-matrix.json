@@ -87,7 +87,6 @@
     "query": "help me choose between Postgres and DynamoDB for the event store",
     "expect": "bmad-deep-recon",
     "also_ok": [
-      "bmad-architecture",
       "bmad-agent-architect"
     ]
   },
@@ -198,10 +197,7 @@
   },
   {
     "query": "create the architecture for this",
-    "expect": "bmad-architecture",
-    "also_ok": [
-      "bmad-agent-architect"
-    ]
+    "expect": "bmad-agent-architect"
   },
   {
     "query": "lets plan the UX for the onboarding flow",

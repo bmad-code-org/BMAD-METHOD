@@ -26,7 +26,7 @@ A small, verified block of rules in `AGENTS.md` at the repo root, between the `<
 
 ## What stays out
 
-Repo overviews, directory trees, stack lists, commands the obvious guess gets right, pasted code, history, and plans. For a style rule a linter, hook, or CI check can enforce, the skill proposes the check. Product intent belongs in a spec, and a contested design decision in `bmad-architecture`. To learn the code, recommend `bmad-walkthrough` (`help/existing-codebase.md`).
+Repo overviews, directory trees, stack lists, commands the obvious guess gets right, pasted code, history, and plans. For a style rule a linter, hook, or CI check can enforce, the skill proposes the check. Product intent belongs in a spec, and a contested design decision with Winston (`bmad-agent-architect`). To learn the code, recommend `bmad-walkthrough` (`help/existing-codebase.md`).
 
 ## Why the block is small
 

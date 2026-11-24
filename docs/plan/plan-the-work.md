@@ -1,6 +1,6 @@
 ---
 title: Plan the Work
-description: 'The Plan stage: from a clear intent to stories ready to build. Follow the state of the initiative and its epics; John, Sofia, bmad-ux, and bmad-architecture each handle one step.'
+description: 'The Plan stage: from a clear intent to stories ready to build. Follow the state of the initiative and its epics; John, Sofia, bmad-ux, and bmad-agent-architect each handle one step.'
 sidebar:
   order: 1
 ---
@@ -42,7 +42,7 @@ With one:
 /bmad-agent-po what's next?
 ```
 
-![The initiative's states in order, each with its next step: no initiative yet, Sofia writes it; open questions, Sofia walks them with you; not sliced, Sofia cuts it into epics; shared design, optionally bmad-ux, adopted; shared decisions, optionally bmad-architecture, adopted; epic not refined, Sofia refines it; no stories yet, Sofia plans them; stories ready, bmad-build, one per chat](/diagrams/plan-states.svg)
+![The initiative's states in order, each with its next step: no initiative yet, Sofia writes it; open questions, Sofia walks them with you; not sliced, Sofia cuts it into epics; shared design, optionally bmad-ux, adopted; shared decisions, optionally bmad-agent-architect, adopted; epic not refined, Sofia refines it; no stories yet, Sofia plans them; stories ready, bmad-build, one per chat](/diagrams/plan-states.svg)
 
 | State | Next step | Page |
 | --- | --- | --- |
@@ -50,7 +50,7 @@ With one:
 | No initiative yet, and people must agree on what the product is | Optionally, John, the Product Manager, first writes a PRD or the planning document that fits | [Write a PRD](./write-a-prd.md) |
 | Open questions or assumptions in the initiative | Sofia walks them with you | [Write and Slice the Initiative](./write-and-slice-the-initiative.md#2-settle-what-she-could-not) |
 | Not sliced | Sofia cuts it into epics | [Write and Slice the Initiative](./write-and-slice-the-initiative.md#3-cut-it-into-epics) |
-| The interface matters, or epics must share decisions | `bmad-ux`, `bmad-architecture`, then Sofia adopts their files | [Design UX and Architecture](./design-ux-and-architecture.md) |
+| The interface matters, or epics must share decisions | `bmad-ux`, `bmad-agent-architect`, then Sofia adopts their files | [Design UX and Architecture](./design-ux-and-architecture.md) |
 | An epic not yet refined | Sofia works out what its stories must agree on | [Plan an Epic's Stories](./plan-an-epics-stories.md) |
 | A refined epic with no stories | Sofia plans its stories | [Plan an Epic's Stories](./plan-an-epics-stories.md#2-plan-the-stories) |
 | Stories ready | Build them | [Build and Verify](../build/build-and-verify.md) |

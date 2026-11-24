@@ -4,7 +4,7 @@ For Method plans, requirements, and cases for a decision. These rules add to the
 
 ## Opening
 
-When the document plans work the ticket tree will hold, a container is active or a ticket is in play, and neither the caller, the template, nor the ticket already fixes the altitude, the opening asks first which level of the tree the document is for: the program, the initiative, or an epic. Templates whose altitude is fixed (`prd-program`, `prd`, `prd-epic`, `charter`) already disambiguate the level, so skip that question when one of them is selected.
+When the document plans work the ticket tree will hold, a container is active or a ticket is in play, and neither the caller, the template, nor the ticket already fixes the altitude, the opening asks first which level of the tree the document is for: the program, the initiative, or an epic. Templates whose altitude is fixed (`prd-program`, `prd`, `prd-epic`, `charter`, `arch-enterprise`, `arch-spine`, `arch-epic`) already disambiguate the level, so skip that question when one of them is selected.
 
 ## Inheriting from a parent
 

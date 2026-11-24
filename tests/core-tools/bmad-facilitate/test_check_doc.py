@@ -35,7 +35,8 @@ def test_placeholders_detected_in_frontmatter_and_body_ignoring_fences_comments_
         "# Plan\n\n"
         "Status is TODO and details are FIXME or XXX.\n"
         "Unfilled {team-name} in prose.\n"
-        "Inline `{slug}` and `/users/{id}` stay clean.\n\n"
+        "Inline `{slug}`, `/users/{id}`, `# TODO: legacy`, and ``nested ` TODO`` stay clean.\n"
+        "Bare `TBD` marker and escaped \\`TODO\\` in prose are caught.\n\n"
         "```\nTBD TODO {fenced_token}\n```\n\n"
         "<!-- TODO {comment_token} -->\n"
     )
@@ -46,6 +47,8 @@ def test_placeholders_detected_in_frontmatter_and_body_ignoring_fences_comments_
         {"kind": "marker", "text": "FIXME", "location": "doc0.md:9"},
         {"kind": "marker", "text": "XXX", "location": "doc0.md:9"},
         {"kind": "token", "text": "{team-name}", "location": "doc0.md:10"},
+        {"kind": "marker", "text": "TBD", "location": "doc0.md:12"},
+        {"kind": "marker", "text": "TODO", "location": "doc0.md:12"},
     ]
 
 

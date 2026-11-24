@@ -6,9 +6,10 @@ renamed = [
   { from = "bmad-quick-dev", to = "bmad-build" },
   { from = "bmad-dev-auto", to = "bmad-build-auto" },
   { from = "bmad-checkpoint-preview", to = "bmad-walkthrough" },
-  { from = "bmad-create-architecture", to = "bmad-architecture" },
 ]
 removed = [
+  "bmad-architecture",
+  "bmad-create-architecture",
   "bmad-agent-sm",
   "bmad-agent-qa",
   "bmad-agent-quick-flow-solo-dev",

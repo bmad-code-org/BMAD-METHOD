@@ -40,7 +40,7 @@ for audited or contracted work, John writes those too; Mary (`bmad-agent-analyst
 is derived from it:
 
 - `bmad-ux` writes `DESIGN.md` and `EXPERIENCE.md` in its own `ux-<slug>/` folder, as input beside the PRD.
-- `bmad-architecture` writes a short architecture document (the spine): the
+- Winston (`bmad-agent-architect`) writes the architecture spine (`arch-spine`): the
   decisions that keep independently built epics compatible.
 - Sofia writes the initiative's requirements from the PRD and each epic's
   from the initiative's lines, pointing at the spine and the UX documents
@@ -70,8 +70,8 @@ Linear, and a review cadence, and all of it stays.
   never edit the PRD by hand to catch up.
 - **The same holds for design and architecture.** A design system, an
   existing architecture document, or a live codebase is what `bmad-ux` and
-  `bmad-architecture` start from. On an existing system the architecture
-  skill reads the code and records the conventions already there rather than
+  Winston (`bmad-agent-architect`) start from. On an existing system Winston
+  reads the code and records the conventions already there rather than
   proposing new ones.
 - **Your tracker stays your tracker.** Jira remains where the organization
   plans, reports, and reviews. Sofia publishes leaf files when needed; build status lives in local joined plans. Tracker status is mirrored separately and never makes a build skip work. [Map Your Tracker to the Ticket Tree](../reference/map-your-tracker.md)
@@ -91,7 +91,7 @@ document can be regenerated from it.
 | ------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | Product manager          | Brainstorming, Forge Idea, Deep Recon, then a PRFAQ or a brief from Mary (`bmad-agent-analyst`), then John (`bmad-agent-pm`) for the PRD | The PRD and its update cycle; the one-pager the steering committee reads  |
 | Designer                 | `bmad-ux`                                                                                         | `DESIGN.md`, `EXPERIENCE.md`                                              |
-| Tech lead or architect   | `bmad-architecture`                                                                               | The architecture spine                                                    |
+| Tech lead or architect   | Winston (`bmad-agent-architect`)                                                                  | The architecture spine (`arch-spine`)                                     |
 | One engineer, per epic   | Sofia (`bmad-agent-po`), Build per story, `bmad-retrospective`                                    | That epic: its file, its `tickets.toml`, its verdict                      |
 | Whoever tracks the whole | Sofia (`bmad-agent-po`)                                                                           | The ticket tree and plan statuses                                         |
 
@@ -143,7 +143,7 @@ shows what goes wrong without the spine.
 
 Sofia cuts epics by outcome, deployment, and slice size, not by who builds them. If your organization cuts epics by its own rule, tell her and she offers to save it to `_bmad/custom/bmad-agent-po.toml`.
 
-Each epic starts thin, with its scope agreed and its detail left open. Ask Sofia to refine each epic before its stories are planned. She says what is already settled and names each open point with her pick: settle it now, spike it, or leave it to the stories. On a large initiative you can flesh an epic out further with a PRD from John, or a `bmad-ux` or `bmad-architecture` run on the epic, or research with `bmad-deep-recon`. Those runs land in the epic's folder and become its companions, so whoever takes the epic finds them beside its file.
+Each epic starts thin, with its scope agreed and its detail left open. Ask Sofia to refine each epic before its stories are planned. She says what is already settled and names each open point with her pick: settle it now, spike it, or leave it to the stories. On a large initiative you can flesh an epic out further with a PRD from John, or a `bmad-ux` or Winston (`bmad-agent-architect`, `arch-epic`) run on the epic, or research with `bmad-deep-recon`. Those runs land in the epic's folder and become its companions, so whoever takes the epic finds them beside its file.
 
 ## More Than One Initiative
 

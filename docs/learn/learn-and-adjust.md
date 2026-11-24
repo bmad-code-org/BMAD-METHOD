@@ -70,7 +70,7 @@ back built work, or cut scope. You decide.
 - She drops work that no longer belongs, records the reason, and clears what
   waited on it.
 - When the change reaches the design or the spine, she notes what it
-  invalidates and offers `bmad-ux` or `bmad-architecture`; she never edits
+  invalidates and offers `bmad-ux` or Winston (`bmad-agent-architect`); she never edits
   their files.
 
 She records the reason as a dated `Decision:` line in each ticket she touched.

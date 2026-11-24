@@ -45,7 +45,7 @@ A plain path or URL source goes in as a positional source (keeping `--libraries-
 
 Steering frontmatter keys and top/section comments stay out of the document: `description`, `not_for`, `agents`, `mode`, `order`, `facilitation_order`, `guidance`, `rubric`, `methods`, `output`, `style`, `layout`, `view`, `companions`, `forbid_id_prefixes`, and `lint`. Sections follow `facilitation_order` (else body order), optional unless unmarked, and template rules override this skill.
 
-Load `guidance` (the resolved path from the listing) as part of the template, with the template's comments winning. When `methods` is set, use the `key_questions` of rows you and the user agree apply.
+Load `guidance` (the resolved path from the listing) as part of the template, with the template's comments winning. When `methods` is set, use the `key_questions` of rows you and the user agree apply, and still probe domain-specific risks the catalog does not name.
 
 ## Create and resume
 

@@ -11,7 +11,7 @@ Use this when the user asks how to get an existing codebase ready for agentic co
 
 ## Improve before building, when quality is low
 
-If the codebase is inconsistent or untested, some refactoring and test work first goes a long way, and it pays back in every later session. Agents can help assess the code and carry out the improvements: ask for an assessment of inconsistent patterns, then make each cleanup its own `bmad-build` change with tests in place first. A skill dedicated to this is planned. A codebase of decent quality needs none of this: start with a small change.
+If the codebase is inconsistent or untested, some refactoring and test work first goes a long way, and it pays back in every later session. Talk to Winston (`bmad-agent-architect`) for an `agent-readiness` assessment: he runs deterministic repo telemetry (largest files, git churn hotspots, competing instruction/doc bloat, comment noise, and existing guardrails), settles canonical patterns, and produces a sequenced, test-first cleanup backlog for Sofia or `bmad-build`. A codebase of decent quality needs none of this: start with a small change.
 
 ## Documentation: keep it small
 

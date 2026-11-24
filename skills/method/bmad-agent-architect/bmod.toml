@@ -1,7 +1,14 @@
 [skill]
 bmod = "bmod-method"
 source = "github:bmad-code-org/BMAD-METHOD/skills/method"
+scripts = ["scripts/lint_arch.py", "scripts/scan_repo_readiness.py"]
+required_skills = [
+  { skill = "bmad-facilitate", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+]
 recommended_skills = [
-  "bmad-architecture",
   "bmad-agent-po",
+  "bmad-agent-pm",
+  "bmad-project-context",
+  { skill = "bmad-party-mode", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+  { skill = "bmad-advanced-elicitation", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
 ]

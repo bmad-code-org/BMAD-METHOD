@@ -1,6 +1,6 @@
 ---
 title: 'Design UX and Architecture'
-description: Decide whether the work needs a UX design or an architecture spine, run bmad-ux and bmad-architecture on the initiative or an epic, and have Sofia adopt their files so every build reads them.
+description: Decide whether the work needs a UX design or an architecture spine, run bmad-ux and Winston (bmad-agent-architect) on the initiative or an epic, and have Sofia adopt their files so every build reads them.
 sidebar:
   order: 4
 ---
@@ -18,7 +18,7 @@ epics that share none skip it.
 | A regulated, high-risk, or enterprise initiative | Follow your governance; architecture is normally required |
 
 Sally, the UX Designer (`bmad-agent-ux-designer`), runs `bmad-ux`, and
-Winston, the Architect (`bmad-agent-architect`), runs `bmad-architecture`.
+Winston, the Architect (`bmad-agent-architect`), handles architecture through `bmad-facilitate` (`arch-spine` at initiative level, `arch-epic` on one epic).
 Both change what `bmad-build` reads, not how it runs: each session still builds
 one story, but every session reads the same decisions, so the parts fit
 together.
@@ -32,7 +32,7 @@ screens can do. For kept code, such as a kept prototype, architecture runs
 before Sofia slices, to record the decisions the code already made. Skip
 either when it has no open questions.
 
-When she slices, Sofia offers `bmad-architecture` for the decisions the epics
+When she slices, Sofia offers Winston (`bmad-agent-architect`) for the decisions the epics
 share, but she won't prompt for `bmad-ux`. Run it yourself when the epics need
 a shared design system.
 
@@ -57,8 +57,8 @@ files later with `bmad-ux` update, not by editing the ticket.
 
 When several epics or agents build against the same system, each makes its
 own defensible choice, and the choices collide: REST here and GraphQL there,
-`snake_case` meeting `camelCase`, session cookies against JWT. Run
-`bmad-architecture` on the initiative to write a short architecture document,
+`snake_case` meeting `camelCase`, session cookies against JWT. Ask
+Winston (`bmad-agent-architect`) to run `arch-spine` on the initiative to write a short architecture document,
 the **spine**, that records only the calls two people would otherwise make
 differently.
 
@@ -94,15 +94,15 @@ waiting for check-in, checked in, and just freed. In a new chat:
 **You:**
 
 ```text wrap
-/bmad-architecture settle the decisions the check-in epics share
+/bmad-agent-architect settle the decisions the check-in epics share
 ```
-**`bmad-architecture`:** One call your epics would make differently: where the
+**Winston (`bmad-agent-architect`):** One call your epics would make differently: where the
 no-show timer runs. On the server, an offline tablet can never free a room by
 itself; on the tablet, check-in still works offline. I lean server. Which?
 
 **You:** Server.
 
-It records that as `AD-1` in `architecture-check-in/`. Then, to Sofia:
+It records that as `AD-1` in `arch-spine-check-in/`. Then, to Sofia:
 
 **You:**
 
@@ -123,8 +123,8 @@ finishes, ask Sofia to adopt its files:
 ```
 
 She adds them to the initiative's References, and the epics that depend on
-them cite them. A build then reads them beside its story. `bmad-architecture` recommends this
-step itself when it finishes.
+them cite them. A build then reads them beside its story. Winston recommends this
+step itself when `arch-spine` finishes.
 
 Either skill can also run on one epic when the initiative's design or spine
 does not cover it. An epic run writes into the epic's folder. An architecture
