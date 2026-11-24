@@ -247,6 +247,42 @@ class TestScanRepoReadiness(unittest.TestCase):
                     scanner.main([str(root), "--commits", "0"])
                 self.assertEqual(bad_commits.exception.code, 2)
 
+    def test_php_hash_comments_and_unreadable_files_reported(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "src").mkdir()
+            php_file = root / "src" / "OrderController.php"
+            php_file.write_text(
+                "\n".join(
+                    [
+                        "<?php",
+                        "#[Route('/orders')]",
+                        "# TODO: remove legacy code",
+                        "class OrderController {}",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            blocked = root / "src" / "secret.py"
+            blocked.write_text("x = 1\n", encoding="utf-8")
+
+            orig_read_text = Path.read_text
+
+            def fake_read_text(path_self: Path, *args, **kwargs):
+                if path_self == blocked:
+                    raise PermissionError("denied")
+                return orig_read_text(path_self, *args, **kwargs)
+
+            with patch.object(Path, "read_text", fake_read_text):
+                report = scanner.scan_repo(root, top=10)
+
+            self.assertEqual(report["summary"]["source_files"], 1)
+            self.assertEqual(report["skipped_unreadable_files"], ["src/secret.py"])
+            php_spot = next(c for c in report["comment_hotspots"] if c["path"] == "src/OrderController.php")
+            self.assertEqual(php_spot["comment_lines"], 1)
+            self.assertEqual(php_spot["todo_markers"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

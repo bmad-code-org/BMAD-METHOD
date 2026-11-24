@@ -189,7 +189,7 @@ GUARDRAIL_NAMES = frozenset(
     }
 )
 
-HASH_COMMENT_EXTS = frozenset({".py", ".rb", ".sh", ".bash", ".zsh", ".ex", ".exs"})
+HASH_COMMENT_EXTS = frozenset({".py", ".rb", ".php", ".sh", ".bash", ".zsh", ".ex", ".exs"})
 TICKET_IGNORE_PREFIXES = frozenset(
     {
         "UTF",
@@ -304,7 +304,12 @@ def analyze_comments(lines: list[str], *, ext: str = "") -> dict[str, int | floa
                 comment_text = stripped[2:]
                 in_block = True
             comment_text = comment_text.lstrip("*").strip()
-        elif allow_hash and stripped.startswith("#") and not stripped.startswith("#!"):
+        elif (
+            allow_hash
+            and stripped.startswith("#")
+            and not stripped.startswith("#!")
+            and not (ext == ".php" and stripped.startswith("#["))
+        ):
             is_comment = True
             comment_text = stripped.lstrip("#").strip()
         elif stripped.startswith("//"):
@@ -374,6 +379,7 @@ def scan_repo(repo: Path, *, top: int = 15, commits: int = 200) -> dict:
     guardrails: list[str] = []
     ci_workflows: list[str] = []
     skipped_large_files: list[str] = []
+    skipped_unreadable_files: list[str] = []
 
     total_files = 0
     source_files = 0
@@ -404,6 +410,7 @@ def scan_repo(repo: Path, *, top: int = 15, commits: int = 200) -> dict:
                     continue
                 text = fpath.read_text(encoding="utf-8", errors="ignore")
             except OSError:
+                skipped_unreadable_files.append(posix)
                 continue
 
             total_files += 1
@@ -481,6 +488,7 @@ def scan_repo(repo: Path, *, top: int = 15, commits: int = 200) -> dict:
             "ci_workflows": sorted(ci_workflows),
         },
         "skipped_large_files": sorted(skipped_large_files),
+        "skipped_unreadable_files": sorted(skipped_unreadable_files),
     }
 
 
