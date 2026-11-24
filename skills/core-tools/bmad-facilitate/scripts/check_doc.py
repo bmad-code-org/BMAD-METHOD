@@ -6,7 +6,7 @@
 """check-doc — find placeholders, forbidden id prefixes, and stale TOCs in markdown documents.
 
 Runs universal structural sanity checks across one or more markdown files regardless of which ID
-scheme a document uses. Fenced code blocks and HTML comments are skipped.
+scheme a document uses. Fenced code blocks and closed HTML comments are skipped.
 
 A file with a `## Table of Contents` has its links compared to its own headings, using GitHub's
 anchors. Every `##` section needs an entry; entries may also link deeper headings.
@@ -46,11 +46,13 @@ TOC_LINK = re.compile(r"\[[^\]]*\]\(#([^)\s]+)\)")
 TOC_ANCHOR = "table-of-contents"
 MAX_RANGE = 200
 
+frontmatter = None
+
 
 def _load_frontmatter(start_paths: Iterable[Path] = ()):
     """Load shared `frontmatter.py` from `_bmad/scripts/`, an adjacent `bmad` skill, or repo checkout."""
     candidates: list[Path] = []
-    for start in [*start_paths, Path.cwd()]:
+    for start in start_paths:
         cur = start if start.is_dir() else start.parent
         for root in (cur, *cur.parents):
             candidates.append(root / "_bmad" / "scripts" / "frontmatter.py")
@@ -61,6 +63,8 @@ def _load_frontmatter(start_paths: Iterable[Path] = ()):
             skills.parent / "core-tools" / "bmad" / "scripts" / "frontmatter.py",
         ]
     )
+    for root in (Path.cwd(), *Path.cwd().parents):
+        candidates.append(root / "_bmad" / "scripts" / "frontmatter.py")
     for path in candidates:
         if path.is_file():
             spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
@@ -70,26 +74,55 @@ def _load_frontmatter(start_paths: Iterable[Path] = ()):
     raise FileNotFoundError("frontmatter.py not found in _bmad/scripts/ or installed bmad skill")
 
 
-frontmatter = _load_frontmatter()
+def _require_frontmatter():
+    global frontmatter
+    if frontmatter is None:
+        frontmatter = _load_frontmatter()
+    return frontmatter
 
 
 def split_frontmatter(text: str) -> tuple[str, str, int]:
     """Return (frontmatter_text, body_text, body_line_offset) with CRLF normalized."""
+    fm = _require_frontmatter()
     norm = text.replace("\r\n", "\n")
     try:
-        fm_text, body_text = frontmatter.split(norm)
+        fm_text, body_text = fm.split(norm)
     except ValueError:
         return "", norm, 0
     return fm_text, body_text, norm[: len(norm) - len(body_text)].count("\n")
 
 
+def _find_closing_backticks(line: str, open_idx: int, tick_len: int) -> int:
+    """Index just after matching `tick_len` backticks on `line`, or -1 when unclosed."""
+    pos = open_idx + tick_len
+    n = len(line)
+    while pos < n:
+        if line[pos] != "`":
+            pos += 1
+            continue
+        end = pos
+        while end < n and line[end] == "`":
+            end += 1
+        if end - pos == tick_len:
+            return end
+        pos = end
+    return -1
+
+
+def _has_closing_comment(lines: list[str], line_idx: int, col: int) -> bool:
+    """Whether a bare `<!--` at (line_idx, col) has a matching `-->` later in `lines`."""
+    if "-->" in lines[line_idx][col:]:
+        return True
+    return any("-->" in line for line in lines[line_idx + 1 :])
+
+
 def prose_lines(text: str) -> list[str]:
-    """The document's lines with fenced code and HTML comments blanked, numbering kept."""
+    """The document's lines with fenced code and closed HTML comments blanked, numbering kept."""
     lines = text.replace("\r\n", "\n").split("\n")
     out: list[str] = []
     fence: tuple[str, int] | None = None
     in_comment = False
-    for line in lines:
+    for idx, line in enumerate(lines):
         if fence is not None:
             out.append("")
             m = FENCE_OPEN.match(line)
@@ -103,22 +136,36 @@ def prose_lines(text: str) -> list[str]:
                 out.append("")
                 continue
         pos = 0
+        n = len(line)
         buf: list[str] = []
-        while pos < len(line):
+        while pos < n:
             if in_comment:
                 end = line.find("-->", pos)
                 if end == -1:
                     break
                 in_comment = False
                 pos = end + 3
-            else:
-                start = line.find("<!--", pos)
-                if start == -1:
-                    buf.append(line[pos:])
-                    break
-                buf.append(line[pos:start])
+            elif line[pos] == "`":
+                tick_end = pos
+                while tick_end < n and line[tick_end] == "`":
+                    tick_end += 1
+                close_end = _find_closing_backticks(line, pos, tick_end - pos)
+                if close_end != -1:
+                    buf.append(line[pos:close_end])
+                    pos = close_end
+                else:
+                    buf.append(line[pos:tick_end])
+                    pos = tick_end
+            elif line.startswith("<!--", pos) and _has_closing_comment(lines, idx, pos + 4):
                 in_comment = True
-                pos = start + 4
+                pos += 4
+            else:
+                next_tick = line.find("`", pos + 1)
+                next_comment = line.find("<!--", pos + 1)
+                stops = [s for s in (next_tick, next_comment) if s != -1]
+                stop = min(stops) if stops else n
+                buf.append(line[pos:stop])
+                pos = stop
         out.append("".join(buf))
     return out
 

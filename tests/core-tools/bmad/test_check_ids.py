@@ -1,8 +1,8 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pytest>=8.0"]
+# dependencies = ["pytest>=8.0", "pyyaml>=6.0.2"]
 # ///
-"""Tests for Method check_ids.py. Run: uv run --with pytest pytest tests/method/bmod-method/test_check_ids.py"""
+"""Tests for bmad check_ids.py. Run: uv run --frozen python -B -m pytest tests/core-tools/bmad/test_check_ids.py"""
 
 import importlib.util
 import json
@@ -11,11 +11,13 @@ from pathlib import Path
 
 import pytest
 
-_SPEC = importlib.util.spec_from_file_location(
-    "method_check_ids", Path(__file__).resolve().parents[3] / "skills/method/bmod-method/scripts/check_ids.py"
-)
+SCRIPTS_DIR = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad/scripts"
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
+_SPEC = importlib.util.spec_from_file_location("check_ids", SCRIPTS_DIR / "check_ids.py")
 check_ids = importlib.util.module_from_spec(_SPEC)
-sys.modules["method_check_ids"] = check_ids
+sys.modules["check_ids"] = check_ids
 _SPEC.loader.exec_module(check_ids)
 
 
@@ -122,7 +124,12 @@ def test_withdrawn_scoped_zero_padded_and_skip_code_comments():
     assert withdrawn["withdrawn"] == {"OQ-7": ["doc0.md:3"]}
     assert withdrawn["undefined"] == {}
 
-    epic = "- **E02-FR-01**: A.\n- **E02-FR-02**: B.\n- **E02-FR-03**: C.\n\nCovered by E02-FR-01 to E02-FR-03, and E02-FR-09.\n"
+    epic = (
+        "- **E02-FR-01**: A.\n"
+        "- **E02-FR-02**: B.\n"
+        "- **E02-FR-03**: C.\n\n"
+        "Covered by E02-FR-01 to E02-FR-03, and E02-FR-09.\n"
+    )
     epic_res = report(epic)
     assert epic_res["counts"]["E02-FR"] == {"defined": 3, "referenced": 4}
     assert epic_res["undefined"] == {"E02-FR-09": ["doc0.md:5"]}
@@ -133,9 +140,6 @@ def test_withdrawn_scoped_zero_padded_and_skip_code_comments():
         ]
         == {}
     )
-
-    fenced = "- **FR-1**: a\n\n```\nFR-7 in code\n```\n<!-- FR-8 -->\nCites FR-9.\n"
-    assert report(fenced)["undefined"] == {"FR-9": ["doc0.md:7"]}
 
 
 def test_outside_tokens_and_non_monotonic_edits_stay_clean():
@@ -151,10 +155,111 @@ def test_outside_tokens_and_non_monotonic_edits_stay_clean():
         "undefined": {},
         "duplicate": {},
         "withdrawn": {},
+        "unresolved_sources": [],
         "counts": {
             "INV": {"defined": 3, "referenced": 0},
             "OKR": {"defined": 2, "referenced": 2},
         },
+    }
+
+
+def test_fence_suffix_inline_code_and_unclosed_comment_interplay():
+    text = (
+        "- **FR-1**: Remove the `<!--` prefix.\n"
+        "Use <!-- unclosed marker literally.\n"
+        "<!--\n```\n-->\n"
+        "Cites FR-9.\n"
+        "```markdown\n"
+        "<!-- unclosed comment inside fence (FR-8 ignored)\n"
+        "```\t\n"
+        "```~\n"
+        "```\n"
+        "Cites FR-10.\n"
+    )
+    assert report(text)["undefined"] == {
+        "FR-9": ["doc0.md:6"],
+        "FR-10": ["doc0.md:12"],
+    }
+
+
+def test_child_table_and_parent_collision_detection(tmp_path, capsys):
+    (tmp_path / "_bmad").mkdir()
+    parent = tmp_path / "parent.md"
+    parent.write_text(
+        "---\ntitle: Parent PRD\n---\n\n"
+        "| ID | Measure |\n|---|---|\n| OKR-1 | Activation |\n| OKR-2 | Retention |\n\n"
+        "- **INV-1**: Tenant isolation holds.\n",
+        encoding="utf-8",
+    )
+    child = tmp_path / "child.md"
+    child.write_text(
+        "---\n"
+        "title: Child PRD\n"
+        "sources:\n"
+        '  - "{project-root}/parent.md"\n'
+        "---\n\n"
+        "| ID | Measure |\n|---|---|\n"
+        "| OKR-1 | Redefined |\n"
+        "| OKR-2 | Redefined |\n"
+        "| OKR-3 | New child okr |\n\n"
+        "- **INV-1**: Redefined invariant.\n",
+        encoding="utf-8",
+    )
+
+    assert check_ids.main([str(child)]) == 0
+    found = json.loads(capsys.readouterr().out)
+    assert found["undefined"] == {}
+    assert found["unresolved_sources"] == []
+    assert found["duplicate"] == {
+        "INV-1": [f"{parent}:10", f"{child}:13"],
+        "OKR-1": [f"{parent}:7", f"{child}:9"],
+        "OKR-2": [f"{parent}:8", f"{child}:10"],
+    }
+    assert found["counts"]["OKR"] == {"defined": 3, "referenced": 0}
+
+
+def test_sources_scalar_mapping_project_root_and_unresolved(tmp_path, capsys):
+    (tmp_path / "_bmad").mkdir()
+    parent_dir = tmp_path / "out"
+    parent_dir.mkdir()
+    parent = parent_dir / "parent.md"
+    parent.write_text(
+        "---\ntitle: Parent\n---\n\n- **OKR-1**: Speed.\n- **OQ-7.** Withdrawn: old.\n",
+        encoding="utf-8",
+    )
+
+    # Scalar source string resolves cleanly.
+    child_scalar = tmp_path / "child-scalar.md"
+    child_scalar.write_text(
+        "---\ntitle: Scalar\nsources: out/parent.md\n---\n\n- **E01-FR-01**: Moves OKR-1, breaks OKR-9, cites OQ-7.\n",
+        encoding="utf-8",
+    )
+    assert check_ids.main([str(child_scalar)]) == 0
+    scalar_res = json.loads(capsys.readouterr().out)
+    assert scalar_res["unresolved_sources"] == []
+    assert scalar_res["undefined"] == {"OKR-9": [f"{child_scalar}:6"]}
+    assert scalar_res["withdrawn"] == {"OQ-7": [f"{child_scalar}:6"]}
+
+    # Mapping source + unresolved local markdown path + known planning prefix catch when parent missing.
+    child_broken = tmp_path / "child-broken.md"
+    child_broken.write_text(
+        "---\n"
+        "title: Broken\n"
+        "sources:\n"
+        '  - path: "{project-root}/out/missing-parent.md"\n'
+        "  - https://example.com/spec.md\n"
+        "---\n\n"
+        "- **E01-FR-01**: Cites OKR-9 and INV-7.\n",
+        encoding="utf-8",
+    )
+    assert check_ids.main([str(child_broken)]) == 0
+    broken_res = json.loads(capsys.readouterr().out)
+    assert broken_res["unresolved_sources"] == [
+        {"source": "{project-root}/out/missing-parent.md", "document": str(child_broken)}
+    ]
+    assert broken_res["undefined"] == {
+        "INV-7": [f"{child_broken}:8"],
+        "OKR-9": [f"{child_broken}:8"],
     }
 
 
@@ -167,6 +272,9 @@ def test_cli_json_and_exit_codes(tmp_path, capsys):
     assert check_ids.main([str(doc), str(tmp_path / "absent.md")]) == 2
     assert "not found" in capsys.readouterr().err
 
+    assert check_ids.main([str(doc), "--context", str(tmp_path / "absent.md")]) == 2
+    assert "not found" in capsys.readouterr().err
+
     with pytest.raises(SystemExit) as help_exc:
         check_ids.main(["--help"])
     assert help_exc.value.code == 0
@@ -174,68 +282,3 @@ def test_cli_json_and_exit_codes(tmp_path, capsys):
     with pytest.raises(SystemExit) as empty_exc:
         check_ids.main([])
     assert empty_exc.value.code == 2
-
-
-def test_fence_suffix_and_comment_interplay():
-    text = (
-        "- **FR-1**: First.\n"
-        "<!--\n```\n-->\n"
-        "Cites FR-9.\n"
-        "```markdown\n"
-        "<!-- unclosed comment inside fence (FR-8 ignored)\n"
-        "```\t\n"
-        "```~\n"
-        "```\n"
-        "Cites FR-10.\n"
-    )
-    assert report(text)["undefined"] == {
-        "FR-9": ["doc0.md:5"],
-        "FR-10": ["doc0.md:11"],
-    }
-
-
-def test_inherited_parent_sources_and_context_files(tmp_path, capsys):
-    (tmp_path / "_bmad").mkdir()
-    parent_dir = tmp_path / "_bmad-output" / "initiative-app" / "prd-app"
-    epic_dir = tmp_path / "_bmad-output" / "initiative-app" / "tickets" / "epic-01" / "prd-epic-one"
-    parent_dir.mkdir(parents=True)
-    epic_dir.mkdir(parents=True)
-
-    parent = parent_dir / "prd-app.md"
-    parent.write_text(
-        "---\ntitle: Parent PRD\n---\n\n"
-        "| ID | Measure |\n|---|---|\n| `OKR-1` | Activation |\n\n"
-        "- **INV-1**: Tenant isolation holds.\n"
-        "- **BR-1**: Signed consent required.\n"
-        "- **BR-2**: Audit log kept 7 years.\n"
-        "- **OQ-7.** Withdrawn: resolved earlier.\n",
-        encoding="utf-8",
-    )
-
-    child = epic_dir / "prd-epic-one.md"
-    child.write_text(
-        "---\n"
-        "title: Child Epic PRD\n"
-        "sources:\n"
-        "  - _bmad-output/initiative-app/prd-app/prd-app.md#e01\n"
-        "  - https://example.com/external-spec.md\n"
-        "  - missing-optional-source.md\n"
-        "---\n\n"
-        "- **OKR-2**: Epic target builds on OKR-1 and broken OKR-99.\n"
-        "- **E01-FR-01**: Respects INV-1 and cites deprecated OQ-7.\n\n"
-        "| ID | Note |\n|---|---|\n| BR-1 | Trace 1 |\n| BR-2 | Trace 2 |\n",
-        encoding="utf-8",
-    )
-
-    assert check_ids.main([str(child)]) == 0
-    found = json.loads(capsys.readouterr().out)
-    assert found["undefined"] == {"OKR-99": [f"{child}:9"]}
-    assert found["duplicate"] == {}
-    assert found["withdrawn"] == {"OQ-7": [f"{child}:10"]}
-    assert found["counts"] == {
-        "E01-FR": {"defined": 1, "referenced": 0},
-        "OKR": {"defined": 1, "referenced": 2},
-    }
-
-    assert check_ids.main([str(child), "--context", str(tmp_path / "absent.md")]) == 2
-    assert "not found" in capsys.readouterr().err

@@ -81,7 +81,7 @@ Format the status line by state: `Title · Opening` before section 1, `Title · 
 
 ## Writing and visuals
 
-Fill every required section concisely to suit the stakes and reader without artificial word-count padding; keep lists to lines and tables to phrases. Write only `{doc}` and files declared in `companions:`, placing unrequested material in the best-fitting section or flagging it at Finalize.
+Fill every required section concisely to suit the stakes and reader without artificial word-count padding; keep lists to lines and tables to phrases. Write only `{doc}`, files declared in `companions:`, and any confirmed parent-document update a template explicitly authorizes (never on headless runs), placing unrequested material in the best-fitting section or flagging it at Finalize.
 
 Tag every unconfirmed inference `[ASSUMPTION: ...]`, keeping user-confirmed claims untagged (a blanket yes leaves individual tags open until confirmed). Place open questions in the template's open-questions slot or a closing `## Open questions`, and populate any `## Table of Contents` with linked `##` entries and search cues.
 

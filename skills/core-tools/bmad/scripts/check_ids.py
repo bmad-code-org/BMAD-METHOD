@@ -3,10 +3,10 @@
 # requires-python = ">=3.11"
 # dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
-"""check-ids — find broken ID cross-references, duplicate definitions, and withdrawn citations.
+"""check-ids — find broken ID cross-references, duplicate definitions, withdrawn citations, and missing sources.
 
-Method opt-in lint hook run at Finalize/Validate for ID-heavy templates (`prd-program`, `prd`,
-`prd-epic`, `charter`, `brd`, `srs`). Pairs with core-tools `check_doc.py` (which owns
+Opt-in template lint hook (`lint: "{project-root}/_bmad/scripts/check_ids.py"`), installed into
+`_bmad/scripts/` by `bmad setup`. Pairs with `bmad-facilitate`'s `check_doc.py` (which owns
 placeholders, TOC, and `--forbid-prefix`).
 
 An id is a token like REQ-3, ITEM-12 or CAP-4, or one carrying a scope prefix, like S02-REQ-07.
@@ -15,27 +15,27 @@ line in bold; an id may be bare, bold, or wrapped in backticks (`REQ-3`, **`REQ-
 list item or line defines it only when punctuation follows (`- REQ-3: ...`, ``- `REQ-3`: ...``,
 `REQ-3 (withdrawn)`). An id that opens a list of ids (`REQ-1, REQ-2`, `REQ-1 to REQ-8`) is not a
 definition. Every other occurrence is a reference, and a range such as `REQ-1 to REQ-8` references
-each id in it. A table most of whose defining ids were already defined above it (or in supplied
-parent/source files), such as a traceability table, only references its ids. Fenced code blocks
-and HTML comments are skipped. Definitions in any listed file or resolved frontmatter `sources:`
-parent document count for references; `sources:` / `--context` files act as read-only definition
-context and never count toward `duplicate` or target `counts`.
+each id in it. A table most of whose defining ids were already defined earlier in the target
+document(s), such as a traceability table, only references its ids. Fenced code blocks and closed
+HTML comments are skipped.
 
-Unrecognized external hyphenated tokens (e.g. `UTF-8`, `UTC-5`) and out-of-order updates are
-intentionally not flagged.
+Definitions in frontmatter `sources:` (scalar, list, or mapping `{path: ...}`) and `--context` files
+count as read-only parent context: valid citations resolve, redefinitions collide in `duplicate`,
+and unresolvable local markdown `sources:` entries appear in `unresolved_sources`. Unrecognized
+external hyphenated tokens (e.g. `UTF-8`, `UTC-5`) and out-of-order updates are not flagged.
 
 Prints JSON:
-  undefined   referenced but never defined, for id prefixes defined in the files or parent context
-  duplicate   defined more than once across the target files
-  withdrawn   defined as withdrawn, removed, dropped or superseded, yet still referenced
-  counts      per prefix defined in the target files: distinct ids defined and referenced
+  undefined           referenced but never defined, for defined, parent, or known planning prefixes
+  duplicate           defined more than once across target files or colliding with a parent context id
+  withdrawn           defined as withdrawn, removed, dropped or superseded, yet still referenced
+  unresolved_sources  local markdown `sources:` paths that could not be found on disk
+  counts              per prefix defined in target files: distinct ids defined and referenced
 Locations are `file:line`. Exits 0, or 2 on bad usage or a missing file.
 """
 
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import re
 import sys
@@ -44,6 +44,8 @@ from collections.abc import Iterable
 from pathlib import Path
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+
+import frontmatter  # noqa: E402
 
 ID = r"(?<![A-Za-z0-9-])(?:[A-Z]\d+-)?[A-Z][A-Z0-9]{0,5}-\d+(?![A-Za-z0-9])"
 TOKEN = re.compile(ID)
@@ -55,33 +57,8 @@ CONNECTOR = re.compile(rf"^(?:\*\*|`)*\s*(?:,|/|&|and\b|or\b|to\b|through\b|[–
 SEPARATOR = re.compile(r"^\s*(?:[:.()/–—]|-\s)")
 RANGE = re.compile(rf"({ID})(?:\*\*|`)*\s*(?:to|through|[–—-])\s*(?:\*\*|`)*({ID})")
 WITHDRAWN = re.compile(r"^[\s*`:.)(—–-]*(?:withdrawn|removed|dropped|superseded)\b", re.IGNORECASE)
+KNOWN_PLANNING_PREFIXES = frozenset({"AD", "BR", "CF", "CTR", "FR", "INIT", "INV", "OKR", "OQ", "REQ", "RULE", "UJ"})
 MAX_RANGE = 200
-
-
-def _load_frontmatter(start_paths: Iterable[Path] = ()):
-    """Load shared `frontmatter.py` from `_bmad/scripts/`, an adjacent `bmad` skill, or repo checkout."""
-    candidates: list[Path] = []
-    for start in [*start_paths, Path.cwd()]:
-        cur = start if start.is_dir() else start.parent
-        for root in (cur, *cur.parents):
-            candidates.append(root / "_bmad" / "scripts" / "frontmatter.py")
-    skills = Path(__file__).resolve().parents[2]
-    candidates.extend(
-        [
-            skills / "bmad" / "scripts" / "frontmatter.py",
-            skills.parent / "core-tools" / "bmad" / "scripts" / "frontmatter.py",
-        ]
-    )
-    for path in candidates:
-        if path.is_file():
-            spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            return module
-    raise FileNotFoundError("frontmatter.py not found in _bmad/scripts/ or installed bmad skill")
-
-
-frontmatter = _load_frontmatter()
 
 
 def split_frontmatter(text: str) -> tuple[str, str, int]:
@@ -94,13 +71,37 @@ def split_frontmatter(text: str) -> tuple[str, str, int]:
     return fm_text, body_text, norm[: len(norm) - len(body_text)].count("\n")
 
 
+def _find_closing_backticks(line: str, open_idx: int, tick_len: int) -> int:
+    """Index just after matching `tick_len` backticks on `line`, or -1 when unclosed."""
+    pos = open_idx + tick_len
+    n = len(line)
+    while pos < n:
+        if line[pos] != "`":
+            pos += 1
+            continue
+        end = pos
+        while end < n and line[end] == "`":
+            end += 1
+        if end - pos == tick_len:
+            return end
+        pos = end
+    return -1
+
+
+def _has_closing_comment(lines: list[str], line_idx: int, col: int) -> bool:
+    """Whether a bare `<!--` at (line_idx, col) has a matching `-->` later in `lines`."""
+    if "-->" in lines[line_idx][col:]:
+        return True
+    return any("-->" in line for line in lines[line_idx + 1 :])
+
+
 def prose_lines(text: str) -> list[str]:
-    """The document's lines with fenced code and HTML comments blanked, numbering kept."""
+    """The document's lines with fenced code and closed HTML comments blanked, numbering kept."""
     lines = text.replace("\r\n", "\n").split("\n")
     out: list[str] = []
     fence: tuple[str, int] | None = None
     in_comment = False
-    for line in lines:
+    for idx, line in enumerate(lines):
         if fence is not None:
             out.append("")
             m = FENCE_OPEN.match(line)
@@ -114,22 +115,36 @@ def prose_lines(text: str) -> list[str]:
                 out.append("")
                 continue
         pos = 0
+        n = len(line)
         buf: list[str] = []
-        while pos < len(line):
+        while pos < n:
             if in_comment:
                 end = line.find("-->", pos)
                 if end == -1:
                     break
                 in_comment = False
                 pos = end + 3
-            else:
-                start = line.find("<!--", pos)
-                if start == -1:
-                    buf.append(line[pos:])
-                    break
-                buf.append(line[pos:start])
+            elif line[pos] == "`":
+                tick_end = pos
+                while tick_end < n and line[tick_end] == "`":
+                    tick_end += 1
+                close_end = _find_closing_backticks(line, pos, tick_end - pos)
+                if close_end != -1:
+                    buf.append(line[pos:close_end])
+                    pos = close_end
+                else:
+                    buf.append(line[pos:tick_end])
+                    pos = tick_end
+            elif line.startswith("<!--", pos) and _has_closing_comment(lines, idx, pos + 4):
                 in_comment = True
-                pos = start + 4
+                pos += 4
+            else:
+                next_tick = line.find("`", pos + 1)
+                next_comment = line.find("<!--", pos + 1)
+                stops = [s for s in (next_tick, next_comment) if s != -1]
+                stop = min(stops) if stops else n
+                buf.append(line[pos:stop])
+                pos = stop
         out.append("".join(buf))
     return out
 
@@ -193,32 +208,73 @@ def split_id(token: str) -> tuple[str, int]:
     return prefix, int(number)
 
 
-def _resolve_source_path(raw: str, doc_path: Path) -> Path | None:
-    target = raw.split("#", 1)[0].strip()
-    if not target or "://" in target or Path(target).suffix.lower() != ".md":
-        return None
-    rel = Path(target).expanduser()
-    if rel.is_absolute():
-        return rel.resolve() if rel.is_file() else None
-    roots = [doc_path.parent]
-    for parent in (doc_path.parent, *doc_path.parent.parents):
-        if (parent / "_bmad").is_dir():
-            roots.append(parent)
-            break
-    roots.append(Path.cwd())
-    for root in roots:
-        candidate = root / rel
-        if candidate.is_file():
-            return candidate.resolve()
+def _is_known_prefix(prefix: str, active_prefixes: set[str]) -> bool:
+    if prefix in active_prefixes or prefix in KNOWN_PLANNING_PREFIXES:
+        return True
+    return "-" in prefix and prefix.rsplit("-", 1)[1] in KNOWN_PLANNING_PREFIXES
+
+
+def _project_root_for(start: Path) -> Path | None:
+    cur = start if start.is_dir() else start.parent
+    for root in (cur, *cur.parents):
+        if (root / "_bmad").is_dir():
+            return root
     return None
 
 
-def resolve_frontmatter_sources(file_paths: Iterable[Path]) -> list[tuple[str, str]]:
-    """Read existing local markdown `sources:` referenced by `file_paths` as parent context."""
+def _source_candidates(sources: object) -> list[str]:
+    if isinstance(sources, str):
+        return [sources]
+    if isinstance(sources, dict):
+        items = [sources]
+    elif isinstance(sources, list):
+        items = sources
+    else:
+        return []
+    raw: list[str] = []
+    for entry in items:
+        if isinstance(entry, str):
+            raw.append(entry)
+        elif isinstance(entry, dict):
+            path = entry.get("path") or entry.get("file")
+            if isinstance(path, str):
+                raw.append(path)
+    return raw
+
+
+def _resolve_source_path(raw: str, doc_path: Path) -> tuple[bool, Path | None]:
+    """Return `(is_local_markdown, resolved_path_or_None)` for a frontmatter `sources:` item."""
+    target = raw.split("#", 1)[0].strip()
+    if not target or "://" in target or Path(target).suffix.lower() != ".md":
+        return False, None
+    project_root = _project_root_for(doc_path) or _project_root_for(Path.cwd())
+    if target.startswith("{project-root}"):
+        rel_part = target[len("{project-root}") :].lstrip("/\\")
+        base = project_root or Path.cwd()
+        candidate = base / rel_part
+        return True, candidate.resolve() if candidate.is_file() else None
+    rel = Path(target).expanduser()
+    if rel.is_absolute():
+        return True, rel.resolve() if rel.is_file() else None
+    roots = [doc_path.parent]
+    if project_root is not None and project_root not in roots:
+        roots.append(project_root)
+    if Path.cwd() not in roots:
+        roots.append(Path.cwd())
+    for root in roots:
+        candidate = root / rel
+        if candidate.is_file():
+            return True, candidate.resolve()
+    return True, None
+
+
+def resolve_frontmatter_sources(file_paths: Iterable[Path]) -> tuple[list[tuple[str, str]], list[dict[str, str]]]:
+    """Read local markdown `sources:` referenced by `file_paths`; return `(contexts, unresolved)`."""
     paths = [p for p in file_paths if p.is_file()]
     primary = {p.resolve() for p in paths}
     seen = set(primary)
     contexts: list[tuple[str, str]] = []
+    unresolved: list[dict[str, str]] = []
     for doc_path in paths:
         fm_text, _, _ = split_frontmatter(doc_path.read_text(encoding="utf-8"))
         if not fm_text:
@@ -227,27 +283,24 @@ def resolve_frontmatter_sources(file_paths: Iterable[Path]) -> list[tuple[str, s
             meta = frontmatter.load(fm_text)
         except ValueError:
             continue
-        sources = meta.get("sources")
-        if not isinstance(sources, list):
-            continue
-        for entry in sources:
-            if not isinstance(entry, str):
+        for entry in _source_candidates(meta.get("sources")):
+            is_local_md, resolved = _resolve_source_path(entry, doc_path.resolve())
+            if not is_local_md:
                 continue
-            resolved = _resolve_source_path(entry, doc_path.resolve())
-            if resolved is None or resolved in seen:
+            if resolved is None:
+                unresolved.append({"source": entry, "document": str(doc_path)})
+                continue
+            if resolved in seen:
                 continue
             seen.add(resolved)
             contexts.append((str(resolved), resolved.read_text(encoding="utf-8")))
-    return contexts
+    return contexts, unresolved
 
 
-def _index_files(
-    files: list[tuple[str, str]], seed_defined: Iterable[str] = ()
-) -> tuple[dict[str, list[str]], dict[str, list[str]], set[str]]:
+def _index_files(files: list[tuple[str, str]]) -> tuple[dict[str, list[str]], dict[str, list[str]], set[str]]:
     defined: dict[str, list[str]] = defaultdict(list)
     referenced: dict[str, list[str]] = defaultdict(list)
     withdrawn: set[str] = set()
-    seeded = set(seed_defined)
     table: list[tuple[str, str, str]] = []
 
     def record_definition(where: str, token: str, rest: str) -> None:
@@ -256,8 +309,8 @@ def _index_files(
             withdrawn.add(token)
 
     def close_table() -> None:
-        # A table most of whose ids were defined above it (or in parent context) is a reference table.
-        cites = 2 * sum((token in defined or token in seeded) for _, token, _ in table) > len(table)
+        # Only count ids defined earlier in the target files themselves when classifying reference tables.
+        cites = 2 * sum(token in defined for _, token, _ in table) > len(table)
         for where, token, rest in table:
             if cites:
                 referenced[token].append(where)
@@ -294,24 +347,35 @@ def _index_files(
     return defined, referenced, withdrawn
 
 
-def scan(files: list[tuple[str, str]], context_files: list[tuple[str, str]] = ()) -> dict:
-    """Scan markdown files for undefined, duplicate, and withdrawn IDs across defined and parent families."""
-    ctx_defined_set: set[str] = set()
+def scan(
+    files: list[tuple[str, str]],
+    context_files: list[tuple[str, str]] = (),
+    unresolved_sources: list[dict[str, str]] = (),
+) -> dict:
+    """Scan markdown files for undefined, duplicate, withdrawn, and unresolved-source IDs."""
+    ctx_defined: dict[str, list[str]] = {}
     ctx_withdrawn: set[str] = set()
     if context_files:
-        ctx_defined, _, ctx_withdrawn = _index_files(context_files)
-        ctx_defined_set = set(ctx_defined)
+        raw_ctx_def, _, ctx_withdrawn = _index_files(context_files)
+        ctx_defined = dict(raw_ctx_def)
 
-    defined, referenced, withdrawn = _index_files(files, seed_defined=ctx_defined_set)
-    all_defined = set(defined) | ctx_defined_set
-    all_prefixes = {split_id(token)[0] for token in all_defined}
+    defined, referenced, withdrawn = _index_files(files)
+    all_defined = set(defined) | set(ctx_defined)
+    active_prefixes = {split_id(token)[0] for token in all_defined}
     target_prefixes = {split_id(token)[0] for token in defined}
 
     undefined = {
         token: list(dict.fromkeys(referenced[token]))
         for token in sorted(referenced, key=split_id)
-        if token not in all_defined and split_id(token)[0] in all_prefixes
+        if token not in all_defined and _is_known_prefix(split_id(token)[0], active_prefixes)
     }
+    duplicate: dict[str, list[str]] = {}
+    for token in sorted(defined, key=split_id):
+        if token in ctx_defined:
+            duplicate[token] = [*ctx_defined[token], *defined[token]]
+        elif len(defined[token]) > 1:
+            duplicate[token] = defined[token]
+
     counts: dict[str, dict[str, int]] = defaultdict(lambda: {"defined": 0, "referenced": 0})
     for token in defined:
         counts[split_id(token)[0]]["defined"] += 1
@@ -322,19 +386,18 @@ def scan(files: list[tuple[str, str]], context_files: list[tuple[str, str]] = ()
     all_withdrawn = withdrawn | ctx_withdrawn
     return {
         "undefined": undefined,
-        "duplicate": {t: defined[t] for t in sorted(defined, key=split_id) if len(defined[t]) > 1},
+        "duplicate": duplicate,
         "withdrawn": {
             t: list(dict.fromkeys(referenced[t])) for t in sorted(all_withdrawn, key=split_id) if referenced.get(t)
         },
+        "unresolved_sources": list(unresolved_sources),
         "counts": dict(sorted(counts.items())),
     }
 
 
 def main(argv: list[str] | None = None) -> int:
-    global frontmatter
-
     parser = argparse.ArgumentParser(
-        description="Find broken id cross-references, duplicate definitions, and withdrawn citations."
+        description="Find broken id cross-references, duplicate definitions, withdrawn citations, and missing sources."
     )
     parser.add_argument("files", nargs="+", metavar="FILE", help="document and optional companion markdown files")
     parser.add_argument(
@@ -347,11 +410,6 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     target_paths = [Path(name) for name in args.files]
     context_paths = [Path(name) for name in args.context]
-    try:
-        frontmatter = _load_frontmatter([p.resolve() for p in [*target_paths, *context_paths]])
-    except FileNotFoundError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        return 2
 
     files: list[tuple[str, str]] = []
     for name, path in zip(args.files, target_paths, strict=True):
@@ -371,13 +429,14 @@ def main(argv: list[str] | None = None) -> int:
             seen.add(resolved)
             contexts.append((name, resolved.read_text(encoding="utf-8")))
 
-    for name, text in resolve_frontmatter_sources(target_paths):
+    source_contexts, unresolved = resolve_frontmatter_sources(target_paths)
+    for name, text in source_contexts:
         resolved = Path(name).resolve()
         if resolved not in seen:
             seen.add(resolved)
             contexts.append((name, text))
 
-    print(json.dumps(scan(files, context_files=contexts), indent=2))
+    print(json.dumps(scan(files, context_files=contexts, unresolved_sources=unresolved), indent=2))
     return 0
 
 

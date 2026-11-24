@@ -45,7 +45,7 @@ The level comes from the work itself, never from team size or time. Start at the
 | One story: one end-to-end behavior | Story | A story ticket | Sofia (`bmad-agent-po`) |
 | More than one story of one capability | Epic | The epic PRD (`prd-epic`), with or without a parent | John (`bmad-agent-pm`) |
 | Several capabilities that share outcomes, invariants or nouns | Initiative | The PRD (`prd`), thin, with its epic map | John |
-| Several initiatives | Program | The PRD at program level, or a charter when governance is the question | John, or Mary (`bmad-agent-analyst`) for the charter |
+| Several initiatives | Program | The program PRD (`prd-program`), or a charter (`charter`) when governance is the question | John, or Mary (`bmad-agent-analyst`) for the charter |
 
 ## Routing
 

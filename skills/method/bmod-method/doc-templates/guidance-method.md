@@ -6,9 +6,9 @@ For Method plans, requirements, and cases for a decision. These rules add to the
 
 When the document plans work the ticket tree will hold, a container is active or a ticket is in play, and neither the caller, the template, nor the ticket already fixes the altitude, the opening asks first which level of the tree the document is for: the program, the initiative, or an epic. Templates whose altitude is fixed (`prd-program`, `prd`, `prd-epic`, `charter`) already disambiguate the level, so skip that question when one of them is selected.
 
-## Parent-aware spine
+## Inheriting from a parent
 
-When a parent container or spec exists (`program-*.md`, `initiative-*.md`, or a parent PRD along with its `companions:` or `sources:`), read it first, inherit its `OKR-N`, `INV-N`, shared nouns, and `BR-N` or `RULE-N` constraints by id citation without restating them, and ask only for what this level adds or narrows. When no parent spine exists (such as a standalone `epic-*` or greenfield `prd-epic`), establish a compact strategic floor inline before diving deep: problem, non-goals, tiered `OKR-N` (`Passable` / `Good` / `Excellent`) with production measurement, binary `INV-N` invariants, and boundaries or seams.
+When an upstream or parent document exists (`sources:`, `companions:`, or a parent container), read it first and ask only for what this level adds or narrows. Cite upstream ids verbatim rather than restating them, never reuse an upstream id for a different item, and continue numbering above its highest number when adding new items in the same prefix.
 
 ## Stakes
 
@@ -20,7 +20,7 @@ Read the stakes as one of: hobby or personal use, internal, pitch or investor, p
 
 ## Ids and requirements
 
-Give stable ids to anything others will cite, each a short uppercase prefix, a hyphen, and a number, such as `REQ-3` or `FR-3`, the form Method's `check_ids.py` lint hook reads. Where the document carries requirements or scope, make each requirement testable and each edge explicit; coaching a requirements document stops when the remaining questions reach edge cases and trade-offs. Names, owners, and dates in the body come from the user, never the environment.
+Give stable ids to anything others will cite, each a short uppercase prefix, a hyphen, and a number, such as `REQ-3` or `FR-3`, the form `{project-root}/_bmad/scripts/check_ids.py` reads on templates that declare it as a `lint:` hook. Where the document carries requirements or scope, make each requirement testable and each edge explicit; coaching a requirements document stops when the remaining questions reach edge cases and trade-offs. Names, owners, and dates in the body come from the user, never the environment.
 
 ## The level below
 

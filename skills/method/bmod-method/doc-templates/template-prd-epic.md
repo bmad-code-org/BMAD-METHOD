@@ -8,7 +8,7 @@ agents: [bmad-agent-pm]
 facilitation_order: [context, journeys-and-flows, rules-edge-cases-and-failure-modes, requirements, instrumentation, seams, product-specifics, changes-to-the-parent, chunky-story-slice-map, open-questions]
 guidance: guidance-method.md
 rubric: rubric-planning.md
-lint: ../scripts/check_ids.py
+lint: "{project-root}/_bmad/scripts/check_ids.py"
 status: draft
 created: ""
 updated: ""
@@ -24,7 +24,7 @@ updated: ""
 
 <!-- writing: Ids carry the epic when a parent names one — such as E02-FR-01, E02-UJ-1, and E02-OQ-1 — so cross-file checks never collide with the parent; with no parent, use FR-1, UJ-1, and OQ-1. If requirements sprawl across multiple independent capabilities, split into separate epics rather than bloating one document. Each FR is one testable statement, "[Actor] can [capability] [under conditions]", with its result. Behavior, not implementation: no schema, endpoint or file, which the technical design owns. -->
 
-<!-- done when: Every FR can be checked and traces to a journey or a rule; every journey step that needs the product has an FR; the failure cases a builder would otherwise guess are written down; what proves the target band is named; Chunky story slice map covers 100% of FRs and instrumentation requirements; any agreed Changes to the parent have been applied inline to the parent PRD with user confirmation; nothing restates the parent; and the user remembers making every decision in it. -->
+<!-- done when: Every FR can be checked and traces to a journey or a rule; every journey step that needs the product has an FR; the failure cases a builder would otherwise guess are written down; what proves the target band is named; Chunky story slice map covers 100% of FRs and instrumentation requirements; on interactive runs, any agreed Changes to the parent have been applied inline to the parent PRD with user confirmation and re-linted (headless runs leave deltas recorded in Changes to the parent); nothing restates the parent; and the user remembers making every decision in it. -->
 
 # {title}
 
@@ -52,7 +52,7 @@ updated: ""
 <!-- include when: one of these holds; give each that holds its own `###` and leave the rest out. A model decides or generates what users see: what it must never do, failure modes taken from real outputs, a prototype's where one exists, eval thresholds to ship and to roll back, and the fallback on refusal, timeout, tool failure and low confidence. A consumer or branded product: tone, information architecture, platforms, monetization. Developers adopt it: onboarding, documentation, errors, samples. Embedded or hardware: memory, power, form factor, updates, environment. -->
 
 ## Changes to the parent
-<!-- include when: a parent PRD exists. Ask before finalizing the slice map: did anything found here change a shared noun, an invariant, an OKR, another epic's entry, or a Contract Index row, or impact an architectural decision (`AD-n`)? "None" is the usual answer and is written as that. Otherwise list the exact changes, impacted sibling epics, Contract Index rows, and flagged `AD-n`s, and apply agreed parent PRD edits inline (with user confirmation) before closing. -->
+<!-- include when: a parent PRD exists. Ask before finalizing the slice map: did anything found here change a shared noun, an invariant, an OKR, another epic's entry, or a Contract Index row, or impact an architectural decision (`AD-n`)? "None" is the usual answer and is written as that. Otherwise list the exact changes, impacted sibling epics, Contract Index rows, and flagged `AD-n`s; on interactive runs, apply agreed parent PRD edits inline with user confirmation, bump its `updated:` date, rerun `check_doc.py` and `lint:` on the parent, and note if an existing initiative ticket needs Sofia to sync it (on headless runs, leave deltas recorded here without editing the parent). -->
 
 ## Chunky story slice map
 <!-- Propose right-sized, journey-shaped chunky stories for this epic, sized by end-to-end verifiability, journey cohesion, and clean review fit — never a fixed story quota. Fold validation, error handling, setup or scaffolding, and rollout work into user journeys rather than cutting standalone setup or go-live stories unless explicitly requested. For each story give a one-line outcome and the journey beats (E0X-UJ-N or UJ-N) it delivers. Follow with a **100% FR Coverage Matrix** table mapping every E0X-FR-xx (or FR-N) and every instrumentation or measurement requirement from Instrumentation to its owning chunky story, confirming zero uncovered FRs or measurements. -->

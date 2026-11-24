@@ -9,7 +9,7 @@ facilitation_order: [problem-and-vision, scope-and-non-goals, okrs, invariants, 
 guidance: guidance-method.md
 rubric: rubric-planning.md
 forbid_id_prefixes: [FR]
-lint: ../scripts/check_ids.py
+lint: "{project-root}/_bmad/scripts/check_ids.py"
 status: draft
 created: ""
 updated: ""
@@ -21,7 +21,7 @@ updated: ""
 
 <!-- opening: First establish whether the program is legacy modernization, net-new greenfield, or hybrid, which decides the rollout and integration strategy. Then invite an uninterrupted brain dump: why the program exists, who it serves, the outcomes expected across waves and the major domain workstreams, plus any charter, BRD, strategy doc or existing architecture context to read first. -->
 
-<!-- inputs: Read any charter, BRD, strategy doc or enterprise architecture first before asking anything it answers. A business requirements document or charter among the sources: keep its BR-N and RULE-N ids. Only the user knows sponsor outcomes, priorities, risk appetite and constraints. -->
+<!-- inputs: Read any charter, BRD, strategy doc or enterprise architecture first before asking anything it answers. Keep any upstream document ids rather than restating them or reusing them for different items, and continue numbering above its highest id when adding new items in the same prefix. Only the user knows sponsor outcomes, priorities, risk appetite and constraints. -->
 
 <!-- writing: Outcomes, guardrails, seams and initiative boundaries — zero child epic maps and zero requirement lists (`FR` belongs in each epic's `prd-epic`, never here). Global ids: OKR-N, INV-N, OQ-N, and INIT-01, INIT-02 onward for initiatives (never E01, which belongs to epics). Child initiative PRDs cite these ids rather than restating them. Shared nouns and cross-domain contract names are used exactly as defined. Shape cues: Problem and vision half a page, each initiative three to five lines. Padding to look thorough is the failure. -->
 
