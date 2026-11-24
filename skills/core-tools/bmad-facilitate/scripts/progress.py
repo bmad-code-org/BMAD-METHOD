@@ -42,7 +42,7 @@ FINALIZE_SEQUENCE = [
     "3. Review: name reviewers first (rubric walker, fresh reader, finalize_reviewers), run them, and triage findings (skip only at lowest stakes).",
     "4. Triage [ASSUMPTION] tags and open questions: resolve blockers one at a time, defer the rest.",
     "5. Polish: apply doc_standards (structure before prose, succinctness pass, skill: passes; skip skill: only at lowest stakes).",
-    "6. Rebuild Table of Contents (if present), rerun check_doc.py, and fix every toc or lint hit.",
+    "6. Rebuild Table of Contents (if present), rerun check_doc.py, and fix every toc, placeholder, forbidden_prefix, or lint hit.",
     "7. User read: report settled-out sections, polish changes, and three lowest-confidence decisions; wait for edits (rerun step 6 if headings moved).",
     "8. External handoffs: run workflow.external_handoffs.",
     "9. Close: set status: final (unless blocked), remove settled-out markers, render view if configured, delete {scratch}, run decentralized bmad next-step lookup, and run workflow.on_complete.",

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """check-doc — find placeholders, forbidden id prefixes, and stale TOCs in markdown documents.
 
@@ -23,6 +24,7 @@ Locations are `file:line`. Exits 0, or 2 on bad usage or a missing file.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import re
 import sys
@@ -34,9 +36,7 @@ sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts 
 
 ID = r"(?<![A-Za-z0-9-])(?:[A-Z]\d+-)?[A-Z][A-Z0-9]{0,5}-\d+(?![A-Za-z0-9])"
 TOKEN = re.compile(ID)
-FRONTMATTER = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*(?:\n|\Z)", re.DOTALL)
 FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}|~{3,})")
-COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
 INLINE_CODE = re.compile(r"`[^`\n]+`")
 PLACEHOLDER_WORD = re.compile(r"\b(TBD|TODO|FIXME|XXX)\b")
 TEMPLATE_TOKEN = re.compile(r"\{[a-z_][a-z0-9_ /.-]*\}")
@@ -47,37 +47,80 @@ TOC_ANCHOR = "table-of-contents"
 MAX_RANGE = 200
 
 
+def _load_frontmatter(start_paths: Iterable[Path] = ()):
+    """Load shared `frontmatter.py` from `_bmad/scripts/`, an adjacent `bmad` skill, or repo checkout."""
+    candidates: list[Path] = []
+    for start in [*start_paths, Path.cwd()]:
+        cur = start if start.is_dir() else start.parent
+        for root in (cur, *cur.parents):
+            candidates.append(root / "_bmad" / "scripts" / "frontmatter.py")
+    skills = Path(__file__).resolve().parents[2]
+    candidates.extend(
+        [
+            skills / "bmad" / "scripts" / "frontmatter.py",
+            skills.parent / "core-tools" / "bmad" / "scripts" / "frontmatter.py",
+        ]
+    )
+    for path in candidates:
+        if path.is_file():
+            spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return module
+    raise FileNotFoundError("frontmatter.py not found in _bmad/scripts/ or installed bmad skill")
+
+
+frontmatter = _load_frontmatter()
+
+
 def split_frontmatter(text: str) -> tuple[str, str, int]:
     """Return (frontmatter_text, body_text, body_line_offset) with CRLF normalized."""
     norm = text.replace("\r\n", "\n")
-    m = FRONTMATTER.match(norm)
-    if not m:
+    try:
+        fm_text, body_text = frontmatter.split(norm)
+    except ValueError:
         return "", norm, 0
-    return m.group(1), norm[m.end() :], norm[: m.end()].count("\n")
-
-
-def code_mask(lines: list[str]) -> list[bool]:
-    """True for each line inside (or fencing) a fenced code block."""
-    mask, fence = [], None
-    for line in lines:
-        m = FENCE_OPEN.match(line)
-        if fence is None:
-            if m:
-                fence = m.group(1)
-            mask.append(fence is not None)
-        else:
-            mask.append(True)
-            if m and m.group(1)[0] == fence[0] and len(m.group(1)) >= len(fence) and not line.strip(" `~"):
-                fence = None
-    return mask
+    return fm_text, body_text, norm[: len(norm) - len(body_text)].count("\n")
 
 
 def prose_lines(text: str) -> list[str]:
     """The document's lines with fenced code and HTML comments blanked, numbering kept."""
     lines = text.replace("\r\n", "\n").split("\n")
-    lines = ["" if in_code else line for line, in_code in zip(lines, code_mask(lines), strict=True)]
-    joined = COMMENT.sub(lambda m: "\n" * m.group(0).count("\n"), "\n".join(lines))
-    return joined.split("\n")
+    out: list[str] = []
+    fence: tuple[str, int] | None = None
+    in_comment = False
+    for line in lines:
+        if fence is not None:
+            out.append("")
+            m = FENCE_OPEN.match(line)
+            if m and m.group(1)[0] == fence[0] and len(m.group(1)) >= fence[1] and not line[m.end() :].strip(" \t"):
+                fence = None
+            continue
+        if not in_comment:
+            m = FENCE_OPEN.match(line)
+            if m and (m.group(1)[0] == "~" or "`" not in line[m.end() :]):
+                fence = (m.group(1)[0], len(m.group(1)))
+                out.append("")
+                continue
+        pos = 0
+        buf: list[str] = []
+        while pos < len(line):
+            if in_comment:
+                end = line.find("-->", pos)
+                if end == -1:
+                    break
+                in_comment = False
+                pos = end + 3
+            else:
+                start = line.find("<!--", pos)
+                if start == -1:
+                    buf.append(line[pos:])
+                    break
+                buf.append(line[pos:start])
+                in_comment = True
+                pos = start + 4
+        out.append("".join(buf))
+    return out
 
 
 def split_id(token: str) -> tuple[str, int]:
@@ -190,6 +233,8 @@ def scan(files: list[tuple[str, str]], forbid_prefixes: Iterable[str] = ()) -> d
 
 
 def main(argv: list[str] | None = None) -> int:
+    global frontmatter
+
     parser = argparse.ArgumentParser(
         description="Find placeholders, forbidden id prefixes, and stale TOCs in markdown documents."
     )
@@ -204,8 +249,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
     files = []
-    for name in args.files:
-        path = Path(name)
+    paths = [Path(name) for name in args.files]
+    try:
+        frontmatter = _load_frontmatter([p.resolve() for p in paths])
+    except FileNotFoundError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    for name, path in zip(args.files, paths, strict=True):
         if not path.is_file():
             print(f"not found: {name}", file=sys.stderr)
             return 2

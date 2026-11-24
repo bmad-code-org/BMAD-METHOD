@@ -21,7 +21,7 @@ State the sequence in one sentence, then run all nine steps in order (including 
 3. **Review:** name the chosen reviewers, run the Review phase above, and settle findings.
 4. **Triage:** walk standing `[ASSUMPTION]` tags and open questions; resolve blocking items one at a time and defer non-blockers with owner and revisit condition (flag many blockers as a finding).
 5. **Polish:** apply `{workflow.doc_standards}` in order — structural clarity before prose, succinctness pass cutting filler without losing facts, and tables/diagrams where prose walks flows or comparisons. Invoke `skill:` standards (skipped only at lowest stakes) and apply `file:` or text rules directly, adding no unsupported claims. On headless runs or after blanket approvals, move remaining `[ASSUMPTION]` tags into the template's assumptions section or a closing `## Assumptions` list naming affected ids/sections.
-6. **TOC & re-lint:** if `## Table of Contents` exists, rebuild entries from final headings and rerun `check_doc.py` (with companions and `--forbid-prefix`) plus `lint:` until `toc` and lint issues clear.
+6. **TOC & re-lint:** if `## Table of Contents` exists, rebuild entries from final headings and rerun `check_doc.py` (with companions and `--forbid-prefix`) plus `lint:` until `check_doc.py` (`toc`, `placeholders`, `forbidden_prefix`) and `lint:` issues clear.
 7. **User read:** unless headless, report settled-out sections with reasons, polish changes, and the three lowest-confidence decisions, then wait for user feedback and apply edits (rerunning step 6 after any edit).
 8. **External handoffs:** execute `{workflow.external_handoffs}`.
 9. **Close & completion:** perform Close below, then run `{workflow.on_complete}`.

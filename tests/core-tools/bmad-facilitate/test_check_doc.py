@@ -127,3 +127,25 @@ def test_cli_exit_codes_and_help(tmp_path, capsys):
     with pytest.raises(SystemExit) as empty_exc:
         check_doc.main([])
     assert empty_exc.value.code == 2
+
+
+def test_fence_suffix_and_html_comment_interplay():
+    text = (
+        "<!--\n```\n-->\n"
+        "TODO in prose after comment containing unmatched fence.\n"
+        "```markdown\t\n"
+        "TODO inside fence with trailing tab ignored\n"
+        "```~\n"
+        "Still inside fence because mixed tilde does not close backtick fence: TODO\n"
+        "<!-- unclosed comment inside fence ignored\n"
+        "```\t \n"
+        "```python\n"
+        "<!-- comment marker in second fence ignored\n"
+        "```\n"
+        "FIXME visible after closing fences.\n"
+    )
+    hits = report(text)["placeholders"]
+    assert hits == [
+        {"kind": "marker", "text": "TODO", "location": "doc0.md:4"},
+        {"kind": "marker", "text": "FIXME", "location": "doc0.md:14"},
+    ]

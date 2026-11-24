@@ -174,3 +174,68 @@ def test_cli_json_and_exit_codes(tmp_path, capsys):
     with pytest.raises(SystemExit) as empty_exc:
         check_ids.main([])
     assert empty_exc.value.code == 2
+
+
+def test_fence_suffix_and_comment_interplay():
+    text = (
+        "- **FR-1**: First.\n"
+        "<!--\n```\n-->\n"
+        "Cites FR-9.\n"
+        "```markdown\n"
+        "<!-- unclosed comment inside fence (FR-8 ignored)\n"
+        "```\t\n"
+        "```~\n"
+        "```\n"
+        "Cites FR-10.\n"
+    )
+    assert report(text)["undefined"] == {
+        "FR-9": ["doc0.md:5"],
+        "FR-10": ["doc0.md:11"],
+    }
+
+
+def test_inherited_parent_sources_and_context_files(tmp_path, capsys):
+    (tmp_path / "_bmad").mkdir()
+    parent_dir = tmp_path / "_bmad-output" / "initiative-app" / "prd-app"
+    epic_dir = tmp_path / "_bmad-output" / "initiative-app" / "tickets" / "epic-01" / "prd-epic-one"
+    parent_dir.mkdir(parents=True)
+    epic_dir.mkdir(parents=True)
+
+    parent = parent_dir / "prd-app.md"
+    parent.write_text(
+        "---\ntitle: Parent PRD\n---\n\n"
+        "| ID | Measure |\n|---|---|\n| `OKR-1` | Activation |\n\n"
+        "- **INV-1**: Tenant isolation holds.\n"
+        "- **BR-1**: Signed consent required.\n"
+        "- **BR-2**: Audit log kept 7 years.\n"
+        "- **OQ-7.** Withdrawn: resolved earlier.\n",
+        encoding="utf-8",
+    )
+
+    child = epic_dir / "prd-epic-one.md"
+    child.write_text(
+        "---\n"
+        "title: Child Epic PRD\n"
+        "sources:\n"
+        "  - _bmad-output/initiative-app/prd-app/prd-app.md#e01\n"
+        "  - https://example.com/external-spec.md\n"
+        "  - missing-optional-source.md\n"
+        "---\n\n"
+        "- **OKR-2**: Epic target builds on OKR-1 and broken OKR-99.\n"
+        "- **E01-FR-01**: Respects INV-1 and cites deprecated OQ-7.\n\n"
+        "| ID | Note |\n|---|---|\n| BR-1 | Trace 1 |\n| BR-2 | Trace 2 |\n",
+        encoding="utf-8",
+    )
+
+    assert check_ids.main([str(child)]) == 0
+    found = json.loads(capsys.readouterr().out)
+    assert found["undefined"] == {"OKR-99": [f"{child}:9"]}
+    assert found["duplicate"] == {}
+    assert found["withdrawn"] == {"OQ-7": [f"{child}:10"]}
+    assert found["counts"] == {
+        "E01-FR": {"defined": 1, "referenced": 0},
+        "OKR": {"defined": 1, "referenced": 2},
+    }
+
+    assert check_ids.main([str(child), "--context", str(tmp_path / "absent.md")]) == 2
+    assert "not found" in capsys.readouterr().err
