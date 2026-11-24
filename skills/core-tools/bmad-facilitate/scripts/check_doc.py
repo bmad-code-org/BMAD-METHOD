@@ -37,7 +37,6 @@ sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts 
 ID = r"(?<![A-Za-z0-9-])(?:[A-Z]\d+-)?[A-Z][A-Z0-9]{0,5}-\d+(?![A-Za-z0-9])"
 TOKEN = re.compile(ID)
 FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}|~{3,})")
-INLINE_CODE = re.compile(r"`[^`\n]+`")
 PLACEHOLDER_WORD = re.compile(r"\b(TBD|TODO|FIXME|XXX)\b")
 TEMPLATE_TOKEN = re.compile(r"\{[a-z_][a-z0-9_ /.-]*\}")
 RANGE = re.compile(rf"({ID})(?:\*\*|`)*\s*(?:to|through|[–—-])\s*(?:\*\*|`)*({ID})")
@@ -193,6 +192,34 @@ def is_forbidden(token: str, forbidden: set[str]) -> bool:
     return prefix in forbidden or any(prefix.endswith(f"-{f}") for f in forbidden)
 
 
+def _strip_inline_code(line: str) -> str:
+    """Remove delimited inline code spans on `line`, respecting backtick lengths and escaped backticks."""
+    out: list[str] = []
+    pos = 0
+    n = len(line)
+    while pos < n:
+        if line[pos] == "`" and not _is_escaped(line, pos):
+            tick_end = pos
+            while tick_end < n and line[tick_end] == "`":
+                tick_end += 1
+            close_end = _find_closing_backticks(line, pos, tick_end - pos)
+            if close_end != -1:
+                tick_len = tick_end - pos
+                inner = line[tick_end : close_end - tick_len].strip()
+                if PLACEHOLDER_WORD.fullmatch(inner):
+                    out.append(line[pos:close_end])
+                pos = close_end
+                continue
+            out.append(line[pos:tick_end])
+            pos = tick_end
+        else:
+            next_tick = line.find("`", pos + 1)
+            stop = next_tick if next_tick != -1 else n
+            out.append(line[pos:stop])
+            pos = stop
+    return "".join(out)
+
+
 def find_placeholders(name: str, fm_text: str, prose: list[str], body_offset: int) -> list[dict[str, str]]:
     """Find literal placeholder markers and unfilled `{token}` placeholders in frontmatter and prose."""
     hits: list[dict[str, str]] = []
@@ -202,7 +229,7 @@ def find_placeholders(name: str, fm_text: str, prose: list[str], body_offset: in
                 for m in rx.finditer(line):
                     hits.append({"kind": kind, "text": m.group(0), "location": f"{name}:{idx}"})
     for idx, line in enumerate(prose, 1 + body_offset):
-        no_code = INLINE_CODE.sub("", line)
+        no_code = _strip_inline_code(line)
         for m in PLACEHOLDER_WORD.finditer(no_code):
             hits.append({"kind": "marker", "text": m.group(0), "location": f"{name}:{idx}"})
         for m in TEMPLATE_TOKEN.finditer(no_code):
