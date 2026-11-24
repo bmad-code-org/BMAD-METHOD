@@ -83,8 +83,8 @@ two parts: once for the initiative, then once for each epic.
    ```
 
 4. **Winston settles the decisions the two epics share,** such as where the
-   no-show timer runs. Winston runs `bmad-architecture`, and Sofia adopts the
-   spine.
+   no-show timer runs. Winston (`bmad-agent-architect`) coaches the
+   `arch-spine` document, and Sofia adopts the spine.
 
    ```text wrap
    /bmad-agent-architect settle the decisions the check-in epics share
@@ -121,8 +121,8 @@ so agree it as a team or assign it in your tracker. Each owner repeats steps
    /bmad-agent-ux-designer design the door check-in epic's check-in screen, only what is new or different for this epic
    ```
 
-7. **Only if the epic has open technical questions,** Winston runs
-   `bmad-architecture` on the epic, covering only what is new or different.
+7. **Only if the epic has open technical questions,** Winston (`bmad-agent-architect`)
+   runs `arch-epic` on the epic, covering only what is new or different.
 
    ```text wrap
    /bmad-agent-architect settle the door check-in epic's open technical questions

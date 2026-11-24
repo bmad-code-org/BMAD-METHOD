@@ -174,16 +174,78 @@ class TestScanRepoReadiness(unittest.TestCase):
             # Agent instruction files inside dot-dirs and project-owned top-level skills/ remain visible.
             (root / ".claude" / "CLAUDE.md").write_text("# Claude rules\n", encoding="utf-8")
             (root / ".cursor" / "rules" / "style.md").write_text("# Style rules\n", encoding="utf-8")
+            (root / ".cursor" / "rules" / "security.mdc").write_text("# Security rule\n", encoding="utf-8")
             (root / "skills" / "tool.py").write_text("def run():\n    return 1\n", encoding="utf-8")
             (root / "src" / "app.py").write_text("def ok():\n    return True\n", encoding="utf-8")
 
             report = scanner.scan_repo(root, top=10)
             self.assertEqual(report["summary"]["source_files"], 2)
-            self.assertEqual(report["summary"]["doc_files"], 2)
+            self.assertEqual(report["summary"]["doc_files"], 3)
             self.assertEqual({f["path"] for f in report["largest_files"]}, {"skills/tool.py", "src/app.py"})
             self.assertEqual(report["comment_hotspots"], [])
             doc_paths = {d["path"] for d in report["instruction_and_doc_files"]}
-            self.assertEqual(doc_paths, {".claude/CLAUDE.md", ".cursor/rules/style.md"})
+            self.assertEqual(doc_paths, {".claude/CLAUDE.md", ".cursor/rules/security.mdc", ".cursor/rules/style.md"})
+
+    def test_subdir_scan_and_non_ascii_churn_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp) / "repo"
+            app = repo / "packages" / "app"
+            (app / "src").mkdir(parents=True)
+            env = _git_env(repo)
+            subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True, env=env)
+
+            cafe = app / "src" / "caf\u00e9.py"
+            cafe.write_text("x = 1\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=repo, check=True, env=env)
+            subprocess.run(["git", "commit", "-m", "init"], cwd=repo, check=True, capture_output=True, env=env)
+
+            cafe.write_text("x = 2\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=repo, check=True, env=env)
+            subprocess.run(["git", "commit", "-m", "bump"], cwd=repo, check=True, capture_output=True, env=env)
+
+            report = scanner.scan_repo(app, top=5)
+            self.assertTrue(report["git_available"])
+            self.assertEqual(report["churn_hotspots"][0]["path"], "src/caf\u00e9.py")
+            self.assertEqual(report["churn_hotspots"][0]["churn_commits"], 2)
+
+    def test_comment_noise_ignores_c_hashes_jsdoc_and_standards_prefixes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "src").mkdir()
+            (root / "src" / "lib.c").write_text(
+                "\n".join(["#include <stdio.h>", "#define X 1"] * 12) + "\n// Supports UTF-8, SHA-256, ISO-8601\n",
+                encoding="utf-8",
+            )
+            (root / "src" / "doc.ts").write_text(
+                "\n".join(
+                    [
+                        "/**",
+                        " * @param {string} userId",
+                        " * @returns {boolean} ok = true",
+                        " */",
+                        "export const ok = true;",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (root / "nested").mkdir()
+            nested_out = root / "nested" / "sub" / "report.json"
+
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                rc = scanner.main([str(root), "-o", str(nested_out)])
+            self.assertEqual(rc, 0)
+            data = json.loads(nested_out.read_text(encoding="utf-8"))
+            self.assertEqual(data["comment_hotspots"], [])
+
+            with redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as bad_top:
+                    scanner.main([str(root), "--top", "0"])
+                self.assertEqual(bad_top.exception.code, 2)
+                with self.assertRaises(SystemExit) as bad_commits:
+                    scanner.main([str(root), "--commits", "0"])
+                self.assertEqual(bad_commits.exception.code, 2)
 
 
 if __name__ == "__main__":

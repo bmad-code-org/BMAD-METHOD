@@ -93,7 +93,7 @@ epic: Sofia lists it in the initiative's Boundaries as a touch point, with the
 epic that owns it.
 
 She then lists the decisions more than one epic must adopt, such as a
-contract, a data format, or a shared value list, and offers `bmad-architecture`
+contract, a data format, or a shared value list, and offers Winston (`bmad-agent-architect`)
 to settle them. Decline, and each becomes a story in the opening epic that the
 others wait on. See [Design UX and Architecture](./design-ux-and-architecture.md).
 She records each slicing choice, and each suggestion you decline, as a dated
@@ -127,7 +127,7 @@ R2 (E02): A room nobody checks into is freed and can be booked by anyone; freein
 
 **Sofia:** Two epics, taken from the PRD's epic map: 1 Door check-in, then
 2 Free no-show rooms, which needs check-ins to exist. Both depend on
-where the no-show timer runs. Settle that with `bmad-architecture`?
+where the no-show timer runs. Settle that with Winston (`bmad-agent-architect`)?
 :::
 
 ## What You Get

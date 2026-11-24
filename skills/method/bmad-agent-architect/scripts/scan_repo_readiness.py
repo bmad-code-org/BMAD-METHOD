@@ -189,14 +189,48 @@ GUARDRAIL_NAMES = frozenset(
     }
 )
 
+HASH_COMMENT_EXTS = frozenset({".py", ".rb", ".sh", ".bash", ".zsh", ".ex", ".exs"})
+TICKET_IGNORE_PREFIXES = frozenset(
+    {
+        "UTF",
+        "SHA",
+        "ISO",
+        "AES",
+        "RSA",
+        "RFC",
+        "HTTP",
+        "HTTPS",
+        "TLS",
+        "SSL",
+        "TCP",
+        "UDP",
+        "IP",
+        "ASCII",
+        "BASE",
+        "UUID",
+        "JSON",
+        "HTML",
+        "CSS",
+        "SQL",
+        "JWT",
+        "EC",
+        "ECDSA",
+        "HMAC",
+        "MD",
+        "CRC",
+        "POSIX",
+        "IEEE",
+    }
+)
 TODO_RE = re.compile(r"\b(TODO|FIXME|HACK|XXX)\b")
-TICKET_RE = re.compile(r"\b[A-Z]{2,8}-\d+\b")
+TICKET_RE = re.compile(r"\b([A-Z]{2,8})-\d+\b")
 CODE_HINT_RE = re.compile(
     r"(?:=|;|\{|\}|\(\)|\b(?:def|class|function|const|let|var|return|import|export|if|for|while)\b)"
 )
 
 LARGE_DOC_LINES = 200
 MIN_COMMENT_SAMPLE_LINES = 20
+MAX_FILE_BYTES = 2 * 1024 * 1024
 
 
 def approx_tokens(text: str) -> int:
@@ -208,7 +242,19 @@ def git_churn(repo: Path, commits: int) -> tuple[bool, Counter[str]]:
     env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
     try:
         proc = subprocess.run(
-            ["git", "-C", str(repo), "log", f"-n{commits}", "--name-only", "--pretty=format:"],
+            [
+                "git",
+                "-c",
+                "core.quotePath=false",
+                "-C",
+                str(repo),
+                "log",
+                f"-n{commits}",
+                "--relative",
+                "-z",
+                "--name-only",
+                "--pretty=format:",
+            ],
             capture_output=True,
             text=True,
             check=True,
@@ -218,14 +264,14 @@ def git_churn(repo: Path, commits: int) -> tuple[bool, Counter[str]]:
     except (OSError, subprocess.SubprocessError):
         return False, Counter()
     counts: Counter[str] = Counter()
-    for raw in proc.stdout.splitlines():
-        rel = raw.strip()
-        if rel:
-            counts[rel] += 1
+    for rel in proc.stdout.split("\0"):
+        path = rel.lstrip("\n")
+        if path:
+            counts[path] += 1
     return True, counts
 
 
-def analyze_comments(lines: list[str]) -> dict[str, int | float]:
+def analyze_comments(lines: list[str], *, ext: str = "") -> dict[str, int | float]:
     """Count comment lines, TODO markers, ticket IDs, and commented-out code runs."""
     comment_lines = 0
     todo_markers = 0
@@ -233,6 +279,7 @@ def analyze_comments(lines: list[str]) -> dict[str, int | float]:
     commented_code_runs = 0
     code_run = 0
     in_block = False
+    allow_hash = not ext or ext in HASH_COMMENT_EXTS
 
     for raw in lines:
         stripped = raw.strip()
@@ -247,6 +294,7 @@ def analyze_comments(lines: list[str]) -> dict[str, int | float]:
                 in_block = False
             else:
                 comment_text = stripped
+            comment_text = comment_text.lstrip("*").strip()
         elif stripped.startswith("/*"):
             is_comment = True
             end = stripped.find("*/", 2)
@@ -255,7 +303,8 @@ def analyze_comments(lines: list[str]) -> dict[str, int | float]:
             else:
                 comment_text = stripped[2:]
                 in_block = True
-        elif stripped.startswith("#") and not stripped.startswith("#!"):
+            comment_text = comment_text.lstrip("*").strip()
+        elif allow_hash and stripped.startswith("#") and not stripped.startswith("#!"):
             is_comment = True
             comment_text = stripped.lstrip("#").strip()
         elif stripped.startswith("//"):
@@ -266,9 +315,10 @@ def analyze_comments(lines: list[str]) -> dict[str, int | float]:
             comment_lines += 1
             if TODO_RE.search(comment_text):
                 todo_markers += 1
-            if TICKET_RE.search(comment_text):
-                ticket_refs += 1
-            if comment_text and CODE_HINT_RE.search(comment_text):
+            for m in TICKET_RE.finditer(comment_text):
+                if m.group(1) not in TICKET_IGNORE_PREFIXES:
+                    ticket_refs += 1
+            if comment_text and not comment_text.startswith("@") and CODE_HINT_RE.search(comment_text):
                 code_run += 1
             else:
                 if code_run >= 2:
@@ -323,6 +373,7 @@ def scan_repo(repo: Path, *, top: int = 15, commits: int = 200) -> dict:
     manifests: list[str] = []
     guardrails: list[str] = []
     ci_workflows: list[str] = []
+    skipped_large_files: list[str] = []
 
     total_files = 0
     source_files = 0
@@ -347,6 +398,14 @@ def scan_repo(repo: Path, *, top: int = 15, commits: int = 200) -> dict:
             if ext in BINARY_EXTS:
                 continue
 
+            try:
+                if fpath.stat().st_size > MAX_FILE_BYTES:
+                    skipped_large_files.append(posix)
+                    continue
+                text = fpath.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                continue
+
             total_files += 1
             if fname in MANIFEST_NAMES:
                 manifests.append(posix)
@@ -354,11 +413,6 @@ def scan_repo(repo: Path, *, top: int = 15, commits: int = 200) -> dict:
                 guardrails.append(posix)
             if posix.startswith(".github/workflows/") and ext in {".yml", ".yaml"}:
                 ci_workflows.append(posix)
-
-            try:
-                text = fpath.read_text(encoding="utf-8", errors="ignore")
-            except OSError:
-                continue
             lines = text.splitlines()
             line_count = len(lines)
             tokens = approx_tokens(text)
@@ -376,11 +430,11 @@ def scan_repo(repo: Path, *, top: int = 15, commits: int = 200) -> dict:
                         "churn_commits": file_churn,
                     }
                 )
-                cstats = analyze_comments(lines)
+                cstats = analyze_comments(lines, ext=ext)
                 has_noise = cstats["todo_markers"] > 0 or cstats["ticket_refs"] > 0 or cstats["commented_code_runs"] > 0
                 if (line_count >= MIN_COMMENT_SAMPLE_LINES and cstats["comment_ratio"] >= 0.15) or has_noise:
                     comment_records.append({"path": posix, "lines": line_count, **cstats})
-            elif ext in DOC_EXTS or fname in INSTRUCTION_NAMES:
+            elif ext in DOC_EXTS or fname in INSTRUCTION_NAMES or ".cursor/rules/" in posix:
                 doc_files += 1
                 doc_tokens += tokens
                 if is_instruction_or_important_doc(rel, line_count):
@@ -426,6 +480,7 @@ def scan_repo(repo: Path, *, top: int = 15, commits: int = 200) -> dict:
             "configs": sorted(guardrails),
             "ci_workflows": sorted(ci_workflows),
         },
+        "skipped_large_files": sorted(skipped_large_files),
     }
 
 
@@ -437,6 +492,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("-o", "--output", type=Path, help="write JSON output to file instead of stdout")
     args = parser.parse_args(argv)
 
+    if args.top < 1:
+        parser.error("--top must be >= 1")
+    if args.commits < 1:
+        parser.error("--commits must be >= 1")
+
     repo = args.repo.expanduser().resolve()
     if not repo.is_dir():
         print(f"error: not a directory: {args.repo}", file=sys.stderr)
@@ -444,6 +504,7 @@ def main(argv: list[str] | None = None) -> int:
 
     payload = json.dumps(scan_repo(repo, top=args.top, commits=args.commits), indent=2)
     if args.output:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(payload + "\n", encoding="utf-8")
     else:
         print(payload)

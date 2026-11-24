@@ -8,6 +8,7 @@ import importlib.util
 import io
 import json
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -80,7 +81,8 @@ class TestLintArch(unittest.TestCase):
 
     def test_duplicate_and_non_monotonic_ad_id_caught(self) -> None:
         dup = CLEAN.replace("### `AD-2` — layered deps `[ADOPTED]`", "### AD-1 — layered deps")
-        self.assertIn("ad_id", cats(lint_arch.lint(dup)))
+        dup_res = lint_arch.lint(dup)
+        self.assertEqual(cats(dup_res), ["ad_id"])
 
         non_mono = CLEAN.replace("### `AD-2` — layered deps `[ADOPTED]`", "### **AD-5** — layered deps").replace(
             "### AD-1 — single write path", "### AD-9 — single write path"
@@ -101,9 +103,15 @@ class TestLintArch(unittest.TestCase):
         res_prose = lint_arch.lint(prose_only)
         self.assertTrue(any(f["category"] == "ad_fields" and "rule" in f["detail"] for f in res_prose["findings"]))
 
-        # Alternate label syntax (`- **Rule**:` and plain `Rule:`) passes.
+        # Alternate label syntax (`- **Rule**:` and plain `Rule:`) passes, as do deeper subheadings inside an AD.
         alt = CLEAN.replace("- **Rule:**", "- **Rule**:").replace("- **Binds:**", "Binds:")
         self.assertTrue(lint_arch.lint(alt)["ok"])
+
+        with_sub = CLEAN.replace(
+            "- **Rule:** state changes only through the command bus",
+            "#### Exceptions\n\n- **Rule:** state changes only through the command bus",
+        )
+        self.assertTrue(lint_arch.lint(with_sub)["ok"])
 
     def test_fences_and_html_comments_ignored(self) -> None:
         text = (
@@ -120,7 +128,7 @@ class TestLintArch(unittest.TestCase):
         self.assertEqual(cats(res_blank), ["version_pin"])
         self.assertTrue(res_blank["findings"][0]["location"].startswith("arch-spine-shop.md (line "))
 
-        for bad in ("{pin}", "TBD", "latest", "unpinned"):
+        for bad in ("{pin}", "TBD", "latest", "unpinned", "*", "^2.0", ">=1.4", "~3.1", "1.x", "N/A", "-", "—"):
             res = lint_arch.lint(CLEAN.replace("| fastapi | 0.115 |", f"| fastapi | {bad} |"))
             self.assertEqual(cats(res), ["version_pin"], msg=bad)
 
@@ -135,7 +143,11 @@ class TestLintArch(unittest.TestCase):
         fenced = "---\ntitle: 'x'\n---\n\n```md\n## Stack\n\n| foo |  |\n```\n"
         self.assertTrue(lint_arch.lint(fenced)["ok"])
 
-        reordered = "---\ntitle: 'x'\n---\n\n## Stack & Versions\n\n| Version | Name |\n| --- | --- |\n| 0.115 | fastapi |\n|  | redis |\n"
+        reordered = (
+            "---\ntitle: 'x'\n---\n\n## Stack & Versions\n\n### Runtime\n\n"
+            "| Version | Name |\n| --- | --- |\n| 0.115 | fastapi |\n\n"
+            "| Name | Version |\n| --- | --- |\n| redis |  |\n"
+        )
         res_reord = lint_arch.lint(reordered)
         self.assertEqual(len(res_reord["findings"]), 1)
         self.assertIn("redis", res_reord["findings"][0]["detail"])
@@ -185,6 +197,13 @@ class TestLintArch(unittest.TestCase):
             self.assertEqual(rc2, 0)
             self.assertTrue(any(f["category"] == "ad_id" for f in json.loads(buf2.getvalue())["findings"]))
 
+            # All-non-.md inputs exits 2 instead of silently returning ok:true.
+            err_non_md = io.StringIO()
+            with redirect_stderr(err_non_md):
+                rc_non_md = lint_arch.main([str(companion)])
+            self.assertEqual(rc_non_md, 2)
+            self.assertIn("no markdown files", err_non_md.getvalue())
+
             # Missing file exits 2.
             err = io.StringIO()
             with redirect_stderr(err):
@@ -192,10 +211,67 @@ class TestLintArch(unittest.TestCase):
             self.assertEqual(rc_missing, 2)
             self.assertIn("not found", err.getvalue())
 
+            # Unreadable / invalid UTF-8 markdown file exits 2 with JSON error.
+            bad_utf8 = root / "bad.md"
+            bad_utf8.write_bytes(b"\xff\xfe\xfd")
+            buf_bad = io.StringIO()
+            with redirect_stdout(buf_bad):
+                rc_bad = lint_arch.main([str(bad_utf8)])
+            self.assertEqual(rc_bad, 2)
+            bad_payload = json.loads(buf_bad.getvalue())
+            self.assertFalse(bad_payload["ok"])
+            self.assertIn("could not read", bad_payload["error"])
+
             # --help exits 0.
             with self.assertRaises(SystemExit) as exc:
                 lint_arch.main(["--help"])
             self.assertEqual(exc.exception.code, 0)
+
+    def test_installed_script_resolves_frontmatter_and_help_from_outside_cwd(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            proj = base / "proj"
+            method_scripts = proj / "_bmad" / "method" / "scripts"
+            core_scripts = proj / "_bmad" / "scripts"
+            method_scripts.mkdir(parents=True)
+            core_scripts.mkdir(parents=True)
+            installed = method_scripts / "lint_arch.py"
+            shutil.copy2(SCRIPT, installed)
+            shutil.copy2(FRONTMATTER, core_scripts / "frontmatter.py")
+
+            outside = base / "outside"
+            outside.mkdir()
+            doc = base / "doc.md"
+            doc.write_text(CLEAN, encoding="utf-8")
+
+            help_proc = subprocess.run(
+                [sys.executable, str(installed), "--help"], cwd=outside, capture_output=True, text=True
+            )
+            self.assertEqual(help_proc.returncode, 0, help_proc.stderr)
+
+            ok_proc = subprocess.run(
+                [sys.executable, str(installed), "--project-root", str(proj), str(doc)],
+                cwd=outside,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(ok_proc.returncode, 0, ok_proc.stderr)
+            self.assertTrue(json.loads(ok_proc.stdout)["ok"])
+
+            # Without _bmad/scripts/frontmatter.py anywhere reachable, missing parser exits 2 cleanly.
+            isolated = base / "isolated"
+            isolated.mkdir()
+            orphan_script = isolated / "lint_arch.py"
+            shutil.copy2(SCRIPT, orphan_script)
+            miss_proc = subprocess.run(
+                [sys.executable, str(orphan_script), str(doc)],
+                cwd=outside,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(miss_proc.returncode, 2)
+            self.assertNotIn("Traceback", miss_proc.stderr)
+            self.assertIn("frontmatter.py not found", miss_proc.stderr)
 
 
 if __name__ == "__main__":

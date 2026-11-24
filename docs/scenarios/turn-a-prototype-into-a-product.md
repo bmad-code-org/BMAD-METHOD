@@ -57,7 +57,7 @@ knows only one floor, and reads the bookings table directly.
    ```
 
    ```text wrap
-   /bmad-architecture settle the decisions the floor-plan epics share
+   /bmad-agent-architect settle the decisions the floor-plan epics share
    ```
 
    ```text wrap
@@ -95,8 +95,8 @@ them, and a retrospective per epic.
 
 The prototype's code is worth keeping. Record its rules with
 `bmad-project-context`, have Sofia write the initiative from the prototype,
-and run `bmad-architecture` to record the decisions the kept code already
-made, so Sofia adopts them before she slices the rest. See
+and ask Winston (`bmad-agent-architect`) to record the decisions the kept code already
+made in an architecture spine, so Sofia adopts them before she slices the rest. See
 [Change an Existing Codebase](./change-an-existing-codebase.md).
 
 New to BMad? Start with [Install BMad](../start/install-bmad.md).

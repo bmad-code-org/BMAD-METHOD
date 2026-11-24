@@ -9,7 +9,7 @@ agents: [bmad-agent-architect]
 facilitation_order: [context-and-inherited-spine, codebase-grounding, story-seam-contracts, data-schema-and-migrations, component-and-state-flows, invariants-and-decisions, stack, spine-impact-and-deferred, open-questions]
 guidance: guidance-method.md
 rubric: rubric-architecture.md
-lint: uv run "{project-root}/_bmad/method/scripts/lint_arch.py" "{doc}"
+lint: uv run "{project-root}/_bmad/method/scripts/lint_arch.py" --project-root "{project-root}" "{doc}"
 status: draft
 created: ""
 updated: ""
@@ -24,12 +24,12 @@ updated: ""
 <!-- inputs: Epic container, `prd-epic`, parent `arch-spine`, live repo code, UX `DESIGN.md` / `EXPERIENCE.md`, and standing persistent facts. Only the user knows local performance budgets, rollout constraints, and trade-offs. -->
 
 <!-- writing:
-  - Cite inherited parent `AD-n`s by original ID (never renumber); local decisions use `AD-n` blocks with `Binds`, `Prevents`, `Rule`, and optional one-line `Why`.
+  - Cite inherited parent `AD-n`s by original ID (never renumber); local decisions continue numbering above the parent spine's highest `AD-n` (or start at `AD-1` when standalone) with `Binds`, `Prevents`, `Rule`, and optional one-line `Why`.
   - Verify every proposed `AD-n` against epic and parent numeric `Passable` / `Good` `OKR-N` bounds and `INV-N` invariants before settling.
   - Flag any conflict with a parent `AD-n` as a spine impact rather than overriding silently.
 -->
 
-<!-- companions: When this epic defines an API, webhook, or event contract consumed by sibling epics or external clients, also write `contract.yaml` beside `{doc}` and register its pointer row in the parent `arch-spine` Contract index. -->
+<!-- companions: When this epic defines an API, webhook, or event contract consumed by sibling epics or external clients, also write `contract.yaml` beside `{doc}` and register its pointer row in the parent `arch-spine` Contract index when a parent spine exists. -->
 
 <!-- done when: Live repo seams are grounded in real modules; shared story contracts and any `contract.yaml` are concrete; schemas/migrations and state flows cover the epic's rules and failure modes; every `AD-n` clears numeric `Passable` / `Good` `OKR-N` bounds and `INV-N` invariants; and any parent `arch-spine` Contract index or `AD-n` impacts are recorded. -->
 
@@ -53,7 +53,7 @@ updated: ""
 <!-- include when: this epic has non-trivial component boundaries, async jobs, retries, or state transitions. `diagram: sequence` or `state` showing happy and failure paths. -->
 
 ## Invariants and decisions
-<!-- Epic-local `AD-n` blocks (`### AD-1 — <decision>`): `- **Binds:**`, `- **Prevents:**`, `- **Rule:**`, optional one-line `- **Why:**`, and `[ADOPTED]` when pre-settled. Verify every `AD-n` against numeric `Passable` / `Good` `OKR-N` bounds and `INV-N` invariants; surface any parent `AD-n` contradiction as a spine conflict. -->
+<!-- Epic-local `AD-n` blocks continuing above the parent spine's highest `AD-n` (or starting at `AD-1` when standalone, e.g. `### AD-1 — <decision>`): `- **Binds:**`, `- **Prevents:**`, `- **Rule:**`, optional one-line `- **Why:**`, and `[ADOPTED]` when pre-settled. Verify every `AD-n` against numeric `Passable` / `Good` `OKR-N` bounds and `INV-N` invariants; surface any parent `AD-n` contradiction as a spine conflict. -->
 
 ## Stack
 <!-- include when: standalone epic bootstraps its stack inline or this epic adds new pinned dependencies. Verified pinned versions only: `| Name | Version |`. -->

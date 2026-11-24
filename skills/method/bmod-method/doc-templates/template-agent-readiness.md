@@ -10,7 +10,7 @@ order: fixed
 facilitation_order: [repository-baseline, pattern-consistency, attention-and-doc-hygiene, comment-hygiene, modularity-and-context-fit, feedback-loops-and-guardrails, remediation-backlog, executive-scorecard]
 guidance: guidance-method.md
 rubric: rubric-agent-readiness.md
-lint: uv run "{project-root}/_bmad/method/scripts/lint_arch.py" "{doc}"
+lint: uv run "{project-root}/_bmad/method/scripts/lint_arch.py" --project-root "{project-root}" "{doc}"
 view: always
 status: draft
 created: ""

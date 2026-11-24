@@ -31,12 +31,15 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 
-AD_HEADING = re.compile(r"^#{2,4}[ \t]*(?:`|\*\*)?AD-(\d+)\b.*$", re.MULTILINE)
+AD_HEADING = re.compile(r"^(#{2,4})[ \t]*(?:`|\*\*)?AD-(\d+)\b.*$", re.MULTILINE)
 HEADING = re.compile(r"^#{1,6}[ \t]+", re.MULTILINE)
 FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 SIMILAR_TO = re.compile(r"similar to AD-\d+", re.IGNORECASE)
 TEMPLATE_TOKEN = re.compile(r"\{[a-z_][a-z0-9_ /.-]*\}")
-UNPINNED_VERSION = re.compile(r"^(?:TBD|TODO|FIXME|XXX|latest|unpinned)$", re.IGNORECASE)
+UNPINNED_VERSION = re.compile(
+    r"^(?:TBD|TODO|FIXME|XXX|latest|unpinned|n/a|none|[-–—*xX]+|[\^~><=].*|\d+(?:\.\d+)*\.[xX*])$",
+    re.IGNORECASE,
+)
 FIELD_PATTERNS = {
     "binds": re.compile(r"^[ \t]*(?:[-*+][ \t]+)?\*{0,2}binds\*{0,2}\s*:\*{0,2}", re.IGNORECASE | re.MULTILINE),
     "prevents": re.compile(r"^[ \t]*(?:[-*+][ \t]+)?\*{0,2}prevents\*{0,2}\s*:\*{0,2}", re.IGNORECASE | re.MULTILINE),
@@ -44,22 +47,29 @@ FIELD_PATTERNS = {
 }
 
 
+frontmatter = None
+
+
 def _load_frontmatter(start_paths: Iterable[Path] = (), project_root: Path | None = None):
     """Load shared `frontmatter.py` from `_bmad/scripts/`, an adjacent `bmad` skill, or repo checkout."""
     candidates: list[Path] = []
     if project_root is not None:
         candidates.append(project_root / "_bmad" / "scripts" / "frontmatter.py")
-    for start in [*start_paths, Path.cwd()]:
+    for start in start_paths:
         cur = start if start.is_dir() else start.parent
         for root in (cur, *cur.parents):
             candidates.append(root / "_bmad" / "scripts" / "frontmatter.py")
-    skills = Path(__file__).resolve().parents[2]
+    script_dir = Path(__file__).resolve()
+    skills = script_dir.parents[2]
     candidates.extend(
         [
+            skills / "scripts" / "frontmatter.py",
             skills / "bmad" / "scripts" / "frontmatter.py",
             skills.parent / "core-tools" / "bmad" / "scripts" / "frontmatter.py",
         ]
     )
+    for root in (Path.cwd(), *Path.cwd().parents):
+        candidates.append(root / "_bmad" / "scripts" / "frontmatter.py")
     for path in candidates:
         if path.is_file():
             spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
@@ -69,14 +79,19 @@ def _load_frontmatter(start_paths: Iterable[Path] = (), project_root: Path | Non
     raise FileNotFoundError("frontmatter.py not found in _bmad/scripts/ or installed bmad skill")
 
 
-frontmatter = _load_frontmatter()
+def _require_frontmatter():
+    global frontmatter
+    if frontmatter is None:
+        frontmatter = _load_frontmatter()
+    return frontmatter
 
 
 def split_frontmatter(text: str) -> tuple[str, str, int]:
     """Return (frontmatter_text, body_text, body_line_offset) with CRLF normalized."""
+    fm = _require_frontmatter()
     norm = text.replace("\r\n", "\n")
     try:
-        fm_text, body_text = frontmatter.split(norm)
+        fm_text, body_text = fm.split(norm)
     except ValueError:
         return "", norm, 0
     return fm_text, body_text, norm[: len(norm) - len(body_text)].count("\n")
@@ -147,7 +162,8 @@ def find_ad_issues(scan: str, offset: int, name: str, seen: dict[int, str] | Non
     seen_ids = seen if seen is not None else {}
     prev: int | None = None
     for m in AD_HEADING.finditer(scan):
-        num = int(m.group(1))
+        ad_level = len(m.group(1))
+        num = int(m.group(2))
         file_line = offset + line_of(scan, m.start())
         loc = f"{name} AD-{num} (line {file_line})"
         if num in seen_ids:
@@ -159,9 +175,7 @@ def find_ad_issues(scan: str, offset: int, name: str, seen: dict[int, str] | Non
                     "location": loc,
                 }
             )
-        else:
-            seen_ids[num] = f"{name} line {file_line}"
-        if prev is not None and num <= prev:
+        elif prev is not None and num <= prev:
             findings.append(
                 {
                     "category": "ad_id",
@@ -170,11 +184,13 @@ def find_ad_issues(scan: str, offset: int, name: str, seen: dict[int, str] | Non
                     "location": loc,
                 }
             )
+        if num not in seen_ids:
+            seen_ids[num] = f"{name} line {file_line}"
         prev = num if prev is None else max(prev, num)
 
         start = m.end()
-        nxt = HEADING.search(scan, start)
-        block = scan[start : nxt.start()] if nxt else scan[start:]
+        nxt = re.search(rf"^#{{1,{ad_level}}}[ \t]+", scan[start:], re.MULTILINE)
+        block = scan[start : start + nxt.start()] if nxt else scan[start:]
         missing = [field for field, pattern in FIELD_PATTERNS.items() if not pattern.search(block)]
         if missing:
             findings.append(
@@ -205,12 +221,18 @@ def find_unpinned_stack(scan: str, offset: int, name: str) -> list[dict]:
     header_seen = False
     name_idx, ver_idx = 0, 1
     for i, raw in enumerate(scan.splitlines()):
-        if HEADING.match(raw):
-            in_stack = re.match(r"^##\s+Stack\b", raw) is not None
+        m_head = HEADING.match(raw)
+        if m_head:
+            if len(m_head.group(0).strip()) <= 2:
+                in_stack = re.match(r"^##[ \t]+Stack\b", raw) is not None
             header_seen = False
             name_idx, ver_idx = 0, 1
             continue
-        if not in_stack or not raw.lstrip().startswith("|"):
+        if not in_stack:
+            continue
+        if not raw.lstrip().startswith("|"):
+            header_seen = False
+            name_idx, ver_idx = 0, 1
             continue
         if set(raw.strip()) <= set("|-: "):
             continue
@@ -303,8 +325,12 @@ def main(argv: list[str] | None = None) -> int:
                 Path(args.output).write_text(out + "\n", encoding="utf-8")
             else:
                 print(out)
-            return 0
+            return 2
         md_files.append((name, text))
+
+    if not md_files:
+        print("error: no markdown files to lint", file=sys.stderr)
+        return 2
 
     out = json.dumps(lint_files(md_files), indent=2)
     if args.output:

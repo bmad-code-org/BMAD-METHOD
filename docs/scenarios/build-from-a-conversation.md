@@ -57,7 +57,7 @@ transcript.
    ```
 
    Step 3 settled that the server frees the room, so she has no shared
-   decision to send to `bmad-architecture`.
+   decision to send to Winston (`bmad-agent-architect`).
 
 5. **Plan the first epic's stories,** and approve them. Story 1.1, showing
    each room on its door tablet, is marked `hitl` because facilities mounts
