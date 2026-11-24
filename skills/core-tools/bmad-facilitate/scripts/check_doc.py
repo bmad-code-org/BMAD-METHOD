@@ -13,7 +13,7 @@ anchors. Every `##` section needs an entry; entries may also link deeper heading
 
 Prints JSON:
   placeholders      literal `TBD`/`TODO`/`FIXME`/`XXX` markers and unfilled `{token}` placeholders
-                    in frontmatter or prose (inline code spans stay exempt for `{token}`)
+                    in frontmatter or prose (inline code spans stay exempt)
   forbidden_prefix  occurrences matching any `--forbid-prefix` argument (exact or `<scope>-<prefix>`),
                     including endpoints and expanded `ID-1 to ID-N` ranges
   toc               missing: `##` sections with no entry; stale: entries whose heading is gone;
@@ -202,9 +202,9 @@ def find_placeholders(name: str, fm_text: str, prose: list[str], body_offset: in
                 for m in rx.finditer(line):
                     hits.append({"kind": kind, "text": m.group(0), "location": f"{name}:{idx}"})
     for idx, line in enumerate(prose, 1 + body_offset):
-        for m in PLACEHOLDER_WORD.finditer(line):
-            hits.append({"kind": "marker", "text": m.group(0), "location": f"{name}:{idx}"})
         no_code = INLINE_CODE.sub("", line)
+        for m in PLACEHOLDER_WORD.finditer(no_code):
+            hits.append({"kind": "marker", "text": m.group(0), "location": f"{name}:{idx}"})
         for m in TEMPLATE_TOKEN.finditer(no_code):
             hits.append({"kind": "token", "text": m.group(0), "location": f"{name}:{idx}"})
     return hits

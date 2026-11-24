@@ -35,7 +35,7 @@ def test_placeholders_detected_in_frontmatter_and_body_ignoring_fences_comments_
         "# Plan\n\n"
         "Status is TODO and details are FIXME or XXX.\n"
         "Unfilled {team-name} in prose.\n"
-        "Inline `{slug}` and `/users/{id}` stay clean.\n\n"
+        "Inline `{slug}`, `/users/{id}`, and `# TODO: legacy` (`TBD`, `FIXME`, `XXX`) stay clean.\n\n"
         "```\nTBD TODO {fenced_token}\n```\n\n"
         "<!-- TODO {comment_token} -->\n"
     )
