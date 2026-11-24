@@ -8,7 +8,7 @@ agents: [bmad-agent-analyst]
 facilitation_order: [objectives, stakeholders, scope, current-and-future-process, business-requirements, business-rules, constraints-and-assumptions, cost-and-benefit, traceability, open-questions, approval, summary]
 guidance: guidance-method.md
 rubric: rubric-planning.md
-lint: ../scripts/check_ids.py
+lint: "{project-root}/_bmad/scripts/check_ids.py"
 status: draft
 created: ""
 updated: ""

@@ -6,17 +6,23 @@
 
 import importlib.util
 import json
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 
-_SPEC = importlib.util.spec_from_file_location(
-    "check_doc", Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-facilitate/scripts/check_doc.py"
-)
+SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-facilitate/scripts/check_doc.py"
+FRONTMATTER = SCRIPT.parents[2] / "bmad" / "scripts" / "frontmatter.py"
+sys.path.insert(0, str(FRONTMATTER.parent))
+import frontmatter  # noqa: E402
+
+_SPEC = importlib.util.spec_from_file_location("check_doc", SCRIPT)
 check_doc = importlib.util.module_from_spec(_SPEC)
 sys.modules["check_doc"] = check_doc
 _SPEC.loader.exec_module(check_doc)
+check_doc.frontmatter = frontmatter
 
 
 def report(*texts: str, forbid_prefixes=()) -> dict:
@@ -149,3 +155,73 @@ def test_fence_suffix_and_html_comment_interplay():
         {"kind": "marker", "text": "TODO", "location": "doc0.md:4"},
         {"kind": "marker", "text": "FIXME", "location": "doc0.md:14"},
     ]
+
+
+def test_inline_backtick_and_unclosed_comment_do_not_hide_rest_of_document():
+    text = (
+        "## Table of Contents\n\n"
+        "- [A](#a)\n"
+        "- [B](#b)\n\n"
+        "## A\n\n"
+        "Remove the `<!--` prefix. TODO one. Use bare <!-- safely too.\n\n"
+        "## B\n\n"
+        "Status TBD here. Cites FR-7.\n"
+    )
+    res = report(text, forbid_prefixes=("FR",))
+    assert res["placeholders"] == [
+        {"kind": "marker", "text": "TODO", "location": "doc0.md:8"},
+        {"kind": "marker", "text": "TBD", "location": "doc0.md:12"},
+    ]
+    assert res["forbidden_prefix"] == {"FR-7": ["doc0.md:12"]}
+    assert res["toc"] == {"missing": {}, "stale": {}, "out_of_order": []}
+
+
+def test_escaped_backticks_do_not_preserve_hidden_comments():
+    text = (
+        "Escaped \\` <!-- TODO FR-9 --> \\` should still strip comments.\n"
+        "Escaped backslash \\\\`<!--` prefix still shows TODO.\n"
+        "Closed `span \\` <!-- TODO --> after marker TBD.\n"
+    )
+    res = report(text, forbid_prefixes=("FR",))
+    assert res["placeholders"] == [
+        {"kind": "marker", "text": "TODO", "location": "doc0.md:2"},
+        {"kind": "marker", "text": "TBD", "location": "doc0.md:3"},
+    ]
+    assert res["forbidden_prefix"] == {}
+
+
+def test_standalone_script_resolves_frontmatter_from_doc_root_and_exits_2_when_absent(tmp_path):
+    isolated = tmp_path / "bin"
+    isolated.mkdir()
+    copied = isolated / "check_doc.py"
+    shutil.copy2(SCRIPT, copied)
+
+    outside_cwd = tmp_path / "outside"
+    outside_cwd.mkdir()
+
+    proj = tmp_path / "proj"
+    (proj / "_bmad" / "scripts").mkdir(parents=True)
+    shutil.copy2(FRONTMATTER, proj / "_bmad" / "scripts" / "frontmatter.py")
+    doc = proj / "doc.md"
+    doc.write_text("---\ntitle: OK\n---\n\n# OK\n\nStatus TODO.\n", encoding="utf-8")
+
+    ok = subprocess.run(
+        [sys.executable, str(copied), str(doc)],
+        cwd=outside_cwd,
+        capture_output=True,
+        text=True,
+    )
+    assert ok.returncode == 0, ok.stderr
+    assert json.loads(ok.stdout)["placeholders"] == [{"kind": "marker", "text": "TODO", "location": f"{doc}:7"}]
+
+    orphan = tmp_path / "orphan.md"
+    orphan.write_text("# Orphan\n", encoding="utf-8")
+    missing = subprocess.run(
+        [sys.executable, str(copied), str(orphan)],
+        cwd=outside_cwd,
+        capture_output=True,
+        text=True,
+    )
+    assert missing.returncode == 2
+    assert "Traceback" not in missing.stderr
+    assert "frontmatter.py not found" in missing.stderr

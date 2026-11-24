@@ -28,7 +28,7 @@ Which document depends on the work itself, not on team size or time:
 | One story: one end-to-end behavior | Story | A story ticket from Sofia |
 | More than one story of one capability | Epic | The epic PRD |
 | Several capabilities that share outcomes, invariants or nouns | Initiative | The PRD, thin, with its epic map |
-| Several initiatives | Program | The PRD at program level |
+| Several initiatives | Program | The program PRD (`prd-program`), or a charter (`charter`) for governance |
 
 Start at the lowest level that holds the work; John moves it up when it proves
 bigger.

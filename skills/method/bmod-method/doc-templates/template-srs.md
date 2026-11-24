@@ -8,7 +8,7 @@ agents: [bmad-agent-pm]
 facilitation_order: [introduction, references, overall-description, functional-requirements, interface-requirements, quality-requirements, compliance-requirements, design-constraints, verification, open-questions, revision-history, definitions]
 guidance: guidance-method.md
 rubric: rubric-planning.md
-lint: ../scripts/check_ids.py
+lint: "{project-root}/_bmad/scripts/check_ids.py"
 status: draft
 created: ""
 updated: ""

@@ -16,7 +16,7 @@ Run reviewers in parallel subagents told the stakes and depth, each writing `{sc
 
 State the sequence in one sentence, then run all nine steps in order (including in fast mode):
 
-1. **Deterministic checks & lint:** confirm zero `<!-- open -->` markers remain and every expected `companions:` file exists in `{run}`. Run `uv run "{skill-root}/scripts/check_doc.py" "{doc}"` plus each companion and `--forbid-prefix <PREFIX>` for every `forbid_id_prefixes:` item, fixing `forbidden_prefix`, `placeholders`, and `toc` hits. If `lint:` is set, execute it (run `.py` paths via `uv run "<lint>" "{doc}"` + companions, or run the command with `{doc}`, `{run}`, `{project-root}` expanded) and resolve findings.
+1. **Deterministic checks & lint:** confirm zero `<!-- open -->` markers remain and every expected `companions:` file exists in `{run}`. Run `uv run "{skill-root}/scripts/check_doc.py" "{doc}"` plus each companion and `--forbid-prefix <PREFIX>` for every `forbid_id_prefixes:` item, fixing `forbidden_prefix`, `placeholders`, and `toc` hits. If `lint:` is set, expand `{doc}`, `{run}`, and `{project-root}`, execute it (run `.py` paths via `uv run "<lint>" "{doc}"` + companions, or run the command string), and resolve findings (including any `unresolved_sources`).
 2. **Reconciliation:** run one subagent per user-supplied source to report dropped points, tone, or intent, and surface gaps to the user (skip at lowest stakes unless requested).
 3. **Review:** name the chosen reviewers, run the Review phase above, and settle findings.
 4. **Triage:** walk standing `[ASSUMPTION]` tags and open questions; resolve blocking items one at a time and defer non-blockers with owner and revisit condition (flag many blockers as a finding).
