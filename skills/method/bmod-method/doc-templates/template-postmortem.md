@@ -2,6 +2,7 @@
 title: ""
 template: postmortem
 version: 1.3.0
+category: risk-and-ops
 description: "Causes and actions after something went wrong, written blamelessly."
 not_for: "Judging a person's performance."
 agents: [bmad-agent-architect]

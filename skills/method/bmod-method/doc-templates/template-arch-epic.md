@@ -2,6 +2,7 @@
 title: ""
 template: arch-epic
 version: 1.0.0
+category: delivery
 description: "Epic tech design against live code: story contracts, schemas, migrations and state flows."
 not_for: "Multi-epic system spine (`arch-spine`); enterprise platform topology (`arch-enterprise`); a single story that fits existing patterns (`bmad-build`)."
 agents: [bmad-agent-architect]

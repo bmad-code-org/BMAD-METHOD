@@ -1,7 +1,7 @@
 [skill]
 bmod = "bmod-method"
 source = "github:bmad-code-org/BMAD-METHOD/skills/method"
-scripts = ["scripts/lint_arch.py"]
+scripts = ["scripts/lint_arch.py", "scripts/scan_repo_readiness.py"]
 required_skills = [
   { skill = "bmad-facilitate", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
 ]

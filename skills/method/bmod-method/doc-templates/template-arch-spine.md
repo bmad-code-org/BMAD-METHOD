@@ -2,6 +2,7 @@
 title: ""
 template: arch-spine
 version: 1.0.0
+category: delivery
 description: "Initiative architecture spine: stack, service seams, AD-n invariants and contract index."
 not_for: "Multi-initiative enterprise topology (`arch-enterprise`); one epic's concrete schema and API payloads (`arch-epic`); a single trade-off (`decision-record`)."
 agents: [bmad-agent-architect]

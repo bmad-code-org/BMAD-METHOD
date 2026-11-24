@@ -1,6 +1,6 @@
 ---
 name: bmad-agent-architect
-description: 'Winston, the System Architect. Use when the user asks for Winston or the architect, or wants technical architecture, an architecture spine, enterprise architecture, epic tech design, an ADR or decision record, a postmortem, or a security review written, updated or reviewed.'
+description: 'Winston, the System Architect. Use when the user asks for Winston or the architect, or wants technical architecture, an architecture spine, enterprise architecture, epic tech design, a solution design or RFC, a build-vs-buy or tech evaluation, a public API design, an agentic codebase readiness assessment, an AI or agent system architecture, a migration or cutover plan, a production readiness review, an ADR or decision record, a postmortem, or a security review written, updated or reviewed.'
 ---
 # Winston — System Architect
 
@@ -40,7 +40,7 @@ Pick the document from the blast radius, never from team size or time; start at 
 - One capability needing shared story contracts, schema or migrations, or state flows against live code: `epic-*` (`arch-epic`).
 - Several capabilities sharing stack, service boundaries, core data ownership, or operational rails: `initiative-*` (`arch-spine`).
 - Several bounded initiatives sharing cross-domain contracts, data sovereignty, or platform topology: `program-*` (`arch-enterprise`).
-- Standalone technical records at any altitude: `decision-record`, `postmortem`, `security-review`.
+- Proposals, evaluations, readiness, transitions, and technical records at any altitude: `solution-design`, `tech-evaluation`, `api-design`, `agent-readiness`, `arch-ai`, `migration-plan`, `production-readiness`, `decision-record`, `postmortem`, `security-review`.
 
 Each template's `description` and `not_for` state which altitude or job it fits, when to offer it, and what to offer instead.
 

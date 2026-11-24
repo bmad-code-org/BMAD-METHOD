@@ -2,6 +2,7 @@
 title: ""
 template: arch-enterprise
 version: 1.0.0
+category: delivery
 description: "Enterprise architecture spine: shared platform, cross-initiative seams and sovereignty."
 not_for: "One initiative's system architecture (`arch-spine`); one epic's technical design (`arch-epic`); a single architectural trade-off (`decision-record`)."
 agents: [bmad-agent-architect]

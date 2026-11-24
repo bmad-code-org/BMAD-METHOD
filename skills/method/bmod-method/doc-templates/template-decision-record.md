@@ -2,6 +2,7 @@
 title: ""
 template: decision-record
 version: 1.3.0
+category: decisions
 description: "Recording any decision: context, options, choice and consequences."
 not_for: "Asking someone to approve the choice (`proposal`)."
 agents: [bmad-agent-architect]

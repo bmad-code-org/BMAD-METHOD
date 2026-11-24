@@ -23,12 +23,12 @@ Read this when the question is about Sofia (`bmad-agent-po`), John (`bmad-agent-
 - In the ticket: both files are adopted as References lines. Change them with `bmad-ux` update, not through the ticket.
 - Writes: `{output_folder}/{active_initiative}/ux-<slug>/`: `DESIGN.md`, `EXPERIENCE.md`, and `ux-<slug>.md` naming them. Run on an epic, `ux-<slug>/` goes in the epic's folder, `<slug>` the epic's without `epic-`.
 
-**`bmad-agent-architect`** — Winston, the System Architect. Runs technical architecture and design documents via `bmad-facilitate` across altitudes (`arch-enterprise`, `arch-spine`, `arch-epic`), plus `decision-record`, `postmortem`, and `security-review`.
-- For a user new to architecture: he coaches by default, so the user needs no architecture knowledge to start. When the stack is open he recommends a well-known current starter, checked on the web first, and lays out realistic trade-offs before the user chooses.
-- Gives: altitude-matched architecture contracts (`AD-n` decisions checked against numeric `Passable` / `Good` `OKR-N` bounds and `INV-N` invariants, pinned `## Stack` versions, Coupling Radar sweep, Contract Index, and Explicitly Deferred Decisions). `arch-epic` inspects live repo code to define shared story seam contracts (optionally emitting `contract.yaml`).
-- Pick when: two units built independently could choose incompatibly; an initiative has multiple epics sharing contracts, stack, or operational rails (`arch-spine`); a program coordinates multiple initiatives (`arch-enterprise`); an epic introduces shared story contracts, schema migrations, or state flows (`arch-epic`); or for an ADR, postmortem, or security review.
+**`bmad-agent-architect`** — Winston, the System Architect. Runs technical architecture, design, and readiness assessments via `bmad-facilitate`.
+- For a user new to architecture: he coaches by default, recommends web-verified current starters when the stack is open, and lays out realistic trade-offs before the user chooses.
+- Gives: core delivery spines (`arch-enterprise`, `arch-spine` with Coupling Radar & Contract Index, `arch-epic` with optional `contract.yaml`), proposals & contracts (`solution-design`, `tech-evaluation`, `api-design`, `decision-record`), codebase & AI readiness (`agent-readiness`, `arch-ai`), and risk & transition plans (`migration-plan`, `production-readiness`, `security-review`, `postmortem`). Every `AD-n` is checked against numeric `Passable` / `Good` `OKR-N` bounds and `INV-N` invariants.
+- Pick when: two units built independently could choose incompatibly; a team needs an RFC/ARB sign-off, build-vs-buy bake-off, or public API contract; a repo has agent pattern drift or doc/comment bloat (`agent-readiness`); an AI/agent system needs guardrails and eval gates (`arch-ai`); or a migration or production launch needs safety gates.
 - Not when: one bounded story fits existing patterns → `bmad-build`.
-- Writes: `{output_folder}/{active_initiative}/<id>-<slug>/<id>-<slug>.md` (`arch-enterprise`, `arch-spine`), or `<epic folder>/arch-epic-<slug>/arch-epic-<slug>.md` (with optional `contract.yaml`).
+- Writes: `{output_folder}/{active_initiative}/<id>-<slug>/<id>-<slug>.md` (or `<epic folder>/arch-epic-<slug>/arch-epic-<slug>.md` at epic level).
 
 ## Slicing and tracking the work
 

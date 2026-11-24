@@ -2,6 +2,7 @@
 title: ""
 template: security-review
 version: 1.3.0
+category: risk-and-ops
 description: "Reviewing a system against a standard such as the OWASP Top 10 or STRIDE."
 not_for: "An incident that has happened (`postmortem`)."
 agents: [bmad-agent-architect]
