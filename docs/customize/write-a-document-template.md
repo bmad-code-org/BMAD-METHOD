@@ -52,8 +52,8 @@ updated: ""
 | `agents` | Optional list of the skills that offer this template, such as `[bmad-agent-pm]`; name several to share it. It says who offers the template by default; any agent the user asks can still write it. The `bmad` skill uses the list to say who offers the template. A template in an agent's `assets/` folder counts as that agent's without it. |
 | `rubric` | Optional path to a rubric for the review, relative to the template (such as `rubric-planning.md`), or the bare name `rubric-general` for the shipped general rubric. Empty also uses `rubric-general`. |
 | `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
-| `companions` | Optional one-line list of sibling filenames expected beside `{doc}` (e.g. `[DESIGN.md, EXPERIENCE.md]`), tracked across Resume, Progress, Review, Finalize, and `check_ids.py`. |
-| `forbid_id_prefixes` | Optional one-line list of disallowed id prefixes (e.g. `[FR]`), passed as `--forbid-prefix` to `check_ids.py` during Finalize. |
+| `companions` | Optional one-line list of sibling filenames expected beside `{doc}` (e.g. `[DESIGN.md, EXPERIENCE.md]`), tracked across Resume, Progress, Review, Finalize, and `check_doc.py`. |
+| `forbid_id_prefixes` | Optional one-line list of disallowed id prefixes (e.g. `[FR]`), passed as `--forbid-prefix` to `check_doc.py` during Finalize. |
 | `lint` | Optional relative script path (such as `lint_spine.py`) or command string (supporting `{doc}`, `{run}`, `{project-root}`) executed during Finalize step 1. |
 | `output` | Optional run folder for this template, or a path ending in `.md` for the document itself. It may use `{project-root}`, `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
 | `style` | Optional visual style guide for this template's HTML artifact: a CSS file, design-system doc, screenshot, or verbal aesthetic preference relative to the template. |

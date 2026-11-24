@@ -14,7 +14,7 @@ Facilitate changes proportionally to the delta so edits never drift from intent;
 
 ## Validate
 
-Extract full context first so validation accounts for prior decisions and rejected alternatives. Load `finalize.md` and run its Review section against `{doc}`'s stakes and template `purpose`/`done when` without editing files, flagging what needs user input and offering Update from the findings.
+Extract full context first so validation accounts for prior decisions and rejected alternatives, and merge `{doc}`'s frontmatter template into `{scratch}/template.md` when named (else follow `## A Document No Template Names`). Load `finalize.md` and run its read-only deterministic checks (step 1's `check_doc.py` with companions and any `--forbid-prefix` items, plus any read-only `lint:` hook) alongside its Review section against `{doc}`'s stakes and template `purpose`/`done when` without editing files, flagging what needs user input and offering Update from the findings.
 
 ## A Document No Template Names
 
