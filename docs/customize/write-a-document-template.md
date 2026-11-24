@@ -62,11 +62,11 @@ updated: ""
 
 `template` and `version` stay in the finished document, as does any field you add for a view to show. The other fields stay out.
 
-A method catalog has the header `category,method,name,description,key_questions`, with the key questions separated by `|`. The shipped `security-review` template uses one for the OWASP Top 10 and STRIDE:
+A method catalog has the header `category,name,key_questions`, with the key questions separated by `|`. The shipped `security-review` template uses one for the OWASP Top 10 and STRIDE:
 
 ```csv
-category,method,name,description,key_questions
-release,rollback,Rollback,How a change is undone.,"How is this change undone?|Who can run the rollback?"
+category,name,key_questions
+release,Rollback,"How is this change undone?|Who can run the rollback?"
 ```
 
 ## Replace a shipped template

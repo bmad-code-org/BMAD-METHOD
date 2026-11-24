@@ -63,7 +63,7 @@ updated: ""
 ## Tools, permissions and guardrails
 <!--
   - Table every tool/action exposed to the model (`Tool`, `Data scope`, `Side effects`, `Auth & tenant check`, `Approval gate / idempotency`).
-  - Walk `methods-ai-architecture.csv` security rows: untrusted data separation, prompt-injection defenses, secret/PII scrubbing, and human confirmation for destructive or external writes.
+  - Walk `methods-ai-architecture.csv` security rows (plus any domain-specific abuse paths) and cite enforceable `AD-n` controls.
   - Done when a prompt injection in user or retrieved text cannot escalate privileges or leak cross-tenant data.
 -->
 

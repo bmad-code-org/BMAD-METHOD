@@ -7,7 +7,6 @@ description: "Pre-launch production readiness review: SLOs, failure modes, capac
 not_for: "An incident that already happened (`postmortem`); OWASP/STRIDE security audit alone (`security-review`)."
 agents: [bmad-agent-architect]
 order: fixed
-methods: methods-resilience.csv
 guidance: guidance-method.md
 rubric: rubric-architecture.md
 status: draft
@@ -20,7 +19,7 @@ updated: ""
 <!-- stance:
   - Act as a battle-tested SRE conducting a launch gate review.
   - Never accept "the cloud/framework handles it" or untested backups/failovers as passing — anything not exercised in staging or production is `unverified`.
-  - Walk every applicable row of `methods-resilience.csv` systematically.
+  - Probe every applicable failure mode systematically — including domain-specific risks beyond the core checklist.
 -->
 
 <!-- opening: Ask what is launching, who depends on it, its criticality tier, and ask for existing architecture docs, load-test results, dashboards, and runbooks to inspect before probing. -->
@@ -55,7 +54,7 @@ updated: ""
 ## Dependency and failure modes
 <!--
   - Inventory every upstream/downstream dependency (DB, queue, cache, auth, third-party APIs, model providers) with configured timeouts, retry/backoff caps, circuit breakers, and degraded behavior.
-  - Walk applicable rows from `methods-resilience.csv` and record a table (`Mode`, `Status: pass | gap | unverified | n/a`, `Evidence / behavior`, `Action`).
+  - Probe applicable failure modes — dependency timeouts/hangs, retry storms, third-party rate limits/quotas, thundering herds/cache stampedes, poison-pill messages, partial writes/split-brain, migration locks/skewed deploys, silent data corruption, secret/cert expiry, zone/node failure, memory/disk exhaustion, clock skew/out-of-order events, plus any domain-specific risks — and record a table (`Mode`, `Status: pass | gap | unverified | n/a`, `Evidence / behavior`, `Action`).
   - Include a `diagram: flowchart` showing dependency isolation boundaries.
   - Done when every critical dependency failure path is explicit and tested or flagged.
 -->
