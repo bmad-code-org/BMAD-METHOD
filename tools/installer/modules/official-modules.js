@@ -2232,10 +2232,12 @@ class OfficialModules {
 
 /**
  * Parse a config.toml or config.user.toml written by writeCentralConfig.
- * Only handles the subset of TOML the installer produces: [core],
- * [modules.<code>], string/bool/number scalar values. [agents.*] and other
- * sections are ignored. Returns a plain object keyed by section name where
- * module sections use the bare code (e.g. "bmm"), not the full "modules.bmm".
+ * Handles the subset the installer produces: [core], [modules.<code>],
+ * string/bool/number scalars, and arrays of those scalars. [agents.*] and
+ * other sections are ignored. A quoted string is never reparsed as an array.
+ * Malformed array syntax stays the original raw text. Returns a plain object
+ * keyed by section name where module sections use the bare code (e.g. "bmm"),
+ * not the full "modules.bmm".
  */
 function parseCentralToml(content) {
   const result = {};
@@ -2266,24 +2268,107 @@ function parseCentralToml(content) {
     const kvMatch = line.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$/);
     if (!kvMatch) continue;
 
-    const key = kvMatch[1];
-    const raw = kvMatch[2].trim();
-    let value;
-    if (raw.startsWith('"') && raw.endsWith('"')) {
-      value = raw.slice(1, -1).replaceAll(/\\(["\\nrbt])/g, (_, c) => ({ '"': '"', '\\': '\\', n: '\n', r: '\r', b: '\b', t: '\t' })[c]);
-    } else if (raw === 'true') {
-      value = true;
-    } else if (raw === 'false') {
-      value = false;
-    } else if (raw !== '' && !isNaN(raw)) {
-      value = Number(raw);
-    } else {
-      value = raw;
-    }
-    result[currentSection][key] = value;
+    result[currentSection][kvMatch[1]] = parseCentralTomlValue(kvMatch[2].trim());
   }
 
   return result;
+}
+
+function unescapeTomlBasicString(body) {
+  return body.replaceAll(/\\(["\\nrbt])/g, (_, c) => ({ '"': '"', '\\': '\\', n: '\n', r: '\r', b: '\b', t: '\t' })[c]);
+}
+
+function parseCentralTomlValue(raw) {
+  if (raw.startsWith('"') && raw.endsWith('"')) {
+    return unescapeTomlBasicString(raw.slice(1, -1));
+  }
+  if (raw === 'true') return true;
+  if (raw === 'false') return false;
+  if (raw !== '' && !isNaN(raw)) return Number(raw);
+  if (raw.startsWith('[')) {
+    const arrayValue = parseTomlArrayLiteral(raw);
+    if (arrayValue !== null) return arrayValue;
+  }
+  return raw;
+}
+
+function parseTomlArrayLiteral(text) {
+  const parsed = readTomlArray(text, 0);
+  if (!parsed || parsed.index !== text.length) return null;
+  return parsed.value;
+}
+
+function skipTomlSpace(text, index) {
+  let i = index;
+  while (i < text.length && (text[i] === ' ' || text[i] === '\t')) i++;
+  return i;
+}
+
+function readTomlBasicString(text, index) {
+  if (text[index] !== '"') return null;
+  let body = '';
+  let i = index + 1;
+  while (i < text.length) {
+    if (text[i] === '"') return { value: unescapeTomlBasicString(body), index: i + 1 };
+    if (text[i] === '\\') {
+      if (i + 1 >= text.length) return null;
+      body += text[i] + text[i + 1];
+      i += 2;
+      continue;
+    }
+    body += text[i];
+    i++;
+  }
+  return null;
+}
+
+function readTomlWord(text, index, word, value) {
+  if (!text.startsWith(word, index)) return null;
+  const after = index + word.length;
+  if (after < text.length && /[A-Za-z0-9_]/.test(text[after])) return null;
+  return { value, index: after };
+}
+
+function readTomlNumber(text, index) {
+  const match = /^[+-]?(?:\d+\.\d+|\d+)(?:[eE][+-]?\d+)?/.exec(text.slice(index));
+  if (!match) return null;
+  const token = match[0];
+  if (Number.isNaN(Number(token))) return null;
+  return { value: Number(token), index: index + token.length };
+}
+
+function readTomlArrayElement(text, index) {
+  if (text[index] === '"') return readTomlBasicString(text, index);
+  if (text[index] === '[') return readTomlArray(text, index);
+  const asTrue = readTomlWord(text, index, 'true', true);
+  if (asTrue) return asTrue;
+  const asFalse = readTomlWord(text, index, 'false', false);
+  if (asFalse) return asFalse;
+  const ch = text[index];
+  if (ch === '+' || ch === '-' || (ch >= '0' && ch <= '9')) return readTomlNumber(text, index);
+  return null;
+}
+
+function readTomlArray(text, index) {
+  if (text[index] !== '[') return null;
+  let i = skipTomlSpace(text, index + 1);
+  if (text[i] === ']') return { value: [], index: i + 1 };
+
+  const values = [];
+  while (i < text.length) {
+    const element = readTomlArrayElement(text, i);
+    if (!element) return null;
+    values.push(element.value);
+    i = skipTomlSpace(text, element.index);
+    if (text[i] === ',') {
+      i = skipTomlSpace(text, i + 1);
+      if (text[i] === ']') return { value: values, index: i + 1 };
+      continue;
+    }
+    if (text[i] === ']') return { value: values, index: i + 1 };
+    return null;
+  }
+  return null;
 }
 
 module.exports = { OfficialModules };

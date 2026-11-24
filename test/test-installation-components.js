@@ -4397,6 +4397,119 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 53: TOML array round-trip (#2978)
+  // The installer read path is OfficialModules.loadExistingConfig
+  // (parseCentralToml). The write path is ManifestGenerator.writeCentralConfig
+  // (formatTomlValue). No second parser is used here.
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 53: TOML array round-trip (#2978)${colors.reset}\n`);
+
+  {
+    const projectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-toml-array-'));
+    const bmadDir = path.join(projectDir, '_bmad');
+    const moduleName = 'tomlarrayfixture';
+    try {
+      await fs.ensureDir(path.join(bmadDir, '_config'));
+      await fs.writeFile(path.join(bmadDir, '_config', 'manifest.yaml'), 'installation:\n  version: 6.12.4\n', 'utf8');
+      const source = `[modules.${moduleName}]
+string_array = ["unity", "unreal", "godot", "other"]
+empty_array = []
+empty_spaced_array = [ ]
+comma_array = ["unity, unreal", "godot"]
+escape_array = ["say \\"hi\\"", "a\\\\b"]
+spaced_array = [ "unity" , "unreal" ]
+number_array = [ 1 , -2 , 3.5 ]
+bool_array = [ true , false ]
+scalar_string = "plain"
+scalar_bool = true
+scalar_number = 4
+array_looking_string = "[x]"
+corrupted_string = "[\\"unity\\", \\"unreal\\"]"
+malformed_array = ["unterminated"
+single_quote_array = ['unity', 'unreal']
+bare_array = [unity, unreal]
+trailing_comma_array = ["unity",]
+nested_array = [["unity"], [1, true]]
+`;
+      await fs.writeFile(path.join(bmadDir, 'config.toml'), source, 'utf8');
+
+      const expected = {
+        string_array: ['unity', 'unreal', 'godot', 'other'],
+        empty_array: [],
+        empty_spaced_array: [],
+        comma_array: ['unity, unreal', 'godot'],
+        escape_array: ['say "hi"', String.raw`a\b`],
+        spaced_array: ['unity', 'unreal'],
+        number_array: [1, -2, 3.5],
+        bool_array: [true, false],
+        scalar_string: 'plain',
+        scalar_bool: true,
+        scalar_number: 4,
+        array_looking_string: '[x]',
+        corrupted_string: '["unity", "unreal"]',
+        malformed_array: '["unterminated"',
+        single_quote_array: "['unity', 'unreal']",
+        bare_array: '[unity, unreal]',
+        trailing_comma_array: ['unity'],
+        nested_array: [['unity'], [1, true]],
+      };
+
+      const reader = new OfficialModules();
+      const found = await reader.loadExistingConfig(projectDir);
+      assert(found === true, 'loadExistingConfig reads the fixture installation');
+      const read = reader.existingConfig && reader.existingConfig[moduleName];
+      assert(read !== undefined, 'fixture module section is read from config.toml');
+      for (const [key, value] of Object.entries(expected)) {
+        const actual = read ? read[key] : undefined;
+        assert(JSON.stringify(actual) === JSON.stringify(value), `loadExistingConfig preserves ${key}`, `got ${JSON.stringify(actual)}`);
+      }
+      assert(Array.isArray(read && read.string_array), 'a supported string array stays an array');
+      assert(typeof (read && read.array_looking_string) === 'string', 'a quoted array-looking value stays a string');
+      assert(typeof (read && read.corrupted_string) === 'string', 'an already-corrupted quoted array stays a string');
+      assert(typeof (read && read.malformed_array) === 'string', 'a malformed array stays the original raw string');
+      assert(read && read.scalar_bool === true && read.scalar_number === 4, 'existing scalar bool and number parsing stays intact');
+
+      const generator = new ManifestGenerator();
+      generator.updatedModules = [moduleName];
+      await generator.writeCentralConfig(bmadDir, { [moduleName]: read });
+      const written = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
+      assert(
+        written.includes('string_array = ["unity", "unreal", "godot", "other"]'),
+        'writeCentralConfig emits a TOML array rather than a quoted string',
+      );
+      assert(written.includes('empty_array = []'), 'writeCentralConfig emits an empty TOML array');
+      assert(!written.includes('string_array = "['), 'writeCentralConfig does not quote the string array');
+
+      const reread = new OfficialModules();
+      const foundAgain = await reread.loadExistingConfig(projectDir);
+      assert(foundAgain === true, 'loadExistingConfig reads the rewritten installation');
+      const second = reread.existingConfig && reread.existingConfig[moduleName];
+      for (const [key, value] of Object.entries(expected)) {
+        const actual = second ? second[key] : undefined;
+        assert(
+          JSON.stringify(actual) === JSON.stringify(value),
+          `config read/write/read preserves ${key}`,
+          `got ${JSON.stringify(actual)}`,
+        );
+      }
+
+      await generator.writeCentralConfig(bmadDir, { [moduleName]: second });
+      const thirdReader = new OfficialModules();
+      await thirdReader.loadExistingConfig(projectDir);
+      const third = thirdReader.existingConfig && thirdReader.existingConfig[moduleName];
+      assert(
+        JSON.stringify(third) === JSON.stringify(second),
+        'a second serialization keeps the same supported values',
+        `got ${JSON.stringify(third)}`,
+      );
+    } finally {
+      await fs.remove(projectDir).catch(() => {});
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
