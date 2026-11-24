@@ -10,5 +10,5 @@ runs:
 
     - name: Validate bmod files
       shell: bash
-      run: uv run --python 3.11 "$GITHUB_ACTION_PATH/skills/bmad/scripts/validate_manifests.py"
+      run: uv run --python 3.11 "$GITHUB_ACTION_PATH/skills/core-tools/bmad/scripts/validate_manifests.py"
         --project-root "$GITHUB_WORKSPACE"

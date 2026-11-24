@@ -2,7 +2,7 @@
 title: 'Review a Change'
 description: Use bmad-code-review for a standalone agentic review of a PR, someone else's change, an extra pass, or a review bot.
 sidebar:
-  order: 2
+  order: 3
 ---
 Ten seconds of your attention costs more than ten minutes of inference.
 A bug that escapes to production costs at least a hundred times more

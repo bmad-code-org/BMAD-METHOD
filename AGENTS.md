@@ -3,7 +3,7 @@
 
 # BMAD-METHOD
 
-Open source framework for structured, agent-assisted software delivery. Skills live in `skills/`, Python tooling in `tools/`, the Astro docs site in `docs-site/`, and documentation in `docs/`.
+Open source framework for structured, agent-assisted software delivery. Skills live in `skills/`, with their script tests in `tests/` and their evals in `evals/`, each in a folder mirroring the skill's path under `skills/`. Python tooling is in `tools/`, the Astro docs site in `docs-site/`, and documentation in `docs/`.
 
 ## Policy
 
@@ -31,5 +31,11 @@ Open source framework for structured, agent-assisted software delivery. Skills l
 - Leave runtime choices as prose: when the model decides a value while running, the alternatives stay in the text. Render-time conditionals are only for values fixed before the render.
 - Prefer deleting an instruction to hedging it.
 - Automated tests assert outcomes produced by deterministic code. Do not write automated tests for LLM output or for static source text.
+- Read and write frontmatter in scripts through `skills/core-tools/bmad/scripts/frontmatter.py`. Do not write YAML parsers by hand.
 
 <!-- /bmad:context -->
+
+## Skill authoring
+
+- Skill authoring bar (Toolsmith canon, standards, core-vs-module boundary hygiene, and six-lens pre-PR check): `tools/skill-authoring.md`.
+- Structural pre-pass for any edited skill: `uv run skills/toolsmith/bmad-toolsmith/scripts/prepass.py <skill-dir>`.

@@ -152,13 +152,14 @@ class ProjectCase(unittest.TestCase):
 
 
 class TestRules(ProjectCase):
-    def test_line_endings_of_another_platform_are_refused(self):
-        other = "\n" if os.linesep == "\r\n" else "\r\n"
-        skill = self.skills / "bmad-foreign"
-        skill.mkdir()
-        content = skill_md("bmad-foreign", "Helps with line endings. Use when the file came from elsewhere.")
-        (skill / "SKILL.md").write_bytes(content.replace("\n", other).encode())
-        self.assertTrue(findings_by_rule(self.findings_for(skill), "SKILL-02"))
+    def test_frontmatter_reads_with_either_line_ending(self):
+        for ending in ("\n", "\r\n"):
+            with self.subTest(ending=ending):
+                skill = self.skills / "bmad-endings"
+                skill.mkdir(exist_ok=True)
+                content = skill_md("bmad-endings", "Helps with line endings. Use when the file came from elsewhere.")
+                (skill / "SKILL.md").write_bytes(content.replace("\n", ending).encode())
+                self.assertEqual(self.findings_for(skill), [])
 
     def test_skill_01_missing_skill_md(self):
         skill = self.skills / "bmad-empty"
@@ -227,6 +228,13 @@ class TestRules(ProjectCase):
             findings[0]["detail"],
             'name "bmad-other" does not match directory name "bmad-dir".',
         )
+
+    def test_skill_06_does_not_count_a_block_descriptions_final_newline(self):
+        description = ("Use when testing. " + "x" * 1024)[:1024]
+        skill = self.add_skill(
+            "bmad-block", f"---\nname: bmad-block\ndescription: |\n  {description}\n---\n\n# Body\n\nText.\n"
+        )
+        self.assertEqual(self.findings_for(skill), [])
 
     def test_skill_06_length_and_trigger_subchecks(self):
         long_desc = "Use when testing. " + ("x" * 1024)
@@ -299,6 +307,76 @@ class TestRules(ProjectCase):
         self.assertEqual(empty_f[0]["severity"], "HIGH")
         self.assertEqual(len(unclosed_f), 1)
 
+    def test_skill_08_unescaped_apostrophe_is_invalid_yaml(self):
+        # The form that shipped in bmad-retrospective (#3130): `'` ends a single-quoted scalar.
+        skill = self.add_skill(
+            "bmad-quote",
+            skill_md("bmad-quote", "Reads each ticket's plan. Use when testing."),
+        )
+        found = findings_by_rule(self.findings_for(skill), "SKILL-08")
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0]["severity"], "CRITICAL")
+        self.assertEqual(found[0]["line"], 3)
+        self.assertTrue(found[0]["detail"].startswith("Frontmatter is not valid YAML"))
+
+    def test_skill_08_escaped_apostrophe_is_valid(self):
+        skill = self.add_skill(
+            "bmad-quote",
+            skill_md("bmad-quote", "Reads each ticket''s plan. Use when testing."),
+        )
+        self.assertEqual(findings_by_rule(self.findings_for(skill), "SKILL-08"), [])
+
+    def test_skill_08_frontmatter_that_is_not_a_mapping(self):
+        skill = self.add_skill("bmad-list", "---\n- name\n- description\n---\n\n# Body\n\nText.\n")
+        found = findings_by_rule(self.findings_for(skill), "SKILL-08")
+        self.assertEqual(len(found), 1)
+        self.assertIn("mapping", found[0]["detail"])
+
+    def test_skill_08_strict_run_fails_on_invalid_yaml(self):
+        self.add_skill("bmad-quote", skill_md("bmad-quote", "Reads each ticket's plan. Use when testing."))
+        code, out, _ = self.run_validator(strict=True)
+        self.assertEqual(code, 1)
+        self.assertIn("SKILL-08", out)
+
+    def test_skill_08_no_frontmatter_is_left_to_skill_02(self):
+        skill = self.add_skill("bmad-bare", "# Body\n\nText.\n")
+        rules = {finding["rule"] for finding in self.findings_for(skill)}
+        self.assertNotIn("SKILL-08", rules)
+        self.assertIn("SKILL-02", rules)
+
+    def test_skill_08_line_counts_blank_lines_in_the_block(self):
+        bad = "description: 'Reads each ticket's plan. Use when testing.'"
+        skill = self.add_skill("bmad-quote", f"---\n\n\nname: bmad-quote\n{bad}\n---\n\n# Body\n\nText.\n")
+        found = findings_by_rule(self.findings_for(skill), "SKILL-08")
+        self.assertEqual([f["line"] for f in found], [5])
+
+    def test_invalid_yaml_is_not_also_reported_as_missing_fields(self):
+        skill = self.add_skill("bmad-quote", skill_md("bmad-quote", "Reads each ticket's plan. Use when testing."))
+        rules = {finding["rule"] for finding in self.findings_for(skill)}
+        self.assertEqual(rules & {"SKILL-02", "SKILL-03", "SKILL-08"}, {"SKILL-08"})
+
+    def test_frontmatter_after_leading_blank_lines_is_not_frontmatter(self):
+        skill = self.add_skill("bmad-late", "\n" + skill_md("bmad-late", "Late. Use when testing."))
+        rules = {finding["rule"] for finding in self.findings_for(skill)}
+        self.assertTrue({"SKILL-02", "SKILL-03"} <= rules)
+
+    def test_a_date_is_text(self):
+        skill = self.add_skill(
+            "bmad-date", skill_md("bmad-date", "Dated. Use when testing.", extra_fm="updated: 2026-02-30\n")
+        )
+        self.assertEqual(self.findings_for(skill), [])
+
+    def test_skill_08_name_and_description_must_be_strings(self):
+        for field, content in (
+            ("description", "---\nname: bmad-typed\ndescription: [Use when testing.]\n---\n\n# Body\n\nText.\n"),
+            ("name", "---\nname: 42\ndescription: 'Typed. Use when testing.'\n---\n\n# Body\n\nText.\n"),
+        ):
+            with self.subTest(field=field):
+                skill = self.add_skill("bmad-typed", content)
+                found = findings_by_rule(self.findings_for(skill), "SKILL-08")
+                self.assertEqual(len(found), 1)
+                self.assertIn(f"`{field}` must be a string", found[0]["detail"])
+
     def test_path_02_frontmatter_key_and_content_line(self):
         skill = self.valid(
             "bmad-path",
@@ -333,11 +411,94 @@ class TestRules(ProjectCase):
         skill = self.valid(
             "bmad-script-ok",
             {
-                "notes.md": "Run `uv run {skill-root}/scripts/tool.py` "
-                "and `uv run {project-root}/_bmad/scripts/memlog.py`.\n"
+                "notes.md": 'Run `uv run "{skill-root}/scripts/tool.py"` '
+                'and `uv run "{project-root}/_bmad/scripts/resolve_config.py"`.\n'
             },
         )
         self.assertEqual(findings_by_rule(self.findings_for(skill), "PATH-06"), [])
+        self.assertEqual(findings_by_rule(self.findings_for(skill), "PATH-07"), [])
+
+    def test_path_07_flags_unquoted_root_args_in_uv_run(self):
+        skill = self.valid(
+            "bmad-unquoted",
+            {
+                "notes.md": "\n".join(
+                    [
+                        "Run `uv run {skill-root}/scripts/tool.py --project-root {project-root}`.",
+                        "Single quotes fail on Windows: `uv run '{skill-root}/scripts/tool.py'`.",
+                        'Partial quotes split suffixes: `uv run "{project-root}"/_bmad/scripts/resolve_config.py`.',
+                        'Piped: `uv run "{project-root}/_bmad/scripts/a.py" | uv run {skill-root}/scripts/b.py`.',
+                        'Redirected: `uv run "{skill-root}/scripts/tool.py" >{project-root}/out.json`.',
+                        "```bash",
+                        'uv run "{project-root}/_bmad/scripts/resolve_customization.py" \\',
+                        "  --skill {skill-root} \\",
+                        "  --project-root {project-root} \\",
+                        "  --key workflow",
+                        "```",
+                    ]
+                )
+                + "\n"
+            },
+        )
+        findings = findings_by_rule(self.findings_for(skill), "PATH-07")
+        self.assertEqual(
+            [(f["line"], f["severity"]) for f in findings],
+            [
+                (1, "HIGH"),
+                (1, "HIGH"),
+                (2, "HIGH"),
+                (3, "HIGH"),
+                (4, "HIGH"),
+                (5, "HIGH"),
+                (8, "HIGH"),
+                (9, "HIGH"),
+            ],
+        )
+
+    def test_path_07_ignores_quoted_commands_prose_and_non_shell_fences(self):
+        skill = self.valid(
+            "bmad-quoted-ok",
+            {
+                "notes.md": "\n".join(
+                    [
+                        'Run `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`.',
+                        'Flag equals: `uv run "{skill-root}/scripts/tool.py" --project-root="{project-root}"`.',
+                        'Redirects: `uv run "{skill-root}/scripts/tool.py" <"{project-root}/in.json" >"{project-root}/out.json" 2>"{project-root}/err.log"`.',
+                        "Prose via `uv run`: read `{skill-root}/customize.toml` or `{project-root}/_bmad/custom/x.toml`.",
+                        "```bash",
+                        'uv run "{project-root}/_bmad/scripts/resolve_customization.py" \\',
+                        '  --skill "{skill-root}" \\',
+                        '  --project-root "{project-root}"',
+                        "```",
+                        "```toml",
+                        'output_folder = "{project-root}/_bmad-output"',
+                        "```",
+                        "```toml",
+                        "prompt = 'uv run {skill-root}/scripts/tool.py'",
+                        "  ````",
+                        "Non-uv shell command stays for inference: `cd {project-root}`.",
+                    ]
+                )
+                + "\n"
+            },
+        )
+        self.assertEqual(findings_by_rule(self.findings_for(skill), "PATH-07"), [])
+
+    def test_path_07_preserves_line_numbers_after_inline_code(self):
+        skill = self.valid(
+            "bmad-line-offset",
+            {
+                "notes.md": "\n".join(
+                    [
+                        "See `abcdefghijklmnopqrstuvwxyz` first.",
+                        "uv run {project-root}/_bmad/scripts/resolve_config.py",
+                    ]
+                )
+                + "\n"
+            },
+        )
+        findings = findings_by_rule(self.findings_for(skill), "PATH-07")
+        self.assertEqual([(f["line"], f["severity"]) for f in findings], [(2, "HIGH")])
 
     def test_seq_02_patterns_one_per_line_and_eta_case(self):
         skill = self.valid(
@@ -377,6 +538,7 @@ class TestRules(ProjectCase):
         self.assertTrue(any("{{workflow.other}}" in f["detail"] for f in findings))
         self.assertTrue(any("{{ agent.icon }}" in f["detail"] for f in findings))
 
+    @unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root bypasses file permission bits")
     def test_read_err_on_unreadable_file_continues(self):
         skill = self.valid("bmad-perm", {"secret.md": "ok\n"})
         target = skill / "secret.md"
@@ -513,21 +675,6 @@ class TestCliAndOutput(ProjectCase):
         code, out, _ = self.run_validator(skill_dir=outside, strict=True)
         self.assertEqual(code, 0)
         self.assertIn("Skills scanned: 1", out)
-
-
-class TestParsers(unittest.TestCase):
-    def test_parse_frontmatter_null_and_empty(self):
-        self.assertIsNone(vs.parse_frontmatter("no fence\n"))
-        self.assertEqual(vs.parse_frontmatter("---\n---\nbody\n".replace("\n", os.linesep)), {})
-        self.assertEqual(
-            vs.parse_frontmatter("---\nname: 'quoted'\n---\n".replace("\n", os.linesep)), {"name": "quoted"}
-        )
-
-    def test_parse_frontmatter_multiline_continuation_and_comments(self):
-        content = "---\nname: bmad-x\ndescription: line1\n  line2\n# ignored\n  line3\n---\n\nBody\n"
-        fm = vs.parse_frontmatter_multiline(content.replace("\n", os.linesep))
-        self.assertEqual(fm["name"], "bmad-x")
-        self.assertEqual(fm["description"], "line1\n  line2\n  line3")
 
 
 if __name__ == "__main__":

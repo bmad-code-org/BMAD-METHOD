@@ -142,9 +142,9 @@ personal preferences, belong in your agent's global configuration instead.
 
 ## Hand-Off to Architecture
 
-Make design decisions in `bmad-architecture`. If a decision has real
-tradeoffs and more than one viable shape, the skill tells you to run
-`bmad-architecture` instead of choosing for you. See
+Make design decisions with Winston (`bmad-agent-architect`). If a decision has real
+tradeoffs and more than one viable shape, the skill tells you to talk to
+Winston instead of choosing for you. See
 [Design UX and Architecture](../plan/design-ux-and-architecture.md).
 
 ## Replaces Two Earlier Skills
