@@ -1,6 +1,14 @@
 [skill]
 bmod = "bmod-method"
 source = "github:bmad-code-org/BMAD-METHOD/skills/method"
+scripts = ["scripts/lint_ux.py"]
+required_skills = [
+  { skill = "bmad-facilitate", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+]
 recommended_skills = [
-  "bmad-ux",
+  "bmad-agent-po",
+  "bmad-agent-pm",
+  "bmad-agent-architect",
+  { skill = "bmad-party-mode", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+  { skill = "bmad-advanced-elicitation", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
 ]

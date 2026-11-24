@@ -185,7 +185,7 @@ The BMad Method module adds the six agents above and these workflow skills. The 
 | Skill                           | Purpose                                                                                           | See                                                                                                    |
 | ------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `bmad-agent-pm`                 | John, the Product Manager: coach, update, or validate a PRD or another planning document          | [Write a PRD](../plan/write-a-prd.md)                                                                  |
-| `bmad-ux`                       | Capture the UX vision as `DESIGN.md` and `EXPERIENCE.md`                                          | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
+| `bmad-agent-ux-designer`        | Sally, the UX Designer: coach strategy (`trigger-map`), corporate branding (`brand-identity`), visual direction, product UX, websites, and UI audits | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
 | `bmad-agent-architect`          | Winston, the System Architect: coach, update, or validate architecture spines, RFCs, readiness, and risk docs | [Design UX and Architecture](../plan/design-ux-and-architecture.md)                                    |
 | `bmad-project-context`          | Set up, refresh, or audit the repository's agent instructions                                     | [Set and Maintain Project Context](../existing-codebases/set-and-maintain-project-context.md)          |
 | `bmad-build`                    | Turn a work item into working code, reviewed and verified                                         | [Build a Change](../build/build-a-change.md)                                                           |
@@ -210,7 +210,7 @@ Earlier skill IDs, such as `bmad-create-prd`, `bmad-edit-prd`, `bmad-market-rese
 
 ## Naming and Modules
 
-Every skill shipped by the bmad-code-org uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-dev`, `bmad-ux`, `bmad-build`. A custom module uses its own code as the prefix; see [Add Modules](../customize/add-modules.md) and [Modules and Registration](../toolsmith/modules.md).
+Every skill shipped by the bmad-code-org uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-dev`, `bmad-facilitate`, `bmad-build`. A custom module uses its own code as the prefix; see [Add Modules](../customize/add-modules.md) and [Modules and Registration](../toolsmith/modules.md).
 
 ## Troubleshooting
 

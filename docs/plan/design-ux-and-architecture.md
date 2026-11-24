@@ -1,6 +1,6 @@
 ---
 title: 'Design UX and Architecture'
-description: Decide whether the work needs a UX design or an architecture spine, run bmad-ux and Winston (bmad-agent-architect) on the initiative or an epic, and have Sofia adopt their files so every build reads them.
+description: Decide whether the work needs a UX design or an architecture spine, run Sally (bmad-agent-ux-designer) and Winston (bmad-agent-architect) on the initiative or an epic, and have Sofia adopt their files so every build reads them.
 sidebar:
   order: 4
 ---
@@ -17,7 +17,10 @@ epics that share none skip it.
 | Several epics that must share decisions, or decisions that cross systems | Architecture keeps the builds consistent |
 | A regulated, high-risk, or enterprise initiative | Follow your governance; architecture is normally required |
 
-Sally, the UX Designer (`bmad-agent-ux-designer`), runs `bmad-ux`, and
+Sally, the UX Designer (`bmad-agent-ux-designer`), coaches UX across altitudes
+and design jobs through `bmad-facilitate` (`trigger-map`, `brand-identity`,
+`design-direction`, `ux-system`, `ux-epic`, `ux-quick`, `website-design`, and
+`ux-audit`), and
 Winston, the Architect (`bmad-agent-architect`), handles architecture through `bmad-facilitate` (`arch-spine` at initiative level, `arch-epic` on one epic).
 Both change what `bmad-build` reads, not how it runs: each session still builds
 one story, but every session reads the same decisions, so the parts fit
@@ -33,12 +36,12 @@ before Sofia slices, to record the decisions the code already made. Skip
 either when it has no open questions.
 
 When she slices, Sofia offers Winston (`bmad-agent-architect`) for the decisions the epics
-share, but she won't prompt for `bmad-ux`. Run it yourself when the epics need
+share, but she won't prompt for `ux-system`. Run Sally (`bmad-agent-ux-designer`) yourself when the epics need
 a shared design system.
 
 ## Design the Experience
 
-Run `bmad-ux` when the interface matters to the outcome; skip it for back-end
+Ask Sally (`bmad-agent-ux-designer`) when the interface matters to the outcome; skip it for back-end
 work and internal tools with no real interface. It records your vision, and
 never volunteers its own, in two peer documents: `DESIGN.md` for how the
 product looks (tokens, typography, components) and `EXPERIENCE.md` for how it
@@ -48,10 +51,14 @@ conflicts with a mock, the document wins. With an existing design system,
 records only how your product behaves differently.
 
 Choose a Fast path that drafts both with `[ASSUMPTION]` tags, a
-Coaching path with creative tools such as color themes, design directions,
-wireframes, and key-screen mocks, or a design handoff that prepares a
-prompt for an external design tool and folds its output back in. Change the
-files later with `bmad-ux` update, not by editing the ticket.
+Coaching path starting with `trigger-map`, `brand-identity`, or
+`design-direction` and interactive color themes, design directions, wireframes,
+and key-screen mocks, a dedicated `website-design` blueprint for marketing
+or docs sites, or a two-way handoff with Google Stitch, Claude Design, or Figma
+that folds exports back into `DESIGN.md` and `EXPERIENCE.md`. Point
+`_bmad/custom/bmad-facilitate.toml`'s `style` key at `branding/DESIGN.md` so
+every HTML view BMad generates inherits your brand kit. Change the
+files later with Sally (`bmad-agent-ux-designer`) in update mode, not by editing the ticket.
 
 ## Settle the Decisions Epics Share
 
@@ -85,7 +92,7 @@ In the [room booker](../start/how-bmad-works.md#the-example-app), an office's me
 **You:**
 
 ```text wrap
-/bmad-ux design the door tablet's check-in screen
+/bmad-agent-ux-designer design the door tablet's check-in screen
 ```
 
 It records the screen's four states in `EXPERIENCE.md`: free, booked and

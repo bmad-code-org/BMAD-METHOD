@@ -201,10 +201,7 @@
   },
   {
     "query": "lets plan the UX for the onboarding flow",
-    "expect": "bmad-ux",
-    "also_ok": [
-      "bmad-agent-ux-designer"
-    ]
+    "expect": "bmad-agent-ux-designer"
   },
   {
     "query": "what should I do next?",

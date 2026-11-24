@@ -228,3 +228,26 @@ def test_standalone_script_resolves_frontmatter_from_doc_root_and_exits_2_when_a
     assert missing.returncode == 2
     assert "Traceback" not in missing.stderr
     assert "frontmatter.py not found" in missing.stderr
+
+
+def test_resolved_dotted_frontmatter_token_references_are_exempt_while_unresolved_are_caught():
+    text = (
+        "---\n"
+        "name: Drift\n"
+        "owner: '{owner_name}'\n"
+        "colors:\n"
+        "  primary: '#0F4C81'\n"
+        "rounded:\n"
+        "  md: '6px'\n"
+        "components:\n"
+        "  btn:\n"
+        "    bg: '{colors.primary}'\n"
+        "    radius: '{rounded.md}'\n"
+        "    bad: '{colors.missing}'\n"
+        "---\n\n"
+        "# Drift\n"
+    )
+    assert report(text)["placeholders"] == [
+        {"kind": "token", "text": "{owner_name}", "location": "doc0.md:3"},
+        {"kind": "token", "text": "{colors.missing}", "location": "doc0.md:12"},
+    ]

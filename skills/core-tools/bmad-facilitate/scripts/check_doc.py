@@ -220,13 +220,33 @@ def _strip_inline_code(line: str) -> str:
     return "".join(out)
 
 
+def _resolves_in_mapping(meta: object, path: str) -> bool:
+    """Whether dotted `path` (e.g. `colors.primary`) resolves to a key in nested mapping `meta`."""
+    parts = path.split(".")
+    if len(parts) < 2 or not isinstance(meta, dict):
+        return False
+    cur: object = meta
+    for part in parts:
+        if not isinstance(cur, dict) or part not in cur:
+            return False
+        cur = cur[part]
+    return True
+
+
 def find_placeholders(name: str, fm_text: str, prose: list[str], body_offset: int) -> list[dict[str, str]]:
     """Find literal placeholder markers and unfilled `{token}` placeholders in frontmatter and prose."""
     hits: list[dict[str, str]] = []
+    meta: object = {}
     if fm_text:
+        try:
+            meta = _require_frontmatter().load(fm_text)
+        except ValueError:
+            meta = {}
         for idx, line in enumerate(fm_text.split("\n"), 2):
             for kind, rx in (("marker", PLACEHOLDER_WORD), ("token", TEMPLATE_TOKEN)):
                 for m in rx.finditer(line):
+                    if kind == "token" and _resolves_in_mapping(meta, m.group(0)[1:-1]):
+                        continue
                     hits.append({"kind": kind, "text": m.group(0), "location": f"{name}:{idx}"})
     for idx, line in enumerate(prose, 1 + body_offset):
         no_code = _strip_inline_code(line)

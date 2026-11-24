@@ -45,7 +45,7 @@ rooms-workspace/                         # start your AI tool here; not a repo i
 │   │       ├── tickets.toml             # the epics in build order
 │   │       └── epic-door-check-in/
 │   │           ├── epic-door-check-in.md
-│   │           ├── ux-door-check-in/    # a bmad-ux run on this epic
+│   │           ├── ux-epic-door-check-in/ # a Sally (bmad-agent-ux-designer) ux-epic run on this epic
 │   │           └── tickets/             # the epic's breakdown
 │   │               ├── tickets.toml     # every planned story, in build order
 │   │               ├── story-show-each-room-on-its-door-tablet-plan.md  # the build's plan and the story's status
@@ -116,7 +116,7 @@ _bmad-output/planning-artifacts/EXPERIENCE.md    → initiative-check-in/ux-chec
 _bmad-output/planning-artifacts/architecture.md  → initiative-check-in/architecture-check-in/architecture-check-in.md
 ```
 
-UX is the exception to the naming: `bmad-ux` writes two peer documents, `DESIGN.md` and `EXPERIENCE.md`, which keep their names inside the `ux-<slug>` folder beside a short `ux-<slug>.md` that names them. Your source paths will differ.
+UX is the exception to the naming: Sally (`bmad-agent-ux-designer`) writes two peer documents, `DESIGN.md` and `EXPERIENCE.md`, which keep their names inside the `ux-<slug>` (or `ux-system-<slug>` / `ux-epic-<slug>`) folder beside the short `<id>-<slug>.md` router that names them. Your source paths will differ.
 
 ## Configure Where Tickets Are Tracked
 

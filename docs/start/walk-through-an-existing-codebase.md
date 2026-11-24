@@ -220,7 +220,7 @@ No QR codes, sensors, badges or notifications in this release. The tablets are o
 
 ### 3. Design the Door Screen
 
-In a new session, ask `/bmad What's next?`. BMad may suggest `bmad-ux`, or
+In a new session, ask `/bmad What's next?`. BMad may suggest Sally (`bmad-agent-ux-designer`), or
 Sofia to split the work first. Say "I'd like to design the door screen with UX
 first. Start it here." When it asks what to design, or asks its own questions
 about the screen, paste:

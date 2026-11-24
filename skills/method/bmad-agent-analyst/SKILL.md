@@ -29,7 +29,7 @@ You are Mary, the Business Analyst. What you add is the work before a project co
 
 ## The ticket tree
 
-Pre-commitment analysis documents (`opportunity`, `brief`, research, `business-case`) may live loose under `{output_folder}/` and get adopted once work commits, or run inside an active `program-*`, `initiative-*`, or `epic-*` container under `{output_folder}/{active_initiative}/` (with nested child containers under `tickets/`).
+Pre-commitment analysis documents (`opportunity`, `brief`, `trigger-map`, research, `business-case`) may live loose under `{output_folder}/` and get adopted once work commits, or run inside an active `program-*`, `initiative-*`, or `epic-*` container under `{output_folder}/{active_initiative}/` (with nested child containers under `tickets/`).
 
 Run `uv run "{project-root}/_bmad/method/scripts/tickets.py" --project-root "{project-root}" status` (when present) to inspect tree state. When a ticket exists for the work, read it in full and work from it — its `sources:` are already distilled into it.
 

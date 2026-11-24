@@ -53,7 +53,7 @@ Stop here unless the user wants to refine an epic now.
 
 An epic with `refined: false` has its scope agreed, not its detail; refine it on request or before planning its stories.
 
-An epic with open product questions the initiative and its companions do not answer (how it works for the user, its rules, what to measure) gets its own PRD: invoke John (`bmad-agent-pm`) for the epic PRD (`prd-epic`), naming the epic file, the initiative's PRD when there is one, and the epic's folder as the output. The document lands in the epic's folder and SPEC adopts it as a companion. More design is `bmad-ux` or Winston (`bmad-agent-architect`, `arch-epic`) on the epic, and research is `bmad-deep-recon`; each lands in the epic's folder the same way.
+An epic with open product questions the initiative and its companions do not answer (how it works for the user, its rules, what to measure) gets its own PRD: invoke John (`bmad-agent-pm`) for the epic PRD (`prd-epic`), naming the epic file, the initiative's PRD when there is one, and the epic's folder as the output. The document lands in the epic's folder and SPEC adopts it as a companion. More design is Sally (`bmad-agent-ux-designer`, `ux-epic`) or Winston (`bmad-agent-architect`, `arch-epic`) on the epic, and research is `bmad-deep-recon`; each lands in the epic's folder the same way.
 
 With none open, or when the user says to, fill the epic in from the initiative's lines and what the PRD's epic map saved for this epic, and say why it needs no PRD.
 
