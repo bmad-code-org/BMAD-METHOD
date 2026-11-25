@@ -24,6 +24,7 @@ updated: ""
 
 <!-- writing:
   - Record decisions, not prose rationale: each `AD-n` carries `Binds`, `Prevents`, `Rule`, and a one-line `Why` only when alternatives were weighed or the user gave a reason.
+  - On updates, keep existing `AD-n` IDs stable (amend in place, never renumber or reuse retired IDs) and allocate new `AD-n` IDs above the highest ID already used in this document and any child `arch-spine` or `arch-epic` under it so no ID is ever allocated twice across the hierarchy; flag any decision overriding the driving program ticket so it can be updated.
   - Tag `[ADOPTED]` when the user or existing platform reality already settled a decision.
   - Verify every named technology and version on the web before pinning it.
   - Verify every proposed `AD-n` against program `OKR-N` numeric `Passable` and `Good` bounds and binary `INV-N` invariants before settling.
@@ -45,7 +46,7 @@ updated: ""
 <!-- Versioned integration contracts and event or API boundaries crossing between initiatives or legacy systems, plus Strangler Fig or coexistence seams when modernizing. `diagram: flowchart` showing domains and contract flows. -->
 
 ## Shared platform and telemetry
-<!-- Shared auth/identity backbone, OTel observability and correlation rails for wave `OKR-N` measurement, CI/CD, and multi-region or hosting envelope owned at program scale. -->
+<!-- Shared auth/identity backbone, OTel observability and correlation rails for wave `OKR-N` measurement, CI/CD, and multi-region or hosting envelope owned at program scale. When initiatives use LLMs or agents, also fix shared model-gateway governance, provider data-retention/zero-training rules, and spend guardrails. -->
 
 ## Invariants and decisions
 <!-- Durable cross-initiative rules as ascending blocks (`### AD-1 — <decision>`): `- **Binds:**` (`INIT-NN` or `all`), `- **Prevents:**`, `- **Rule:**`, optional one-line `- **Why:**`, and `[ADOPTED]` when pre-settled. Before settling each `AD-n`, check it against numeric `Passable` and `Good` `OKR-N` thresholds and `INV-N` invariants. Include a dependency-direction diagram (`diagram: flowchart`). -->

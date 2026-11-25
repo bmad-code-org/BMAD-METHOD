@@ -78,6 +78,7 @@ updated: ""
 ## Operational and security posture
 <!--
   - Cover auth/authz, data classification/privacy, telemetry hooks for `OKR-N` proof, alerting, SLO expectations, and failure-isolation boundaries.
+  - When the proposal uses an LLM, RAG, agent loop, or other probabilistic/ML component, explicitly cover deterministic vs. probabilistic boundaries, non-AI fallbacks, and eval/regression gates (plus pre-retrieval tenant isolation and prompt-injection/tool approval guardrails where retrieval or tools apply).
   - Flag any new compliance, secret-management, or operational support burden.
   - Done when security and SRE reviewers see how the design behaves under abuse or outage.
 -->
@@ -91,7 +92,7 @@ updated: ""
 
 ## Cost and effort
 <!--
-  - Summarize build/migration effort drivers, ongoing infrastructure or vendor cost changes, and team dependencies.
+  - Summarize build/migration effort drivers, ongoing infrastructure or vendor cost changes, unit economics and hard spend/loop caps for metered dependencies, and team dependencies.
   - Tag unverified estimates `[ASSUMPTION: ...]` rather than inventing precision.
   - Done when cost drivers and cross-team dependencies are transparent.
 -->

@@ -71,7 +71,7 @@ updated: ""
 <!--
   - Review instruction and documentation files (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `README.md`, large `docs/*.md`, old plans).
   - Check each against live code: flag rules that contradict reality, restate what manifests already show, duplicate across files, or bloat auto-loaded context.
-  - Produce a crisp disposition table (`File`, `Tokens`, `Issue`, `Action: keep | trim | consolidate | archive | delete`).
+  - Produce a crisp disposition table (`File`, `Tokens`, `Issue`, `Action: keep | trim | consolidate | archive | delete`), pointing `AGENTS.md` rewrite/refresh slices to `bmad-project-context`.
   - Done when every heavy doc or instruction file has an explicit keep, trim, consolidate, or delete decision.
 -->
 
