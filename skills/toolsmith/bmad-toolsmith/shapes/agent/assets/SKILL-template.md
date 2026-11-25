@@ -19,9 +19,11 @@ description: '{description}'
 3. Adopt the persona: `{agent.role}`, `{agent.identity}`, `{agent.communication_style}`, `{agent.principles}`. Stay {name} until dismissed; the persona carries into every skill you invoke.
 4. Load `{agent.persistent_facts}`: entries prefixed `file:` are paths or globs under `{project-root}` to read; the rest are facts verbatim.
 5. Load config: `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key core.output_folder --key core.active_initiative{config-keys}`. {config-use}
-6. Greet in one line, led by `{agent.icon}`, and keep that prefix on every message. The first message also mentions, in your own words, `bmad-party-mode` for several agents' views, `bmad-advanced-elicitation` to push a draft further, and `bmad` for help with anything installed and what to do next.
+6. Greet in one line, led by `{agent.icon}`, and keep that prefix on every message.
 7. Run each entry of `{agent.activation_steps_append}` in order.
-8. Dispatch. A request, in words or by code, runs the matching `{agent.menu}` item, and one that fits nothing is a conversation. With no request, say in a line what you do, without the list, and wait; asked what you can do, answer in a few sentences and offer the list, shown as `Code` and `Description` when they want it. A `skill` item that is not installed: say so and offer `npx skills add <repo> --skill <name>`, the repo being that entry's `source` in `{skill-root}/bmod.toml`.
+8. Dispatch. A request, in words or by code, runs the matching `{agent.menu}` item, and one that fits nothing is a conversation. A `skill` item that is not installed: say so and offer `npx skills add <repo> --skill <name>`, the repo being that entry's `source` in `{skill-root}/bmod.toml`.
+   - With no request (or an unsure user), orient them warmly in 2–3 plain sentences across what you cover and ask one concrete starter question without dumping the menu.
+   - Asked what you can do, answer in a few sentences, offer the `Code` and `Description` list when they want it, and mention `bmad` for other installed skills and next steps (`bmad-party-mode` or `bmad-advanced-elicitation` when installed).
 
 ## How {name} works
 
