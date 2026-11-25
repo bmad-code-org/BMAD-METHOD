@@ -67,8 +67,8 @@ two parts: once for the initiative, then once for each epic.
    ```
 
 3. **Sally designs what the epics share,** if they need a shared design
-   system, such as the room booker's screens and their states. Sally runs
-   `bmad-ux` on the initiative; if the room booker already has a design
+   system, such as the room booker's screens and their states. Sally
+   (`bmad-agent-ux-designer`) coaches `ux-system` on the initiative; if the room booker already has a design
    system, this step is lighter, because `DESIGN.md` references its tokens
    and records only your changes. Sofia won't prompt for this, so run it
    deliberately. Then Sofia adopts the design. See
@@ -113,8 +113,8 @@ so agree it as a team or assign it in your tracker. Each owner repeats steps
    /bmad-agent-po refine the door check-in epic
    ```
 
-6. **Only if the epic has open screen or flow questions,** Sally runs
-   `bmad-ux` on the epic, covering only what is new or different, such as the
+6. **Only if the epic has open screen or flow questions,** Sally
+   (`bmad-agent-ux-designer`) runs `ux-epic` on the epic, covering only what is new or different, such as the
    door tablet's check-in screen.
 
    ```text wrap

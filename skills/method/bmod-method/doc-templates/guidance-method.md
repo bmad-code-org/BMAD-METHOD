@@ -4,7 +4,7 @@ For Method plans, requirements, and cases for a decision. These rules add to the
 
 ## Opening
 
-When the document plans work the ticket tree will hold, a container is active or a ticket is in play, and neither the caller, the template, nor the ticket already fixes the altitude, the opening asks first which level of the tree the document is for: the program, the initiative, or an epic. Templates whose altitude is fixed (`prd-program`, `prd`, `prd-epic`, `charter`, `arch-enterprise`, `arch-spine`, `arch-epic`) already disambiguate the level, so skip that question when one of them is selected.
+When the document plans work the ticket tree will hold, a container is active or a ticket is in play, and neither the caller, the template, nor the ticket already fixes the altitude, the opening asks first which level of the tree the document is for: the program, the initiative, or an epic. Templates whose altitude is fixed (`prd-program`, `prd`, `prd-epic`, `charter`, `arch-enterprise`, `arch-spine`, `arch-epic`, `ux-system`, `ux-epic`, `ux-quick`, `brand-identity`, `design-direction`, `website-design`, `ux-audit`) already disambiguate the level, so skip that question when one of them is selected.
 
 ## Inheriting from a parent
 
@@ -20,7 +20,7 @@ Read the stakes as one of: hobby or personal use, internal, pitch or investor, p
 
 ## Ids and requirements
 
-Give stable ids to anything others will cite, each a short uppercase prefix, a hyphen, and a number, such as `REQ-3` or `FR-3`, the form `{project-root}/_bmad/scripts/check_ids.py` reads on templates that declare it as a `lint:` hook. Where the document carries requirements or scope, make each requirement testable and each edge explicit; coaching a requirements document stops when the remaining questions reach edge cases and trade-offs. Names, owners, and dates in the body come from the user, never the environment.
+Give stable ids to anything others will cite, each a short uppercase prefix, a hyphen, and a number, such as `REQ-3` or `FR-3`. Where the document carries requirements or scope, make each requirement testable and each edge explicit; coaching a requirements document stops when the remaining questions reach edge cases and trade-offs. Names, owners, and dates in the body come from the user, never the environment.
 
 ## The level below
 

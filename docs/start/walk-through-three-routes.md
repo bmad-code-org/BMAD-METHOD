@@ -262,8 +262,8 @@ skip as open assumptions.
 ### 4. Design the UX
 
 UX design covers how the app looks and how people use it. In the same
-session, ask `/bmad What's next?`. BMad suggests `bmad-ux`, the UX skill that
-Sally, the UX Designer, runs; say "Yes." It works from your brief and PRD.
+session, ask `/bmad What's next?`. BMad suggests Sally (`bmad-agent-ux-designer`),
+who coaches UX through `bmad-facilitate`; say "Yes." It works from your brief and PRD.
 When it asks how the app should look and work, paste:
 
 ```text wrap
@@ -286,8 +286,7 @@ Use our company colors: navy and white.
 - When it walks through its decisions, take its suggestions.
 - When it offers a review and mock-ups, say "No."
 
-You get `DESIGN.md` for how the app looks and `EXPERIENCE.md` for how it
-works.
+You get `EXPERIENCE.md` for how the app works, and `DESIGN.md` for visual tokens when the chosen route defines them.
 
 ### 5. Write the Requirements and Split Them into Epics
 

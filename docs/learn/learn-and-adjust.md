@@ -70,12 +70,12 @@ back built work, or cut scope. You decide.
 - She drops work that no longer belongs, records the reason, and clears what
   waited on it.
 - When the change reaches the design or the spine, she notes what it
-  invalidates and offers `bmad-ux` or Winston (`bmad-agent-architect`); she never edits
+  invalidates and offers Sally (`bmad-agent-ux-designer`) or Winston (`bmad-agent-architect`); she never edits
   their files.
 
 She records the reason as a dated `Decision:` line in each ticket she touched.
 A change that starts upstream goes through the skill that owns that document
-first: John updates the PRD, `bmad-ux` the design. Then Sofia updates the
+first: John updates the PRD, Sally (`bmad-agent-ux-designer`) the design. Then Sofia updates the
 initiative from it. On the organization path, follow the order in
 [Plan Inside an Organization](../plan/plan-inside-an-organization.md#when-requirements-change-mid-flight).
 

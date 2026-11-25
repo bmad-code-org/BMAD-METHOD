@@ -51,7 +51,7 @@ folder. He opens the way the document's template says. For a PRD he asks whether
 
 ### 2. Choose the Mode
 
-By default John takes the PRD step-by-step: one section at a time, in order, settling each before the next, with your brain dump already written into the sections it filled. Ask for freeform and he recaps, reviews and pushes in whatever order fits, and shows you every section before the review, so none goes in unseen. Ask for fast, or for speed, and he asks what the template requires, topped up with a few high-impact questions of his own, then drafts the rest. To make one mode the start for every document, for yourself or your team, ask `bmad-customize` to set `mode` for `bmad-facilitate`.
+By default John works through a PRD in `freeform` mode — talking naturally across topics, updating the document quietly in the background, and playing back major decisions as they settle. Switch anytime to `step-by-step` to walk sections one at a time in order, or ask for `fast` (or speed) and he asks the essentials plus high-impact questions before drafting the rest with `[ASSUMPTION]` tags. To make one mode the start for every document, for yourself or your team, ask `bmad-customize` to set `mode` for `bmad-facilitate`.
 
 Either way he asks only what only you know and finds other facts himself. The
 stakes change how hard he pushes and what he fills in without you:
@@ -109,8 +109,8 @@ input I should read.
 After your brain dump:
 
 **John:** Purpose: agree the check-in rules before anyone builds. Readers:
-facilities and two developers. Stakes: internal. We'll go step by step;
-say freeform or fast to change that.
+facilities and two developers. Stakes: internal. We'll work freeform;
+say step-by-step or fast to switch, or tell me to finish anytime.
 
 After the conversation, part of `prd-check-in/prd-check-in.md`:
 

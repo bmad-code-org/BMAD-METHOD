@@ -16,7 +16,7 @@ Before any of this, a product manager, designer, or analyst can prototype the id
 
 - Point John the Product Manager (`bmad-agent-pm`) at the existing PRD. Validate gives a findings report and changes nothing. Create rewrites the same requirements in the shape later skills read, with `[ASSUMPTION]` tags on what it filled in.
 - When the source PRD changes, ask John to update the PRD. Tell the user never to hand-edit `prd-<slug>.md`.
-- `bmad-ux` starts from the existing design system. Winston (`bmad-agent-architect`) reads the initiative and takes the existing architecture document or codebase as input beside it.
+- Sally (`bmad-agent-ux-designer`) starts from the existing design system. Winston (`bmad-agent-architect`) reads the initiative and takes the existing architecture document or codebase as input beside it.
 - When the PRD and a ticket's Requirements disagree, the ticket's Requirements win and the PRD is a source: Sofia surfaces the contradiction and the user decides.
 
 ## One owner per document
@@ -27,7 +27,7 @@ Each document has one skill that writes it, so give it one owner. One person can
 |---|---|---|
 | Analyst | `bmad-agent-analyst` | Any brief, PRFAQ, business case or business requirements document, and their updates |
 | Product manager | `bmad-agent-pm` | `prd-<slug>.md`, any charter, and their updates |
-| Designer | `bmad-ux` | `DESIGN.md`, `EXPERIENCE.md` |
+| Designer | `bmad-agent-ux-designer` | `DESIGN.md`, `EXPERIENCE.md` |
 | Tech lead | `bmad-agent-architect` | The architecture spine and epic tech design |
 | One engineer per epic | `bmad-agent-po`, `bmad-build`, `bmad-retrospective` | That epic's requirements, stories, verdict |
 | Whoever tracks the whole | `bmad-agent-po` | the ticket tree |
@@ -38,7 +38,7 @@ Several engineers can each take an epic at once. An epic-level spine inherits th
 
 Epics are an initiative's cohesive capabilities, each something a person could see working by itself, not a split by who builds them.
 
-Slicing writes each epic thin. Before its stories are planned, talk to Sofia the Product Owner to refine it ("refine the booking epic"): an epic with open product questions gets its own PRD from John, and one with none she fills in from the initiative's lines. The user may also add a `bmad-ux` or Winston (`bmad-agent-architect`, `arch-epic`) run on the epic, or `bmad-deep-recon`. Those runs land in the epic's folder and become its companions.
+Slicing writes each epic thin. Before its stories are planned, talk to Sofia the Product Owner to refine it ("refine the booking epic"): an epic with open product questions gets its own PRD from John, and one with none she fills in from the initiative's lines. The user may also add a Sally (`bmad-agent-ux-designer`, `ux-epic`) or Winston (`bmad-agent-architect`, `arch-epic`) run on the epic, or `bmad-deep-recon`. Those runs land in the epic's folder and become its companions.
 
 When the work is more than one initiative's worth, talk to Sofia the Product Owner to propose a parent initiative. It holds the Requirements and decisions its children share and the order between them, and no epics or stories. Each child is an ordinary initiative, planned and built as usual, that names the parent in `sources:`. Set the active initiative to the child being worked, or to the parent to see the whole.
 

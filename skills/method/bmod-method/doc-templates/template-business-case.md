@@ -8,7 +8,6 @@ agents: [bmad-agent-analyst]
 facilitation_order: [sponsors, hypothesis, business-outcomes, leading-indicators, background, scope, nonfunctional-requirements, mvp-and-what-follows, cost, return, recommendation, for-requirements]
 guidance: guidance-method.md
 rubric: rubric-planning.md
-lint: "{project-root}/_bmad/scripts/check_ids.py"
 status: draft
 created: ""
 updated: ""

@@ -45,16 +45,16 @@ updated: ""
 | `version` | Optional version of the template. It is copied into each document, so a later update can say the template has moved on. |
 | `description` | One short line saying what the template is for. Help lists it for every template on every run, so keep it under about 80 characters. Quote it, because a colon breaks unquoted YAML. |
 | `not_for` | Optional short line naming what the template is not for, and the template to use instead. Read with `description` when choosing one, and not listed in help. |
-| `mode` | Optional. The mode a run of this template starts in: `step-by-step` (the default), `freeform` or `fast`. A team's or user's `mode` wins over it. See [Choose how a run walks the sections](#choose-how-a-run-walks-the-sections). |
+| `mode` | Optional. The mode a run of this template starts in: `freeform` (the default), `step-by-step` or `fast`. A team's or user's `mode` wins over it. See [Choose how a run walks the sections](#choose-how-a-run-walks-the-sections). |
 | `order` | Optional. `fixed` for a document whose order matters as much as the result: freeform is never used, and fast keeps the order. |
 | `facilitation_order` | The sections by id, in the order the skill takes them up. See [Order the sections](#order-the-sections). |
 | `guidance` | Optional rules shared by a family of templates and read as part of each, resolved relative to the template (such as `guidance-method.md` in Method or `guidance-planning.md` in Founder). Without it the skill names no domain stakes levels; every document still carries `[ASSUMPTION: ...]` tags where the coach guessed until accepted or corrected. |
 | `agents` | Optional list of the skills that offer this template, such as `[bmad-agent-pm]`; name several to share it. It says who offers the template by default; any agent the user asks can still write it. The `bmad` skill uses the list to say who offers the template. A template in an agent's `assets/` folder counts as that agent's without it. |
 | `rubric` | Optional path to a rubric for the review, relative to the template (such as `rubric-planning.md`), or the bare name `rubric-general` for the shipped general rubric. Empty also uses `rubric-general`. |
 | `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
-| `companions` | Optional one-line list of sibling filenames expected beside `{doc}` (e.g. `[DESIGN.md, EXPERIENCE.md]`), tracked across Resume, Progress, Review, Finalize, and `check_doc.py`. |
-| `forbid_id_prefixes` | Optional one-line list of disallowed id prefixes (e.g. `[FR]`), passed as `--forbid-prefix` to `check_doc.py` during Finalize. |
-| `lint` | Optional script path relative to the template file (such as `../scripts/check_ids.py`) or command string (supporting `{doc}`, `{run}`, `{project-root}`) executed during Finalize step 1. The shipped ID hook is `{project-root}/_bmad/scripts/check_ids.py`. |
+| `companions` | Optional one-line list of sibling filenames expected beside `{doc}` (e.g. `[DESIGN.md, EXPERIENCE.md]`), tracked across Resume, Progress, Review, and Finalize. |
+| `forbid_id_prefixes` | Optional one-line list of disallowed id prefixes (e.g. `[FR]`), flagged during Finalize. |
+| `lint` | Optional custom script path relative to the template file or command string (supporting `{doc}`, `{run}`, `{project-root}`) run during Finalize step 1. |
 | `output` | Optional run folder for this template, or a path ending in `.md` for the document itself. It may use `{project-root}`, `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
 | `style` | Optional visual style guide for this template's HTML artifact: a CSS file, design-system doc, screenshot, or verbal aesthetic preference relative to the template. |
 | `layout` | Optional layout guide or reference file (starter HTML, fixed brand elements, or sample screenshot) for the HTML artifact. It guides how the artifact looks, never whether it is made. See [Give a template its own view](#give-a-template-its-own-view). |
@@ -182,13 +182,13 @@ A section comment can also steer the conversation or limit the answer, in plain 
 
 ### Choose how a run walks the sections
 
-Every run starts in one of three modes. Step-by-step, the default, takes the sections one at a time in facilitation order and settles each before opening the next. Freeform works them in any order and grouping that fits, and shows each to the user before the review. Fast drafts the whole document first, then walks the guesses with the user. Set `mode: freeform` on a template whose sections are usually filled together by a brain dump, as John's `launch` does. A `mode` set for a team or a user through `bmad-customize` wins over every template's, and the user can still switch for one run.
+Every run starts in one of three modes. Freeform, the default, follows the user's thread conversationally across sections, updates the document quietly in the background, and plays back major decisions as they settle. Step-by-step takes sections one at a time in facilitation order and settles each before opening the next — set `mode: step-by-step` on heavy formal contracts (`srs`, `brd`, `charter`, `prd-program`, `arch-enterprise`). Fast drafts the whole document first, then walks the guesses with the user (`ux-quick`, `prototype-plan`, `decision-record`). A `mode` set for a team or a user through `bmad-customize` wins over every template's, and the user can switch at any time during a run.
 
 Set `order: fixed` when an earlier section must be settled before a later one is worked, as in a PRFAQ, where the user defends the press release before the questions. A request for freeform then runs step-by-step, wherever it comes from, and fast keeps the order too. A team extension can set `mode` or `order`, or clear either with an empty value such as `order: ""`.
 
 Each section comment is the brief for that part of the session. A voice, stance or method it sets, such as "you are now a skeptical customer", replaces the skill's defaults until the section closes, so write it as instructions to the coach rather than only a description of the content. These shipped templates set `order: fixed`: Mary's `prfaq` and `opportunity`, John's `pitch`, the `experiment` card they both offer, the module's `postmortem`, and Nadia's `cofounder-agreement`, `startup-diagnostic`, `positioning`, `first-hire` and `validation-experiment`.
 
-Every run shows a progress line on the messages that ask something: `PRFAQ · Customer FAQ (2 of 4)` step-by-step, `PRD · 3 of 8 done` otherwise. The total is every section in the facilitation order, and a section counts once it is settled, so the total stays the same for the whole run.
+In `step-by-step` runs, messages open with a progress line such as `PRFAQ · Customer FAQ (2 of 4)` counted against the template's facilitation order. In `freeform` and `fast`, progress counters stay hidden in chat while `progress.py` checks completeness quietly before Finalize.
 
 Put a bare `## Table of Contents` heading right after the title of any template whose documents run long. Agents often read only the top of a file to judge it, so the skill fills this with a linked entry per section and a short phrase of its key terms, then checks it against the final headings. It gets no slide in a slide view.
 

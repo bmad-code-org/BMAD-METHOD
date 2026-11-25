@@ -23,12 +23,13 @@ persistent_facts = []
 #   "For internal standards, consult corp:kb_search (database='engineering') before web search."
 external_sources = []
 
-# Polish passes at finalize, in order, structural before prose: `skill:NAME [args]`, `file:PATH` or plain text.
+# Polish passes at finalize, structural before prose: `skill:NAME [args]`, `file:PATH` or plain text.
+# `file:` and plain-text rules apply in every depth tier; `skill:` passes scale with Finalize depth.
 doc_standards = [
   "skill:bmad-review lenses=structure,prose",
 ]
 
-# Run beside the rubric walker, same prefixes; resolved only when the review runs.
+# Run beside the rubric walker in Standard and Thorough (skipped in Quick / lowest stakes).
 finalize_reviewers = []
 
 # Where finished documents go beyond local files; each entry names the tool, destination and fields.
@@ -39,10 +40,10 @@ external_handoffs = []
 on_complete = ""
 
 # The mode every run starts in, over each template's own `mode`; empty leaves it to the template,
-# else "step-by-step". "step-by-step" takes the sections one at a time in order; "freeform" works
-# them in any order and grouping, each shown before review; "fast" drafts first and then walks the
-# assumptions. The user can still switch for one run. A template with `order: fixed` runs freeform
-# as step-by-step.
+# else "freeform". "freeform" works conversationally across sections in any order, updating the
+# document quietly in the background; "step-by-step" takes the sections one at a time in order;
+# "fast" drafts first and then walks the assumptions. The user can switch anytime during a run. A
+# template with `order: fixed` runs freeform as step-by-step.
 mode = ""
 
 # Run folder for a template with no `output`; `{active_initiative}` is dropped when none is set.

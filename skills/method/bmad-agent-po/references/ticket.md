@@ -14,7 +14,7 @@ Reference the Requirements of the ticket above; never copy them. Full criteria (
 - Short plain sentences in the project's vocabulary, no invented terms. Offer the user a rewrite where their text breaks this.
 - A reference is a References line, `type — location, section`; location is a path from `{project-root}` or a url, opened before citing; cite the nearest document. Before drafting, read `tickets.reference` from the store config (`read_store.py -k tickets`; the repo store has none).
 - No source-code paths or snippets unless the snippet is the decision; a path the user wants kept goes in Notes.
-- A UI ticket links its design in References; criteria stay functional. User-facing without a design: offer `bmad-ux`; if declined, warn that the builder will guess the layout unless Notes gives details.
+- A UI ticket links its design in References; criteria stay functional. User-facing without a design: offer Sally (`bmad-agent-ux-designer`); if declined, warn that the builder will guess the layout unless Notes gives details.
 - `hitl: true` only when a person does part of the work; name that step in the Description and list known steps in criteria or Notes.
 - Risk on every ticket: `low`, `medium` or `high` business impact if wrong, proposed with a one-line reason; the user decides. A high-risk ticket names in Notes one check beyond its criteria.
 - Record an `estimate` only when the user gives one, on the entry or frontmatter; never propose one.

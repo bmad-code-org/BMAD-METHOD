@@ -9,7 +9,6 @@ facilitation_order: [problem-and-vision, scope-and-non-goals, okrs, invariants, 
 guidance: guidance-method.md
 rubric: rubric-planning.md
 forbid_id_prefixes: [FR]
-lint: "{project-root}/_bmad/scripts/check_ids.py"
 status: draft
 created: ""
 updated: ""

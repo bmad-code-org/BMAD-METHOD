@@ -53,7 +53,7 @@ knows only one floor, and reads the bookings table directly.
    [Design UX and Architecture](../plan/design-ux-and-architecture.md).
 
    ```text wrap
-   /bmad-ux design the floor-plan view and its states
+   /bmad-agent-ux-designer design the floor-plan view and its states
    ```
 
    ```text wrap

@@ -5,10 +5,10 @@ version: 1.4.0
 description: "An initiative's traceable, verifiable requirements for regulated or contracted work."
 not_for: "Product work with no external check (`prd` for several capabilities, `prd-epic` for one); what the business requires, before system behavior (`brd`)."
 agents: [bmad-agent-pm]
+mode: step-by-step
 facilitation_order: [introduction, references, overall-description, functional-requirements, interface-requirements, quality-requirements, compliance-requirements, design-constraints, verification, open-questions, revision-history, definitions]
 guidance: guidance-method.md
 rubric: rubric-planning.md
-lint: "{project-root}/_bmad/scripts/check_ids.py"
 status: draft
 created: ""
 updated: ""

@@ -6,11 +6,9 @@ category: codebase-readiness
 description: "Diagnose a codebase for agentic delivery friction, doc/comment noise, and pattern drift."
 not_for: "Writing or refreshing `AGENTS.md` directly (`bmad-project-context`); greenfield architecture (`arch-spine`); reviewing one PR (`bmad-code-review`)."
 agents: [bmad-agent-architect]
-order: fixed
 facilitation_order: [repository-baseline, pattern-consistency, attention-and-doc-hygiene, comment-hygiene, modularity-and-context-fit, feedback-loops-and-guardrails, remediation-backlog, executive-scorecard]
 guidance: guidance-method.md
 rubric: rubric-agent-readiness.md
-lint: uv run "{project-root}/_bmad/method/scripts/lint_arch.py" --project-root "{project-root}" "{doc}"
 view: always
 status: draft
 created: ""
@@ -27,15 +25,15 @@ updated: ""
 -->
 
 <!-- opening:
-  - Before asking anything, run `uv run "{project-root}/_bmad/method/scripts/scan_repo_readiness.py" "{project-root}"` to gather file sizes, git churn hotspots, instruction/doc footprints, comment pollution, and existing guardrails.
+  - Before asking anything, inspect `{project-root}` directly (or run quick git/file checks) to map file sizes, git churn hotspots, instruction/doc footprints, comment noise, and existing test/lint/CI guardrails.
   - Play back the measured summary and top hotspots briefly, then ask where coding agents have actually drifted, broken things, or wasted context recently.
 -->
 
-<!-- inputs: Repository telemetry from `scan_repo_readiness.py`, inspection of the hotspot files it surfaces, and the user's firsthand knowledge of recurring agent mistakes and canonical preferences. -->
+<!-- inputs: Direct repository telemetry, inspection of the hotspot files surfaced, and the user's firsthand knowledge of recurring agent mistakes and canonical preferences. -->
 
 <!-- writing:
-  - Cite real file paths and measured numbers from `scan_repo_readiness.py` and code inspection.
-  - Every canonical pattern choice uses an `AD-n` block (`Binds`, `Prevents`, `Rule`, optional one-line `Why`) so `lint_arch.py` validates it.
+  - Cite real file paths and measured numbers from code and repository inspection.
+  - Every canonical pattern choice uses an `AD-n` block (`Binds`, `Prevents`, `Rule`, optional one-line `Why`).
   - Score each diagnostic dimension cleanly: `Strong`, `Adequate`, `Friction`, or `Broken`.
 -->
 
@@ -56,7 +54,7 @@ updated: ""
 
 ## Repository baseline
 <!--
-  - Record verified telemetry from `scan_repo_readiness.py`: codebase footprint, primary languages, active test/lint guardrails, and top churn × size hotspots.
+  - Record verified repository baseline telemetry: codebase footprint, primary languages, active test/lint guardrails, and top churn × size hotspots.
   - Confirm with the user which areas are actively developed versus frozen legacy so the audit ignores dead corners.
   - Done when active target scope and baseline telemetry are confirmed by the user.
 -->
@@ -71,7 +69,7 @@ updated: ""
 
 ## Attention and doc hygiene
 <!--
-  - Review every file in `instruction_and_doc_files` (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `README.md`, large `docs/*.md`, old plans).
+  - Review instruction and documentation files (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `README.md`, large `docs/*.md`, old plans).
   - Check each against live code: flag rules that contradict reality, restate what manifests already show, duplicate across files, or bloat auto-loaded context.
   - Produce a crisp disposition table (`File`, `Tokens`, `Issue`, `Action: keep | trim | consolidate | archive | delete`).
   - Done when every heavy doc or instruction file has an explicit keep, trim, consolidate, or delete decision.
@@ -79,7 +77,7 @@ updated: ""
 
 ## Comment hygiene
 <!--
-  - Inspect top `comment_hotspots` from the scan plus a spot check of recent code for LLM-degrading comment noise.
+  - Spot-check high-churn and recent source files for LLM-degrading comment noise.
   - Classify actionable targets: narrating-the-obvious comments, stale docblocks disagreeing with code, commented-out dead code, ticket/workflow breadcrumbs, and essay comments hiding unclear naming.
   - Contrast those with the rare high-value *why* comments to preserve (non-obvious invariants, external quirks, regulatory/perf constraints).
   - Done when concrete files/patterns are slated for pruning or refactoring without stripping valid *why* comments.
@@ -87,7 +85,7 @@ updated: ""
 
 ## Modularity and context fit
 <!--
-  - Inspect `largest_files` and `churn_hotspots` for god-files, dumping-ground `utils`/`helpers` modules, oversized barrel re-exports, and implicit magic that forces agents to load huge files for small edits.
+  - Inspect the largest and highest-churn source files for god-files, dumping-ground `utils`/`helpers` modules, oversized barrel re-exports, and implicit magic that forces agents to load huge files for small edits.
   - Weight by churn: ignore giant files that never change unless they block current work.
   - Done when each hot oversized module has a clear split target or an explicit leave-alone call.
 -->

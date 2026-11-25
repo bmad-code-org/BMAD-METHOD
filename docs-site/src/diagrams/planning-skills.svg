@@ -1,6 +1,6 @@
 <svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img" aria-labelledby="title description">
   <title id="title">Planning skills and what they produce</title>
-  <desc id="description">Three columns of skills and their artifacts. Analysis: bmad-brainstorming, bmad-forge-idea, bmad-deep-recon, and bmad-agent-analyst, Mary the Business Analyst, who writes a brief, a PRFAQ or a BRD. Planning: bmad-agent-pm, John the Product Manager, who writes a PRD or one of eleven other planning documents, and bmad-ux. Solutioning: bmad-agent-architect, Winston the System Architect, and bmad-agent-po, Sofia the Product Owner. The columns flow left to right and hand off to bmad-build, one session per unit. Build finishes at built; the user marks done and retains the plan.</desc>
+  <desc id="description">Three columns of skills and their artifacts. Analysis: bmad-brainstorming, bmad-forge-idea, bmad-deep-recon, and bmad-agent-analyst, Mary the Business Analyst, who writes a brief, a PRFAQ or a BRD. Planning: bmad-agent-pm, John the Product Manager, who writes a PRD or one of eleven other planning documents, and bmad-agent-ux-designer, Sally the UX Designer. Solutioning: bmad-agent-architect, Winston the System Architect, and bmad-agent-po, Sofia the Product Owner. The columns flow left to right and hand off to bmad-build, one session per unit. Build finishes at built; the user marks done and retains the plan.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path class="head" d="M 0 0 L 10 5 L 0 10 z"/>
@@ -54,7 +54,7 @@
       </g>
       <g transform="translate(15 150)">
         <rect class="node" width="240" height="58" rx="2"/>
-        <text x="12" y="23" font-size="14" font-weight="700" class="mono">bmad-ux</text>
+        <text x="12" y="23" font-size="14" font-weight="700" class="mono">bmad-agent-ux-designer</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)">DESIGN.md, EXPERIENCE.md</text>
       </g>
       <text x="135" y="330" font-size="12" text-anchor="middle" fill="var(--dg-ink)">Use a PRD when needed.</text>

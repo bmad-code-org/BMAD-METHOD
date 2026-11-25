@@ -49,7 +49,7 @@ Load `guidance` (the resolved path from the listing) as part of the template, wi
 
 ## Create and resume
 
-Before creating, check if an unfinished run (`status` not `final`) already sits at the target `{run}` folder and offer to resume it. On resume, read `{doc}` and any existing `companions:`, merge its template, state the mode and how to switch, and continue at the first open section without re-asking settled material.
+Before creating, check if an unfinished run (`status` not `final`) already sits at the target `{run}` folder and offer to resume it. On resume, read `{doc}` and any existing `companions:`, merge its template, state the mode and that they can switch or ask to finish anytime, and continue at the first open section without re-asking settled material.
 
 Otherwise bind `{run}`: caller output path first, else the template's `output`, else `{workflow.output}` (dropping `{active_initiative}` when unset). When the output path ends in `.md`, write `{doc}` there directly and nothing beside it except declared companions. Write `{doc}` from `{scratch}/template.md` with `status: draft` (changed only at Close) and give its path.
 
@@ -57,17 +57,19 @@ Otherwise bind `{run}`: caller output path first, else the template's `output`, 
 
 Read every supplied input in full before asking questions; delegate long background documents to subagents returning concise extracts.
 
-**Opening** (unless headless or fast). Follow the template's `opening` comment for what to ask or request first, omitting anything inputs already answer. Unless `opening` rules it out, invite an uninterrupted brain dump in the same message.
+**Opening** (unless headless). Follow the template's `opening` comment for what to ask or request first, omitting anything inputs already answer. In `fast`, fold a plain one-line note naming the active mode and that they can switch modes (between `fast` and `step-by-step` when `order: fixed` locks order, otherwise adding `freeform`) or ask to finish from current inputs anytime into the minimal intake batch. Outside `fast`, invite an uninterrupted brain dump in the same message unless `opening` rules it out:
 
 1. Once a dump arrives, place its facts into the matching open sections, confirm what was captured, and ask "anything else?" with a brief comma-separated nudge for untouched topics.
-2. In the next message, read back the document's purpose, reader, stakes (confirm or ask when unclear), and section count without listing all headings. Name the active mode, how to switch, and that the run persists; cold-start templates compress this into their opener.
-3. Outside fast mode, ask cross-cutting questions that reshape multiple sections one related group per message, holding single-section questions for their section. Start web or `{workflow.external_sources}` research subagents unasked during the dump when external facts are needed, and suggest `bmad-deep-recon` for deep research.
+2. In the next message, read back the document's purpose, reader, and stakes when unclear without announcing total section counts or process scaffolding unless asked. Name the active mode in plain words and invite the user to stay there, switch anytime (between `freeform`, `fast`, or `step-by-step`; `step-by-step`/`fast` if `order: fixed` applies), or ask to finish whenever they want you to finalize everything shared so far; cold-start templates compress this into their opener.
+3. Ask cross-cutting questions that reshape multiple sections one related group per message, holding single-section questions for their section. Start web or `{workflow.external_sources}` research subagents unasked during the dump when external facts are needed, and suggest `bmad-deep-recon` for deep research.
 
-**Mode.** Start in the merged template's `mode` (else `{workflow.mode}`, else `step-by-step`), honoring explicit user/caller requests unless `order: fixed` applies. Templates with `order: fixed` refuse freeform, run step-by-step, and keep facilitation order in fast; users change sticky defaults via `bmad-customize` (`mode`).
+**Mode.** Start in `{workflow.mode}` when set, else the merged template's `mode`, else `freeform` — honoring user or caller requests unless `order: fixed` applies. Templates with `order: fixed` refuse `freeform`, run `step-by-step`, and keep facilitation order in `fast`; users change sticky defaults via `bmad-customize` (`mode`).
 
+Users may switch between allowed modes (`freeform`, `fast`, `step-by-step`) or ask to finish anytime mid-run. Shift into `fast` immediately on urgency cues ("keep it quick", "let's move fast", "just show me something"). When told to finish or wrap up, fill remaining open sections from what was already shared (tagging guesses `[ASSUMPTION: ...]` and listing unresolved gaps as open questions), check completeness via `progress.py`, and run `references/finalize.md` to produce the final document, companions, and artifacts.
+
+- **Freeform:** hold the template's sections and `done when` criteria as a mental checklist and output shape, following the user's thread naturally with at most 2–3 focused questions per turn or concrete options to react to. Update `{doc}` and `companions:` quietly without per-section approval gates, briefly playing back major load-bearing decisions in 2–3 lines as they settle so the final document never surprises the user, and steer gently back only to remaining open gaps.
 - **Step-by-step:** work one section at a time in facilitation order; show dump content, close gaps to `done when`, confirm text, remove `<!-- open -->`, and advance. Settle out failed `include when` sections together with reasons.
-- **Freeform:** work sections in any order that fits the user's thread, showing each section's text before settling it and steering back to open sections when threads drift.
-- **Fast:** fold `opening` and missing `inputs` into one concise batch, draft the full document tagging defaults `[ASSUMPTION: ...]`, list tag/question counts by section, and offer a section-by-section walkthrough before Finalize.
+- **Fast:** fold `opening` and missing `inputs` into one minimal batch, draft the full deliverable tagging defaults `[ASSUMPTION: ...]`, list tag/question counts by section, and offer to walk sections or harden exploratory work into durable contracts once direction clicks.
 
 **Coaching posture.** Never invent or default required `inputs` or resolve contradictions silently. Treat judgment sections (goals, scope, rules, measures) as workouts rather than full drafts up front; assemble `built:` sections after their inputs settle; accept one-line fills at lowest stakes without pushing.
 
@@ -75,13 +77,13 @@ Coach in the user's words without exposing markers, scratch paths, or template k
 
 ## Progress
 
-Before every message that asks the user something or closes a section (unless headless), run `uv run "{skill-root}/scripts/progress.py" --project-root "{project-root}" "{doc}" "{scratch}/template.md"` and open with a one-line status after any caller icon. Never compute counts from memory; when reader headings caused `missing`/`extra` mismatches, count the document's open markers directly.
+Before every message that asks the user something or closes a section in `step-by-step` (unless headless), run `uv run "{skill-root}/scripts/progress.py" --project-root "{project-root}" "{doc}" "{scratch}/template.md"` and open with `Title · Opening` before section 1 or `Title · Section (X of Y)` afterward after any caller icon. Never compute counts from memory; when reader headings caused `missing`/`extra` mismatches, count the document's open markers directly.
 
-Format the status line by state: `Title · Opening` before section 1, `Title · Section (2 of 4)` in step-by-step, `Title · 3 of 8 done · open: Scope, Risks` otherwise, plus item counts (`question 2 of 5`) only for fixed batches. Check `companions` if reported; the moment `progress.py` emits `next_phase: "finalize"` — or, on `missing`/`extra` reader-heading fallback, once zero `<!-- open -->` markers remain in `{doc}` — load `references/finalize.md` and execute `required_sequence` in order.
+In `freeform` and `fast`, skip visible progress counters (`Section X of Y` or open-section counts) in chat and run `progress.py` silently before Finalize as an internal completeness gate. Check `companions` if reported; the moment `progress.py` emits `next_phase: "finalize"` — or, on `missing`/`extra` reader-heading fallback, once zero `<!-- open -->` markers remain in `{doc}` — load `references/finalize.md` and execute `required_sequence` in order.
 
 ## Writing and visuals
 
-Fill every required section concisely to suit the stakes and reader without artificial word-count padding; keep lists to lines and tables to phrases. Write only `{doc}`, files declared in `companions:`, and any confirmed parent-document update a template explicitly authorizes (never on headless runs), placing unrequested material in the best-fitting section or flagging it at Finalize.
+Fill every required section concisely to suit the stakes and reader without artificial word-count padding; keep lists to lines and tables to phrases. When `companions:` holds the main contracts, keep `{doc}` brief as a summary or index instead of repeating companion tables. Write only `{doc}`, files declared in `companions:`, and any confirmed parent-document update a template explicitly authorizes (never on headless runs), placing unrequested material in the best-fitting section or flagging it at Finalize.
 
 Tag every unconfirmed inference `[ASSUMPTION: ...]`, keeping user-confirmed claims untagged (a blanket yes leaves individual tags open until confirmed). Place open questions in the template's open-questions slot or a closing `## Open questions`, and populate any `## Table of Contents` with linked `##` entries and search cues.
 

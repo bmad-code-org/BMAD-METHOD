@@ -57,7 +57,7 @@ The BMad Method also ships the planning templates for John, the Product Manager 
 | Business requirements document | Mary | Program or initiative | What the business requires and signs for, when a separate party builds, a sponsor signs, or a regulator or contract expects it |
 | Launch plan | John | Initiative | Coordinating a built feature's release across teams |
 
-The first seven come before you commit, in Clarify; the rest plan and ship the work. Each is walked one section at a time by default, except the launch plan, which starts freeform; the PRFAQ, the experiment card, the opportunity assessment and the pitch keep their order even when you ask for freeform. A brief from Mary feeds the PRD, but neither requires the other. A business case or strategy narrative stays in prose and ends with a `## For requirements` list of ids, so Sofia can write the initiative from it without a PRD.
+The first seven come before you commit, in Clarify; the rest plan and ship the work. Each starts freeform by default, except the prototype plan (starts fast) and formal sign-off specs (`srs`, `brd`, which start step-by-step); a team or user `mode` setting on `bmad-facilitate` overrides every template's start mode. The PRFAQ, the experiment card, and the opportunity assessment lock section order (`order: fixed`) and run step-by-step even when freeform is requested. A brief from Mary feeds the PRD, but neither requires the other. A business case or strategy narrative stays in prose and ends with a `## For requirements` list of ids, so Sofia can write the initiative from it without a PRD.
 
 ## What a template can do
 
@@ -80,8 +80,8 @@ The first seven come before you commit, in Clarify; the rest plan and ship the w
 | Combine fixed brand elements or ideas with custom composition | Any template with `layout` / `style` reference files | Reference HTML, CSS, design-system docs, or screenshots guide composition without mechanical value injection |
 | Have a creative artifact written from a brief alone | Founder's templates, such as `pitch-deck` | A `layout` comment with no reference file guides visual treatment |
 | Propose rather than only ask | `character`, `stance` | The comment invites proposals; one the user accepts is theirs |
-| Write and track several files | `postmortem` (`companions` comment); any template with `companions: [...]` frontmatter | Frontmatter `companions: [...]` tracks expected sibling files in `progress.py` and `check_doc.py`; a `companions` comment explains when and what each holds |
-| Forbid leaking id prefixes | Any multi-altitude template | `forbid_id_prefixes: [...]` passes `--forbid-prefix` to `check_doc.py` at Finalize |
-| Run a custom Finalize lint check | Any domain template | `lint:` names a relative script or command run during Finalize step 1 |
+| Write and track several files | `postmortem` (`companions` comment); any template with `companions: [...]` frontmatter | Frontmatter `companions: [...]` tracks sibling files in `progress.py` and at Finalize; a `companions` comment explains when and what each holds |
+| Forbid leaking id prefixes | Any multi-altitude template | `forbid_id_prefixes: [...]` flags disallowed id prefixes at Finalize |
+| Run a custom Finalize lint check | Any domain template | Optional custom `lint:` names a relative script or command run during Finalize step 1 |
 
 No shipped template adds to another. [Extend a template](../customize/write-a-document-template.md#extend-a-template) shows how.

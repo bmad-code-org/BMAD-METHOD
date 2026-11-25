@@ -21,7 +21,7 @@ This document should be enough to route the user and say what to do next. Each t
 | Topic file | Read when the user asks about |
 |---|---|
 | `help/analysis-skills.md` | The brief or the PRFAQ from Mary (`bmad-agent-analyst`) in depth: what each gives, when to pick it, when not to, how they relate; and her other documents. |
-| `help/planning-skills.md` | `bmad-agent-po` (Sofia), `bmad-agent-pm` (John) and his planning documents, `bmad-ux`, `bmad-agent-architect` (Winston) in depth, and customizing facilitated templates. |
+| `help/planning-skills.md` | `bmad-agent-po` (Sofia), `bmad-agent-pm` (John) and his planning documents, `bmad-agent-ux-designer` (Sally), `bmad-agent-architect` (Winston) in depth, and customizing facilitated templates. |
 | `help/implementation-skills.md` | `bmad-build` or `bmad-build-auto` in depth. |
 | `help/validation-skills.md` | `bmad-code-review`, `bmad-walkthrough`, `bmad-qa-generate-e2e-tests`, or `bmad-retrospective` in depth. |
 | `help/prototyping.md` | Prototyping or vibe coding first, what a prototype is good for (worth doing, feasibility, complexity, unknowns), non-engineers prototyping, what to do with a prototype afterwards, whether planning still matters after a good first version. |
@@ -64,7 +64,7 @@ flowchart TD
     D -->|unsure it is worth building| E2["A PRFAQ from Mary the Business Analyst, or a prototype"]
     D -->|wants it written down, shareable| E3["Talk to Mary the Business Analyst for a brief"]
     D -->|needs real detail, stakeholders, compliance, integrations| E4["Talk to John the Product Manager to create the PRD"]
-    D -->|thinks in screens and flows| E5["bmad-ux"]
+    D -->|thinks in screens and flows| E5["Talk to Sally the UX Designer (`bmad-agent-ux-designer`)"]
     E1 & E2 & E3 & E4 & E5 --> S1
     S1 --> F
 
@@ -79,7 +79,7 @@ flowchart TD
     F1 & F2 --> F
     F -->|sliced, epics remain| H
 
-    H{"State of each epic file"} -->|refined: false| S7["Talk to Sofia the Product Owner to refine the epic<br/>with open product questions it gets a PRD from John, with none she fills it in; the user may add a `bmad-ux`, `bmad-agent-architect` (`arch-epic`), or `bmad-deep-recon` run on the epic"]
+    H{"State of each epic file"} -->|refined: false| S7["Talk to Sofia the Product Owner to refine the epic<br/>with open product questions it gets a PRD from John, with none she fills it in; the user may add a `bmad-agent-ux-designer` (`ux-epic`), `bmad-agent-architect` (`arch-epic`), or `bmad-deep-recon` run on the epic"]
     H -->|refined, no entries| S3["Talk to Sofia the Product Owner to plan the epic's stories: entries in tickets.toml"]
     H -->|an entry needs criteria first: a bug, refine = true| S5["Talk to Sofia the Product Owner to refine it"]
     H -->|entries ready| I["bmad-build per entry<br/>bmad-build-auto when no one is present"]
@@ -95,7 +95,7 @@ flowchart TD
 
 Rules the diagram leans on:
 
-- The shaping skills feed each other before they feed the spec: a brief or PRFAQ before a PRD when the requirements still need drawing out; `bmad-ux` before or after a PRD, and it may lead on its own; a PRFAQ verdict with serious gaps is addressed before anything else. Sofia the Product Owner takes more than one input.
+- The shaping skills feed each other before they feed the spec: a brief or PRFAQ before a PRD when the requirements still need drawing out; Sally (`bmad-agent-ux-designer`) before or after a PRD, and she may lead on her own; a PRFAQ verdict with serious gaps is addressed before anything else. Sofia the Product Owner takes more than one input.
 - A prototype fits anywhere before the initiative file, and suits enterprise work, hobby work, and non-engineers; a throwaway needs no skill. Thrown away, talk to Sofia the Product Owner to write the initiative from its notes; kept, it is an existing codebase (`help/prototyping.md`).
 - Risk, unclear requirements, architectural reach, or several people push work up from one session even when it is small.
 - An epic file with no `refined` key counts as refined.
@@ -123,16 +123,16 @@ Situations the diagram does not settle.
 
 ## The skills
 
-One line per skill: what it is for and what it writes. Paths are in the active initiative's folder, `{output_folder}/{active_initiative}/`, or in `{output_folder}/` when none is active; each document is a `<type>-<slug>/` folder holding `<type>-<slug>.md`. A document from John, Winston (`bmad-agent-architect`), or a `bmad-ux` run on an epic lands in the epic's folder instead, and Sofia adopts it as the epic's companion. Each initiative's and epic's breakdown sits in a `tickets/` folder inside it. With no active initiative, `bmad-agent-po` offers to create one and Winston can still run standalone technical docs (ADRs, postmortems, security reviews, readiness or design docs); the other planning work hands off to the `bmad` skill to set one. Showing, switching, creating, or clearing the active initiative is a `bmad` request. `planning_artifacts` and `implementation_artifacts` are no longer read.
+One line per skill: what it is for and what it writes. Paths are in the active initiative's folder, `{output_folder}/{active_initiative}/`, or in `{output_folder}/` when none is active; each document is a `<type>-<slug>/` folder holding `<type>-<slug>.md`. A document from John, Winston (`bmad-agent-architect`), or Sally (`bmad-agent-ux-designer`, `ux-epic`) run on an epic lands in the epic's folder instead, and Sofia adopts it as the epic's companion. Each initiative's and epic's breakdown sits in a `tickets/` folder inside it. With no active initiative, `bmad-agent-po` offers to create one and Winston can still run standalone technical docs (ADRs, postmortems, security reviews, readiness or design docs); the other planning work hands off to the `bmad` skill to set one. Showing, switching, creating, or clearing the active initiative is a `bmad` request. `planning_artifacts` and `implementation_artifacts` are no longer read.
 
 | Skill | For | Writes |
 |---|---|---|
 | **Analysis** (`help/analysis-skills.md`) | | |
-| `bmad-agent-analyst` | Mary the Business Analyst brainstorms and researches with the user, then coaches a document that decides whether and why to go ahead out of them: a brief (a 1-2 page account of a product the user believes in; it does not judge the idea), a PRFAQ (tests whether a concept survives scrutiny: press release, hard FAQs, researched claims, a verdict), an opportunity assessment, a business case, a strategy narrative or a business requirements document. She shares the experiment card and the program charter with John. | `<id>-<slug>/<id>-<slug>.md`, such as `brief-<slug>/brief-<slug>.md` |
+| `bmad-agent-analyst` | Mary the Business Analyst brainstorms and researches with the user, then coaches a document that decides whether and why to go ahead out of them: a brief (a 1-2 page account of a product the user believes in; it does not judge the idea), a PRFAQ (tests whether a concept survives scrutiny: press release, hard FAQs, researched claims, a verdict), a user-psychology trigger map (`trigger-map`), an opportunity assessment, a business case, a strategy narrative or a business requirements document. She shares the experiment card and the program charter with John, and `trigger-map` with Sally. | `<id>-<slug>/<id>-<slug>.md`, such as `brief-<slug>/brief-<slug>.md` |
 | **Planning** (`help/planning-skills.md`) | | |
 | `bmad-agent-po` | Sofia the Product Owner. Writes a ticket's Requirements and Constraints from any input, with a stable `R<n>` id per line naming its source, naming the gaps and walking them with the user, or recording each as an Open question line, when the input is sparse, and updates them when the input changes. Slices initiatives into thin epics and epics into stories, refines an epic or a story, runs the board (start, block, close, drop), validates, replans a change mid-flight, and connects a tracker. Stories are entries in `tickets.toml`; a file is written only when one is reviewed, refined, or published. A bug is a `backlog/` file or an entry in its epic. | The ticket file, with `.memlog.md` and companions beside it; the ticket tree under `{output_folder}/{active_initiative}/`, plus `{output_folder}/backlog/` |
 | `bmad-agent-pm` | John the Product Manager coaches a document that defines what gets built or how it ships out of the user, picked by altitude and sized to the stakes: a PRD for several capabilities, a PRD for one epic, prototype plan, Shape Up pitch, requirements specification or launch plan. He shares the experiment card and the program charter with Mary. He also updates and validates them. Either writes any of these when the user asks them to. | `<id>-<slug>/<id>-<slug>.md`, such as `prd-<slug>/prd-<slug>.md` |
-| `bmad-ux` | How the product looks and works. May lead, follow, or stand alone. Can produce mocks and wireframes. | `ux-<slug>/` with `DESIGN.md`, `EXPERIENCE.md`, and `ux-<slug>.md` naming them |
+| `bmad-agent-ux-designer` | Sally, the UX Designer. Coaches UX-first strategy (`trigger-map`), corporate brand packages (`brand-identity`), visual direction (`design-direction`), app UX (`ux-system`, `ux-epic`, `ux-quick`), websites (`website-design`), UI audits (`ux-audit`), creative tools, and Stitch/Claude Design/Figma handoffs. | `<id>-<slug>/` (or `branding/`) with `DESIGN.md`, `EXPERIENCE.md` / `BRAND.md`, mockups, and `<id>-<slug>.md` |
 | `bmad-agent-architect` | Winston, the System Architect, settles technical architecture across altitudes (`arch-enterprise`, `arch-spine`, `arch-epic` + `contract.yaml`), plus `decision-record`, `postmortem`, and `security-review`. | `<id>-<slug>/<id>-<slug>.md`, such as `arch-spine-<slug>/arch-spine-<slug>.md` or `arch-epic-<slug>/arch-epic-<slug>.md` |
 | **Implementation** (`help/implementation-skills.md`) | | |
 | `bmad-build` | One session of delivery: clarifies intent, plans, implements, reviews, commits. The default for any real change. Takes free text, a ticket from the tree (nothing means the next ready one), or any file as intent. Reads a ticket in full with its epic. | A ticket's plan beside `tickets.toml`, or `plan-<slug>.md`; `deferred-work.md` |

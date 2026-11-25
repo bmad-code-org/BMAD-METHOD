@@ -8,7 +8,6 @@ agents: [bmad-agent-analyst]
 facilitation_order: [introduction-and-ask, goals, tenets, state-of-the-business, lessons-learned, strategic-priorities, resource-request, faq, appendix, for-requirements]
 guidance: guidance-method.md
 rubric: rubric-planning.md
-lint: "{project-root}/_bmad/scripts/check_ids.py"
 status: draft
 created: ""
 updated: ""

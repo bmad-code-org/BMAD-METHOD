@@ -5,7 +5,6 @@ version: 1.3.0
 description: "Coordinating the release of an initiative's built work across teams."
 not_for: "Deciding what to build (`brief` or `prd`); a launch talk or slides (`pitch-deck`)."
 agents: [bmad-agent-pm]
-mode: freeform
 facilitation_order: [roles, objective, background, audience, success-metrics, go-or-no-go-criteria, competition, messaging, pricing, channels-and-activities, readiness]
 guidance: guidance-method.md
 rubric: rubric-planning.md
