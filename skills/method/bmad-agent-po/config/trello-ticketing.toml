@@ -61,6 +61,7 @@ covers, after live there), checklists; a container's children are its checklist 
 
 # BMad type -> this store's type.
 [tickets.types]
+program = ""   # empty: the program stays local; its children attach to the nearest published ancestor
 initiative = "initiative"
 epic = "epic"
 story = "story"

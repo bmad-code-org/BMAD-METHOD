@@ -63,6 +63,7 @@ property; `notion-search` scoped to `database` for a looser match.
 
 # BMad type -> this store's type (Type select options; `setup` creates them).
 [tickets.types]
+program = ""   # empty: the program stays local; add "program" here and in the Type select property to publish it
 initiative = "initiative"
 epic = "epic"
 story = "story"

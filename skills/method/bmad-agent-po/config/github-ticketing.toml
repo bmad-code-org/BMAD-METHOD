@@ -66,6 +66,7 @@ Type, hitl, risk, severity, and status are labels — except done and dropped, t
 
 # BMad type -> this store's type.
 [tickets.types]
+program = ""   # empty: the program stays local; its children attach to the nearest published ancestor
 initiative = "milestone"   # an initiative is a milestone, not an issue; its epics carry it
 epic = "epic"
 story = "story"
