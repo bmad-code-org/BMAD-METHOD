@@ -116,7 +116,7 @@ _bmad-output/planning-artifacts/EXPERIENCE.md    → initiative-check-in/ux-chec
 _bmad-output/planning-artifacts/architecture.md  → initiative-check-in/architecture-check-in/architecture-check-in.md
 ```
 
-UX is the exception to the naming: Sally (`bmad-agent-ux-designer`) writes two peer documents, `DESIGN.md` and `EXPERIENCE.md`, which keep their names inside the `ux-<slug>` (or `ux-system-<slug>` / `ux-epic-<slug>`) folder beside the short `<id>-<slug>.md` router that names them. Your source paths will differ.
+UX is the exception to the naming: Sally (`bmad-agent-ux-designer`) writes `EXPERIENCE.md` and (when defining or overriding tokens) `DESIGN.md` inside the `ux-<slug>` (or `ux-system-<slug>` / `ux-epic-<slug>`) folder beside the short `<id>-<slug>.md` router that names them. Your source paths will differ.
 
 ## Configure Where Tickets Are Tracked
 

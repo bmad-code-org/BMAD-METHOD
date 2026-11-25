@@ -11,7 +11,6 @@ mode: freeform
 facilitation_order: [context-and-inherited-system, screens-and-ia, flows-and-journeys, states-and-edge-cases, component-and-visual-deltas, microcopy-and-accessibility, mockups-and-visual-references, system-impact-and-deferred, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md
-lint: uv run "{project-root}/_bmad/method/scripts/lint_ux.py" --project-root "{project-root}" "{doc}"
 status: draft
 created: ""
 updated: ""
@@ -21,7 +20,7 @@ updated: ""
 
 <!-- stance: Design strictly inside this epic. Inherit parent `DESIGN.md` and `ux-system` rules read-only without copying tokens or restating global IA. Coach non-UX users with interactive visual previews and concrete flow walkthroughs rather than abstract jargon. Keep per-story task lists and implementation code out — `bmad-build` plans those against live code. -->
 
-<!-- opening: When the user brings an existing `DESIGN.md` or `EXPERIENCE.md`, run `uv run "{project-root}/_bmad/method/scripts/lint_ux.py" --project-root "{project-root}" <path>` upfront so structural, token, or order issues surface early. Read the epic ticket (`epic-*.md`), `prd-epic` (if any), parent `ux-system` (`DESIGN.md` + `EXPERIENCE.md`, if any), `arch-spine`/`arch-epic` constraints, and affected shipped UI before asking anything. Play back what parent UX and code already settle, ask whether to explore lo-fi flows/wireframes first or go straight to styled interactive screens, then focus on the screens, flows, edge states, and microcopy this epic introduces. -->
+<!-- opening: When the user brings an existing `DESIGN.md` or `EXPERIENCE.md`, read it upfront so token, contrast, or structural issues surface early. Read the epic ticket (`epic-*.md`), `prd-epic` (if any), parent `ux-system` (`DESIGN.md` + `EXPERIENCE.md`, if any), `arch-spine`/`arch-epic` constraints, and affected shipped UI before asking anything. Play back what parent UX and code already settle, ask whether to explore lo-fi flows/wireframes first or go straight to styled interactive screens, then focus on the screens, flows, edge states, and microcopy this epic introduces. -->
 
 <!-- inputs: Epic ticket Requirements (`R<n>`), `prd-epic` (`E0X-FR-xx`, journeys, error paths), parent `DESIGN.md` / `ux-system`, live UI components, `imports/`, and user interaction preferences. -->
 
@@ -30,11 +29,11 @@ updated: ""
 <!-- writing:
   - Keep `{doc}` concise as the epic UX run summary/router linking `{run}/EXPERIENCE.md`, parent or delta `DESIGN.md`, and promoted mockups/wireframes.
   - Cite `E0X-FR-xx` (or `R<n>`) and `{path.to.token}` verbatim inside backticks in prose; keep `DESIGN.md` YAML frontmatter `{path.to.token}` links resolving against declared or parent-linked tokens.
-  - Render interactive wireframes or key-screen prototypes via `{workflow.creative_tools}` (or ingest `{workflow.design_handoffs}` exports via `references/external-design-tools.md`) into `{run}/.working/`, verify surface mock coverage before Review, promote keepers to `{run}/mockups/` or `{run}/wireframes/`, link inline at the relevant `EXPERIENCE.md` sections, and state spines-win-on-conflict once.
+  - Render interactive wireframes or key-screen prototypes via caller-supplied creative tools (or direct interactive HTML/SVG when invoked standalone, or ingest external design-tool exports using `bmad-agent-ux-designer`'s `external-design-tools.md` reference) into `{run}/.working/`, verify surface mock coverage before Review, promote keepers to `{run}/mockups/` or `{run}/wireframes/`, link inline at the relevant `EXPERIENCE.md` sections, and state spines-win-on-conflict once.
   - Log any net-new global pattern or token needing parent adoption under `System impact and deferred`, and set companion `status: final` and `updated` at Close.
 -->
 
-<!-- done when: Every epic requirement (`E0X-FR-xx` / `R<n>`) maps to concrete screens and flows; every surface covers empty, loading, error, focus, offline, and permission states; microcopy and accessibility specifics are settled; promoted mockups/wireframes and `EXPERIENCE.md#<section>` headings are linkable for story tickets; `lint_ux.py` finds zero broken refs/tokens; and any parent `ux-system` impact is logged. -->
+<!-- done when: Every epic requirement (`E0X-FR-xx` / `R<n>`) maps to concrete screens and flows; every surface covers empty, loading, error, focus, offline, and permission states; microcopy and accessibility specifics are settled; promoted mockups/wireframes and `EXPERIENCE.md#<section>` headings are linkable for story tickets; zero broken visual links or token refs remain; and any parent `ux-system` impact is logged. -->
 
 # {title}
 
@@ -59,7 +58,7 @@ updated: ""
 <!-- Specific UI copy Do/Don't examples, empty/error wording, and readability notes — covering keyboard traversal, ARIA announcements, or contrast deltas only when opted in or inherited from parent standards. -->
 
 ## Mockups and visual references
-<!-- List `{workflow.creative_tools}` renders promoted to `{run}/mockups/` or `{run}/wireframes/`, user `imports/`, or `{workflow.design_handoffs}` outputs, noting which `EXPERIENCE.md` section links each. -->
+<!-- List creative renders promoted to `{run}/mockups/` or `{run}/wireframes/`, user `imports/`, or external design-tool outputs, noting which `EXPERIENCE.md` section links each. -->
 
 ## System impact and deferred
 <!-- `"None"` when parent `ux-system` holds cleanly; otherwise list new shared tokens, patterns, or IA adjustments to fold upstream, plus polish items deferred past this epic. -->

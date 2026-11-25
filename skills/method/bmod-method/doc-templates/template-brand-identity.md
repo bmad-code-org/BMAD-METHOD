@@ -11,7 +11,6 @@ mode: freeform
 facilitation_order: [brand-essence-and-positioning, comp-and-aesthetic-direction, logo-and-mark-system, color-and-typography-system, voice-and-imagery, brand-applications-and-bmad-reuse, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md
-lint: uv run "{project-root}/_bmad/method/scripts/lint_ux.py" --project-root "{project-root}" "{doc}"
 output: "{output_folder}/branding"
 view: always
 status: draft
@@ -23,7 +22,7 @@ updated: ""
 
 <!-- stance: Coach non-designers step by step with concrete choices rather than abstract branding buzzwords. Never impose a generic template aesthetic. Push for distinct visual character, crisp typography, verified contrast, and flat-first scalable marks that survive monochrome and 32x32 favicon rendering. -->
 
-<!-- opening: When the user brings an existing `DESIGN.md`, run `uv run "{project-root}/_bmad/method/scripts/lint_ux.py" --project-root "{project-root}" <path>` upfront so broken tokens, hexes, or section order surface immediately. Ask what the company or brand does, who it wants to look trustworthy or exciting to, whether formal accessibility standards (such as WCAG AA contrast) should be enforced across the brand system, and whether any logo, site, screenshots, or colors already exist in `imports/`. -->
+<!-- opening: When the user brings an existing `DESIGN.md`, read it upfront so broken hexes, missing token keys, or contrast issues surface immediately. Ask what the company or brand does, who it wants to look trustworthy or exciting to, whether formal accessibility standards (such as WCAG AA contrast) should be enforced across the brand system, and whether any logo, site, screenshots, or colors already exist in `imports/`. -->
 
 <!-- inputs: Company positioning, target audience feel, existing brand files/assets in `{run}/imports/`, visual comps/anti-patterns, and user picks across rendered options. -->
 
@@ -39,7 +38,7 @@ updated: ""
   - Set `status: final` and `updated` on `DESIGN.md` and `BRAND.md` alongside `{doc}` at Close.
 -->
 
-<!-- done when: Positioning, aesthetic direction, and anti-patterns are settled; vector SVG logo concepts in `logos/` pass monochrome, dark/light, and 32px clarity rules with zero broken or orphaned links; `DESIGN.md` passes `lint_ux.py` contrast and token checks; `BRAND.md` captures voice, logo clear-space, and imagery posture; and the BMad reuse snippet is verified. -->
+<!-- done when: Positioning, aesthetic direction, and anti-patterns are settled; vector SVG logo concepts in `logos/` pass monochrome, dark/light, and 32px clarity rules with zero broken or orphaned links; `DESIGN.md` tokens and contrast hold; `BRAND.md` captures voice, logo clear-space, and imagery posture; and the BMad reuse snippet is verified. -->
 
 # {title}
 

@@ -39,7 +39,7 @@ asks for a program charter, or a requirements specification
 for audited or contracted work, John writes those too; Mary (`bmad-agent-analyst`) writes a business case or a business requirements document. Everything after the PRD
 is derived from it:
 
-- Sally (`bmad-agent-ux-designer`) writes `DESIGN.md` and `EXPERIENCE.md` in a `ux-system-<slug>/` (or `ux-epic-<slug>/`) folder, as input beside the PRD.
+- Sally (`bmad-agent-ux-designer`) writes `DESIGN.md` and `EXPERIENCE.md` in `ux-system-<slug>/` as input beside the PRD (and on an epic `ux-epic-<slug>/`, writes `EXPERIENCE.md` referencing the parent `DESIGN.md`, adding a local `DESIGN.md` only for deltas).
 - Winston (`bmad-agent-architect`) writes the architecture spine (`arch-spine`): the
   decisions that keep independently built epics compatible.
 - Sofia writes the initiative's requirements from the PRD and each epic's

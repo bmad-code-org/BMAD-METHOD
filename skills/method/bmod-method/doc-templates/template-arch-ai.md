@@ -9,7 +9,6 @@ agents: [bmad-agent-architect]
 methods: methods-ai-architecture.csv
 guidance: guidance-method.md
 rubric: rubric-architecture.md
-lint: uv run "{project-root}/_bmad/method/scripts/lint_arch.py" --project-root "{project-root}" "{doc}"
 status: draft
 created: ""
 updated: ""

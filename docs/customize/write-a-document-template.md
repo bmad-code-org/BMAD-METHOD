@@ -52,9 +52,9 @@ updated: ""
 | `agents` | Optional list of the skills that offer this template, such as `[bmad-agent-pm]`; name several to share it. It says who offers the template by default; any agent the user asks can still write it. The `bmad` skill uses the list to say who offers the template. A template in an agent's `assets/` folder counts as that agent's without it. |
 | `rubric` | Optional path to a rubric for the review, relative to the template (such as `rubric-planning.md`), or the bare name `rubric-general` for the shipped general rubric. Empty also uses `rubric-general`. |
 | `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
-| `companions` | Optional one-line list of sibling filenames expected beside `{doc}` (e.g. `[DESIGN.md, EXPERIENCE.md]`), tracked across Resume, Progress, Review, Finalize, and `check_doc.py`. |
-| `forbid_id_prefixes` | Optional one-line list of disallowed id prefixes (e.g. `[FR]`), passed as `--forbid-prefix` to `check_doc.py` during Finalize. |
-| `lint` | Optional script path relative to the template file (such as `../scripts/check_ids.py`) or command string (supporting `{doc}`, `{run}`, `{project-root}`) executed during Finalize step 1. The shipped ID hook is `{project-root}/_bmad/scripts/check_ids.py`. |
+| `companions` | Optional one-line list of sibling filenames expected beside `{doc}` (e.g. `[DESIGN.md, EXPERIENCE.md]`), tracked across Resume, Progress, Review, and Finalize. |
+| `forbid_id_prefixes` | Optional one-line list of disallowed id prefixes (e.g. `[FR]`), flagged during Finalize. |
+| `lint` | Optional custom script path relative to the template file or command string (supporting `{doc}`, `{run}`, `{project-root}`) run during Finalize step 1. |
 | `output` | Optional run folder for this template, or a path ending in `.md` for the document itself. It may use `{project-root}`, `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
 | `style` | Optional visual style guide for this template's HTML artifact: a CSS file, design-system doc, screenshot, or verbal aesthetic preference relative to the template. |
 | `layout` | Optional layout guide or reference file (starter HTML, fixed brand elements, or sample screenshot) for the HTML artifact. It guides how the artifact looks, never whether it is made. See [Give a template its own view](#give-a-template-its-own-view). |

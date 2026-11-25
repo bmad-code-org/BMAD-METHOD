@@ -8,7 +8,6 @@ agents: [bmad-agent-pm]
 facilitation_order: [context, journeys-and-flows, rules-edge-cases-and-failure-modes, requirements, instrumentation, seams, product-specifics, changes-to-the-parent, chunky-story-slice-map, open-questions]
 guidance: guidance-method.md
 rubric: rubric-planning.md
-lint: "{project-root}/_bmad/scripts/check_ids.py"
 status: draft
 created: ""
 updated: ""
@@ -52,7 +51,7 @@ updated: ""
 <!-- include when: one of these holds; give each that holds its own `###` and leave the rest out. A model decides or generates what users see: what it must never do, failure modes taken from real outputs, a prototype's where one exists, eval thresholds to ship and to roll back, and the fallback on refusal, timeout, tool failure and low confidence. A consumer or branded product: tone, information architecture, platforms, monetization. Developers adopt it: onboarding, documentation, errors, samples. Embedded or hardware: memory, power, form factor, updates, environment. -->
 
 ## Changes to the parent
-<!-- include when: a parent PRD exists. Ask before finalizing the slice map: did anything found here change a shared noun, an invariant, an OKR, another epic's entry, or a Contract Index row, or impact an architectural decision (`AD-n`)? "None" is the usual answer and is written as that. Otherwise list the exact changes, impacted sibling epics, Contract Index rows, and flagged `AD-n`s; on interactive runs, apply agreed parent PRD edits inline with user confirmation, bump its `updated:` date, rerun `check_doc.py` and `lint:` on the parent, and note if an existing initiative ticket needs Sofia to sync it (on headless runs, leave deltas recorded here without editing the parent). -->
+<!-- include when: a parent PRD exists. Ask before finalizing the slice map: did anything found here change a shared noun, an invariant, an OKR, another epic's entry, or a Contract Index row, or impact an architectural decision (`AD-n`)? "None" is the usual answer and is written as that. Otherwise list the exact changes, impacted sibling epics, Contract Index rows, and flagged `AD-n`s; on interactive runs, apply agreed parent PRD edits inline with user confirmation, bump its `updated:` date, verify the parent's TOC, placeholders, and cross-references stay clean, and note if an existing initiative ticket needs Sofia to sync it (on headless runs, leave deltas recorded here without editing the parent). -->
 
 ## Chunky story slice map
 <!-- Propose right-sized, journey-shaped chunky stories for this epic, sized by end-to-end verifiability, journey cohesion, and clean review fit — never a fixed story quota. Fold validation, error handling, setup or scaffolding, and rollout work into user journeys rather than cutting standalone setup or go-live stories unless explicitly requested. For each story give a one-line outcome and the journey beats (E0X-UJ-N or UJ-N) it delivers. Follow with a **100% FR Coverage Matrix** table mapping every E0X-FR-xx (or FR-N) and every instrumentation or measurement requirement from Instrumentation to its owning chunky story, confirming zero uncovered FRs or measurements. -->

@@ -50,7 +50,7 @@ conflicts with a mock, the document wins. With an existing design system,
 `DESIGN.md` references its tokens and records only your changes, and `EXPERIENCE.md`
 records only how your product behaves differently.
 
-Choose a Fast path that drafts both with `[ASSUMPTION]` tags, a
+Choose a Fast path (`ux-quick`) that drafts `EXPERIENCE.md` (and `DESIGN.md` when new visual tokens are needed) with `[ASSUMPTION]` tags, a
 Coaching path starting with `trigger-map`, `brand-identity`, or
 `design-direction` and interactive color themes, design directions, wireframes,
 and key-screen mocks, a dedicated `website-design` blueprint for marketing

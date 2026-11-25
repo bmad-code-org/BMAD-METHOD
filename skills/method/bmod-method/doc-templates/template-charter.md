@@ -9,7 +9,6 @@ mode: step-by-step
 facilitation_order: [justification, vision, strategic-alignment, benefits, scope, initiatives, rules, stakeholders, governance, timeline, risks-and-issues]
 guidance: guidance-method.md
 rubric: rubric-planning.md
-lint: "{project-root}/_bmad/scripts/check_ids.py"
 status: draft
 created: ""
 updated: ""

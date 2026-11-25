@@ -9,7 +9,6 @@ agents: [bmad-agent-architect]
 facilitation_order: [context-and-inherited-invariants, coupling-radar, design-paradigm-and-boundaries, invariants-and-decisions, consistency-conventions, stack, structural-seed-and-operations, contract-index, capability-map, explicitly-deferred-decisions, open-questions]
 guidance: guidance-method.md
 rubric: rubric-architecture.md
-lint: uv run "{project-root}/_bmad/method/scripts/lint_arch.py" --project-root "{project-root}" "{doc}"
 status: draft
 created: ""
 updated: ""

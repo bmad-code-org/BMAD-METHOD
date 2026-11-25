@@ -11,7 +11,6 @@ mode: freeform
 facilitation_order: [site-goal-and-audience-awareness, narrative-and-golden-circle, sitemap-and-page-choreography, copy-voice-and-conversion, findability-and-page-metadata, visual-system-and-responsive-rules, mockups-and-visual-references, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md
-lint: uv run "{project-root}/_bmad/method/scripts/lint_ux.py" --project-root "{project-root}" "{doc}"
 view: offer
 status: draft
 created: ""
@@ -22,7 +21,7 @@ updated: ""
 
 <!-- stance: Websites are persuasion, clarity, and editorial rhythm — not app dashboards. Coach non-UX users with concrete structural options and real draft headlines/CTAs rather than abstract wireframes. Keep technical web engineering (SSR/SSG rendering architecture, CDN caching, Core Web Vitals budgets, sitemap.xml/JSON-LD implementation) out of scope here — hand those to Winston (`bmad-agent-architect`) or `bmad-build` if non-trivial. -->
 
-<!-- opening: When the user brings an existing `DESIGN.md`, run `uv run "{project-root}/_bmad/method/scripts/lint_ux.py" --project-root "{project-root}" <path>` upfront. Read any `trigger-map`, `brand-identity` (`branding/DESIGN.md`), `design-direction`, or existing site URLs first. Ask what the site must convince visitors to do, who arrives and how aware they already are, whether any formal accessibility standard applies, whether brand tokens or favorite reference sites exist, and whether to explore lo-fi structure/wireframes first or go straight to styled interactive screens. -->
+<!-- opening: When the user brings an existing `DESIGN.md`, read it upfront for token, hex, or contrast issues. Read any `trigger-map`, `brand-identity` (`branding/DESIGN.md`), `design-direction`, or existing site URLs first. Ask what the site must convince visitors to do, who arrives and how aware they already are, whether any formal accessibility standard applies, whether brand tokens or favorite reference sites exist, and whether to explore lo-fi structure/wireframes first or go straight to styled interactive screens. -->
 
 <!-- inputs: Trigger map / positioning (if any), existing `DESIGN.md` / `BRAND.md`, reference sites (`imports/`), real offer/proof details, and target conversion actions. -->
 
@@ -31,11 +30,11 @@ updated: ""
 <!-- writing:
   - Order key pages using Golden Circle (`WHY -> HOW -> WHAT`): lead with the visitor outcome/emotional hook, show how it works clearly, prove credibility, then ask for the concrete CTA matched to their awareness stage.
   - Cover UX findability cleanly per page (`URL slug`, `Primary search/visitor intent`, `H1`, key `H2` structure, `Title & meta description copy`, social preview) while noting that technical SEO, schema markup, and hosting setup belong to Winston / `bmad-build`.
-  - Keep tokens backticked in prose (`{colors.primary}`); render interactive responsive hero/landing-page HTML prototypes via `{workflow.creative_tools}` or `{workflow.design_handoffs}` and promote keepers to `{run}/mockups/`.
+  - Keep tokens backticked in prose (`{colors.primary}`); render interactive responsive hero/landing-page HTML prototypes via caller-supplied creative tools or external design-tool handoffs (or direct HTML when invoked standalone) and promote keepers to `{run}/mockups/`.
   - Keep `{doc}` concise as the website UX blueprint index; set companion `status: final` and `updated` at Close.
 -->
 
-<!-- done when: Primary visitor awareness stages and CTAs are locked; every page's section rhythm (`WHY -> HOW -> WHAT`), proof blocks, and conversion flow are concrete; interactive nav/form/error states and responsive rules live in `EXPERIENCE.md`; UX findability metadata covers every page; and `DESIGN.md` + promoted mockups pass `lint_ux.py`. -->
+<!-- done when: Primary visitor awareness stages and CTAs are locked; every page's section rhythm (`WHY -> HOW -> WHAT`), proof blocks, and conversion flow are concrete; interactive nav/form/error states and responsive rules live in `EXPERIENCE.md`; UX findability metadata covers every page; and `DESIGN.md` tokens, contrast, and promoted mockups are cleanly verified. -->
 
 # {title}
 
@@ -60,7 +59,7 @@ updated: ""
 <!-- Token decisions in `{run}/DESIGN.md` (type readability across desktop/mobile hero scales, surface cadence, editorial spacing), breakpoint stacking, nav drawer behavior, motion restraint, and any opted-in accessibility standards. -->
 
 ## Mockups and visual references
-<!-- Interactive responsive HTML page prototypes or wireframes promoted to `{run}/mockups/` or `{run}/wireframes/` and `{workflow.design_handoffs}` imports linked inline in `EXPERIENCE.md`. -->
+<!-- Interactive responsive HTML page prototypes or wireframes promoted to `{run}/mockups/` or `{run}/wireframes/` and external design-tool imports linked inline in `EXPERIENCE.md`. -->
 
 ## Open questions
 <!-- optional. Missing brand photography, copy assets, legal footer text, or analytics events with owners. -->

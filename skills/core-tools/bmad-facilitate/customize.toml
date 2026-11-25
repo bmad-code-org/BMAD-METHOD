@@ -23,12 +23,13 @@ persistent_facts = []
 #   "For internal standards, consult corp:kb_search (database='engineering') before web search."
 external_sources = []
 
-# Polish passes at finalize, in order, structural before prose: `skill:NAME [args]`, `file:PATH` or plain text.
+# Polish passes at finalize, structural before prose: `skill:NAME [args]`, `file:PATH` or plain text.
+# `file:` and plain-text rules apply in every depth tier; `skill:` passes scale with Finalize depth.
 doc_standards = [
   "skill:bmad-review lenses=structure,prose",
 ]
 
-# Run beside the rubric walker, same prefixes; resolved only when the review runs.
+# Run beside the rubric walker in Standard and Thorough (skipped in Quick / lowest stakes).
 finalize_reviewers = []
 
 # Where finished documents go beyond local files; each entry names the tool, destination and fields.

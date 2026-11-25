@@ -11,7 +11,6 @@ mode: fast
 facilitation_order: [goal-and-surfaces, key-flow, states-and-microcopy, visual-direction-and-mockups, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md
-lint: uv run "{project-root}/_bmad/method/scripts/lint_ux.py" --project-root "{project-root}" "{doc}"
 status: draft
 created: ""
 updated: ""
@@ -49,7 +48,7 @@ updated: ""
 <!-- Concise table covering empty, loading, error, and success states plus exact microcopy strings (include keyboard/accessibility notes only if requested or inherited). -->
 
 ## Visual direction and mockups
-<!-- Existing styles inherited (or key visual picks) plus any `{workflow.creative_tools}` interactive prototype or wireframe promoted to `{run}/mockups/` or `{run}/wireframes/`. -->
+<!-- Existing styles inherited (or key visual picks) plus any interactive prototype or wireframe rendered via caller-supplied creative tools (or direct HTML/SVG when standalone) and promoted to `{run}/mockups/` or `{run}/wireframes/`. -->
 
 ## Open questions
 <!-- optional. Unsettled UX questions with owner. -->

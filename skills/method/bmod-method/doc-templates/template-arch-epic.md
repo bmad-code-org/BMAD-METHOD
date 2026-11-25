@@ -9,7 +9,6 @@ agents: [bmad-agent-architect]
 facilitation_order: [context-and-inherited-spine, codebase-grounding, story-seam-contracts, data-schema-and-migrations, component-and-state-flows, invariants-and-decisions, stack, spine-impact-and-deferred, open-questions]
 guidance: guidance-method.md
 rubric: rubric-architecture.md
-lint: uv run "{project-root}/_bmad/method/scripts/lint_arch.py" --project-root "{project-root}" "{doc}"
 status: draft
 created: ""
 updated: ""

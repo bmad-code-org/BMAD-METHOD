@@ -6,13 +6,13 @@ Load this reference when `progress.py` emits `next_phase: "finalize"`, or when U
 
 Scale Reconciliation, Review, and Polish to the run's scope and stakes (unless the user requests deeper review):
 
-- **Quick** (`fast` mode, single-flow or exploratory runs, lowest stakes): skip reconciliation subagents, verify `done when` and basic readability yourself in one pass with no subagents, and edit directly without running `{workflow.doc_standards}` subagents.
-- **Standard** (standalone deliverables, single-unit specs, normal internal or product work): skip per-source reconciliation subagents unless multiple complex sources conflict, run **one combined review-and-polish pass** covering the rubric, fresh-reader check, and succinctness/structure clarity, and skip separate back-to-back `{workflow.doc_standards}` subagents.
+- **Quick** (`fast` mode, single-flow or exploratory runs, lowest stakes): skip reconciliation and `skill:` subagents; verify `done when`, basic readability, and any `file:` or plain-text `{workflow.doc_standards}` directly in one inline pass.
+- **Standard** (standalone deliverables, single-unit specs, normal internal or product work): skip per-source reconciliation subagents unless multiple complex sources conflict; run **one combined review-and-polish pass** covering the rubric, fresh-reader check, `{workflow.finalize_reviewers}`, any `file:` or plain-text `{workflow.doc_standards}`, and succinctness/structure clarity. Skip separate back-to-back default `skill:bmad-review` subagents; run extra custom `skill:` standards only if configured.
 - **Thorough** (multi-part or high-blast-radius contracts, regulated or contracted stakes, or explicit request): run per-source reconciliation subagents, parallel Review subagents below, and `{workflow.doc_standards}` in order.
 
 ## Review
 
-In **Thorough** depth, pick reviewers scaled to the stakes, name them to the user, and allow changes before running; in **Standard**, run one combined review-and-polish reviewer (or handle inline on small runs); in **Quick**, verify `done when` yourself in one line and skip subagents.
+In **Thorough** depth, pick reviewers scaled to the stakes, name them to the user, and allow changes before running; in **Standard**, run one combined review-and-polish reviewer covering `{workflow.finalize_reviewers}` too (or handle inline on small runs); in **Quick**, verify `done when` yourself in one line and skip subagents.
 
 - **Rubric walker:** evaluates `{doc}` and companions against the caller's rubric, else the template's `rubric` (bare `rubric-general` means `{skill-root}/references/rubric-general.md`, default `rubric-general`), plus the template's `done when`.
 - **Fresh reader:** reads only `{doc}` and companions, reporting what still blocks acting on it without this conversation (ranked, skipping nitpicks; "nothing important left" is valid).
@@ -24,19 +24,19 @@ When running Review subagents, launch them in parallel told the stakes and depth
 
 State the sequence and active depth tier in one sentence, then run all nine steps in order (including in fast mode), scaling steps 2, 3, and 5 per **Depth tiers**:
 
-1. **Deterministic checks & lint:** confirm zero `<!-- open -->` markers remain and every expected `companions:` file exists in `{run}`. Run `uv run "{skill-root}/scripts/check_doc.py" "{doc}"` plus each companion and `--forbid-prefix <PREFIX>` for every `forbid_id_prefixes:` item, fixing `forbidden_prefix`, `placeholders`, and `toc` hits. If `lint:` is set, expand `{doc}`, `{run}`, and `{project-root}`, execute it (run `.py` paths via `uv run "<lint>" "{doc}"` + companions, or run the command string), and resolve findings (including any `unresolved_sources`).
+1. **Structural check:** confirm zero `<!-- open -->` markers, leftover placeholders (`TBD`/`TODO`/`FIXME`/`XXX` or unfilled template `{token}`s), or disallowed `forbid_id_prefixes:` remain across `{doc}` and every companion file produced in `{run}`. Verify expected `companions:` files exist and any `## Table of Contents` links match headings. If custom `lint:` is set, expand `{doc}`, `{run}`, and `{project-root}`, run it (skip with a note if missing), and resolve findings.
 2. **Reconciliation:** in **Thorough** (or multi-source **Standard** conflicts), run one subagent per user-supplied source to report dropped points, tone, or intent, and surface gaps to the user; otherwise check key source alignment directly.
 3. **Review:** apply the chosen **Depth tier** above and settle findings.
 4. **Triage:** walk standing `[ASSUMPTION]` tags and open questions; resolve blocking items one at a time and defer non-blockers with owner and revisit condition (flag many blockers as a finding).
-5. **Polish:** in **Thorough**, apply `{workflow.doc_standards}` in order — structural clarity before prose, succinctness pass cutting filler without losing facts, and tables/diagrams where prose walks flows or comparisons — invoking `skill:` standards and applying `file:` or text rules directly. In **Standard** and **Quick**, handle any remaining succinctness and table/diagram tightening directly without spawning extra `{workflow.doc_standards}` subagents, adding no unsupported claims. On headless runs or after blanket approvals, move remaining `[ASSUMPTION]` tags into the template's assumptions section or a closing `## Assumptions` list naming affected ids/sections.
-6. **TOC & re-lint:** if `## Table of Contents` exists, rebuild entries from final headings and rerun `check_doc.py` (with companions and `--forbid-prefix`) plus `lint:` until `check_doc.py` (`toc`, `placeholders`, `forbidden_prefix`) and `lint:` issues clear.
+5. **Polish:** in **Thorough**, apply `{workflow.doc_standards}` in order — structural clarity before prose, succinctness cutting filler without losing facts, and tables/diagrams for flows or comparisons — running `skill:` passes and applying `file:` or text rules directly. In **Standard** and **Quick**, apply `file:` and plain-text `{workflow.doc_standards}` inline alongside succinctness and table/diagram tightening, avoiding extra `skill:` subagents and adding no unsupported claims. On headless runs or blanket approvals, move remaining `[ASSUMPTION]` tags to the template's assumptions section or a closing `## Assumptions` list naming affected ids/sections.
+6. **TOC & re-check:** if `## Table of Contents` exists, rebuild entries from final headings and re-verify headings, links, placeholders, `forbid_id_prefixes:`, and any custom `lint:` hook until clean.
 7. **User read:** unless headless, report settled-out sections with reasons, polish changes (if any), and the three lowest-confidence decisions or standing assumptions, then wait for user feedback and apply edits (rerunning step 6 after any edit).
 8. **External handoffs:** execute `{workflow.external_handoffs}`.
 9. **Close & completion:** perform Close below, then run `{workflow.on_complete}`.
 
 ## Close
 
-Set `updated` and `status: final` on `{doc}` and every declared `companions:` file unless a blocking open question keeps `status: draft` (name the blocker). Once `status: final`, strip all `<!-- settled out: ... -->` sections and redo step 6 if a table of contents exists.
+Set `updated` and `status: final` on `{doc}` and every companion file produced in `{run}` unless a blocking open question keeps `status: draft` (name the blocker). Once `status: final`, strip all `<!-- settled out: ... -->` sections and redo step 6 if a table of contents exists.
 
 Unless `{doc}` targeted a standalone `.md` file, build the visual view when merged `view` (fallback `{workflow.view}`, else `offer`) is `always`, or `offer` with user consent (`view = "never"` disables views globally). If any HTML view or promoted deliverable was drafted earlier while contracts were still changing, regenerate or re-sync it from the final settled contracts so status badges, tokens, and copy match before presenting. Whenever the host environment provides a native interactive artifact or preview tool, offer to present it there alongside saving `{doc}` with `.html` replacing `.md`.
 

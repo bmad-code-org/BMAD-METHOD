@@ -80,8 +80,8 @@ The first seven come before you commit, in Clarify; the rest plan and ship the w
 | Combine fixed brand elements or ideas with custom composition | Any template with `layout` / `style` reference files | Reference HTML, CSS, design-system docs, or screenshots guide composition without mechanical value injection |
 | Have a creative artifact written from a brief alone | Founder's templates, such as `pitch-deck` | A `layout` comment with no reference file guides visual treatment |
 | Propose rather than only ask | `character`, `stance` | The comment invites proposals; one the user accepts is theirs |
-| Write and track several files | `postmortem` (`companions` comment); any template with `companions: [...]` frontmatter | Frontmatter `companions: [...]` tracks expected sibling files in `progress.py` and `check_doc.py`; a `companions` comment explains when and what each holds |
-| Forbid leaking id prefixes | Any multi-altitude template | `forbid_id_prefixes: [...]` passes `--forbid-prefix` to `check_doc.py` at Finalize |
-| Run a custom Finalize lint check | Any domain template | `lint:` names a relative script or command run during Finalize step 1 |
+| Write and track several files | `postmortem` (`companions` comment); any template with `companions: [...]` frontmatter | Frontmatter `companions: [...]` tracks sibling files in `progress.py` and at Finalize; a `companions` comment explains when and what each holds |
+| Forbid leaking id prefixes | Any multi-altitude template | `forbid_id_prefixes: [...]` flags disallowed id prefixes at Finalize |
+| Run a custom Finalize lint check | Any domain template | Optional custom `lint:` names a relative script or command run during Finalize step 1 |
 
 No shipped template adds to another. [Extend a template](../customize/write-a-document-template.md#extend-a-template) shows how.

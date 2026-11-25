@@ -10,7 +10,6 @@ mode: step-by-step
 facilitation_order: [context-and-program-bounds, domain-ownership-and-sovereignty, cross-domain-contracts-and-topology, shared-platform-and-telemetry, invariants-and-decisions, stack, explicitly-deferred-decisions, open-questions]
 guidance: guidance-method.md
 rubric: rubric-architecture.md
-lint: uv run "{project-root}/_bmad/method/scripts/lint_arch.py" --project-root "{project-root}" "{doc}"
 status: draft
 created: ""
 updated: ""

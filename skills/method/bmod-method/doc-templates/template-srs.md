@@ -9,7 +9,6 @@ mode: step-by-step
 facilitation_order: [introduction, references, overall-description, functional-requirements, interface-requirements, quality-requirements, compliance-requirements, design-constraints, verification, open-questions, revision-history, definitions]
 guidance: guidance-method.md
 rubric: rubric-planning.md
-lint: "{project-root}/_bmad/scripts/check_ids.py"
 status: draft
 created: ""
 updated: ""

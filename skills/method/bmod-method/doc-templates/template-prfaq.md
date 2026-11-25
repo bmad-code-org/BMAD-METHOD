@@ -9,7 +9,6 @@ order: fixed
 facilitation_order: [press-release, customer-faq, internal-faq, verdict]
 guidance: guidance-method.md
 rubric: rubric-prfaq.md
-lint: "{project-root}/_bmad/scripts/check_ids.py"
 view: always
 status: draft
 created: ""
