@@ -6,7 +6,7 @@ category: delivery
 description: "Epic tech design against live code: story contracts, schemas, migrations and state flows."
 not_for: "Multi-epic system spine (`arch-spine`); enterprise platform topology (`arch-enterprise`); a single story that fits existing patterns (`bmad-build`)."
 agents: [bmad-agent-architect]
-facilitation_order: [context-and-inherited-spine, codebase-grounding, story-seam-contracts, data-schema-and-migrations, component-and-state-flows, invariants-and-decisions, stack, spine-impact-and-deferred, open-questions]
+facilitation_order: [context-and-inherited-spine, codebase-grounding, story-seam-contracts, data-schema-and-migrations, component-and-state-flows, ai-and-probabilistic-boundaries, invariants-and-decisions, stack, spine-impact-and-deferred, open-questions]
 guidance: guidance-method.md
 rubric: rubric-architecture.md
 status: draft
@@ -24,13 +24,14 @@ updated: ""
 
 <!-- writing:
   - Cite inherited parent `AD-n`s by original ID (never renumber); local decisions continue numbering above the parent spine's highest `AD-n` (or start at `AD-1` when standalone) with `Binds`, `Prevents`, `Rule`, and optional one-line `Why`.
+  - On updates, keep existing `AD-n` IDs stable (amend in place or append the next ID; never renumber or reuse retired IDs) and flag any decision overriding the driving epic ticket so it can be updated.
   - Verify every proposed `AD-n` against epic and parent numeric `Passable` / `Good` `OKR-N` bounds and `INV-N` invariants before settling.
   - Flag any conflict with a parent `AD-n` as a spine impact rather than overriding silently.
 -->
 
 <!-- companions: When this epic defines an API, webhook, or event contract consumed by sibling epics or external clients, also write `contract.yaml` beside `{doc}` and register its pointer row in the parent `arch-spine` Contract index when a parent spine exists. -->
 
-<!-- done when: Live repo seams are grounded in real modules; shared story contracts and any `contract.yaml` are concrete; schemas/migrations and state flows cover the epic's rules and failure modes; every `AD-n` clears numeric `Passable` / `Good` `OKR-N` bounds and `INV-N` invariants; and any parent `arch-spine` Contract index or `AD-n` impacts are recorded. -->
+<!-- done when: Live repo seams are grounded in real modules; shared story contracts and any `contract.yaml` are concrete; schemas/migrations and state flows cover the epic's rules and failure modes; verification/eval gates and bounded costs hold where metered or probabilistic dependencies apply; every `AD-n` clears numeric `Passable` / `Good` `OKR-N` bounds and `INV-N` invariants; and any parent `arch-spine` Contract index or `AD-n` impacts are recorded. -->
 
 # {title}
 
@@ -50,6 +51,14 @@ updated: ""
 
 ## Component and state flows
 <!-- include when: this epic has non-trivial component boundaries, async jobs, retries, or state transitions. `diagram: sequence` or `state` showing happy and failure paths. -->
+
+## AI and probabilistic boundaries
+<!-- include when: this epic introduces or modifies an LLM, RAG, or agentic workflow.
+  - Split deterministic code from model inference; specify capability tiers (concrete model IDs in config, not hardcoded snapshots), structured-output validation, and non-AI fallbacks.
+  - Fix context/token budgets, compaction rules preserving invariants, and structural pre-retrieval tenant/ACL isolation and grounding (plus a `diagram: flowchart` of ingestion and trust zones when RAG is used).
+  - Table exposed model tools (`Tool`, `Data scope`, `Side effects`, `Auth & tenant check`, `Approval gate / idempotency`) so indirect prompt injection cannot escalate privileges.
+  - Set offline/online eval thresholds (`Passable`/`Good` release and rollback gates) and hard circuit breakers (max turns, tool calls, subagent depth, per-run/daily spend caps, PII-redacted tracing).
+-->
 
 ## Invariants and decisions
 <!-- Epic-local `AD-n` blocks continuing above the parent spine's highest `AD-n` (or starting at `AD-1` when standalone, e.g. `### AD-1 — <decision>`): `- **Binds:**`, `- **Prevents:**`, `- **Rule:**`, optional one-line `- **Why:**`, and `[ADOPTED]` when pre-settled. Verify every `AD-n` against numeric `Passable` / `Good` `OKR-N` bounds and `INV-N` invariants; surface any parent `AD-n` contradiction as a spine conflict. -->
