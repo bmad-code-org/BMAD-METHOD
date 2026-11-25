@@ -64,9 +64,8 @@ The first seven come before you commit, in Clarify; the rest plan and ship the w
 | To do this | Look at | How it works |
 | --- | --- | --- |
 | Press the user on a thin answer | `postmortem`, Contributing factors | The section comment says when to push and what to ask |
-| Make the user pick from a list | `decision-record`, Status | The section comment names the allowed values |
-| Make the user pick from a source | `security-review`, Scope and system | The section comment points at the method catalog |
-| Drive questions from a catalog | `security-review`, `methods-security.csv` | The `methods` frontmatter names a CSV of key questions |
+| Make the user pick from a list | `security-review`, Findings | The section comment names the allowed status and severity values |
+| Drive questions from a custom catalog | Any custom template (`methods:`) | The `methods` frontmatter names a relative CSV (`category`, `name`, `key_questions`) for proprietary checklists |
 | Walk the sections in order, each with its own voice | `prfaq` in `bmod-method/doc-templates/` | `order: fixed` in the frontmatter, and each section comment is the brief for that part |
 | Change how a mode runs | `security-review`, `stance` | The comment says what fast mode does for this document |
 | Use shared family rules | Any Method or Founder template | `guidance: guidance-method.md` (Method) or `guidance: guidance-planning.md` (Founder) resolves beside the template |

@@ -49,7 +49,7 @@ Load `guidance` (the resolved path from the listing) as part of the template, wi
 
 ## Create and resume
 
-Before creating, check if an unfinished run (`status` not `final`) already sits at the target `{run}` folder and offer to resume it. On resume, read `{doc}` and any existing `companions:`, merge its template, state the mode and that they can switch or ask to finish anytime, and continue at the first open section without re-asking settled material.
+Before creating, check if an unfinished run (`status` not `final`) already sits at the target `{run}` folder and offer to resume it. On resume, read `{doc}` and any existing `companions:`, merge its template (if its named template is missing or retired, follow `references/update-validate.md` `## A Document No Template Names` to keep existing headings or match the closest template), state the mode and that they can switch or ask to finish anytime, and continue at the first open section without re-asking settled material.
 
 Otherwise bind `{run}`: caller output path first, else the template's `output`, else `{workflow.output}` (dropping `{active_initiative}` when unset). When the output path ends in `.md`, write `{doc}` there directly and nothing beside it except declared companions. Write `{doc}` from `{scratch}/template.md` with `status: draft` (changed only at Close) and give its path.
 

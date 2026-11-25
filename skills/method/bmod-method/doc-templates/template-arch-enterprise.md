@@ -24,7 +24,7 @@ updated: ""
 
 <!-- writing:
   - Record decisions, not prose rationale: each `AD-n` carries `Binds`, `Prevents`, `Rule`, and a one-line `Why` only when alternatives were weighed or the user gave a reason.
-  - On updates, keep existing `AD-n` IDs stable (amend in place or append the next ID; never renumber or reuse retired IDs) and flag any decision overriding the driving program ticket so it can be updated.
+  - On updates, keep existing `AD-n` IDs stable (amend in place, never renumber or reuse retired IDs) and allocate new `AD-n` IDs above the highest ID already used in this document and any child `arch-spine` or `arch-epic` under it so no ID is ever allocated twice across the hierarchy; flag any decision overriding the driving program ticket so it can be updated.
   - Tag `[ADOPTED]` when the user or existing platform reality already settled a decision.
   - Verify every named technology and version on the web before pinning it.
   - Verify every proposed `AD-n` against program `OKR-N` numeric `Passable` and `Good` bounds and binary `INV-N` invariants before settling.

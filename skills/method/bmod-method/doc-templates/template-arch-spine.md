@@ -24,7 +24,7 @@ updated: ""
 
 <!-- writing:
   - Inherit parent `arch-enterprise` `AD-n`s by original ID (read-only, never renumbered); surface conflicts rather than overriding.
-  - On updates, keep existing `AD-n` IDs stable (amend in place or append the next ID; never renumber or reuse retired IDs) and flag any decision overriding the driving ticket so it can be updated.
+  - On updates, keep existing `AD-n` IDs stable (amend in place, never renumber or reuse retired IDs) and allocate new `AD-n` IDs above the highest ID already used in this spine and any child `arch-epic` under it so no ID is ever allocated twice across the hierarchy; flag any decision overriding the driving ticket so it can be updated.
   - Every `AD-n` carries `Binds`, `Prevents`, `Rule`, optional one-line `Why`, and `[ADOPTED]` when pre-settled.
   - Verify every proposed `AD-n` against numeric `Passable` and `Good` `OKR-N` bounds and binary `INV-N` invariants before settling.
   - Verify named technology versions on the web before pinning in `## Stack`.
@@ -46,10 +46,10 @@ updated: ""
 <!-- Name the design paradigm and map layers or services to module boundaries, core entity ownership, auth/tenancy/audit backbone, and telemetry hooks proving `OKR-N` measurements. Include a dependency-direction `diagram: flowchart`. -->
 
 ## AI and probabilistic boundaries
-<!-- include when: the system uses an LLM, RAG, or agent loop.
-  - Keep deterministic code in charge of auth, math, state commits, and safety-critical paths; map non-deterministic steps and fallback behavior on provider outage or malformed output.
-  - Route by capability tier (leaving concrete model IDs in config rather than hardcoded snapshots), enforce tenant/ACL isolation and grounding before retrieval structurally (never in prompt text), and require least-privilege tool scopes plus human approval gates where prompt injection could trigger side effects.
-  - Fix eval regression gates (`Passable`/`Good` thresholds) and loop/spend circuit breakers (max turns, tool calls, unit/daily spend caps, PII-redacted trace logging), or record concrete deferrals to the owning epic.
+<!-- include when: the system uses an LLM, RAG, agent loop, or other probabilistic/ML component.
+  - Keep deterministic code in charge of auth, math, state commits, and safety-critical paths; map probabilistic/non-deterministic steps, capability-tier routing (leaving concrete model IDs in config rather than hardcoded snapshots), and non-AI fallbacks on outage, low confidence, or malformed output.
+  - Where retrieval or model tools apply, enforce tenant/ACL isolation and grounding before retrieval structurally (never in prompt text) and require least-privilege tool scopes plus human approval gates where prompt injection could trigger side effects.
+  - Fix eval regression gates (`Passable`/`Good` thresholds) and loop/spend circuit breakers (max turns, tool calls, unit/daily spend caps, PII-redacted trace logging where applicable), or record concrete deferrals to the owning epic.
 -->
 
 ## Invariants and decisions

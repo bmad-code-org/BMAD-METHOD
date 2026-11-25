@@ -8,13 +8,13 @@ Set `{run}` to the document's folder. Read `{doc}` in full, every file listed in
 
 ## Update
 
-Merge the template named in `{doc}`'s frontmatter into `{scratch}/template.md` (or follow the closest template / existing headings if absent), noting when the template's `version` is newer than `{doc}`'s. If an addendum holds live detail the template lacks a slot for, fold it into the fitting section or the next detail level down and tell the user what moved.
+Merge the template named in `{doc}`'s frontmatter into `{scratch}/template.md` (if absent or no longer found in the libraries, follow `## A Document No Template Names` to keep existing headings or match the closest template), noting when the template's `version` is newer than `{doc}`'s. If an addendum holds live detail the template lacks a slot for, fold it into the fitting section or the next detail level down and tell the user what moved.
 
 Facilitate changes proportionally to the delta so edits never drift from intent; if the change overturns the document's core scope, offer Create instead. Surface contradictions with prior decisions before editing, then load `finalize.md` for Review, Finalize, and Close.
 
 ## Validate
 
-Extract full context first so validation accounts for prior decisions and rejected alternatives, and merge `{doc}`'s frontmatter template into `{scratch}/template.md` when named (else follow `## A Document No Template Names`). Load `finalize.md` and run its read-only structural checks (step 1's open markers, placeholders, companions, any `forbid_id_prefixes:`, TOC alignment, and any read-only custom `lint:` hook) alongside its Review section against `{doc}`'s stakes and template `purpose`/`done when` without editing files, flagging what needs user input and offering Update from the findings.
+Extract full context first so validation accounts for prior decisions and rejected alternatives, and merge `{doc}`'s frontmatter template into `{scratch}/template.md` when named and found (if absent or retired, follow `## A Document No Template Names`). Load `finalize.md` and run its read-only structural checks (step 1's open markers, placeholders, companions, any `forbid_id_prefixes:`, TOC alignment, and any read-only custom `lint:` hook) alongside its Review section against `{doc}`'s stakes and template `purpose`/`done when` without editing files, flagging what needs user input and offering Update from the findings.
 
 ## A Document No Template Names
 
