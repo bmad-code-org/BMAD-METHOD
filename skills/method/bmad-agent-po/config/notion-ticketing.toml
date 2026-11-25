@@ -37,7 +37,7 @@ the agent tool in use (in Claude Code, `claude mcp add --transport http notion h
 then sign in over OAuth. Either way, share the database, or the page it will be created under, with
 the connection.
 When `database` is empty: ask which page to create under, then `notion-create-database` named
-Tickets with properties Title (title), Type (select, options per [tickets.types]), Status (status,
+Tickets with properties Title (title), Type (select, non-empty options per [tickets.types]), Status (status,
 options per [tickets.status]), Parent (relation to this database), Blocked by (relation to this
 database), Assignee (person), Covers (text), Risk (select: low, medium, high), Severity (select:
 P0, P1, P2, P3), Estimate (text), hitl (checkbox), and, when `key` is set, ID (unique id
@@ -52,7 +52,7 @@ write = """
 tracker_id is the ID property when `key` is set, else the page id; remote is the page url.
 `notion-create-pages` into `database` creates; `notion-update-page` changes any property or the
 content — Status, Assignee, Parent, Blocked by, Covers, Risk, Severity, hitl. Status is [tickets.status].<state>. No parent: leave the Parent relation empty. An initiative
-is a page of Type initiative with no Parent. The body is the page content.
+is a page of Type initiative whose Parent is its published program (or empty when none). The body is the page content.
 """
 
 query = """

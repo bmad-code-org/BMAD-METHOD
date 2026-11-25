@@ -16,7 +16,9 @@ A missing container file is created first from `{{ workflow.ticket_template }}`,
 
 `.memlog.md` is append-only, one line per entry; requirements carry their stable `R<n>`. Each run derives the derived lines (`Requirements`, `Constraints`, `Assumption:`, and `Open question:` lines) and every spec-authored companion from the memlog plus the sources it cites.
 
-On a container, SPEC is the only writer of those derived lines; a change goes to the memlog, never into them by hand. A derive replaces those lines, updates `Done when` when derived from source OKRs or targets, sets `sources:` and `companions:` in the frontmatter, adds a References line per companion, sets `refined: true` on an epic once its Requirements are settled, and leaves the container's title, outcome, boundaries, and Notes untouched. A source id on a line must exist in a `sources:` file; neither list names the memlog, README files, or process records.
+On a container, SPEC is the only writer of those derived lines; a change goes to the memlog, never into them by hand. A derive replaces those lines, updates `Done when` from source OKRs or targets, sets `sources:` and `companions:`, adds a References line per companion, and sets `refined: true` on a settled epic.
+
+It leaves the title, outcome, boundaries, and non-derived Notes (`Decision:`, `Parked:`, `Source conflict:`) untouched. A source id on a line must exist in `sources:`; neither list names the memlog, README files, or process records.
 
 Writes go through `{skill-root}/scripts/memlog.py`:
 
@@ -48,7 +50,7 @@ Read stakes as hobby or personal use, internal, launch, or regulated or contract
 
 At hobby or personal stakes (or already-settled work), keep it light and proceed directly unless the user asks for a specialist.
 
-At real stakes (`internal`, `launch`, `regulated or contracted`), if open product or UX questions remain that the user cannot settle on the spot, record them as `Open question:` lines and write a new standalone epic thin with `refined: false`. Then stop and recommend starting a **fresh chat** with John (`bmad-agent-pm`) or Sally (`bmad-agent-ux-designer`) — unless the user explicitly skips discovery and supplies the answers (record skips as dated `Decision:` lines). Unaddressed domain implications (like healthcare silent on PHI) also become `Open question:` lines.
+At real stakes (`internal`, `launch`, `regulated or contracted`), if open product or UX questions remain that the user cannot settle on the spot, record them as `Open question:` lines in the current container (when creating a new standalone epic, write it thin with `refined: false`). Then stop and recommend starting a **fresh chat** with John (`bmad-agent-pm`) or Sally (`bmad-agent-ux-designer`) — unless the user explicitly skips discovery and supplies the answers (record skips as dated `Decision:` lines). Unaddressed domain implications (like healthcare silent on PHI) also become `Open question:` lines.
 
 ## Contradiction arbiter
 

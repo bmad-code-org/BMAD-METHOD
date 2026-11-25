@@ -65,7 +65,7 @@ An epic with `refined: false` has its scope agreed, not its detail; refine it on
 **PRD judgment gate (never a mechanical rule):** Evaluate explicitly whether the parent ticket, its companions (`prd`, `ux-*`, `arch-*`), and saved epic notes already settle how it works for users, its business rules/edge cases/failure paths, and what proves its target OKR band. Give **one clear recommendation with reasons** (never a neutral coin toss):
 
 - **Open product discovery remains (at real stakes):** stop and recommend a **fresh chat with John (`bmad-agent-pm`)** to create or update `prd-epic`, giving him the epic file, parent PRD (if any), and `<epic-folder>/prd-epic-<slug>/` (or the existing `prd-epic` run) as output. Never load John or `bmad-facilitate` inside Sofia's chat.
-- **Settled by parent + saved notes + companions, hobby stakes, or user explicitly skips `prd-epic`:** explain why no epic PRD is needed, derive the epic ticket from the parent/inputs via `spec.md` (recording any user skip of open questions as a dated `Decision:`), re-read Outcome and `Done when`, set `refined: true`, and commit (or publish) per `board.md`.
+- **Settled by parent + saved notes + companions, hobby stakes, or user explicitly skips `prd-epic`:** explain why no epic PRD is needed, derive the epic ticket via `spec.md` (recording any user skip of open questions as a dated `Decision:`), and re-read Outcome and `Done when`. Set `refined: true` only once Requirements are settled with no blocking open questions or conflicts, then commit (or publish) per `board.md`.
 
 **Unprompted UX & Architecture offers before slicing:** Before planning stories on any refined or unrefined epic at real stakes lacking these companions for **this epic** (a parent `ux-system` does not replace `ux-epic`, and with no prior decline recorded in Notes):
 
@@ -84,7 +84,7 @@ After the epic file, read its breakdown, child tickets, `companions:`, and `unad
 - **No standalone setup or go-live stories:** fold setup and platform baselines into the first journey story that needs them, each `hitl` step onto the first story needing it, and validation, error handling, instrumentation, tests, and production delivery into the journeys they serve (deployment into the final journey story unless explicitly requested).
 - **Shared code lane:** stories touching the same code form one ordered lane; offer a closing end-to-end suite only if a test plan calls for it or the user asks.
 
-Draft `tickets/tickets.toml` from `{{ workflow.tickets_template }}` and revise with the user until the split is agreed:
+Draft `tickets/tickets.toml` from `{{ workflow.tickets_template }}`, run the Dependencies and Set checks in `validate.md` on the draft, and revise with the user until the split is agreed:
 
 - **1–2 sentence `description`:** keep each entry's `description` strictly 1–2 outcome sentences — never a mini-spec (full criteria live in the Refined Story).
 - **Mandatory design & contract `references`:** every UI-bearing entry cites every UX artifact that exists for the epic (`DESIGN.md` — epic or inherited parent `ux-system`, `EXPERIENCE.md#<section>`, and promoted mockup/wireframe paths) plus any relevant `arch-epic` / `contract.yaml` / `AD-n` anchors, even when the epic's `References` already links the companion folder.
@@ -95,7 +95,7 @@ With the draft, name parallel work and deferred scope. A split while planning ad
 
 **Detail every story by default (at epic inception):** Once the split is agreed, pull and detail each entry into its **Refined Story** (`tickets/story-<slug>.md`) per `ticket.md` in the same chat (suggesting a fresh chat if context is heavy) — writing Given/When/Then functional + measurement criteria, boundaries, and opening every referenced file to confirm paths and `#section` anchors resolve. The user approves each story (`refined: true`). The user may opt to detail only the next story now and leave the rest as thin `refine = true` entries (which stay in `ready_to_refine`, not `ready_to_start`, until detailed at pickup).
 
-Run the Set check in `validate.md` across the approved story set so every epic `R<n>` (both functional and instrumentation) is proven by at least one criterion and results satisfy `Done when`. Then run `tickets.py status <initiative folder>` (or epic folder if standalone), repoint any `blocks` entries waiting on this epic to the exact entry, clear any `unpinned_after`, `undeclared_after`, or `order_conflict`, and commit — or on a tracker, offer to publish **after** the stories are approved (`board.md`) so each story is sent once and complete.
+Re-run the Set check in `validate.md` across the approved story set so every epic `R<n>` (both functional and instrumentation) is proven by at least one criterion and results satisfy `Done when`. Then run `tickets.py status <initiative folder>` (or epic folder if standalone), repoint any `blocks` entries waiting on this epic to the exact entry, clear any `unpinned_after`, `undeclared_after`, or `order_conflict`, and commit — or on a tracker, offer to publish **after** the stories are approved (`board.md`) so each story is sent once and complete.
 
 Report the `ready_to_start` approved stories (and any `ready_to_refine` stories left thin), inviting the user to start a fresh chat for `bmad-build`.
 

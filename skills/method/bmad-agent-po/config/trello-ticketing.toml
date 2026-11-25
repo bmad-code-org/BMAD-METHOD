@@ -37,7 +37,7 @@ the agent tool in use (in Claude Code, `claude mcp add --transport http trello h
 then sign in over OAuth with write permission.
 The MCP can create a board but not lists or labels. When `board` is empty, offer to create one;
 then ask the user to add the lists in [tickets.status] (Backlog, In Progress, Review, Done) plus
-Initiatives and Epics, and labels for every value in [tickets.types] plus hitl, risk:low, risk:medium, risk:high, and
+Initiatives and Epics, and labels for every non-empty value in [tickets.types] plus hitl, risk:low, risk:medium, risk:high, and
 P0-P3. Check with
 `trelloReadBoard` before first publish and name what is still missing.
 """

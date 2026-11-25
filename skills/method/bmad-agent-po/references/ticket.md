@@ -6,7 +6,7 @@ Ask only what is unsettled, offering defaults strictly on ticket shape, ordering
 
 ## Each fact lives in one place
 
-A **Refined Story** (`story-<slug>.md`) — authored at epic inception by default, or at pickup for any story left thin, plus bugs and standalone `backlog/` leaves — is a verification contract pointing back to the epic ticket (when an epic exists) and its companions rather than a second spec. Epic stories cite the epic's `R<m>` and `E0X-FR-xx` ids (standalone `backlog/` leaves have no epic to cite); keep parent spec prose out and leave code paths and build tasks in Amelia's local `story-<slug>-plan.md`.
+A **Refined Story** (`story-<slug>.md`) — authored at epic inception by default, or at pickup for any story left thin, plus bugs and standalone `backlog/` leaves — is a verification contract pointing back to the epic ticket (when an epic exists) and its companions rather than a second spec. Epic stories cite the epic's `R<m>` and, when `prd-epic` exists, `E0X-FR-xx` ids (standalone `backlog/` leaves have no epic to cite); keep parent spec prose out and leave code paths and build tasks in Amelia's local `story-<slug>-plan.md`.
 
 Full acceptance criteria ("Reviewing or refining an existing ticket" says when) use Given/When/Then to cover behavior changes, failure paths, binding decisions, and production measurement checks when the epic or OKR requires them; point at the epic for everything else.
 

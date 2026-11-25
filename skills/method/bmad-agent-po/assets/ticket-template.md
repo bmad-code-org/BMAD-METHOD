@@ -36,7 +36,7 @@ risk: [low|medium|high; container: a best guess until sliced, then its children'
 - Initiative: one `R<n> (<source ids>): <outcome>` per epic or capability (`E01`.. from `prd`, or distilled from brief/`brd`/UX/notes).
 - Epic: crisp capability `R<n>` lines grouping cohesive `E0X-FR-xx` ids explicitly in parentheses (`prd-epic`) or `parent R<m>` / source section (non-PRD), plus a dedicated `R<n>` line per instrumentation/measurement requirement.
 Story (pulled unrefined): `Verify: how it will be checked`.
-Refined Story (at epic inception by default, `refine = true` at pickup, bugs, or standalone): numbered Given/When/Then verification criteria citing epic `R<m>` and `E0X-FR-xx` (for epic stories; none for standalone `backlog/` leaves) — covering behavior, failure paths, and production measurement checks when required:]
+Refined Story (at epic inception by default, `refine = true` at pickup, bugs, or standalone): numbered Given/When/Then verification criteria citing epic `R<m>` and, when `prd-epic` exists, `E0X-FR-xx` (for epic stories; none for standalone `backlog/` leaves) — covering behavior, failure paths, and production measurement checks when required:]
 
 1. **[Behavior or measurement name]** (R<m> / E0X-FR-xx)
    **Given** [state before]
