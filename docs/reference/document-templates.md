@@ -57,7 +57,7 @@ The BMad Method also ships the planning templates for John, the Product Manager 
 | Business requirements document | Mary | Program or initiative | What the business requires and signs for, when a separate party builds, a sponsor signs, or a regulator or contract expects it |
 | Launch plan | John | Initiative | Coordinating a built feature's release across teams |
 
-The first seven come before you commit, in Clarify; the rest plan and ship the work. Each is walked one section at a time by default, except the launch plan, which starts freeform; the PRFAQ, the experiment card, the opportunity assessment and the pitch keep their order even when you ask for freeform. A brief from Mary feeds the PRD, but neither requires the other. A business case or strategy narrative stays in prose and ends with a `## For requirements` list of ids, so Sofia can write the initiative from it without a PRD.
+The first seven come before you commit, in Clarify; the rest plan and ship the work. Each starts freeform by default, except the prototype plan (starts fast) and formal sign-off specs (`srs`, `brd`, which start step-by-step); a team or user `mode` setting on `bmad-facilitate` overrides every template's start mode. The PRFAQ, the experiment card, and the opportunity assessment lock section order (`order: fixed`) and run step-by-step even when freeform is requested. A brief from Mary feeds the PRD, but neither requires the other. A business case or strategy narrative stays in prose and ends with a `## For requirements` list of ids, so Sofia can write the initiative from it without a PRD.
 
 ## What a template can do
 

@@ -6,7 +6,6 @@ category: delivery
 description: "Enterprise architecture spine: shared platform, cross-initiative seams and sovereignty."
 not_for: "One initiative's system architecture (`arch-spine`); one epic's technical design (`arch-epic`); a single architectural trade-off (`decision-record`)."
 agents: [bmad-agent-architect]
-mode: step-by-step
 facilitation_order: [context-and-program-bounds, domain-ownership-and-sovereignty, cross-domain-contracts-and-topology, shared-platform-and-telemetry, invariants-and-decisions, stack, explicitly-deferred-decisions, open-questions]
 guidance: guidance-method.md
 rubric: rubric-architecture.md

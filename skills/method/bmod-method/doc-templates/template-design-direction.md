@@ -7,7 +7,6 @@ description: "Visual direction workshop: dissect comps and screenshots, set tast
 not_for: "Full multi-epic product IA and state specs (`ux-system`); company-wide logo and branding package (`brand-identity`); single-epic screen updates (`ux-epic`)."
 agents: [bmad-agent-ux-designer]
 companions: [DESIGN.md]
-mode: freeform
 facilitation_order: [context-and-audience, comp-and-inspiration-dissection, taste-dials-and-anti-patterns, visual-explorations, token-foundation, external-tool-bridge, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md
@@ -19,7 +18,7 @@ updated: ""
 
 <!-- purpose: Help the user move beyond vague labels like "clean and modern" by dissecting real comps/screenshots, setting concrete taste dials and anti-patterns, exploring interactive HTML visual directions, and optionally prompting or ingesting Google Stitch, Claude Design, Figma, or `awesome-design-md` into a starter `DESIGN.md`. -->
 
-<!-- stance: Never ask the user to design in the abstract or pick hex codes blind. Give concrete visual comparisons, draw out what specifically works or feels wrong in real examples, and reject generic AI clichés (default Inter/purple gradients/identical rounded cards). Use the caller-supplied `external-design-tools.md` reference (or `bmad-agent-ux-designer`'s installed reference when invoked standalone) whenever working with external generators, and offer to harden the settled direction into fuller UX, website, or brand contracts once it clicks. -->
+<!-- stance: Never ask the user to design in the abstract or pick hex codes blind. Give concrete visual comparisons, draw out what specifically works or feels wrong in real examples, and reject generic AI clichés (default Inter/purple gradients/identical rounded cards). Use the caller-supplied `external-design-tools.md` reference (or `bmad-agent-ux-designer`'s installed reference if present; otherwise follow the writing rules below directly) whenever working with external generators, and offer to harden the settled direction into fuller UX, website, or brand contracts once it clicks. -->
 
 <!-- opening: When the user brings an existing `DESIGN.md`, read it upfront so broken hexes, missing tokens, or contrast issues surface early. Ask what we are styling, whether an existing `branding/DESIGN.md` or UI system (like shadcn) applies, and ask for 2–4 URLs, screenshots, or visual comps they like or hate (if none, offer to generate contrasting starter directions via creative tools or direct interactive HTML). -->
 

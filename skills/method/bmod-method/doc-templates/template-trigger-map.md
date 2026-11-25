@@ -6,7 +6,6 @@ category: ux-strategy
 description: "User-psychology trigger map: business goals, prioritized target groups, positive desires, and negative fears."
 not_for: "Detailed product functional requirements (`prd`, `prd-epic`); UI screen layouts and tokens (`ux-system`, `design-direction`); market sizing and business cases (`opportunity`, `business-case`)."
 agents: [bmad-agent-ux-designer, bmad-agent-analyst]
-mode: freeform
 facilitation_order: [business-goals, product-focus, target-groups, driving-forces-and-triggers, customer-awareness-and-entry, trigger-map-diagram, impact-priorities, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md

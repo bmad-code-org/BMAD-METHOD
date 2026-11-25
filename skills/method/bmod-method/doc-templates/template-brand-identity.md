@@ -7,7 +7,6 @@ description: "Reusable corporate branding package: logos, DESIGN.md tokens, BRAN
 not_for: "Single-product UI screens and state flows (`ux-system`, `ux-epic`); marketing website page structure (`website-design`); brownfield UI usability audit (`ux-audit`)."
 agents: [bmad-agent-ux-designer]
 companions: [DESIGN.md, BRAND.md]
-mode: freeform
 facilitation_order: [brand-essence-and-positioning, comp-and-aesthetic-direction, logo-and-mark-system, color-and-typography-system, voice-and-imagery, brand-applications-and-bmad-reuse, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md

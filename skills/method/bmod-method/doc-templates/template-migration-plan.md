@@ -6,7 +6,6 @@ category: risk-and-ops
 description: "Safety-first data, platform, or API migration plan with parity proof and rollback gates."
 not_for: "Greenfield system architecture (`arch-spine`); post-incident analysis (`postmortem`)."
 agents: [bmad-agent-architect]
-order: fixed
 facilitation_order: [scope-and-blast-radius, parity-and-verification-proof, rollback-and-point-of-no-return, coexistence-and-backfill, cutover-sequence, communication-and-decommission, open-questions, summary]
 guidance: guidance-method.md
 rubric: rubric-architecture.md

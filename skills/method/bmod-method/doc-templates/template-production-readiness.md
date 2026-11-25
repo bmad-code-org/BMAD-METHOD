@@ -6,7 +6,6 @@ category: risk-and-ops
 description: "Pre-launch production readiness review: SLOs, failure modes, capacity, recovery and verdict."
 not_for: "An incident that already happened (`postmortem`); OWASP/STRIDE security audit alone (`security-review`)."
 agents: [bmad-agent-architect]
-order: fixed
 guidance: guidance-method.md
 rubric: rubric-architecture.md
 status: draft

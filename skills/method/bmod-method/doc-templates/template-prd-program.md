@@ -5,7 +5,6 @@ version: 1.0.0
 description: "Outcomes, guardrails, rollout strategy and initiative map for a program."
 not_for: "One initiative with several capabilities (`prd`); one capability's requirements (`prd-epic`); program mandate and governance (`charter`); contracted business baseline (`brd`)."
 agents: [bmad-agent-pm]
-mode: step-by-step
 facilitation_order: [problem-and-vision, scope-and-non-goals, okrs, invariants, shared-nouns-and-seams, initiative-map, rollout-and-integration-strategy, deferred-decisions-and-risks]
 guidance: guidance-method.md
 rubric: rubric-planning.md

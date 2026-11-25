@@ -6,7 +6,6 @@ category: codebase-readiness
 description: "Diagnose a codebase for agentic delivery friction, doc/comment noise, and pattern drift."
 not_for: "Writing or refreshing `AGENTS.md` directly (`bmad-project-context`); greenfield architecture (`arch-spine`); reviewing one PR (`bmad-code-review`)."
 agents: [bmad-agent-architect]
-order: fixed
 facilitation_order: [repository-baseline, pattern-consistency, attention-and-doc-hygiene, comment-hygiene, modularity-and-context-fit, feedback-loops-and-guardrails, remediation-backlog, executive-scorecard]
 guidance: guidance-method.md
 rubric: rubric-agent-readiness.md

@@ -7,7 +7,6 @@ description: "Epic UX design: inherits system DESIGN.md; defines epic screens, f
 not_for: "Initiative-wide design tokens and global IA (`ux-system`); public marketing site (`website-design`); a standalone small tool with no parent system (`ux-quick`); a single story fitting existing screens and tokens (`bmad-build`)."
 agents: [bmad-agent-ux-designer]
 companions: [EXPERIENCE.md]
-mode: freeform
 facilitation_order: [context-and-inherited-system, screens-and-ia, flows-and-journeys, states-and-edge-cases, component-and-visual-deltas, microcopy-and-accessibility, mockups-and-visual-references, system-impact-and-deferred, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md
@@ -29,7 +28,7 @@ updated: ""
 <!-- writing:
   - Keep `{doc}` concise as the epic UX run summary/router linking `{run}/EXPERIENCE.md`, parent or delta `DESIGN.md`, and promoted mockups/wireframes.
   - Cite `E0X-FR-xx` (or `R<n>`) and `{path.to.token}` verbatim inside backticks in prose; keep `DESIGN.md` YAML frontmatter `{path.to.token}` links resolving against declared or parent-linked tokens.
-  - Render interactive wireframes or key-screen prototypes via caller-supplied creative tools (or direct interactive HTML/SVG when invoked standalone, or ingest external design-tool exports using `bmad-agent-ux-designer`'s `external-design-tools.md` reference) into `{run}/.working/`, verify surface mock coverage before Review, promote keepers to `{run}/mockups/` or `{run}/wireframes/`, link inline at the relevant `EXPERIENCE.md` sections, and state spines-win-on-conflict once.
+  - Render interactive wireframes or key-screen prototypes via caller-supplied creative tools (or direct interactive HTML/SVG when invoked standalone, ingesting external design-tool exports via caller-supplied `external-design-tools.md` or `bmad-agent-ux-designer`'s installed copy if present, otherwise following the writing rules here directly) into `{run}/.working/`, verify surface mock coverage before Review, promote keepers to `{run}/mockups/` or `{run}/wireframes/`, link inline at the relevant `EXPERIENCE.md` sections, and state spines-win-on-conflict once.
   - Log any net-new global pattern or token needing parent adoption under `System impact and deferred`, and set companion `status: final` and `updated` at Close.
 -->
 

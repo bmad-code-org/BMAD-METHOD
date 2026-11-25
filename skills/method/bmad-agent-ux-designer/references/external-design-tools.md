@@ -1,6 +1,6 @@
 # External Design Tools
 
-Bridge BMad's markdown contracts (`DESIGN.md`, `EXPERIENCE.md`) with visual design tools configured in `{workflow.design_handoffs}`: Google Stitch (and Stitch MCP), Claude Design, Figma (Figma MCP `get_design_context`/`get_variable_defs`, Figma Make, or exports), Penpot MCP, Vercel v0, screenshots, or `awesome-design-md` reference files.
+Bridge BMad's markdown contracts (`DESIGN.md`, `EXPERIENCE.md`) with configured visual design tools (for example via Sally's `design_handoffs` setting when invoked through her): Google Stitch (and Stitch MCP), Claude Design, Figma (Figma MCP `get_design_context`/`get_variable_defs`, Figma Make, or exports), Penpot MCP, Vercel v0, screenshots, or `awesome-design-md` reference files.
 
 Visual generators produce layouts and style fast, while routinely skipping empty states, error recovery, permissions, offline behavior, accessibility, and token consistency. Use Sally to coach direction before prompting, then distill exports into durable contracts.
 

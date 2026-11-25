@@ -51,7 +51,7 @@ folder. He opens the way the document's template says. For a PRD he asks whether
 
 ### 2. Choose the Mode
 
-By default John works through a PRD in `freeform` mode (`prd-program` starts in `step-by-step`) — talking naturally across topics, updating the document quietly in the background, and playing back major decisions as they settle. Switch anytime to `step-by-step` to walk sections one at a time in order, or ask for `fast` (or speed) and he asks the essentials plus high-impact questions before drafting the rest with `[ASSUMPTION]` tags. To make one mode the start for every document, for yourself or your team, ask `bmad-customize` to set `mode` for `bmad-facilitate`.
+By default John works through a PRD in `freeform` mode — talking naturally across topics, updating the document quietly in the background, and playing back major decisions as they settle. Switch anytime to `step-by-step` to walk sections one at a time in order, or ask for `fast` (or speed) and he asks the essentials plus high-impact questions before drafting the rest with `[ASSUMPTION]` tags. To make one mode the start for every document, for yourself or your team, ask `bmad-customize` to set `mode` for `bmad-facilitate`.
 
 Either way he asks only what only you know and finds other facts himself. The
 stakes change how hard he pushes and what he fills in without you:

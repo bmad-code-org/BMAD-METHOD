@@ -7,7 +7,6 @@ description: "Marketing site, landing page, docs, or portfolio UX: narrative flo
 not_for: "Multi-epic stateful SaaS applications (`ux-system`, `ux-epic`); corporate logo and brand kit (`brand-identity`); existing site UX critique (`ux-audit`)."
 agents: [bmad-agent-ux-designer]
 companions: [DESIGN.md, EXPERIENCE.md]
-mode: freeform
 facilitation_order: [site-goal-and-audience-awareness, narrative-and-golden-circle, sitemap-and-page-choreography, copy-voice-and-conversion, findability-and-page-metadata, visual-system-and-responsive-rules, mockups-and-visual-references, open-questions]
 guidance: guidance-method.md
 rubric: rubric-ux.md
