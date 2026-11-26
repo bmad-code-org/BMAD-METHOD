@@ -42,10 +42,11 @@ _bmad-output/
   backlog/                            # tickets with no epic, and their plans
 ```
 
-A `program-*` container's `tickets.toml` lists child initiatives under
-`tickets/initiative-*` (older sibling child initiatives remain readable).
-`tickets.py` refuses a tree in the earlier layout, with `tickets.toml` beside
-the container's own file: run `bmad migrate method`.
+A `program-*` container's `tickets.toml` lists child initiatives stored under
+`tickets/initiative-*` (sibling child initiatives remain readable only under a
+legacy parent initiative before converting to `type: program`). `tickets.py`
+refuses a tree in the earlier layout, with `tickets.toml` beside the
+container's own file: run `bmad migrate method`.
 
 ## Ticket Files
 
@@ -144,7 +145,7 @@ kind of table.
 | Key | Meaning |
 | --- | --- |
 | `id` | Permanent; never reused |
-| `slug` | The child container's folder inside this `tickets/` folder (or a legacy sibling `initiative-*` folder) |
+| `slug` | The child container's folder inside `tickets/` (or a sibling `initiative-*` folder under a legacy parent initiative) |
 | `title` | The epic's or initiative's name |
 | `description` | What is true when it is done |
 | `covers` | The parent's requirement ids it delivers |

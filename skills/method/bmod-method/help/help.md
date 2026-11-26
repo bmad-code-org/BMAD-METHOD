@@ -62,10 +62,12 @@ flowchart TD
     A(["Request"]) --> B{"Blast radius"}
     B -->|"Obvious low-risk edit"| B1(["Edit directly — no skill"])
     B -->|"1 bounded story (1+ sessions)"| B2(["bmad-build inline 60s preamble + 1-line signal, or backlog/ story"])
-    B -->|"1 capability, multi-story (epic-*)"| E0{"Stakes and discovery"}
-    E0 -->|"Real stakes, open product questions"| E1["Fresh chat: John (prd-epic w/ Mini-Spine)"]
-    E0 -->|"Hobby or settled"| S0["Sofia writes epic-* SOT"]
+    B -->|"1 capability, multi-story (epic-*)"| E0{"Epic container exists?"}
+    E0 -->|"Yes"| H
+    E0 -->|"No, real stakes & open questions"| E1["Fresh chat: John (prd-epic w/ Mini-Spine)"]
+    E0 -->|"No, hobby or settled"| S0["Sofia writes epic-* SOT"]
     E1 --> S0
+    S0 --> H
     B -->|"2+ capabilities (initiative-*) or multi-initiative (program-*)"| C{"Container file exists?"}
 
     C -->|"No"| D{"Need upstream shaping first?"}
@@ -89,7 +91,7 @@ flowchart TD
     S7 -->|"Yes"| J1["Fresh chat: John (prd-epic) -> inline parent updates"]
     S7 -->|"No / user says skip"| S7b["Sofia fills epic-* SOT directly"]
     J1 --> S7b
-    S7b --> UX{"UI epic lacking ux-epic, or shared story contracts?"}
+    S7b --> UX{"Real stakes: UI epic lacking ux-epic, or shared contracts?"}
     UX -->|"Yes (fresh chat each)"| UX1["Offer Sally (ux-epic) before slicing; Winston (arch-epic) for contracts/migrations"]
     UX -->|"No"| S3
     UX1 --> S3
@@ -146,7 +148,7 @@ Standalone skills — Winston's technical docs, Sally's branding/websites/audits
 | `bmad-agent-ux-designer` | Sally facilitates `trigger-map`, `brand-identity`, `design-direction`, `ux-system`, `ux-epic`, `ux-quick`, `website-design`, and `ux-audit`, plus creative HTML mockups and Stitch/Claude Design/Figma handoffs. | `<id>-<slug>/` (or `branding/`) with `DESIGN.md`, `EXPERIENCE.md` / `BRAND.md`, mockups, `<id>-<slug>.md` |
 | `bmad-agent-architect` | Winston facilitates `arch-enterprise`, `arch-spine`, `arch-epic` (+ `contract.yaml`), `solution-design`, `tech-evaluation`, `api-design`, `agent-readiness`, `migration-plan`, `production-readiness`, `decision-record`, `postmortem`, and `security-review`. | `<id>-<slug>/<id>-<slug>.md` |
 | **Implementation** (`help/implementation-skills.md`) | | |
-| `bmad-build` | Delivery session: clarifies (60s micro-preamble + 1-line signal when standalone), walks parent contracts (`DESIGN.md`, `EXPERIENCE.md`, mockups, architecture) into `context:`, preserves Refined Story ACs verbatim, plans, implements, reviews, and commits. | `story-<slug>-plan.md` beside `tickets.toml` (or in `backlog/`), `plan-<slug>.md`, `deferred-work.md` |
+| `bmad-build` | Delivery session: clarifies (60s micro-preamble + 1-line signal when standalone), walks parent contracts (`DESIGN.md`, `EXPERIENCE.md`, mockups, architecture) into `context:`, keeps every Refined Story AC covered in the plan, implements, reviews, and commits. | `story-<slug>-plan.md` beside `tickets.toml` (or in `backlog/`), `plan-<slug>.md`, `deferred-work.md` |
 | `bmad-build-auto` | Unattended single-ticket build for loops/scripts (or approved prototype plans), walking the same parent contracts and halting `blocked` on any intent gap. | Same plan paths as `bmad-build` |
 | **Validation** (`help/validation-skills.md`) | | |
 | `bmad-code-review` | Agent review of any diff, PR, branch, or `in-review` ticket with verified, triaged findings (redundant right after a thorough `bmad-build` review). | Dated block in plan's `## Code Review` section, or chat |

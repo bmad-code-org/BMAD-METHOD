@@ -18,7 +18,7 @@ Place or run briefs, PRDs, UX (`DESIGN.md`, `EXPERIENCE.md`, mockups), and archi
 ## Trackers
 
 - The repo store (versioned Markdown + `tickets.toml`) is the default and most tested; external trackers (GitHub Issues, Jira, Linear, Notion, Trello) are configured via `"set up the ticket store"` into `_bmad/custom/ticketing-store-config.toml` and remain lightly tested.
-- With a tracker, Markdown files stay the working copy and sync only when the user asks Sofia (`"Publish the tickets"`). Sofia never pushes git branches.
+- With a tracker, Markdown files stay the working copy. Publication follows the `publication` setting: `at_inception` offers to publish the agreed set after validation, and `on_start` publishes each unpublished ticket when its work starts. Explicit requests (such as `"Publish the tickets"`) publish anytime, and Sofia never pushes git branches.
 
 ## What the user says
 
@@ -37,7 +37,7 @@ Place or run briefs, PRDs, UX (`DESIGN.md`, `EXPERIENCE.md`, mockups), and archi
 ## Hand-off to bmad-build
 
 - Start a fresh chat and run `bmad-build` on `"build story 1.2"`. Amelia reads the Refined Story (or entry), its epic file, and relevant UX/architecture `companions:` (`DESIGN.md`, `EXPERIENCE.md#<section>`, mockups, `contract.yaml` listed in plan `context:`), walking `parent:` upward only when the epic defers something.
-- `bmad-build` cites Refined Story ACs verbatim inside `<frozen-after-approval>`, keeps its ephemeral task breakdown in `story-<slug>-plan.md` beside `tickets.toml`, and advances `status` as far as `built`.
+- `bmad-build` covers every Refined Story AC and measurement check inside `story-<slug>-plan.md` beside `tickets.toml`, advancing `status` up to `built`.
 
 ## Feedback
 

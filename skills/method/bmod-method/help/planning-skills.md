@@ -48,7 +48,7 @@ Slicing an initiative follows its PRD's Epic Map verbatim (or groups cohesive ca
 Refining an epic is a judgment call by Sofia before stories are sliced:
 
 - When open product discovery remains, she recommends a fresh chat with John (`prd-epic`); when parent + companions already settle the capability (or the user skips the PRD), she fills the epic SOT directly and states why.
-- For any UI-bearing epic lacking a `ux-*` companion, she unpromptedly offers Sally (`ux-epic`) in a fresh chat before slicing; when stories share contracts, migrations, or state flows, she offers Winston (`arch-epic`).
+- At real stakes, for any UI-bearing epic lacking an epic-level `ux-epic` companion (an initiative-level `ux-system` does not replace it), she unpromptedly offers Sally (`ux-epic`) in a fresh chat before slicing; when stories share contracts, migrations, or state flows, she offers Winston (`arch-epic`). At hobby or personal stakes, she skips unsolicited specialist offers unless asked.
 - She slices journey-shaped chunky stories (with no standalone setup or go-live stories unless asked) into 1–2 sentence `tickets.toml` entries citing `DESIGN.md`, `EXPERIENCE.md#<section>`, mockups, and `AD-n`, and authors Refined Stories (`story-<slug>.md`) at epic inception by default (or at pickup if left thin).
 
-Work spanning several initiatives uses a top-level `program-*` container whose `tickets/tickets.toml` orders nested `tickets/initiative-*` folders (legacy sibling child initiatives still read cleanly). Point `core.active_initiative` at the program for rollup or at a child container for local work.
+Work spanning several initiatives uses a top-level `program-*` container whose `tickets/tickets.toml` orders nested `tickets/initiative-*` folders (legacy parent initiatives — before converting to `type: program` — still read sibling folders cleanly). Point `core.active_initiative` at the program for rollup or at a child container for local work.

@@ -40,7 +40,7 @@ Facilitation adapts to whatever parent exists via one Spine Preamble: child runs
 - **Specs** (`program-*.md`, `initiative-*.md`, `epic-*.md` Minimal Altitude SOT, plus optional `prd-*`, `ux-*`, `arch-*` companions) capture agreed decisions, boundaries, and provenance.
 - **Tickets** (`tickets.toml` entries) stay 1–2 outcome sentences plus `verify`, `covers`, and concrete `DESIGN.md` / `EXPERIENCE.md#<section>` / mockup / `AD-n` references.
 - **Refined Stories** (`story-<slug>.md`) are verification contracts (`E0X-FR-xx`, Given/When/Then functional and measurement ACs) authored by Sofia at epic inception by default, or at pickup if left thin.
-- **Build Plans** (`story-<slug>-plan.md`) belong locally to Amelia (`bmad-build`): they cite Refined Story ACs verbatim inside `<frozen-after-approval>` alongside exact files, tasks, and tests.
+- **Build Plans** (`story-<slug>-plan.md`) belong locally to Amelia (`bmad-build`): they cover every Refined Story AC (including measurement checks) alongside exact files, tasks, and tests.
 
 ## Binary invariants and tiered OKRs
 

@@ -64,5 +64,5 @@ For mid-build pivots or technical blockers, start with Sofia (`"this changed, wh
 
 ## Tracker integration
 
-- Nothing syncs automatically with Jira, Linear, or GitHub Issues; Sofia pulls tracker state and publishes only when explicitly requested.
+- Nothing syncs automatically with Jira, Linear, or GitHub Issues. Publication follows `publication`: `at_inception` offers to publish the agreed set after validation, while `on_start` publishes each unpublished ticket when the user approves starting it (headless runs follow the configured policy, and explicit requests publish anytime).
 - Each story's local plan tracks `status` (builds stop at `built` for human or orchestrator `done` sign-off), independent of `tracker_status` on leaf files (`help/ticketing-and-epics.md`).
