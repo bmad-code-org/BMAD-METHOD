@@ -1,14 +1,21 @@
 # Slicing
 
-The level comes from the work itself, never from team size or time: one story is a story; more than one story of one capability is an epic; several capabilities that share outcomes, invariants or nouns are an initiative; several initiatives are a program, a parent initiative. An initiative is sliced into epics; an epic is refined, then planning it writes all its stories. When the user has a split in mind, or the initiative's PRD carries an epic map, use it and say where the rules below would cut differently.
+The altitude comes from the work itself, never from team size or time:
+
+- **Story:** a standalone single-story capability stays a story, never an epic.
+- **Epic:** one cohesive capability (`epic-<slug>/`, standalone or inside an initiative); inside a multi-epic initiative (or from a PRD map), an epic may hold one story or a few.
+- **Initiative:** multiple capabilities sharing outcomes, invariants, or nouns.
+- **Program:** bounded initiatives under one portfolio (`program-<slug>/` nesting child initiatives under `tickets/`).
+
+When a `prd-program` Initiative Map (`INIT-01`..), `prd` Epic Map (`E01`..), or `prd-epic` `Chunky story slice map` exists, adopt its names, boundaries, and scope verbatim (citing map ids in the container's `Requirements` lines while `tickets.toml` `id`s use integers from `next_id`). Flag only real code, invariant, or scope conflicts to the user rather than renaming or moving scope on your own.
 
 {{ workflow.tickets_before }}
 
 ## Every container, in order
 
-1. **Envelope.** A document in the folder is an input, not the container; a missing container is written from its input per `spec.md`.
-2. **Requirements.** Unwritten spec sections are written per The Operation in `spec.md` from an input; an epic's are written when it is refined.
-3. **Complete the container**: known unknowns in Notes, Outcome and `Done when` re-read against Requirements and Constraints. When the container was just written, confirm its scope with the user before slicing, unless it was written from a PRD the user has just finished.
+1. **Envelope & reconciliation.** Read the container file first when it exists, then run `tickets.py status` on the container (if no container file exists yet, inspect the folder directly). A document in the folder is an input, not the container; reconcile a missing container and all final `unadopted_runs` in one pass per `spec.md`, flagging `draft` runs as unfinished.
+2. **Requirements.** Unwritten spec sections are written per The Operation in `spec.md`; an epic's are written when it is refined.
+3. **Complete the container.** Confirm known unknowns in Notes, Outcome, and `Done when` against Requirements and Constraints. When the container was just written, confirm its scope with the user before slicing, unless it came from a PRD the user just finished.
 
 ## Read the code
 
@@ -18,78 +25,79 @@ Where the code contradicts a Requirements line, add a `Source conflict:` line (t
 
 ## One message, then revise
 
-Before the draft is revised, one message holds what the spec and code show, each question that changes the split (first demo, least certain part) with your pick, and the draft in build order. Revise it in place until approved. A split taken from a PRD's epic map carries no questions: show it once for confirmation.
+Before the draft is revised, one message holds what the spec and code show, any open slicing or ordering question with your pick (strictly on slicing, ordering, or dependency mechanics — never product or UX decisions), and the draft in build order. Revise it in place until approved. If open product or UX questions block the split, stop and recommend John or Sally in a fresh chat unless the user explicitly says skip and supplies the call.
 
-Record each slicing choice, declined suggestions included, as a dated `Decision:` line in the container's Notes as it is made.
+A split taken verbatim from a PRD Initiative Map, Epic Map, or `Chunky story slice map` carries no slicing questions: show it once for confirmation. Record each slicing choice, declined suggestions included, as a dated `Decision:` line in the container's Notes.
 
-## Several initiatives
+## Program into initiatives
 
-When the work is more than one initiative's worth, propose a parent initiative over several initiatives, not epics inside epics; every initiative keeps initiative, epic and story. The parent's file holds the Requirements and the decisions its children share. Draft its `tickets/tickets.toml` from `{{ workflow.tickets_template }}`: one `[[initiative]]` per child in build order, with an `id`, the child's folder name as `slug`, a `description` of what is true when it is done, the parent ids it `covers`, and an `after` naming what it needs from which child. Run the tree check in `validate.md`, present the draft, and revise it in place until approved.
+When the work spans multiple bounded initiatives under shared portfolio outcomes or cross-domain seams, propose a `program-<slug>/` (`type: program`), never epics inside epics; each child initiative keeps its own initiative, epic, and story layers.
 
-On approval, create each child as its own `initiative-<slug>/` beside the parent, its file from `{{ workflow.ticket_template }}` with the parent's file in `sources:`; its Requirements, citing parent ids, are written per `spec.md` when it is taken up. A parent holds no epics or entries. Commit. To work a child, record it as `active_initiative` the way On activation in `workflow.md` does; `tickets.py status` on the parent shows every child.
+Adopt `prd-program` (`INIT-01`..) verbatim when present; never cut rollout, migration, or pilot phases as initiatives (fold phased rollout into adaptive rollout gates). Draft `tickets/tickets.toml` from `{{ workflow.tickets_template }}`: one `[[initiative]]` per child in build order with `id`, child folder `slug`, `description`, parent `covers`, and `after` naming what it needs from another child. Run the tree check in `validate.md`, present the draft, and revise until approved.
+
+On approval, create each child under `tickets/initiative-<slug>/` (`type: initiative`) from `{{ workflow.ticket_template }}` with the program file in `sources:`. Do not invent or write a child initiative's requirements before its own discovery/PRD; when a child is taken up with open product questions, recommend John (`prd`) in a fresh chat unless the user explicitly skips. Commit; to work a child, set `core.active_initiative` to `<program-slug>/tickets/<initiative-slug>` per `workflow.md` (`tickets.py status` on the program rolls up every child).
 
 ## Initiative into epics
 
 Revise or drop existing epics per `board.md`; add only when the user confirms the need.
 
-When the initiative's PRD carries an epic map, the split is settled: one epic per entry, in the map's order, its description from the outcome the entry names and its `after` from what the entry needs from another epic.
-
-Otherwise the epics are the initiative's cohesive capabilities: each is something a person could see working by itself, and one that takes an "and" joining two things which each stand alone is two.
+- **With a `prd` Epic Map:** the split is settled — adopt one epic per entry verbatim in the map's order, using its outcome for `description` and its dependencies for `after`.
+- **Without a PRD:** enforce 1 capability = 1 epic (each something a person can see working by itself; a standalone single-story capability stays a story, never an epic, and a single-capability product stays a standalone `epic-<slug>/`; never mix `[[epic]]` and `[[entry]]` in one `tickets.toml`). Never cut rollout or pilot phases as epics — fold phased rollout into adaptive rollout/verification checks.
 
 Either way:
 
 - A unit the work only consumes or configures is a touch point: list it in the initiative's Boundaries with its owning epic.
-- Every epic delivers to production; its `Done when` includes integrated verification.
+- **Closed-loop OKRs:** map every OKR and baseline (including long-horizon targets) to an owning epic and instrumentation — or flag explicitly every unowned OKR or baseline as an unmapped gap in the container's Notes (`Open question:` or `Parked:`) before approval rather than leaving targets orphaned.
+- Include integrated verification in each epic's `Done when` without forcing standalone go-live stories.
 
-Draft the set as the initiative's `tickets/tickets.toml` from `{{ workflow.tickets_template }}`: one `[[epic]]` per epic in build order, each with an `id`, a `description` of what is true when it is done, the parent ids it `covers`, and an `after` naming what it needs from which epic; `after` on an epic file only for a whole-epic gate. Run the tree check in `validate.md`, then present the draft in build order, saying whether it came from the PRD's map or is your own cut, with each epic's boundary, the tracer path, touch points with owners, and decisions several epics share.
+Draft `tickets/tickets.toml` from `{{ workflow.tickets_template }}`: one `[[epic]]` per epic in build order with `id`, `description` (outcome), parent `covers`, and `after` naming what it needs from which epic (`after` on an epic file only for a whole-epic gate). Run the tree check in `validate.md`, then present the draft in build order saying whether it came verbatim from the PRD map or is your cut, showing each epic's boundary, OKR/baseline ownership (plus any unmapped gaps), tracer path, touch points, and cross-epic decisions.
 
-On approval, create each new epic's folder in the initiative's `tickets/` folder and its file from `{{ workflow.ticket_template }}`, written thin: Description, Outcome, Boundaries, `Done when` as far as known, References to the parent, `covers` and `after`, with `refined: false` and no Requirements. Commit (on a tracker, publish) per `board.md`.
+On approval, create each new epic under `tickets/epic-<slug>/` from `{{ workflow.ticket_template }}`, written thin: Description, Outcome, Boundaries, known `Done when`, parent References, `covers`, `after`, `refined: false`, and no Requirements. Commit (on a tracker, publish) per `board.md`.
 
-Offer Winston (`bmad-agent-architect`) to settle shared decisions in the architecture spine, cited in adopting epics' References. If declined, each becomes a `story` entry (`hitl = true`) in the opening epic's `tickets.toml`, written now, and each adopting epic gets `after = [{ epic = <opening>, needs = <the decision> }]`; planning keeps those entries first, ids kept.
+Offer Winston (`bmad-agent-architect`, `arch-spine`) in a **fresh chat** when no architecture spine exists (and Sally `bmad-agent-ux-designer`, `ux-system` in a **fresh chat** for UI initiatives lacking UX). If an architecture spine is declined, shared cross-epic decisions become `story` entries (`hitl = true`) in the opening epic's `tickets.toml` with adopting epics adding `after = [{ epic = <opening>, needs = <the decision> }]`.
 
 Stop here unless the user wants to refine an epic now.
 
 ## Refining an epic
 
-An epic with `refined: false` has its scope agreed, not its detail; refine it on request or before planning its stories.
+An epic with `refined: false` has its scope agreed, not its detail; refine it on request or before planning its stories. Read the epic file first, then run `tickets.py status <epic-folder>` (`unadopted_runs`, `companions`) and reconcile any final unadopted epic runs via `spec.md` in one pass (flagging `draft` runs as unfinished).
 
-An epic with open product questions the initiative and its companions do not answer (how it works for the user, its rules, what to measure) gets its own PRD: invoke John (`bmad-agent-pm`) for the epic PRD (`prd-epic`), naming the epic file, the initiative's PRD when there is one, and the epic's folder as the output. The document lands in the epic's folder and SPEC adopts it as a companion. More design is Sally (`bmad-agent-ux-designer`, `ux-epic`) or Winston (`bmad-agent-architect`, `arch-epic`) on the epic, and research is `bmad-deep-recon`; each lands in the epic's folder the same way.
+**PRD judgment gate (never a mechanical rule):** Evaluate explicitly whether the parent ticket, its companions (`prd`, `ux-*`, `arch-*`), and saved epic notes already settle how it works for users, its business rules/edge cases/failure paths, and what proves its target OKR band. Give **one clear recommendation with reasons** (never a neutral coin toss):
 
-With none open, or when the user says to, fill the epic in from the initiative's lines and what the PRD's epic map saved for this epic, and say why it needs no PRD.
+- **Open product discovery remains (at real stakes):** stop and recommend a **fresh chat with John (`bmad-agent-pm`)** to create or update `prd-epic`, giving him the epic file, parent PRD (if any), and `<epic-folder>/prd-epic-<slug>/` (or the existing `prd-epic` run) as output. Never load John or `bmad-facilitate` inside Sofia's chat.
+- **Settled by parent + saved notes + companions, hobby stakes, or user explicitly skips `prd-epic`:** explain why no epic PRD is needed, derive the epic ticket via `spec.md` (recording any user skip of open questions as a dated `Decision:`), and re-read Outcome and `Done when`. Set `refined: true` only once Requirements are settled with no blocking open questions or conflicts, then commit (or publish) per `board.md`.
 
-Either way, write its Requirements per `spec.md`, re-read Outcome and `Done when`, set `refined: true`, and commit (on a tracker, publish) per `board.md`.
+**Unprompted UX & Architecture offers before slicing:** Before planning stories on any refined or unrefined epic at real stakes lacking these companions for **this epic** (a parent `ux-system` does not replace `ux-epic`, and with no prior decline recorded in Notes):
+
+- **UI-bearing epic lacking `ux-*`:** unpromptedly offer a **fresh chat with Sally (`bmad-agent-ux-designer`, `ux-epic`)** so screen flows, states, `DESIGN.md`, `EXPERIENCE.md#<section>`, and mockups are settled before stories slice.
+- **Shared non-trivial contracts, schemas/migrations, API/event payloads, or state flows lacking `arch-*`:** unpromptedly offer a **fresh chat with Winston (`bmad-agent-architect`, `arch-epic`)** against live code when present.
+- Record any user decline as a dated `Decision:` in the epic's Notes. At hobby or personal stakes, skip unprompted specialist offers unless asked.
 
 ## Epic into stories
 
-After the epic file, read its breakdown, child tickets, and results. Each blocking unknown is settled now per `board.md`, recorded as the `unknown` of the entries it blocks, or spiked if the user asks.
+After the epic file, read its breakdown, child tickets, `companions:`, and `unadopted_runs` (reconciling final unadopted runs via `spec.md` first). Run any unprompted UX or architecture offer above before drafting `tickets.toml`, and settle each blocking unknown per `board.md` (`unknown` on blocked entries, or spiked if requested).
 
-What makes a good story:
+**Story sizing and slice source:**
 
-- A story is one complete capability a person can see working end to end and verify in one sitting. It is large on purpose: an epic may have one story, or a few. The steps inside it, such as a migration, an endpoint, a screen or its tests, are not stories: the build plans those itself, and they are never tickets.
-- Too small when it cannot be verified as an outcome by itself: merge it into the story it serves.
-- Stories touching the same code form one ordered lane.
-- Done is one runnable check.
-- Split, never shrink: "for now", "placeholder", "simplified", "wired later" is a second story.
-- Each hitl step goes on the first story that needs it. Setup, the platform baseline included, is part of the first story that needs it and production delivery part of the last; neither is a story of its own. Tests go in every story; the only test story is the closing end-to-end suite.
+- **With `prd-epic` `Chunky story slice map`:** adopt its story names, boundaries, FR coverage, and instrumentation assignments verbatim (flagging only real code/invariant conflicts).
+- **Without a `Chunky story slice map`:** slice by cohesive end-to-end journeys sized by end-to-end verifiability in one sitting and clean review/context fit. Active epics typically hold 1–3 chunky stories (no fixed quota or cap; more may mean the epic is too large), never horizontal layers or topics (a migration, endpoint, screen, validation, or isolated config). Merge slices too small to verify as a real outcome; split only when independent workflows or failure domains cannot be verified together, or promote a second capability into a new epic.
+- **No standalone setup or go-live stories:** fold setup and platform baselines into the first journey story that needs them, each `hitl` step onto the first story needing it, and validation, error handling, instrumentation, tests, and production delivery into the journeys they serve (deployment into the final journey story unless explicitly requested).
+- **Shared code lane:** stories touching the same code form one ordered lane; offer a closing end-to-end suite only if a test plan calls for it or the user asks.
 
-Offer a closing end-to-end suite if the source has a test plan or the user asks.
+Draft `tickets/tickets.toml` from `{{ workflow.tickets_template }}`, run the Dependencies and Set checks in `validate.md` on the draft, and revise with the user until the split is agreed:
 
-Draft the breakdown as the epic's `tickets/tickets.toml` from `{{ workflow.tickets_template }}`, run the set check in `validate.md`, and revise it in place with the user until approved. Beyond the template:
+- **1–2 sentence `description`:** keep each entry's `description` strictly 1–2 outcome sentences — never a mini-spec (full criteria live in the Refined Story).
+- **Mandatory design & contract `references`:** every UI-bearing entry cites every UX artifact that exists for the epic (`DESIGN.md` — epic or inherited parent `ux-system`, `EXPERIENCE.md#<section>`, and promoted mockup/wireframe paths) plus any relevant `arch-epic` / `contract.yaml` / `AD-n` anchors, even when the epic's `References` already links the companion folder.
+- **Closed-loop coverage:** every epic `R<n>` line (covering both `E0X-FR-xx` and instrumentation/measurement needs) lands in an owning story's `covers` (using the epic's leading `R<n>` ids so `tickets.py body` resolves them) and `verify`.
+- **`after`, `refine`, & checkpoints:** copy parent epic `after` providers to the entries needing them (`<epic id>.<entry id>` or `epic-<slug>`), set `refine = true` by default (omit `refine = true` only when the user explicitly asks to build straight from a bare entry), and for unattended builds ask about `plan_checkpoint` / `done_checkpoint` (proposing `plan_checkpoint` on risky entries).
 
-- `after`: if this epic has an `after` in the initiative's breakdown, add the provider to each entry that needs it: `<epic id>.<entry id>` once that entry exists, else `epic-<slug>`.
-- `refine = true` only on request.
-- When the user says the epic will build unattended, ask for `plan_checkpoint` and `done_checkpoint` per entry, proposing `plan_checkpoint` on risky ones.
-- Each touch point this epic owns is an entry or part of one.
+With the draft, name parallel work and deferred scope. A split while planning adds an epic (folder, envelope, `[[epic]]` with `after`) and moves its `covers` ids and entries without renaming files.
 
-With the draft, name parallel work and deferred scope.
+**Detail every story by default (at epic inception):** Once the split is agreed, pull and detail each entry into its **Refined Story** (`tickets/story-<slug>.md`) per `ticket.md` in the same chat (suggesting a fresh chat if context is heavy) — writing Given/When/Then functional + measurement criteria, boundaries, and opening every referenced file to confirm paths and `#section` anchors resolve. The user approves each story (`refined: true`). The user may opt to detail only the next story now and leave the rest as thin `refine = true` entries (which stay in `ready_to_refine`, not `ready_to_start`, until detailed at pickup).
 
-A split while planning adds an epic (folder, envelope, `[[epic]]` with its `after`) and moves its covers ids and entries; no file is renamed.
+Re-run the Set check in `validate.md` across the approved story set so every epic `R<n>` (both functional and instrumentation) is proven by at least one criterion and results satisfy `Done when`. Then run `tickets.py status <initiative folder>` (or epic folder if standalone), repoint any `blocks` entries waiting on this epic to the exact entry, clear any `unpinned_after`, `undeclared_after`, or `order_conflict`, and commit — or on a tracker, offer to publish **after** the stories are approved (`board.md`) so each story is sent once and complete.
 
-Write no leaf file until its entry is pulled.
-
-Run `tickets.py status <initiative folder>`. Repoint each ticket in this epic's `blocks` (under `epics`) to the entry it waits for. Clear any `unpinned_after`, `undeclared_after`, or `order_conflict`, then commit (on a tracker, publish), both per `board.md`.
-
-Tell the user the entries are ready to build; for `bmad-build-auto`, a loop, or a factory, recommend reviewing each entry now (`ticket.md`).
+Report the `ready_to_start` approved stories (and any `ready_to_refine` stories left thin), inviting the user to start a fresh chat for `bmad-build`.
 
 ## Re-slicing
 

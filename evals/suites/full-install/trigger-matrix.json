@@ -196,6 +196,30 @@
     ]
   },
   {
+    "query": "refine story 1.2",
+    "expect": "bmad-agent-po"
+  },
+  {
+    "query": "build story 1.2",
+    "expect": "bmad-build"
+  },
+  {
+    "query": "slice this program charter into initiatives",
+    "expect": "bmad-agent-po"
+  },
+  {
+    "query": "check the board for blocked stories",
+    "expect": "bmad-agent-po"
+  },
+  {
+    "query": "replan epic 2 after the API changed",
+    "expect": "bmad-agent-po"
+  },
+  {
+    "query": "connect Jira as our ticket store",
+    "expect": "bmad-agent-po"
+  },
+  {
     "query": "create the architecture for this",
     "expect": "bmad-agent-architect"
   },
