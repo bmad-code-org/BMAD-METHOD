@@ -51,7 +51,9 @@ When users will change a value, the body says so in one line: invoke the `bmad-c
 
 ## Help files
 
-A module record's `help/` has one reader, the `bmad` help agent. `help.md` loads on every help question for every installed module, so it stays a short routing index: what each skill gives, when to recommend it, what to offer next, and which topic file answers what. A `help/<topic>.md` is read only when `help.md` names it for the question at hand. No help file holds install mechanics or `bmod.toml` key detail; the help agent cannot act on them.
+A module record's `help/` has one reader, the `bmad` help agent. `help.md` loads on every help question for every installed module, so it stays a short routing index: what each skill gives, when to recommend it, what to offer next, and which topic file answers what.
+
+A `help/<topic>.md` topic loads only when `help.md` names it for the question at hand. Cross-references between help files use module-relative `help/<topic>.md` paths (checked by `validate_manifests.py`). No help file holds install mechanics or `bmod.toml` key detail; the help agent cannot act on them.
 
 ## Scripts
 

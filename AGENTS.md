@@ -37,5 +37,5 @@ Open source framework for structured, agent-assisted software delivery. Skills l
 
 ## Skill authoring
 
-- Skill authoring bar (Toolsmith canon, standards, core-vs-module boundary hygiene, and six-lens pre-PR check): `tools/skill-authoring.md`.
-- Structural pre-pass for any edited skill: `uv run skills/toolsmith/bmad-toolsmith/scripts/prepass.py <skill-dir>`.
+- Before editing any skill, agent, template, reference, or module `help/` file under `skills/`, read `tools/skill-authoring.md` and follow its `Read before editing` sources (`canon.md`, `standards.md`) and six-lens pre-PR check (leanness, progressive disclosure, boundary hygiene).
+- Run the structural pre-pass on every edited skill directory: `uv run skills/toolsmith/bmad-toolsmith/scripts/prepass.py <skill-dir>`.
