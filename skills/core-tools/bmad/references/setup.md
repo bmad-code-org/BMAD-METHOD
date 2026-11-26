@@ -36,7 +36,7 @@ Modules carry install messages from their authors: `pre_install_message` and `po
 
 **Update.** For `newer-available` modules, show each `update.pre_install_message`, then run `npx skills update -p -y` for the `project` scope and `npx skills update -g -y` for `global`. Then read this file again and run the check again, since the update can retire skills and add questions, and continue without asking again.
 
-**Config and `_bmad`.** Run with `--list-config-questions`. It prints `[{module, key, prompt, default, scope}]`. Ask each question in order, and no others, showing its default, and say when its `scope` is `user`: that answer is personal and not shared. Use an accepted default exactly as emitted. If there are answers, write them with the Write tool to `{project-root}/.bmad-help-setup-modules.toml` (another name if that exists), each under its module with the key quoted, values as escaped TOML basic strings:
+**Config and `_bmad`.** Run with `--list-config-questions`. It prints `[{module, key, prompt, default, scope}]`. Ask each question in order, and no others, showing its default, and say when its `scope` is `user`: that answer is personal and not shared. When a question asks for the path to something the project may already hold, look for it first and offer what you find as the answer. Use an accepted default exactly as emitted. If there are answers, write them with the Write tool to `{project-root}/.bmad-help-setup-modules.toml` (another name if that exists), each under its module with the key quoted, values as escaped TOML basic strings:
 
 ```toml
 [modules."example"]

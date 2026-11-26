@@ -4,9 +4,11 @@
 # ///
 """Run eval cases through the recorded harness.
 
-A case is `input + rubric + optional state_prefix + optional files`. Each file is a path relative
-to the project root or the cases file, or a GitHub file URL pinned to a ref; absolute paths are
-refused and a missing fixture stops the run before it starts. For each case and
+A case is `input + rubric + optional state_prefix + optional files + optional skills`. Each file is
+a path relative to the project root or the cases file, or a GitHub file URL pinned to a ref, or
+`{"from": <either>, "to": <workspace path>}` to stage it under another name; absolute paths are
+refused and a missing fixture stops the run before it starts. `skills` lists skill folders staged
+beside the skill under test, for a skill that hands work to another; the bare config gets none. For each case and
 config the runner makes a clean room outside the project, copies the skill under test into
 the folder the harness reads skills from, stages the fixtures, runs the harness command once
 from the workspace, and records what it printed with timing and token usage. Grading happens
@@ -36,7 +38,8 @@ Usage:
     [--workers N] [--label NAME] [--quiet]
 
 CASES.json is a list of cases or {"cases": [...]}. Each case:
-  {"id": "...", "input": "...", "rubric": [...], "state_prefix": "..."?, "files": ["..."]?}
+  {"id": "...", "input": "...", "rubric": [...], "state_prefix": "..."?, "files": ["..." | {"from", "to"}]?,
+   "skills": ["<skill folder>"]?}
 
 Exit 0 when every run completed, 1 when any run errored or timed out or the command was
 not found, 2 on a usage error, 3 when no harness is recorded.
@@ -94,16 +97,38 @@ def stage_skill(skill_path: Path, cwd: Path, skills_subdir: str) -> Path:
 GITHUB_FILE = re.compile(r"^https://github\.com/(?P<owner>[^/]+)/(?P<repo>[^/]+)/blob/(?P<ref>[^/]+)/(?P<path>.+)$")
 
 
+def fixture_entry(entry: object) -> tuple[str, str | None]:
+    """A `files` entry as (source, explicit destination or None)."""
+    if isinstance(entry, dict):
+        return (
+            "" if entry.get("from") is None else str(entry["from"]),
+            "" if entry.get("to") is None else str(entry["to"]),
+        )
+    return str(entry), None
+
+
+def is_machine_path(path: str) -> bool:
+    return path.startswith("~") or Path(path).is_absolute()
+
+
 def fixture_problems(files: list, project_root: Path, cases_dir: Path) -> list[str]:
     """Why each `files` entry cannot be staged on any machine, checked before anything runs.
 
     An entry is a path relative to the project root or the cases file's folder, or a GitHub
-    file URL. An absolute or home path is refused: it names one person's machine.
+    file URL, optionally as `{"from", "to"}`. An absolute or home path is refused: it names one
+    person's machine.
     """
     problems, dests = [], {}
-    for entry in map(str, files or []):
+    for raw in files or []:
+        entry, to = fixture_entry(raw)
+        if to is not None and (not entry or not to):
+            problems.append(f"{raw}: a renamed fixture needs both `from` and `to`")
+            continue
+        if to is not None and (is_machine_path(to) or ".." in Path(to).parts):
+            problems.append(f"{raw}: `to` must be a path inside the workspace")
+            continue
         m = GITHUB_FILE.match(entry)
-        dest = Path(unquote(m["path"])).name if m else entry
+        dest = Path(to or (Path(unquote(m["path"])).name if m else entry)).as_posix()
         if dest in dests:
             problems.append(f"{entry}: lands at {dest}, as {dests[dest]} does; one would replace the other")
         dests.setdefault(dest, entry)
@@ -115,7 +140,7 @@ def fixture_problems(files: list, project_root: Path, cases_dir: Path) -> list[s
             problems.append(
                 f"{entry}: a URL fixture must be a GitHub file URL, https://github.com/<owner>/<repo>/blob/<ref>/<path>"
             )
-        elif entry.startswith("~") or Path(entry).is_absolute():
+        elif is_machine_path(entry):
             problems.append(
                 f"{entry}: absolute paths break on other machines; use a path relative to the project root "
                 "or the cases file, or a GitHub file URL pinned to a commit"
@@ -146,14 +171,38 @@ def resolve_fixtures(files: list, project_root: Path, cases_dir: Path, fetch_dir
     references. A GitHub file lands at the workspace root under its file name.
     """
     out: list[tuple[Path, str]] = []
-    for entry in map(str, files or []):
+    for raw in files or []:
+        entry, to = fixture_entry(raw)
         m = GITHUB_FILE.match(entry)
         if m:
-            out.append((fetch_github(m, fetch_dir), Path(unquote(m["path"])).name))
+            out.append((fetch_github(m, fetch_dir), to or Path(unquote(m["path"])).name))
             continue
         src = next((root / entry).resolve() for root in (project_root, cases_dir) if (root / entry).resolve().is_file())
-        out.append((src, entry))
+        out.append((src, to or entry))
     return out
+
+
+def companion_skills(skills: list, project_root: Path, cases_dir: Path) -> tuple[list[Path], list[str]]:
+    """Each `skills` entry as a skill folder, and why any cannot be staged."""
+    found, problems, seen_names = [], [], {}
+    for entry in map(str, skills or []):
+        if is_machine_path(entry) or ".." in Path(entry).parts:
+            problems.append(f"{entry}: a companion skill must be a path relative to the project root or the cases file")
+            continue
+        folder = next(
+            ((root / entry).resolve() for root in (project_root, cases_dir) if (root / entry / "SKILL.md").is_file()),
+            None,
+        )
+        if folder is None:
+            problems.append(f"{entry}: no SKILL.md under {project_root} or {cases_dir}")
+        elif folder.name in seen_names:
+            problems.append(
+                f"{entry}: companion skill folder name `{folder.name}` collides with {seen_names[folder.name]}"
+            )
+        else:
+            seen_names[folder.name] = entry
+            found.append(folder)
+    return found, problems
 
 
 def stage_fixtures(fixtures: list[tuple[Path, str]], cwd: Path) -> None:
@@ -184,6 +233,7 @@ def run_case(
     config: str,
     skill_path: Path | None,
     fixtures: list[tuple[Path, str]],
+    companions: list[Path] = (),
 ) -> dict:
     case_id = str(case.get("id", "unnamed"))
     case_dir.mkdir(parents=True, exist_ok=True)
@@ -205,7 +255,10 @@ def run_case(
     def stage(cwd: Path) -> None:
         stage_fixtures(fixtures, cwd)
         if skill_path is not None:
-            stage_skill(skill_path, cwd, (harness or {}).get("skill_dir", DEFAULT_SKILL_DIR))
+            skills_subdir = (harness or {}).get("skill_dir", DEFAULT_SKILL_DIR)
+            stage_skill(skill_path, cwd, skills_subdir)
+            for companion in companions:
+                stage_skill(companion, cwd, skills_subdir)
 
     if harness is None:
         (case_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
@@ -334,10 +387,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"harness invalid: {e}", file=sys.stderr)
         return 2
 
+    companions = {id(c): companion_skills(c.get("skills", []), fixture_root, cases_file.parent) for c in cases}
     problems = [
         f"case {c.get('id')}: {x}"
         for c in cases
-        for x in fixture_problems(c.get("files", []), fixture_root, cases_file.parent)
+        for x in [*fixture_problems(c.get("files", []), fixture_root, cases_file.parent), *companions[id(c)][1]]
     ]
     if problems:
         print("fixtures cannot be staged:\n  " + "\n  ".join(problems), file=sys.stderr)
@@ -406,6 +460,7 @@ def main(argv: list[str] | None = None) -> int:
                 config_name,
                 config_skill,
                 fixtures[id(c)],
+                companions[id(c)][0],
             ): c
             for config_name, c, case_dir, config_skill in jobs
         }

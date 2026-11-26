@@ -25,6 +25,8 @@ Field semantics:
 - `rubric`: a list of named expectations, each gradeable to `{text, passed, evidence}` by the grader. The strong-versus-weak taxonomy below decides whether each one is worth keeping.
 - `state_prefix`: optional bracketed prime that places the skill mid-workflow (see below). Null or absent means the skill starts cold.
 - `files`: optional fixtures staged into the case's clean working directory before the run. Each is a path relative to `--project-root` or the cases file's directory, or a GitHub file URL (`https://github.com/<owner>/<repo>/blob/<ref>/<path>`, pinned to a commit or tag) for data kept in another repo. A relative path keeps its directory structure, so the input can reference it verbatim; a GitHub file lands at the workspace root under its file name. Absolute and `~` paths are refused, because cases must run on anyone's machine, and a missing fixture stops the run before it starts.
+- `files` entry as `{"from": <path or URL>, "to": <workspace path>}`: stages a fixture under another name, so cases sharing one folder can each carry their own `_bmad/config.toml` or customization.
+- `skills`: optional skill folders, relative like `files`, staged beside the skill under test for a skill that hands work to another (an agent that calls `bmad-facilitate`). The bare config gets none of them.
 
 For trigger cases the shape is lighter: a `query` and a `should_trigger` boolean, because there is no artifact to grade, only whether the skill fired.
 

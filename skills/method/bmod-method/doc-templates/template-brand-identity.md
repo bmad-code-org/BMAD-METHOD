@@ -31,9 +31,9 @@ updated: ""
 
 <!-- writing:
   - Enforce Flat-First Logo Discipline: craft vector SVG concepts in `{run}/logos/` that hold legibility in single-color monochrome, on dark and light backgrounds, and at 32x32 favicon size; link every kept asset from `BRAND.md` and `DESIGN.md` so none stay orphaned.
-  - Populate `{run}/DESIGN.md` so any coding agent or `bmad-facilitate` `workflow.style` config can point at it directly with verified light/dark contrast ratios and zero placeholder hexes.
+  - Populate `{run}/DESIGN.md` so any coding agent, Sally, Clio, or `bmad-facilitate` can inherit it via the core-tools `design_system` setup answer with verified light/dark contrast ratios and zero placeholder hexes.
   - Keep `{doc}` concise as the brand decision index linking `DESIGN.md`, `BRAND.md`, `logos/`, and the wiring instructions.
-  - Include a ready-to-paste `bmad-facilitate.toml` (`style = "file:..."`) and `persistent_facts` snippet in `BRAND.md` and `Brand applications and BMad reuse` so every future BMad HTML artifact and build inherits the brand automatically.
+  - Document `modules.core-tools.design_system` pointing to `{run}` (or `{run}/DESIGN.md`) in `BRAND.md` and `Brand applications and BMad reuse`, and offer at Close to set it through the `bmad` skill so every future BMad HTML view, UX run, and Creative deck inherits the brand automatically.
   - Set `status: final` and `updated` on `DESIGN.md` and `BRAND.md` alongside `{doc}` at Close.
 -->
 
@@ -59,7 +59,7 @@ updated: ""
 <!-- Copy cadence, Do/Don't microcopy table, illustration/photography aesthetic rules, and diagram styling recorded in `BRAND.md`. -->
 
 ## Brand applications and BMad reuse
-<!-- Concrete starter rules for web UI, docs/reports, and decks, plus copy-paste `_bmad/custom/bmad-facilitate.toml` (`style = "file:..."`) and `persistent_facts` wiring so every BMad HTML view and UI build uses this package automatically. -->
+<!-- Concrete starter rules for web UI, docs/reports, and decks, plus wiring `{run}` (or `{run}/DESIGN.md`) as the core-tools `modules.core-tools.design_system` setup answer through the `bmad` skill so every BMad HTML view and UI build inherits this package automatically. -->
 
 ## Open questions
 <!-- optional. Trademark checks, custom font licensing, print assets, or photography shoots queued with owners. -->

@@ -1,0 +1,10 @@
+[core]
+project_name = "studio"
+output_folder = "{project-root}/_bmad-output"
+
+[modules.creative]
+record_folder = "{project-root}/creative"
+voice_guide = ""
+
+[modules.core-tools]
+design_system = "{project-root}/brand/DESIGN.md"

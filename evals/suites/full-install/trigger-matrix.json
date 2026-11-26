@@ -313,5 +313,155 @@
       "bmad-deep-recon",
       "bmad-agent-analyst"
     ]
+  },
+  {
+    "query": "talk to Clio",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "my novel's villain feels flat, help me make her more interesting",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "I'm running a tabletop campaign in a drowned city and need the factions fleshed out",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "this essay sounds like AI wrote it, make it sound like me again",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "learn how I write from my old blog posts so your drafts sound like me",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "help me write a keynote in my own voice",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "turn my voice memos into a podcast script",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "write my grandmother's life story for her 90th birthday",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "brainstorm plot twists for my mystery novel",
+    "expect": "bmad-creative-agent-director",
+    "also_ok": [
+      "bmad-brainstorming"
+    ]
+  },
+  {
+    "query": "help me find a title for my essay about grief and gardening",
+    "expect": "bmad-creative-agent-director",
+    "also_ok": [
+      "bmad-brainstorming"
+    ]
+  },
+  {
+    "query": "make a visual that explains how our neighborhood compost program works",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "make a mood board for the fantasy world in my novel",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "my conference slides are walls of text, can you help",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "make a deck for my library conference talk on reading programs",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "help me practice my keynote and play a tough audience",
+    "expect": "bmad-creative-agent-director"
+  },
+  {
+    "query": "help me rehearse my pitch to investors on Friday",
+    "expect": "bmad-founder-agent-advisor"
+  },
+  {
+    "query": "help me tell our founder story for demo day",
+    "expect": "bmad-founder-agent-advisor",
+    "also_ok": [
+      "bmad-creative-agent-director"
+    ]
+  },
+  {
+    "query": "write the story of how our company started for the about page",
+    "expect": "bmad-creative-agent-director",
+    "also_ok": [
+      "bmad-agent-ux-designer"
+    ]
+  },
+  {
+    "query": "build a brand identity and logo for my pottery studio",
+    "expect": "bmad-agent-ux-designer"
+  },
+  {
+    "query": "design the landing page for my novel",
+    "expect": "bmad-agent-ux-designer",
+    "also_ok": [
+      "bmad-creative-agent-director"
+    ]
+  },
+  {
+    "query": "redesign the check-in experience at our dental clinic so people stop dreading it",
+    "expect": "bmad-creative-agent-director",
+    "also_ok": [
+      "bmad-agent-ux-designer"
+    ]
+  },
+  {
+    "query": "run design thinking on our app's checkout flow",
+    "expect": "bmad-agent-ux-designer"
+  },
+  {
+    "query": "audit our app's UI for usability problems",
+    "expect": "bmad-agent-ux-designer"
+  },
+  {
+    "query": "our volunteers keep quitting after two months and nothing we try sticks",
+    "expect": "bmad-creative-agent-director",
+    "also_ok": [
+      "bmad-agent-analyst"
+    ]
+  },
+  {
+    "query": "figure out why our support ticket volume doubled last quarter",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "our small museum keeps losing visitors, help us reinvent what we offer",
+    "expect": "bmad-creative-agent-director",
+    "also_ok": [
+      "bmad-agent-analyst"
+    ]
+  },
+  {
+    "query": "use Blue Ocean thinking to find a new direction for our community theater",
+    "expect": "bmad-creative-agent-director",
+    "also_ok": [
+      "bmad-agent-analyst"
+    ]
+  },
+  {
+    "query": "write a business case for opening a second location",
+    "expect": "bmad-agent-analyst"
+  },
+  {
+    "query": "get the creative studio together on my album concept",
+    "expect": "bmad-creative-agent-director",
+    "also_ok": [
+      "bmad-party-mode"
+    ]
+  },
+  {
+    "query": "write an investor update for this month",
+    "expect": "bmad-founder-agent-advisor"
   }
 ]
