@@ -14,31 +14,39 @@ These are the exact rules for the ticket tree that Sofia, the Product Owner
 ## Layout
 
 The tree is the folder `active_initiative` names under `output_folder`
-(`_bmad-output` by default). Each initiative and epic keeps its own file,
-other skills' run folders, and its retrospective at the top of
-its folder. Its breakdown goes in a `tickets/` folder inside it.
+(`_bmad-output` by default): a `program-*`, `initiative-*`, or standalone
+`epic-*` container, or a nested path like `program-shop/tickets/initiative-checkout`.
+Each container keeps its own file, other skills' run folders, and its
+retrospective at the top of its folder. Its breakdown goes in a `tickets/`
+folder inside it.
 
 ```text
 _bmad-output/
-  initiative-<slug>/
-    initiative-<slug>.md
-    prd-<slug>/  ux-<slug>/  architecture-<slug>/
+  program-<slug>/                     # optional Altitude 0
+    program-<slug>.md
+    prd-program-<slug>/  arch-enterprise-<slug>/
     tickets/
-      tickets.toml                    # the epics, in build order
-      epic-<slug>/
-        epic-<slug>.md
-        epic-<slug>-retrospective.md
+      tickets.toml                    # the initiatives, in build order
+      initiative-<slug>/              # Altitude 1 (or top-level)
+        initiative-<slug>.md
+        prd-<slug>/  ux-system-<slug>/  arch-spine-<slug>/
         tickets/
-          tickets.toml                # the entries, in build order
-          story-<slug>.md             # only when refined or published
-          story-<slug>-plan.md        # written by the build
+          tickets.toml                # the epics, in build order
+          epic-<slug>/                # Altitude 2 (or top-level)
+            epic-<slug>.md
+            epic-<slug>-retrospective.md
+            tickets/
+              tickets.toml            # the entries, in build order
+              story-<slug>.md         # Refined Story (at inception or pickup)
+              story-<slug>-plan.md    # written by the build
   backlog/                            # tickets with no epic, and their plans
 ```
 
-A parent initiative's `tickets.toml` lists child initiatives, each an
-ordinary initiative folder beside it, instead of epics. `tickets.py` refuses
-a tree in the earlier layout, with `tickets.toml` beside the container's own
-file: run `bmad migrate method`.
+A `program-*` container's `tickets.toml` lists child initiatives stored under
+`tickets/initiative-*` (sibling child initiatives remain readable only under a
+legacy parent initiative before converting to `type: program`). `tickets.py`
+refuses a tree in the earlier layout, with `tickets.toml` beside the
+container's own file: run `bmad migrate method`.
 
 ## Ticket Files
 
@@ -130,18 +138,18 @@ of truth: a build reads the file, and Sofia keeps the entry's `id`, `type`, `tit
 ## Epic and Initiative Tables
 
 An initiative's `tickets.toml` holds one `[[epic]]` table per epic, in build
-order. A parent initiative holds `[[initiative]]` tables with the same keys,
-and an initiative with no epics holds `[[entry]]` tables; a file holds one
+order. A `program-*` container holds `[[initiative]]` tables with the same
+keys, and an initiative with no epics holds `[[entry]]` tables; a file holds one
 kind of table.
 
 | Key | Meaning |
 | --- | --- |
 | `id` | Permanent; never reused |
-| `slug` | The epic's folder, inside this `tickets/` folder; for a child initiative, its folder beside the parent's |
-| `title` | The epic's name |
+| `slug` | The child container's folder inside `tickets/` (or a sibling `initiative-*` folder under a legacy parent initiative) |
+| `title` | The epic's or initiative's name |
 | `description` | What is true when it is done |
-| `covers` | The initiative's requirement ids it delivers |
-| `after` | The epics it depends on, as `[{ epic = 1, needs = "…" }]`, or `initiative = 1` in a parent initiative. It declares the dependency; entries pin it with their own `after`, or the epic file's `after` gates every story until that epic is done |
+| `covers` | The parent's requirement ids it delivers |
+| `after` | The epics it depends on, as `[{ epic = 1, needs = "…" }]`, or `initiative = 1` in a `program-*` container. It declares the dependency; entries pin it with their own `after`, or the epic file's `after` gates every story until that epic is done |
 
 `tickets.py status` flags `unpinned_after`, `undeclared_after`, and
 `order_conflict`.

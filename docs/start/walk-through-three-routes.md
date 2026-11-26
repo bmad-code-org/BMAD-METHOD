@@ -342,13 +342,16 @@ The architecture document is now linked to your epics.
 In a new session, ask `/bmad What's next?`. BMad suggests Sofia, to refine the
 first epic and plan its stories; say "Yes."
 
-- When she lists the epic's open questions, each with the answer she
-  recommends, say "Go with your picks."
-- When she proposes the stories, say "Two stories only, to keep the
-  walkthrough short. Both run on my computer, with no deployment yet."
-  Without the last sentence, she may put a production deployment in story 2,
-  which you can't build here.
-- When she shows the stories and asks to save them, say "Yes."
+- If she asks whether to refine with John (`prd-epic`) or Sally (`ux-epic`) in a
+  fresh chat first, say "Skip the epic PRD and fill the epic in from the
+  initiative and UX — we'll keep it light for this walkthrough." Answer any
+  remaining open questions directly (pick the simplest default for the
+  walkthrough).
+- When she proposes the stories, say "Two stories, both running on my computer,
+  with no deployment yet." Without the last phrase, she may include production
+  deployment in story 2, which you can't build here.
+- When she shows the stories and asks to save `tickets.toml` and the refined
+  story files, say "Yes."
 
 ### 8. Build Both Stories
 

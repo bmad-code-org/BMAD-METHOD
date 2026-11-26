@@ -4,71 +4,65 @@ Use this when the work belongs to a team or enterprise: a PRD already exists, a 
 
 ## When the full path is warranted
 
-A single builder, or a small team that already agrees, talks to Sofia the Product Owner (`bmad-agent-po`) to write the initiative and needs no PRD. Recommend the full path (PRD, architecture, requirements on every epic, tracking) only when one of these is true:
+A single builder or small aligned team can work directly from Sofia (`bmad-agent-po`) or `(Story ->) bmad-build` without a formal PRD. Recommend the full path (`prd`, `ux-system` if UI-bearing, `arch-spine`, epic inception, and tracking) when one of these holds:
 
-- People who did not do the thinking must approve what the product is.
-- Several epics, teams, or agents build against the same decisions and must not diverge.
-- A regulator, steering committee, or company process requires named documents.
+- People outside the core builders must review and approve what gets built.
+- Several epics, teams, or parallel coding agents share contracts and must not diverge.
+- A regulator, steering committee, or compliance process mandates named artifacts.
 
-Before any of this, a product manager, designer, or analyst can prototype the idea (`help/prototyping.md`).
+Before committing, an analyst, PM, or designer can prototype to validate the concept (`help/prototyping.md`).
 
 ## An existing PRD is input
 
-- Point John the Product Manager (`bmad-agent-pm`) at the existing PRD. Validate gives a findings report and changes nothing. Create rewrites the same requirements in the shape later skills read, with `[ASSUMPTION]` tags on what it filled in.
-- When the source PRD changes, ask John to update the PRD. Tell the user never to hand-edit `prd-<slug>.md`.
-- Sally (`bmad-agent-ux-designer`) starts from the existing design system. Winston (`bmad-agent-architect`) reads the initiative and takes the existing architecture document or codebase as input beside it.
-- When the PRD and a ticket's Requirements disagree, the ticket's Requirements win and the PRD is a source: Sofia surfaces the contradiction and the user decides.
+- Point John (`bmad-agent-pm`) at the existing PRD: `validate` yields read-only findings, while `create` reshapes it into an altitude-appropriate `prd` (tagging inferred gaps as `[ASSUMPTION]`). Tell users not to hand-edit generated `prd-<slug>.md` files directly.
+- Sally (`bmad-agent-ux-designer`) builds on any existing design system; Winston (`bmad-agent-architect`) reads the initiative alongside existing architecture docs or live code.
+- When an upstream PRD and Sofia's Minimal Altitude SOT conflict, Sofia surfaces the contradiction for the human to settle.
 
 ## One owner per document
 
-Each document has one skill that writes it, so give it one owner. One person can hold several roles.
+Each artifact has one owning skill, though one person may wear several hats:
 
-| Role | Runs | Owns |
+| Role | Skill | Owns |
 |---|---|---|
-| Analyst | `bmad-agent-analyst` | Any brief, PRFAQ, business case or business requirements document, and their updates |
-| Product manager | `bmad-agent-pm` | `prd-<slug>.md`, any charter, and their updates |
-| Designer | `bmad-agent-ux-designer` | `DESIGN.md`, `EXPERIENCE.md` |
-| Tech lead | `bmad-agent-architect` | The architecture spine and epic tech design |
-| One engineer per epic | `bmad-agent-po`, `bmad-build`, `bmad-retrospective` | That epic's requirements, stories, verdict |
-| Whoever tracks the whole | `bmad-agent-po` | the ticket tree |
+| Analyst | `bmad-agent-analyst` | `brief`, `prfaq`, `opportunity`, `business-case`, `narrative`, `brd`, plus `trigger-map` / `charter` / `experiment` |
+| Product manager | `bmad-agent-pm` | `prd-program`, `prd`, `prd-epic`, `srs`, `pitch`, `launch`, `prototype-plan`, plus `charter` / `experiment` |
+| Designer | `bmad-agent-ux-designer` | `DESIGN.md`, `EXPERIENCE.md`, `BRAND.md`, mockups (`ux-system`, `ux-epic`, `ux-quick`, `brand-identity`) |
+| Architect | `bmad-agent-architect` | `arch-enterprise`, `arch-spine`, `arch-epic` (+ `contract.yaml`), RFCs, readiness, and ADR/security plans |
+| Epic owner | `bmad-agent-po`, `bmad-build`, `bmad-retrospective` | Epic SOT, stories, builds, and epic retrospective |
+| Portfolio / board owner | `bmad-agent-po` | Fractal ticket tree and tracker sync |
 
-Several engineers can each take an epic at once. An epic-level spine inherits the parent spine's decisions as binding.
+Several engineers can execute separate epics in parallel once the parent spine (`arch-spine` / `ux-system`) locks shared boundaries; each epic inherits its parent's invariants and contracts.
 
-## Large initiatives
+## Large initiatives and programs
 
-Epics are an initiative's cohesive capabilities, each something a person could see working by itself, not a split by who builds them.
+Epics slice cohesive capabilities, never team org charts. Thin epics (`refined: false`) wait until Epic Inception to expand: Sofia flags when a fresh-chat `prd-epic` from John is needed, and offers fresh-chat Sally (`ux-epic`) and Winston (`arch-epic`) runs before slicing stories.
 
-Slicing writes each epic thin. Before its stories are planned, talk to Sofia the Product Owner to refine it ("refine the booking epic"): an epic with open product questions gets its own PRD from John, and one with none she fills in from the initiative's lines. The user may also add a Sally (`bmad-agent-ux-designer`, `ux-epic`) or Winston (`bmad-agent-architect`, `arch-epic`) run on the epic, or `bmad-deep-recon`. Those runs land in the epic's folder and become its companions.
-
-When the work is more than one initiative's worth, talk to Sofia the Product Owner to propose a parent initiative. It holds the Requirements and decisions its children share and the order between them, and no epics or stories. Each child is an ordinary initiative, planned and built as usual, that names the parent in `sources:`. Set the active initiative to the child being worked, or to the parent to see the whole.
+Work spanning multiple initiatives uses a top-level **`program-<slug>/`** container (`prd-program` for rollout waves and `INIT-01`.. maps, or `charter` for governance, plus `arch-enterprise` when initiatives share technical seams). Nested `tickets/initiative-<slug>/` folders hold each initiative's epics and stories, and `core.active_initiative` points either at the program for rollup or at a specific child initiative.
 
 ## Where sign-off happens
 
-Each moment produces a written result an approval can attach to. Advise placing existing approvals here.
-
-| Moment | What it holds back |
+| Moment | Gate |
 |---|---|
-| Mary's PRFAQ verdict | Writing the PRD |
-| John's PRD validation | Design and architecture work |
-| Architecture spine review | Writing each epic's Requirements |
-| `bmad-agent-po` planning approval | Accepting the breakdown and its dependencies |
-| `bmad-retrospective` verdict | Starting the next epic |
+| Mary's PRFAQ verdict | Committing to a full PRD |
+| John's PRD validation | Downstream UX and architecture alignment |
+| Architecture spine review | Expanding child epics |
+| `bmad-agent-po` slicing approval | Locking the breakdown and dependencies |
+| `bmad-retrospective` verdict | Closing an epic and pulling the next |
 
-Mary's PRFAQ runs headless when told so, and `bmad-retrospective` accepts `-H`, to run without a conversation.
+Mary's PRFAQ supports headless mode when requested, and `bmad-retrospective` accepts `-H` for non-interactive runs.
 
 ## When requirements change
 
-Reviewers ask for changes in whichever document they are reading. Apply the change to the document that owns it, then re-run the later skills.
+Apply changes in the owning source document first, then cascade downstream in fresh chats:
 
-1. Ask John to update the PRD. He surfaces conflicts with earlier decisions before applying anything.
-2. Talk to Sofia the Product Owner to update the initiative's Requirements from the PRD. Requirement ids stay stable, and she names the epics and stories that no longer match.
-3. Ask Winston (`bmad-agent-architect`) to update the architecture spine when a decision shared across epics changes; he reads the updated initiative.
-4. Talk to Sofia the Product Owner to re-slice them. Existing plans retain status.
+1. Ask John to update the owning `prd` or `prd-epic` (which surfaces conflicts with prior decisions).
+2. Ask Sofia to reconcile the updated source into the ticket tree while keeping `R<n>` ids stable and flagging stale stories.
+3. Ask Winston (`bmad-agent-architect`) to update `arch-spine` or `arch-epic` if cross-epic or seam contracts shifted.
+4. Have Sofia re-slice or drop affected entries while preserving live plans and completed work.
 
-For a change that threatens the plan itself, talk to Sofia the Product Owner to replan first: "this changed, what now".
+For mid-build pivots or technical blockers, start with Sofia (`"this changed, what now"`) to `REPLAN` before writing new code.
 
 ## Tracker integration
 
-- Nothing syncs with Jira or any tracker automatically, in either direction.
-- Repo-store status lives in each joined plan. Builds stop at `built`; the user or orchestrator marks `done`.
-- Sofia can publish tickets to Jira, Linear, or GitHub. When she runs, the tracker's status is read into the leaf file as `tracker_status`. The build's own `status` stays in its separate joined plan; tracker status never drives the build (`help/ticketing-and-epics.md`).
+- Nothing syncs automatically with Jira, Linear, or GitHub Issues. Publication follows `publication`: `at_inception` offers to publish the agreed set after validation, while `on_start` publishes each unpublished ticket when the user approves starting it (headless runs follow the configured policy, and explicit requests publish anytime).
+- Each story's local plan tracks `status` (builds stop at `built` for human or orchestrator `done` sign-off), independent of `tracker_status` on leaf files (`help/ticketing-and-epics.md`).

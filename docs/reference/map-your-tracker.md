@@ -20,7 +20,7 @@ does the same job:
 
 | What the level does here                                 | BMad level        |
 | -------------------------------------------------------- | ----------------- |
-| Groups several product efforts, such as a program        | Parent initiative |
+| Groups several product efforts, such as a program        | Program           |
 | One outcome with its own requirements                    | Initiative        |
 | One increment that closes once its Done when holds       | Epic              |
 | One change that fits a single build session              | Story, bug, spike |
