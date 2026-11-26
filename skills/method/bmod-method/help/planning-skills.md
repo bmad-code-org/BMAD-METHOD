@@ -10,7 +10,7 @@ Sofia owns the **Minimal Altitude SOT** (`program-*.md`, `initiative-*.md`, `epi
 - **Slicing & picks:** Adopts `prd-program`, `prd`, and `prd-epic` Section 9 maps verbatim. Her picks stay strictly within slicing, ordering, and board mechanics; on non-PRD inputs with no success measure, she asks what proves the work succeeded and how it will be measured, mapping every OKR baseline to an owning epic or flagging unmapped gaps.
 - **Pick when:** Distilling any finished analysis/planning output into a container SOT, reconciling newly added UX/arch companions, slicing work, managing board status, or replanning mid-flight.
 - **Not when:** Product discovery or UX design still needs open-ended exploration — hand off to John or Sally in a fresh chat rather than having Sofia invent product answers.
-- **Writes:** `<type>-<slug>/<type>-<slug>.md` under `{output_folder}/{active_initiative}/`, `.memlog.md`, `tickets/tickets.toml`, Refined Story files (`story-<slug>.md`), and `{output_folder}/backlog/` leaves.
+- **Writes:** The container's `<type>-<slug>.md` and `.memlog.md` in `{output_folder}/{active_initiative}/`, `tickets/tickets.toml` and nested child containers (`tickets/<type>-<slug>/`), Refined Stories (`story-<slug>.md`), and `{output_folder}/backlog/` leaves.
 
 ## John — Product Manager (`bmad-agent-pm`)
 

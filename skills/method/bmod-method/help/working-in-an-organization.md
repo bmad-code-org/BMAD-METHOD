@@ -4,7 +4,7 @@ Use this when the work belongs to a team or enterprise: a PRD already exists, a 
 
 ## When the full path is warranted
 
-A single builder or small aligned team can work directly from Sofia (`bmad-agent-po`) or `(Story ->) bmad-build` without a formal PRD. Recommend the full path (`prd`, `ux-system`, `arch-spine`, epic inception, and tracking) when one of these holds:
+A single builder or small aligned team can work directly from Sofia (`bmad-agent-po`) or `(Story ->) bmad-build` without a formal PRD. Recommend the full path (`prd`, `ux-system` if UI-bearing, `arch-spine`, epic inception, and tracking) when one of these holds:
 
 - People outside the core builders must review and approve what gets built.
 - Several epics, teams, or parallel coding agents share contracts and must not diverge.
@@ -37,7 +37,7 @@ Several engineers can execute separate epics in parallel once the parent spine (
 
 Epics slice cohesive capabilities, never team org charts. Thin epics (`refined: false`) wait until Epic Inception to expand: Sofia flags when a fresh-chat `prd-epic` from John is needed, and offers fresh-chat Sally (`ux-epic`) and Winston (`arch-epic`) runs before slicing stories.
 
-Work spanning multiple initiatives uses a top-level **`program-<slug>/`** container (`prd-program` for rollout waves and `INIT-01`.. maps, or `charter` for governance, plus `arch-enterprise`). Nested `tickets/initiative-<slug>/` folders hold each initiative's epics and stories, and `core.active_initiative` points either at the program for rollup or at a specific child initiative.
+Work spanning multiple initiatives uses a top-level **`program-<slug>/`** container (`prd-program` for rollout waves and `INIT-01`.. maps, or `charter` for governance, plus `arch-enterprise` when initiatives share technical seams). Nested `tickets/initiative-<slug>/` folders hold each initiative's epics and stories, and `core.active_initiative` points either at the program for rollup or at a specific child initiative.
 
 ## Where sign-off happens
 

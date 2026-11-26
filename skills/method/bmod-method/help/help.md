@@ -51,7 +51,7 @@ Altitude comes from blast radius, never from team size or session count. When ge
 | Two or more capabilities sharing outcomes, invariants, or nouns | **Initiative** (`initiative-<slug>/`) | Thin Spine `prd` (+ optional `ux-system`, `arch-spine`) then Sofia; or Sofia directly if settled | John (`prd`) then Sofia (`initiative-*.md`) |
 | Multiple initiatives serving one larger goal, theme, or program | **Program** (`program-<slug>/`, optional) | Loosely coupled goal/theme: Mary (`narrative` or `charter`) + Sofia (`program-*` rollup), skipping `arch-enterprise`; technically coupled waves: John (`prd-program`) + Winston (`arch-enterprise`) | John (`prd-program`), Mary (`narrative`/`charter`), Sofia (`program-*.md`) |
 
-A project's `core.active_initiative` can point directly at any top-level container (`program-*`, `initiative-*`, or standalone `epic-*`).
+A project's `core.active_initiative` can point at any container (`program-*`, `initiative-*`, or `epic-*`), top-level or nested.
 
 ## Routing
 
@@ -87,7 +87,8 @@ flowchart TD
     F1 --> F
     F -->|"Sliced, containers remain"| H
 
-    H{"Epic state (or child initiative -> its epics)"} -->|"refined: false"| S7{"Open product discovery?"}
+    H{"Child container state"} -->|"Unsliced child initiative"| F
+    H -->|"Epic refined: false"| S7{"Open product discovery?"}
     S7 -->|"Yes"| J1["Fresh chat: John (prd-epic) -> inline parent updates"]
     S7 -->|"No / user says skip"| S7b["Sofia fills epic-* SOT directly"]
     J1 --> S7b
@@ -95,7 +96,7 @@ flowchart TD
     UX -->|"Yes (fresh chat each)"| UX1["Offer Sally (ux-epic) before slicing; Winston (arch-epic) for contracts/migrations"]
     UX -->|"No"| S3
     UX1 --> S3
-    H -->|"refined: true, no entries"| S3["Sofia slices chunky journey stories in tickets.toml + authors Refined Stories (or at pickup if left thin)"]
+    H -->|"Epic refined: true, no entries"| S3["Sofia slices chunky journey stories in tickets.toml + authors Refined Stories (or at pickup if left thin)"]
     H -->|"Entry refined or ready"| I["Fresh chat per story: bmad-build (or bmad-build-auto) -> Review -> Human marks done"]
     H -->|"Blocked or mid-build change"| S6["Sofia settles/spikes or REPLANs"]
     I --> H
@@ -134,7 +135,7 @@ Rules the routing rests on:
 
 ## The skills
 
-Paths resolve under `{output_folder}/{active_initiative}/` (where `active_initiative` holds any top-level `program-*`, `initiative-*`, or `epic-*` container), or `{output_folder}/` when none is active. Each facilitated run creates a `<type>-<slug>/<type>-<slug>.md` folder, and epic-level runs land inside their epic (`<epic>/<template id>-<slug>/`).
+Paths resolve under `{output_folder}/{active_initiative}/` (where `active_initiative` holds any `program-*`, `initiative-*`, or `epic-*` container — top-level or nested), or `{output_folder}/` when none is active. Each facilitated run creates a `<type>-<slug>/<type>-<slug>.md` folder, and epic-level runs land inside their epic (`<epic>/<template id>-<slug>/`).
 
 Standalone skills — Winston's technical docs, Sally's branding/websites/audits/quick UX, Mary's pre-commitment docs, `bmad-build`, and `bmad-agent-po` container creation — work without an active initiative. Managing `active_initiative` is a `bmad` command; `planning_artifacts` and `implementation_artifacts` are obsolete.
 
