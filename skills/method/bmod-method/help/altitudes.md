@@ -2,7 +2,7 @@
 
 Read this when the user asks why BMad uses four altitudes, how the fractal tree works, what the Coupling Test decides, how changes ripple upward, or how Specs, Tickets, Refined Stories, and Build Plans differ.
 
-BMad v7 replaces heavyweight upfront PRDs and separate ad-hoc fast tracks with one mirrored **Intent-Spec Tree** (`(Program) -> Initiative -> Epic -> Story`). Product, UX, and Architecture refine together just in time, entered at the lowest altitude that holds the blast radius.
+BMad v7 replaces heavyweight upfront PRDs and separate ad-hoc fast tracks with one mirrored **Intent-Spec Tree** (`Story -> Epic -> Initiative`, plus an optional `Program` umbrella above them when work spans multiple initiatives). Product, UX, and Architecture refine together just in time, entered at the lowest altitude that holds the blast radius.
 
 ## Theory of altitudes
 
@@ -10,10 +10,12 @@ Every altitude above Story manages only the seams between its direct children. A
 
 | Altitude | Horizon | Product Spec | UX Spec | Architecture Spec |
 |---|---|---|---|---|
-| **0. Program** (optional) | 1–2 yr wave | North Star, wave OKRs, enterprise invariants, `INIT-01`.. map, rollout (`prd-program` or `charter`) | Optional brand and system standards (`ux-system`) | Enterprise spine (`arch-enterprise`): domain ownership, cross-domain contracts |
-| **1. Initiative** (thin spine) | Upfront (days) | Problem, non-goals, tiered `OKR-N`, `INV-N`, shared nouns, `E01`.. stubs, zero FRs (`prd`) | System UX (`ux-system`): `DESIGN.md` tokens, `EXPERIENCE.md` IA, accessibility | System spine (`arch-spine`): stack, seams, auth/tenancy, telemetry, Contract Index |
-| **2. Epic** (inception) | Just in time | `E0X-FR-xx`, deep journeys, rules, target OKR band, Chunky Story Map (`prd-epic` by judgment) | Epic UX (`ux-epic`): inherits `DESIGN.md`; flows, states, microcopy, mockups (or `ux-quick`) | Epic tech design (`arch-epic`): migrations, payloads, state flows vs live code (+ `contract.yaml`) |
 | **3. Story** (verification unit) | Epic inception or pickup | End-to-end behavior citing `E0X-FR-xx`, Given/When/Then functional + measurement ACs | Specific `EXPERIENCE.md#<section>` and mockup files cited per UI story | Ephemeral `story-<slug>-plan.md` (`bmad-build`): files, tasks, tests, `context:` contracts |
+| **2. Epic** (inception) | Just in time | `E0X-FR-xx`, deep journeys, rules, target OKR band, Chunky Story Map (`prd-epic` by judgment) | Epic UX (`ux-epic`): inherits `DESIGN.md`; flows, states, microcopy, mockups (or `ux-quick`) | Epic tech design (`arch-epic`): migrations, payloads, state flows vs live code (+ `contract.yaml`) |
+| **1. Initiative** (thin spine) | Upfront (days) | Problem, non-goals, tiered `OKR-N`, `INV-N`, shared nouns, `E01`.. stubs, zero FRs (`prd`) | System UX (`ux-system`): `DESIGN.md` tokens, `EXPERIENCE.md` IA, accessibility | System spine (`arch-spine`): stack, seams, auth/tenancy, telemetry, Contract Index |
+| **0. Program** (optional multi-initiative) | Across initiatives | Outcome, tiered `OKR-N`, shared guardrails, `INIT-01`.. map (`narrative`/`charter` when loose; `prd-program` when coupled) | Optional shared brand/system standards (`ux-system`) | Skip when initiatives are independent; add `arch-enterprise` when initiatives share cross-domain seams |
+
+The optional `Program` layer scales by coupling rather than company size: independent initiatives serving a shared strategic goal or theme need only a light `narrative` or `charter` plus Sofia's `program-*` rollup, while technically coupled initiatives add `prd-program` and `arch-enterprise`.
 
 ## The coupling test
 

@@ -4,7 +4,7 @@ This document covers the skills of the `method` module: what each one gives the 
 
 ## How the method works
 
-BMad v7 organizes work as one **Intent-Spec Tree** across four altitudes: `(Program) -> Initiative -> Epic -> Story`. Enter at the lowest altitude whose blast radius contains the work, and promote upward only if hidden coupling surfaces.
+BMad v7 organizes work as one **Intent-Spec Tree** across three everyday altitudes (`Story -> Epic -> Initiative`), with an optional `Program` umbrella above them when a larger goal, theme, or program spans multiple initiatives. Enter at the lowest altitude whose blast radius contains the work, and promote upward only if hidden coupling surfaces.
 
 **Any intent feeds Sofia's Minimal Altitude SOT.** Whether the input is a PRD, BRD, brief, PRFAQ, UX design, `bmad-ingest` transcript, or plain notes, Sofia (`bmad-agent-po`) owns the `program-*.md`, `initiative-*.md`, or `epic-*.md` spec at that altitude.
 
@@ -49,7 +49,7 @@ Altitude comes from blast radius, never from team size or session count. When ge
 | One bounded story (one or more build sessions) | **Story** | `(Story ->) bmad-build` (bring a `backlog/` story or start inline with Amelia's 60s micro-preamble + 1-line success signal) | `bmad-build` (or Sofia for `backlog/`) |
 | One cohesive capability spanning multiple stories | **Epic** (`epic-<slug>/`) | Real stakes & open discovery: `prd-epic` (auto Mini-Spine); hobby or already settled: Sofia directly | John (`prd-epic`) then Sofia (`epic-*.md`) |
 | Two or more capabilities sharing outcomes, invariants, or nouns | **Initiative** (`initiative-<slug>/`) | Thin Spine `prd` (+ optional `ux-system`, `arch-spine`) then Sofia; or Sofia directly if settled | John (`prd`) then Sofia (`initiative-*.md`) |
-| Multiple initiatives / 6+ domains / multi-year ecosystem | **Program** (`program-<slug>/`) | `prd-program` default (`charter` when governance/mandate is the question) + optional `arch-enterprise` | John (`prd-program`), Mary (`charter`), Sofia (`program-*.md`) |
+| Multiple initiatives serving one larger goal, theme, or program | **Program** (`program-<slug>/`, optional) | Loosely coupled goal/theme: Mary (`narrative` or `charter`) + Sofia (`program-*` rollup), skipping `arch-enterprise`; technically coupled waves: John (`prd-program`) + Winston (`arch-enterprise`) | John (`prd-program`), Mary (`narrative`/`charter`), Sofia (`program-*.md`) |
 
 A project's `core.active_initiative` can point directly at any top-level container (`program-*`, `initiative-*`, or standalone `epic-*`).
 
@@ -117,7 +117,7 @@ Rules the routing rests on:
 |---|---|---|
 | One bounded feature or tool needing two build sessions | `(Story ->) bmad-build` | Session count never forces an initiative; Amelia runs a 60s micro-preamble + 1-line success signal inline and promotes only if coupling surfaces. |
 | One capability needing a few stories, no multi-epic initiative | `epic-<slug>/`: John (`prd-epic`) for real stakes, or Sofia directly for hobby/settled | Standalone top-level epics include an auto Mini-Spine Preamble and lift cleanly into an initiative later if needed. |
-| Work spans multiple initiatives or 6+ domains | `program-<slug>/`: John (`prd-program`) default, Mary (`charter`) for governance, Winston (`arch-enterprise`), Sofia (`program-*`) | `program-*` governs wave OKRs, cross-domain contracts, and nested `tickets/initiative-*` rollups. |
+| Work spans multiple initiatives serving one goal, theme, or program | `program-<slug>/`: Mary (`narrative` or `charter`) + Sofia (`program-*`) when initiatives are independent; John (`prd-program`) + Winston (`arch-enterprise`) when initiatives share cross-domain seams | Scales by coupling rather than company size: independent initiatives share an outcome rollup without enterprise architecture, while coupled waves coordinate contracts and rollout. |
 | "Create a spec", "write the initiative", "distill this PRD", "slice this", "what's ready", "replan", "ask Sofia" | Sofia (`bmad-agent-po`) | Dispatches to her capabilities (SPEC, TICKETS, REFINE, BOARD, VALIDATE, REPLAN, STORE); asked, she lists them. |
 | "Create/update/validate a PRD", "draft the program charter", "shape a pitch", "plan the launch", "ask John" | John (`bmad-agent-pm`) | Coaches, updates, or validates product documents across `prd-program`, `prd`, `prd-epic`, `srs`, `pitch`, `launch`, `prototype-plan`, `charter`, and `experiment`. |
 | "Write a brief", "create a PRFAQ", "write the BRD", "business case", "strategy narrative", "market research", "ask Mary" | Mary (`bmad-agent-analyst`) | Runs BRAINSTORM, RESEARCH, and CONTEXT, and facilitates upstream analysis docs (`brief`, `prfaq`, `opportunity`, `business-case`, `narrative`, `brd`, `charter`, `experiment`, `trigger-map`). |

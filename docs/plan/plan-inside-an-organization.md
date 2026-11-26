@@ -147,7 +147,7 @@ Each epic starts thin, with its scope agreed and its detail left open. Ask Sofia
 
 ## More Than One Initiative
 
-When the work spans multiple initiatives, such as a program of several products, use a top-level `program` container (`program-<slug>/`) with `prd-program` (or `charter` when governance is the question) and `arch-enterprise`. Nested `tickets/initiative-<slug>/` folders hold each child initiative's own epics and stories, citing the program's invariants and OKRs. Set `active_initiative` to the child initiative being worked on, or to the `program-<slug>` folder to see the whole program.
+When work spans multiple initiatives serving a larger strategic goal, theme, or delivery program, use a top-level `program` container (`program-<slug>/`) scaling by coupling: Mary's `narrative` or `charter` plus Sofia's rollup when the child initiatives are independent, or `prd-program` and `arch-enterprise` when they share cross-domain seams. Nested `tickets/initiative-<slug>/` folders hold each child initiative's own epics and stories, citing any shared invariants and OKRs. Set `active_initiative` to the child initiative being worked on, or to the `program-<slug>` folder to see the whole effort.
 
 ## When Requirements Change Mid-Flight
 
