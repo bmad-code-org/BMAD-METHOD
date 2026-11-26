@@ -265,9 +265,11 @@ design and architecture to the initiative, split it into an epic, refine it,
 and plan its stories; say "Yes."
 
 - When she lists where the design and architecture differ from the
-  requirements, say "Go with your picks."
+  requirements, say "Side with the architecture and UX."
 - When she proposes epics, say "One epic for now: check in or lose the room."
-- When she lists the epic's open questions, say "Go with your picks."
+- If she asks whether to run an epic PRD with John first or lists open epic
+  questions, say "Skip the epic PRD and fill the epic in from the initiative,
+  UX, and architecture — use the simplest defaults for this walkthrough."
 - When she proposes the stories, say "As few as you can, each one build
   session. All on my computer, with the tablet as a browser window."
 - When she shows the stories, say "Yes."

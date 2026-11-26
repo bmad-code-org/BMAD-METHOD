@@ -156,7 +156,7 @@ different way of delivering.
 | Build session | One goal: roughly 500 changed lines, not counting tests, in a handful of files, started in a fresh chat | The build offers to split a request with two independent goals; on a split it writes the rest to `deferred-work.md` |
 | Story | One complete capability a person can see working end to end; an epic may have one, or a few | Sofia merges one that cannot be verified as an outcome by itself; setup and production delivery are part of a story, not stories of their own; the steps inside a story are the build's plan, never tickets |
 | Epic | One cohesive capability: something a person could see working by itself | One that takes an "and" joining two things which each stand alone is two epics; an epic may have a single story |
-| Initiative | Several epics toward one outcome | Work bigger than one initiative gets a parent initiative over several initiatives, not epics inside epics |
+| Initiative | Several epics toward one outcome | Work spanning multiple initiatives uses a `program` container (`program-*`) holding child initiatives (`tickets/initiative-*`), not epics inside epics |
 
 Sofia sizes stories and epics by judgment, and `tickets.py` checks no size. A
 story that turns out too big usually surfaces when the build offers a split.

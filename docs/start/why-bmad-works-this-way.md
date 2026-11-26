@@ -32,8 +32,8 @@ Where it's decided: [commit b284c68](https://github.com/bmad-code-org/BMAD-METHO
 ## Size the Work Before Planning It
 
 Sofia sizes new work first and says which path it takes: one bug or story on
-its own, one epic, an initiative of several epics, or a parent initiative when
-the work is more than one initiative's worth. The level comes from the work
+its own, one epic, an initiative of several epics, or a program (`program-*`)
+when the work spans several initiatives. The level comes from the work
 itself: one story is a story, more than one story of one capability is an
 epic, and several capabilities are an initiative. Epics are the initiative's
 cohesive capabilities, not a split by who builds them.

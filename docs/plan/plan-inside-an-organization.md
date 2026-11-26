@@ -147,7 +147,7 @@ Each epic starts thin, with its scope agreed and its detail left open. Ask Sofia
 
 ## More Than One Initiative
 
-When the work is more than one initiative's worth, such as a program of several products, Sofia proposes a parent initiative instead of nesting deeper. The parent holds the requirements and decisions its children share and the order between them; it has no epics or stories of its own. Each child is an ordinary initiative with its own epics and stories, citing the parent's requirements. Set the active initiative to the child being worked on, or to the parent to see the whole program.
+When the work spans multiple initiatives, such as a program of several products, use a top-level `program` container (`program-<slug>/`) with `prd-program` (or `charter` when governance is the question) and `arch-enterprise`. Nested `tickets/initiative-<slug>/` folders hold each child initiative's own epics and stories, citing the program's invariants and OKRs. Set `active_initiative` to the child initiative being worked on, or to the `program-<slug>` folder to see the whole program.
 
 ## When Requirements Change Mid-Flight
 

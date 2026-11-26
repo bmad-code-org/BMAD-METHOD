@@ -224,11 +224,47 @@
     "expect": "bmad-agent-architect"
   },
   {
+    "query": "design the epic tech architecture and API contract against the live codebase",
+    "expect": "bmad-agent-architect"
+  },
+  {
+    "query": "run an agentic codebase readiness assessment on this repository",
+    "expect": "bmad-agent-architect"
+  },
+  {
+    "query": "write a build-vs-buy tech evaluation and architecture decision record",
+    "expect": "bmad-agent-architect"
+  },
+  {
     "query": "lets plan the UX for the onboarding flow",
     "expect": "bmad-agent-ux-designer"
   },
   {
+    "query": "create the DESIGN.md visual tokens and EXPERIENCE.md UX system for this product",
+    "expect": "bmad-agent-ux-designer"
+  },
+  {
+    "query": "build a corporate brand identity and logo kit for our company",
+    "expect": "bmad-agent-ux-designer"
+  },
+  {
+    "query": "audit our existing UI for usability, edge states, and accessibility",
+    "expect": "bmad-agent-ux-designer"
+  },
+  {
+    "query": "ask Amelia how much review this change needs",
+    "expect": "bmad-agent-dev"
+  },
+  {
+    "query": "build the ready tickets in this epic unattended while I am away",
+    "expect": "bmad-agent-dev"
+  },
+  {
     "query": "what should I do next?",
+    "expect": "bmad"
+  },
+  {
+    "query": "I have a single-capability feature with three stories — where do I start in BMad?",
     "expect": "bmad"
   },
   {

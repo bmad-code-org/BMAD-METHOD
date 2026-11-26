@@ -1,49 +1,44 @@
 # Setting up and driving the ticket tree with Sofia
 
-Use this when a user asks how to set up or drive the ticket tree with Sofia (`bmad-agent-po`). For the shared ticket-tree design, see `help/ticketing-and-epics.md`.
+Use this when a user asks how to set up or drive the ticket tree with Sofia (`bmad-agent-po`). For the shared layout and file roles, see `help/ticketing-and-epics.md`.
 
 ## Where the store lives
 
-- The ticket tree is the folder `active_initiative` names under `output_folder`: an initiative with its epics inside, a single epic, or a backlog folder of epics or one-off stories, as the user wants. Tickets with no epic go in `{output_folder}/backlog/`. With no active folder, Sofia offers to create one and record it.
-- An epic's stories are entries in its `tickets.toml`; a story gets a markdown file only when it is reviewed, refined, or published. Tickets with no epic are markdown files.
-- `output_folder` is `_bmad-output` unless changed under `[core]` in `_bmad/custom/config.toml` (committed, applies to the team).
+- `core.active_initiative` under `core.output_folder` (`_bmad-output` by default, configurable in `_bmad/custom/config.toml`) accepts any fractal container root (`program-*`, `initiative-*`, `epic-*`, or a nested path like `program-shop/tickets/initiative-checkout`). Standalone one-offs go in `{output_folder}/backlog/`.
+- Epic stories live as crisp 1–2 sentence `[[entry]]` items in `tickets/tickets.toml` alongside Refined Story files (`story-<slug>.md`, authored at epic inception by default or at pickup if left thin).
 
 ## Several repos
 
-Install BMad in the workspace folder that holds the repos, put the store there, and start the AI tool from that folder so one session reaches the plan and every repo. Give a new store folder its own `git init`.
+Install BMad in the workspace folder holding all repositories and launch your AI tool from there so one session reaches the store and every repo (`help/monorepo-and-polyrepo.md`). Give a new store folder its own `git init`.
 
 ## Existing planning documents
 
-Copy a brief, PRD, UX design, or architecture into the initiative folder as `<type>-<slug>/<type>-<slug>.md`, for example `initiative-checkout/prd-checkout/prd-checkout.md`. The UX files keep their names, `DESIGN.md` and `EXPERIENCE.md`, inside `ux-<slug>/`. Copy, do not move, so other skills still find their files. Sofia writes the initiative's Requirements from them, each line naming its source id; each epic's lines are cut from those, and the stories cite their epic's `R<n>` ids.
+Place or run briefs, PRDs, UX (`DESIGN.md`, `EXPERIENCE.md`, mockups), and architecture docs as `<type>-<slug>/` folders inside the container they belong to (`<epic>/ux-epic-<slug>/` for epic runs). `tickets.py status` reports unadopted runs in one pass so Sofia reconciles them into `companions:` / `sources:` and surfaces contradictions without dropping anything.
 
 ## Trackers
 
-- Tickets are files in the store unless the user connects a tracker: "set up the ticket store", or "reconfigure the ticket store" to change it later. Nothing needs setting up for the repo store.
-- The choice goes in `_bmad/custom/ticketing-store-config.toml`. It holds only what the project sets, such as the tracker's project key; a key added there overrides the skill's default for that tracker.
-- Choices: repo (the default; files under version control, no account), GitHub Issues, Jira, Linear, Notion, or Trello. Sofia checks the needed CLI or connection at setup.
-- Repo is the most tested. The trackers are lightly tested.
-- With a tracker, the markdown files stay the working copy. Nothing syncs on its own: files and tracker line up only when the user asks Sofia. She never pushes.
+- The repo store (versioned Markdown + `tickets.toml`) is the default and most tested; external trackers (GitHub Issues, Jira, Linear, Notion, Trello) are configured via `"set up the ticket store"` into `_bmad/custom/ticketing-store-config.toml` and remain lightly tested.
+- With a tracker, Markdown files stay the working copy and sync only when the user asks Sofia (`"Publish the tickets"`). Sofia never pushes git branches.
 
 ## What the user says
 
 | Say | Result |
 |---|---|
-| "Split this initiative into epics" | Proposes epic boundaries and records the agreed order in the initiative's `tickets.toml`. Each epic file is written thin, with `refined: false`. |
-| "Refine the booking epic" | With open product questions she hands to John for the epic's PRD; with none she fills the epic in from the initiative's lines and says why it needs no PRD. The user can add design or research to the epic. The epic then gets its Requirements and `refined: true`. |
-| "Plan the first epic's stories" | Plans the whole epic into entries in the epic's `tickets.toml`, in build order, each with an `id` that names it under the epic. No story file is written. |
-| "Refine story 1.2", "review the stories" | Pulls the story's file from its entry if it has none, then reviews and improves it with the user. Full acceptance criteria are written only for a bug, a ticket with no epic, or when the user asks. |
-| "File a bug: ..." | One ticket straight into `backlog/`, with no epic. |
-| "What's ready?", "what's next?" | Lists what is ready to refine, ready to start, in progress, and blocked, for one epic or the whole initiative. |
-| "Start story 1.2" | Checks it is ready to start. On a tracker, publishes it if it is not yet published and moves it to in progress. On the repo store there is nothing to write: run `bmad-build` on it. |
-| "Mark story 1.2 done", "I'm working story 1.2" | Writes `status` in the story's plan through `tickets.py mark`, creating the plan when there is none. Done is only ever the user's, or an orchestrator's, to mark. |
-| "Publish the tickets" | Sends tickets to the tracker, writing each ticket's file first. By default the whole breakdown publishes once approved; with `publication = "on_start"`, each ticket publishes when it starts. On the repo store, approving the breakdown commits it; nothing is published. |
+| "Split this initiative into epics" | Adopts PRD Epic Map verbatim (or proposes cohesive capabilities) in `tickets/tickets.toml`, writing thin `epic-<slug>.md` files (`refined: false`). |
+| "Refine the booking epic" | Evaluates open questions: recommends a fresh chat with John (`prd-epic`) if product discovery is open, else fills the epic SOT directly; offers fresh-chat Sally (`ux-epic`) and Winston (`arch-epic`) when UI or shared contracts apply. |
+| "Plan the first epic's stories" | Slices journey-shaped chunky stories into `tickets.toml` (with `DESIGN.md` / `EXPERIENCE.md#<section>` / mockup / `AD-n` refs) and drafts Refined Stories (`story-<slug>.md`) by default. |
+| "Refine story 1.2", "review the stories" | Pulls or updates `story-<slug>.md` with functional + measurement Given/When/Then ACs and verifies coverage against the epic. |
+| "File a bug: ..." | Creates a standalone ticket directly in `{output_folder}/backlog/`. |
+| "What's ready?", "what's next?" | Reports `ready_to_refine`, `ready_to_start`, `in_progress`, and `blocked` across the active container (rolling up programs recursively). |
+| "Start story 1.2" | Confirms readiness; on external trackers publishes if needed and marks in progress; on the repo store hands off to `bmad-build`. |
+| "Mark story 1.2 done" | Updates `status` in the story's plan via `tickets.py mark`; `done` is always marked by the human or orchestrator. |
+| "Publish the tickets" | Pulls any missing story files first, then pushes to the configured tracker (either all on approval or `on_start`). |
 
 ## Hand-off to bmad-build
 
-- A planned story needs no file. Run `bmad-build` on it: "build story 1.2", naming the epic's id and the story's. The builder reads the entry, its epic, the story file when there is one, and the documents their References name, such as a codebase research document. It plans the story's acceptance criteria from the epic's Requirements and `Done when`, the entry's description, and its `Verify:` check.
-- A story needs no refining before `bmad-build`; the build refines it. Before an unattended run, talk to Sofia the Product Owner to review the stories. A bug, a ticket with no epic, and an entry the user marked `refine = true` get full criteria first; "what's next?" lists these under ready to refine.
-- The build writes its plan, `<type>-<slug>-plan.md`, beside `tickets.toml`. The plan carries the ticket's `status`, which the build moves as far as `built`. After reviewing the work, the user says "mark story 1.2 done".
+- Start a fresh chat and run `bmad-build` on `"build story 1.2"`. Amelia reads the Refined Story (or entry), its epic file, and relevant UX/architecture `companions:` (`DESIGN.md`, `EXPERIENCE.md#<section>`, mockups, `contract.yaml` listed in plan `context:`), walking `parent:` upward only when the epic defers something.
+- `bmad-build` cites Refined Story ACs verbatim inside `<frozen-after-approval>`, keeps its ephemeral task breakdown in `story-<slug>-plan.md` beside `tickets.toml`, and advances `status` as far as `built`.
 
 ## Feedback
 
-Open an issue at github.com/bmad-code-org/BMAD-METHOD with "bmad-agent-po" in the title, or post in the BMad Discord. Useful reports say what was given, asked, produced, and expected.
+Open an issue at `github.com/bmad-code-org/BMAD-METHOD` with `"bmad-agent-po"` in the title, or post in the BMad Discord with what was given, asked, produced, and expected.
