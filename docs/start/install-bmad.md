@@ -43,6 +43,8 @@ Skills run with your coding tool's permissions, so add only customizations you t
 
 Open the coding tool from the project folder and ask the `bmad` skill to run `bmad setup`. Setup installs the shared runtime and module scripts under `_bmad/`. Ask for `bmad status` to verify the installation and versions. Documents and tickets go to `_bmad-output`, inside the active initiative's folder when one is set; ask `bmad` to create or switch one.
 
+Setup also asks whether to install the session-start hook. Answer `on` and it writes an entry into each coding tool's own hook file in the project, such as `.claude/settings.json`, so every new session opens with a short note of the BMad skills installed and when to use them; the tool keeps using its other skills. The default is `off`, and answering `off` later removes the entry. Codex runs project hooks only after you trust them in its `/hooks` menu.
+
 Invoke `bmad-build` with the change you want, or ask `bmad` for guidance. For work spanning repositories, set up at the workspace root so skills can reach both the output folder and code repositories.
 
 ## Update an Installation

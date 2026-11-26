@@ -18,6 +18,8 @@ SETUP_PY = REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts" / "setup.py"
 BMAD_SOURCE = "github:bmad-code-org/BMAD-METHOD/skills"
 SHARED_SCRIPTS = (
     "config_utils.py",
+    "session_start.py",
+    "session_start_hook.py",
     "render_skill.py",
     "resolve_config.py",
     "resolve_customization.py",

@@ -25,6 +25,7 @@ Run with `--status`; it writes nothing. On a first install (`bmad_exists` false)
 - `unknown-version`: the installed copy predates module records; `npx skills update` fixes it.
 - `custom_gitignore` `unprotected`: personal answers may be committed. Only the user edits that `.gitignore`.
 - `newer_copy_unused`: the duplicate in use is older than another copy.
+- `session_start`: the session-start hook the core-tools `session_start_hook` answer asks for, per coding tool with a skills folder in the project. `present` matches the answer, `absent` and `stale` do not, `unreadable` means the tool's hook file is not valid JSON or sits behind a symlink, and setup will not touch it. `owed` true means the Fix step brings the files in line. Relay a host's `note` as written.
 
 Then list what can be done and ask which to do, unless the request already said. End with `next` when it is not null.
 
@@ -45,6 +46,8 @@ Modules carry install messages from their authors: `pre_install_message` and `po
 ```
 
 Then run with no mode flag, adding `--module-answers <file>` when you wrote one, and delete that file after. It refreshes `_bmad/scripts` and each module's scripts, adds the answers, and moves `_bmad/custom/` files of renamed skills (`custom_renames`); it never changes an existing value. Report what changed, `custom_not_renamed` (both files exist: the user merges them) and `custom_unused` (customizations of removed skills). Then show the `post_install_message` of each module whose `scripts` is `created` or whose `version` differs from the kept one, including modules added since; show each message once.
+
+**Session-start hook.** The same run applies the core-tools `session_start_hook` answer. `on` writes or refreshes one `SessionStart` entry in each present coding tool's own hook file (`.claude/settings.json`, `.codex/hooks.json`), merged into what the file already holds; it runs `_bmad/scripts/session_start.py`, which tells the tool at the start of each session which BMad skills are installed and when to use them, and to keep using its other skills. `off` removes only that entry. Report `session_start` by host: `written`, `removed`, `present`, `absent` or `unreadable`, and relay each `note` as written. The files are committed with the project, so teammates get the hook on their next pull. To change the answer later, the user edits `modules.core-tools.session_start_hook` in `_bmad/config.toml` and runs setup again.
 
 **Remove and install.** When a path is `global`, say that deleting it affects every project on this machine.
 
