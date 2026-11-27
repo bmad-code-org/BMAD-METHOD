@@ -83,10 +83,12 @@ Refactor UserService to use async/await instead of callbacks.
 
 `bmad-build` starts from your request and investigates the codebase and any
 upstream planning documents before deciding whether anything material is still
-missing. The input can start rough; clear, evidence-supported requests proceed
-without a clarification turn. When something is unclear, it looks for evidence
-first — only what the repository and planning context cannot settle becomes an
-open question on a finished design, not an interview before work starts.
+missing. When building from a ticket, it trusts the ticket and loads any linked
+UX designs, mockups, and architecture contracts automatically into its plan so
+the implementation stays aligned with them. For standalone requests without a
+ticket, it runs a brief check-in and captures a one-line success signal first.
+When something is unclear, it looks for evidence in the repository before
+asking you anything.
 
 Answer open questions carefully when they appear. A wrong call there is the most
 expensive kind of mistake to find later.

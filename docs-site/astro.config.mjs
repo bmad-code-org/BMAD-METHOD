@@ -294,6 +294,18 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Agents',
+          collapsed: true,
+          items: [
+            { label: 'Mary, Business Analyst', slug: 'agents/mary-analyst' },
+            { label: 'John, Product Manager', slug: 'agents/john-pm' },
+            { label: 'Sofia, Product Owner', slug: 'agents/sofia-po' },
+            { label: 'Sally, UX Designer', slug: 'agents/sally-ux-designer' },
+            { label: 'Winston, System Architect', slug: 'agents/winston-architect' },
+            { label: 'Amelia, Developer', slug: 'agents/amelia-dev' },
+          ],
+        },
+        {
           label: 'Existing Codebases',
           collapsed: true,
           items: [
@@ -350,6 +362,22 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Founder',
+          collapsed: true,
+          items: [
+            { label: 'Founder', slug: 'founder/founder' },
+            { label: 'Money, Fundraising, and Pitch Room', slug: 'founder/numbers-and-pitch-room' },
+          ],
+        },
+        {
+          label: 'Creative',
+          collapsed: true,
+          items: [
+            { label: 'Creative', slug: 'creative/creative' },
+            { label: 'Voice, Writing, and Studio Rooms', slug: 'creative/voice-lint-and-rooms' },
+          ],
+        },
+        {
           label: 'Toolsmith',
           collapsed: true,
           items: [
@@ -378,11 +406,6 @@ export default defineConfig({
           label: 'BMad Ecosystem',
           collapsed: false,
           items: [
-            {
-              label: 'Creative Intelligence Suite',
-              link: 'https://cis-docs.bmad-method.org/',
-              attrs: { target: '_blank' },
-            },
             {
               label: 'Game Dev Studio',
               link: 'https://game-dev-studio-docs.bmad-method.org/',

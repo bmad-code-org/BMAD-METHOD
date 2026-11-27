@@ -17,11 +17,11 @@ epics that share none skip it.
 | Several epics that must share decisions, or decisions that cross systems | Architecture keeps the builds consistent |
 | A regulated, high-risk, or enterprise initiative | Follow your governance; architecture is normally required |
 
-Sally, the UX Designer (`bmad-agent-ux-designer`), coaches UX across altitudes
+Sally, the UX Designer (`bmad-agent-ux-designer`, [guide](../agents/sally-ux-designer.md)), coaches UX across altitudes
 and design jobs through `bmad-facilitate` (`trigger-map`, `brand-identity`,
 `design-direction`, `ux-system`, `ux-epic`, `ux-quick`, `website-design`, and
 `ux-audit`), and
-Winston, the Architect (`bmad-agent-architect`), handles architecture through `bmad-facilitate` (`arch-spine` at initiative level, `arch-epic` on one epic).
+Winston, the Architect (`bmad-agent-architect`, [guide](../agents/winston-architect.md)), handles architecture through `bmad-facilitate` (`arch-spine` at initiative level, `arch-epic` on one epic).
 Both change what `bmad-build` reads, not how it runs: each session still builds
 one story, but every session reads the same decisions, so the parts fit
 together.
@@ -55,9 +55,9 @@ Coaching path starting with `trigger-map`, `brand-identity`, or
 `design-direction` and interactive color themes, design directions, wireframes,
 and key-screen mocks, a dedicated `website-design` blueprint for marketing
 or docs sites, or a two-way handoff with Google Stitch, Claude Design, or Figma
-that folds exports back into `DESIGN.md` and `EXPERIENCE.md`. Point
-`_bmad/custom/bmad-facilitate.toml`'s `style` key at `branding/DESIGN.md` so
-every HTML view BMad generates inherits your brand kit. Change the
+that folds exports back into `DESIGN.md` and `EXPERIENCE.md`. Set the
+core-tools `design_system` setup answer to `branding/DESIGN.md` via `bmad setup`
+so future HTML views, UX runs, and Creative decks inherit your brand kit. Change the
 files later with Sally (`bmad-agent-ux-designer`) in update mode, not by editing the ticket.
 
 ## Settle the Decisions Epics Share

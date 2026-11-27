@@ -1,11 +1,11 @@
 ---
 title: 'How Document Templates Work'
-description: Where the documents John, Mary and bmad-facilitate write come from, and the three ways a team changes one.
+description: Where the documents BMad agents and bmad-facilitate write come from, and the three ways a team changes one.
 sidebar:
   order: 5
 ---
 
-Every document John (`bmad-agent-pm`) and Mary (`bmad-agent-analyst`) write runs through one skill, `bmad-facilitate`, and one markdown template per document type. The template is the whole definition of the document: its sections, what the coach asks for each one, when it pushes back, and what the review checks. To change a document, you change its template, never the skill.
+Every structured document across BMad Method ([Mary](../agents/mary-analyst.md), [John](../agents/john-pm.md), [Sally](../agents/sally-ux-designer.md), [Winston](../agents/winston-architect.md)), [Founder](../founder/founder.md) (Nadia), and [Creative](../creative/creative.md) (Clio) runs through one skill, `bmad-facilitate`, and one markdown template per document type. The template is the whole definition of the document: its sections, what the coach asks for each one, when it pushes back, and what the review checks. To change a document, you change its template, never the skill.
 
 ## A Template Is Facilitation Instructions
 
@@ -44,6 +44,6 @@ Start with an extension. Move to a copy only when your changes outgrow it, becau
 
 When a run starts, the skill merges the template and every extension of it into one file and works from that file alone, the extensions first so their rules win. To see exactly what the coach reads, ask `bmad-customize` to show the merged template; the files its `guidance` and `methods` name are read beside it.
 
-Settings that cover every document, such as doc standards, reviewers, where output goes and whether HTML views are made, live in `_bmad/custom/bmad-facilitate.toml` instead of a template.
+Settings that cover every document (such as doc standards, reviewers, where output goes, default mode, mid-run sketches, whether HTML views are built, and an optional personal voice guide) are all configured through `bmad-customize` instead of editing a template, while a project's shared brand or design system is set during `bmad setup`.
 
 You do not need to know any of this to make a change. Tell `bmad-customize` what you want, such as "every PRD needs a support readiness section", and it decides between an extension, a copy and a setting, writes the file and shows you the merged result. [Customize a Document for Your Team](./customize-a-document-for-your-team.md) walks through all three ways with a real example, [Write a Document Template](./write-a-document-template.md) covers the file format in full, and [Document Templates](../reference/document-templates.md) lists the shipped templates.

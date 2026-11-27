@@ -227,6 +227,6 @@ Ask for a document by name, or describe the work and let the agent pick, say
 why, and name close alternatives. Every document John and Mary write works the
 same way: create, update, or validate. The full list, from the opportunity
 assessment to the launch plan, is in
-[Document Templates](../reference/document-templates.md#documents-john-and-mary-write).
+[Document Templates](../reference/document-templates.md#mary-and-john-analysis-and-product).
 To make every PRD ask the questions your company cares about, see
 [Customize a Document for Your Team](../customize/customize-a-document-for-your-team.md).

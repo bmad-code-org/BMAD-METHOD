@@ -131,7 +131,7 @@ concept, each weakness with what it would take to fix, so you can deal with what
 could sink it before you plan.
 
 If you already believe in the product and want it written down, ask Mary for a
-brief instead; see [Document Templates](../reference/document-templates.md#documents-john-and-mary-write).
+brief instead; see [Document Templates](../reference/document-templates.md#mary-and-john-analysis-and-product).
 
 A throwaway prototype needs no skill: prompt your agent directly. John, the
 Product Manager (`bmad-agent-pm`), writes a prototype plan when you want the

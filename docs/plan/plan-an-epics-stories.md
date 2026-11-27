@@ -72,10 +72,7 @@ the story touches, and widens it from there; that is the build's plan, not a
 story. Cleanup the epic deferred is not a story either: the retrospective
 Sofia offers when the epic closes reports it.
 
-The stories become entries in the epic's `tickets/tickets.toml`, in build
-order. No story file is written: a build plans each story's acceptance
-criteria when it starts, so detail is not written months before it is used.
-A story can wait on a story in another epic, or on a whole epic.
+The stories become entries in the epic's `tickets/tickets.toml` linking any finished design or architecture files, and once the breakdown is agreed Sofia writes each story's detailed acceptance criteria right away by default so coding agents have clear verification checks from the start. If you ask to keep stories thin for later, `bmad-build` clarifies acceptance criteria when it picks each one up. A story can wait on a story in another epic, or on a whole epic.
 
 ### 3. Decide Who Builds What
 
@@ -128,11 +125,9 @@ risk = "medium"
 ```
 :::
 
-### 4. Refine a Story When It Needs It
+### 4. Refine a Thin Story Later
 
-A story needs no refining before an attended build; the build questions you
-itself. Refine it when you want to review a story first or it will run
-unattended:
+Stories detailed when the epic was sliced already carry their acceptance criteria. If you chose to keep an entry thin or changed scope mid-flight, ask Sofia to refine or refresh it before an unattended run or review:
 
 ```text wrap
 /bmad-agent-po refine story 2.3
