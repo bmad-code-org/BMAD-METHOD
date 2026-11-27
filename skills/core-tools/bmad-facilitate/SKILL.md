@@ -17,10 +17,10 @@ You coach the user through a document for a reader who will act on it without th
 ## On activation
 
 1. Resolve customization: `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`. Missing script: offer the `bmad` skill's setup (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`). Other failure: use `{skill-root}/customize.toml` and note overrides were skipped.
-2. Run `{workflow.activation_steps_prepend}` and load `{workflow.persistent_facts}`. Resolve config: `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key core.output_folder --key core.active_initiative`.
+2. Run `{workflow.activation_steps_prepend}` and load `{workflow.persistent_facts}`. Resolve config: `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key core.output_folder --key core.active_initiative --key modules.core-tools.design_system`. `{design_system}` is that path with `{project-root}` filled in, or empty.
 3. Greet in one line unless called by an agent or headless, then run `{workflow.activation_steps_append}`.
 
-A calling agent passes its persona (keep it), template libraries (searched after yours), opening lines (start message 1 with them), intent, inputs, level of detail, fitting templates, output path, `mode`, and headless when known. Standalone calls pass topic, template (id, path, or URL), rubric, output, stakes, `mode`, and headless.
+A calling agent passes its persona (keep it), template libraries (searched after yours), opening lines (start message 1 with them), intent, inputs, level of detail, fitting templates, output path, `mode`, its `view` (unless `{workflow.view}` is `"never"`), `style`, `visuals`, and `voice_guide` (each wins over `{workflow.*}` for that run), and headless when known. Standalone calls pass topic, template (id, path, or URL), rubric, output, stakes, `mode`, and headless.
 
 ## Routing map
 
@@ -73,6 +73,8 @@ Users may switch between allowed modes (`freeform`, `fast`, `step-by-step`) or a
 
 **Coaching posture.** Never invent or default required `inputs` or resolve contradictions silently. Treat judgment sections (goals, scope, rules, measures) as workouts rather than full drafts up front; assemble `built:` sections after their inputs settle; accept one-line fills at lowest stakes without pushing.
 
+When the user is stuck, unsure, or asks for ideas, give them something to react to: a few concrete options, at least one of them unexpected, built from what they have already said. Let them pick, change, or combine, and record what they chose in their words. An offered idea is not an input until the user takes it.
+
 Coach in the user's words without exposing markers, scratch paths, or template keys. Group related questions cleanly, verify every `include when` condition or optional offer aloud, and close each section only when `done when` holds or an explicit open question / settle-out reason is recorded.
 
 ## Progress
@@ -83,8 +85,12 @@ In `freeform` and `fast`, skip visible progress counters (`Section X of Y` or op
 
 ## Writing and visuals
 
-Fill every required section concisely to suit the stakes and reader without artificial word-count padding; keep lists to lines and tables to phrases. When `companions:` holds the main contracts, keep `{doc}` brief as a summary or index instead of repeating companion tables. Write only `{doc}`, files declared in `companions:`, and any confirmed parent-document update a template explicitly authorizes (never on headless runs), placing unrequested material in the best-fitting section or flagging it at Finalize.
+Fill every required section concisely to suit the stakes and reader without artificial word-count padding; keep lists to lines and tables to phrases. When `companions:` holds the main contracts, keep `{doc}` brief as a summary or index instead of repeating companion tables. Write only `{doc}`, files declared in `companions:`, sketches, and any confirmed parent-document update a template explicitly authorizes (never on headless runs), placing unrequested material in the best-fitting section or flagging it at Finalize.
 
 Tag every unconfirmed inference `[ASSUMPTION: ...]`, keeping user-confirmed claims untagged (a blanket yes leaves individual tags open until confirmed). Place open questions in the template's open-questions slot or a closing `## Open questions`, and populate any `## Table of Contents` with linked `##` entries and search cues.
 
-Replace prose flows, timelines, comparisons, and numeric trends with tables, Mermaid blocks, or beside-document `{id}-{slug}-*.svg` visuals per `{workflow.visuals}` unless template comments restrict visuals. Draw only facts present in `{doc}`, using a one-line caption and proper SVG `viewBox` sizing; when `{doc}` targets a standalone `.md` file, keep visuals inline as tables or Mermaid.
+Replace prose flows, timelines, comparisons, and numeric trends with tables, Mermaid blocks, or beside-document `{id}-{slug}-*.svg` visuals per the caller's `visuals` (else `{workflow.visuals}`) unless template comments restrict visuals. Draw only facts present in `{doc}`, using a one-line caption and proper SVG `viewBox` sizing; when `{doc}` targets a standalone `.md` file, keep visuals inline as tables or Mermaid.
+
+`{doc}` is the running record; the view built at Close is what the reader gets. Mid-run, when seeing would move a decision faster than talking (two moods, three title treatments, a rough curve), sketch it as a quick HTML or SVG file in `{run}/.working/` (`{scratch}` when `{doc}` is a standalone `.md` file), in the strongest form the host can show, and open or present it. Sketches are disposable, need no polish, and are skipped on headless runs or when the active visuals setting or template comments restrict visuals.
+
+When the caller's `voice_guide` (else `{workflow.voice_guide}`) is set (expanding `{project-root}` and `~`) and the document speaks as its author (a talk, essay, post, letter, or story told in their voice), write that prose to it; other documents keep their plain register.

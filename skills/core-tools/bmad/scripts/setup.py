@@ -578,8 +578,18 @@ def retired_skills(
     scoped: tuple[InstalledModule, ...],
     installed: tuple[InstalledModule, ...],
 ) -> tuple[Retired, ...]:
-    """Old names the modules renamed or removed. A name an installed module still lists is not retired."""
-    current = {name for module in installed for name in (*module.skills, *module.absent_skills)}
+    """Old names the modules renamed or removed. A name an installed module still lists is not retired,
+    unless that module's own record is retired: a module another one replaced goes whole.
+    """
+    old_names = {
+        name for module in installed for name in (*module.retired.removed, *(r.old for r in module.retired.renamed))
+    }
+    current = {
+        name
+        for module in installed
+        if module.folder not in old_names
+        for name in (*module.skills, *module.absent_skills)
+    }
     retired: list[Retired] = []
     for module in scoped:
         entries = [(rename.old, rename.new) for rename in module.retired.renamed]

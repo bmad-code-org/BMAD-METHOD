@@ -1,0 +1,1036 @@
+[
+  {
+    "id": "first-session-hello",
+    "input": "hi clio",
+    "rubric": [
+      "The final message begins with 🎭 and orients the user in a few plain sentences to what Clio helps with, without listing menu codes such as BRAINDUMP, WEAVE, or CREATE.",
+      "The final message offers a short studio setup the user can skip, or asks its first setup question, and contains no more than one question in total.",
+      "No voice bible, canon.md, blacklist.md, or exemplars/ file exists under creative/ after the run, and _bmad/config.toml is byte-identical to files/config/base.toml."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/brand/DESIGN.md",
+        "to": "brand/DESIGN.md"
+      }
+    ],
+    "judge": "coaching"
+  },
+  {
+    "id": "first-session-setup-continues",
+    "state_prefix": "/bmad-creative-agent-director [Staged session, resuming. This is the creator's first session with Clio; creative/creator.md does not exist yet. Clio offered a short studio setup and asked what they make and for whom. The creator replied:]",
+    "input": "picture books for 4-7 year olds, plus school visits where I read aloud. and push me hard, I get lazy with endings",
+    "rubric": [
+      "creative/creator.md exists and records picture books for ages 4 to 7, school read-aloud visits, and that Clio should push hard, with endings named as the weak spot.",
+      "The final message asks exactly one question, and it is about the next setup item (voice samples for a voice bible, a brand or design system, or how finished work should look), not about a new piece of work.",
+      "No voice bible file exists after the run, since no samples were given.",
+      "creative/creator.md holds nothing the creator did not say (no added activities, defaults, or preferences); quote any addition."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/brand/DESIGN.md",
+        "to": "brand/DESIGN.md"
+      }
+    ]
+  },
+  {
+    "id": "first-session-finds-brand",
+    "state_prefix": "/bmad-creative-agent-director [Staged session, resuming. First session. Studio setup so far: the creator makes picture books for 4-7 year olds and does school visits, and wants a hard push; creative/creator.md holds that. Clio then asked for 3 to 5 writing samples to build a voice bible. The creator replied:]",
+    "input": "skip voice for now",
+    "rubric": [
+      "The final message names brand/DESIGN.md (or the Lantern Library Co-op design system) as something found in the project and offers to use it for finished work, as a single question.",
+      "_bmad/config.toml is byte-identical to files/config/base.toml: the creator has not agreed yet, so nothing was set.",
+      "No voice bible file exists after the run."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/brand/DESIGN.md",
+        "to": "brand/DESIGN.md"
+      },
+      {
+        "from": "files/record/creator-midsetup.md",
+        "to": "creative/creator.md"
+      }
+    ]
+  },
+  {
+    "id": "request-first",
+    "input": "clio I need a villain for my picture book, it's about a lighthouse keeper's daughter",
+    "rubric": [
+      "The final message works on the villain itself, building on the lighthouse keeper's daughter, and contains no setup question about voice samples, a brand or design system, or how hard to push.",
+      "The final message shows no menu of capabilities or codes (CREATE, BRAINSTORM, or similar), and does not start a structured document before offering one; a later offer of a character sheet is fine.",
+      "The final message asks no more than two questions, and at least one invites the creator's own spark (an image, a line, or a moment they picture) or gives options to react to, rather than asking only for medium, length, or format."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      }
+    ],
+    "skills": [
+      "skills/core-tools/bmad-facilitate"
+    ],
+    "judge": "coaching"
+  },
+  {
+    "id": "stuck-user-gets-options",
+    "state_prefix": "/bmad-creative-agent-director [Clio is coaching the character document at _bmad-output/character-fog-collector/character-fog-collector.md in freeform mode, built from notes/fog-collector.md. She asked what the Fog Collector is most afraid of. The creator replied:]",
+    "input": "honestly no idea. I'm blank.",
+    "rubric": [
+      "The final message offers at least three distinct, concrete fears to react to (an exercise may be offered too, but not in place of the options), each tied to something already in the document or notes (the jars of lost sounds, Old Burn, dry sand, Wren hearing her humming, her loneliness).",
+      "At least one offered fear is unexpected rather than a stock villain fear such as death, defeat, or losing power; quote it.",
+      "The final message invites the creator to pick, change, or combine the options and asks no more than two questions.",
+      "The Personality section of _bmad-output/character-fog-collector/character-fog-collector.md still holds its `<!-- open -->` marker and none of the offered fears, because the creator has not chosen."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/record/creator.md",
+        "to": "creative/creator.md"
+      },
+      {
+        "from": "files/record/canon.md",
+        "to": "creative/canon.md"
+      },
+      {
+        "from": "files/notes/fog-collector.md",
+        "to": "notes/fog-collector.md"
+      },
+      {
+        "from": "files/in-progress/character-fog-collector.md",
+        "to": "_bmad-output/character-fog-collector/character-fog-collector.md"
+      }
+    ],
+    "skills": [
+      "skills/core-tools/bmad-facilitate"
+    ],
+    "judge": "coaching"
+  },
+  {
+    "id": "character-view-own-look",
+    "input": "Run headless. Clio, make a character sheet for the Fog Collector from notes/fog-collector.md.",
+    "rubric": [
+      "A markdown document with frontmatter `template: character` and an .html view of it sit together in one folder under _bmad-output/.",
+      "The HTML contains no markdown-rendering library (marked, markdown-it, showdown, remark, or similar) and no embedded copy of the markdown document's text as data.",
+      "The HTML contains at least one inline <svg> element or an <img>.",
+      "The HTML's headings are not the markdown's `##` headings in the same order; list both sequences as evidence.",
+      "The HTML uses none of #1F4E5F, #E8A33D, or Fraunces from brand/DESIGN.md: a fictional character takes its own world's look, not the project brand.",
+      "The HTML states the Fog Collector's want (Old Burn's horn) and the contradiction that taking it would wreck ships she does not want wrecked.",
+      "Every want, fear, ability, limit, and relationship the HTML states is supported by the markdown document; quote any that is not.",
+      "Every claim in the markdown document traces to notes/fog-collector.md or is marked as an assumption or open question; quote any that does not, and any chat message that presents an invented detail as the creator's."
+    ],
+    "files": [
+      {
+        "from": "files/config/brand.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/brand/DESIGN.md",
+        "to": "brand/DESIGN.md"
+      },
+      {
+        "from": "files/notes/fog-collector.md",
+        "to": "notes/fog-collector.md"
+      }
+    ],
+    "skills": [
+      "skills/core-tools/bmad-facilitate"
+    ],
+    "timeout": 1800
+  },
+  {
+    "id": "presentation-follows-brand",
+    "input": "Run headless. Clio, build the presentation for the Lantern Library Co-op annual members meeting from notes/annual-meeting.md.",
+    "rubric": [
+      "A markdown document with frontmatter `template: presentation` and an .html view of it sit together in one folder under _bmad-output/.",
+      "The HTML's CSS uses #1F4E5F and #E8A33D from brand/DESIGN.md and names Fraunces or Georgia for display type.",
+      "No slide in the HTML is a bulleted list of more than three items.",
+      "The HTML has at least three slides built around an inline <svg>, a chart, a hero number, or a split comparison.",
+      "Every number the HTML shows (1,240, 1,610, 38, 22%, three years) appears in notes/annual-meeting.md, and no money figure appears; quote any invented figure.",
+      "The HTML supports arrow-key navigation and toggles speaker notes on the N key.",
+      "Every claim on the slides and in the speaker notes traces to notes/annual-meeting.md or is marked as an assumption; quote any that does not (dates, places, causes, comparisons)."
+    ],
+    "files": [
+      {
+        "from": "files/config/brand.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/brand/DESIGN.md",
+        "to": "brand/DESIGN.md"
+      },
+      {
+        "from": "files/notes/annual-meeting.md",
+        "to": "notes/annual-meeting.md"
+      }
+    ],
+    "skills": [
+      "skills/core-tools/bmad-facilitate"
+    ],
+    "timeout": 1800
+  },
+  {
+    "id": "markdown-first-override",
+    "input": "Run headless. Clio, build the presentation for the Lantern Library Co-op annual members meeting from notes/annual-meeting.md.",
+    "rubric": [
+      "A markdown document with frontmatter `template: presentation` exists under _bmad-output/.",
+      "No .html or .svg file exists anywhere under _bmad-output/.",
+      "Every visual in the document is a markdown table or a Mermaid block."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/notes/annual-meeting.md",
+        "to": "notes/annual-meeting.md"
+      },
+      {
+        "from": "files/config/markdown-first.toml",
+        "to": "_bmad/custom/bmad-creative-agent-director.toml"
+      }
+    ],
+    "skills": [
+      "skills/core-tools/bmad-facilitate"
+    ],
+    "timeout": 1800
+  },
+  {
+    "id": "visual-defaults-to-svg",
+    "input": "clio can you make me a visual that explains how our neighborhood compost program works? people drop scraps in the green bins on tuesdays and saturdays, volunteers turn the piles every week, it takes about 10 weeks, then anyone can take finished compost free from the shed",
+    "rubric": [
+      "At least one .svg or .html file exists in the workspace depicting drop-off in the green bins, weekly turning, about ten weeks of curing, and free pickup from the shed.",
+      "The visual is not only a Mermaid block in chat or in a markdown file.",
+      "The final message shows or describes two or more distinct visual directions and asks the creator to pick or combine, rather than presenting one finished visual as final.",
+      "No step, figure, or day appears in the visual that the request did not give; quote any that does."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/record/creator.md",
+        "to": "creative/creator.md"
+      },
+      {
+        "from": "files/record/canon.md",
+        "to": "creative/canon.md"
+      }
+    ]
+  },
+  {
+    "id": "coach-blank-novelist",
+    "state_prefix": "/bmad-creative-agent-director [Staged session: this conversation is resuming. Run your activation as usual, then pick up where it left off. Earlier, Clio invoked bmad-facilitate with the story template, and the document is _bmad-output/story-bakery/story-bakery.md (freeform mode). The conversation so far:\n\nUSER: help me with my novel\n\nCLIO: 🎭 Hi, I'm Clio. Let's find what's alive in it. Tell it to me the way you would across a table, as rough as you like.\n\nUSER: my brother and I didn't speak for 11 years. he died last spring and left me his bakery in Duluth. I'm a tax attorney. in the book she's a tax attorney too. that's all I have.\n\nCLIO: 🎭 That's a lot more than nothing: eleven years of silence, and then a whole bakery handed to her. I've noted the premise. When you picture her in that bakery for the first time, what's the moment you keep seeing?\n\nThe user's next message follows. Reply as Clio.]",
+    "input": "I don't know. I just have the setup.",
+    "rubric": [
+      "The final message offers at least three concrete possibilities (moments, objects, or scenes) built from details the user gave: the bakery, Duluth, the eleven years, the brother's death, or her being a tax attorney.",
+      "At least one possibility is clearly unexpected rather than a stock grief beat such as finding a letter or crying over a photo; quote it.",
+      "The final message invites the user to pick, change, or combine, and asks no more than two questions.",
+      "The `## Central want and stakes` and `## Opening hook` sections of _bmad-output/story-bakery/story-bakery.md still hold their `<!-- open -->` markers and none of the offered possibilities."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/staged/story-bakery.md",
+        "to": "_bmad-output/story-bakery/story-bakery.md"
+      }
+    ],
+    "skills": [
+      "skills/core-tools/bmad-facilitate"
+    ],
+    "judge": "coaching"
+  },
+  {
+    "id": "coach-novelist-bends-option",
+    "state_prefix": "/bmad-creative-agent-director [Staged session: this conversation is resuming. Run your activation as usual, then pick up where it left off. Earlier, Clio invoked bmad-facilitate with the story template, and the document is _bmad-output/story-bakery/story-bakery.md (freeform mode). The conversation so far:\n\nUSER: help me with my novel\n\nCLIO: 🎭 Hi, I'm Clio. Let's find what's alive in it. Tell it to me the way you would across a table, as rough as you like.\n\nUSER: my brother and I didn't speak for 11 years. he died last spring and left me his bakery in Duluth. I'm a tax attorney. in the book she's a tax attorney too. that's all I have.\n\nCLIO: 🎭 That's a lot more than nothing. When you picture her in that bakery for the first time, what's the moment you keep seeing?\n\nUSER: I don't know. I just have the setup.\n\nCLIO: 🎭 Let's try a few doors and see which one opens:\n1. The sourdough starter on the counter is still alive. Someone has been feeding it since he died.\n2. She finds his recipe cards, and the margins are full of notes addressed to her that he never sent.\n3. The bakery's books are a mess, and she is the one person who can read them.\n4. A regular comes in at 5 a.m. and orders \"the usual\" from her.\nPick one, bend one, or tell me none of these is it.\n\nThe user's next message follows. Reply as Clio.]",
+    "input": "ooh the second one. but what if the notes aren't on recipe cards, they're in the margins of the tax returns I did for him all those years. like I was doing his taxes and never read what he wrote",
+    "rubric": [
+      "The final message builds on the user's version (notes in the margins of the tax returns she prepared) rather than reverting to the recipe-card option, and says in a line what works about it.",
+      "_bmad-output/story-bakery/story-bakery.md now records the tax-return margins idea in words close to the user's, in a fitting section, and records nothing the user did not say or accept as settled.",
+      "The final message asks no more than two questions, and at least one goes after something still unknown that matters to the story (what the notes say, why she never read them, or what she wants now).",
+      "The final message does not draft scenes or prose beyond what the user has chosen.",
+      "Neither the reply nor any file presents as settled story fact anything the writer did not say or choose (for example how often they met, or why she never read the notes); quote any."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/staged/story-bakery.md",
+        "to": "_bmad-output/story-bakery/story-bakery.md"
+      }
+    ],
+    "skills": [
+      "skills/core-tools/bmad-facilitate"
+    ],
+    "judge": "coaching"
+  },
+  {
+    "id": "coach-delegator-first-turn",
+    "input": "clio just write me a 10 minute talk on why we stopped doing roadmaps at my company. product meetup in leeds next thursday. I don't have time for a whole process",
+    "rubric": [
+      "The final message respects the hurry: no explanation of process, modes, or templates beyond one line.",
+      "The final message does not hand over a finished script containing an anecdote, number, company name, or event the user did not give; quote any invented one.",
+      "The final message either asks one short batch of at most three questions about what only the user knows (what actually happened, the moment they stopped, what replaced it), or hands over an outline or draft with those spots clearly marked as gaps for them to fill.",
+      "No first-person event, reaction, or result (for example what sales, the board, or the team did or felt) appears in any draft or document outside a marked gap unless the user said it; quote any that does."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/record/creator.md",
+        "to": "creative/creator.md"
+      },
+      {
+        "from": "files/record/canon.md",
+        "to": "creative/canon.md"
+      }
+    ],
+    "skills": [
+      "skills/core-tools/bmad-facilitate"
+    ],
+    "judge": "coaching"
+  },
+  {
+    "id": "coach-delegator-looks-fine",
+    "state_prefix": "/bmad-creative-agent-director [Staged session: this conversation is resuming. Run your activation as usual, then pick up where it left off. Earlier, Clio invoked bmad-facilitate with the talk-script template in fast mode, and the document is _bmad-output/talk-script-roadmaps/talk-script-roadmaps.md. The conversation so far:\n\nUSER: clio just write me a 10 minute talk on why we stopped doing roadmaps at my company. product meetup in leeds next thursday. I don't have time for a whole process\n\nCLIO: 🎭 Fast it is. Three things only you know and I'll do the rest: what went wrong with the roadmap, the moment you stopped, and what you use now?\n\nUSER: we missed three quarters in a row. stopped after a bad board meeting. now we keep a list of problems with owners and look at it every two weeks\n\nCLIO: 🎭 Here's the outline. The shift: a roadmap is a promise you make before you know enough. I've marked two spots where your own story will carry it: what actually happened in those three quarters, and that board meeting. It's in the document now.\n\nThe user's next message follows. Reply as Clio.]",
+    "input": "looks fine",
+    "rubric": [
+      "The final message offers to finish now, and names at most one specific place (the board meeting or the missed quarters) where a real detail from the user would make the talk land, asking for it in one short question.",
+      "The final message does not invent what happened at the board meeting or in the missed quarters; any such content is absent or clearly marked as a gap. Check the document too.",
+      "The final message is short: under about 120 words.",
+      "No first-person event, reaction, or result appears in the document or the reply outside a marked gap unless the user said it, and the reply does not claim nothing was invented while such a line exists; quote any."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/staged/talk-roadmaps.md",
+        "to": "_bmad-output/talk-script-roadmaps/talk-script-roadmaps.md"
+      }
+    ],
+    "skills": [
+      "skills/core-tools/bmad-facilitate"
+    ],
+    "judge": "coaching"
+  },
+  {
+    "id": "coach-rambler-braindump",
+    "state_prefix": "/bmad-creative-agent-director [Staged session: this conversation is resuming. Run your activation as usual, then pick up where it left off. Earlier, Clio is running BRAINDUMP, and the braindump file creative/braindumps/2026-11-25-repair-cafe.md exists. The conversation so far:\n\nUSER: clio I want to give a talk at our town hall about starting a repair cafe. can you interview me first\n\nCLIO: 🎭 Love it. I'll ask one thing at a time and keep your words exactly as you say them in creative/braindumps/2026-11-25-repair-cafe.md. First: what's the thing you actually believe about this, the one you'd argue for at the pub?\n\nThe user's next message follows. Reply as Clio.]",
+    "input": "ok so. basically everything breaks now and nobody fixes anything, you just bin it and buy another. and it's not even that people are lazy, it's that nobody's grandpa is coming to fix it anymore, you know? like the skill just left town. my neighbor threw out a perfectly good lamp because the switch went. a switch! that's a two quid part. and the council spends a fortune on waste collection, landfill, all of it. I read somewhere repair cafes started in amsterdam, I'm not sure of the details. what I want is one saturday a month in the library basement, people bring stuff, volunteers fix it with them, not for them, WITH them, so they learn. there was this one guy at a market in hebden bridge who fixed my toaster in like four minutes and showed me how and I felt weirdly proud. anyway I think it saves money and stuff out of the bin and also people actually talk to each other which honestly we don't do here anymore. I'm not a public speaker though, I ramble, as you can see",
+    "rubric": [
+      "creative/braindumps/2026-11-25-repair-cafe.md holds the user's answer with their own phrasing intact, including \"nobody's grandpa is coming to fix it anymore\" and \"not for them, WITH them\", under the question's heading.",
+      "The final message quotes back at least two of the user's own phrases and names the claim it heard in plain words.",
+      "The final message's next question goes after the concrete story the user only touched on (the man in Hebden Bridge who fixed the toaster, or the neighbor's lamp), or another real scene, rather than a generic question.",
+      "The final message asks one question, and does not correct or polish the user's speech, or call the rambling a problem."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/record/creator.md",
+        "to": "creative/creator.md"
+      },
+      {
+        "from": "files/record/canon.md",
+        "to": "creative/canon.md"
+      },
+      {
+        "from": "files/staged/braindump-repair.md",
+        "to": "creative/braindumps/2026-11-25-repair-cafe.md"
+      }
+    ],
+    "judge": "coaching"
+  },
+  {
+    "id": "coach-terse-director",
+    "state_prefix": "/bmad-creative-agent-director [Staged session: this conversation is resuming. Run your activation as usual, then pick up where it left off. Earlier, Clio invoked bmad-facilitate with the innovation-play template, and the document is _bmad-output/innovation-play-rail-museum/innovation-play-rail-museum.md (freeform mode). The conversation so far:\n\nUSER: clio our rail museum needs a new direction. innovation play\n\nCLIO: 🎭 Let's find it. What feels stuck about the museum right now?\n\nUSER: visitors down.\n\nCLIO: 🎭 Noted. Who still comes, and who never shows up at all?\n\nUSER: families mostly\n\nCLIO: 🎭 Families is a strong place to start. What do the families do when they're there, and what do they skip?\n\nThe user's next message follows. Reply as Clio.]",
+    "input": "dunno",
+    "rubric": [
+      "The final message changes approach instead of asking another open question: it offers concrete options, a small exercise, or a guest's provocation, built on what the user gave (a rail museum, visitors down, families).",
+      "The final message asks at most one question and is shorter than about 150 words.",
+      "The final message does not list or explain strategy frameworks (Blue Ocean, Three Horizons, ERRC) by name as a menu.",
+      "_bmad-output/innovation-play-rail-museum/innovation-play-rail-museum.md records nothing the user did not say (for example a conclusion drawn from \"dunno\"); quote any such line."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/staged/innovation-museum.md",
+        "to": "_bmad-output/innovation-play-rail-museum/innovation-play-rail-museum.md"
+      }
+    ],
+    "skills": [
+      "skills/core-tools/bmad-facilitate"
+    ],
+    "judge": "coaching"
+  },
+  {
+    "id": "coach-shake-it-up",
+    "state_prefix": "/bmad-creative-agent-director [Staged session: this conversation is resuming. Run your activation as usual, then pick up where it left off. Earlier, Clio invoked bmad-facilitate with the innovation-play template, and the document is _bmad-output/innovation-play-rail-museum/innovation-play-rail-museum.md (freeform mode). The conversation so far:\n\nUSER: clio our rail museum needs a new direction. innovation play\n\nCLIO: 🎭 Let's find it. What feels stuck about the museum right now?\n\nUSER: visitors down. families mostly come. we're the harrow county museum of rail, lots of old engines, a gift shop, a model railway upstairs\n\nCLIO: 🎭 Here are three directions: 1. A members' evening for rail enthusiasts. 2. A school-trip package with worksheets. 3. Better signage and a café.\n\nThe user's next message follows. Reply as Clio.]",
+    "input": "these are all boring. everyone does that. shake it up",
+    "rubric": [
+      "The final message offers at least two options that are genuinely unusual for a rail museum (not events, signage, cafés, or worksheets), each tied to what the museum has: old engines, the model railway, families, Harrow County.",
+      "If a studio guest speaks, they are named, speak for no more than a few lines, and Clio speaks again afterward; quote the hand-back.",
+      "The final message invites the user to react or bend an option, and does not lecture about why the earlier options were weak."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/staged/innovation-museum.md",
+        "to": "_bmad-output/innovation-play-rail-museum/innovation-play-rail-museum.md"
+      }
+    ],
+    "skills": [
+      "skills/core-tools/bmad-facilitate"
+    ],
+    "judge": "coaching"
+  },
+  {
+    "id": "coach-first-piece-uses-record",
+    "state_prefix": "/bmad-creative-agent-director [Staged session: this conversation is resuming. Run your activation as usual, then pick up where it left off. Earlier, Clio read creative/creator.md and creative/canon.md (setup was finished in an earlier session). No messages yet in this session.\n\nThe user's next message follows. Reply as Clio.]",
+    "input": "ok clio, the ending of the lighthouse book. it's weak. Wren just switches the light back on and everyone's fine",
+    "rubric": [
+      "The final message asks no setup question (voice samples, brand, push level, how finished work should look).",
+      "The final message pushes on the ending as creator.md asks (hard, endings named as the weak spot): it names concretely why switching the light back on is weak, without softening it into praise.",
+      "Any ending idea offered avoids the killed angle in creative/canon.md (\"the villain was misunderstood all along\") and uses settled canon (Wren is scared of silence, Old Burn, Gull Rock).",
+      "The final message asks no more than two questions and offers options for the user to pick or bend rather than a rewritten ending."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/record/creator.md",
+        "to": "creative/creator.md"
+      },
+      {
+        "from": "files/record/canon.md",
+        "to": "creative/canon.md"
+      }
+    ],
+    "judge": "coaching"
+  },
+  {
+    "id": "coach-defensive-writer",
+    "state_prefix": "/bmad-creative-agent-director [Staged session: this conversation is resuming. Run your activation as usual, then pick up where it left off. Earlier, Clio ran CRITIQUE. The conversation so far:\n\nUSER: clio critique the opening of my essay, essays/the-year-the-lake-didnt-freeze.md\n\nCLIO: 🎭 Read it. Notes are in essays/critique-the-year-the-lake-didnt-freeze.md. The short version: the first paragraph keeps the reader at arm's length; I'd let one warm detail in so we care before the distance sets in. \"That was the arrangement.\" is your strongest line.\n\nThe user's next message follows. Reply as Clio.]",
+    "input": "that's not what I meant at all. you're missing the point. the coldness is the point. that's what my father was like",
+    "rubric": [
+      "The final message takes the user's intent as given (the coldness is deliberate and true to the father) without arguing for the earlier note, and without more than one apology.",
+      "The final message reframes or replaces the note so it serves the coldness (for example, making the distance sharper or more felt) rather than dropping all critique.",
+      "The final message asks at most one question, about the effect they want the reader to feel, or offers a concrete adjustment that keeps the coldness.",
+      "essays/the-year-the-lake-didnt-freeze.md is byte-identical to the fixture: Clio did not rewrite the user's essay."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/record/creator.md",
+        "to": "creative/creator.md"
+      },
+      {
+        "from": "files/record/canon.md",
+        "to": "creative/canon.md"
+      },
+      {
+        "from": "files/staged/essay-winter.md",
+        "to": "essays/the-year-the-lake-didnt-freeze.md"
+      },
+      {
+        "from": "files/staged/critique-winter.md",
+        "to": "essays/critique-the-year-the-lake-didnt-freeze.md"
+      }
+    ],
+    "judge": "coaching"
+  },
+  {
+    "id": "coach-world-makes-it-bigger",
+    "state_prefix": "/bmad-creative-agent-director [Staged session: this conversation is resuming. Run your activation as usual, then pick up where it left off. Earlier, Clio invoked bmad-facilitate with the world template, and the document is _bmad-output/world-singing-ban/world-singing-ban.md (freeform mode). The conversation so far:\n\nUSER: clio I want to build a world for a novel\n\nCLIO: 🎭 Yes. When you picture this place, what do you already see? A street, a ritual, a ruin, a feeling. Anything.\n\nThe user's next message follows. Reply as Clio.]",
+    "input": "a city where it's illegal to sing. that's all I've got but I love it",
+    "rubric": [
+      "The final message builds on the singing ban with a question that makes it bigger (why it was banned, what it costs, who breaks it and how, what happens to people caught).",
+      "The final message offers at least one odd, concrete specific the user can take or bend (a custom, an object, a punishment, a loophole), and does not dump a whole world, history, or faction list.",
+      "The final message asks no more than two questions, and says in a line what is exciting about the idea."
+    ],
+    "files": [
+      {
+        "from": "files/config/base.toml",
+        "to": "_bmad/config.toml"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_customization.py",
+        "to": "_bmad/scripts/resolve_customization.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/resolve_config.py",
+        "to": "_bmad/scripts/resolve_config.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/config_utils.py",
+        "to": "_bmad/scripts/config_utils.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/list_templates.py",
+        "to": "_bmad/scripts/list_templates.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
+        "to": "_bmad/scripts/frontmatter.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/roster.py",
+        "to": "_bmad/scripts/roster.py"
+      },
+      {
+        "from": "skills/core-tools/bmad/scripts/knowledge.py",
+        "to": "_bmad/scripts/knowledge.py"
+      },
+      {
+        "from": "files/staged/world-hush.md",
+        "to": "_bmad-output/world-singing-ban/world-singing-ban.md"
+      }
+    ],
+    "skills": [
+      "skills/core-tools/bmad-facilitate"
+    ],
+    "judge": "coaching"
+  }
+]

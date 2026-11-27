@@ -1,0 +1,3 @@
+[workflow]
+view = "never"
+visuals = "Keep every visual inside the markdown as a table or a Mermaid block. No HTML, no SVG files."
