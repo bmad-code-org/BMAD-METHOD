@@ -4,7 +4,8 @@
       "id": "kestrel-manual",
       "input": "Run headless. Our agents need to work from this compressor service manual but it's too long and the headings are just numbers: kestrel-k200-manual.md. Sort it out so they can find things. I won't be around, so don't wait for me.",
       "files": [
-        "https://github.com/bmad-code-org/bmad-method-sample-data/blob/59de7a03913129cff4c6808f2445f4da00ea9b31/shardtest/kestrel-k200-manual/kestrel-k200-manual.md"
+        "https://github.com/bmad-code-org/bmad-method-sample-data/blob/59de7a03913129cff4c6808f2445f4da00ea9b31/shardtest/kestrel-k200-manual/kestrel-k200-manual.md",
+        "_bmad/scripts/frontmatter.py"
       ],
       "rubric": [
         "Every line of the original manual is still present word for word in the workspace output (either the original file kept intact somewhere, or files whose contents together contain every original line), checked by sampling the text of paragraphs 2-6a, 3-4a, 5-5 and Table C-3",
@@ -19,7 +20,8 @@
       "id": "meridian-proposal",
       "input": "Run headless. Agents keep reading our client proposal, meridian-proposal.md. Should it be sharded for them? Do whatever is right and tell me what you did; I'm not around to answer questions.",
       "files": [
-        "https://github.com/bmad-code-org/bmad-method-sample-data/blob/59de7a03913129cff4c6808f2445f4da00ea9b31/shardtest/meridian-proposal/meridian-proposal.md"
+        "https://github.com/bmad-code-org/bmad-method-sample-data/blob/59de7a03913129cff4c6808f2445f4da00ea9b31/shardtest/meridian-proposal/meridian-proposal.md",
+        "_bmad/scripts/frontmatter.py"
       ],
       "rubric": [
         "The final reply recommends against splitting the proposal into multiple files, giving its short length (about 3,000 words) or its whole-document purpose as the reason",
@@ -31,13 +33,15 @@
       "id": "tidewater-prd",
       "input": "Run headless. Our agents have to work from this huge PRD, tidewater-prd.md (about 134k words). Make it navigable for them. I'm away, so decide yourself and tell me what you did.",
       "files": [
-        "https://github.com/bmad-code-org/bmad-method-sample-data/blob/59de7a03913129cff4c6808f2445f4da00ea9b31/shardtest/tidewater-prd/tidewater-prd.md"
+        "https://github.com/bmad-code-org/bmad-method-sample-data/blob/59de7a03913129cff4c6808f2445f4da00ea9b31/shardtest/tidewater-prd/tidewater-prd.md",
+        "_bmad/scripts/frontmatter.py"
       ],
       "rubric": [
         "Every line of the original PRD is still present word for word in the workspace output (the original kept intact somewhere, or files whose contents together contain every original line), checked by sampling FR-WO-015, NFR-RET-004, Appendix A and the section 5.3 plan table",
         "An entry file exists whose first 200 lines let a reader locate where FR-WO-015 and the Appendix A traceability matrix are, without reading anything else first",
         "The final reply or a conflicts list in the output reports that the Professional price is stated as both $27 and $29, and that raw telematics retention is stated as both 18 and 25 months, without asserting only one value",
-        "No output file other than a copy of the original rewrites PRD content in new words: requirement text in the output matches the source verbatim"
+        "No output file other than a copy of the original rewrites PRD content in new words: requirement text in the output matches the source verbatim",
+        "If the output is split, the full FR-WO-015 passage, from its heading to the line before the FR-WO-016 heading, appears word for word in the body of one shard the manifest lists"
       ]
     }
   ]
