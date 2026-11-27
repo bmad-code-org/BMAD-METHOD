@@ -63,7 +63,7 @@ Bring a cast of distinct creative personalities together for multi-angle brainst
 ```
 
 ```text
-/bmad-creative-agent-director Help me build the villain and setting rules for my sci-fi novella without slipping into generic tropes.
+Hey Clio, help me build the villain and setting rules for my sci-fi novella without slipping into generic tropes.
 ```
 :::
 

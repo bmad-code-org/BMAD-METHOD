@@ -45,7 +45,7 @@ If AI coding tools keep getting confused in an older repository, Winston can aud
 ```
 
 ```text
-/bmad-agent-architect Review our codebase and help us plan a zero-downtime migration from our old REST endpoints to v2.
+Hey Winston, review our codebase and help us plan a zero-downtime migration from our old REST endpoints to v2.
 ```
 :::
 

@@ -49,7 +49,7 @@ Point Sally at an existing app, prototype, or frontend codebase for a structured
 ```
 
 ```text
-/bmad-agent-ux-designer Audit our checkout page for usability, accessibility, and mobile layout issues.
+Hey Sally, audit our checkout page for usability, accessibility, and mobile layout issues.
 ```
 :::
 

@@ -41,7 +41,7 @@ When all tasks in a milestone are done, Amelia runs a retrospective against the 
 ```
 
 ```text
-/bmad-agent-dev Review the changes on my current branch for edge cases and missing tests.
+Hey Amelia, review the changes on my current branch for edge cases and missing tests.
 ```
 :::
 

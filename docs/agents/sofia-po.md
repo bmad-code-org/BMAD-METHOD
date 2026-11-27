@@ -48,7 +48,7 @@ By default, Sofia stores everything in simple files right inside your repository
 ```
 
 ```text
-/bmad-agent-po What is ready to build next, and is anything waiting on my decision?
+Hey Sofia, what is ready to build next, and is anything waiting on my decision?
 ```
 
 ```text

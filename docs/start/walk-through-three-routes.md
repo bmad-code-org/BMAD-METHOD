@@ -263,7 +263,7 @@ skip as open assumptions.
 
 UX design covers how the app looks and how people use it. In the same
 session, ask `/bmad What's next?`. BMad suggests Sally (`bmad-agent-ux-designer`),
-who coaches UX through `bmad-facilitate`; say "Yes." It works from your brief and PRD.
+who helps design the user experience; say "Yes." It works from your brief and PRD.
 When it asks how the app should look and work, paste:
 
 ```text wrap

@@ -30,20 +30,18 @@ finished epic, then have Sofia validate and close it.
 
 ## Who Does What
 
-Each role on a team has an agent to work through.
+Each role on a team has an agent to talk and work through.
 
-| Person on the team | Agent                            | What it runs or writes                                                                                                                                                                                   |
-| ------------------ | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Analyst            | Mary (`bmad-agent-analyst`)      | Runs `bmad-brainstorming`, `bmad-deep-recon`, and `bmad-project-context`; writes the documents that decide whether and why to go ahead, such as a brief, PRFAQ, or business case                                                                                                  |
-| Product manager    | John (`bmad-agent-pm`)           | Proposes the planning document your goal needs and writes it with you: a PRD, or [another planning document](../reference/document-templates.md#mary-and-john-analysis-and-product) when the work calls for one, such as a prototype plan, experiment card, or launch plan |
-| Product owner      | Sofia (`bmad-agent-po`)          | Writes the initiative, its epics, and their stories; runs the board                                                                                                                                      |
-| UX designer        | Sally (`bmad-agent-ux-designer`) | Coaches UX-first strategy (`trigger-map`), corporate brand packages (`brand-identity`), visual direction (`design-direction`), product UX (`ux-system`, `ux-epic`, `ux-quick`), websites (`website-design`), and UI audits (`ux-audit`) through `bmad-facilitate` |
-| Architect          | Winston (`bmad-agent-architect`) | Coaches architecture spines (`arch-spine`, `arch-epic`), technical designs, and repo/AI readiness through `bmad-facilitate`                                                                                                               |
-| Developer          | Amelia (`bmad-agent-dev`)       | Knows the development skills and picks the one that fits; runs `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-walkthrough`, `bmad-qa-generate-e2e-tests`, and `bmad-retrospective`           |
+| Person on the team | Agent                            | How they help |
+| ------------------ | -------------------------------- | ------------- |
+| Analyst            | [Mary](../agents/mary-analyst.md) (`bmad-agent-analyst`) | Helps you explore rough ideas, research markets, competitors, or your own codebase, and figure out whether and why something is worth building |
+| Product manager    | [John](../agents/john-pm.md) (`bmad-agent-pm`) | Converses with you to plan a project of any size, from a small addition to an existing app or a quick prototype up to a massive enterprise application, shaping goals, requirements, and launches |
+| Product owner      | [Sofia](../agents/sofia-po.md) (`bmad-agent-po`) | Turns ideas, notes, or plans into clear, buildable steps in the right order, tracks what is ready next, and adjusts the plan when things change |
+| UX designer        | [Sally](../agents/sally-ux-designer.md) (`bmad-agent-ux-designer`) | Helps you design how your product looks, feels, and works: user psychology, brand identity, visual direction, app screens and flows, websites, external design handoffs, and UI audits |
+| Architect          | [Winston](../agents/winston-architect.md) (`bmad-agent-architect`) | Helps you make practical technical decisions: choosing a stack, aligning architecture across features, weighing build-vs-buy, planning migrations, reviewing security, and preparing repos for AI agents |
+| Developer          | [Amelia](../agents/amelia-dev.md) (`bmad-agent-dev`) | Helps you build changes interactively or unattended, review code independently, walk through unfamiliar code, add end-to-end tests, and wrap up finished milestones |
 
-Each agent runs the skills named, and calling a skill directly does the same
-work. Say what you want in plain words. Ask an agent what it can do and it
-answers in a few sentences, with its full list only if you ask for it.
+Say what you want in plain words. Ask any agent what they can help with and they answer in a few sentences, with more detail only if you ask.
 
 ## Pick a Route
 
@@ -94,10 +92,11 @@ Sofia, the Product Owner, writes and keeps those lines. Her sources can be a
 PRD from John, the Product Manager; a brief from Mary, the Business Analyst;
 meeting notes; or a design. She lifts what they say into the ticket and cites
 them, and later skills read the ticket instead of the sources. UX files and
-the architecture spine sit beside the ticket as References. A story is
-usually just an entry in its epic's `tickets.toml`: one line of what it
-delivers and how it is verified.
-The build writes its acceptance criteria when it starts.
+the architecture spine sit beside the ticket as References. Each story starts as
+an entry in its epic's `tickets.toml` (one line of what it delivers and how it
+is verified), and Sofia writes its detailed acceptance criteria right away by
+default so coding agents know what to verify (or leaves entries thin for the
+build to detail when you prefer).
 
 ![The room booker's check-in feature as a ticket tree: one initiative, two epics, and their stories in build order, one marked hitl and one waiting on another](/diagrams/room-booker-ticket-tree.svg)
 

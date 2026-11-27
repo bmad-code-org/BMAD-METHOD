@@ -41,7 +41,7 @@ Mary can set up or refresh your repository's `AGENTS.md` instructions so coding 
 ```
 
 ```text
-/bmad-agent-analyst I want to build an internal portal for onboarding partners. Help me write a short brief and business case.
+Hey Mary, I want to build an internal portal for onboarding partners. Help me write a short brief and business case.
 ```
 :::
 

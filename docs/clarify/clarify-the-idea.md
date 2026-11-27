@@ -18,9 +18,7 @@ No skill here writes tickets.
 | **Skip it when** | The intent is already written down and agreed: a good issue, an existing PRD, a clear paragraph |
 | **What comes next** | [Plan the Work](../plan/plan-the-work.md), or [Build a Change](../build/build-a-change.md) when the idea turns out to be one small change |
 
-Start with Mary, the Business Analyst (`bmad-agent-analyst`). She runs
-brainstorming and research for you, and writes the brief or PRFAQ. Each skill
-also runs on its own.
+Start with [Mary, Business Analyst](../agents/mary-analyst.md) (`bmad-agent-analyst`). Talk through your rough idea with her to brainstorm angles, research the market or your codebase, pressure-test assumptions, or write a brief. Each skill also runs on its own.
 
 ```text wrap
 /bmad-agent-analyst I have an idea for check-in at meeting-room doors; help me work out whether it is worth building

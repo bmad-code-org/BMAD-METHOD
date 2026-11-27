@@ -53,7 +53,7 @@ When you face a major fork (quitting your job, raising vs. bootstrapping, pivoti
 ```
 
 ```text
-/bmad-founder-agent-advisor We have $180k in the bank and two SAFEs. Help me figure out our real runway and what a $1M seed round does to our ownership.
+Hey Nadia, we have $180k in the bank and two SAFEs. Help me figure out our real runway and what a $1M seed round does to our ownership.
 ```
 :::
 

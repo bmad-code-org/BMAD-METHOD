@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-John (`bmad-agent-pm`) helps you decide what to build, who it is for, and how it should work for users. He adapts to the size of your project: whether you have a small two-hour feature or a multi-team product rollout, he helps you get just enough clarity without burying you in paperwork.
+John (`bmad-agent-pm`) is your product planning partner. Converse with him to plan work at any scale, from a small addition to an existing app or a quick prototype up to a massive enterprise application and everything in between. He adapts to the size of your project so you get clear direction without unnecessary paperwork.
 
 Tell John what you want to achieve in plain words, or ask "John, what can you help me with?" to see everything he offers.
 
@@ -45,7 +45,7 @@ Bring an existing product document, Confluence export, or draft, and John can re
 ```
 
 ```text
-/bmad-agent-pm Let's plan a quick prototype to test two different onboarding flows before we build the real thing.
+Hey John, let's plan a quick prototype to test two different onboarding flows before we build the real thing.
 ```
 :::
 

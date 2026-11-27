@@ -17,14 +17,7 @@ epics that share none skip it.
 | Several epics that must share decisions, or decisions that cross systems | Architecture keeps the builds consistent |
 | A regulated, high-risk, or enterprise initiative | Follow your governance; architecture is normally required |
 
-Sally, the UX Designer (`bmad-agent-ux-designer`, [guide](../agents/sally-ux-designer.md)), coaches UX across altitudes
-and design jobs through `bmad-facilitate` (`trigger-map`, `brand-identity`,
-`design-direction`, `ux-system`, `ux-epic`, `ux-quick`, `website-design`, and
-`ux-audit`), and
-Winston, the Architect (`bmad-agent-architect`, [guide](../agents/winston-architect.md)), handles architecture through `bmad-facilitate` (`arch-spine` at initiative level, `arch-epic` on one epic).
-Both change what `bmad-build` reads, not how it runs: each session still builds
-one story, but every session reads the same decisions, so the parts fit
-together.
+[Sally, UX Designer](../agents/sally-ux-designer.md) (`bmad-agent-ux-designer`) helps you design the user experience, brand kit, visual direction, screens, websites, and UI audits, while [Winston, System Architect](../agents/winston-architect.md) (`bmad-agent-architect`) helps settle shared technical decisions and epic designs. Both change what `bmad-build` reads, not how it runs: each session still builds one story, but every session reads the same decisions, so the parts fit together.
 
 At the initiative and on each epic, UX goes first and architecture second, so
 the design can inform the technical choices. Architecture reads the
@@ -50,15 +43,7 @@ conflicts with a mock, the document wins. With an existing design system,
 `DESIGN.md` references its tokens and records only your changes, and `EXPERIENCE.md`
 records only how your product behaves differently.
 
-Choose a Fast path (`ux-quick`) that drafts `EXPERIENCE.md` (and `DESIGN.md` when new visual tokens are needed) with `[ASSUMPTION]` tags, a
-Coaching path starting with `trigger-map`, `brand-identity`, or
-`design-direction` and interactive color themes, design directions, wireframes,
-and key-screen mocks, a dedicated `website-design` blueprint for marketing
-or docs sites, or a two-way handoff with Google Stitch, Claude Design, or Figma
-that folds exports back into `DESIGN.md` and `EXPERIENCE.md`. Set the
-core-tools `design_system` setup answer to `branding/DESIGN.md` via `bmad setup`
-so future HTML views, UX runs, and Creative decks inherit your brand kit. Change the
-files later with Sally (`bmad-agent-ux-designer`) in update mode, not by editing the ticket.
+Choose a fast path for a quick single-flow design and draft, a guided coaching path covering user motivations, corporate brand kits, visual directions from favorite comps and interactive color themes, wireframes and key-screen mocks, a dedicated website or landing-page blueprint, or a two-way handoff with Google Stitch, Claude Design, or Figma that folds exports back into `DESIGN.md` and `EXPERIENCE.md`. Set the core-tools `design_system` setup answer to `branding/DESIGN.md` via `bmad setup` so future HTML views, UX runs, and Creative decks inherit your brand kit. Change the files later with Sally (`bmad-agent-ux-designer`) in update mode, not by editing the ticket.
 
 ## Settle the Decisions Epics Share
 
