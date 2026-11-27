@@ -1137,6 +1137,166 @@ class RenderSkillTests(unittest.TestCase):
         self.assertIn("deleting that folder is safe", result.stdout)
         self.assertFalse(workflow.exists())
 
+    def _run_raw_cli(
+        self,
+        script: Path,
+        args: tuple[str, ...],
+        *,
+        cwd: Path,
+        home: Path | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        env = os.environ.copy()
+        if home is not None:
+            env["HOME"] = str(home)
+            env["USERPROFILE"] = str(home)
+        return subprocess.run(
+            [sys.executable, str(script), *args],
+            cwd=cwd,
+            env=env,
+            text=True,
+            encoding="utf-8",
+            capture_output=True,
+            check=False,
+        )
+
+    def test_project_root_optional_infers_script_project_and_preserves_symlinked_bmad(self):
+        ws = self._workspace()
+        skill = self._skill(ws, "bmad-build")
+        result = self._run_raw_cli(
+            ws.project / "_bmad" / "scripts" / "render_skill.py",
+            ("--skill", str(skill)),
+            cwd=ws.outer,
+            home=ws.outer / "home",
+        )
+        printed = self._entry(result, ws.project, skill)
+        self.assertTrue(printed.resolve().is_relative_to(ws.project.resolve()))
+
+        # A symlinked _bmad/ must keep the caller's project root, not jump to the shared parent.
+        shared = self._workspace()
+        ws_linked = self._workspace(name="consumer", shared_bmad=shared.bmad)
+        linked_skill = self._skill(ws_linked, "bmad-build")
+        linked_result = self._run_raw_cli(
+            ws_linked.project / "_bmad" / "scripts" / "render_skill.py",
+            ("--skill", str(linked_skill)),
+            cwd=ws.outer,
+            home=ws.outer / "home",
+        )
+        linked_printed = self._entry(linked_result, ws_linked.project, linked_skill)
+        expected_ns = f"consumer-{hashlib.sha256(str(ws_linked.project.resolve()).encode('utf-8')).hexdigest()[:12]}"
+        self.assertEqual(linked_printed.parent.parent.name, expected_ns)
+
+    def test_project_root_optional_walks_up_from_cwd_or_halts_when_missing(self):
+        ws = self._workspace()
+        skill = self._skill(ws, "bmad-build")
+        nested = ws.project / "a" / "b"
+        nested.mkdir(parents=True)
+        result = self._run_raw_cli(
+            SCRIPTS_SRC / "render_skill.py",
+            ("--skill", str(skill)),
+            cwd=nested,
+            home=ws.outer / "home",
+        )
+        self._entry(result, ws.project, skill)
+
+        empty = ws.outer / "no-bmad"
+        empty.mkdir()
+        missing = self._run_raw_cli(
+            SCRIPTS_SRC / "render_skill.py",
+            ("--skill", str(skill)),
+            cwd=empty,
+            home=ws.outer / "home",
+        )
+        self.assertEqual(missing.returncode, 1, missing.stdout + missing.stderr)
+        self.assertIn("HALT: project root not found", missing.stdout)
+
+    def test_skill_fallback_resolution_across_roots_project_and_home(self):
+        ws = self._workspace()
+        home = ws.outer / "home"
+        proj_agents = _copy_skill(ws.project / ".agents" / "skills" / "bmad-build", "bmad-build")
+        home_agents = _copy_skill(home / ".claude" / "skills" / "bmad-code-review", "bmad-code-review")
+        extra_root = ws.outer / "extra-root"
+        extra_skill = _copy_skill(extra_root / "bmad-build", "bmad-build")
+        other_root = ws.outer / "other-root"
+        _copy_skill(other_root / "bmad-build", "bmad-build")
+
+        def assert_selected(result: subprocess.CompletedProcess[str], expected: Path) -> None:
+            entry = self._entry(result, ws.project, expected)
+            manifest = json.loads((entry.parent / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["inputs"]["skill_root"], str(expected.resolve()))
+
+        # Misderived harness path and bare skill name resolve cleanly via project dot-skills root.
+        for token in ("bmad-build", "/bogus/provider/skills/bmad-build"):
+            res = self._run_raw_cli(
+                ws.project / "_bmad" / "scripts" / "render_skill.py",
+                ("--skill", token),
+                cwd=ws.project,
+                home=home,
+            )
+            assert_selected(res, proj_agents)
+
+        # Tier 1: explicit --root precedence picks first matching root over another --root or project root.
+        tiered = self._run_raw_cli(
+            ws.project / "_bmad" / "scripts" / "render_skill.py",
+            ("--skill", "/wrong/bmad-build", "--root", str(extra_root), "--root", str(other_root)),
+            cwd=ws.project,
+            home=home,
+        )
+        assert_selected(tiered, extra_skill)
+
+        # Tier 3: global user-home dot-skills root resolves when absent from project roots.
+        from_home = self._run_raw_cli(
+            ws.project / "_bmad" / "scripts" / "render_skill.py",
+            ("--skill", "__versions__/bmad-code-review"),
+            cwd=ws.project,
+            home=home,
+        )
+        assert_selected(from_home, home_agents)
+
+        # Symlinked alias in another project tool folder deduplicates cleanly to one target.
+        claude_dir = ws.project / ".claude" / "skills"
+        claude_dir.mkdir(parents=True)
+        (claude_dir / "bmad-build").symlink_to(proj_agents, target_is_directory=True)
+        deduped = self._run_raw_cli(
+            ws.project / "_bmad" / "scripts" / "render_skill.py",
+            ("--skill", "bmad-build"),
+            cwd=ws.project,
+            home=home,
+        )
+        assert_selected(deduped, proj_agents)
+
+        # Genuinely distinct duplicate project directories halt as ambiguous rather than guessing.
+        (claude_dir / "bmad-build").unlink()
+        _copy_skill(claude_dir / "bmad-build", "bmad-build")
+        ambiguous = self._run_raw_cli(
+            ws.project / "_bmad" / "scripts" / "render_skill.py",
+            ("--skill", "bmad-build"),
+            cwd=ws.project,
+            home=home,
+        )
+        self.assertEqual(ambiguous.returncode, 1, ambiguous.stdout + ambiguous.stderr)
+        self.assertIn("HALT: skill 'bmad-build' matches multiple directories", ambiguous.stdout)
+
+        # Missing skill and regular-file skill paths halt cleanly.
+        not_found = self._run_raw_cli(
+            ws.project / "_bmad" / "scripts" / "render_skill.py",
+            ("--skill", "/missing/nonexistent-skill"),
+            cwd=ws.project,
+            home=home,
+        )
+        self.assertEqual(not_found.returncode, 1)
+        self.assertIn("HALT: skill directory not found", not_found.stdout)
+
+        not_dir = ws.project / "plain-file.txt"
+        not_dir.write_text("x", encoding="utf-8")
+        file_err = self._run_raw_cli(
+            ws.project / "_bmad" / "scripts" / "render_skill.py",
+            ("--skill", str(not_dir)),
+            cwd=ws.project,
+            home=home,
+        )
+        self.assertEqual(file_err.returncode, 1)
+        self.assertIn("HALT: skill path is not a directory", file_err.stdout)
+
     def test_skill_md_command_dispatches_for_every_rendered_skill(self):
         for name in RENDERED_SKILLS:
             with self.subTest(name):
