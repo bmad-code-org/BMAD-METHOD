@@ -1,78 +1,69 @@
 ---
 title: 'Design UX and Architecture'
-description: Decide whether the work needs a UX design or an architecture spine, run Sally (bmad-agent-ux-designer) and Winston (bmad-agent-architect) on the initiative or an epic, and have Sofia adopt their files so every build reads them.
+description: Decide whether your work needs UX design or shared technical architecture, run Sally and Winston on an initiative, an epic, or standalone work, and have Sofia attach their files so builds follow them.
 sidebar:
   order: 4
 ---
 
-Use this page to decide whether the work needs UX or architecture before
-stories are planned. Most changes need neither. Work whose epics must share
-decisions (stack, contracts, formats, hosting) needs an architecture spine;
-epics that share none skip it.
+Use this page to decide whether your project needs UX design or shared technical architecture before planning stories. Most small changes need neither. Work where multiple epics or coding sessions must follow the same visual system or technical contracts benefits from writing those shared choices down once.
 
 | Work | UX and architecture |
 | --- | --- |
-| A clear, local change with established patterns | Usually unnecessary |
+| A clear, local change following established patterns | Usually unnecessary |
 | Several related components with known constraints | Optional, depending on coordination risk |
-| Several epics that must share decisions, or decisions that cross systems | Architecture keeps the builds consistent |
+| Several epics sharing screens, contracts, or system boundaries | Keeps independent builds consistent |
 | A regulated, high-risk, or enterprise initiative | Follow your governance; architecture is normally required |
 
-[Sally, UX Designer](../agents/sally-ux-designer.md) (`bmad-agent-ux-designer`) helps you design the user experience, brand kit, visual direction, screens, websites, and UI audits, while [Winston, System Architect](../agents/winston-architect.md) (`bmad-agent-architect`) helps settle shared technical decisions and epic designs. Both change what `bmad-build` reads, not how it runs: each session still builds one story, but every session reads the same decisions, so the parts fit together.
+[Sally, UX Designer](../agents/sally-ux-designer.md) (`bmad-agent-ux-designer`) coaches you through user experience, brand identity, visual direction, screen flows, websites, and UI audits. [Winston, System Architect](../agents/winston-architect.md) (`bmad-agent-architect`) helps settle shared technical decisions, feature designs, technology choices, migrations, and security reviews. Neither changes how `bmad-build` works: each build session still delivers one story at a time, while reading the same UX and architecture files so separately built parts fit together.
 
-At the initiative and on each epic, UX goes first and architecture second, so
-the design can inform the technical choices. Architecture reads the
-initiative, so both come after Sofia writes and slices it, though UX can also
-lead earlier and feed the PRD or the initiative directly. BMad doesn't enforce
-the order, so swap them when a technical constraint has to settle what the
-screens can do. For kept code, such as a kept prototype, architecture runs
-before Sofia slices, to record the decisions the code already made. Skip
-either when it has no open questions.
+Both Sally and Winston also work standalone whenever you want design or architecture help without creating an initiative or ticket tree.
 
-When she slices, Sofia offers Winston (`bmad-agent-architect`) for the decisions the epics
-share, but she won't prompt for `ux-system`. Run Sally (`bmad-agent-ux-designer`) yourself when the epics need
-a shared design system.
+## When to Run Them and in What Order
 
-## Design the Experience
+At both the initiative and epic levels, run UX design before architecture so the user experience shapes the technical choices. Architecture normally runs after Sofia writes and slices the initiative because Winston reads the epic boundaries to see what they share. UX can run right after slicing or even earlier to inform a PRD. BMad does not lock you into one sequence: swap the order whenever a hard technical constraint determines what the interface can do, and if you are building on existing code you plan to keep, run architecture before Sofia slices so Winston records the technical decisions already in the codebase.
 
-Ask Sally (`bmad-agent-ux-designer`) when the interface matters to the outcome; skip it for back-end
-work and internal tools with no real interface. It records your vision, and
-never volunteers its own, in two peer documents: `DESIGN.md` for how the
-product looks (tokens, typography, components) and `EXPERIENCE.md` for how it
-works (structure, states, interactions, accessibility, key flows). When either
-conflicts with a mock, the document wins. With an existing design system,
-`DESIGN.md` references its tokens and records only your changes, and `EXPERIENCE.md`
-records only how your product behaves differently.
+Sofia prompts you at the right moments automatically:
 
-Choose a fast path for a quick single-flow design and draft, a guided coaching path covering user motivations, corporate brand kits, visual directions from favorite comps and interactive color themes, wireframes and key-screen mocks, a dedicated website or landing-page blueprint, or a two-way handoff with Google Stitch, Claude Design, or Figma that folds exports back into `DESIGN.md` and `EXPERIENCE.md`. Set the core-tools `design_system` setup answer to `branding/DESIGN.md` via `bmad setup` so future HTML views, UX runs, and Creative decks inherit your brand kit. Change the files later with Sally (`bmad-agent-ux-designer`) in update mode, not by editing the ticket.
+- After slicing an initiative, she offers fresh chats with Sally (for UI initiatives without UX files yet) and Winston (when no shared architecture exists yet).
+- Before slicing an individual epic into stories, she offers Sally if the epic introduces screens or user flows not yet covered, and Winston if the epic introduces non-trivial API contracts, schemas, migrations, or state flows.
 
-## Settle the Decisions Epics Share
+You can always decline either offer when there are no open design or technical questions, and Sofia records your choice in the ticket's notes.
 
-When several epics or agents build against the same system, each makes its
-own defensible choice, and the choices collide: REST here and GraphQL there,
-`snake_case` meeting `camelCase`, session cookies against JWT. Ask
-Winston (`bmad-agent-architect`) to run `arch-spine` on the initiative to write a short architecture document,
-the **spine**, that records only the calls two people would otherwise make
-differently.
+## Design the Experience with Sally
 
-One test decides what belongs: if two units built this independently, could
-they choose incompatibly? A decision goes in only when the answer is yes, the
-call is non-obvious, and it is a real trade-off. Each decision gets a stable
-id, `AD-1`, `AD-2`, that tickets cite, and the spine lists what it
-deliberately leaves to the code.
+Work with [Sally](../agents/sally-ux-designer.md) (`bmad-agent-ux-designer`) whenever the interface matters to the outcome; skip her for pure backend changes or internal scripts with no user-facing surface. She captures your vision rather than imposing a house style, recording it in two peer documents: `DESIGN.md` for how the product looks (visual tokens, typography, spacing, components) and `EXPERIENCE.md` for how it behaves (structure, loading and empty states, error handling, interactions, accessibility, and key flows). If a visual mockup ever conflicts with the written spec, the document wins. When you already have an existing design system, `DESIGN.md` references its tokens and records only your additions, while `EXPERIENCE.md` covers only what behaves differently.
 
-Coaching is the default, so you need no architecture background: for each big
-call (paradigm, stack or starter, major boundaries, deployment and hosting) it
-lays out the realistic options and why it leans one way, then you choose. For
-a new project it recommends a current, well-known starter, because a good one
-settles a coherent set of decisions for free. On an existing codebase it reads
-the code and confirms the conventions already there instead of re-documenting
-them. On code an earlier initiative built, the code is the source of truth:
-the spine ratifies the invariants it must keep, tagged `[ADOPTED]`, and
-decides only what this initiative adds or changes. One session's worth of work
-needs no spine.
+Sally matches the depth of design work to what you actually need:
+
+| UX work | What Sally covers |
+| --- | --- |
+| Quick single-flow UX | A fast, lightweight spec and wireframe for a small tool or single screen |
+| Full product and epic UX | Guided coaching covering screen states, edge cases, interactive color themes, visual direction explorations, wireframes, and interactive HTML key-screen mockups |
+| Brand identity (`BRAND.md`) and websites | Positioning, color palettes with contrast checks, typography pairings, scalable SVG logos, interactive HTML brand books, and landing-page blueprints |
+| User motivation maps and UI audits | Mapping what drives and blocks users before designing screens, or auditing an existing app or frontend codebase for usability, responsiveness, and accessibility issues |
+| External design-tool handoffs | Two-way workflows with Google Stitch, Claude Design, and Figma that turn briefs into visual explorations and fold exported tokens or frames back into `DESIGN.md` and `EXPERIENCE.md` |
+
+During `bmad setup`, you can point the `design_system` setting to any `DESIGN.md`, brand guide, CSS token file, or folder of design files so future UX runs, HTML views, and visual outputs inherit your brand automatically. When design decisions change later, ask Sally to update the files rather than editing tickets by hand.
+
+## Settle Shared Technical Decisions with Winston
+
+When several epics or coding sessions build against the same system without shared guardrails, each makes a reasonable local choice that collides with the others: REST in one place and GraphQL in another, `snake_case` meeting `camelCase`, or session cookies clashing with JWTs. Ask [Winston](../agents/winston-architect.md) (`bmad-agent-architect`) to write a short shared architecture document for the initiative that records only the calls two builders could make incompatibly.
+
+Winston applies a strict filter so the document stays short: if two people built separate parts independently, could they pick incompatible approaches? A decision belongs in shared architecture only when the answer is yes, the choice is non-obvious, and it involves a real trade-off. Each recorded call gets a stable decision ID that epics and stories can cite, and the document explicitly lists what it leaves to individual coding sessions.
+
+Coaching is the default, so you do not need an architecture background. For each major call (application style, tech stack or starter template, data ownership, service boundaries, hosting, or AI/agent guardrails), Winston lays out realistic options, explains what each costs, states his lean with reasons, and lets you decide. On a new project, he recommends a current, well-supported starter that settles a coherent baseline cleanly. On an existing codebase, he reads the code first and ratifies the conventions already working in production instead of rewriting them, deciding only what your new work adds or changes.
+
+Beyond shared architecture for an initiative or epic, Winston also handles standalone technical work:
+
+| Technical work | What Winston covers |
+| --- | --- |
+| Enterprise architecture | Cross-domain boundaries and shared contracts spanning a multi-initiative program |
+| Solution designs (RFCs) and technology evaluations | Structured proposals for peer review and weighted build-vs-buy comparisons |
+| API designs and migration plans | Public APIs, webhook contracts, versioning policies, parity checks, and zero-downtime cutover plans |
+| Security reviews, production readiness, and postmortems | Practical threat modeling, launch readiness gates, Architecture Decision Records (ADRs), incident reviews, and codebase audits for AI coding agents |
 
 :::note[Example: the room booker]
-In the [room booker](../start/how-bmad-works.md#the-example-app), an office's meeting-room app:
+In the [room booker](../start/how-bmad-works.md#the-example-app), an office meeting-room app:
 
 **You:**
 
@@ -80,52 +71,41 @@ In the [room booker](../start/how-bmad-works.md#the-example-app), an office's me
 /bmad-agent-ux-designer design the door tablet's check-in screen
 ```
 
-It records the screen's four states in `EXPERIENCE.md`: free, booked and
-waiting for check-in, checked in, and just freed. In a new chat:
+Sally records the screen's four states in `EXPERIENCE.md`: free, booked and waiting for check-in, checked in, and just freed. In a fresh chat:
 
 **You:**
 
 ```text wrap
 /bmad-agent-architect settle the decisions the check-in epics share
 ```
-**Winston (`bmad-agent-architect`):** One call your epics would make differently: where the
-no-show timer runs. On the server, an offline tablet can never free a room by
-itself; on the tablet, check-in still works offline. I lean server. Which?
+
+**Winston:** One call your epics could make differently is where the no-show timer runs. On the server, an offline tablet can never free a room on its own; on the tablet, check-in keeps working offline. I lean server. Which do you want?
 
 **You:** Server.
 
-It records that as `AD-1` in `arch-spine-check-in/`. Then, to Sofia:
+He records that decision in the initiative's architecture document. Then, in a chat with Sofia:
 
 **You:**
 
 ```text wrap
-/bmad-agent-po adopt the design and the spine
+/bmad-agent-po adopt the design and the architecture
 ```
-**Sofia:** Added both to the initiative's References; both epics cite `AD-1`,
-and door check-in cites the design.
+
+**Sofia:** Added both to the initiative's references; both epics cite the server-timer decision, and door check-in cites the tablet design.
 :::
 
-## Adopt the Files into the Ticket
+## Attach the Files to Your Plan
 
-A design or a spine helps only if the builds find it. When either skill
-finishes, ask Sofia to adopt its files:
+A UX design or shared architecture helps coding sessions only when they know to read it. When Sally or Winston finishes, ask Sofia to adopt their files:
 
 ```text wrap
-/bmad-agent-po adopt the spine
+/bmad-agent-po adopt the design and architecture
 ```
 
-She adds them to the initiative's References, and the epics that depend on
-them cite them. A build then reads them beside its story. Winston recommends this
-step itself when `arch-spine` finishes.
+Sofia links the files into the initiative or epic references and makes sure every affected story cites them. Coding sessions then load those visual tokens, screen states, and technical contracts beside the story automatically. Winston reminds you to take this step when his document finishes.
 
-Either skill can also run on one epic when the initiative's design or spine
-does not cover it. An epic run writes into the epic's folder. An architecture
-run inherits the parent spine's decisions and records only what it left open;
-for a UX run, ask it to cover only what the initiative's design leaves open.
+Either specialist can also run on a single epic whenever the initiative-level design or architecture left details open. Epic-level files live inside that epic's folder: Winston inherits the initiative's decisions and records only what the epic adds, and Sally covers the specific screen flows, states, and mockups that epic introduces.
 
 :::caution[Common mistakes]
-Deciding the API style "as we go", documenting every minor choice, and a spine
-written once and never updated are the three ways this step fails. Record the
-decisions that cross epic boundaries, and when one changes mid-flight, tell
-Sofia ([Learn and Adjust](../learn/learn-and-adjust.md#a-change-mid-flight)).
+Deciding API conventions "as you go", documenting every minor implementation detail, or writing an architecture document once and never updating it are the three ways this step breaks down. Record only the decisions that cross boundaries, and whenever one changes mid-flight, update it with Sally or Winston and tell Sofia ([Learn and Adjust](../learn/learn-and-adjust.md#a-change-mid-flight)).
 :::

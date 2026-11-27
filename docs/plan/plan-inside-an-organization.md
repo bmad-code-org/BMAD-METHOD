@@ -1,173 +1,95 @@
 ---
 title: 'Plan Inside an Organization'
-description: How the full planning path works when several people must agree on the product, several engineers build it in parallel, and someone has to sign off — who owns which document, where approval happens, and how change flows.
+description: How the full planning path works when several people must agree on the product, several engineers build it in parallel, and someone must sign off. Covers document ownership, approvals, and change flow.
 sidebar:
   order: 6
 ---
 
-Use this page when the work belongs to an organization rather than to you:
-more than one person must agree on what the product is, more than one engineer
-will build it, or someone must sign off before money is spent. In that
-setting, planning documents are contracts between people first and input to
-the skills second.
+Use this page when your work belongs to an organization rather than a solo builder: multiple stakeholders must agree on what the product is, several engineers will build parts in parallel, or leadership must sign off before funding or launch. In that setting, planning documents are contracts between people first and inputs to BMad skills second.
 
 ## The Scaled-Down Version First
 
-A single builder, or a small team that already agrees, does not need most of
-what follows. A forged idea, a PRFAQ, a brainstorm intent, or a
-well-written issue goes straight to Sofia, the Product Owner
-(`bmad-agent-po`), who writes the requirements into the ticket and slices it.
-[How BMad Works](../start/how-bmad-works.md) covers that route.
-Sofia will tell you if the input is too thin; until she does, no PRD is
-required.
+A solo builder or a small team that already agrees does not need most of what follows. A forged idea, a PRFAQ, a brainstorm summary, or a clear issue goes straight to Sofia, the Product Owner (`bmad-agent-po`), who writes the requirements into the initiative or epic and slices the work. [How BMad Works](../start/how-bmad-works.md) covers that lighter path. Sofia tells you if your input is too thin; until she does, no PRD is required.
 
-Reach for the full path when one of these is true:
+Use the full organizational path when any of these apply:
 
-- People who did not do the thinking must approve what the product is.
-- Several epics, teams, or agents will build against the same decisions and
-  must not diverge.
-- A regulator, a steering committee, or an enterprise process requires named
-  documents as evidence.
+- Stakeholders who did not shape the idea must approve what gets built.
+- Several epics, teams, or coding agents will build against shared technical decisions and must stay compatible.
+- A regulator, steering committee, or enterprise governance process requires formal written deliverables as evidence.
 
 ## The PRD Is What the Organization Owns
 
-The PRD is the document the organization owns. It is written by John, the
-Product Manager (`bmad-agent-pm`), validated by him, and updated through him; nothing else in the chain claims to
-say what the product is. Brainstorming, Forge Idea, Deep Recon, a product
-brief, and a PRFAQ exist to get the PRD written well. When the organization
-asks for a program charter, or a requirements specification
-for audited or contracted work, John writes those too; Mary (`bmad-agent-analyst`) writes a business case or a business requirements document. Everything after the PRD
-is derived from it:
+The PRD is the product contract the organization owns. John, the Product Manager (`bmad-agent-pm`), writes, validates, and updates it; no downstream file claims to redefine what the product is. Brainstorming, Forge Idea, Deep Recon, a product brief, and a PRFAQ exist to get the PRD right. When governance also requires a program charter or a formal requirements specification for audited or contracted delivery, John writes those as well, while Mary (`bmad-agent-analyst`) writes a business case or business requirements document (BRD). Everything downstream derives from the PRD:
 
-- Sally (`bmad-agent-ux-designer`) writes `DESIGN.md` and `EXPERIENCE.md` in `ux-system-<slug>/` as input beside the PRD (and on an epic `ux-epic-<slug>/`, writes `EXPERIENCE.md` referencing the parent `DESIGN.md`, adding a local `DESIGN.md` only for deltas).
-- Winston (`bmad-agent-architect`) writes the architecture spine (`arch-spine`): the
-  decisions that keep independently built epics compatible.
-- Sofia writes the initiative's requirements from the PRD and each epic's
-  from the initiative's lines, pointing at the spine and the UX documents
-  rather than copying them.
-- Sofia slices them into ordered entries and tracks their joined plans.
+- Sally (`bmad-agent-ux-designer`) writes `DESIGN.md` and `EXPERIENCE.md` beside the PRD for shared product UX, and adds epic-level `EXPERIENCE.md` (plus local `DESIGN.md` overrides only when needed) for specific epics.
+- Winston (`bmad-agent-architect`) writes the shared architecture: the technical decisions that keep independently built epics compatible.
+- Sofia writes the initiative's requirements from the PRD and each epic's requirements from the initiative, linking to the shared architecture and UX files instead of duplicating them.
+- Sofia slices the epics into ordered stories and tracks each story's local build plan and run log.
 
-Nothing downstream reinterprets the PRD. If a ticket's requirements need an
-answer the PRD does not give, the answer goes into the PRD first; Sofia is
-re-run after. When the PRD and a ticket's Requirements disagree, the ticket's
-Requirements win and the PRD is a source; Sofia surfaces the contradiction
-and you decide.
+Nothing downstream reinterprets the PRD silently. If a story or epic needs a product answer the PRD does not cover, add the answer to the PRD first and re-run Sofia afterward. If the PRD and a ticket's requirements ever disagree, Sofia flags the contradiction so you decide how to reconcile them.
 
 ## Bring the Documents You Have
 
-Nothing here asks you to replace the planning system you already run. An
-organization arrives with a PRD in Confluence or Notion, a backlog in Jira or
-Linear, and a review cadence, and all of it stays.
+BMad does not ask you to abandon the tools your organization already runs. If your company writes PRDs in Confluence or Notion, tracks work in Jira or Linear, and holds regular review meetings, all of those stay in place.
 
-- **Your PRD is the input.** John opens with a brain dump and reads any
-  files you point him at, so the first run is "here is our PRD". Ask him to
-  **validate** and you get a findings report on the document as it stands,
-  with nothing changed. Ask him to **create** from that input and you get the
-  same requirements in the shape the later skills read, with `[ASSUMPTION]`
-  tags on anything it had to fill in. After that, the copy your reviewers
-  already edit is the source. When it changes, ask John to
-  **update** the PRD from it and let him bring it in line;
-  never edit the PRD by hand to catch up.
-- **The same holds for design and architecture.** A design system, an
-  existing architecture document, or a live codebase is what Sally (`bmad-agent-ux-designer`) and
-  Winston (`bmad-agent-architect`) start from. On an existing system Winston
-  reads the code and records the conventions already there rather than
-  proposing new ones.
-- **Your tracker stays your tracker.** Jira remains where the organization
-  plans, reports, and reviews. Sofia publishes leaf files when needed; build status lives in local joined plans. Tracker status is mirrored separately and never makes a build skip work. [Map Your Tracker to the Ticket Tree](../reference/map-your-tracker.md)
-  shows how your hierarchy maps onto the tree.
-- **Your reviews stay your reviews.** The five sign-off moments below are
-  where the skills produce something reviewable. Put your existing approvals
-  at those points and the documents the skills write become the material
-  those meetings already needed.
+- Your existing PRD can serve directly as John's input, because he reads any files you point him at. Ask him to validate it for a findings report without modifying the file, or ask him to create a structured PRD from it with `[ASSUMPTION]` tags marking anything he had to fill in. When reviewers update your external copy later, ask John to update his PRD from the revised version rather than editing his file by hand.
+- Sally and Winston start from your existing design system, architecture docs, and live repositories in the same way. On an existing codebase, Winston reads the code first and ratifies the conventions already working in production instead of proposing new ones.
+- Jira, Linear, or GitHub Issues stays where the team plans, reports, and reviews. Sofia publishes ticket files to your tracker when needed while local build plans and run logs stay in the repository, and tracker board status is mirrored separately so dragging a card never causes a build to skip planning. See [Map Your Tracker to the Ticket Tree](../reference/map-your-tracker.md).
+- Your existing reviews stay in place, because the five sign-off points below produce concrete written outputs you can attach directly to your team's current approval meetings.
 
-The one thing that does change is where an edit goes: in the PRD the skills
-read, not in a ticket's requirements or a story, so that every derived
-document can be regenerated from it.
+The one habit that changes is where edits happen: apply product changes to the PRD rather than patching a downstream story, so every derived document stays consistent.
 
 ## Who Owns What
 
-| Role                     | Runs                                                                                              | Owns                                                                      |
-| ------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Product manager          | Brainstorming, Forge Idea, Deep Recon, then a PRFAQ or a brief from Mary (`bmad-agent-analyst`), then John (`bmad-agent-pm`) for the PRD | The PRD and its update cycle; the one-pager the steering committee reads  |
-| Designer                 | Sally (`bmad-agent-ux-designer`)                                                                  | `DESIGN.md`, `EXPERIENCE.md`                                              |
-| Tech lead or architect   | Winston (`bmad-agent-architect`)                                                                  | The architecture spine (`arch-spine`)                                     |
-| One engineer, per epic   | Sofia (`bmad-agent-po`), Build per story, `bmad-retrospective`                                    | That epic: its file, its `tickets.toml`, its verdict                      |
-| Whoever tracks the whole | Sofia (`bmad-agent-po`)                                                                           | The ticket tree and plan statuses                                         |
+| Role | Runs | Owns |
+| --- | --- | --- |
+| Product manager | Brainstorming, Forge Idea, Deep Recon, PRFAQ or brief with Mary (`bmad-agent-analyst`), and PRDs with John (`bmad-agent-pm`) | The PRD and its update cycle; executive one-pagers |
+| Designer | Sally (`bmad-agent-ux-designer`) | `DESIGN.md`, `EXPERIENCE.md`, brand kits, and mockups |
+| Tech lead or architect | Winston (`bmad-agent-architect`) | Shared architecture and technical decision records |
+| Engineer (per epic) | Sofia (`bmad-agent-po`), `bmad-build` per story, `bmad-retrospective` | That epic's stories, build plans, and retrospective verdict |
+| Delivery lead or PO | Sofia (`bmad-agent-po`) | The ticket tree, dependencies, and status rollups |
 
-The rows are roles, not headcount. One person can hold several; what matters
-is that each document has exactly one owner, because each has exactly one
-skill that writes it. An epic is a handful of Build sessions, usually a day's
-work for one person. The organization's coordination lives in the PRD and the
-spine; the epic itself never needs a committee.
+These rows are roles, not required headcount. One person can wear several hats; what matters is that each document has one clear owner and one agent that updates it. An epic is usually a handful of coding sessions for one engineer. Organizational alignment lives in the PRD and shared architecture, so individual epics never need committee oversight.
 
 ## Where Sign-Off Happens
 
-The skills give you five moments where a human decision is expected, and each
-one blocks something specific. Put approvals there rather than inventing new
-gates.
+BMad gives you five natural checkpoints where a human decision gates the next phase. Place organizational sign-offs here rather than inventing parallel approval steps:
 
-| Moment                    | What is judged                                                        | What it blocks               |
-| ------------------------- | --------------------------------------------------------------------- | ---------------------------- |
-| PRFAQ verdict             | Whether the concept is strong enough to resource                      | Writing the PRD              |
-| PRD validate              | A findings report on the PRD without changing it                      | Design and architecture work |
-| Architecture spine review | The decisions every epic will follow, with alternatives weighed       | Writing the epics' requirements |
-| Ticket-breakdown approval | The entries, requirement coverage, and validated dependencies         | Starting the agreed work     |
-| Retrospective verdict     | Did the epic meet its own acceptance criteria                         | Starting the next epic       |
+| Moment | What is judged | What it blocks |
+| --- | --- | --- |
+| PRFAQ verdict | Whether the product concept is strong enough to fund | Writing the PRD |
+| PRD validation | Findings report on the PRD before committing design effort | UX design and architecture work |
+| Shared architecture review | Technical decisions every epic must follow, with trade-offs weighed | Writing detailed epic requirements |
+| Story breakdown approval | Ordered stories, requirement coverage, and checked dependencies | Starting implementation |
+| Retrospective verdict | Whether the finished epic met its own acceptance criteria | Starting the next epic or closing |
 
-Every one of these produces a written result, so the approval has something to
-attach to. In regulated or enterprise settings those documents are the audit
-trail. The PRFAQ runs unattended when you tell Mary so, and Retrospective takes `-H`, when you want the
-same check without a conversation.
+Each checkpoint produces a written artifact you can attach to a ticket, PR, or governance record. In regulated or enterprise settings, those files form your audit trail. Both PRFAQ and retrospective also support non-interactive mode when you want an evidence-only check without a live discussion.
 
 :::note[Reviewers read copies; change the source]
-People will review the PRD, the spine, and an epic's ticket, and they will ask
-for changes in whichever one they happen to be reading. Apply the change where
-it belongs: to the PRD if it is about what the product is, to the spine if it
-is about how epics stay compatible, to the epic's requirements only if it is
-about that epic alone. Then re-run the later skills. Editing an epic's
-requirements to work around a PRD that no longer says the right thing is how
-the documents stop agreeing.
+Stakeholders will comment on whichever document they happen to open: the PRD, the shared architecture, or an epic's stories. Apply each change at its source: update the PRD for product scope, update the shared architecture for cross-epic technical rules, and update an epic directly only when the change belongs to that epic alone. Then re-run the downstream skills so nothing drifts out of sync.
 :::
 
 ## Several Epics at Once
 
-One PRD, one spine, one ticket per epic. Several engineers can each take an
-epic at the same time when the boundaries are explicit; the spine is what
-makes that safe, because it records the calls two people would otherwise make
-differently: the API style, how state is changed, who owns shared data. Each
-epic's spine inherits the parent's decisions and records only what the parent
-left open. Run integration checks and a retrospective at every epic boundary,
-not only at the end. [Design UX and Architecture](./design-ux-and-architecture.md)
-shows what goes wrong without the spine.
+With one PRD, one shared architecture, and one ticket folder per epic, several engineers can build different epics in parallel safely. The shared architecture prevents collisions by settling API style, state ownership, and shared schemas before coding starts. When an individual epic adds its own technical design, it inherits the initiative's decisions and records only what the parent left open. Run integration checks and a retrospective at every epic boundary rather than waiting until the entire project finishes. See [Design UX and Architecture](./design-ux-and-architecture.md) for how shared design and architecture stay aligned.
 
-Sofia cuts epics by outcome, deployment, and slice size, not by who builds them. If your organization cuts epics by its own rule, tell her and she offers to save it to `_bmad/custom/bmad-agent-po.toml`.
+Sofia splits epics by user outcome, deployment boundaries, and slice size rather than org-chart ownership. If your organization uses its own slicing conventions, use `bmad-customize` to record those team rules for Sofia so every initiative follows them.
 
-Each epic starts thin, with its scope agreed and its detail left open. Ask Sofia to refine each epic before its stories are planned. She says what is already settled and names each open point with her pick: settle it now, spike it, or leave it to the stories. On a large initiative you can flesh an epic out further with a PRD from John, or a Sally (`bmad-agent-ux-designer`, `ux-epic`) or Winston (`bmad-agent-architect`, `arch-epic`) run on the epic, or research with `bmad-deep-recon`. Those runs land in the epic's folder and become its companions, so whoever takes the epic finds them beside its file.
+Each epic begins as a lightweight outline and gets refined right before coding starts. When you ask Sofia to refine an epic, she tells you what is already settled, flags open product questions for John, and offers Sally for new UI flows or Winston for new contracts, schemas, or migrations, plus `bmad-deep-recon` when research is needed. Every specialist document lands inside the epic's folder as a linked companion so whoever builds the epic finds everything in one place.
 
 ## More Than One Initiative
 
-When work spans multiple initiatives serving a larger strategic goal, theme, or delivery program, use a top-level `program` container (`program-<slug>/`) scaling by coupling: Mary's `narrative` or `charter` plus Sofia's rollup when the child initiatives are independent, or `prd-program` and `arch-enterprise` when they share cross-domain seams. Nested `tickets/initiative-<slug>/` folders hold each child initiative's own epics and stories, citing any shared invariants and OKRs. Set `active_initiative` to the child initiative being worked on, or to the `program-<slug>` folder to see the whole effort.
+When work spans multiple initiatives serving a larger strategic goal or delivery portfolio, organize them inside a top-level program folder (`program-<slug>/`). Match the documentation to how tightly coupled the initiatives are: use a strategy narrative or program charter from Mary and John plus Sofia's program rollup when initiatives run mostly independently, or add a program PRD and enterprise architecture when initiatives share cross-domain contracts and rules. Each child initiative lives under `tickets/initiative-<slug>/` with its own epics and stories while citing shared program rules and objectives. Ask the `bmad` skill to switch your active initiative to a specific child when building, or point it at `program-<slug>` to view progress rolled up across the entire program.
 
 ## When Requirements Change Mid-Flight
 
-They will. The path for a change is the same as the path for the original:
+Requirements will change during delivery. Route every mid-flight change through the same chain that created the plan:
 
-1. Ask John to update the PRD with the change signal. He surfaces
-   conflicts with earlier decisions before applying anything.
-2. Tell Sofia what changed. She updates the affected tickets' requirements in
-   place and keeps requirement ids stable, so stories that are unaffected
-   stay unaffected, and names the entries that went stale.
-3. If the change touches a cross-epic decision, update the spine. It reads the
-   updated requirements.
-4. For the affected epics, she re-slices those entries and revises the
-   remaining breakdown. Keep historical plans and completed states.
+1. Ask John to update the PRD with the new requirement or constraint. He highlights any conflicts with earlier decisions before editing the file.
+2. Tell Sofia what changed. She updates the affected requirements in place while keeping existing requirement IDs stable, leaves unaffected stories untouched, and lists which stories are now stale.
+3. If the change affects a cross-epic technical decision, ask Winston to update the shared architecture. He reads the updated requirements and updates the affected contracts.
+4. For the affected epics, Sofia adjusts or re-slices the remaining unstarted stories while preserving completed plans and build history as the record.
 
 ## What You Get
 
-A set of documents that agree with each other because each has one writer and
-one owner; five named points where the organization can say yes or no with
-something in hand; and a change path that flows from the PRD outward instead
-of from whichever document someone happened to edit. Engineering still
-implements one Build session at a time, exactly as it would for a
-single-builder change.
+You end up with planning documents that stay aligned because each has one owner and one writer, five clear sign-off points backed by written evidence, and a predictable change flow that starts at the source instead of ad-hoc ticket edits. Engineering still builds one focused session at a time, using the exact same `bmad-build` workflow a solo developer uses.

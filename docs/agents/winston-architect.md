@@ -1,43 +1,47 @@
 ---
 title: 'Winston, System Architect'
-description: 'Use Winston (bmad-agent-architect) to choose a tech stack, align designs across features, weigh build-vs-buy, plan migrations, and review security or readiness.'
+description: 'Use Winston (bmad-agent-architect) to choose a tech stack, align shared architecture across features, design AI systems, plan migrations, and review security or repo readiness.'
 sidebar:
-  order: 5
+  order: 6
 ---
 
-Winston (`bmad-agent-architect`) helps you make sound technical decisions before separate pieces of code collide or grow brittle. You do not need deep architecture experience to work with him: he favors boring, dependable technology over hype and walks through options and trade-offs in plain English.
+Winston (`bmad-agent-architect`) helps you make sound technical decisions before separate pieces of code collide or grow brittle. You do not need deep architecture experience to work with him: he favors boring, dependable technology over hype, walks through options and trade-offs in plain English, and saves concise architecture documents, decision records, and API contracts under `_bmad-output/`.
 
-Ask Winston about your technical problem in plain words, or ask "Winston, what can you help me with?" anytime.
+Call Winston with `/bmad-agent-architect` in tools that support slash commands (such as Claude Code), or speak to him in plain English in any tool. Ask `"Winston, what can you help me with?"` anytime.
 
 ## What Winston Helps You Do
 
-### Choose a stack and set shared technical guardrails
+### Choose a stack and set shared architecture guardrails
 
-When several features or teams will build against the same system, Winston helps settle only the decisions where independent choices would clash: tech stack, service boundaries, data ownership, authentication, hosting, and AI safety or cost guardrails. He keeps documents short by leaving everyday implementation details to the coding sessions.
+When several features or teams will build against the same system, Winston writes a short shared architecture document that settles only the decisions where independent choices would clash: tech stack, service boundaries, data ownership, authentication, hosting, and AI safety or cost guardrails. He leaves everyday implementation details to the coding sessions so the document stays lean.
 
 ### Design a feature against your live codebase
 
-When you are adding a major capability to an existing project, Winston inspects your current code first, respects the patterns already working in production, and maps out data schemas, API contracts, migrations, and state flows that fit cleanly.
+When you are adding a major capability to an existing project, Winston inspects your current code first, respects the patterns already working in production, and maps out data schemas, API contracts, data transitions, and state flows that fit cleanly.
 
-### Weigh build-vs-buy and technology choices
+### Design AI and agent systems
 
-Comparing databases, auth providers, frameworks, or vendor tools? Winston coaches you through weighted trade-offs, total cost, and lock-in risks, or helps write short decision records so future teammates know why a choice was made.
+When your product includes LLMs, retrieval pipelines, tool calling, or multi-step agents, Winston helps design prompt and model boundaries, evaluation hooks, safety guardrails, latency budgets, and cost ceilings so AI features behave predictably in production.
+
+### Weigh build-vs-buy and record technical decisions
+
+Comparing databases, auth providers, frameworks, or vendor tools? Winston coaches you through weighted trade-offs, total cost, and lock-in risks, or helps write short ADRs (architecture decision records, brief one-page notes explaining why a technical choice was made and what alternatives were rejected) so future teammates never have to guess.
 
 ### Write technical proposals and API contracts
 
-When another team, partner, or client needs to review a technical plan, Winston helps draft clear technical proposals (RFCs) as well as public API, webhook, and partner integration contracts with versioning and error conventions.
+When another team, partner, or client needs to review a technical plan before coding starts, Winston helps draft clear technical proposals (often called RFCs, or Requests for Comments) as well as public API, webhook, and partner integration contracts with versioning and error conventions.
 
 ### Plan risky migrations and launches
 
-Before cutting over a database, platform, or API, or flipping the switch on a major launch, Winston helps plan parity checks, rollback gates, reliability targets, capacity checks, and go-live readiness reviews.
+Before moving data or traffic from an old database, platform, or API to a new one, or before launching a major release, Winston helps plan verification checks, safe rollback steps, reliability targets, capacity checks, and go-live readiness reviews.
 
 ### Review security and learn from incidents
 
-Winston coaches practical security reviews (against checklists like OWASP Top 10 or STRIDE) and blameless postmortems after an outage, including clear timelines, root causes, follow-up actions, and customer communication drafts when needed.
+Winston coaches practical security reviews, including threat modeling (mapping how an attacker could abuse a system before it ships) and structured checklists like OWASP Top 10. After an outage, he guides blameless postmortems with clear timelines, root causes, follow-up actions, and customer communication drafts when needed.
 
-### Make a codebase friendlier for AI coding agents
+### Assess agent-readiness and update existing architecture docs
 
-If AI coding tools keep getting confused in an older repository, Winston can audit the codebase for hidden friction, noisy comments, and inconsistent patterns so builds become predictable.
+If AI coding tools keep getting confused in an older repository, Winston runs an agent-readiness assessment to find hidden friction, noisy comments, and inconsistent patterns so automated builds become predictable. He can also update an existing architecture document when your system evolves or validate one read-only to spot gaps without editing your files.
 
 :::note[Ways to start]
 ```text
@@ -47,13 +51,17 @@ If AI coding tools keep getting confused in an older repository, Winston can aud
 ```text
 Hey Winston, review our codebase and help us plan a zero-downtime migration from our old REST endpoints to v2.
 ```
+
+```text
+Hey Winston, run an agent-readiness check on this repository and tell us what slows coding agents down.
+```
 :::
 
 ## Working with the Rest of the Team
 
-- **Small changes skip Winston:** a single straightforward feature that fits your existing codebase goes straight to [Amelia](amelia-dev.md) (`bmad-build`).
-- **Design before plumbing:** when a feature has an interface, work with [Sally](sally-ux-designer.md) first so user needs guide the technical design.
-- **Hand off to builds:** ask [Sofia](sofia-po.md) to attach Winston's decisions to your project plan so every coding session follows the same contracts.
+- A single straightforward feature that fits your existing codebase skips Winston and goes straight to [Amelia](amelia-dev.md) (`bmad-build`).
+- When a feature has an interface, work with [Sally](sally-ux-designer.md) first so user needs guide the technical design.
+- Ask [Sofia](sofia-po.md) to attach Winston's architecture documents and contracts to your project plan so every coding session follows the same decisions.
 
 See [Design UX and Architecture](../plan/design-ux-and-architecture.md) for how architecture fits into project planning.
 

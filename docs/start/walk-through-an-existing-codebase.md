@@ -3,23 +3,19 @@ title: 'Walk Through an Existing Codebase'
 description: 'Tutorial: inherit a working room booker with no planning documents, give agents a project context, make a small change, then add two features by the route each needs.'
 ---
 
-You inherit the room booker that [Walk Through Three Routes](./walk-through-three-routes.md)
-started: a working app with rooms, booking, and a calendar, but no planning
-documents and nobody left to ask. Four parts change it, each by the route the
-work needs.
+You inherit the room booker that [Walk Through Three Routes](./walk-through-three-routes.md) started: a working app with rooms, booking, and a calendar, but no planning documents and nobody left to ask. Over four parts you orient yourself and change it using the route each task calls for.
 
 | Part | The work | Route | Time |
 | --- | --- | --- | --- |
 | [0. Get oriented](#part-0-get-oriented) | Run the app and give agents a project context | `bmad-project-context` | About 10 minutes |
-| [1. Make a small change](#part-1-make-a-small-change) | Book a meeting again from the booking | Straight to `bmad-build` | About 15 minutes |
+| [1. Make a small change](#part-1-make-a-small-change) | Book a meeting again from the booking screen | Straight to `bmad-build` | About 15 minutes |
 | [2. Calendar export](#part-2-calendar-export) | Bookings in people's own calendar apps | Sofia, the Product Owner, then build | About 45 minutes |
-| [3. Check in or lose the room](#part-3-check-in-or-lose-the-room) | A door tablet for check-in, and rooms freed when nobody turns up | Deep recon, Sofia, UX, architecture, stories, one story built | About 1.5 hours |
+| [3. Check in or lose the room](#part-3-check-in-or-lose-the-room) | A door tablet for check-in, and rooms freed when nobody turns up | Deep recon, Sofia, UX, shared architecture, stories, one story built | About 1.5 hours |
 
-Do the parts in order. Each one builds on the code the last one left.
+Work through the parts in order, because each part builds on the code left by the previous one.
 
 :::note[Before You Start]
-You need what [Install BMad](./install-bmad.md) lists. Get the app at the
-point where you inherit it:
+You need the prerequisites listed in [Install BMad](./install-bmad.md). Clone the sample tutorial repository at the point where you inherit it:
 
 ```bash
 git clone --depth 1 --branch brownfield-start https://github.com/ilya-baimetov/bmad-room-booking-app.git
@@ -27,20 +23,16 @@ cd bmad-room-booking-app
 git switch -c my-changes
 ```
 
-The `brownfield-start` branch is the finished app with every BMad file
-removed, and `--depth 1` leaves out the history of how it was built. Then
-install BMad and run `bmad setup` in the folder.
+The `brownfield-start` branch holds the finished app with every BMad file removed, and `--depth 1` leaves out the build history. Next, [install BMad and run `/bmad setup`](./install-bmad.md) inside the cloned folder.
 :::
 
-The steps work as in [Walk Through Three Routes](./walk-through-three-routes.md#how-the-steps-work):
-paste the text blocks, follow the notes, and take the agent's recommended
-option for any question the notes don't cover.
+The steps work the same way as in [Walk Through Three Routes](./walk-through-three-routes.md#how-the-steps-work): paste the text blocks, follow the notes for choices that shape the walkthrough, and accept the agent's recommended default for everything else.
 
 ## Part 0: Get Oriented
 
 ### 1. Run the App
 
-The README says how. From the repository root:
+The repository README lists the commands to start it locally. From the repository root, run:
 
 ```bash
 uv sync
@@ -49,38 +41,25 @@ uv run python -m roombooker.seed seeds/build-people.csv --demo-bookings
 uv run uvicorn roombooker.app:app
 ```
 
-Open `http://127.0.0.1:8000/` and pick a name. The seed loads 30 made-up
-people across three offices and two weeks of bookings. Code comments cite
-decisions such as `AD-4` whose documents are gone.
+Open `http://127.0.0.1:8000/` and pick a name. The seed loads 30 sample people across three offices and two weeks of bookings. As you browse the code, you will notice comments referencing old architecture decision IDs whose original design documents are gone.
 
 ### 2. Give Agents a Project Context
 
-A project context is a short, verified block in `AGENTS.md` that every later
-session reads: how to run the tests, where things live, and what not to
-change. It may also add, or offer to add, a one-line `CLAUDE.md` that points
-Claude Code at it. In a new session:
+A project context is a short, verified block in `AGENTS.md` that every later coding session reads: how to run the tests, where files live, and what must not change. The skill may also add or offer a short `CLAUDE.md` pointing Claude Code at `AGENTS.md`. In a new session, run:
 
 ```text wrap
 /bmad-project-context
 ```
 
-It finds no instruction file, reads the repository, and checks each claim
-against the code.
+It detects no existing instruction file, reads the repository, and checks each factual claim against the code.
 
 - When it asks what rules you bring, say "Nothing beyond the repository."
-- When it asks what agents get wrong here, say "I don't know yet. I just
-  inherited it."
-- When it asks anything else an inheritor can't know, such as team branch
-  rules or where the real list of people comes from, say "I don't know." If it
-  asks about the decisions the code comments cite, such as `AD-4`, say "Those
-  documents are gone."
-- When it shows the block, say "Write it."
-- If it offers a `CLAUDE.md` that points Claude Code at `AGENTS.md`, say
-  "Yes." Claude Code reads `CLAUDE.md`, not `AGENTS.md`.
+- When it asks what agents get wrong here, say "I don't know yet. I just inherited it."
+- When it asks anything else an inheritor cannot know (such as team branching rules or where the real employee directory lives), say "I don't know." If it asks about the missing decision documents cited in code comments, say "Those documents are gone."
+- When it shows the drafted block, say "Write it."
+- If it offers to create a `CLAUDE.md` pointing to `AGENTS.md`, say "Yes" if you use Claude Code.
 
-It never commits. Commit what it wrote yourself; `git status` lists it.
-Usually that's `AGENTS.md` and `CLAUDE.md`; leave out any file `git status`
-doesn't list:
+`bmad-project-context` never commits automatically. Check `git status` and commit the files it created (typically `AGENTS.md` and `CLAUDE.md`; omit any file not listed):
 
 ```bash
 git add AGENTS.md CLAUDE.md && git commit -m "docs: add agent instructions"
@@ -88,40 +67,31 @@ git add AGENTS.md CLAUDE.md && git commit -m "docs: add agent instructions"
 
 ## Part 1: Make a Small Change
 
-One small change first shows how the build handles code it didn't write. In a
-new session:
+Starting with one self-contained change shows how `bmad-build` respects code it did not write. In a new session, run:
 
 ```text wrap
 /bmad-build On a booking's details page, add "Book again": it opens the booking form with the same room, start time, length, title and attendees, one week later. If that slot is taken, the form says so and lets you pick another time.
 ```
 
-- If it says there are uncommitted changes, such as the BMad setup files, say
-  "Commit them first."
-- If it asks whether the work belongs to an initiative, say "Loose."
-- If it shows a plan, say "Approved."
+- If it reports uncommitted changes (such as BMad setup files), say "Commit them first."
+- If it asks whether this work belongs to an initiative or has no active initiative, say there is no active initiative for this standalone change.
+- If it presents a plan, say "Approved."
 
-It reads the code first, follows the patterns it finds, adds tests, and
-commits, on a new branch if it makes one, otherwise on `my-changes`. Stay on
-the branch it committed to: the later parts build on top of it. Restart the
-app (stop it, then run `uv run uvicorn roombooker.app:app` again), open a
-booking you made from My bookings, and press Book again. The form opens one
-week later; if the room is taken then, it says so.
+It inspects the existing code first, matches the patterns it finds, adds tests, and commits locally (on a new branch if it creates one, or on `my-changes`). Stay on that branch so the remaining parts build on top of it. Restart the server (`uv run uvicorn roombooker.app:app`), open a booking from My bookings, and click Book again to confirm the form opens one week later and warns you when that slot is taken.
 
 ## Part 2: Calendar Export
 
-People want their room bookings in the calendar app they already use. That's
-a few stories with one clear idea, so Sofia writes the requirements and the
-stories, and you build them.
+Staff want their room bookings in the calendar apps they already use. Because this is a clear feature spanning a few connected stories, Sofia writes the requirements and stories, and you build them one by one.
 
 ### 1. Write the Requirements and Stories
+
+Start the initiative:
 
 ```text wrap
 /bmad Create an initiative called calendar-export. People want their room bookings in their own calendar app.
 ```
 
-In the same session, ask `/bmad What's next?`. BMad suggests Sofia; say "Yes."
-When she asks what you want to build, or starts asking her own questions about
-it, paste:
+In the same session, ask `/bmad What's next?`. BMad suggests Sofia; say "Yes." When she asks what you want to build, paste:
 
 ```text wrap
 People want their room bookings in the calendar app they already use: Outlook, Google Calendar or Apple Calendar.
@@ -135,70 +105,50 @@ The feed address is secret. A person can reset it, and the old address stops wor
 No sign-in to Microsoft or Google, and nothing comes back from those calendars: the room booker stays the only place to book.
 ```
 
-- When she lists the guesses she made, say "All fine."
-- If she asks whether Google Calendar or Outlook can reach the app from the
-  internet, say "I don't know yet. Record it as an open question."
-- When she asks how to split the work, say "Straight into stories, no epics.
-  As few as you can, each one build session."
+- When she lists the assumptions she made, say "All fine."
+- If she asks whether Google Calendar or Outlook can reach the app over the internet, say "I don't know yet. Record it as an open question."
+- When she asks how to split the work, say "Straight into stories, no epics. Keep it to as few cohesive stories as possible."
 - When she shows the stories and asks to save them, say "Yes."
 
 ### 2. Build Each Story
 
-Once per story. In a new session, ask `/bmad What's next?`. BMad suggests
-`bmad-build` for the next story; say "Yes."
+Run this step once per story. In a new session, ask `/bmad What's next?`. BMad suggests `bmad-build` for the next ready story; say "Yes."
 
-- If it says there are uncommitted changes, say "Commit them first."
-- If it asks which branch to build on, take its suggestion.
-- If it shows its plan, say "Approved."
+- If it reports uncommitted changes, say "Commit them first."
+- If it asks which branch to build on, accept its recommendation.
+- If it shows a build plan, say "Approved."
 
-Check the story yourself: ask "How do I run the app?" If you kept the database
-from Part 0, run `uv run alembic upgrade head` again first, because a story
-that changes the database fails without it. Then check what the story added:
-for the download, open a booking and press Add to calendar; for the feed, go
-to Calendar feed on My bookings (press its button to create an address if none
-is shown yet), copy the address, and open it in a private browser window,
-which downloads a `.ics` file of your bookings. Then, in a new session, ask
-`/bmad What's next?` and say "Mark it done with Sofia." She notes that you
-haven't checked it in a calendar app, and the initiative stays in progress
-until it's live, which is expected here.
+Verify each story yourself. Ask "How do I run the app?" If you kept your SQLite database from Part 0, run `uv run alembic upgrade head` before restarting the server whenever a story changes the database schema. Check the new feature in your browser: for the download, open a booking and click Add to calendar; for the feed, open Calendar feed on My bookings (generate a link if needed), copy the URL, and open it in a private browser window to confirm a `.ics` file downloads. Then open a new session, ask `/bmad What's next?`, and say "Mark it done with Sofia." She notes that live calendar-app verification is still pending while running locally, which is expected here.
 
 ## Part 3: Check In or Lose the Room
 
-Booked rooms often sit empty because nobody turns up. This feature adds a
-tablet at each room's door where people check in, and frees a room nobody
-checks into within 15 minutes of its start. It changes how bookings end, adds
-a screen, and needs a rule about where the no-show timer runs, so it gets UX
-and architecture before its stories. It is the "Check in or lose the room"
-feature the [examples in these docs](./how-bmad-works.md#the-example-app)
-follow.
+Booked rooms often sit empty because nobody turns up. This feature adds a tablet at each room's door where people check in and frees any room nobody checks into within 15 minutes of its start. Because it changes booking lifecycles, adds a new screen, and requires deciding where the no-show timer runs, you research the existing code first and then add UX and shared architecture before slicing stories. This is the "Check in or lose the room" feature referenced in [the example app](./how-bmad-works.md#the-example-app).
 
 ### 1. Learn How Bookings End Today
 
-Nobody remembers how a booking ends when nobody shows up. Ask for a cited
-account of the code before planning anything. In a new session:
+Nobody remembers how bookings currently end when no one shows up. Ask `bmad-deep-recon` for a cited factual account of the code before planning anything. In a new session, run:
 
 ```text wrap
 /bmad-deep-recon before we add check-in, how do bookings end today, and what depends on that?
 ```
 
-When it shows its plan of questions, say "Go ahead." If it asks where to
-file the account, say "Loose. It isn't part of calendar export." It writes an
-account with file and line citations and no recommendation. If it asks to
-fetch more Git history or to write a decision record, say "No." The history
-was left out of your clone on purpose.
+When it shows its research plan, say "Go ahead." If it asks whether to attach the report to an initiative, tell it there is no active initiative yet because this is separate from calendar export. It writes a factual account with file and line citations and zero recommendations. If it offers to fetch full Git history or write a decision record, say "No," because the shallow clone omits history on purpose.
 
 ### 2. Write the Requirements
 
-In a new session:
+In a new session, create the initiative:
 
 ```text wrap
 /bmad Start a new initiative called check-in. People check in at a tablet by the room's door, and rooms nobody checks into are freed.
 ```
 
-In the same session, ask `/bmad What's next?`. BMad suggests Sofia; say "Yes."
-If it starts writing a PRD with John instead, say "I'd like to write the
-requirements with Sofia first, not a PRD." When she asks what you want to
-build, or starts asking her own questions about it, paste:
+Now open Sofia (`bmad-agent-po`) in the same session to write the requirements directly from your notes and the research report:
+
+```text wrap
+/bmad-agent-po Write the initiative requirements for check-in from my description and the deep-recon report on how bookings end today.
+```
+
+When she asks for the details, paste:
 
 ```text wrap
 This is a new feature for our existing room booking app. Read the deep-recon account of how bookings end today.
@@ -214,19 +164,16 @@ Office managers see how many bookings were freed in their office this week.
 No QR codes, sensors, badges or notifications in this release. The tablets are ordinary tablets showing a web page, and an office manager sets each one up once.
 ```
 
-- When she lists the guesses she made, say "All fine."
-- When she shows the requirements, say "Looks good, save it."
-- If she offers to start the next step, say "Not now."
+- When she lists the assumptions she made, say "All fine."
+- When she shows the drafted requirements, say "Looks good, save it."
+- If she offers to start slicing immediately, say "Not now." You will design the screen and settle the technical contract next.
 
 ### 3. Design the Door Screen
 
-In a new session, ask `/bmad What's next?`. BMad may suggest Sally (`bmad-agent-ux-designer`), or
-Sofia to split the work first. Say "I'd like to design the door screen with UX
-first. Start it here." When it asks what to design, or asks its own questions
-about the screen, paste:
+For this walkthrough, you intentionally design the door screen before slicing stories so Sofia and every coding session build from the same layout and states. In a new session, open Sally (`bmad-agent-ux-designer`):
 
 ```text wrap
-Let's go fast. Design the door tablet's check-in screen, and the check-in and freed states in My bookings.
+/bmad-agent-ux-designer Let's go fast. Design the door tablet's check-in screen, and the check-in and freed states in My bookings.
 
 The tablet is read from a few steps away: the room name, free or booked, and the current booking big enough to see from the door.
 
@@ -235,68 +182,42 @@ Checking in is one tap.
 Keep the app's existing look.
 ```
 
-- When it walks through its decisions, take its suggestions.
-- When it offers a review and mock-ups, say "No."
+- When she walks through her design choices, accept her suggestions.
+- When she offers a review pass and interactive mockups, say "No."
 
-### 4. Settle the Architecture
+### 4. Settle the Shared Architecture
 
-In a new session, ask `/bmad What's next?`. BMad may suggest Sofia first, to
-add the door-screen design to the initiative. Say "I'd like to settle the
-architecture now. Start it here." If it offers to commit files first, say
-"Commit them first." Paste:
+Next, bring in Winston (`bmad-agent-architect`) to inspect the existing codebase and settle where the no-show timer runs and how check-in fits the existing data model. In a new session, open Winston directly:
 
 ```text wrap
-Let's go fast. I only need the architecture document, nothing else.
+/bmad-agent-architect Let's go fast. I only need the architecture document, nothing else.
 
 There is no architecture document yet. Read the code for the decisions it already makes, and settle what check-in adds.
 
 This is a walkthrough, so please skip the reviewer gate.
 ```
 
-- If it asks where the no-show timer runs, take its recommendation. In fast
-  mode it may settle this itself.
-- When it shows the draft and asks you to confirm its guesses, say "Fine." If
-  it asks to commit the document, say "Yes."
+- If he asks whether to commit earlier files first, say "Commit them first."
+- If he asks where the no-show timer should run, accept his recommendation (in fast mode he may settle it directly).
+- When he shows the draft and asks you to confirm his assumptions, say "Fine." If he offers to commit the document, say "Yes."
 
 ### 5. Plan the Stories and Build the First
 
-In a new session, ask `/bmad What's next?`. BMad suggests Sofia, to add the
-design and architecture to the initiative, split it into an epic, refine it,
-and plan its stories; say "Yes."
+In a new session, ask `/bmad What's next?`. BMad suggests Sofia to adopt Sally's design and Winston's architecture into the initiative, split it into an epic, refine it, and plan its stories; say "Yes."
 
-- When she lists where the design and architecture differ from the
-  requirements, say "Side with the architecture and UX."
+- When she lists places where the design or architecture sharpens the earlier requirements, say "Side with the architecture and UX."
 - When she proposes epics, say "One epic for now: check in or lose the room."
-- If she asks whether to run an epic PRD with John first or lists open epic
-  questions, say "Skip the epic PRD and fill the epic in from the initiative,
-  UX, and architecture — use the simplest defaults for this walkthrough."
-- When she proposes the stories, say "As few as you can, each one build
-  session. All on my computer, with the tablet as a browser window."
-- When she shows the stories, say "Yes."
-- If she goes on to plan the first story's build, say "Approve and stop." You
-  build it in a new session.
+- If she asks whether to write an epic-level PRD with John first or lists open epic questions, say "Skip the epic PRD and fill the epic in from the initiative, UX, and architecture, using the simplest defaults for this walkthrough."
+- When she proposes the stories, say "Keep it to as few cohesive stories as possible, all running on my computer, with the tablet as a browser window."
+- When she shows the stories and refined story files, say "Yes."
+- If she starts planning the first story's build in the same chat, say "Approve and stop" so you can build it in a fresh session.
 
-Build the first story as in Part 2, step 2. To check the door screen, open a
-private browser window sized like a tablet, pick an office manager (the
-run-the-app answer names them), and on Manage rooms press Set up door tablet
-for a room. That window becomes the door screen. In your main window, book
-that room at the next quarter hour that is at least 5 minutes away. From 5
-minutes before the start, reload the door screen and press Check in; it shows
-that you checked in. When you mark the story done, say "I checked it on the
-door screen. Mark it done with Sofia." The rest of the epic follows the same
-way: keep asking `/bmad What's next?`.
+Build the first story just as in Part 2, step 2. To verify the door screen, open a private browser window resized like a tablet, pick an office manager (the run-the-app instructions name them), and open Manage rooms to click Set up door tablet for a room. In your main browser window, book that room for the next quarter hour that is at least 5 minutes away. Once you are within 5 minutes of the start time, reload the tablet window and click Check in to confirm it registers. When you mark the story done, say "I checked it on the door screen. Mark it done with Sofia." Continue through the rest of the epic with `/bmad What's next?`.
 
 ## What You Did
 
-You took over code you didn't write, gave every later session a verified
-project context, and changed the code three ways: a small change straight
-through the build, a feature from Sofia's requirements, and a feature that
-needed a cited account of the code, UX, and architecture before its stories.
-Each build read the code first and followed what it found.
+You inherited an undocumented codebase, gave every future session a verified project context in `AGENTS.md`, and extended the code three different ways: a standalone change straight through `bmad-build`, a multi-story feature planned directly with Sofia, and a complex feature backed by codebase research, UX design, and shared architecture before slicing stories. Each build read the live code first and matched the patterns it found.
 
 :::tip[Key Takeaways]
-On existing code, start with the project context, then make one small change
-to see how the build handles the codebase before planning anything larger.
-When nobody knows how a part works, ask `bmad-deep-recon` for a cited account
-before you plan the change.
+On an existing codebase, set up `AGENTS.md` with `bmad-project-context` first, then run one small build to see how BMad follows your repo's conventions before planning larger features. When nobody remembers how a critical path works, run `bmad-deep-recon` for a cited factual account before making any design calls.
 :::

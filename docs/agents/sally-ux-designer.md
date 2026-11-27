@@ -2,12 +2,12 @@
 title: 'Sally, UX Designer'
 description: 'Use Sally (bmad-agent-ux-designer) to design how your product looks and behaves, build a brand kit, explore visual directions, connect Figma or Stitch, and audit UIs.'
 sidebar:
-  order: 4
+  order: 5
 ---
 
-Sally (`bmad-agent-ux-designer`) helps you design how a product looks, feels, and works, even if you have never worked with a designer before. Bring a rough idea, screenshots of sites you like, a brand concept, or a live app that feels clunky, and she coaches you step by step with concrete visual options you can react to.
+Sally (`bmad-agent-ux-designer`) helps you design how a product looks, feels, and works, even if you have never worked with a designer before. Bring a rough idea, screenshots of sites you like, a brand concept, or a live app that feels clunky, and she coaches you step by step with concrete visual options you can react to. She writes durable design files (`DESIGN.md` for visual rules, `EXPERIENCE.md` for flows and interaction states, and `BRAND.md` for brand identity) under `_bmad-output/` or your project's branding folder so coding agents and teammates can build directly from them.
 
-Ask Sally in plain words, or ask "Sally, what can you help me with?" anytime.
+Call Sally with `/bmad-agent-ux-designer` in tools that support slash commands (such as Claude Code), or speak to her in plain English in any tool. Ask `"Sally, what can you help me with?"` anytime.
 
 ## What Sally Helps You Do
 
@@ -17,7 +17,7 @@ Before anyone draws a screen, Sally can help map who your users are, what they a
 
 ### Build a brand identity from scratch
 
-When you want a consistent look for a company, product, or project, Sally coaches you through positioning, aesthetic direction, color palettes with verified accessibility contrast, typography pairings, brand voice, and clean scalable SVG logos that still read clearly at tiny favicon sizes and in monochrome. She generates an interactive HTML Brand Book and helps wire your brand into BMad during `bmad setup` so future visual pages and presentations match automatically.
+When you want a consistent look for a company, product, or project, Sally coaches you through positioning, aesthetic direction, color palettes with verified accessibility contrast, typography pairings, brand voice, and clean scalable SVG logos that still read clearly at tiny favicon sizes and in monochrome. She writes `BRAND.md` and a `DESIGN.md` theme package, generates an interactive HTML Brand Book, and helps wire your brand into BMad during [`bmad setup`](../start/install-bmad.md) so future visual pages and presentations match automatically.
 
 ### Find your visual direction
 
@@ -25,11 +25,11 @@ Not sure what your app should look like? Share websites, apps, or screenshots yo
 
 ### Design an app or feature at any scale
 
-Sally scales to whatever you are building:
+Sally scales her output to whatever you are building:
 
-- **Quick single-screen flows:** a fast, lightweight spec and wireframe for a small tool or prototype.
-- **Feature designs:** detailed user flows, edge cases, loading and empty states, error messages, keyboard accessibility, and interactive HTML screen mockups.
-- **Full product design systems:** shared colors, typography, layout navigation, and component behavior that keep multiple features looking and behaving like one coherent product.
+- For a small tool or prototype, she writes a fast, lightweight spec and wireframe for a single screen or flow.
+- For a feature or epic, she produces detailed `EXPERIENCE.md` user flows, edge cases, loading and empty states, error messages, keyboard accessibility rules, and interactive HTML screen mockups.
+- For a full product, she establishes a shared `DESIGN.md` with reusable design tokens (the shared colors, typography, spacing, and elevation rules) alongside system-wide layout navigation and component behavior so multiple features look and feel like one coherent product.
 
 ### Design a website or landing page
 
@@ -37,7 +37,7 @@ For marketing sites, product landing pages, documentation, or portfolios, Sally 
 
 ### Work with Figma, Google Stitch, and Claude Design
 
-If you already sketch or design in **Google Stitch**, **Claude Design**, **Figma**, **Penpot**, or **v0**, Sally works both ways: she helps write sharp design briefs to feed those tools, and turns the designs or tokens you bring back into complete, developer-ready specs with missing edge states and accessibility filled in.
+If you already sketch or design in **Google Stitch**, **Claude Design**, **Figma**, **Penpot**, or **v0**, Sally works both ways: she helps write sharp design briefs to feed those tools, and turns the designs or visual tokens (reusable color, font, and spacing definitions) you bring back into complete, developer-ready `DESIGN.md` and `EXPERIENCE.md` specs with missing edge states and accessibility filled in.
 
 ### Audit an existing UI
 
@@ -55,12 +55,12 @@ Hey Sally, audit our checkout page for usability, accessibility, and mobile layo
 
 ## Working with the Rest of the Team
 
-- **Design-first or after planning:** start with Sally before [John](john-pm.md) if the user experience drives the product, or bring her in after John shapes the requirements.
-- **Keep code builds faithful:** when Sally finishes a design, ask [Sofia](sofia-po.md) to attach it to your plan so [Amelia](amelia-dev.md) reads your visual tokens, screen states, and mockups directly while writing code.
-- **Non-software creative work:** for narrative slide decks, workshops, or non-software experiences, work with [Clio](../creative/creative.md) instead.
+- Start with Sally before [John](john-pm.md) if the user experience drives the product, or bring her in after John shapes the requirements.
+- When Sally finishes `DESIGN.md` and `EXPERIENCE.md`, ask [Sofia](sofia-po.md) to attach them to your plan so [Amelia](amelia-dev.md) reads your visual tokens, screen states, and mockups directly while writing code.
+- For narrative slide decks, workshops, or non-software creative work, talk to [Clio](../creative/creative.md) instead.
 
 See [Design UX and Architecture](../plan/design-ux-and-architecture.md) for how UX fits into a multi-part build.
 
 ## Tailoring Sally
 
-To supply your own reference designs, example layouts, or external design-tool preferences, invoke `bmad-customize` and tell it what you want Sally to follow.
+To supply your own reference designs, example layouts, or external design-tool preferences, invoke `bmad-customize` and describe what you want Sally to follow.

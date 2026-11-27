@@ -1,87 +1,59 @@
 ---
 title: Learn and Adjust
-description: 'The Learn and adjust stage: close a finished epic and judge it, route a change that lands mid-flight through Sofia, and decide what happens to the findings builds set aside.'
+description: 'The Learn and adjust stage: wrap up finished epics, handle mid-flight scope changes, triage deferred findings, and turn recurring lessons into permanent team rules.'
 sidebar:
   order: 1
 ---
 
-Use this page when an epic's stories are all built, when a requirement changes
-in the middle of the work, or when findings set aside by builds pile up. Learn
-and adjust decides what to change. Each story passed its own review, so this
-stage judges the epic as a whole and sends what it finds back to the document
-or ticket that owns it.
+Use this page when an epic finishes, when requirements change mid-flight, or when deferred findings build up across runs. Every story already passed its own isolated review, so Learn and adjust evaluates the whole epic together, routes changes back to the right document, and feeds lessons into your team's future runs.
 
 | | Learn and adjust |
 | --- | --- |
-| **You start with** | An epic whose stories are all built, done, or dropped; a change; or deferred findings |
-| **You produce** | `epic-<slug>-retrospective.md` with a verdict and action items, a closed epic, and updated tickets |
-| **It is done when** | The verdict is recorded, the epic is closed, and each action item and finding is filed or dropped with a reason |
-| **Skip it when** | Rarely at the end of an epic: it is the check no single story's review makes. Mid-epic, only when a change or a finding calls for it |
-| **What comes next** | [Plan the Work](../plan/plan-the-work.md), where the findings change requirements, the spine, or the stories; the next epic |
+| **You start with** | A finished epic, a mid-flight change, or deferred findings from builds |
+| **You produce** | An epic retrospective with verdict and action items, a closed epic or initiative, updated specs, and sharper project rules |
+| **It is done when** | The verdict is recorded, the work is closed, and action items or findings are filed, turned into rules, or explicitly dropped |
+| **Skip it when** | Rarely at an epic boundary, since this is the check no single story review performs. Mid-epic, run it only when a change or deferred finding calls for it |
+| **What comes next** | Plan the next epic in [Plan the Work](../plan/plan-the-work.md), or close the initiative once its epics finish |
 
-## Finish an Epic
+## Finish an Epic (or Initiative)
 
-When every story is built, check that the epic's bugs and spikes are finished
-too: the retrospective accepts an epic only when none of its tickets is
-unfinished. Then check the stories still at `built` and mark them done, with
-one command per story:
+Before closing an epic, confirm all of its tickets (stories, bugs, and spikes) have finished. Stories left at `built` already count as finished for a retrospective, and you can verify them and ask Sofia to mark several done in one plain-English message:
 
 ```text wrap
-/bmad-agent-po mark story 1.3 done
+/bmad-agent-po mark stories 1.1, 1.2, and 1.3 done
 ```
 
-Then start a fresh chat and run `bmad-retrospective` on the epic,
-with its folder, id, or slug. It reads the epic's plans, commits, and diffs rather than
-anyone's memory, judges the epic against its own Done when, and reviews the
-whole changeset for the problems no single story's review could see. It writes
-`epic-<slug>-retrospective.md` in the epic's folder, with a verdict of
-`accepted`, `accepted-with-open-items`, or `rejected` and proposed action
-items. It creates no tickets and changes no status.
+Next, run `bmad-retrospective` in a fresh chat (or ask [Amelia](../agents/amelia-dev.md) to run it for you):
 
 ```text wrap
 /bmad-retrospective 1
 ```
 
-Then have Sofia validate and close the epic. She checks it against its
-Requirements and Done when, and you confirm:
+The retrospective inspects the actual commits, diffs, build plans, and epic criteria rather than relying on chat memory. It writes `epic-<slug>-retrospective.md` inside the epic folder with an evidence-backed verdict (`accepted`, `accepted-with-open-items`, or `rejected`) and proposed action items, without modifying ticket statuses on its own. See [Finish an Epic](./finish-an-epic.md) for everything the retrospective checks and how to handle each verdict.
+
+Once you have decided what to do with any action items, ask Sofia to close the epic:
 
 ```text wrap
 /bmad-agent-po close the door check-in epic
 ```
 
-Decide what to do with each action item.
-[Finish an Epic](./finish-an-epic.md) covers what the retrospective looks for.
-To review the epic's changes yourself, block by block, you can also run
-`bmad-walkthrough` on the epic's PR or on one commit at a time.
+Sofia runs a closure check against the epic's requirements and completion criteria and waits for your confirmation. If you ask her to close an epic before running a retrospective, she offers to run `bmad-retrospective` first. To inspect the epic's diff yourself block by block before merging, you can also run `bmad-walkthrough` on the epic's PR or commits.
+
+When every epic inside an initiative finishes (or every child initiative inside a program finishes), ask Sofia to close the initiative or program the same way. Closing every child never closes the parent automatically; Sofia runs the parent's closure check against its overall outcome and asks you to confirm.
 
 ## A Change Mid-Flight
 
-Tell Sofia "this changed, what now", with what changed and where it came from.
-She reads the affected ticket, its history, its breakdown, and the work
-already finished, and says whether what is required changed or only how it is
-delivered. Then she proposes a way forward: adjust the remaining stories, roll
-back built work, or cut scope. You decide.
+Requirements change while code is being built. Tell Sofia "this changed, what now", explaining what shifted and where the decision came from. She reads the affected spec, its history, its stories, and the work already completed, explains whether the underlying requirement changed or only how it is delivered, and proposes options: adjust remaining stories, add a follow-up story, roll back built code, or cut scope. You make the call.
 
-- When what is required changes, she updates the ticket's requirements first,
-  keeping every id, and names the stories whose requirements changed.
-- When the breakdown changes, she re-slices the affected epics. Finished work
-  is never rewritten; it stays as the record, and a new story carries the
-  change.
-- She drops work that no longer belongs, records the reason, and clears what
-  waited on it.
-- When the change reaches the design or the spine, she notes what it
-  invalidates and offers Sally (`bmad-agent-ux-designer`) or Winston (`bmad-agent-architect`); she never edits
-  their files.
+- When requirements change, she updates them in place while keeping existing requirement IDs stable, and tells you which stories are now stale.
+- Finished stories are never silently rewritten; they stay as the historical record while a new story carries the change.
+- Work that no longer belongs is marked dropped with the reason recorded, and any dependent stories are unblocked.
+- When a change invalidates UX designs or shared architecture, Sofia flags what drifted and recommends a fresh chat with Sally (`bmad-agent-ux-designer`) or Winston (`bmad-agent-architect`); she never edits their files herself.
 
-She records the reason as a dated `Decision:` line in each ticket she touched.
-A change that starts upstream goes through the skill that owns that document
-first: John updates the PRD, Sally (`bmad-agent-ux-designer`) the design. Then Sofia updates the
-initiative from it. On the organization path, follow the order in
-[Plan Inside an Organization](../plan/plan-inside-an-organization.md#when-requirements-change-mid-flight).
+Every adjustment is logged as a dated decision in the touched tickets. If the change started in an upstream document, update that document with its owning agent first (John for a PRD, Sally for UX, Winston for shared architecture), then bring it to Sofia. On a formal team workflow, follow the sequence in [Plan Inside an Organization](../plan/plan-inside-an-organization.md#when-requirements-change-mid-flight).
 
 :::note[Example: the room booker]
-In the [room booker](../start/how-bmad-works.md#the-example-app), an office's meeting-room app, facilities shortens the no-show window to 10
-minutes when the second epic is one story in. John updates the PRD first.
+In the [room booker](../start/how-bmad-works.md#the-example-app), an office meeting-room app, facilities shortens the no-show window to 10 minutes while epic 2 is one story in. John updates the PRD first:
 
 **You:**
 
@@ -89,29 +61,35 @@ minutes when the second epic is one story in. John updates the PRD first.
 /bmad-agent-pm update the check-in PRD: facilities set the no-show window to 10 minutes
 ```
 
-Then Sofia updates the initiative from it.
+Then you bring the update to Sofia:
 
 **You:**
 
 ```text wrap
 /bmad-agent-po this changed, what now: the no-show window is 10 minutes, see prd-check-in/
 ```
-**Sofia:** What is required changed, not how. The INV-1 constraint keeps its
-id and now says 10 minutes. Story 2.1 was built and reviewed with 15,
-and its plan records that: keep it, and add a story that changes the value?
-Story 2.2 has not started and will be built with 10.
+
+**Sofia:** The core requirement changed, not just implementation detail. The no-show rule keeps its tracking ID and now says 10 minutes. Story 2.1 was already built with 15 minutes and its plan records that: keep 2.1 as built and add a new story to update the window to 10 minutes? Story 2.2 has not started yet and will use 10 minutes directly.
 
 **You:** Yes.
 
-**Sofia:** Added story 2.9, and a dated `Decision:` line to the initiative and
-the epic.
+**Sofia:** Added story 2.3 and logged the dated decision on both the initiative and epic 2.
 :::
 
 ## Deferred Findings
 
-Builds stay focused on one goal, so real findings that belong elsewhere are set
-aside. `bmad-build` and `bmad-code-review` add them to `deferred-work.md` in
-the initiative's folder; `bmad-build-auto` lists them under `deferred` in its
-plan instead. Nothing turns them into tickets on its own. Before the next epic
-is planned, go through them with Sofia: each becomes a story or a bug in
-`backlog/`, or is dropped with the reason recorded.
+Builds stay focused on one goal, so real issues spotted outside the current story are set aside rather than derailing the session:
+
+- Interactive `bmad-build` and `bmad-code-review` runs append deferred items to `deferred-work.md` in your active initiative folder (or output folder when no initiative is active).
+- Unattended `bmad-build-auto` runs record deferred findings inside each story's build plan (and Amelia collects them into her summary report when a batch finishes).
+
+Nothing turns deferred items into tickets automatically. Before planning your next epic, review `deferred-work.md` and any unattended run summaries with Sofia so every item either becomes a story or backlog bug or gets intentionally dropped with a recorded reason.
+
+## Turning Lessons into Team Rules
+
+A retrospective is most valuable when recurring mistakes stop happening in future epics. When the same pitfall shows up twice across stories or reviews, feed it back into your project's standing rules:
+
+- Run `bmad-project-context` to record repository conventions, build commands, codebase quirks, or concrete agent mistakes in `AGENTS.md` so every future coding and review session reads them automatically.
+- Invoke `bmad-customize` to add a custom code-review lens, adjust default review depth, or add team-specific planning checks for Sofia, John, Sally, or Winston.
+
+Taking two minutes to record a recurring lesson after an epic prevents repeating the same fix in the next one.
