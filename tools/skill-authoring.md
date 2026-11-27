@@ -9,7 +9,7 @@ Every PR that adds or edits a skill, agent, template, or module `help/` file mus
   - Deep review rubrics: `skills/toolsmith/bmad-toolsmith/lenses/` (`lens-leanness.md`, `lens-architecture.md`, `lens-determinism.md`, `lens-customization.md`, `lens-trigger.md`).
   - New skill shapes, rendered agents, or `bmad-facilitate` templates: `skills/toolsmith/bmad-toolsmith/shapes/`.
   - Ticket-tree skills: `tools/ticket-tree-rules.md`.
-  - Rendered-skill Jinja token syntax (`Token Forms` / `Templates in Rendered Skills`) or looking up a failing `validate_skills.py` rule ID: `tools/skill-validator.md`. Where its older step-file layout or `module.yaml` notes conflict with `canon.md` or `standards.md`, `canon.md` and `standards.md` win.
+  - Rendered-skill Jinja token syntax (`Token Forms` / `Templates in Rendered Skills`) or looking up a failing `validate_skills.py` rule ID: `tools/skill-validator.md`.
 
 ## Core-vs-module boundary hygiene
 
@@ -21,7 +21,7 @@ Domain guidance, document templates, and review rubrics belong in the module tha
 
 State the goal and consumer in 1–2 lines and let a capable LLM choose how to converse, phrase, and adapt. Keep extra prose only for non-inferable contracts: exact script commands, file/frontmatter schemas, hard ordering gates, or a named failure the model hits without it.
 
-Never transcribe ticket or spec rationale into prompt text, and never bolt edge-case clauses onto an existing paragraph — split or rewrite instead. Treat any `long_paragraphs` hit from `prepass.py` as a smell to cut or break up.
+Write for a stateless reader seeing only the current file: never transcribe ticket rationale or change history ("replaces X", "no longer Y", "supersedes older Z"), and fix stale sibling docs in place instead of adding override caveats. Never bolt edge-case clauses onto an existing paragraph — split or rewrite instead, and treat `long_paragraphs` hits from `prepass.py` as a smell to cut or break up.
 
 ## Six-lens pre-PR smell check
 

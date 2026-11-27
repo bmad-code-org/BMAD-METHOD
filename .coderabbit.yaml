@@ -7,10 +7,9 @@
 language: en-US
 early_access: true
 tone_instructions: |
-  Skip subjective copy-editing or voice preferences, but do flag prompt-quality
-  defects defined in tools/skill-authoring.md, canon.md, and standards.md —
-  including bloat, bolted-on hedging, over-explaining, and broken progressive
-  disclosure. Never ask to pad prompts with defensive edge-case qualifiers.
+  Skip subjective voice nits, but flag prompt-quality defects from
+  tools/skill-authoring.md, canon.md, and standards.md: bloat, hedging,
+  diff residue, and broken progressive disclosure. Prefer cuts over padding.
 
 reviews:
   profile: chill
@@ -87,17 +86,17 @@ reviews:
         references, and module help/ files). Review against both repository
         correctness and the Toolsmith authoring bar in tools/skill-authoring.md,
         skills/toolsmith/bmad-toolsmith/canon.md, and
-        skills/toolsmith/bmad-toolsmith/lenses/standards.md (which supersede
-        older step-file/module.yaml notes in tools/skill-validator.md):
+        skills/toolsmith/bmad-toolsmith/lenses/standards.md:
         - Correctness: unresolved paths or cross-references (module help/ files
           use module-relative `help/<topic>.md` refs), wrong skill invocation
           syntax, documented behavior code does not implement, and genuine
           factual contradictions across files.
         - Prompt quality: bloat, dense paragraphs, bolted-on hedging or exotic
-          corner cases, over-explaining what a capable model can infer, broken
-          progressive disclosure (inlining branch-only procedures instead of
-          references/ or topic files), and core-vs-module leaks
-          (skills/core-tools/ must stay 100% module-agnostic).
+          corner cases, change-history residue ("replaces X", "no longer Y", or
+          override caveats for stale sibling docs), over-explaining what a capable
+          model can infer, broken progressive disclosure (inlining branch-only
+          procedures instead of references/ or topic files), and core-vs-module
+          leaks (skills/core-tools/ must stay 100% module-agnostic).
         - Do not treat a concise summary that omits fallbacks documented
           elsewhere as a contradiction, and prefer suggesting cuts or
           simplifications over adding extra qualifiers or branches.
