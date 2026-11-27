@@ -193,6 +193,120 @@ class CreativeLintTests(unittest.TestCase):
         self.assertEqual(invoke("metrics", str(empty), "--wpm", "0")[0], 2)
         self.assertEqual(invoke("metrics", str(empty), "--max-invented-pct", "120")[0], 2)
 
+    def test_metrics_counts_multiple_trailing_and_prefix_invented_tags(self) -> None:
+        four_two = self.write(
+            "four-two.md",
+            "One. Two. Three. Four. Five. [INVENTED] Six. [INVENTED]\n",
+        )
+        code, data, err = invoke("metrics", str(four_two), "--check-invented")
+        self.assertEqual(code, 1, err)
+        assert data is not None
+        self.assertEqual(data["sentence_count"], 6)
+        self.assertEqual(data["invented_sentences"], 2)
+        self.assertEqual(data["invented_pct"], 33.3)
+        self.assertFalse(data["ok"])
+
+        two_two = self.write(
+            "two-two.md",
+            "Real one. Real two. Made three. [INVENTED] Made four. [INVENTED]\n",
+        )
+        code2, data2, err2 = invoke("metrics", str(two_two), "--check-invented")
+        self.assertEqual(code2, 1, err2)
+        assert data2 is not None
+        self.assertEqual(data2["sentence_count"], 4)
+        self.assertEqual(data2["invented_sentences"], 2)
+        self.assertEqual(data2["invented_pct"], 50.0)
+
+        prefixed = self.write(
+            "prefixed.md",
+            "[INVENTED] Made one. [INVENTED] Made two.\n",
+        )
+        code3, data3, err3 = invoke("metrics", str(prefixed), "--check-invented")
+        self.assertEqual(code3, 1, err3)
+        assert data3 is not None
+        self.assertEqual(data3["sentence_count"], 2)
+        self.assertEqual(data3["invented_sentences"], 2)
+        self.assertEqual(data3["invented_pct"], 100.0)
+
+    def test_metrics_compares_unrounded_invented_percentage(self) -> None:
+        one_third = self.write("third.md", "One. Two. [INVENTED] Three.\n")
+        code, data, err = invoke("metrics", str(one_third), "--check-invented", "--max-invented-pct", "33.3")
+        self.assertEqual(code, 1, err)
+        assert data is not None
+        self.assertEqual(data["invented_pct"], 33.3)
+        self.assertFalse(data["ok"])
+
+    def test_metrics_supports_non_latin_unicode_prose(self) -> None:
+        russian = self.write("ru.md", "Привет мир. Это мой рассказ.\n")
+        code, data, err = invoke("metrics", str(russian), "--wpm", "150")
+        self.assertEqual(code, 0, err)
+        assert data is not None
+        self.assertEqual(data["word_count"], 5)
+        self.assertEqual(data["sentence_count"], 2)
+        self.assertEqual(data["runtime_seconds"], 2)
+
+    def test_metrics_section_filters_talk_script_to_spoken_sections(self) -> None:
+        talk = self.write(
+            "talk-script.md",
+            "---\ntitle: Demo Talk\n---\n\n"
+            "# Demo Talk\n\n"
+            "## Table of Contents\n\n- Slot and audience\n- Spoken draft\n\n"
+            "## Slot and audience\n\nTwenty minute keynote for skeptical engineers.\n\n"
+            "## Body beats and visual cues\n\nBeat one explains the failure.\n\n"
+            "## Spoken draft\n\nHere is the first spoken sentence. Here is the second.\n\n"
+            "## Hook written last\n\nWatch this fail.\n\n"
+            "## Pacing and lint check\n\nClean pass recorded earlier.\n",
+        )
+        code, data, err = invoke(
+            "metrics",
+            str(talk),
+            "--section",
+            "Hook written last",
+            "--section",
+            "Spoken draft",
+        )
+        self.assertEqual(code, 0, err)
+        assert data is not None
+        self.assertEqual(data["word_count"], 13)
+        self.assertEqual(data["sentence_count"], 3)
+
+        missing_code, _, missing_err = invoke("metrics", str(talk), "--section", "No Such Section")
+        self.assertEqual(missing_code, 2)
+        self.assertIn("no matching ## sections found", missing_err)
+
+    def test_lint_handles_fence_inside_html_comment_and_longer_closing_fence(self) -> None:
+        draft = self.write(
+            "fences.md",
+            "<!-- comment opening a fake fence\n```text\n-->\nWe should delve here.\n"
+            "```\nignored inside three-backtick fence\n````\nStill fine.\n",
+        )
+        code, data, err = invoke("lint", str(draft), "--blacklist", str(self.blacklist))
+        self.assertEqual(code, 1, err)
+        assert data is not None
+        self.assertEqual(data["blocking_count"], 1)
+        self.assertEqual(data["blocking"][0]["line"], 4)
+        self.assertEqual(data["blocking"][0]["match"], "delve")
+
+    def test_starter_blacklist_catches_curly_apostrophes(self) -> None:
+        if not STARTER_BLACKLIST.is_file():
+            self.skipTest("starter blacklist not yet created")
+        draft = self.write("curly.md", "Let’s dive in because it’s worth noting.\n")
+        code, data, err = invoke("lint", str(draft), "--blacklist", str(STARTER_BLACKLIST), "--surface", "spoken")
+        self.assertEqual(code, 1, err)
+        assert data is not None
+        self.assertEqual(data["blocking_count"], 2)
+
+    def test_lint_frontmatter_line_offset_via_shared_helper(self) -> None:
+        draft = self.write(
+            "fm.md",
+            "---\ntitle: Test\ntags: [one, two]\n---\nLine five.\nWe delve on line six.\n",
+        )
+        code, data, err = invoke("lint", str(draft), "--blacklist", str(self.blacklist), "--project-root", str(ROOT))
+        self.assertEqual(code, 1, err)
+        assert data is not None
+        self.assertEqual(data["blocking_count"], 1)
+        self.assertEqual(data["blocking"][0]["line"], 6)
+
 
 if __name__ == "__main__":
     unittest.main()

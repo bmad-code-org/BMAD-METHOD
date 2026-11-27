@@ -15,7 +15,7 @@ The outcome is a finished creative artifact and interactive HTML deliverable —
   - every fitting template candidate rather than guessing if the request spans more than one;
   - inputs from `{record_folder}` (`assets/record-README.md` defines the layout): `creator.md`, `audience.md`, `canon.md`, `blacklist.md`, `{voice_bible}`, and any matching `braindumps/` file;
   - suggested next steps on close: running `DESLOP`, `PACKAGE`, `CRITIQUE`, or `REHEARSE` on drafts, or testing the work in `STUDIO` via the `bmad-party-mode` skill.
-- When a `talk-script` or spoken section settles, run `scripts/creative_lint.py` before closing or hand it straight into `DESLOP`.
+- When a `talk-script` or spoken section settles, run `uv run "{skill-root}/scripts/creative_lint.py"` before closing (passing `--section "Hook written last" --section "Spoken draft"` for `metrics` on `talk-script`) or hand it straight into `DESLOP`.
 - On close, record newly settled lore, visual direction, or rejected angles in `{record_folder}/canon.md` and update the deliverable's status and path in `{record_folder}/threads.md`.
 
 ## Hand back

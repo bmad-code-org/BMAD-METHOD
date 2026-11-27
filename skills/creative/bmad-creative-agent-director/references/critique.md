@@ -11,7 +11,7 @@ The outcome is a concrete, prioritized cut-and-upgrade list that makes a slide, 
   3. **Inform, persuade, or transition:** every slide or element earns its keep by shifting understanding, proving a claim, or bridging turns — cut anything purely decorative or redundant.
   4. **Static-card ban:** flag any multi-bullet text card and name its concrete upgrade (hero stat, staged diagram, split comparison, dated timeline, chart, or single vivid visual metaphor).
 - Trace the eye path on dense frames: check contrast, margin breathing room, and whether text exceeds ~8 words per visual element.
-- Offer to route multi-reader pre-ship roasting through `STUDIO` (`critique-table`) in the `bmad-party-mode` skill when several perspectives would sharpen the pass.
+- Offer to invoke the `bmad-party-mode` skill for multi-reader pre-ship roasting through `STUDIO` (`critique-table`) when several perspectives would sharpen the pass.
 
 ## Hand back
 

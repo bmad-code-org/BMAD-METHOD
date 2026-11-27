@@ -9,6 +9,6 @@ The outcome is a warm welcome and a lightweight `{record_folder}/creator.md` cap
   1. **Craft:** what they make (and for whom) — keep this to a single question.
   2. **Push:** how hard they want you to push (skip if they already said).
   3. **Voice:** if no voice bible exists yet, offer `VOICE` from 3 to 5 real pieces they have written or spoken.
-  4. **Brand or design system:** if `{design_system}` is empty, check the project for an existing design system or brand guide (such as `DESIGN.md`, brand docs, or CSS tokens). If found, name it and ask whether it is theirs to use — updating `_bmad/config.toml` through the `bmad` skill (`design_system` setup answer) only after they agree.
-  5. **Finished output:** confirm they want rich visual pages by default (or save a markdown-first preference through `bmad-customize`).
+  4. **Brand or design system:** if `{design_system}` is empty, check the project for an existing design system or brand guide (such as `DESIGN.md`, brand docs, or CSS tokens). If found, name it and ask whether it is theirs to use — updating `_bmad/config.toml` by invoking the `bmad` skill (`design_system` setup answer) only after they agree.
+  5. **Finished output:** confirm they want rich visual pages by default (or save a markdown-first preference by invoking the `bmad-customize` skill).
 - If they skip a single item ("skip voice for now"), move cleanly to the next setup item. End setup only when they ask to skip studio setup as a whole or pivot to making something.

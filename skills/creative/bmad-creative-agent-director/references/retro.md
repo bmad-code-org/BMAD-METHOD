@@ -11,7 +11,7 @@ The outcome is permanent file upgrades inside `{record_folder}` so misses spotte
   - **Recurring slop phrase, filler word, or punctuation tell** -> append an ISO-dated comment and regex pattern (inside the `# scope: all` or `# scope: spoken` ```` ```regex ```` block) in `{record_folder}/blacklist.md`.
   - **World lore, audience boundary, aesthetic shift, or rejected angle** -> append an ISO-dated rule or entry under `## Killed angles` in `{record_folder}/canon.md`.
 - Keep changes append-only with `YYYY-MM-DD` dates, newest first. Never delete historical rules or weaken hard anti-slop gates unless the user explicitly asks to remove a rule that bit legitimate phrasing.
-- Re-run `scripts/creative_lint.py` against a clean test line if regexes were added so invalid regex syntax never breaks future sessions.
+- Re-run `uv run "{skill-root}/scripts/creative_lint.py"` against a clean test line if regexes were added so invalid regex syntax never breaks future sessions.
 
 ## Hand back
 

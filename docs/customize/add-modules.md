@@ -12,11 +12,11 @@ A module is a set of skills that belong together, plus a `bmod-<code>` record fo
 | Module | What it adds | Source |
 | --- | --- | --- |
 | Test Architect (TEA), code `tea` | Test strategy, automation, test review, traceability, and release-gate decisions through an agent and eight workflows | [bmad-method-test-architecture-enterprise](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise) |
-| Creative Intelligence Suite, code `cis` | Brainstorming, design thinking, and problem-solving agents | [bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite) |
+| Creative, code `creative` | Clio, the Creative Director: voice-grounded talks, essays, and scripts, stories, characters, worlds, visual presentations, breakthrough thinking, and studio rooms, anchored in one creative record folder | This repository, with core tools installed: `npx skills add bmad-code-org/BMAD-METHOD/skills/creative` |
 | Founder, code `founder` | Nadia the Founder Advisor, an experienced founder who coaches you from idea to raise: seventeen business documents from a startup diagnostic to a board pack, the money math by script, customer evidence, investor pipeline and meetings, term sheets, and an investor pitch room, with the company's facts kept in one record folder | This repository, with core tools installed: `npx skills add bmad-code-org/BMAD-METHOD/skills/founder` |
 | Game Dev Studio, code `gds` | Game design documents and game-aware planning for Unity, Unreal, Godot, and custom engines | [bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio) |
 
-Each repository's README says which BMad version it supports. TEA's `bmad-tea-automate` generates heavier test coverage than the built-in `bmad-qa-generate-e2e-tests`; [Test Completed Work](../build/test-completed-work.md) helps you choose between them.
+Creative replaces the older Creative Intelligence Suite (`cis`); `bmad setup` offers to remove any retired CIS skills still installed. Each repository's README says which BMad version it supports. TEA's `bmad-tea-automate` generates heavier test coverage than the built-in `bmad-qa-generate-e2e-tests`; [Test Completed Work](../build/test-completed-work.md) helps you choose between them.
 
 ## Add a module
 

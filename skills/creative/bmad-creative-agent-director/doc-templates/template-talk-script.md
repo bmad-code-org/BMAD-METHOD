@@ -49,4 +49,4 @@ updated: ""
 <!-- built: from the settled spoken body. The final Target-Transformation-Stakes cold open that matches what the talk actually proves, plus closing CTA/ease transition. -->
 
 ## Pacing and lint check
-<!-- built: from scripts/creative_lint.py output on the settled script. Recorded word count, estimated runtime (`MM:SS` at measured WPM), burstiness check, and blacklist status. -->
+<!-- built: from `uv run "{skill-root}/scripts/creative_lint.py"` (from Clio's skill folder, passing `--section "Hook written last" --section "Spoken draft"` to `metrics`) on the settled script. Recorded word count, estimated runtime (`MM:SS` at measured WPM), burstiness check, and blacklist status. -->

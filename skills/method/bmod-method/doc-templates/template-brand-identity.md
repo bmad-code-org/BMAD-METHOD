@@ -59,7 +59,7 @@ updated: ""
 <!-- Copy cadence, Do/Don't microcopy table, illustration/photography aesthetic rules, and diagram styling recorded in `BRAND.md`. -->
 
 ## Brand applications and BMad reuse
-<!-- Concrete starter rules for web UI, docs/reports, and decks, plus wiring `{run}` (or `{run}/DESIGN.md`) as the core-tools `modules.core-tools.design_system` setup answer through the `bmad` skill so every BMad HTML view and UI build inherits this package automatically. -->
+<!-- Concrete starter rules for web UI, docs/reports, and decks, plus wiring `{run}` (or `{run}/DESIGN.md`) as the core-tools `modules.core-tools.design_system` setup answer through the `bmad` skill so every future BMad HTML view, UX run, and Creative deck inherits this package automatically, and UI builds can reference DESIGN.md directly. -->
 
 ## Open questions
 <!-- optional. Trademark checks, custom font licensing, print assets, or photography shoots queued with owners. -->

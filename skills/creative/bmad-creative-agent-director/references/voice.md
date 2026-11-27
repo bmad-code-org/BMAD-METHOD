@@ -4,7 +4,7 @@ The outcome is an evidence-backed `{voice_bible}` derived strictly from real wri
 
 ## What you cannot infer
 
-- Confirm `{record_folder}/README.md` exists (copy `assets/record-README.md` if creating the record for the first time). If creating a new voice bible with no explicit `voice_guide` path set, ask once whether to save it as a personal cross-project voice bible (`~/.bmad/voice-bible.md`, falling back to `{record_folder}/voice-bible.md` if writes outside `{project-root}` are blocked) or keep it project-local (`{record_folder}/voice-bible.md`).
+- Confirm `{record_folder}/README.md` exists (copy `assets/record-README.md` if creating the record for the first time). If creating a new voice bible with no explicit `voice_guide` path set, ask once whether to save it as a personal cross-project voice bible (`~/.bmad/voice-bible.md`, falling back to `{record_folder}/voice-bible.md` if writes outside `{project-root}` are blocked) or keep it project-local (`{record_folder}/voice-bible.md`), and bind `{voice_bible}` to the chosen path.
 - Ask for 3 to 5 real pieces or cleaned spoken transcripts that represent the creator at their best, and save each untouched into `{record_folder}/exemplars/YYYY-MM-DD-<slug>.md` with medium, date, and source context in frontmatter. Never fabricate exemplar text.
 - If fewer than three real samples exist yet, ask for raw emails, voice notes, posts, or talk transcripts they already wrote, or pause `VOICE` cleanly rather than guessing from adjectives.
 - Read `assets/voice-bible-spec.md` and deconstruct the saved exemplars across sentence rhythm, cold openings, transitions, recurring constructions, jargon handling, hedging, and filler tokens. Cite at least one verbatim quote per rule.

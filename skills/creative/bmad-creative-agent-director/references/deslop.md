@@ -11,7 +11,7 @@ The outcome is a tightened draft where AI cliché patterns, synthetic symmetry, 
   `uv run "{skill-root}/scripts/creative_lint.py" metrics "<draft-path>" --wpm <wpm>`
 - Fix every blocking regex violation, review advisory spoken hits on written pieces, resolve burstiness warnings by inserting crisp 3-to-6-word punch lines, and inspect against the Manual QA list in `{record_folder}/blacklist.md` plus `assets/craft-checklist.md`.
 - Protect `keep:` tokens from `{voice_bible}` while eliminating `cut:` verbal tics, fake-casual props, and unannounced filler. When removing fluff exposes a thin factual claim, mark a `GAP` for the creator rather than inventing content.
-- Re-run `scripts/creative_lint.py` after edits until blocking violations are zero.
+- Re-run `uv run "{skill-root}/scripts/creative_lint.py"` after edits until blocking violations are zero.
 
 ## Hand back
 

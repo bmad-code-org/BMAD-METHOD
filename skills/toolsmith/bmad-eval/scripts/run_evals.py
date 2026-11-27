@@ -108,7 +108,7 @@ def fixture_entry(entry: object) -> tuple[str, str | None]:
 
 
 def is_machine_path(path: str) -> bool:
-    return path.startswith("~") or Path(path).is_absolute()
+    return path.startswith(("~", "/", "\\")) or bool(Path(path).anchor) or bool(re.match(r"^[A-Za-z]:", path))
 
 
 def fixture_problems(files: list, project_root: Path, cases_dir: Path) -> list[str]:
@@ -182,7 +182,12 @@ def resolve_fixtures(files: list, project_root: Path, cases_dir: Path, fetch_dir
     return out
 
 
-def companion_skills(skills: list, project_root: Path, cases_dir: Path) -> tuple[list[Path], list[str]]:
+def companion_skills(
+    skills: list,
+    project_root: Path,
+    cases_dir: Path,
+    reserved_names: dict[str, str] | None = None,
+) -> tuple[list[Path], list[str]]:
     """Each `skills` entry as a skill folder, and why any cannot be staged."""
     found, problems, seen_names = [], [], {}
     for entry in map(str, skills or []):
@@ -195,6 +200,10 @@ def companion_skills(skills: list, project_root: Path, cases_dir: Path) -> tuple
         )
         if folder is None:
             problems.append(f"{entry}: no SKILL.md under {project_root} or {cases_dir}")
+        elif reserved_names and folder.name in reserved_names:
+            problems.append(
+                f"{entry}: companion skill folder name `{folder.name}` collides with {reserved_names[folder.name]}"
+            )
         elif folder.name in seen_names:
             problems.append(
                 f"{entry}: companion skill folder name `{folder.name}` collides with {seen_names[folder.name]}"
@@ -387,7 +396,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"harness invalid: {e}", file=sys.stderr)
         return 2
 
-    companions = {id(c): companion_skills(c.get("skills", []), fixture_root, cases_file.parent) for c in cases}
+    reserved = {skill_path.name: f"the skill under test ({skill_path.name})"}
+    if variant_path is not None:
+        reserved.setdefault(variant_path.name, f"the variant skill ({variant_path.name})")
+    companions = {
+        id(c): companion_skills(c.get("skills", []), fixture_root, cases_file.parent, reserved) for c in cases
+    }
     problems = [
         f"case {c.get('id')}: {x}"
         for c in cases

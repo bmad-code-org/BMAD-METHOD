@@ -26,4 +26,4 @@ cut: kind of, sort of, honestly, you know, at the end of the day
 
 - `keep:` lists connective glue and speech tics that carry this creator's natural rhythm and should not be sterilized during cleanup or weaving.
 - `cut:` lists verbal filler and hedging tics to strip unless quoting raw speech intentionally.
-- On conflict, `keep:` wins so authentic cadence is never flattened into generic prose.
+- On conflict, `keep:` overrides `cut:` and manual/advisory trims so authentic cadence is never flattened into generic prose; blocking `blacklist.md` regex patterns still block unless pruned from `blacklist.md`.

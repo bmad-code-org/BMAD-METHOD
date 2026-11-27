@@ -14,8 +14,8 @@ Append new patterns with an ISO date via `RETRO`. Only prune manually if a patte
 # scope: all
 # empty openers and throat-clearing
 \bwithout further ado\b
-\blet'?s (dive|jump) (right )?in(to)?\b
-\bin today'?s (fast.?paced )?(world|landscape|talk|post|episode)\b
+\blet['’]?s (dive|jump) (right )?in(to)?\b
+\bin today['’]?s (fast.?paced )?(world|landscape|talk|post|episode)\b
 # AI cliché verbs and adjectives
 \bdelve\b
 \bdive deep\b
@@ -47,18 +47,18 @@ Append new patterns with an ISO date via `RETRO`. Only prune manually if a patte
 \b(that|with that) being said\b
 \bwith that said\b
 \bneedless to say\b
-\bit'?s worth noting\b
-\bit'?s important to note\b
-\bnow that we'?ve covered\b
+\bit['’]?s worth noting\b
+\bit['’]?s important to note\b
+\bnow that we['’]?ve covered\b
 # synthetic slop constructions
 \bin the world of\b
 \bin the (ever.)?(changing|evolving) landscape\b
 \bat the end of the day\b
 \blet that sink in\b
-\bbut here'?s the (thing|kicker|catch)\b
+\bbut here['’]?s the (thing|kicker|catch)\b
 \btake (it|this|your \w+) to the next level\b
 \bimagine (a world|if you could)\b
-\bwhether you'?re a\b
+\bwhether you['’]?re a\b
 \bnot (just|only) \w[^.,;]{0,40}, but\b
 \bthe (best|craziest|wildest) part\?
 \bgone are the days\b

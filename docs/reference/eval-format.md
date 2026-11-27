@@ -51,8 +51,9 @@ Evals sit outside the skill, so installing the skill never copies them. `bmad-ev
 | `rubric` | Named expectations, each graded to `{text, passed, evidence}` |
 | `state_prefix` | Optional bracketed text that places the skill mid-workflow. Null or absent starts cold |
 | `files` | Optional fixtures staged into the clean working directory |
+| `skills` | Optional skill folders staged beside the skill under test (omitted in `bare` mode) |
 
-Each entry in `files` is a path relative to `--project-root` or the cases file's folder, or a GitHub file URL pinned to a commit or tag, `https://github.com/<owner>/<repo>/blob/<ref>/<path>`, for data kept in another repo. A relative path keeps its folders, so the input can name it as written; a GitHub file lands at the workspace root under its file name. Absolute and `~` paths are refused so the cases run on anyone's machine, and a missing fixture stops the run before any case starts.
+Each entry in `files` is a path relative to `--project-root` or the cases file's folder, a GitHub file URL pinned to a commit or tag (`https://github.com/<owner>/<repo>/blob/<ref>/<path>`) for data kept in another repo, or `{"from": "<path or GitHub URL>", "to": "<workspace-relative path>"}` to stage a fixture under another name. A relative path keeps its folders, so the input can name it as written; a GitHub file lands at the workspace root under its file name unless `to` renames it. Rooted, drive-qualified, `~`, and `..` paths are refused so cases run on any machine, and duplicate destinations or missing fixtures stop the run before any case starts. Companion folders in `skills` must also be relative paths holding a `SKILL.md` and cannot share a folder name with another companion or with the skill (or variant) under test.
 
 ## `state_prefix`
 

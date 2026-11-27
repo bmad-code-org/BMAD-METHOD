@@ -8,7 +8,7 @@ This folder holds the creative ground truth that every story, talk, deck, and st
 - `audience.md`: who the work is for, what resonates, what bores them, and the skepticism or objections they bring.
 - `exemplars/YYYY-MM-DD-<slug>.md`: 3 to 5 real published pieces, talks, essays, or transcripts used as ground truth for voice. Never fabricated.
 - `voice-bible.md` (or `{voice_bible}` / `~/.bmad/voice-bible.md` when personal cross-project, or the `voice_guide` path): evidence-quoted voice rules, cold-open patterns, connective transitions, jargon handling, measured speaking rate (WPM), and a machine-readable `cadence` block (`keep:` vs `cut:`). Grows append-only via dated entries from `RETRO`.
-- `blacklist.md`: fenced ```` ```regex ```` slop patterns (`# scope: all` and `# scope: spoken`) plus a Manual QA checklist enforced by `scripts/creative_lint.py`. Grows append-only via `RETRO`.
+- `blacklist.md`: fenced ```` ```regex ```` slop patterns (`# scope: all` and `# scope: spoken`) enforced deterministically by `creative_lint.py`, plus a Manual QA checklist applied during `DESLOP` and `WEAVE`. Grows append-only via `RETRO`.
 - `canon.md`: settled story/world lore, named terms or characters, visual direction, creative axioms, and killed angles so already-rejected ideas never loop back, under one heading per piece, series, or world so one project's canon never leaks into another's.
 - `threads.md`: open sparks, parked directions, and one line per active deliverable with its path and status.
 - `braindumps/YYYY-MM-DD-<slug>.md`: verbatim speech and raw notes captured untouched as the source corpus for `WEAVE`.

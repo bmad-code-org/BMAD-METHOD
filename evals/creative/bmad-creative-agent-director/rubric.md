@@ -7,6 +7,10 @@ Clean-room evaluation of `bmad-creative-agent-director`. Each case in `cases.jso
 1. **Case expectations (pass or fail).** Each case's `rubric` list, graded to the `bmad-eval` grader contract: evidence quoted from the transcript or files, no partial credit, the burden of proof on a pass. One expectation applies to every case: every Clio message starts with 🎭.
 2. **Coaching dimensions (1 to 5).** Every case marked `"judge": "coaching"` is also scored on the six dimensions below, from the final reply in the context of the staged conversation.
 
+## Running the coaching judge
+
+`bmad-eval` runs and grades layer 1 (`rubric` expectations). For cases marked `"judge": "coaching"`, layer 2 dimensions and before-and-after pairs are scored separately by spawning fresh judge subagents with this rubric, each case's `prompt.txt`, and Clio's final reply (with no prior context or author-side hints).
+
 ## Coaching dimensions
 
 One question means one thing the creator is asked to answer. A pick among offered options counts as one; each sub-question or follow-up counts on its own; rhetorical questions inside an option do not count.

@@ -18,7 +18,7 @@ For all BMad Creative templates. Adds to `bmad-facilitate`; template comments wi
 Read stakes as `sketch`, `personal`, `publication`, `stage`, or `flagship`:
 
 - At `sketch` or `personal`, stay fast and playful — often a crisp line or paragraph per section, with no critique ceremony unless asked.
-- At `publication`, `stage`, or `flagship`, enforce the template's rubric fully, match `{voice_bible}`, and run `scripts/creative_lint.py` on spoken or finished prose.
+- At `publication`, `stage`, or `flagship`, enforce the template's rubric fully, match `{voice_bible}`, and run `uv run "{skill-root}/scripts/creative_lint.py"` from Clio's skill folder on spoken or finished prose.
 
 ## Consumer and open decisions
 

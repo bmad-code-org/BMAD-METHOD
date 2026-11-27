@@ -228,6 +228,9 @@ class RunEvalsTest(unittest.TestCase):
                 ({"from": None, "to": "x.md"}, "needs both"),
                 ({"from": "fixtures/notes.md", "to": "../out.md"}, "inside the workspace"),
                 ({"from": "fixtures/notes.md", "to": "/tmp/out.md"}, "inside the workspace"),
+                ({"from": "fixtures/notes.md", "to": "\\tmp\\out.md"}, "inside the workspace"),
+                ({"from": "fixtures/notes.md", "to": "C:\\out.md"}, "inside the workspace"),
+                ({"from": "fixtures/notes.md", "to": "~/out.md"}, "inside the workspace"),
             ):
                 write(cases, json.dumps([{"id": "b", "input": "hello", "rubric": ["x"], "files": [entry]}]))
                 res = run(
@@ -287,9 +290,11 @@ class RunEvalsTest(unittest.TestCase):
             skill, cases, harness = make_project(root)
             write(root / "a" / "helper" / "SKILL.md", "---\nname: helper\ndescription: A.\n---\n")
             write(root / "b" / "helper" / "SKILL.md", "---\nname: helper\ndescription: B.\n---\n")
+            write(root / "other" / "greet" / "SKILL.md", "---\nname: greet\ndescription: Shadow.\n---\n")
             for skills, said in (
                 (["../skills/engine"], "relative to the project root"),
                 (["a/helper", "b/helper"], "collides"),
+                (["other/greet"], "collides"),
             ):
                 write(cases, json.dumps([{"id": "c", "input": "hello", "rubric": ["x"], "skills": skills}]))
                 res = run(
@@ -299,6 +304,32 @@ class RunEvalsTest(unittest.TestCase):
                 self.assertEqual(res.returncode, 2, skills)
                 self.assertIn(said, res.stderr)
                 self.assertFalse((root / "out").exists())
+
+    def test_companion_skill_colliding_with_variant_stops_before_any_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill, cases, harness = make_project(root)
+            variant = root / "variants" / "greet-v1"
+            write(variant / "SKILL.md", "---\nname: greet\ndescription: Variant.\n---\n")
+            write(root / "other" / "greet-v1" / "SKILL.md", "---\nname: greet-v1\ndescription: Shadow.\n---\n")
+            write(root / "skills" / "engine" / "SKILL.md", "---\nname: engine\ndescription: Runs.\n---\n")
+            write(cases, json.dumps([{"id": "v", "input": "hello", "rubric": ["x"], "skills": ["other/greet-v1"]}]))
+            res = run(
+                "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(root / "out"),
+                "--mode", "variant", "--variant-path", str(variant),
+                "--project-root", str(root), "--harness", str(harness), "--quiet",
+            )  # fmt: skip
+            self.assertEqual(res.returncode, 2)
+            self.assertIn("collides", res.stderr)
+            self.assertFalse((root / "out").exists())
+
+            write(cases, json.dumps([{"id": "ok", "input": "hello", "rubric": ["x"], "skills": ["skills/engine"]}]))
+            res_ok = run(
+                "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(root / "out"),
+                "--mode", "variant", "--variant-path", str(variant),
+                "--project-root", str(root), "--harness", str(harness), "--quiet",
+            )  # fmt: skip
+            self.assertEqual(res_ok.returncode, 0, res_ok.stderr)
 
     @unittest.skipIf(os.name == "nt", "the fake gh is a shell script")
     def test_github_fixture_is_fetched_at_its_ref_and_staged_by_name(self):
