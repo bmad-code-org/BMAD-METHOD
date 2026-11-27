@@ -53,7 +53,7 @@ Weak patterns to avoid:
 - Filename-only checks. "brief.md exists" passes for an empty file. Pair existence with a content check.
 - Wholly subjective phrasing. "the brief is high quality" cannot be graded. State the property concretely.
 - Tautologies. Anything that follows automatically from the prompt being understood proves nothing.
-- Escape clauses. "Kept intact somewhere", "or equivalent", or an "or" branch that a kept copy of the input can satisfy lets a broken output pass. Every branch a line allows must show the property in the deliverable itself.
+- Escape clauses. "Kept intact somewhere", "or equivalent", or an "or" branch that a kept copy of the input can satisfy lets a broken output pass. For an artifact check, every branch a line allows must show the property in the intended deliverable.
 - A reply that claims file work. When the skill's job is to write files, the evidence is in those files: a reply saying the work was done passes for a skill that did nothing.
 
 Strong patterns for artifact correctness:
@@ -78,7 +78,7 @@ Most process-discipline checks are deterministic reads of the transcript and fil
 
 A line earns trust only for a defect it has been seen to fail. Copy a passing output, plant one defect the line exists to catch (delete a required line, break a rule the skill enforces), grade both copies against the same rubric, and confirm the line passes the original and fails the broken copy citing the planted defect.
 
-When the defect has to show up in a real run, such as a wrong choice the skill reports or a step it skips, sabotage one line of a copy of the skill and run `--mode variant --variant-path <copy> --runs 3`, grading both arms against the same rubric. Before counting a sabotaged run, confirm from its output or transcript that the defect actually occurred. Count a catch only on those runs, and only when the line passes every clean run.
+When the defect has to show up in a real run, such as a wrong choice the skill reports or a step it skips, sabotage one line of a copy of the skill and run `--mode variant --variant-path <copy> --runs 3`, grading both arms against the same rubric. Before counting a sabotaged run, confirm from its output or transcript that the defect actually occurred. Count a catch only when the line fails on such a run citing the planted defect and passes every clean run.
 
 A sharding case shows the gap. Its skill keeps a copy of the source in `.source/`, and this line passed an output with one requirement line deleted from its shard, because that copy satisfied the first branch:
 
