@@ -2,7 +2,7 @@
 title: Build Software with BMad
 description: BMad helps you decide what to build and then build it. Start here to install it, make your first change, or find the path that fits the work in front of you.
 hero:
-  title: 'Turn ideas into software.<br>At any scale.'
+  title: 'Turn ideas into software. At any scale.'
   tagline: Think it through, then build it. You make the calls, so you understand what you ship.
   actions:
     - text: Meet the BMad Agent

@@ -19,6 +19,7 @@ Depending on your AI coding tool (such as Claude Code, Codex, or Cursor), you in
 | **Agent** | A specialist persona (such as Mary the Business Analyst or Sofia the Product Owner) that guides you through decisions and runs the right skills for its role. |
 | **Initiative** | A top-level project container grouping several related capabilities toward one outcome, such as a new product or a major feature set. |
 | **Epic** | One cohesive capability that a person can see working by itself, made up of one or a few stories. |
+| **Epic inception** | The just-in-time planning pass right before you start building an epic, when Sofia expands that epic's outline, offers any needed epic-level PRD, UX design, or technical design, and writes its approved stories while later epics stay thin. |
 | **Story** | One complete, bounded piece of user-facing behavior that you can verify end to end. |
 | **Program** | An optional container above initiatives used when multiple related initiatives share portfolio outcomes or cross-team rules. |
 | **PRD** | Product Requirements Document: a shared written agreement on what a product or feature must do, who it serves, and what is out of scope. |

@@ -5,7 +5,7 @@ sidebar:
   order: 4
 ---
 
-Sofia (`bmad-agent-po`) is your organizer once you have an idea, notes, designs, or a plan from [John](john-pm.md) and want to turn it into clear work that coding agents can build reliably step by step. You do not need to know any agile or software-process jargon to work with her: she organizes larger efforts into initiatives (a goal spanning multiple features), epics (a single capability made of several steps), and stories (individual pieces of work small enough for one coding session), and keeps the whole ticket tree under `_bmad-output/`.
+Sofia (`bmad-agent-po`) is your organizer once you have an idea, notes, designs, or a plan from [John](john-pm.md) and want to turn it into clear work that coding agents can build reliably step by step. You do not need to know any agile or software-process jargon to work with her: she organizes larger efforts into initiatives (a goal spanning multiple features), epics (a single cohesive capability made of a few stories), and stories (bounded user-facing pieces you can verify end to end), and keeps the whole ticket tree under `_bmad-output/`.
 
 Call Sofia with `/bmad-agent-po` in tools that support slash commands (such as Claude Code), or speak to her in plain English in any tool. Ask `"Sofia, what can you help me with?"` at any time to see everything she offers.
 
@@ -24,9 +24,9 @@ If you are still not sure, ask `bmad` or describe your goal to Sofia and she wil
 
 Give Sofia rough notes, meeting takeaways, a product brief, a PRD, or designs. She pulls out what needs to be built, what rules it must obey, what is still unknown, and any places where two source files disagree, bringing those questions to you instead of guessing product answers herself.
 
-### Break big goals into buildable steps
+### Break big goals into buildable steps (and run epic inception)
 
-Sofia slices larger goals into ordered epics and stories small enough for one coding session each, where every piece delivers something real you can see and test when it finishes. She checks that nothing is missing, circular, or out of order before you approve.
+Sofia slices larger goals into thin epic outlines in build order so you do not over-plan work that is weeks away. Right before you start building an epic, she runs **epic inception**: she checks whether that epic needs a focused epic PRD from John or epic-level designs from Sally and Winston, slices the epic into right-sized stories that deliver real verifiable outcomes, checks that nothing is missing, circular, or out of order, and writes each story's full refined story file with acceptance criteria once you approve.
 
 ### Prepare clear instructions and attach designs
 

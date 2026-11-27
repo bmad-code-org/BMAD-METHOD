@@ -23,6 +23,7 @@ Each part is a separate new project. Give each part its own Git repository with 
 | --- | --- |
 | Initiative | The top-level folder that holds all the planning documents and tickets for one product or feature set. |
 | Epic | One cohesive capability of an app, made up of one or a few stories. |
+| Epic inception | The just-in-time planning pass right before you build an epic, when Sofia expands its outline, checks whether it needs an epic PRD, UX, or architecture, and writes its refined stories while later epics stay light. |
 | Story | One bounded piece of user-facing behavior you verify end to end as one unit, even if building it takes more than one coding session. |
 | Built | The code for a story is written, tested, reviewed, and committed, ready for you to check. |
 | Done | You checked a built story yourself and told Sofia to mark it done. |
@@ -254,9 +255,11 @@ Without that line, three reviewer agents audit the architecture draft, which can
 
 The shared architecture is now linked to your epics.
 
-### 7. Plan the First Epic's Stories
+### 7. Plan the First Epic's Stories (Epic Inception)
 
-In a new session, ask `/bmad What's next?`. BMad suggests Sofia to refine the first epic and plan its stories; say "Yes."
+Because epics start as thin outlines, you prepare each epic just in time right before building it, a step BMad calls **epic inception**. Later epics stay light until their turn arrives so lessons from epic 1 can still reshape them.
+
+In a new session, ask `/bmad What's next?`. BMad suggests Sofia to run epic inception on the first epic, refining it and planning its stories; say "Yes."
 
 - If she asks whether to write an epic-level PRD with John or epic UX designs with Sally in a fresh chat first, say "Skip the epic PRD and fill the epic in from the initiative and UX, keeping it light for this walkthrough." Answer any remaining open questions directly using the simplest default.
 - When she proposes the stories, say "Two stories, both running on my computer, with no deployment yet." Without that last phrase, she may include production deployment in story 2, which is outside this local walkthrough.

@@ -201,9 +201,9 @@ This is a walkthrough, so please skip the reviewer gate.
 - If he asks where the no-show timer should run, accept his recommendation (in fast mode he may settle it directly).
 - When he shows the draft and asks you to confirm his assumptions, say "Fine." If he offers to commit the document, say "Yes."
 
-### 5. Plan the Stories and Build the First
+### 5. Run Epic Inception and Build the First Story
 
-In a new session, ask `/bmad What's next?`. BMad suggests Sofia to adopt Sally's design and Winston's architecture into the initiative, split it into an epic, refine it, and plan its stories; say "Yes."
+In a new session, ask `/bmad What's next?`. BMad suggests Sofia to adopt Sally's design and Winston's architecture into the initiative and run **epic inception** (the just-in-time pass where an epic outline expands into concrete requirements and refined stories right before building); say "Yes."
 
 - When she lists places where the design or architecture sharpens the earlier requirements, say "Side with the architecture and UX."
 - When she proposes epics, say "One epic for now: check in or lose the room."

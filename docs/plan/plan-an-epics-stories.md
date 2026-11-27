@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-Use Sofia, the Product Owner (`bmad-agent-po`), to turn one epic into a few complete stories that coding agents can build and a person can verify. Plan only the epic you will build next; later epics stay as outlines until their turn arrives, so what the first epic teaches you can still reshape them.
+Use Sofia, the Product Owner (`bmad-agent-po`), to run **epic inception**: the just-in-time planning pass right before you start building an epic, turning its thin outline into a refined spec, any epic-specific UX or technical design it needs, and a few complete stories that coding agents can build and a person can verify. Run epic inception only on the epic you will build next; later epics stay as thin outlines until their turn arrives, so what the first epic teaches you can still reshape them.
 
 - The initiative is split into epics and you are ready to start one
 - An epic's stories have not been planned yet, or a mid-flight change made them stale

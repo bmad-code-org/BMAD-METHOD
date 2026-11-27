@@ -73,7 +73,7 @@ UX runs before shared architecture here so user flows inform the technical choic
 
 ## For Each Epic
 
-Each epic has one owner, and the two epics proceed in parallel: you own door check-in, and Dana owns freeing no-show rooms. BMad leaves epic ownership to your team agreement or external issue tracker. Each owner works through steps 5 to 12 for their epic.
+Each epic has one owner, and the two epics proceed in parallel: you own door check-in, and Dana owns freeing no-show rooms. BMad leaves epic ownership to your team agreement or external issue tracker. Each owner begins with **epic inception** (steps 5 to 8, where a thin epic outline expands just in time with any needed epic-level PRD, UX, architecture, and approved stories), then builds, reviews, and closes the epic in steps 9 to 12.
 
 5. Sofia refines the epic and identifies what still needs decisions before coding. If open product questions or edge cases remain for this epic, Sofia recommends a fresh chat with John (`bmad-agent-pm`) to write a focused epic-level PRD first; otherwise she fills out the epic's requirements directly from the initiative and its linked documents. Before slicing a UI-bearing or contract-heavy epic, she also offers fresh chats with Sally or Winston if epic-specific UX or technical design is missing. See [Plan an Epic's Stories](../plan/plan-an-epics-stories.md).
 

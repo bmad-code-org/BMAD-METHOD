@@ -23,8 +23,8 @@ The PRD is the product contract the organization owns. John, the Product Manager
 
 - Sally (`bmad-agent-ux-designer`) writes `DESIGN.md` and `EXPERIENCE.md` beside the PRD for shared product UX, and adds epic-level `EXPERIENCE.md` (plus local `DESIGN.md` overrides only when needed) for specific epics.
 - Winston (`bmad-agent-architect`) writes the shared architecture: the technical decisions that keep independently built epics compatible.
-- Sofia writes the initiative's requirements from the PRD and each epic's requirements from the initiative, linking to the shared architecture and UX files instead of duplicating them.
-- Sofia slices the epics into ordered stories and tracks each story's local build plan and run log.
+- Sofia writes the initiative's requirements from the PRD and slices thin epic outlines in build order. When an epic is next up to build, Sofia runs epic inception (expanding the epic just in time, recommending fresh chats with John, Sally, or Winston if epic-level product, UX, or architecture detail is missing, slicing ordered stories with refined story files, and publishing the approved set to your tracker).
+- Sofia tracks each story's status alongside its local build plan and run log.
 
 Nothing downstream reinterprets the PRD silently. If a story or epic needs a product answer the PRD does not cover, add the answer to the PRD first and re-run Sofia afterward. If the PRD and a ticket's requirements ever disagree, Sofia flags the contradiction so you decide how to reconcile them.
 

@@ -55,8 +55,8 @@ Once a plan exists:
 | Open questions or assumptions in the spec | Sofia walks through them with you | [Write and Slice the Initiative](./write-and-slice-the-initiative.md#2-settle-what-she-could-not) |
 | Not yet broken into epics | Sofia splits the initiative into ordered epics | [Write and Slice the Initiative](./write-and-slice-the-initiative.md#3-cut-it-into-epics) |
 | The interface matters, or epics must share technical decisions | Work with Sally (`bmad-agent-ux-designer`) and Winston (`bmad-agent-architect`), then have Sofia attach their files | [Design UX and Architecture](./design-ux-and-architecture.md) |
-| An epic is still an outline | Sofia works out what its stories must agree on | [Plan an Epic's Stories](./plan-an-epics-stories.md) |
-| A refined epic has no stories yet | Sofia plans and details its stories | [Plan an Epic's Stories](./plan-an-epics-stories.md#2-plan-the-stories) |
+| An epic is still an outline | Run **epic inception**: Sofia expands the epic just in time, offers any needed epic PRD, UX, or architecture, and settles what its stories must agree on | [Plan an Epic's Stories](./plan-an-epics-stories.md) |
+| A refined epic has no stories yet | Sofia slices it into ordered stories and writes their refined story files | [Plan an Epic's Stories](./plan-an-epics-stories.md#2-plan-the-stories) |
 | Stories are ready | Build them one session at a time | [Build and Verify](../build/build-and-verify.md) |
 
 When new material arrives later, such as a UX design or an updated PRD, bring it back to Sofia so she updates the spec. She preserves stable tracking links on every requirement and tells you which existing stories need to change.
