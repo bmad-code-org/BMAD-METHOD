@@ -3,30 +3,36 @@ title: 'How to Install BMad'
 description: Install BMad's skills with the Skills CLI, set up the project runtime, and verify or update it.
 ---
 
-Install BMad through the Skills CLI, then run `bmad setup` in the project.
+Install BMad through the Skills CLI, then run `bmad setup` inside your AI coding tool to initialize your project.
 
 ## Prerequisites
 
-You need an AI coding tool that supports skills and [uv](https://docs.astral.sh/uv/) for setup and Python scripts. The Skills CLI also needs Node.js, npm, and Git.
+Before you install BMad, make sure you have:
+
+- An AI coding tool that supports skills (such as Claude Code, Codex, or Cursor)
+- [uv](https://docs.astral.sh/uv/) for project setup and BMad's bundled Python helper scripts
+- Node.js (20.12+), npm, and Git (used by the Skills CLI and build workflows)
 
 ## Install the Skills
 
-From your project directory, run:
+From your project directory, run these two commands to install the core tools and the BMad Method bundle:
 
 ```bash
 npx skills add bmad-code-org/BMAD-METHOD/skills/core-tools --skill '*'
 npx skills add bmad-code-org/BMAD-METHOD/skills/method --skill '*'
 ```
 
-Each module sits in its own folder of the repository, and each command installs one module whole, its record included. `--skill '*'` takes every skill in the folder; the Skills CLI still asks which coding tools to install to. Core tools hold the `bmad` skill for setup and help, so every install needs them. Add Toolsmith (`skills/toolsmith`) or Founder (`skills/founder`) the same way.
+The first command installs the shared core tools, including the `bmad` setup and help skill that every installation needs. The second installs the BMad Method agents and delivery workflows. Passing `--skill '*'` selects everything in each bundle, and the Skills CLI still asks which AI coding tool you want to install to.
 
-To choose skills instead, run `npx skills add bmad-code-org/BMAD-METHOD` and select your coding tool and skills. Include `bmad` for setup and help, and the module records `bmod-core-tools` and `bmod-method` for the modules you use. To install a small set by name:
+You can add optional bundles the same way:
 
-```bash
-npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build --skill bmad-agent-po
-```
+| Bundle | What it adds | Install command |
+| --- | --- | --- |
+| [Founder](../founder/founder.md) | Startup discovery, modeling, and fundraising with Nadia | `npx skills add bmad-code-org/BMAD-METHOD/skills/founder --skill '*'` |
+| [Creative](../creative/creative.md) | Voice-grounded writing, talks, decks, and storytelling with Clio | `npx skills add bmad-code-org/BMAD-METHOD/skills/creative --skill '*'` |
+| [Toolsmith](../toolsmith/toolsmith.md) | Building and testing your own BMad skills with Smithy | `npx skills add bmad-code-org/BMAD-METHOD/skills/toolsmith --skill '*'` |
 
-Add review, retrospective, or other skills as needed. Keep project and global installation scopes consistent.
+If you prefer to pick individual skills instead of installing full bundles, run `npx skills add bmad-code-org/BMAD-METHOD` interactively and choose your coding tool and skills (keeping `bmad` selected for setup and help). Keep project and global installation scopes consistent across your bundles. See [Add Modules](../customize/add-modules.md) for external modules such as Test Architect (TEA) and Game Dev Studio.
 
 ## Security Scan Warnings
 
@@ -41,35 +47,34 @@ Skills run with your coding tool's permissions, so add only customizations you t
 
 ## Set Up and Verify
 
-Open the coding tool from the project folder and ask the `bmad` skill to run `bmad setup`. Setup installs the shared runtime and module scripts under `_bmad/`. Ask for `bmad status` to verify the installation and versions. Documents and tickets go to `_bmad-output`, inside the active initiative's folder when one is set; ask `bmad` to create or switch one.
+Open your AI coding tool in the project folder and ask the `bmad` skill to run setup:
 
-Invoke `bmad-build` with the change you want, or ask `bmad` for guidance. For work spanning repositories, set up at the workspace root so skills can reach both the output folder and code repositories.
+```text
+/bmad setup
+```
+
+Setup installs BMad's runtime configuration and helper scripts under `_bmad/`. To verify your installed bundles and versions, run `/bmad status` in chat. Planning documents and tickets are stored in `_bmad-output/`, organized inside your active initiative folder once you create one.
+
+From there, invoke `bmad-build` with a change you want to make, or ask `bmad` where to start. For work spanning multiple repositories, run setup at the shared workspace root so skills can reach both the output folder and the code repositories.
+
+:::tip[Working on multiple epics in parallel?]
+Builds expect a clean Git working tree on a branch that matches the epic, so teams running parallel epics often work in separate branches or Git worktrees (running `bmad setup` in each fresh worktree). See [Build and Verify](../build/build-and-verify.md) and [Plan Inside an Organization](../plan/plan-inside-an-organization.md#several-epics-at-once) for team workflow guidance.
+:::
 
 ## Update an Installation
 
-Ask the `bmad` skill to run `bmad setup` again. It checks each module's version and runs `npx skills update` for you when there is a newer one. Then it asks any new config questions, moves your `_bmad/custom/` files when a skill was renamed, and offers to delete skills a module renamed or removed. Last, it checks whether a migration applies and asks whether to run it.
+Open your coding tool and ask the `bmad` skill to run `/bmad setup` again. It checks each installed module's version and runs `npx skills update` for you when a newer version is available. It then asks any new configuration questions, moves your `_bmad/custom/` files if a skill was renamed, offers to remove retired skills, and checks whether a project migration applies.
 
-If you update by hand with `npx skills update`, run `bmad setup` afterwards. If `bmad status` reports that it could not check a module for updates, read the reason it gives: when the module's source has moved, run `npx skills update` once, then `bmad setup`. Restart your coding tool when its skill catalog needs refreshing.
+If you update manually with `npx skills update`, run `/bmad setup` in chat afterward so the project's `_bmad/` runtime stays in sync. If `/bmad status` reports that a module's source moved, run `npx skills update` once and then `/bmad setup`. Restart your coding tool if its skill list needs refreshing.
 
-If you are coming from an earlier BMad version, `bmad setup` offers to remove what the earlier version left behind and to migrate your planning documents. The earlier version's documentation stays on [its own branch](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12).
+If you are upgrading from an earlier BMad version, `/bmad setup` offers to clean up older files and migrate your planning documents. Documentation for the legacy v6 line stays on [its own branch](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12).
 
-Skills install to your coding tool's folder in the project by default, or to a per-user folder with `-g`; [Where Skills Live](../reference/skills-and-agents.md#where-skills-live) lists the folders. Setup updates either scope, but it writes `_bmad/` only in the project it runs in, so run `bmad setup` in each project that uses BMad.
+Skills install into your coding tool's project folder by default, or into a per-user folder with `-g`; [Where Skills Live](../reference/skills-and-agents.md#where-skills-live) lists the paths. Because setup writes `_bmad/` inside the current project, run `/bmad setup` in every project that uses BMad.
 
 ### Pin a Release
 
-To stay on one release, add BMad from the repository at its tag, `npx skills add bmad-code-org/BMAD-METHOD#<tag>`, choosing the same skills as before, then run `bmad setup`. `npx skills update` keeps a pinned install on its tag. When a newer release exists, `bmad status` reports `pinned` and gives the command that moves to it, as it does for [modules](../customize/add-modules.md#keep-a-module-updated).
-
-### Start Each Epic in a Fresh Worktree
-
-Builds expect a branch that fits the epic. To give that branch its own folder and a current install, open a git worktree when you pick up an epic, and remove it once the epic is closed:
-
-1. Run `git worktree add -b epic-2 ../room-booker-epic-2`, then open your coding tool in the new folder.
-2. Install the skills as above, at your pinned tag if you use one, and run `bmad setup`. Copy your personal `_bmad/custom/*.user.toml` files across, because a new worktree has no gitignored files.
-3. Refine, plan, and build the epic there, then run its retrospective and close it.
-4. Merge the branch, then run `git worktree remove ../room-booker-epic-2`.
-
-Ticket status is committed with the code, so merge a story another epic waits on as soon as it is done. If your installed skills are committed, commit the fresh install before building, because builds need a clean tree.
+To stay on a specific release tag, install from the repository at that tag (`npx skills add bmad-code-org/BMAD-METHOD#<tag>`), select the same skills as before, and run `/bmad setup`. Running `npx skills update` keeps a pinned install on its tag. When a newer release comes out, `/bmad status` reports `pinned` and prints the command to upgrade, as described in [Keep a Module Updated](../customize/add-modules.md#keep-a-module-updated).
 
 ## What You Get
 
-Your coding tool discovers the installed skills. The project's `_bmad/` holds shared configuration and supporting scripts. Team and personal customizations live under `_bmad/custom/` and survive setup refreshes.
+Your coding tool discovers the installed skills immediately. The project's `_bmad/` folder holds shared configuration and supporting scripts, while team and personal customizations live under `_bmad/custom/` and survive updates.

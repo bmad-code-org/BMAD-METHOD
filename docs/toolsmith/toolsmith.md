@@ -1,119 +1,107 @@
 ---
 title: 'Toolsmith'
-description: 'What the Toolsmith module is and what you can build with it: agents with memory, domain experts, workflows, and modules, for yourself, your business, or your team.'
+description: 'Build your own BMad skills, agents, document templates, and shareable modules with Smithy (bmad-toolsmith) and verify them with bmad-eval.'
 sidebar:
   order: 1
 ---
 
-Toolsmith is the module for building your own skills, agents, and modules. Its agent, Smithy (`bmad-toolsmith`), builds one from a conversation about what you need. `bmad-eval` measures whether it works. What you build is not limited to software: it can be any job you can describe.
+Toolsmith is the BMad module for building your own skills, agents, document templates, and shareable modules. **Smithy, the Toolsmith** (`bmad-toolsmith`), helps you turn any repeatable workflow or domain expertise into a working tool through conversation, and `bmad-eval` measures whether it actually works. You are not limited to software engineering: anything you can explain as a repeatable job can become a skill.
 
-A skill is a folder with a `SKILL.md` file. Your AI tool reads the description in that file to decide when to load the skill, and the agent follows the rest of the file once it does. Everything Toolsmith builds starts from that folder, and it works in any tool that reads the open Agent Skills format.
-
-## The Dream
-
-What if your AI remembered everything? A fitness coach that remembers every PR. A writing partner that knows your characters better than you do. A research assistant that already knows how you work.
-
-With Toolsmith you can build:
-
-- **Personal companions:** agents with memory that know their owner and grow with them over time
-- **Domain experts:** specialists for any field, such as legal, medical, finance, teaching, creative, or technical
-- **Workflows:** structured processes that take you, or an agent working alone, through complex work the same way every time
-- **Modules:** agents and workflows bundled together, to share with a team or publish for anyone
+A skill is a folder with a `SKILL.md` file. Your AI tool reads the short description at the top of that file to decide when to load the skill, and then follows the instructions inside. Everything Smithy builds uses the open Agent Skills format, so it works across compatible AI coding tools. Real modules such as [Founder](../founder/founder.md) and [Creative](../creative/creative.md) are built on the exact same module structure.
 
 ## What You Can Build
 
+Toolsmith builds four kinds of tools, from personal assistants to team-wide modules:
+
+- Personal companions with memory that remember your history, goals, and preferences across sessions rather than starting from scratch every chat (see [Agents with Memory](agents-with-memory.md)).
+- Domain specialists focused on fields such as legal review, finance, operations, teaching, writing, or software engineering.
+- Repeatable workflows and coached document templates that guide anyone through complex work the same way every time.
+- Shareable modules that package related skills and agents together so a team or the public can install and update them from any Git repository.
+
 | Domain | Examples |
 | --- | --- |
-| **Personal** | A journal companion, a fitness coach that tracks every PR, a dream journal that learns your recurring symbols, a language tutor that knows which words you keep missing |
-| **Creative** | A creative muse, a writing partner that knows your characters, a game master who remembers every character your party has met, a songwriting partner |
-| **Business** | A marketing brief in your brand voice, a contract review against your legal team's checklist, a month-end close runbook, an executive coach who keeps you to your stated priorities |
-| **Software** | A code coach, an architecture diagram reviewer, release notes from merged pull requests |
-| **Any domain** | Anything you can describe as a job you repeat |
+| **Personal** | A journal companion, a fitness coach that tracks every personal record, a language tutor that drills words you keep missing |
+| **Creative** | A writing partner that tracks your characters and arcs, a tabletop game master who remembers every NPC, a songwriting collaborator |
+| **Business** | A marketing brief writer in your brand voice, a contract reviewer against your legal checklist, a month-end close runbook, an executive coach |
+| **Software** | A code coach, an architecture diagram reviewer, a release-notes generator from merged pull requests |
+| **Any domain** | Any repeatable job where you keep retyping the same rules, format, or corrections |
 
-## Capture Your Own Work
+## Capture Work You Already Do
 
-Any job you do with an agent more than once can become a skill, whether it is marketing, legal, operations, research, teaching, or your own life outside work. You describe the job and Smithy asks for what is missing. You do not need to know how skills are built.
+Any job you do with an AI tool more than once can become a skill, without needing to study skill file formats first. Describe what you want in plain English and Smithy asks only for what is missing.
 
-You do not even need to describe it. Smithy can read your session logs, find the requests you keep making and the corrections you keep giving, and propose a skill that already knows them. See [From Session Logs](approaches.md#from-session-logs).
+If you are not sure how to describe the job, Smithy can also read your recent session logs, spot the requests you keep making and the corrections you keep giving, and propose a skill that already bakes those lessons in. See [From Session Logs](approaches.md#from-session-logs).
 
-When a person talks something through and a document comes out, such as an appraisal report or a patient intake, Smithy builds a document template that `bmad-facilitate` coaches anyone through.
+## Built for Teams and Sharing
 
-## Agents That Know You
+When a skill needs to work for a whole team rather than just one person, Toolsmith helps you build it to last:
 
-A memory agent meets you in a first conversation, keeps what it learns in a folder in your project, and wakes as the same self every session. It does not start over. It remembers your goals, your past work, and how you like to work, and it raises what it wants to follow up. You can hand it material to keep, teach it new capabilities, and let it work on a schedule while you are away.
-
-The thirtieth session with a memory agent is different from the first, because it knows you. See [Agents with Memory](agents-with-memory.md).
-
-## For Teams
-
-A skill is a team's way of doing a job, written down so that every agent that loads it follows it. Toolsmith adds what a team needs to rely on one:
-
-- **Change it per team without forking.** A `customize.toml` exposes what varies, and each team's overrides live in its own project, so they survive updates. A rendered skill lets a team replace rules inside its steps. See [Make a Skill Customizable](make-a-skill-customizable.md).
-- **Version and update it from its source.** `bmad setup` compares each module's version with its source and offers the update.
-- **Validate before install.** Smithy's validate mode reports what would stop a skill or module installing, loading, or firing.
-- **Prove it works.** `bmad-eval` shows whether a skill beats the bare model on real cases, and whether its description fires on the right requests. See [Eval Runner](bmad-eval.md).
-
-## Share It as a Module
-
-A module is plain skills plus a small record. It installs with `npx skills add` from any Git repository, the same way as any other skill, so it needs no BMad installer and can be listed wherever Agent Skills are. The record lets `bmad` set the module up, recommend its skills, and check it for updates. See [Modules and Registration](modules.md#why-the-bmod-format).
+- Let teams tailor output paths, rules, or templates in their own project without forking your skill. See [Make a Skill Customizable](make-a-skill-customizable.md).
+- Package one skill or several as a BMad module so `bmad` sets it up, recommends it, and checks its Git source for updates. See [Modules and Registration](modules.md).
+- Validate skills and modules before sharing so broken paths, bad metadata, or missing records are caught early. See [Work on an Existing Skill](modes.md).
+- Measure whether a skill actually beats the bare model on real tasks and fires on the right user prompts. See [Eval Runner](bmad-eval.md).
 
 ## Install Toolsmith
 
-Toolsmith installs from the BMAD-METHOD repository. If you do not have BMad yet, start with [Install BMad](../start/install-bmad.md). Then add the module from your project folder:
+If you have not installed BMad yet, start with [How to Install BMad](../start/install-bmad.md). Then add Toolsmith from your project folder:
 
 ```bash
 npx skills add bmad-code-org/BMAD-METHOD/skills/toolsmith --skill '*'
 ```
 
-This installs both Smithy and `bmad-eval`, which Smithy requires. Ask the `bmad` skill to run `bmad setup toolsmith`. The module asks no setup questions.
+This installs both Smithy (`bmad-toolsmith`) and the eval runner (`bmad-eval`). Open your AI tool and ask the `bmad` skill to run `bmad setup toolsmith`.
 
 ## Talk to Smithy
 
-Start the `bmad-toolsmith` skill, or ask for Smithy by name, and say what you want. You do not need to know the shape of the result, or which mode to use. Asked what he does, Smithy answers in a few sentences and shows the codes below when you want them.
+Call Smithy with `/bmad-toolsmith` in tools that support slash commands (such as Claude Code), or speak to him directly in plain English in any tool. You do not need to memorize commands, shapes, or modes ahead of time. Ask `"Smithy, what can you help me with?"` anytime for a short overview.
 
-| Code | What it does |
-| --- | --- |
-| `BUILD` | Build a new skill, agent, or module from a conversation |
-| `SCAFFOLD` | Lay out a skill you will write yourself |
-| `LOGS` | Propose a skill from your session logs, then build it |
-| `EDIT` | Change, fix, or extend a skill |
-| `CONVERT` | Rebuild a skill, prompt, or command from another tool as a BMad skill |
-| `REVIEW` | Review a skill and write a report of findings |
-| `CUT` | Cut a skill's prose to what changes what the model does |
-| `PACKAGE` | Package one skill or several into a module |
-| `VALIDATE` | Check a skill or module for what would stop it installing, loading, or firing |
-| `MIGRATE` | Convert an old-format module to the current format |
-| `EVAL` | Run, benchmark, or trigger-test a skill with `bmad-eval` |
+:::note[Ways to start]
+```text
+/bmad-toolsmith Build a skill that turns merged pull requests since the last tag into customer-facing release notes.
+```
 
-## How a Build Works
+```text
+Hey Smithy, look at my recent sessions and propose a skill for the review checks I keep asking for.
+```
 
-Every new skill follows the same path. If you use the scaffold approach to write the skill yourself, steps 3 and 4 are yours.
+```text
+Hey Smithy, review my custom skill at skills/acme-release-notes and tell me what to tighten up.
+```
+:::
+
+## How Smithy Builds a Skill
+
+Every new skill follows the same five-stage path on both the coached path and the fast path.
 
 ![How Smithy builds a skill](/diagrams/toolsmith-build-path.svg)
 
-Smithy coaches by default. It helps you decide well, pushes back where an idea is thin, and aims for a tool that works for whoever uses its output. If you say you are in a hurry, or ask Smithy to work on its own, it takes the fast path: it confirms a plan instead of asking questions, and lists its judgment calls at the end.
+Smithy coaches by default: he helps you sharpen the goal, pushes back when an idea is vague, and makes sure the output works for whoever will use it. If you tell him you are in a hurry or ask him to work on his own, he switches to the fast path, confirming one plan up front and listing his judgment calls at the end.
 
-1. **Discovery.** Smithy reads what you have already said and asks only for what is missing, one or two questions at a time.
-2. **Smithy execution plan.** Smithy shows the name, purpose, description, shape, registration, approach, location, and files. Nothing is written until you approve it, and you can change any line. Smithy writes the approved plan to a `plan.md` in its reports folder, so a later session can pick it up.
-3. **Build.** Smithy writes the skill, and tries it on a real input when you have one.
-4. **Review.** Five review lenses read everything Smithy wrote. Smithy fixes the defects they find. It asks before it applies a finding that changes what the skill does or how it sounds; on the fast path it lists those instead. A small skill, one `SKILL.md` with no scripts and no `customize.toml`, gets only the leanness and trigger lenses, in one round.
-5. **Hand-off.** Smithy validates the skill, offers a trigger eval, and tells you where the skill is and what to try first.
+1. During discovery, Smithy reads what you already shared and asks only for what is missing, one or two questions at a time.
+2. In the execution plan, Smithy shows the skill name, purpose, trigger description, shape, registration, approach, and files; nothing is written until you approve, and he saves the approved plan to his reports folder so a later session can pick up cleanly.
+3. During the build stage, Smithy writes the skill and tries it on a real example when you have one.
+4. During review, Smithy runs automated checks and focused review lenses over what he wrote, fixes clear defects, and asks before applying any change that alters behavior or tone.
+5. At hand-off, Smithy validates the finished skill, offers a trigger test to confirm it loads on the right prompts, and tells you where the files live and what to try first.
+
+## Tailoring Smithy
+
+To change where Smithy writes new skills, where review reports and build plans land, or to give him your team's standing skill-authoring rules, invoke `bmad-customize` and describe what you want changed for `bmad-toolsmith`.
 
 ## In This Section
 
 | Page | Read it when you want to |
 | --- | --- |
-| [Build Your First Skill](build-your-first-skill.md) | Go from an idea to a working skill, then a module |
-| [Ways to Build a Skill](approaches.md) | Choose how a build runs |
-| [Shapes of a Skill](shapes.md) | See what Smithy can make |
+| [Build Your First Skill](build-your-first-skill.md) | Walk through building one skill and growing it into a module |
+| [Ways to Build a Skill](approaches.md) | Choose between lean builds, scaffolding, eval-driven loops, or mining session logs |
+| [Shapes of a Skill](shapes.md) | See the kinds of skills, agents, utilities, and templates Smithy can build |
 | [Work on an Existing Skill](modes.md) | Edit, convert, review, cut, package, or validate a skill |
-| [Write a Good Skill](write-a-good-skill.md) | Learn the standard Smithy writes to and reviews against |
-| [Subagent Patterns](subagent-patterns.md) | Spread a skill's work across subagents |
-| [Make a Skill Customizable](make-a-skill-customizable.md) | Let teams change a skill without forking it |
-| [Agents with Memory](agents-with-memory.md) | Build an agent that remembers you between sessions |
-| [Modules and Registration](modules.md) | Decide how a skill registers with BMad |
-| [Distribute Your Module](distribute-your-module.md) | Publish a module so others can install it |
-| [Migrate an Old Module](migrate-an-old-module.md) | Bring a `module.yaml` module to the current format |
-| [Eval Runner](bmad-eval.md) | Measure whether a skill works |
+| [Write a Good Skill](write-a-good-skill.md) | Learn the authoring standard Smithy writes to and reviews against |
+| [Subagent Patterns](subagent-patterns.md) | Spread heavy skill work across parallel subagents |
+| [Make a Skill Customizable](make-a-skill-customizable.md) | Let teams adapt your skill without forking it |
+| [Agents with Memory](agents-with-memory.md) | Build an agent that keeps persistent memory between sessions |
+| [Modules and Registration](modules.md) | Decide how skills register and organize inside BMad modules |
+| [Distribute Your Module](distribute-your-module.md) | Publish a module from a Git repository for others to install |
+| [Migrate an Old Module](migrate-an-old-module.md) | Bring an older `module.yaml` module to the current format |
+| [Eval Runner](bmad-eval.md) | Measure quality, baseline lift, and trigger accuracy with `bmad-eval` |
 
-The exact file formats are in [Module Files](../reference/module-files.md) and [Eval Format](../reference/eval-format.md).
+For exact file schemas, see [Module Files](../reference/module-files.md) and [Eval Format](../reference/eval-format.md).

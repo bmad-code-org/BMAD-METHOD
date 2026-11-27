@@ -1,5 +1,5 @@
 <svg class="bmad-diagram" viewBox="0 0 940 762" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="bd-title">
-<title id="bd-title">The bmad-build run: intent is clarified, planned, implemented, then reviewed. Review can patch the work, send it back to plan or clarification, void it, or defer it, before the result is presented to you.</title>
+<title id="bd-title">The bmad-build run: intent is clarified, investigated and planned (routing small changes directly to one-shot implementation or full changes through plan approval), implemented, then reviewed with quick or thorough lenses. Review can patch the work, send it back to plan or clarification, void it, or defer it to deferred-work.md, before the result is presented to you.</title>
 <defs>
 <marker id="bd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
 <marker id="bd-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head soft" d="M0 0 L10 5 L0 10 z"/></marker>
@@ -33,8 +33,9 @@
 <path class="edge" d="M400 634.0 V676.0" marker-end="url(#bd-arrow)"/>
 <text class="k" x="410" y="78">intent</text>
 <text class="k" x="410" y="160">intent</text>
-<path class="edge" d="M300.0 136 H262 Q250 136 250 148 V356 Q250 368 262 368 H298.0" marker-end="url(#bd-arrow)"/>
-<text class="k" x="244" y="240" transform="rotate(-90 244 240)">one-shot mode</text>
+<path class="edge" d="M300.0 218 H266 Q254 218 254 230 V356 Q254 368 266 368 H298.0" marker-end="url(#bd-arrow)"/>
+<text class="k" x="150" y="332">one-shot mode</text>
+<text class="k" x="150" y="344">&lt;= 100 lines</text>
 <path class="edge" d="M360 512 C 350 484 262 488 258 512 C 254 532 276 530 298.0 527" marker-end="url(#bd-arrow)"/>
 <text class="k" x="252" y="478">patch</text>
 <path class="edge" d="M300.0 545 H183" marker-end="url(#bd-arrow)"/>
@@ -44,33 +45,39 @@
 <path class="edge" d="M500.0 552 C 556 566 580 640 610 651" marker-end="url(#bd-arrow)"/>
 <text class="k" x="524" y="606">defer</text>
 <g class="glyph" transform="translate(614 632)"><path d="M0 0h20l10 10v30H0z"/><path class="fold" d="M20 0v10h10z"/></g>
-<text class="sub" x="600" y="694">deferred_work.md</text>
+<text class="sub" x="600" y="694">deferred-work.md</text>
 <path class="edge" d="M500.0 524 H540 Q552 524 552 512 V216 Q552 204 540 204 H502.0" marker-end="url(#bd-arrow)"/>
 <text class="k" x="546" y="368" transform="rotate(-90 546 368)">bad_plan</text>
 <path class="edge" d="M500.0 540 H592 Q604 540 604 528 V134 Q604 122 592 122 H502.0" marker-end="url(#bd-arrow)"/>
 <text class="k" x="598" y="330" transform="rotate(-90 598 330)">intent_gap</text>
-<use href="#bd-person" class="glyph" transform="translate(96 118)"/>
-<path class="edge soft" d="M128 122 H298.0" marker-end="url(#bd-arrow-soft)"/>
-<text class="k" x="150" y="112">interview</text>
+<use href="#bd-person" class="glyph" transform="translate(96 196)"/>
+<path class="edge soft" d="M128 200 H298.0" marker-end="url(#bd-arrow-soft)"/>
+<text class="k" x="142" y="182">open questions</text>
+<text class="k" x="142" y="194">if needed</text>
 <use href="#bd-person" class="glyph" transform="translate(96 282)"/>
 <path class="edge soft" d="M128 286 H320.0" marker-end="url(#bd-arrow-soft)"/>
-<text class="k" x="150" y="266">plan review</text>
-<text class="k" x="150" y="278">optional</text>
+<text class="k" x="142" y="266">plan approval</text>
+<text class="k" x="142" y="278">or review</text>
 <use href="#bd-person" class="glyph" transform="translate(96 692)"/>
 <path class="edge soft" d="M322.0 696 H111" marker-end="url(#bd-arrow-soft)"/>
 <text class="k" x="150" y="686">you review the result</text>
-<rect class="panel" x="660" y="330" width="240" height="196" rx="2"/>
-<text class="k panel-title" x="676" y="354">Review lenses</text>
-<rect class="node" x="676" y="366" width="208" height="44" rx="2"/>
-<text class="n small" x="688" y="385">Blind Hunter</text>
-<text class="sub" x="688" y="400">find any 10 things to fix</text>
-<path class="edge soft lens" d="M676 388 C 620 388 600 532 502.0 532" marker-end="url(#bd-arrow-soft)"/>
-<rect class="node" x="676" y="418" width="208" height="44" rx="2"/>
-<text class="n small" x="688" y="437">Edge Cases Hunter</text>
-<text class="sub" x="688" y="452">find forgotten corner cases</text>
-<path class="edge soft lens" d="M676 440 C 620 440 600 532 502.0 532" marker-end="url(#bd-arrow-soft)"/>
-<rect class="node" x="676" y="470" width="208" height="44" rx="2"/>
-<text class="n small" x="688" y="489">Verification Gap Finder</text>
-<text class="sub" x="688" y="504">is this covered by tests?</text>
-<path class="edge soft lens" d="M676 492 C 620 492 600 532 502.0 532" marker-end="url(#bd-arrow-soft)"/>
+<rect class="panel" x="660" y="292" width="260" height="262" rx="2"/>
+<text class="k panel-title" x="676" y="314">Review lenses</text>
+<text class="sub" x="676" y="329">quick: 1 lens · thorough: 4</text>
+<rect class="node" x="676" y="340" width="228" height="44" rx="2"/>
+<text class="n small" x="688" y="359">Blind Hunter</text>
+<text class="sub" x="688" y="374">fresh eyes on the diff</text>
+<path class="edge soft lens" d="M676 362 C 620 362 600 532 502.0 532" marker-end="url(#bd-arrow-soft)"/>
+<rect class="node" x="676" y="392" width="228" height="44" rx="2"/>
+<text class="n small" x="688" y="411">Edge Cases Hunter</text>
+<text class="sub" x="688" y="426">find forgotten corner cases</text>
+<path class="edge soft lens" d="M676 414 C 620 414 600 532 502.0 532" marker-end="url(#bd-arrow-soft)"/>
+<rect class="node" x="676" y="444" width="228" height="44" rx="2"/>
+<text class="n small" x="688" y="463">Verification Gap Finder</text>
+<text class="sub" x="688" y="478">is this covered by tests?</text>
+<path class="edge soft lens" d="M676 466 C 620 466 600 532 502.0 532" marker-end="url(#bd-arrow-soft)"/>
+<rect class="node" x="676" y="496" width="228" height="44" rx="2"/>
+<text class="n small" x="688" y="515">Intent Alignment Auditor</text>
+<text class="sub" x="688" y="530">does the diff match intent?</text>
+<path class="edge soft lens" d="M676 518 C 620 518 600 532 502.0 532" marker-end="url(#bd-arrow-soft)"/>
 </svg>

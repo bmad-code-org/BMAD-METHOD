@@ -1,79 +1,61 @@
 ---
 title: Build from a Conversation
-description: 'Scenario: a decision made on a call or in a brainstorm becomes a cited note or a summary, then an initiative written by Sofia, then stories built one session at a time, with no PRD.'
+description: 'Scenario: a decision made on a call or in a brainstorm becomes a cited note or summary, then an initiative written by Sofia, then stories built one by one with no PRD.'
 sidebar:
   order: 2
 ---
 
-Use this route when the decision was made in a conversation or a brainstorm
-and nobody needs a PRD to agree on it. The transcript, or the brainstorm's
-summary, is the input, and the initiative Sofia writes from it is the spec.
+Use this route when a decision came out of a conversation or brainstorm and nobody needs a formal PRD to align on it. The call transcript or brainstorm summary is your starting input, and the initiative Sofia writes from it becomes your specification.
 
-The example is the [room booker](../start/how-bmad-works.md#the-example-app).
-On a call, the office manager and the facilities lead talked about rooms that
-are booked and never used. The office manager decides, and you have the
-transcript.
+The example uses the [room booker](../start/how-bmad-works.md#the-example-app). On a call, the office manager and the facilities lead talked through rooms that are booked and left empty. The office manager has decision authority, and you saved the call transcript.
 
 ![Build from a Conversation: in Clarify, bmad-ingest turns a call into a cited note, or a brainstorm leaves a summary; Sofia writes the initiative from it, then the epics and the first epic's stories in Plan; bmad-build builds one story per chat and you mark each done; the retrospective judges the finished epic, then Sofia validates and closes it](/diagrams/scenario-conversation.svg)
 
 ## Steps
 
-1. **Turn the call into a note.** Each point cites its timestamp, and both
-   numbers appear where the two disagreed. See
-   [Clarify the Idea](../clarify/clarify-the-idea.md#turn-raw-input-into-notes).
+1. Turn the call into a cited note, where each takeaway links back to its timestamp and any disagreement stays flagged for you to resolve. See [Clarify the Idea](../clarify/clarify-the-idea.md#turn-raw-input-into-notes).
 
    ```text wrap
    /bmad-ingest ~/Downloads/rooms-call.txt
    ```
 
-   If you start from a brainstorm, the summary `bmad-brainstorming` wrote,
-   or the report of an idea `bmad-forge-idea` hardened, is your note. Go to
-   step 2.
+   If you are starting from a brainstorm summary from `bmad-brainstorming` or a hardened report from `bmad-forge-idea`, skip directly to step 2.
 
-2. **Have Sofia, the Product Owner, write the initiative** from the note.
+2. Have Sofia, the Product Owner, write the initiative from the note.
 
    ```text wrap
    /bmad-agent-po write the initiative from the rooms call note
    ```
 
-   From a brainstorm, name its summary instead:
+   If you started from a brainstorm, point her to its summary instead:
 
    ```text wrap
    /bmad-agent-po write the initiative from the brainstorm summary
    ```
 
-3. **Settle her open questions** with the office manager, then answer Sofia
-   in the same chat.
+3. Settle her open questions with the office manager, then reply to Sofia in the same chat.
 
    ```text wrap
    The office manager says a room counts as unused 15 minutes after its start, and the server frees it.
    ```
 
-4. **Cut it into epics:** door check-in first, then freeing no-show rooms.
-   See [Write and Slice the Initiative](../plan/write-and-slice-the-initiative.md).
+4. Slice the initiative into epics: door check-in first, then freeing no-show rooms. See [Write and Slice the Initiative](../plan/write-and-slice-the-initiative.md).
 
    ```text wrap
    /bmad-agent-po split this initiative into epics
    ```
 
-   Step 3 settled that the server frees the room, so she has no shared
-   decision to send to Winston (`bmad-agent-architect`).
+   Because step 3 settled that the server frees unused rooms, Sofia has no unresolved cross-epic technical question to send to Winston (`bmad-agent-architect`).
 
-5. **Plan the first epic's stories,** and approve them. Story 1.1, showing
-   each room on its door tablet, is marked `hitl` because facilities mounts
-   and pairs the tablets. See
-   [Plan an Epic's Stories](../plan/plan-an-epics-stories.md).
+5. Plan the first epic's stories and approve them. Stories use `epic.story` numbering, so `1.1` is the first story of epic 1. Story `1.1` (showing each room on its door tablet) is marked `hitl` (human-in-the-loop: a person handles part of the work outside code, confirming before building or when done) because facilities mounts and pairs the physical tablets. Once you approve the split, Sofia writes a full story file with clear acceptance criteria for each story by default. See [Plan an Epic's Stories](../plan/plan-an-epics-stories.md).
 
    ```text wrap
    /bmad-agent-po refine the door check-in epic, then plan its stories
    ```
 
-6. **Build story by story,** each in a fresh chat, and mark each one done
-   after you check it. See [Build and Verify](../build/build-and-verify.md).
+6. Build story by story, starting each story in a fresh chat and marking each one done after you verify it. See [Build and Verify](../build/build-and-verify.md).
 
-   Story 1.1 has a person's step. Build it with `bmad-build`, have facilities
-   mount and pair the tablets, check that a tablet shows its room, then mark
-   it done.
+   Because story `1.1` includes a manual step, run `bmad-build` on it, have facilities mount and pair the tablets, confirm a tablet displays its room, and then ask Sofia to mark it done.
 
    ```text wrap
    /bmad-build 1.1
@@ -87,13 +69,9 @@ transcript.
    /bmad-build 1.2
    ```
 
-   Build and mark each remaining story the same way, then finish the epic in
-   step 7. Repeat steps 5 to 7 for the second epic.
+   Build, verify, and mark each remaining story done the same way, then close the epic in step 7. Repeat steps 5 through 7 for the second epic.
 
-7. **Run the retrospective, then close the epic.** The retrospective judges
-   the finished epic. Then Sofia validates it against its Requirements and
-   Done when, you confirm, and she closes it. See
-   [Finish an Epic](../learn/finish-an-epic.md).
+7. Run the retrospective, then close the epic. The retrospective evaluates the finished epic as a whole against its original goals, and once you accept its verdict, Sofia validates the epic against its requirements and completion criteria, asks you to confirm, and closes it. See [Finish an Epic](../learn/finish-an-epic.md).
 
    ```text wrap
    /bmad-retrospective 1
@@ -105,20 +83,13 @@ transcript.
 
 ## What You Have at the End
 
-The note, the initiative and its epic files, each epic's stories in
-`tickets.toml`, the code, one plan per story recording its build, and a
-retrospective per epic. There is no PRD, UX file, or architecture spine,
-because no one needed them.
+You finish with the cited call note, the initiative and epic specifications, a refined story file (`story-<slug>.md`) with acceptance criteria for each story, tested code, a local build plan recording each run, and a retrospective for each epic. No PRD, UX document, or shared architecture file was created because nobody needed one.
 
 ## Shorter and Longer Routes
 
-- If the note describes one session's work, hand it to `bmad-build`, as in
-  [Make a Small Change](./make-a-small-change.md).
-- If it is a few stories, ask Sofia to slice the initiative into stories
-  directly, with no epics.
-- If the decision is already written down, skip step 1 and hand the issue or
-  paragraph to Sofia.
-- If several people must agree first, take the route in
-  [Plan a Feature as a Team](./plan-a-feature-as-a-team.md).
+- If the note describes a single self-contained change, hand it straight to `bmad-build` as shown in [Make a Small Change](./make-a-small-change.md).
+- If the whole effort is only a few stories, ask Sofia to slice the initiative straight into stories without creating epics.
+- If the decision is already written clearly in an issue or short paragraph, skip step 1 and hand that text directly to Sofia.
+- If several stakeholders need to align before coding starts, use [Plan a Feature as a Team](./plan-a-feature-as-a-team.md).
 
 New to BMad? Start with [Install BMad](../start/install-bmad.md).

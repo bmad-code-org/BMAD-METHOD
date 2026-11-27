@@ -146,12 +146,12 @@ export default defineConfig({
               slug: 'index',
             },
             {
-              label: 'How BMad Works',
-              slug: 'start/how-bmad-works',
+              label: 'The BMad Agent',
+              slug: 'start/the-bmad-agent',
             },
             {
-              label: 'Why BMad Works This Way',
-              slug: 'start/why-bmad-works-this-way',
+              label: 'How BMad Works',
+              slug: 'start/how-bmad-works',
             },
             {
               label: 'Install BMad',
@@ -168,6 +168,10 @@ export default defineConfig({
             {
               label: 'Walk Through an Existing Codebase',
               slug: 'start/walk-through-an-existing-codebase',
+            },
+            {
+              label: 'Why BMad Works This Way',
+              slug: 'start/why-bmad-works-this-way',
             },
             {
               label: 'Get Answers About BMad',
@@ -294,6 +298,19 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Agents',
+          collapsed: true,
+          items: [
+            { label: 'Meet the Agents', slug: 'agents/agents' },
+            { label: 'Mary, Business Analyst', slug: 'agents/mary-analyst' },
+            { label: 'John, Product Manager', slug: 'agents/john-pm' },
+            { label: 'Sofia, Product Owner', slug: 'agents/sofia-po' },
+            { label: 'Sally, UX Designer', slug: 'agents/sally-ux-designer' },
+            { label: 'Winston, System Architect', slug: 'agents/winston-architect' },
+            { label: 'Amelia, Developer', slug: 'agents/amelia-dev' },
+          ],
+        },
+        {
           label: 'Existing Codebases',
           collapsed: true,
           items: [
@@ -350,22 +367,53 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Founder',
+          collapsed: true,
+          items: [
+            { label: 'Founder', slug: 'founder/founder' },
+            { label: 'Money, Fundraising, and Pitch Room', slug: 'founder/numbers-and-pitch-room' },
+          ],
+        },
+        {
+          label: 'Creative',
+          collapsed: true,
+          items: [
+            { label: 'Creative', slug: 'creative/creative' },
+            { label: 'Voice, Writing, and Studio Rooms', slug: 'creative/voice-lint-and-rooms' },
+          ],
+        },
+        {
           label: 'Toolsmith',
           collapsed: true,
           items: [
-            { label: 'Toolsmith', slug: 'toolsmith/toolsmith' },
-            { label: 'Build Your First Skill', slug: 'toolsmith/build-your-first-skill' },
-            { label: 'Ways to Build a Skill', slug: 'toolsmith/approaches' },
-            { label: 'Shapes of a Skill', slug: 'toolsmith/shapes' },
-            { label: 'Work on an Existing Skill', slug: 'toolsmith/modes' },
-            { label: 'Write a Good Skill', slug: 'toolsmith/write-a-good-skill' },
-            { label: 'Subagent Patterns', slug: 'toolsmith/subagent-patterns' },
-            { label: 'Make a Skill Customizable', slug: 'toolsmith/make-a-skill-customizable' },
-            { label: 'Agents with Memory', slug: 'toolsmith/agents-with-memory' },
-            { label: 'Modules and Registration', slug: 'toolsmith/modules' },
-            { label: 'Distribute Your Module', slug: 'toolsmith/distribute-your-module' },
-            { label: 'Migrate an Old Module', slug: 'toolsmith/migrate-an-old-module' },
-            { label: 'Eval Runner', slug: 'toolsmith/bmad-eval' },
+            {
+              label: 'Getting Started',
+              items: [
+                { label: 'Toolsmith', slug: 'toolsmith/toolsmith' },
+                { label: 'Build Your First Skill', slug: 'toolsmith/build-your-first-skill' },
+                { label: 'Ways to Build a Skill', slug: 'toolsmith/approaches' },
+                { label: 'Shapes of a Skill', slug: 'toolsmith/shapes' },
+                { label: 'Work on an Existing Skill', slug: 'toolsmith/modes' },
+              ],
+            },
+            {
+              label: 'Skill Craft',
+              items: [
+                { label: 'Write a Good Skill', slug: 'toolsmith/write-a-good-skill' },
+                { label: 'Subagent Patterns', slug: 'toolsmith/subagent-patterns' },
+                { label: 'Make a Skill Customizable', slug: 'toolsmith/make-a-skill-customizable' },
+                { label: 'Agents with Memory', slug: 'toolsmith/agents-with-memory' },
+              ],
+            },
+            {
+              label: 'Modules and Evals',
+              items: [
+                { label: 'Modules and Registration', slug: 'toolsmith/modules' },
+                { label: 'Distribute Your Module', slug: 'toolsmith/distribute-your-module' },
+                { label: 'Migrate an Old Module', slug: 'toolsmith/migrate-an-old-module' },
+                { label: 'Eval Runner', slug: 'toolsmith/bmad-eval' },
+              ],
+            },
           ],
         },
         {
@@ -378,11 +426,6 @@ export default defineConfig({
           label: 'BMad Ecosystem',
           collapsed: false,
           items: [
-            {
-              label: 'Creative Intelligence Suite',
-              link: 'https://cis-docs.bmad-method.org/',
-              attrs: { target: '_blank' },
-            },
             {
               label: 'Game Dev Studio',
               link: 'https://game-dev-studio-docs.bmad-method.org/',
