@@ -1219,6 +1219,11 @@ class RenderSkillTests(unittest.TestCase):
         other_root = ws.outer / "other-root"
         _copy_skill(other_root / "bmad-build", "bmad-build")
 
+        def assert_selected(result: subprocess.CompletedProcess[str], expected: Path) -> None:
+            entry = self._entry(result, ws.project, expected)
+            manifest = json.loads((entry.parent / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["inputs"]["skill_root"], str(expected.resolve()))
+
         # Misderived harness path and bare skill name resolve cleanly via project dot-skills root.
         for token in ("bmad-build", "/bogus/provider/skills/bmad-build"):
             res = self._run_raw_cli(
@@ -1227,7 +1232,7 @@ class RenderSkillTests(unittest.TestCase):
                 cwd=ws.project,
                 home=home,
             )
-            self._entry(res, ws.project, proj_agents)
+            assert_selected(res, proj_agents)
 
         # Tier 1: explicit --root precedence picks first matching root over another --root or project root.
         tiered = self._run_raw_cli(
@@ -1236,7 +1241,7 @@ class RenderSkillTests(unittest.TestCase):
             cwd=ws.project,
             home=home,
         )
-        self._entry(tiered, ws.project, extra_skill)
+        assert_selected(tiered, extra_skill)
 
         # Tier 3: global user-home dot-skills root resolves when absent from project roots.
         from_home = self._run_raw_cli(
@@ -1245,7 +1250,7 @@ class RenderSkillTests(unittest.TestCase):
             cwd=ws.project,
             home=home,
         )
-        self._entry(from_home, ws.project, home_agents)
+        assert_selected(from_home, home_agents)
 
         # Symlinked alias in another project tool folder deduplicates cleanly to one target.
         claude_dir = ws.project / ".claude" / "skills"
@@ -1257,7 +1262,7 @@ class RenderSkillTests(unittest.TestCase):
             cwd=ws.project,
             home=home,
         )
-        self._entry(deduped, ws.project, proj_agents)
+        assert_selected(deduped, proj_agents)
 
         # Genuinely distinct duplicate project directories halt as ambiguous rather than guessing.
         (claude_dir / "bmad-build").unlink()
