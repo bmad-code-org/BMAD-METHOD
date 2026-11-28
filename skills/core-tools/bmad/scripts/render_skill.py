@@ -398,7 +398,7 @@ class _Table:
 
 
 class _ConfigTable(_Table):
-    """`config.key` is the short lookup of one scalar anywhere in the central config; `config.a.b.c` is a path."""
+    """`config.key` looks up a scalar anywhere in the central config (equal copies resolve; differing copies halt); `config.a.b.c` is a path."""
 
     def __init__(self, central: dict[str, Any], table: dict[str, Any], path: str, ctx: _RenderContext) -> None:
         super().__init__(path)
