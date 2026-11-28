@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Deterministic Skill Validator
 
-Validates 11 deterministic rules across skill directories.
+Validates 13 deterministic rules across skill directories.
 Acts as a fast first-pass complement to the inference-based skill validator.
 
 What it checks:
@@ -15,10 +16,12 @@ What it checks:
 - SKILL-05: name matches directory basename
 - SKILL-06: description quality (length, "Use when"/"Use if"; the fixed text for a module record)
 - SKILL-07: SKILL.md has body content after frontmatter
+- SKILL-08: SKILL.md frontmatter parses as a YAML mapping with string name and description
 - PATH-02: no installed_path variable
 - PATH-06: script calls use {skill-root}, not a bare scripts/ path
+- PATH-07: {project-root} and {skill-root} arguments in uv run calls are double-quoted
 - SEQ-02: no time estimates
-- TPL-01: template files must not contain render-time {{ config.* }} / {{ workflow.* }} expressions
+- TPL-01: template files must not contain render-time {{ config.* }} / {{ workflow.* }} / {{ agent.* }} expressions
 
 Usage:
   uv run --python 3.11 tools/validate_skills.py                    # All skills, human-readable
@@ -40,6 +43,8 @@ sys.dont_write_bytecode = True
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_DIR = os.path.join(PROJECT_ROOT, "skills")
+sys.path.insert(0, os.path.join(SRC_DIR, "core-tools", "bmad", "scripts"))
+import frontmatter  # noqa: E402
 
 # JS RegExp#toString() forms — Python's re.Pattern repr is not load-bearing for messages.
 NAME_REGEX_DISPLAY = r"/^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$/"
@@ -56,9 +61,17 @@ TIME_ESTIMATE_PATTERNS = [
     re.compile(r"\bETA\b"),
 ]
 TEMPLATE_FILENAME_REGEX = re.compile(r"template", re.I)
-COMPILE_TIME_SUB_REGEX = re.compile(r"\{\{-?\s*(?:(?:config|workflow)\.|initiative_folder\b)[^}]*\}\}")
+COMPILE_TIME_SUB_REGEX = re.compile(r"\{\{-?\s*(?:(?:config|workflow|agent)\.|initiative_folder\b)[^}]*\}\}")
 INSTALLED_PATH_RE = re.compile(r"installed_path", re.I)
 BARE_SCRIPT_RE = re.compile(r"\buv\s+run\b[^`]*?\s(?:\./)?scripts/")
+UV_RUN_RE = re.compile(r"\buv\s+run\b")
+ROOT_ANCHOR_RE = re.compile(r"\{(?:project-root|skill-root)\}")
+CODE_FENCE_RE = re.compile(
+    r"^[ \t]*(?P<fence>(?P<fence_char>`|~)(?P=fence_char){2,})(?P<info>[^\r\n]*)\r?\n(?P<body>.*?)^[ \t]*(?P=fence)(?P=fence_char)*[ \t]*(?:\r?\n|\Z)",
+    re.MULTILINE | re.DOTALL,
+)
+INLINE_CODE_RE = re.compile(r"`([^`\r\n]+)`")
+SHELL_FENCE_LANGS = {"", "bash", "sh", "zsh", "shell", "console", "pwsh", "powershell", "cmd"}
 USE_WHEN_RE = re.compile(r"use\s+when\b", re.I)
 USE_IF_RE = re.compile(r"use\s+if\b", re.I)
 DEPRECATED_RE = re.compile(r"^\s*deprecated\b", re.I)
@@ -111,75 +124,42 @@ def _finding(
 # --- Frontmatter Parsing ---
 
 
-def _frontmatter_block(content: str) -> str | None:
-    trimmed = content.lstrip()
-    if not trimmed.startswith("---"):
-        return None
-
-    end_index = trimmed.find(f"{os.linesep}---{os.linesep}", 3)
-    if end_index == -1:
-        if trimmed.endswith(f"{os.linesep}---"):
-            end_index = len(trimmed) - len(os.linesep) - 3
-        else:
-            return None
-
-    return trimmed[3:end_index].strip()
-
-
-def _strip_quotes(value: str) -> str:
-    if (value.startswith("'") and value.endswith("'")) or (value.startswith('"') and value.endswith('"')):
-        return value[1:-1]
-    return value
-
-
-def parse_frontmatter(content: str) -> dict[str, str] | None:
-    fm_block = _frontmatter_block(content)
-    if fm_block is None:
-        return None
-    if fm_block == "":
+def frontmatter_fields(content: str) -> dict:
+    """The frontmatter's fields as text, or {} when there are none or they are not YAML."""
+    try:
+        return frontmatter.load(frontmatter.split(content)[0])
+    except ValueError:
         return {}
 
-    result: dict[str, str] = {}
-    for line in fm_block.split(os.linesep):
-        colon_index = line.find(":")
-        if colon_index == -1:
-            continue
-        # Skip indented lines (nested YAML values)
-        if line[:1] in (" ", "\t"):
-            continue
-        key = line[:colon_index].strip()
-        value = line[colon_index + 1 :].strip()
-        result[key] = _strip_quotes(value)
-    return result
 
+def skill_frontmatter(content: str) -> tuple[dict | None, tuple[str, int | None] | None]:
+    """Read SKILL.md frontmatter as the skills CLI and agents do. Return (fields, (detail, line) or None).
 
-def parse_frontmatter_multiline(content: str) -> dict[str, str] | None:
-    fm_block = _frontmatter_block(content)
-    if fm_block is None:
-        return None
-    if fm_block == "":
-        return {}
-
-    result: dict[str, str] = {}
-    current_key: str | None = None
-    current_value = ""
-
-    for line in fm_block.split(os.linesep):
-        colon_index = line.find(":")
-        # New key: column 0 (no leading whitespace) and colon not at index 0
-        if colon_index > 0 and line[:1] not in (" ", "\t"):
-            if current_key is not None:
-                result[current_key] = _strip_quotes(current_value.strip())
-            current_key = line[:colon_index].strip()
-            current_value = line[colon_index + 1 :]
-        elif current_key is not None:
-            if line.lstrip().startswith("#"):
-                continue
-            current_value += "\n" + line
-
-    if current_key is not None:
-        result[current_key] = _strip_quotes(current_value.strip())
-    return result
+    Fields are typed, an absent value as ""; they are {} with no frontmatter block, which is left to SKILL-02
+    and SKILL-03, and None when the block is not a YAML mapping."""
+    try:
+        block = frontmatter.split(content)[0]
+    except ValueError:
+        return {}, None
+    try:
+        fields = frontmatter.load(block, typed=True)
+    except ValueError as error:
+        cause = error.__cause__
+        if cause is None:
+            return None, ("Frontmatter must be a YAML mapping.", None)
+        mark = getattr(cause, "problem_mark", None)
+        line = mark.line + 2 if mark is not None else None  # the block starts on the line after `---`
+        problem = getattr(cause, "problem", None) or str(cause).splitlines()[0]
+        return None, (f"Frontmatter is not valid YAML: {problem}.", line)
+    fields = {key: "" if value is None else value for key, value in fields.items()}
+    for key in ("name", "description"):  # a block scalar's final newline is not part of it
+        if isinstance(fields.get(key), str):
+            fields[key] = fields[key].rstrip("\n")
+    for key in ("name", "description"):
+        value = fields.get(key, "")
+        if not isinstance(value, str):
+            return fields, (f"Frontmatter `{key}` must be a string, got {type(value).__name__}.", None)
+    return fields, None
 
 
 # --- Safe File Reading ---
@@ -187,7 +167,7 @@ def parse_frontmatter_multiline(content: str) -> dict[str, str] | None:
 
 def safe_read_file(file_path: str, findings: list[dict], rel_file: str | None) -> str | None:
     try:
-        with open(file_path, encoding="utf-8", errors="replace", newline="") as f:
+        with open(file_path, encoding="utf-8-sig", errors="replace", newline="") as f:
             return f.read()
     except OSError as error:
         findings.append(
@@ -207,11 +187,140 @@ def safe_read_file(file_path: str, findings: list[dict], rel_file: str | None) -
 
 
 def _blank(match: re.Match[str]) -> str:
-    return re.sub(r"[^\r\n]", "", match.group(0))
+    return re.sub(r"[^\r\n]", " ", match.group(0))
 
 
 def strip_code_blocks(content: str) -> str:
     return re.sub(r"```.*?```", _blank, content, flags=re.DOTALL)
+
+
+def _is_double_quoted(text: str) -> bool:
+    if len(text) < 2 or not (text.startswith('"') and text.endswith('"')):
+        return False
+    i = 1
+    end = len(text) - 1
+    while i < end:
+        if text[i] == "\\" and i + 1 < end:
+            i += 2
+            continue
+        if text[i] == '"':
+            return False
+        i += 1
+    return True
+
+
+def _is_quoted_root_arg(token: str) -> bool:
+    if _is_double_quoted(token):
+        return True
+    if "=" in token:
+        key, val = token.split("=", 1)
+        if not ROOT_ANCHOR_RE.search(key) and _is_double_quoted(val):
+            return True
+    return False
+
+
+def _unquoted_root_tokens(cmd: str) -> list[tuple[int, str]]:
+    """Return (offset, token) for each {project-root}/{skill-root} token in a uv run command not double-quoted."""
+    bad: list[tuple[int, str]] = []
+    n = len(cmd)
+    i = 0
+    while i < n:
+        ch = cmd[i]
+        if ch in " \t\r\n|;&()[]<>":
+            i += 1
+            continue
+        if ch == "\\" and i + 1 < n and cmd[i + 1] in "\r\n":
+            i += 2
+            if i < n and cmd[i - 1] == "\r" and cmd[i] == "\n":
+                i += 1
+            continue
+        if ch == "#":
+            while i < n and cmd[i] != "\n":
+                i += 1
+            continue
+        start = i
+        in_double = False
+        in_single = False
+        while i < n:
+            c = cmd[i]
+            if in_double:
+                if c == "\\" and i + 1 < n:
+                    i += 2
+                elif c == '"':
+                    in_double = False
+                    i += 1
+                else:
+                    i += 1
+            elif in_single:
+                if c == "'":
+                    in_single = False
+                i += 1
+            else:
+                if c == '"':
+                    in_double = True
+                    i += 1
+                elif c == "'":
+                    in_single = True
+                    i += 1
+                elif c == "\\" and i + 1 < n:
+                    if cmd[i + 1] in "\r\n":
+                        break
+                    i += 2
+                elif c in " \t\r\n|;&()[]<>":
+                    break
+                else:
+                    i += 1
+        tok = cmd[start:i]
+        if ROOT_ANCHOR_RE.search(tok) and not _is_quoted_root_arg(tok):
+            bad.append((start, tok))
+    return bad
+
+
+def find_unquoted_root_in_uv_run(content: str) -> list[tuple[int, str]]:
+    """Return (1-based line, token) for unquoted {project-root}/{skill-root} arguments in uv run commands."""
+    hits: list[tuple[int, str]] = []
+
+    def check_span(span: str, base_offset: int) -> None:
+        if not UV_RUN_RE.search(span) or not ROOT_ANCHOR_RE.search(span):
+            return
+        for local_offset, tok in _unquoted_root_tokens(span):
+            line = content.count("\n", 0, base_offset + local_offset) + 1
+            hits.append((line, tok))
+
+    def scan_non_fenced(segment: str, base_offset: int) -> None:
+        for im in INLINE_CODE_RE.finditer(segment):
+            check_span(im.group(1), base_offset + im.start(1))
+        blanked = INLINE_CODE_RE.sub(_blank, segment)
+        pos = 0
+        for line in blanked.splitlines(keepends=True):
+            if UV_RUN_RE.search(line):
+                check_span(line, base_offset + pos)
+            pos += len(line)
+
+    pos = 0
+    for fm in CODE_FENCE_RE.finditer(content):
+        scan_non_fenced(content[pos : fm.start()], pos)
+        info_tokens = fm.group("info").strip().split()
+        lang = info_tokens[0].lower() if info_tokens else ""
+        if lang in SHELL_FENCE_LANGS:
+            body = fm.group("body")
+            body_offset = fm.start("body")
+            lines = body.splitlines(keepends=True)
+            idx = 0
+            line_pos = 0
+            while idx < len(lines):
+                group_start = line_pos
+                parts = [lines[idx]]
+                line_pos += len(lines[idx])
+                while parts[-1].rstrip("\r\n").endswith("\\") and idx + 1 < len(lines):
+                    idx += 1
+                    parts.append(lines[idx])
+                    line_pos += len(lines[idx])
+                check_span("".join(parts), body_offset + group_start)
+                idx += 1
+        pos = fm.end()
+    scan_non_fenced(content[pos:], pos)
+    return hits
 
 
 # --- Skill Discovery ---
@@ -313,9 +422,22 @@ def validate_skill(skill_dir: str) -> list[dict]:
     skill_content = safe_read_file(skill_md_path, findings, "SKILL.md")
     if skill_content is None:
         return findings
-    skill_fm = parse_frontmatter_multiline(skill_content)
+    skill_fm, yaml_error = skill_frontmatter(skill_content)
+    if yaml_error is not None:
+        detail, line = yaml_error
+        findings.append(
+            _finding(
+                "SKILL-08",
+                "SKILL.md Frontmatter Must Be Valid YAML",
+                "CRITICAL",
+                "SKILL.md",
+                detail,
+                "Fix the frontmatter so a YAML parser reads it: in a single-quoted value, write an apostrophe as `''`.",
+                line,
+            )
+        )
 
-    if not skill_fm or "name" not in skill_fm:
+    if skill_fm is not None and "name" not in skill_fm:
         findings.append(
             _finding(
                 "SKILL-02",
@@ -326,7 +448,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
                 "Add `name: <skill-name>` to the frontmatter.",
             )
         )
-    elif skill_fm["name"] == "":
+    elif skill_fm and skill_fm["name"] == "":
         findings.append(
             _finding(
                 "SKILL-02",
@@ -338,7 +460,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
             )
         )
 
-    if not skill_fm or "description" not in skill_fm:
+    if skill_fm is not None and "description" not in skill_fm:
         findings.append(
             _finding(
                 "SKILL-03",
@@ -349,7 +471,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
                 "Add `description: <what it does and when to use it>` to the frontmatter.",
             )
         )
-    elif skill_fm["description"] == "":
+    elif skill_fm and skill_fm["description"] == "":
         findings.append(
             _finding(
                 "SKILL-03",
@@ -361,10 +483,12 @@ def validate_skill(skill_dir: str) -> list[dict]:
             )
         )
 
-    name = skill_fm.get("name") if skill_fm else None
-    description = skill_fm.get("description") if skill_fm else None
+    name = (skill_fm or {}).get("name")
+    name = name if isinstance(name, str) else None
+    description = (skill_fm or {}).get("description")
+    description = description if isinstance(description, str) else None
 
-    is_deprecated = isinstance(description, str) and bool(DEPRECATED_RE.search(description))
+    is_deprecated = bool(description and DEPRECATED_RE.search(description))
     is_record = is_module_record(skill_dir)
     name_regex = RECORD_NAME_REGEX if is_record else NAME_REGEX
     name_display = RECORD_NAME_REGEX_DISPLAY if is_record else NAME_REGEX_DISPLAY
@@ -430,18 +554,11 @@ def validate_skill(skill_dir: str) -> list[dict]:
                 )
             )
 
-    trimmed = skill_content.lstrip()
-    body_start = -1
-    if trimmed.startswith("---"):
-        end_idx = trimmed.find(f"{os.linesep}---{os.linesep}", 3)
-        if end_idx != -1:
-            body_start = end_idx + len(os.linesep) + 3
-        elif trimmed.endswith(f"{os.linesep}---"):
-            body_start = len(trimmed)
-    else:
-        body_start = 0
-    body = trimmed[body_start:].strip() if body_start >= 0 else ""
-    if body == "":
+    try:
+        body = frontmatter.split(skill_content)[1]
+    except ValueError as error:
+        body = "" if "not terminated" in str(error) else skill_content
+    if body.strip() == "":
         findings.append(
             _finding(
                 "SKILL-07",
@@ -463,8 +580,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
         if content is None:
             continue
 
-        fm = parse_frontmatter(content)
-        if fm and "installed_path" in fm:
+        if "installed_path" in frontmatter_fields(content):
             findings.append(
                 _finding(
                     "PATH-02",
@@ -501,10 +617,23 @@ def validate_skill(skill_dir: str) -> list[dict]:
                         "HIGH",
                         rel_file,
                         "`uv run scripts/...` resolves from the working directory, not the skill.",
-                        "Call the script as `uv run {skill-root}/scripts/...`.",
+                        'Call the script as `uv run "{skill-root}/scripts/..."`.',
                         line=i + 1,
                     )
                 )
+
+        for line_num, tok in find_unquoted_root_in_uv_run(content):
+            findings.append(
+                _finding(
+                    "PATH-07",
+                    "Quote Path Arguments in Shell Commands",
+                    "HIGH",
+                    rel_file,
+                    f"`{tok}` in a `uv run` call is not wrapped in double quotes; paths with spaces will split.",
+                    'Wrap the complete `{project-root}` or `{skill-root}` argument in double quotes, e.g. `"{skill-root}/scripts/..."` or `"{project-root}"`.',
+                    line=line_num,
+                )
+            )
 
     for file_path in all_files:
         ext = os.path.splitext(file_path)[1]
@@ -555,7 +684,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
                         "HIGH",
                         rel_file,
                         f"Template file contains render-time expression `{match.group(0)}` — this would be baked at render time and leak a machine-local value into every spec produced from the template.",
-                        "Remove the `{{ config.key }}`, `{{ workflow.key }}` or `{{ initiative_folder }}` expression. Use single-curly `{var}` if the value should be resolved at LLM runtime by the consumer of the generated spec.",
+                        "Remove the `{{ config.key }}`, `{{ workflow.key }}`, `{{ agent.key }}` or `{{ initiative_folder }}` expression. Use single-curly `{var}` if the value should be resolved at LLM runtime by the consumer of the generated spec.",
                         line=i + 1,
                     )
                 )

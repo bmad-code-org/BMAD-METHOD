@@ -1,0 +1,42 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Customization surface for bmad-ingest.
+# Team overrides:     {project-root}/_bmad/custom/bmad-ingest.toml
+# Personal overrides: {project-root}/_bmad/custom/bmad-ingest.user.toml
+#
+# Merge rules: scalars override, arrays append, tables merge key by key,
+# arrays of tables merge by `code` or `id`.
+
+[workflow]
+
+# Instructions run after config is loaded, before the persistent facts.
+activation_steps_prepend = []
+
+# Instructions run after activation, before the work begins.
+activation_steps_append = []
+
+# Standing context for the whole run: literal sentences, or `file:` paths and
+# globs under {project-root} whose contents are loaded as facts.
+persistent_facts = []
+
+# Run after the note has been written. A string or an array of strings;
+# empty for none.
+on_complete = ""
+
+# Where originals are kept, so notes can link them by a relative path.
+raw_folder = "{output_folder}/raw"
+
+# Where a note goes when the caller, the work in progress and the template
+# name no other place. A path, or an instruction the agent follows, such as
+# "Add the note to the page that owns its topic."
+notes_folder = "{output_folder}/notes"
+
+# Where templates live, searched in order; the first template with an id wins.
+# Each entry is a folder, one template file, a GitHub URL (pin a version with
+# @ref) or a sentence naming the tool that reaches it. Installed modules'
+# ingest-templates/ folders are searched after these. To add, replace or
+# extend (`extends: <id>`) a template, put a file in the first folder.
+template_libraries = [
+  "{project-root}/_bmad/custom/ingest-templates",
+  "~/.bmad/ingest-templates",
+]

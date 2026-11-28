@@ -1,27 +1,19 @@
 ---
 title: 'Getting Deeper'
-description: Use Build and BMad Spec to extend a command in a specific Django version
+description: Use Build and Sofia, the Product Owner, to extend a command in a specific Django version
 sidebar:
   order: 3
 ---
 
-You already know Build from small projects. Here, you will use it in a specific
-version of Django: first for one bounded command change, then for three related
-stories defined by one BMad Spec. The two exercises demonstrate the
-[one-session and epic-sized planning paths](../plan/choose-a-planning-path.md).
+This advanced tutorial is for developers who want a deeper real-world brownfield walkthrough after completing the shorter [Walk Through an Existing Codebase](../start/walk-through-an-existing-codebase.md) room-booker tutorial. You will work inside a specific release of Django, first making one bounded command change and then building three related stories under one epic. Together, the two exercises show the [one-session and epic-sized planning paths](../start/how-bmad-works.md#size-and-stakes) on a large, mature codebase.
 
 :::note[Prerequisites]
-Use a macOS or Linux shell with Git, Node.js 20.12+ and `npx`,
-[uv](https://docs.astral.sh/uv/getting-started/installation/), and a coding tool
-supported by BMad. Complete [Build Your First Change](../start/build-your-first-change.md) before
-continuing. The exact install and launch commands below are for Claude Code. If
-you use another supported tool, you can run Build there instead.
+Use a macOS or Linux shell with Git, Node.js 20.12+ and `npx`, [uv](https://docs.astral.sh/uv/getting-started/installation/), and a coding tool supported by BMad. Complete [Build Your First Change](../start/build-your-first-change.md) before continuing. The launch commands below use Claude Code, and you can run the same chat prompts in any other supported coding tool.
 :::
 
 ## 1. Check Out the Exact Django Version
 
-Clone Django 5.2.4 into a new directory, confirm that you have the expected
-source code, and create a branch for the exercise:
+Clone Django 5.2.4 into a new directory, confirm that you have the expected source code, and create a branch for the exercise:
 
 ```bash
 git clone --depth 1 --branch 5.2.4 https://github.com/django/django.git bmad-django
@@ -38,8 +30,7 @@ c941d0deec0ea08a30670be0fac879f2372f071b
 
 ## 2. Set Up Django for Editing
 
-Set up Python 3.12, install your Django checkout so the example app uses it,
-and create a small Django project next to the repository:
+Set up Python 3.12, install your Django checkout in editable mode so the example app uses it, and create a small Django project beside the repository:
 
 ```bash
 uv python install 3.12
@@ -65,11 +56,11 @@ manage.py diffsettings: error: argument --output: invalid choice: 'json' (choose
 
 ## 4. Install BMad
 
-Install BMad Method with the skills CLI, then let the `bmad` skill set up the
-project:
+Install BMad Method with the skills CLI, then let the `bmad` skill set up the project:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD
+npx skills add bmad-code-org/BMAD-METHOD/skills/core-tools --skill '*'
+npx skills add bmad-code-org/BMAD-METHOD/skills/method --skill '*'
 ```
 
 Open Claude Code in this directory and ask the `bmad` skill to run `bmad setup`. Restart Claude Code once the skills are installed.
@@ -93,6 +84,8 @@ Open your coding tool from the repository root. For Claude Code, run:
 claude
 ```
 
+Then enter this prompt in chat:
+
 ```text
 /bmad-build Add JSON output support to django-admin diffsettings. Preserve
 the existing output formats, add focused tests, and update the command
@@ -100,17 +93,11 @@ documentation. Leave the implementation in the working tree for local
 inspection.
 ```
 
-Build asks any questions it needs before it writes a plan. Answer according
-to your own preferences for the new JSON output. There is no single required
-JSON design for this exercise.
+Build asks any clarifying questions it needs before writing a plan. Answer according to your own preferences for the new JSON output, because there is no single required JSON shape for this exercise.
 
-Build presents a plan and waits for you to approve it or ask for changes.
-Once approved, it builds and reviews the change, handles its findings, and
-shows you the result. Keep this exercise about JSON output for `diffsettings`;
-filtering, redaction, and CI behavior belong in the next exercise.
+Build presents a plan and waits for you to approve it or ask for changes. Once approved, it implements and reviews the change, resolves its findings, and reports the result. Keep this first exercise focused on JSON output for `diffsettings`, because filtering, redaction, and CI exit behavior belong in the second exercise.
 
-Build ends with a short summary and offers the next steps. Continue with the
-manual checks below before asking it to create a PR.
+Build finishes with a short summary and offers next steps. Run the manual checks below before asking it to commit or create a pull request.
 
 ## 6. See It Work
 
@@ -128,26 +115,22 @@ Now run the command again:
 uv run python ../bmad-django-app/manage.py diffsettings --output=json
 ```
 
-Look through the JSON and compare it with the choices you made with Build.
+Inspect the JSON output and compare it with the choices you approved during Build.
 
 ## 7. You Built It
 
-Congratulations, you've now added something useful to a complex open-source
-codebase.
+You have added a tested feature to a large open-source codebase in a single attended Build run.
 
 ## 8. Write a Spec for the Larger Change
 
-The next change needs three Build runs. `/bmad-forge-idea` can help you decide
-what to build. `/bmad-advanced-elicitation` can help you improve a draft. You do
-not need either here because the requirements are already clear. Send them
-straight to BMad Spec:
+The next change spans three Build runs. Normally you might use `/bmad-forge-idea` to stress-test an unclear idea or `/bmad-advanced-elicitation` to sharpen a draft, but here the requirements are already settled. Send them straight to Sofia, the Product Owner:
 
 ```text
-/bmad-spec Create a spec named diffsettings-audit and break it into
+/bmad-agent-po Create an epic named diffsettings-audit and break it into
 exactly three stories in this order: filters, redaction, then CI status.
 
 Read the current diffsettings implementation, focused tests, and command
-documentation before writing the spec. Keep every existing output format
+documentation before writing the requirements. Keep every existing output format
 and the JSON design already approved. Add repeatable --include and --exclude
 shell-glob filters. Include patterns are OR, and exclusions always win. Add
 repeatable --redact shell-glob masks that replace current and default values
@@ -155,18 +138,14 @@ with [REDACTED] without changing whether a difference exists. Add
 --fail-on-difference, which exits 1 when differences remain after filtering and
 0 otherwise. Each story adds focused tests and updates the existing command
 documentation. Do not add another Django documentation file or an external
-service. Use diffsettings-audit as the spec folder slug.
+service. Use diffsettings-audit as the epic's slug.
 ```
 
-BMad Spec first has you pick or create an initiative, then writes `_bmad-output/initiative-<slug>/spec-diffsettings-audit/spec-diffsettings-audit.md`. Hand it to `bmad-ticket` to create `epic-diffsettings-audit` and its three ordered entries in `tickets.toml`. Read the spec and entries and answer any questions. Continue when they match the requirements above; note the epic folder the skill creates.
+Because this is a single-epic effort, Sofia can create it directly as a standalone top-level container at `_bmad-output/epic-diffsettings-audit/` (without forcing a parent initiative), or place it under an existing initiative if you already have one active. She writes `epic-diffsettings-audit.md` with its Requirements, creates the ordered story entries in `tickets/tickets.toml`, and by default writes a Refined Story file (`tickets/story-<slug>.md`) for each story with full acceptance criteria and boundaries. Review the epic file and the three story files, answer any questions she raises, and approve them once they match the requirements above.
 
 ## 9. Build the Three Stories
 
-Run Build once for each story, in order. Complete each Build run before moving
-to the next one. Every run uses the same spec. You will run these stories
-attentively because they establish how filtering, redaction, and exit behavior
-fit together. Later epics with stable, repeated patterns may be better
-candidates for automation.
+Run Build once for each story, in order, completing each run before starting the next. Every run reads the same epic and story specification. Running these three stories attentively lets you verify how filtering, redaction, and exit status fit together; later epics with well-established patterns are better candidates for unattended automation.
 
 ### Story 1: Filters
 
@@ -175,7 +154,7 @@ candidates for automation.
 the epic-diffsettings-audit ticket tree.
 ```
 
-After Build finishes, observe the result:
+After Build finishes, verify the filtering behavior:
 
 ```bash
 uv run python ../bmad-django-app/manage.py diffsettings \
@@ -184,8 +163,7 @@ uv run python ../bmad-django-app/manage.py diffsettings \
 printf 'exit: %s\n' "$?"
 ```
 
-The output has `DEBUG` and `SECRET_KEY`, but no `DATABASES`, followed by
-`exit: 0`. The include patterns are combined, while the exclusion wins.
+The output should list `DEBUG` and `SECRET_KEY`, omit `DATABASES`, and end with `exit: 0`. Include patterns combine with OR logic, while exclusions always win.
 
 ### Story 2: Redaction
 
@@ -194,7 +172,7 @@ The output has `DEBUG` and `SECRET_KEY`, but no `DATABASES`, followed by
 the epic-diffsettings-audit ticket tree.
 ```
 
-Observe the unified output:
+Verify the unified output:
 
 ```bash
 uv run python ../bmad-django-app/manage.py diffsettings \
@@ -202,7 +180,7 @@ uv run python ../bmad-django-app/manage.py diffsettings \
 printf 'exit: %s\n' "$?"
 ```
 
-The secret does not appear. Both sides of the difference are masked:
+The secret value does not appear, and both sides of the difference are masked:
 
 ```text
 - SECRET_KEY = [REDACTED]
@@ -217,7 +195,7 @@ exit: 0
 the epic-diffsettings-audit ticket tree.
 ```
 
-Observe a difference that remains after filtering:
+Verify a difference that remains after filtering:
 
 ```bash
 uv run python ../bmad-django-app/manage.py diffsettings \
@@ -225,12 +203,11 @@ uv run python ../bmad-django-app/manage.py diffsettings \
 printf 'exit: %s\n' "$?"
 ```
 
-The `DEBUG` difference remains visible, and the command finishes with
-`exit: 1`.
+The `DEBUG` difference stays visible, and the command finishes with `exit: 1`.
 
 ## 10. See the Whole Change Work
 
-Now combine the three stories in one observation:
+Combine all three stories in a single run:
 
 ```bash
 uv run python ../bmad-django-app/manage.py diffsettings \
@@ -239,32 +216,22 @@ uv run python ../bmad-django-app/manage.py diffsettings \
 printf 'exit: %s\n' "$?"
 ```
 
-The JSON contains only `SECRET_KEY`. Every current or default value exposed by
-the JSON shape you chose earlier is `[REDACTED]`; neither original value
-appears. The underlying values still differ, so the final line is `exit: 1`.
+The JSON contains only `SECRET_KEY`. Every current or default value in the JSON shape you chose earlier is `[REDACTED]`, so neither original value appears, and because the underlying values still differ, the command finishes with `exit: 1`.
 
-The first exercise gave Build one bounded change directly. This exercise gave
-three separate Build runs one spec. Filtering, redaction, and CI status still
-work together at the end. You have extended a mature Django command, and the
-final result still does what you asked for at the start.
+The first exercise sent one bounded request straight to Build, while the second coordinated three Build runs under one shared specification so filtering, redaction, and CI exit status work cleanly together.
 
-If you want several perspectives on the result, `/bmad-party-mode` is an
-optional final step. You do not need it to finish this tutorial.
+If you want multiple agent perspectives on the finished feature, `/bmad-party-mode` is an optional follow-up, though you do not need it to finish the tutorial.
 
 ## 11. Review the Epic
 
-Run Retrospective against the epic:
+Run Retrospective against the completed epic:
 
 ```text
 /bmad-retrospective epic-diffsettings-audit
 ```
 
-Retrospective reads the epic's `tickets.toml` and joined plans, then checks the integrated result against its requirements and source spec. It writes `epic-diffsettings-audit-retrospective.md` directly in the epic folder. Review its evidence, acceptance verdict, and proposed follow-up work. Keep the plans: they own status and historical evidence.
+Retrospective reads the epic's `tickets.toml` along with the local build plans and run logs for each story, then checks the integrated result against the epic's requirements. It writes `epic-diffsettings-audit-retrospective.md` inside the epic folder. Review its evidence, acceptance verdict, and any proposed follow-up items, and keep the local build plans because they store live status and historical review evidence.
 
 ## 12. Keep Building
 
-Now [install BMad in your own repository](../start/install-bmad.md), then use
-the `bmad-build` skill to make a change you want. See
-[Build a Change](../build/build-a-change.md) for the attended path. Use
-[Choose a Planning Path](../plan/choose-a-planning-path.md) to decide
-when a change needs a spec, automation, or the full project flow.
+When you are ready to apply this to your own codebase, [install BMad in your repository](../start/install-bmad.md) and start with `bmad-build` on a real task. See [Build a Change](../build/build-a-change.md) for the attended Build flow, and [How BMad Works](../start/how-bmad-works.md) to judge when a change needs a spec, automation, or full project planning.

@@ -1,0 +1,102 @@
+[
+  {
+    "query": "hey Nadia, I need help getting ready for my seed raise",
+    "should_trigger": true
+  },
+  {
+    "query": "Nadia, can we think through whether I should quit my job to do this full time",
+    "should_trigger": true
+  },
+  {
+    "query": "can I talk to the founder advisor about the grant I'm applying for",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to talk to the advisor about pricing before the call with Northwind tomorrow",
+    "should_trigger": true
+  },
+  {
+    "query": "ask the startup advisor whether my pitch deck is ready to send",
+    "should_trigger": true
+  },
+  {
+    "query": "let's get Nadia in here, I have notes from three investor calls to go through",
+    "should_trigger": true
+  },
+  {
+    "query": "advisor, check in on my raise with me",
+    "should_trigger": true
+  },
+  {
+    "query": "Nadia, I don't have a business yet, I just want someone to think ideas through with",
+    "should_trigger": true
+  },
+  {
+    "query": "how many months of runway do we have if we hire two engineers in March",
+    "should_trigger": true
+  },
+  {
+    "query": "read this SAFE and tell me what's unusual about it",
+    "should_trigger": true
+  },
+  {
+    "query": "draft this month's investor update",
+    "should_trigger": true
+  },
+  {
+    "query": "make a pitch deck for our seed round",
+    "should_trigger": true
+  },
+  {
+    "query": "write a grant proposal for the city arts fund",
+    "should_trigger": true
+  },
+  {
+    "query": "write the PRD for the booking app's payments feature",
+    "should_trigger": false
+  },
+  {
+    "query": "write the business case for migrating our billing service to the new platform",
+    "should_trigger": false
+  },
+  {
+    "query": "write a Shape Up pitch for the six-week cycle on search filters",
+    "should_trigger": false
+  },
+  {
+    "query": "pressure-test my startup idea for a dog-walking marketplace before I commit to it",
+    "should_trigger": false
+  },
+  {
+    "query": "write a product brief for the booking app, a page or two I can show the sponsor",
+    "should_trigger": false
+  },
+  {
+    "query": "research the competitors for a self-hosted analytics startup: pricing, positioning, funding",
+    "should_trigger": false
+  },
+  {
+    "query": "ask the architect to review the database design",
+    "should_trigger": false
+  },
+  {
+    "query": "run party mode with three investor personas debating whether AI note-takers are a real market",
+    "should_trigger": false
+  },
+  {
+    "query": "talk to Mary about the market for meal kits",
+    "should_trigger": false
+  },
+  {
+    "query": "help me brainstorm names for my startup",
+    "should_trigger": false
+  },
+  {
+    "query": "plan an experiment to see whether a shorter signup form lifts activation",
+    "should_trigger": false
+  },
+  {
+    "query": "plan the cross-team launch of the new reporting feature next month",
+    "should_trigger": false
+  }
+]

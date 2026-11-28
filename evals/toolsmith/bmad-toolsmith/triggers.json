@@ -1,0 +1,190 @@
+[
+  {
+    "query": "make me a skill that turns a meeting transcript into decisions and action items",
+    "should_trigger": true
+  },
+  {
+    "query": "I keep asking you to run the same release checklist every time. can you turn that into a skill so I stop repeating myself",
+    "should_trigger": true
+  },
+  {
+    "query": "build an agent called Scout who reviews PRs with a grumpy senior-engineer persona and can also write release notes",
+    "should_trigger": true
+  },
+  {
+    "query": "scaffold a new skill folder for me, I'll write the prompt myself",
+    "should_trigger": true
+  },
+  {
+    "query": "my changelog skill never triggers when I ask for release notes, fix the description",
+    "should_trigger": true
+  },
+  {
+    "query": "review skills/decision-record and tell me what is bloated in it",
+    "should_trigger": true
+  },
+  {
+    "query": "package these three skills into a module we can install from our repo",
+    "should_trigger": true
+  },
+  {
+    "query": "we have an old module with a module.yaml and a setup skill, migrate it to the new bmod format",
+    "should_trigger": true
+  },
+  {
+    "query": "convert my Cursor rule for commit messages into a skill",
+    "should_trigger": true
+  },
+  {
+    "query": "hey smithy, you around?",
+    "should_trigger": true
+  },
+  {
+    "query": "I want a persona that remembers our conversations between sessions and gets to know how I work over time",
+    "should_trigger": true
+  },
+  {
+    "query": "I found this code-review skill on GitHub and copied it into .claude/skills/code-review. Can you make this skill BMad compliant and optimize it?",
+    "should_trigger": true
+  },
+  {
+    "query": "a teammate shared their standup-notes skill with me but it's like 4000 tokens of rambling, cut this skill down to what actually matters",
+    "should_trigger": true
+  },
+  {
+    "query": "grabbed a pdf-summary skill off some marketplace, optimize this skill before I start using it on our project",
+    "should_trigger": true
+  },
+  {
+    "query": "optimize this SQL query, it takes 12 seconds on the orders table and I think it's the join",
+    "should_trigger": false
+  },
+  {
+    "query": "run the evals for skills/decision-record and show me the benchmark",
+    "should_trigger": false
+  },
+  {
+    "query": "implement the login story from the ticket tree",
+    "should_trigger": false
+  },
+  {
+    "query": "what should I do next with bmad on this project?",
+    "should_trigger": false
+  },
+  {
+    "query": "write a python script that parses this CSV and sums the totals column",
+    "should_trigger": false
+  },
+  {
+    "query": "install the pdf skill from the anthropic marketplace",
+    "should_trigger": false
+  },
+  {
+    "query": "help me brainstorm names for my product",
+    "should_trigger": false
+  },
+  {
+    "query": "which skills do I have installed right now?",
+    "should_trigger": false
+  },
+  {
+    "query": "add a rule to tools/validate_skills.py that rejects descriptions without Use when",
+    "should_trigger": false
+  },
+  {
+    "query": "what is a bmod and how does bmad setup find one?",
+    "should_trigger": false
+  },
+  {
+    "query": "create a ticket for the new export feature",
+    "should_trigger": false
+  },
+  {
+    "query": "override the dev agent's communication style for this project only",
+    "should_trigger": false
+  },
+  {
+    "query": "customize the prd skill so it writes into docs/ instead of the default folder",
+    "should_trigger": false
+  },
+  {
+    "query": "here are my last five Claude Code transcripts from this week, can you find the skill hiding in them and build it",
+    "should_trigger": true
+  },
+  {
+    "query": "validate my module before I publish it, check the bmod.toml and that every file reference resolves",
+    "should_trigger": true
+  },
+  {
+    "query": "review the diff in this PR, it touches skills/release-notes and a couple of scripts",
+    "should_trigger": false
+  },
+  {
+    "query": "run the trigger optimization loop on skills/release-notes and tell me the hit rate",
+    "should_trigger": false
+  },
+  {
+    "query": "my Scout agent in skills/acme-agent-scout needs a new capability that drafts incident postmortems, add it to his menu",
+    "should_trigger": true
+  },
+  {
+    "query": "add a step to my acme-release-notes skill so it checks the version bump before it writes anything",
+    "should_trigger": true
+  },
+  {
+    "query": "I wrote skills/acme-onboarding last month, change it so it asks for the team name before generating the checklist",
+    "should_trigger": true
+  },
+  {
+    "query": "build a code-review skill that each of our three teams can adjust with their own steps and rules without forking it",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to build a module from scratch for our sales team: a call-prep skill, a proposal writer and an account-manager agent",
+    "should_trigger": true
+  },
+  {
+    "query": "migrate my bmad installation to the latest version",
+    "should_trigger": false
+  },
+  {
+    "query": "add the cis module to this project",
+    "should_trigger": false
+  },
+  {
+    "query": "validate these tickets before we start the sprint",
+    "should_trigger": false
+  },
+  {
+    "query": "define three personas for a roundtable on our pricing change",
+    "should_trigger": false
+  },
+  {
+    "query": "process this transcript from today's client call into notes",
+    "should_trigger": false
+  },
+  {
+    "query": "build the CSV export feature from story 2.3",
+    "should_trigger": false
+  },
+  {
+    "query": "make a document template for our vet clinic's patient intake so the team gets coached through it the same way every time",
+    "should_trigger": true
+  },
+  {
+    "query": "I need an agent for my car dealership that writes appraisal reports for trade-ins",
+    "should_trigger": true
+  },
+  {
+    "query": "add a risks section to every PRD template we use",
+    "should_trigger": false
+  },
+  {
+    "query": "coach me through our patient intake document for Biscuit, the new beagle",
+    "should_trigger": false
+  },
+  {
+    "query": "change our intake template so it also asks for the owner's phone number",
+    "should_trigger": false
+  }
+]

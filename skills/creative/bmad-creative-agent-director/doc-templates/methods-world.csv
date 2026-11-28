@@ -1,0 +1,9 @@
+category,method,name,description,key_questions
+rules,price-tag,The Price Tag,"Give every power, technology, or custom a cost and find out who pays it.",What does this cost each time it is used?|Who pays when the user cannot?|What happens to people who refuse to pay?
+rules,who-cleans-up,Who Cleans Up,Follow the side effects of the world's big systems down to the people who deal with them.,What mess does this leave behind?|Whose job is cleaning it up?|What do those people know that the powerful do not?
+rules,illegal-here,What Is Illegal Here,Find the laws and taboos that reveal what this world fears.,"What gets you arrested, exiled, or shunned?|Why was it banned?|Who breaks the rule anyway, and how?"
+daily,lowest-paid-day,A Day for the Lowest Paid,Walk through one ordinary day of the person at the bottom of this world.,Where do they wake up?|What do they eat and who do they owe?|What would they never say aloud?
+daily,market-stall,The Market Stall,"Stand at a market and list what is sold, what is scarce, and what is haggled over.",What is cheap here that is precious elsewhere?|What can you not buy at any price?|What is sold under the counter?
+daily,swear-and-celebrate,Curses and Holidays,Invent how people swear and what they celebrate; both show what they hold sacred.,"What do people swear by, or at?|What is the biggest holiday and what does it remember?|Which celebration is quietly resented?"
+factions,rumor-mill,The Rumor Mill,"Write three rumors each faction spreads about the others, true or not.",What does each faction say about its rivals?|Which rumor is true?|Who started the one that is not?
+frontier,edge-of-the-map,Edge of the Map,Name what lies past the known edge and what people believe about it.,"What is beyond the last map?|What do people believe is out there?|Who came back, and what did they refuse to describe?"

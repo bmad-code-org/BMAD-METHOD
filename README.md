@@ -15,42 +15,56 @@ _Start anywhere. Use BMad end to end, or carry its briefs, specifications, and a
 
 ## Start Building
 
-Choose one install route. You need an AI coding tool that supports skills and
-[uv](https://docs.astral.sh/uv/) for BMad setup and Python scripts.
+BMad ships on two lines. The stable release is **v6.12**, installed by the npm installer and frozen aside from bug fixes. **V7** is in preview alpha on this branch: its skills, install path, and docs change often. The v7 release ETA is mid-November 2026, and it might be sooner. Both routes need [uv](https://docs.astral.sh/uv/) for BMad setup and Python scripts.
 
-**Skills CLI** — with [Node.js and npm](https://nodejs.org) and Git, run in your project:
+### Stable: v6.12 (recommended if stability is needed until v7 is finalized for release)
 
-```bash
-npx skills add bmad-code-org/BMAD-METHOD
-```
-
-Select the skills and coding tool you want. Include `bmad` for setup and help, and the module record for each module you pick skills from: `bmod-method` and `bmod-core-tools`. To install by name instead, list them together: `npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build`.
-
-**Claude Code plugin** — add the marketplace inside Claude Code:
-
-```text
-/plugin marketplace add bmad-code-org/bmad-plugins
-```
-
-**Codex plugin** — add the marketplace from your terminal:
+With [Node.js](https://nodejs.org) 20.12+ and [Python](https://www.python.org) 3.10+, run in your project:
 
 ```bash
-codex plugin marketplace add bmad-code-org/bmad-plugins
+npx bmad-method install
 ```
 
-For either marketplace, install `bmad-method` for the delivery workflows and
-`bmad-core-tools` for standalone skills, including the `bmad` hub.
+Open your project in your AI coding tool, invoke `bmad-build` with what you want to change, and run `bmad-help` whenever you want guidance on what comes next. The v6.12 source and documentation live on the [V6.12 branch](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12).
+
+### V7 Preview Alpha (recommended for solo or small teams that can pivot as things will change before beta)
+
+Expect breaking changes between updates. You need an AI coding tool that supports skills.
+
+With [Node.js and npm](https://nodejs.org) and Git, run in your project to install core tools and BMad Method:
+
+```bash
+npx skills add bmad-code-org/BMAD-METHOD/skills/core-tools --skill '*'
+npx skills add bmad-code-org/BMAD-METHOD/skills/method --skill '*'
+```
+
+Each command installs one module whole and asks which coding tools to install to. Core tools hold the `bmad` skill for setup and help, so every install needs them.
+
+Optional modules install the same way:
+
+| Module | What it adds | Install |
+| --- | --- | --- |
+| Toolsmith | Smithy builds, converts, reviews and packages skills, agents and modules; `bmad-eval` measures them | `npx skills add bmad-code-org/BMAD-METHOD/skills/toolsmith --skill '*'` |
+| Founder | Nadia the Founder Advisor coaches the business side of a startup, from idea and pricing to fundraising | `npx skills add bmad-code-org/BMAD-METHOD/skills/founder` |
+| Creative | Clio the Creative Director coaches voice-grounded writing, talks, stories, visuals, and breakthrough thinking | `npx skills add bmad-code-org/BMAD-METHOD/skills/creative` |
+
+To pick single skills instead, run `npx skills add bmad-code-org/BMAD-METHOD` and include `bmad` plus the record of each module you take skills from, such as `bmod-core-tools` and `bmod-method`.
 
 Open your coding tool in the project and ask the `bmad` skill to run
 `bmad setup`. Then invoke `bmad-build` with what you want to change. Ask
 `bmad` whenever you want guidance on what comes next or what is optional.
+
+Ask for `bmad status` to check versions and see what to run next. Ask for `bmad setup` to install updates: it runs `npx skills update`, then refreshes the project and cleans up renamed and removed skills.
+
+Report preview problems in [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) or on [Discord](https://discord.gg/gk8jAdXWmj).
+
+### Next steps
 
 **[Build your first project with BMad →](https://docs.bmad-method.org/start/build-your-first-change/)**
 
 **[Add BMad to an existing codebase →](https://docs.bmad-method.org/existing-codebases/start-in-an-existing-codebase/)**
 
 BMad is free and open source, with no paywalled workflows or gated community.
-Ask for `bmad status` to check versions and see what to run next. Ask for `bmad setup` to install updates: it runs `npx skills update`, then refreshes the project and cleans up renamed and removed skills. With a plugin marketplace, update there, then ask for `bmad setup`.
 
 ## Why BMad?
 
@@ -63,7 +77,7 @@ Coding assistants are effective at implementation, but they often turn unstated 
 - **Guided collaboration** — Use structured workflows and multiple-agent discussions without handing over judgment.
 - **One delivery path** — Move from early thinking through reviewed implementation, correction, and learning.
 
-[See how much planning a change needs →](https://docs.bmad-method.org/plan/choose-a-planning-path/)
+[See how much planning a change needs →](https://docs.bmad-method.org/start/how-bmad-works/)
 
 ## BMad Ecosystem
 
@@ -81,7 +95,7 @@ Install the core method or add official modules for specialized work.
 ## Documentation
 
 - **[Build Your First Change](https://docs.bmad-method.org/start/build-your-first-change/)** — Install BMad and build a small project.
-- **[Choose a Planning Path](https://docs.bmad-method.org/plan/choose-a-planning-path/)** — Pick how much planning a change needs and see what each planning skill produces.
+- **[How BMad Works](https://docs.bmad-method.org/start/how-bmad-works/)** — The four stages, the ticket that is the spec at each level, and where your work starts.
 - **[Start in an Existing Codebase](https://docs.bmad-method.org/existing-codebases/start-in-an-existing-codebase/)** — Add BMad to an existing codebase.
 
 ## Community

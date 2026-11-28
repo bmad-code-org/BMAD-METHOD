@@ -1,0 +1,122 @@
+[
+  {
+    "query": "hey Clio",
+    "should_trigger": true
+  },
+  {
+    "query": "my novel's villain feels flat, help me make her more interesting",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm running a tabletop campaign in a drowned city and need the factions fleshed out",
+    "should_trigger": true
+  },
+  {
+    "query": "this essay sounds like AI wrote it, make it sound like me again",
+    "should_trigger": true
+  },
+  {
+    "query": "learn how I write from my old blog posts so your drafts sound like me",
+    "should_trigger": true
+  },
+  {
+    "query": "my conference slides are walls of text, can you help",
+    "should_trigger": true
+  },
+  {
+    "query": "help me practice my keynote and play a tough audience",
+    "should_trigger": true
+  },
+  {
+    "query": "I keep rambling about this talk idea in voice memos, help me turn it into something I can say on stage",
+    "should_trigger": true
+  },
+  {
+    "query": "write my grandmother's life story for her 90th birthday",
+    "should_trigger": true
+  },
+  {
+    "query": "help me find a title for my essay about grief and gardening",
+    "should_trigger": true
+  },
+  {
+    "query": "make a visual that explains how our neighborhood compost program works",
+    "should_trigger": true
+  },
+  {
+    "query": "our volunteers keep quitting after two months and nothing we try sticks",
+    "should_trigger": true
+  },
+  {
+    "query": "redesign the check-in experience at our dental clinic so people stop dreading it",
+    "should_trigger": true
+  },
+  {
+    "query": "our small museum keeps losing visitors, help us reinvent what we offer",
+    "should_trigger": true
+  },
+  {
+    "query": "get the creative studio together on my album concept",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm stuck on chapter three and don't know what I want anymore",
+    "should_trigger": true
+  },
+  {
+    "query": "design the onboarding screens for our mobile app",
+    "should_trigger": false
+  },
+  {
+    "query": "build a brand identity and logo for my pottery studio",
+    "should_trigger": false
+  },
+  {
+    "query": "make the pitch deck for our seed round",
+    "should_trigger": false
+  },
+  {
+    "query": "help me rehearse my pitch to investors on Friday",
+    "should_trigger": false
+  },
+  {
+    "query": "write a business case for opening a second location",
+    "should_trigger": false
+  },
+  {
+    "query": "do competitive research on meal kit companies",
+    "should_trigger": false
+  },
+  {
+    "query": "give me 50 name ideas for my bakery",
+    "should_trigger": false
+  },
+  {
+    "query": "write a product brief for my app idea",
+    "should_trigger": false
+  },
+  {
+    "query": "write the PRD for the booking app's notifications feature",
+    "should_trigger": false
+  },
+  {
+    "query": "write a strategy narrative for next year's plan",
+    "should_trigger": false
+  },
+  {
+    "query": "figure out why our support ticket volume doubled last quarter",
+    "should_trigger": false
+  },
+  {
+    "query": "audit our app's UI for usability problems",
+    "should_trigger": false
+  },
+  {
+    "query": "fix the bug where login redirects to a blank page",
+    "should_trigger": false
+  },
+  {
+    "query": "I have an idea for an app matching retirees with dog walkers, pressure-test it",
+    "should_trigger": false
+  }
+]

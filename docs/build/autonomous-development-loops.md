@@ -1,271 +1,77 @@
 ---
 title: Autonomous Development Loops
-description: Run bmad-build-auto as the unattended worker for one session-sized unit, and let an orchestrator drive many of them.
+description: Run well-specified stories unattended with Amelia or bmad-build-auto, review results safely, and know when to stay interactive.
 sidebar:
   order: 6
 ---
 
-`bmad-build-auto` is the unattended worker for one session-sized unit in the
-canonical [Build a Change](./build-a-change.md) implementation model. One invocation
-clarifies, plans, implements, and reviews one intent or ticket, then exposes a
-terminal status that a human or orchestrator can act on.
+Once an epic's architecture and code patterns are settled, you do not have to babysit every routine story. `bmad-build-auto` is BMad's unattended worker: each run takes a single story, plans it, implements it, reviews the diff, commits locally, and stops cleanly with a clear status (`built` or `blocked`) that you or an orchestrator can act on.
 
-Build Auto builds only what its invocation names; it never picks the next
-ticket itself. It does not repeat across a backlog, coordinate epics,
-or run a retrospective. It owns only its implementation run and the plan it
-creates or resumes. A human or an orchestrator, such as an AI coding session or
-bmad-loop, owns backlog policy and dispatch.
+`bmad-build-auto` never picks the next story on its own or loops across a backlog. You can ask [Amelia, Developer](../agents/amelia-dev.md) (`bmad-agent-dev`) to drive a batch of ready stories one at a time, invoke `bmad-build-auto` on one ticket directly, or plug it into an external orchestrator.
 
-## What It Does
+:::note[Building an external orchestrator?]
+This page is a practical guide for developers and engineering managers running unattended builds. If you are wiring `bmad-build-auto` into a custom script, CI runner, or orchestrator like `bmad-loop`, see the full machine specification in [Autonomous Loop Contract](../reference/autonomous-loop-contract.md).
+:::
 
-`bmad-build-auto` performs one unattended implementation run:
+## When Unattended Loops Work Well
 
-1. Clarify the incoming intent
-2. Create (or find and resume) a plan file
-3. Implement the change
-4. Review the result
-5. Finish by writing a terminal status to the plan file or fallback result artifact
+Unattended runs succeed when the codebase and tickets leave no product guesswork behind:
 
-The review runs one `quick` lens by default. Pass `thorough` in the
-invocation, or pin it in `_bmad/custom/bmad-build-auto.toml`.
-Quick is fine inside the loop, but something should probably run a thorough review on  
-every change; see [Review a Change](review-a-change.md#choose-the-depth).
+| Mode | Best fit |
+| --- | --- |
+| Unattended with `bmad-build-auto` | Follow-on stories after foundational patterns are already in the repository, stories with clear Given/When/Then acceptance criteria written by Sofia, and well-scoped refactors or bug fixes |
+| Interactive with `bmad-build` | The opening story of a new epic (which establishes patterns later stories copy), high-risk architectural changes, UI work where you want to steer the visual feel, and any story marked as requiring a human step |
 
-## Prerequisites
+Before starting an unattended batch, ask Sofia to double-check the epic's stories (`/bmad-agent-po review the stories`) so open questions are settled before nobody is at the keyboard.
 
-This skill relies on an ability to run subagents. If subagents are unavailable,
-the workflow halts `blocked` with `no subagents`. An AI coding session that
-orchestrates several tickets must start one Build Auto worker per ticket. Each
-worker must be able to start the review subagents used inside its own run.
+## Prerequisites and Safety Guardrails
 
-Version control, while optional, is strongly recommended. If present, the working tree must be clean and the agent must be able to update repository metadata. For a ticket from the tree, the branch must fit the ticket's epic.
+Unattended execution enforces strict safety boundaries so a runaway loop cannot leave a half-broken repository behind:
 
-## Inputs
+- Your coding tool must support spawning subagents so the worker can run independent review lenses; without subagents, the run halts immediately as `blocked`.
+- Every run requires a clean Git working tree on a branch matching the epic and commits locally on success, never pushing to a remote automatically.
+- Tickets must live in the repository ticket store (the default) so status updates record directly in each story's build plan.
+- Amelia skips any story Sofia marked as needing a human step, and pauses for your go-ahead at any pre-coding approval pause or post-run pause you set with Sofia.
+- `bmad-build-auto` never marks work done; it stops at `built` so human acceptance remains an explicit decision.
 
-### Primary Invocation Input
+## Start an Unattended Run
 
-The main input is the invocation prompt. `bmad-build-auto` treats that prompt as workflow input, not as a finished implementation plan.
+### Option 1: Let Amelia run ready stories (recommended)
 
-Supported intent shapes include:
+Open a fresh chat on your epic's branch and ask Amelia (`bmad-agent-dev`) to run the ready stories unattended:
 
-- A ticket from the tree, named as a ticket (`ticket 1.2`, or a ticket's title), or a ticket file by path. A bare ref or title is not taken as a ticket
-- A short free-form change request
-- A path to an intent file
-- A path to an existing plan file generated by this workflow
+```text wrap
+/bmad-agent-dev Run the ready stories in this epic unattended and report back when finished or blocked.
+```
 
-### Tickets from the Tree
+Amelia checks which stories are ready, skips any story requiring a human step, respects your approval checkpoints, launches one `bmad-build-auto` worker per story in order, and hands you a concise summary of every commit, deferred finding, and blocked story when she stops.
 
-Build Auto reads the tree through `{project-root}/_bmad/method/scripts/tickets.py`,
-the script [`bmad-ticket`](../plan/break-work-into-stories-and-track-it.md) installs.
-This page describes the repo store, where a ticket's status lives in its plan.
-On a tracker store, `tickets.py mark` refuses to run, so move the ticket on
-the tracker through `bmad-ticket`.
+### Option 2: Run a single story directly
 
-- A named ticket goes through `tickets.py find`. When `find` fails, for example on a reference that matches no ticket or more than one, the run halts with `ticket not resolved`.
-- It builds from the entry in `tickets.toml`, its epic file and what that file's References name, and the entry's story file when it has one. It never writes a ticket file and never runs `tickets.py pull`.
-- For continuity, planning reads the plans of the ticket's prerequisites in the same epic.
-- Exactly one ticket per invocation: the workflow never reads another entry or advances to a different ticket, whatever the outcome.
+To run `bmad-build-auto` yourself on one story from the ticket tree, include the word `ticket` before the story number so it links back to the tree and updates the ticket's plan:
 
-An entry's `plan_checkpoint` and `done_checkpoint` are the orchestrator's fields.
-Build Auto never reads them. To honor `plan_checkpoint` on a refined entry
-(`refined` in `tickets.py find`), have a person approve its story file before
-dispatching. On an entry that is not refined, dispatch it with `Halt after planning.`, wait for a person to
-approve the plan, then dispatch it again. To honor `done_checkpoint`, pause
-after that ticket's run until a person says to continue.
+```text wrap
+/bmad-build-auto ticket 2.3
+```
 
-### Resume Input
+If you want the run to draft the plan and pause for your review before writing any code, tell it to stop after planning:
 
-If the invocation names a ticket whose plan exists, or points to a plan file, the workflow resumes from the plan's `status`:
+```text wrap
+/bmad-build-auto ticket 2.3. Halt after planning.
+```
 
-| Plan status     | Entry point                            |
-| --------------- | -------------------------------------- |
-| `draft`         | plan                                   |
-| `ready-for-dev` | implement                              |
-| `in-progress`   | implement                              |
-| `in-review`     | review                                 |
-| `built`         | review again as a fresh follow-up pass |
-| `done`          | review again as a fresh follow-up pass |
-| `blocked`       | halt immediately                       |
+Inspect the generated plan, and when it looks right, invoke `/bmad-build-auto ticket 2.3` again to implement and review it.
 
-## Orchestration Options
+## Check Results and Handle Blocked Runs
 
-Build Auto is the worker in each option below. The orchestrator selects a unit,
-starts one worker, reads its result, and decides what happens next.
+When an unattended batch finishes, review three outputs before merging or moving to the next epic:
 
-### Dispatch from the ticket tree
+1. Check built stories and any follow-up review notes. Each successful story lands at status `built` with its local commit and a summary inside its plan file. By default, `bmad-build-auto` runs a `quick` self-review; if the plan flags that a follow-up review is recommended, run `bmad-code-review` on `thorough` (or run `bmad-build-auto ticket <ref>` once more for another review pass). See [Review a Change](review-a-change.md#choose-the-depth).
+2. Review deferred findings with Sofia before planning the next epic. Real pre-existing issues noticed outside the current story are recorded under the plan's deferred list instead of interrupting the run, so each can become a backlog ticket or be intentionally dropped.
+3. Resolve any blocked stories. A `blocked` status is a safety stop rather than a failure, usually caused by an unanswered product ambiguity (`intent gap`), failing verification checks, or a review repair loop that did not converge cleanly. Read the blocking reason in Sofia's `what's next?` summary or inside the story's plan, fix the underlying gap (for example, update the story with Sofia), and ask Amelia to clear the block and retry, or finish that story interactively with `bmad-build`.
 
-An orchestrator runs `tickets.py next`, dispatches one worker per ticket in
-`ready_to_start` as `ticket <ref>`, and reads
-`tickets.py status` or the plan afterwards. Tickets in `ready_to_start` have
-their prerequisites done or in review, so the tree's `after` fields set the
-order.
+Once you have verified the finished stories (or walked through them with `bmad-walkthrough`), tell Sofia which stories to mark done.
 
-The optional [bmad-loop](https://github.com/bmad-code-org/bmad-loop)
-orchestrator does not dispatch from the ticket tree yet. This page is the
-contract it will follow. Retrospective is a separate epic-closing activity;
-an orchestrator may recommend it, but `bmad-retrospective` performs it.
+## Customize Unattended Behavior
 
-### Use an AI coding session as the orchestrator
-
-An AI coding session can act as the orchestrator, dispatch one Build Auto
-worker per ticket, inspect the resulting evidence, and revise later tickets
-when the epic or its entries no longer fit what implementation revealed.
-The orchestrating session remains responsible for keeping those revisions
-consistent with the larger intent.
-
-### Coordinate parallel epic streams
-
-Project-level parallelism needs a higher coordination layer or separate epic
-owners. Independent epic streams can run in parallel when dependencies and
-integration boundaries are explicit.
-
-## Context Inputs
-
-On activation, the workflow resolves:
-
-- `_bmad/config.toml`, `_bmad/config.user.toml`, and optional team/user overrides under `_bmad/custom/`
-- Any configured workflow customizations from `customize.toml`, team overrides, and user overrides
-- Persistent facts listed in workflow config — empty unless you opt in, so nothing is loaded here by default
-
-It may also look at:
-
-- For a ticket from the tree: its entry, its epic file and that file's References, its story file when there is one, and the plans of its prerequisites in the same epic
-- For other work: the planning documents in the active initiative's folder, or in the output folder when no initiative is active
-
-## Plan Status
-
-The plan frontmatter `status` is the main machine-readable state for orchestration:
-
-| Plan status     | Meaning                                                  | Board state   |
-| --------------- | -------------------------------------------------------- | ------------- |
-| `draft`         | Plan exists but has not passed ready-for-dev validation  | `backlog`     |
-| `ready-for-dev` | Plan is complete enough to implement                     | `backlog`     |
-| `in-progress`   | Implementation is underway                               | `in-progress` |
-| `in-review`     | The run's own review and triage are underway             | `review`      |
-| `built`         | The run finished; nobody has called the ticket done yet  | `review`      |
-| `done`          | The user or an orchestrator called the ticket done       | `done`        |
-| `blocked`       | The run cannot safely continue unattended                | `in-progress` |
-| `dropped`       | `bmad-ticket` dropped the ticket, on the user's word | `dropped`     |
-
-Build Auto never moves a ticket to `done`. The user or an orchestrator
-marks a ticket done with `tickets.py mark <ref> done`. A follow-up pass on a
-`done` plan keeps it `done`.
-
-### Deferred Findings
-
-`deferred` is where the skill reports real findings that are not this ticket's problem. Each item contains:
-
-- `summary` — one-sentence description of the deferred issue
-- `evidence` — why the finding is real
-- `location` — optional file:line or component hint
-- `severity` — optional final triage severity (`high`, `medium`, `low`); a maybe-false entry carries its if-true grade plus " (unverified)"
-
-A `maybe-false` finding is deferred only when its claim, if true, would be `medium` or worse; its evidence records what would settle it. Weaker ones are rejected in the plan's triage log with the same note.
-
-This is intentionally not a backlog. It is a machine-readable review output. The orchestrator has to decide what happens next: create a ticket, append to a central queue, correlate duplicates across runs, or do nothing.
-
-### On `ready-for-dev`
-
-`ready-for-dev` is normally a resume state the workflow passes straight through on its way to implementation. It becomes a genuine halt outcome when the invocation prompt directs a halt after planning: once the plan passes the READY FOR DEVELOPMENT gate, the workflow sets status `ready-for-dev` and stops there instead of continuing to implementation. Dispatching the same ticket or plan again resumes at implementation via the routing above.
-
-### On `built`
-
-On successful completion, the workflow writes or updates the plan with:
-
-- Final `status: built`, or `done` on a follow-up pass of a `done` plan
-- An `Auto Run Result` section containing:
-  - Summary of implemented change
-  - Files changed
-  - Review findings breakdown
-  - Verification performed
-  - Residual risks
-- `followup_review_recommended` flag. True if LLM decided another review pass seems worthwhile. It's a suggestion, not a must. Simplest way to give it a second review pass is to dispatch the same ticket or plan again.
-- `baseline_revision` — the full canonical revision before implementation. `NO_VCS` without version control.
-- `risk` — `low`, `medium`, or `high`, the business impact if the change is wrong, scored at planning. For a ticket it starts from the ticket's risk and is never lower. A CI process can read it to decide how much review the change gets.
-- `deferred` frontmatter entries for review findings triaged `defer`. Each item records `summary`, `evidence`, and, when known, `location` plus `severity`.
-
-The workflow commits but does not push. The working copy is clean at exit.
-
-### On `blocked`
-
-On blocked completion, the workflow records the final status and a blocking condition:
-
-- For a ticket named by its ref, file, or title, it runs `tickets.py mark <ref> blocked --blocked <blocking condition>`. That writes `status: blocked`, `blocked_at` (the date), and `blocked_reason` to the plan, creating the plan with only that frontmatter when the run halted before planning.
-- Details go under the plan's `## Auto Run Result`. On such a ticket, `blocked plan supplied` writes nothing, so the plan keeps its first reason.
-- If `mark` fails, or the run was given a plan path or work outside the tree, the workflow sets `status` in an existing plan or writes the fallback result artifact. The blocking condition is then only in `## Auto Run Result` or that file, not in `blocked_reason`.
-
-Typical blocking conditions include:
-
-- `unclear intent`
-- `intent gap`
-- `no subagents`
-- `ticket not resolved`
-- `version-control metadata not writable`
-- `plan failed ready-for-development standard`
-- `missing plan_file before implementation`
-- `implementation verification failed`
-- `review repair loop exceeded 5 iterations (non-convergence)`
-- `blocked plan supplied` (the plan already had `status: blocked`)
-
-A blocked plan halts every later dispatch of its ticket. To retry, fix the
-cause, then run `tickets.py mark <ref> <status>` with the status to resume from,
-which clears `blocked_at` and `blocked_reason`. When the plan holds only
-frontmatter, delete it instead, and the next dispatch starts fresh.
-
-An `intent gap` means the captured intent cannot answer a question the run hit — it can halt the planning step (before any code exists) or the review step. When review halts on it, the working tree is reverted as usual, but the attempted change is first saved as a patch file beside the plan, referenced from the plan's triage log and the halt output. The patch shows which reading of the intent the run implemented — concrete evidence for repairing the intent. If the attempted reading turns out to be correct, `git apply` the patch and set the plan status to `in-review` to resume review on it instead of re-running from scratch.
-
-## Output Artifacts
-
-The workflow always tries to leave behind a durable artifact describing what happened.
-
-### Primary Plan Artifact
-
-For a ticket from the tree, the plan is the path `tickets.py find` returns:
-`<type>-<slug>-plan.md` in the ticket's epic folder beside `tickets.toml`, or in
-`backlog/` for a backlog ticket. Its `ticket` field holds the entry id, or the
-ticket file's stem for a backlog ticket; that field is how `tickets.py` joins
-the plan to its ticket. For other work, the workflow creates:
-
-`{output_folder}/{active_initiative}/plan-<slug>.md`, or `{output_folder}/plan-<slug>.md` when no initiative is active
-
-That plan is the contract between planning, implementation, and review. It contains:
-
-- Frontmatter `status` and `ticket`
-- Frontmatter machine state (`baseline_revision`, `followup_review_recommended`, `warnings`, `deferred`, `blocked_at`, `blocked_reason`)
-- The immutable `<intent-contract>` block
-- Code map
-- Tasks and acceptance criteria
-- Plan change log
-- Review triage log
-- Verification notes
-
-### Fallback Result Artifact
-
-If the workflow halts before it has a valid `plan_file` and no ticket was resolved, or when `mark` fails and no plan exists, it writes:
-
-`{output_folder}/{active_initiative}/bmad-build-auto-result-<slug-or-timestamp>.md`, or the same file in `{output_folder}/` when no initiative is active
-
-This records the terminal status and blocking condition.
-
-### Additional Artifacts
-
-When the review step halts on `intent gap`, the workflow also writes a patch file preserving the attempted change. Its path is recorded in the plan's triage log.
-
-## Orchestrator Responsibilities
-
-An orchestrator integrating `bmad-build-auto` should:
-
-- Pass one ticket as `ticket <ref>`, or one coherent intent, per invocation
-- Pass the same ticket ref when resuming a ticket, so a halt records `blocked_reason`, or the plan path for work outside the tree
-- Monitor the plan file or fallback result file for terminal state
-- Read `status`, the blocking condition (`blocked_reason`, or `## Auto Run Result`), and `followup_review_recommended` rather than inferring success from chat output alone
-- Read deferred findings from the plan frontmatter `deferred:` list
-- Use `baseline_revision..<next ticket's baseline_revision>` to identify a ticket's commits, or `baseline_revision..HEAD` at exit when there is no next ticket yet
-- Mark a ticket done with `tickets.py mark <ref> done` once it is accepted; Build Auto never does
-- Honor each entry's `plan_checkpoint` and `done_checkpoint`
-- Expect autonomous file changes and local commits
-- Handle `blocked` as a routing signal, not just a failure signal
-
-In practice, `blocked` usually means the workflow ran into a situation where unattended execution would be unsafe. That is often the point where a higher-level orchestrator, another workflow, or a human should take over.
-
-After resolving a blocked run, the orchestrator should usually start a fresh `bmad-build-auto` run. If it reuses prior work, it should pass an explicit ticket ref or known-good plan path rather than relying on implicit discovery.
+By default, `bmad-build-auto` runs `quick` review inside each loop. You can ask for `thorough` review on any single invocation, or invoke `bmad-customize` and tell it to pin thorough review, adjust completion instructions, or add team-specific guardrails for `bmad-build-auto` permanently. For exact override files and settings, see [Configuration](../reference/configuration.md). For full worker contracts, exit states, and patch recovery details for external orchestrators, see [Autonomous Loop Contract](../reference/autonomous-loop-contract.md).
