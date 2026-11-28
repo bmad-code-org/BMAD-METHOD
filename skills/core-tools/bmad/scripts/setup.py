@@ -335,7 +335,7 @@ def setup(
             user_config_text=user_text,
             custom_renames=retirement.renames,
         )
-    output = project_root / output_folder(config_text)
+    output = output_folder(config_text, project_root)
     if not present(output):
         changed = True
     ensure_dir(output)
@@ -1853,7 +1853,7 @@ def status_report(
     scripts_src, config_src = payload(skill_root)
     shared_state = tree_state(bmad / "scripts", shared_scripts_tree(scripts_src))
     existing_text, _merged, base_text = team_config_plan(project_root, config_src)
-    output = project_root / output_folder(base_text)
+    output = output_folder(base_text, project_root)
     custom = bmad / "custom"
     pending = pending_config_questions(project_root, skill_root, scoped)
     unmet = unmet_requirements(installation, skill_root, module=code)
@@ -2409,12 +2409,11 @@ def fill_team_config(text: str, project_root: Path) -> str:
     return text.replace("{directory_name}", project_root.name)
 
 
-def output_folder(config_text: str) -> str:
-    folder = tomllib.loads(config_text).get("core", {}).get("output_folder", "_bmad-output")
-    prefix = "{project-root}/"
-    if folder.startswith(prefix):
-        folder = folder[len(prefix) :]
-    return folder or "_bmad-output"
+def output_folder(config_text: str, project_root: Path) -> Path:
+    """Return the output folder, resolving {project-root} as render_skill does."""
+    folder = tomllib.loads(config_text).get("core", {}).get("output_folder") or "_bmad-output"
+    root = project_root.resolve()
+    return root / folder.replace("{project-root}", root.as_posix())
 
 
 def materialize_bmad(
