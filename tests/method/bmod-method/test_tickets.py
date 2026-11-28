@@ -11,7 +11,7 @@ import unittest
 from datetime import date
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[3] / "skills/method/bmad-agent-po/scripts/tickets.py"
+SCRIPT = Path(__file__).resolve().parents[3] / "skills/method/bmod-method/scripts/tickets.py"
 CONFIG_UTILS = SCRIPT.parents[3] / "core-tools" / "bmad" / "scripts" / "config_utils.py"
 FRONTMATTER = CONFIG_UTILS.with_name("frontmatter.py")
 
@@ -2259,7 +2259,7 @@ class ActiveInitiativeTests(TreeCase):
 
     def test_the_skill_installs_the_script_and_a_lone_copy_runs(self):
         bmod = tomllib.loads((SCRIPT.parents[1] / "bmod.toml").read_text(encoding="utf-8"))
-        self.assertIn("scripts/tickets.py", bmod["skill"]["scripts"])
+        self.assertIn("scripts/tickets.py", bmod["bmod"]["scripts"])
         installed = self.root / "_bmad" / "method" / "scripts"
         installed.mkdir(parents=True)
         shutil.copy(SCRIPT, installed)

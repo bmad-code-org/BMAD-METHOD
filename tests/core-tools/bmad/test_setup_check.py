@@ -297,6 +297,28 @@ class OwedSetupTests(unittest.TestCase):
             setup_check.report(folder, self.project, self.roots)
         self.assertEqual(stream.getvalue(), "")
 
+    def test_a_missing_or_stale_bmod_placed_script_is_reported(self):
+        folder = self.skill(module_extra='scripts = ["scripts/shared.py"]\n')
+        record = self.skills / "bmod-demo"
+        (record / "scripts").mkdir()
+        (record / "scripts" / "shared.py").write_bytes(b"new\n")
+
+        # Checked both with roots and via the sibling record fallback without roots.
+        for call_roots in (self.roots, ()):
+            (note,) = setup_check.owed(folder, self.project, call_roots)
+            self.assertIn("`_bmad/demo/scripts/`", note)
+            self.assertIn("`bmad setup`", note)
+
+        placed = self.project / "_bmad" / "demo" / "scripts" / "shared.py"
+        placed.parent.mkdir(parents=True)
+        placed.write_bytes(b"old\n")
+        for call_roots in (self.roots, ()):
+            self.assertEqual(len(setup_check.owed(folder, self.project, call_roots)), 1)
+
+        placed.write_bytes(b"new\n")
+        for call_roots in (self.roots, ()):
+            self.assertEqual(setup_check.owed(folder, self.project, call_roots), [])
+
 
 if __name__ == "__main__":
     unittest.main()

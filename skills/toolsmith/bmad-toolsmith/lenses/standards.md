@@ -44,9 +44,9 @@ When users will change a value, the body says so in one line: invoke the `bmad-c
 
 ## bmod.toml
 
-- A skill in a module has `[skill]` with `bmod` (the record folder), `source` (the record's `update_source`), `required_skills` (it invokes them), `recommended_skills` (they help beside it) and the `scripts` it ships. A dependency is a plain name for the same source, `{ skill, source, version? }` for another.
-- A single-skill module carries `[bmod]` (`code`, `version`, `update_source`, `skills`, `required_skills`) and an empty `[skill]` in one file.
-- A multi-skill module keeps `[bmod]` in a `bmod-<code>` record folder with `help/` and, with agents, `roster.toml`.
+- A skill in a module has `[skill]` with `bmod` (the record folder), `source` (the record's `update_source`), `required_skills` (it invokes them), `recommended_skills` (they help beside it) and any skill-owned `scripts` it ships. A dependency is a plain name for the same source, `{ skill, source, version? }` for another.
+- A single-skill module carries `[bmod]` (`code`, `version`, `update_source`, `skills`, `required_skills`, optional `scripts`) and an empty `[skill]` in one file.
+- A multi-skill module keeps `[bmod]` in a `bmod-<code>` record folder with `help/`, module-wide shared `scripts` (when multiple skills call them), and, with agents, `roster.toml`.
 - A skill outside BMad needs none.
 
 ## Help files

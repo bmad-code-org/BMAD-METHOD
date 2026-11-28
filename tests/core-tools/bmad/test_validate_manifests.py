@@ -594,6 +594,24 @@ class RosterContentTests(ValidatorCase):
             "member 'bmad-build' names skill 'bmad-typo', which this repository does not ship", self.problems()
         )
 
+    def test_missing_bmod_script_is_reported(self):
+        self.method_record(
+            'required_skills = ["bmad"]\n', 'required_skills = ["bmad"]\nscripts = ["scripts/missing.py"]\n'
+        )
+        self.assertIn("declares unsafe or missing script 'scripts/missing.py'", self.problems())
+
+    def test_conflicting_bmod_and_skill_script_is_reported(self):
+        self.method_record(
+            'required_skills = ["bmad"]\n', 'required_skills = ["bmad"]\nscripts = ["scripts/shared.py"]\n'
+        )
+        write(self.skills / "bmod-method" / "scripts" / "shared.py", "print('record')\n")
+        write(
+            self.skills / "bmad-build" / "bmod.toml",
+            f'[skill]\nbmod = "bmod-method"\nsource = "{SOURCE}"\nscripts = ["scripts/shared.py"]\n',
+        )
+        write(self.skills / "bmad-build" / "scripts" / "shared.py", "print('skill')\n")
+        self.assertIn("has two different scripts for 'shared.py'", self.problems())
+
 
 if __name__ == "__main__":
     unittest.main()

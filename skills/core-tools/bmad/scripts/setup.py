@@ -90,6 +90,7 @@ class ParsedBmod(NamedTuple):
     recommended_skills: tuple[Requirement, ...]
     pre_install_message: str = ""
     post_install_message: str = ""
+    scripts: tuple[PurePosixPath, ...] = ()
 
 
 class ParsedRetired(NamedTuple):
@@ -1476,22 +1477,27 @@ def member_names(record_file: InstalledFile) -> tuple[str, ...]:
 
 
 def read_module_scripts(installed: InstalledModule) -> tuple[tuple[PurePosixPath, bytes], ...]:
-    """The scripts a module's installed skills place in `_bmad/<code>/scripts/`."""
+    """The scripts a module's record and installed skills place in `_bmad/<code>/scripts/`."""
     placed: dict[PurePosixPath, tuple[bytes, Path]] = {}
     scripts: list[tuple[PurePosixPath, bytes]] = []
+    sources: list[tuple[Path, Path, tuple[PurePosixPath, ...]]] = [
+        (installed.source, installed.file, installed.parsed.scripts)
+    ]
     for member in installed.members:
         assert member.parsed.skill is not None
-        for relative in member.parsed.skill.scripts:
-            content = read_declared_script(member.source, relative, member.file)
+        sources.append((member.source, member.file, member.parsed.skill.scripts))
+    for source_root, manifest_file, declared in sources:
+        for relative in declared:
+            content = read_declared_script(source_root, relative, manifest_file)
             destination = PurePosixPath(*relative.parts[1:])
             previous = placed.get(destination)
             if previous is None:
-                placed[destination] = (content, member.file)
+                placed[destination] = (content, manifest_file)
                 scripts.append((relative, content))
             elif previous[0] != content:
                 raise Exception(
                     f"module {installed.module!r} has two different scripts for "
-                    f"{destination.as_posix()!r}: {previous[1]} and {member.file}"
+                    f"{destination.as_posix()!r}: {previous[1]} and {manifest_file}"
                 )
     return tuple(scripts)
 
@@ -1538,6 +1544,7 @@ def parse_bmod_table(table: dict, path: Path) -> ParsedBmod:
         parse_requirements(table.get("recommended_skills"), "bmod.recommended_skills", path),
         optional_string(table, "bmod", "pre_install_message", path),
         optional_string(table, "bmod", "post_install_message", path),
+        parse_scripts(table.get("scripts"), path, "bmod.scripts"),
     )
 
 
@@ -1776,15 +1783,15 @@ def conflicting_question_key(keys: list[str], candidate: str) -> str | None:
     return None
 
 
-def parse_scripts(value: object, path: Path) -> tuple[PurePosixPath, ...]:
+def parse_scripts(value: object, path: Path, field: str = "skill.scripts") -> tuple[PurePosixPath, ...]:
     if value is None:
         return ()
     if not isinstance(value, list):
-        raise Exception(f"bmod file {path} field 'skill.scripts' must be a list")
+        raise Exception(f"bmod file {path} field '{field}' must be a list")
     scripts: list[PurePosixPath] = []
     for entry in value:
         if not isinstance(entry, str) or not entry:
-            raise Exception(f"bmod file {path} field 'skill.scripts' has invalid value {entry!r}")
+            raise Exception(f"bmod file {path} field '{field}' has invalid value {entry!r}")
         relative = PurePosixPath(entry)
         if (
             relative.is_absolute()
@@ -1794,7 +1801,7 @@ def parse_scripts(value: object, path: Path) -> tuple[PurePosixPath, ...]:
             or ".." in relative.parts
             or "." in relative.parts
         ):
-            raise Exception(f"bmod file {path} field 'skill.scripts' has unsafe value {entry!r}")
+            raise Exception(f"bmod file {path} field '{field}' has unsafe value {entry!r}")
         scripts.append(relative)
     return tuple(scripts)
 

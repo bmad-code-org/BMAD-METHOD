@@ -18,5 +18,6 @@ skills = [
   "bmad-walkthrough",
 ]
 required_skills = [{ skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" }]
+scripts = ["scripts/tickets.py"]
 pre_install_message = ""
 post_install_message = ""
