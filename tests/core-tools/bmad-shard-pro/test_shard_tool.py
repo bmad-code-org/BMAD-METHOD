@@ -989,3 +989,62 @@ def test_a_sub_map_never_takes_the_main_file_name(tmp_path):
     assert code == 0 and out["sub_maps"] == ["map-all-2.md", "map-rest.md"], out
     assert shard_tool.NOTE_MARK in (folder / "map-all.md").read_text(encoding="utf-8")
     assert run("check", str(folder), "--rebuild")[0] == 0
+
+
+def test_lookup_refuses_when_a_shard_has_unterminated_frontmatter(built):
+    lookup_before = (built / "identifier-lookup.md").read_text(encoding="utf-8")
+    part2 = built / "part-2.md"
+    lines = part2.read_text(encoding="utf-8").splitlines()
+    closing = lines.index("---", 1)
+    part2.write_text("\n".join(lines[:closing] + lines[closing + 1 :]) + "\n", encoding="utf-8")
+
+    code, out = run("lookup", str(built))
+    assert code == 2
+    assert "part-2.md" in out["error"]
+    assert (built / "identifier-lookup.md").read_text(encoding="utf-8") == lookup_before
+
+
+def test_map_refresh_does_not_delete_main_doc_listed_in_legacy_sub_maps(tmp_path):
+    src = tmp_path / "s.md"
+    src.write_text("\n".join(f"line {i}" for i in range(1, 501)) + "\n", encoding="utf-8")
+    shards = [
+        {"file": f"s{i}.md", "title": f"S{i}", "summary": "x", "start": i * 2 + 1, "end": i * 2 + 2} for i in range(250)
+    ]
+    folder = tmp_path / "map-all"
+    groups = [{"heading": "All", "shards": shards[:150]}, {"heading": "Rest", "shards": shards[150:]}]
+    plan = {"source": str(src), "folder": str(folder), "title": "Big", "groups": groups}
+    (tmp_path / "p.json").write_text(json.dumps(plan), encoding="utf-8")
+    assert run("build", str(tmp_path / "p.json"))[0] == 0
+
+    manifest_path = folder / ".shards.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["sub_maps"] = ["map-all.md", "map-rest.md"]
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    code, out = run("map", str(folder))
+    assert code == 0 and out["sub_maps"] == ["map-all-2.md", "map-rest.md"], out
+    assert (folder / "map-all.md").is_file()
+    assert shard_tool.NOTE_MARK in (folder / "map-all.md").read_text(encoding="utf-8")
+
+
+def test_map_preserves_user_authored_map_prefixed_page_linked_under_map(built):
+    notes = built / "map-notes.md"
+    notes_text = "# Notes\n\nHand-written guide.\n"
+    notes.write_text(notes_text, encoding="utf-8")
+    main = built / "doc-sample.md"
+    main.write_text(main.read_text(encoding="utf-8") + "- [Notes](./map-notes.md) — guide\n", encoding="utf-8")
+
+    # Short map refresh must not unlink user-authored map-notes.md
+    code, out = run("map", str(built))
+    assert code == 0, out
+    assert notes.read_text(encoding="utf-8") == notes_text
+
+    # Colliding group refresh must refuse rather than overwrite map-notes.md
+    for i in range(190):
+        (built / f"extra-{i:03d}.md").write_text(
+            shard(f"Extra {i}", f"Added extra {i}", f"Body {i}.\n", group="Notes"), encoding="utf-8"
+        )
+    main.write_text(main.read_text(encoding="utf-8") + "- [Notes](./map-notes.md) — guide\n", encoding="utf-8")
+    code, out = run("map", str(built))
+    assert code == 2 and "map-notes.md" in out["error"]
+    assert notes.read_text(encoding="utf-8") == notes_text

@@ -491,7 +491,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     ids = {f"CAP-{n}": f"R{n + offset}" for n in spec["capabilities"]}
 
     def map_cap(match: re.Match[str]) -> str:
-        return ids.get(match.group(0), match.group(0))
+        return ids.get(f"CAP-{int(match.group(1))}", match.group(0))
 
     def map_caps(text: str) -> str:
         """CAP ids mapped everywhere but inside a Requirements line's parentheses, where they are a folded spec's source ids."""
@@ -541,11 +541,14 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         for sibling in sorted(p for p in home.iterdir() if p != folder and is_spec_folder(p)):
             theirs_path = sibling / f"{sibling.name}.md"
             theirs_text = yaml_checked(read_for_fold(theirs_path, project_root), theirs_path, project_root)
-            theirs = parse_spec(theirs_text)["capabilities"]
+            theirs_spec = parse_spec(theirs_text)
+            if theirs_spec["unparsed_capabilities"]:
+                raise FoldProblem(f"{sibling.name} has unparsed capabilities; fix it before folding {folder.name}")
+            theirs = theirs_spec["capabilities"]
             shared = ids.keys() & {f"CAP-{n}" for n in theirs}
             for path in cap_scope(home, []) if shared else []:
                 text = R_SOURCE.sub("", writes[path] if path in writes else read_for_fold(path, project_root))
-                if ambiguous := shared & {match.group(0) for match in CAP_ID.finditer(text)}:
+                if ambiguous := shared & {f"CAP-{int(match.group(1))}" for match in CAP_ID.finditer(text)}:
                     raise FoldProblem(
                         f"{', '.join(sorted(ambiguous))} defined by both {folder.name} and {sibling.name} "
                         f"and cited in {relative(path, project_root)}"
@@ -742,6 +745,7 @@ def parse_spec(text: str) -> dict[str, object]:
     key = "rest"
     blocks: list[tuple[int, dict[str, str]]] = []
     cap_section = sections.get("capabilities", "")
+    unparsed_capabilities = False
     for line in cap_section.splitlines():
         if match := CAPABILITY.match(line):
             current, key = {"rest": match.group(3).strip()}, "rest"
@@ -749,11 +753,16 @@ def parse_spec(text: str) -> dict[str, object]:
         elif current is not None and (field := CAPABILITY_FIELD.match(line)):
             key = field.group(1)
             current[key] = field.group(2).strip()
-        elif current is not None and line.strip():
-            # A wrapped line continues the field above it; another bullet does not.
-            if line.lstrip().startswith("- "):
-                key = "rest"
-            current[key] = f"{current.get(key, '')} {line.strip()}".strip()
+        elif line.strip():
+            if line.strip().startswith("<!--"):
+                continue
+            if current is None or line.startswith("- "):
+                unparsed_capabilities = True
+            else:
+                # A wrapped line continues the field above it; another bullet does not.
+                if line.lstrip().startswith("- "):
+                    key = "rest"
+                current[key] = f"{current.get(key, '')} {line.strip()}".strip()
     for number, block in blocks:
         intent, success = block.get("intent", ""), block.get("success", "")
         line = intent or block["rest"]
@@ -766,7 +775,7 @@ def parse_spec(text: str) -> dict[str, object]:
         "companions": frontmatter_list(meta, "companions"),
         "sources": frontmatter_list(meta, "sources"),
         "capabilities": capabilities,
-        "unparsed_capabilities": bool(bullets(cap_section)) and not capabilities,
+        "unparsed_capabilities": unparsed_capabilities,
         "constraints": bullets(sections.get("constraints", "")),
         "non_goals": bullets(sections.get("non-goals", "")),
         "assumptions": bullets(sections.get("assumptions", "")),

@@ -184,7 +184,7 @@ def _require_review_layers(value: Any, label: str) -> list[dict[str, str]]:
 
 def _keyed_by_code(tables: list[dict[str, Any]]) -> bool:
     """Menus key their items on `code`; review layers on `id`. Same order as `structural_merge`."""
-    return all("code" in table for table in tables)
+    return all(isinstance(table.get("code"), str) for table in tables)
 
 
 def _require_keyed_tables(value: Any, label: str, key: str) -> list[dict[str, str]]:
