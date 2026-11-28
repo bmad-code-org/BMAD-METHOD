@@ -1061,7 +1061,7 @@ class FoldSpecsTests(unittest.TestCase):
 
         story = read_fields(self.store / "backlog" / "story-caddie.md")
         self.assertEqual((story["id"], story["title"]), ("5", title))
-        self.assertEqual(read_fields(self.store / "backlog" / ".memlog.md")["topic"], title)
+        self.assertEqual(read_fields(self.store / "backlog" / "story-caddie.memlog.md")["topic"], title)
 
     def test_a_ticket_whose_frontmatter_is_not_yaml_is_reported_and_nothing_changes(self):
         epic = self.write_epic_with_spec()
