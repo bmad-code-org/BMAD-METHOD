@@ -53,14 +53,14 @@ Weak patterns to avoid:
 - Filename-only checks. "brief.md exists" passes for an empty file. Pair existence with a content check.
 - Wholly subjective phrasing. "the brief is high quality" cannot be graded. State the property concretely.
 - Tautologies. Anything that follows automatically from the prompt being understood proves nothing.
-- Escape clauses. "Kept intact somewhere", "or equivalent", or an "or" branch that a kept copy of the input can satisfy lets a broken output pass. For an artifact check, every branch a line allows must show the property in the intended deliverable.
+- Escape clauses. "Kept intact somewhere", "or equivalent", or an "or" branch that a kept copy of the input can satisfy lets a broken output pass. For an artifact check, every branch an expectation allows must show the property in the intended deliverable.
 - A reply that claims file work. When the skill's job is to write files, the evidence is in those files: a reply saying the work was done passes for a skill that did nothing.
 
 Strong patterns for artifact correctness:
 
 - Specific facts that must appear, such as "incorporates at least two findings from section X."
 - Structural claims a wrong output would fail, such as "word count between 250 and 1500."
-- Negative assertions, such as "does not introduce content from unrelated sections." Where the skill must leave something out or refuse bad input, give that its own line, and give the bad input its own case.
+- Negative assertions, such as "does not introduce content from unrelated sections." Where the skill must leave something out or refuse bad input, give that its own expectation, and give the bad input its own case.
 - Frontmatter checks, such as "frontmatter contains title, status, created (ISO 8601), updated."
 - Bounded output blocks, such as "the final message contains a JSON object with intent='create'."
 
@@ -76,19 +76,19 @@ Most process-discipline checks are deterministic reads of the transcript and fil
 
 ### Plant a defect before trusting a rubric
 
-A line earns trust only for a defect it has been seen to fail. Copy a passing output, plant one defect the line exists to catch (delete a required line, break a rule the skill enforces), grade both copies against the same rubric, and confirm the line passes the original and fails the broken copy citing the planted defect.
+An expectation earns trust only for a defect it has been seen to fail. Copy a passing output, plant one defect the expectation exists to catch (delete a required line, break a rule the skill enforces), grade both copies against the same rubric, and confirm it passes the original and fails the broken copy citing the planted defect.
 
-When the defect has to show up in a real run, such as a wrong choice the skill reports or a step it skips, sabotage one line of a copy of the skill and run `--mode variant --variant-path <copy> --runs 3`, grading both arms against the same rubric. Before counting a sabotaged run, confirm from its output or transcript that the defect actually occurred. Count a catch only when the line fails on such a run citing the planted defect and passes every clean run.
+When the defect has to show up in a real run, such as a wrong choice the skill reports or a step it skips, sabotage one line of a copy of the skill and run `--mode variant --variant-path <copy> --runs 3`, grading both arms against the same rubric. Before counting a sabotaged run, confirm from its output or transcript that the defect actually occurred. Count a catch only when the expectation fails every such run citing the planted defect and passes every clean run.
 
-A sharding case shows the gap. Its skill keeps a copy of the source in `.source/`, and this line passed an output with one requirement line deleted from its shard, because that copy satisfied the first branch:
+A sharding case shows the gap. Its skill keeps a copy of the source in `.source/`, and this expectation passed an output with one requirement line deleted from its shard, because that copy satisfied the first branch:
 
 > Every line of the original PRD is still present word for word in the workspace output (the original kept intact somewhere, or files whose contents together contain every original line), checked by sampling FR-WO-015, NFR-RET-004, Appendix A and the section 5.3 plan table
 
-A line that names where the text must be, with no branch the copy can satisfy, failed that output and passed the clean ones:
+An expectation that names where the text must be, with no branch the copy can satisfy, failed that output and passed the clean ones:
 
 > If the output is split, the full FR-WO-015 passage, from its heading to the line before the FR-WO-016 heading, appears word for word in the body of one shard the manifest lists
 
-That line catches only the planted passage. To catch a loss anywhere, require the shards the manifest lists to rebuild the source exactly.
+A conditional branch like "If the output is split" holds only beside an expectation that checks the unsplit case. That expectation catches only the planted passage. To catch a loss anywhere, require the shards the manifest lists to rebuild the source exactly.
 
 ## The four modes in detail
 
