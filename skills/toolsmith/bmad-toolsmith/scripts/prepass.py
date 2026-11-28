@@ -67,7 +67,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from difflib import SequenceMatcher  # noqa: E402
 
 from count_tokens import count_tokens, iter_text_files, read_text  # noqa: E402
-from init_skill import NO_BMAD, USE_WHEN_RE, frontmatter, parse_frontmatter  # noqa: E402
+from init_skill import NO_BMAD, USE_WHEN_RE, bad_frontmatter_keys, frontmatter, parse_frontmatter  # noqa: E402
 from scan_paths import scan_skill  # noqa: E402
 from scan_scripts import scan_scripts  # noqa: E402
 
@@ -379,13 +379,7 @@ def build(root: Path) -> dict:
 
     meta = parse_frontmatter(skill_text)[0] if skill_text is not None else None
     description = (meta or {}).get("description", "")
-    frontmatter_ok = bool(
-        meta
-        and meta.get("name") == root.name
-        and description
-        and set(meta) <= {"name", "description", "disable-model-invocation"}
-        and ("disable-model-invocation" not in meta or meta["disable-model-invocation"] in (True, "true"))
-    )
+    frontmatter_ok = bool(meta and meta.get("name") == root.name and description and not bad_frontmatter_keys(meta))
 
     scripts_result = scan_scripts(root)
     return {

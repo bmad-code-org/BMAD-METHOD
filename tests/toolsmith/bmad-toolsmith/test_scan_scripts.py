@@ -121,6 +121,21 @@ class ScanScriptsTest(unittest.TestCase):
             (missing,) = [f for f in data["findings"] if f["rule"] == "test-missing"]
             self.assertEqual(missing["fix"], "add tests/core-tools/bmad-demo/test_bare.py (unittest)")
 
+    def test_hyphenated_script_expects_underscored_test_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill_ok = make_skill(Path(tmp) / "ok", {"validate-prompt.py": GOOD}, ("test_validate_prompt.py",))
+            code_ok, data_ok = scan(skill_ok)
+            self.assertEqual(code_ok, 0, data_ok)
+            self.assertEqual(data_ok["findings"], [])
+
+            skill_bad = make_skill(Path(tmp) / "bad", {"validate-prompt.py": GOOD}, ("test_validate-prompt.py",))
+            code_bad, data_bad = scan(skill_bad)
+            self.assertEqual(code_bad, 1)
+            self.assertEqual(
+                [(f["rule"], f["fix"]) for f in data_bad["findings"]],
+                [("test-missing", "add scripts/tests/test_validate_prompt.py (unittest)")],
+            )
+
     def test_copy_with_crlf_line_endings_is_still_a_copy(self):
         with tempfile.TemporaryDirectory() as tmp:
             skill = make_skill(Path(tmp), {})

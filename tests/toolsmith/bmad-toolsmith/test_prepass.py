@@ -363,6 +363,14 @@ class PrepassTest(unittest.TestCase):
                 },
             )
             self.assertFalse(prepass(bad_skill)["frontmatter_ok"])
+            int_skill = make_skill(
+                Path(tmp),
+                name="bmad-manual-one",
+                files={
+                    "SKILL.md": "---\nname: bmad-manual-one\ndescription: 'Manual skill. Use when asked.'\ndisable-model-invocation: 1\n---\n\nBody\n"
+                },
+            )
+            self.assertFalse(prepass(int_skill)["frontmatter_ok"])
 
 
 if __name__ == "__main__":

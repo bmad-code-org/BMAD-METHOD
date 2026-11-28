@@ -17,6 +17,8 @@ by `_bmad/scripts/roster.py`) with the user's custom `party_members` and
   * --party <id> — full member detail for one chosen group, on demand
     (e.g. when the user switches rooms). Unknown id returns the available
     names instead of an error wall.
+  * --check-codes CODE [CODE ...] — check proposed custom member codes against
+    every resolvable code, alias, and name in the full collective.
 
 The merge is deterministic (a keyed union; a custom member whose code
 matches an installed agent overrides it), so the orchestrator consumes a
@@ -30,6 +32,7 @@ missing customization resolver falls back to reading customize.toml directly.
   resolve_party.py --project-root P --skill S
   resolve_party.py --project-root P --skill S --list-groups
   resolve_party.py --project-root P --skill S --party writers-room   (alias: --group)
+  resolve_party.py --project-root P --skill S --check-codes analyst sec-hawk
 """
 
 import argparse
@@ -311,12 +314,42 @@ def group_detail(g, collective, index):
     return detail
 
 
+def check_codes(requested_codes, collective, index):
+    """Split proposed custom codes into those that would override a member and those that are clear.
+
+    Resolves each code exactly as build_collective resolves a custom member's code.
+    """
+    collisions, clear = [], []
+    for raw in requested_codes:
+        canonical = index.get(raw) or index.get(raw.lower())
+        if canonical in collective:
+            entry = collective[canonical]
+            collisions.append(
+                {
+                    "requested": raw,
+                    "matches": canonical,
+                    "name": entry["name"],
+                    "title": entry.get("title", ""),
+                    "source": entry["source"],
+                }
+            )
+        else:
+            clear.append(raw)
+    return {"collisions": collisions, "clear": clear}
+
+
 def build_parser():
     ap = argparse.ArgumentParser(description="Resolve the party-mode roster, lazily.")
     ap.add_argument("--project-root", required=True)
     ap.add_argument("--skill", required=True, help="Path to the bmad-party-mode skill dir")
     ap.add_argument("--party", "--group", dest="party", help="Resolve full detail for this group id")
     ap.add_argument("--list-groups", action="store_true", help="Group names only")
+    ap.add_argument(
+        "--check-codes",
+        nargs="+",
+        metavar="CODE",
+        help="Check proposed member codes for collisions against the full collective",
+    )
     return ap
 
 
@@ -346,6 +379,10 @@ def main():
         return
 
     collective, index, installed_codes = build_collective(agents, workflow.get("party_members", []), guests)
+
+    if args.check_codes:
+        _emit(check_codes(args.check_codes, collective, index))
+        return
 
     if args.party:
         g = find_group(groups, args.party)

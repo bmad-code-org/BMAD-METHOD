@@ -686,6 +686,24 @@ class TestCliAndOutput(ProjectCase):
         code, out, _ = self.run_validator(skill_dir=outside, strict=True)
         self.assertEqual(code, 0, out)
 
+    def test_disable_model_invocation_true_is_exempt_from_trigger_phrase(self):
+        manual = Path(self._tmp.name) / "bmad-manual"
+        write(
+            manual / "SKILL.md", skill_md("bmad-manual", "Manual command.", extra_fm="disable-model-invocation: true\n")
+        )
+        self.assertEqual(findings_by_rule(vs.validate_skill(str(manual)), "SKILL-06"), [])
+
+        non_manual = Path(self._tmp.name) / "bmad-non-manual"
+        write(
+            non_manual / "SKILL.md",
+            skill_md("bmad-non-manual", "Normal command.", extra_fm="disable-model-invocation: false\n"),
+        )
+        self.assertEqual(len(findings_by_rule(vs.validate_skill(str(non_manual)), "SKILL-06")), 1)
+
+        int_one = Path(self._tmp.name) / "bmad-int-one"
+        write(int_one / "SKILL.md", skill_md("bmad-int-one", "Int command.", extra_fm="disable-model-invocation: 1\n"))
+        self.assertEqual(len(findings_by_rule(vs.validate_skill(str(int_one)), "SKILL-06")), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

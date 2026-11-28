@@ -246,6 +246,82 @@ class TestArguments(unittest.TestCase):
             args = rp.build_parser().parse_args(["--project-root", "p", "--skill", "s", flag, "writers-room"])
             self.assertEqual(args.party, "writers-room")
 
+    def test_check_codes_parses_multiple_codes(self):
+        args = rp.build_parser().parse_args(["--project-root", "p", "--skill", "s", "--check-codes", "analyst", "foo"])
+        self.assertEqual(args.check_codes, ["analyst", "foo"])
+
+
+class TestCheckCodes(unittest.TestCase):
+    def test_detects_alias_name_guest_custom_and_ignores_ambiguous_alias(self):
+        agents = {
+            **AGENTS,
+            "bmad-agent-dev": {"name": "Amelia", "icon": "💻", "title": "Dev", "module": "bmm"},
+            "foo-agent-dev": {"name": "Devon", "icon": "💻", "title": "Other Dev", "module": "foo"},
+        }
+        guests = {"pip": {"name": "Pip", "title": "Helper", "module": "bmm"}}
+        custom = [{"code": "sec-hawk", "name": "Vex", "title": "Security"}]
+        collective, index, _ = rp.build_collective(agents, custom, guests)
+
+        result = rp.check_codes(["analyst", "MARY", "sec-hawk", "vex", "pip", "dev", "morpheus"], collective, index)
+        self.assertEqual(
+            result["collisions"],
+            [
+                {
+                    "requested": "analyst",
+                    "matches": "bmad-agent-analyst",
+                    "name": "Mary",
+                    "title": "Analyst",
+                    "source": "installed",
+                },
+                {
+                    "requested": "MARY",
+                    "matches": "bmad-agent-analyst",
+                    "name": "Mary",
+                    "title": "Analyst",
+                    "source": "installed",
+                },
+                {
+                    "requested": "sec-hawk",
+                    "matches": "sec-hawk",
+                    "name": "Vex",
+                    "title": "Security",
+                    "source": "custom",
+                },
+                {
+                    "requested": "vex",
+                    "matches": "sec-hawk",
+                    "name": "Vex",
+                    "title": "Security",
+                    "source": "custom",
+                },
+                {
+                    "requested": "pip",
+                    "matches": "pip",
+                    "name": "Pip",
+                    "title": "Helper",
+                    "source": "roster",
+                },
+            ],
+        )
+        # Ambiguous shared alias `dev` resolves to neither agent in build_collective, so clear matches it.
+        self.assertEqual(result["clear"], ["dev", "morpheus"])
+
+    def test_verdict_matches_what_adding_the_member_does(self):
+        guests = {"pip": {"name": "Pip"}}
+        custom = [{"code": "sec-hawk", "name": "Vex"}]
+        collective, index, _ = rp.build_collective(AGENTS, custom, guests)
+        result = rp.check_codes(["Analyst", "john", "pip", "vex", "morpheus"], collective, index)
+        verdicts = {c["requested"]: c["matches"] for c in result["collisions"]}
+        verdicts.update({code: None for code in result["clear"]})
+        for code, matches in verdicts.items():
+            with self.subTest(code=code):
+                after, _, _ = rp.build_collective(AGENTS, [*custom, {"code": code, "name": "New"}], guests)
+                if matches is None:
+                    self.assertEqual(set(after) - set(collective), {code})
+                else:
+                    self.assertEqual(set(after), set(collective))
+                    self.assertEqual(after[matches]["name"], "New")
+
 
 class TestMalformedMembers(unittest.TestCase):
     """A member whose code or name is not a string is left out with a warning; the rest load."""

@@ -23,9 +23,10 @@ Create:
 Check:
   init_skill.py --check <skill-folder> [--any-name]
 
-  Verifies SKILL.md exists, the frontmatter has only `name` and `description`, the name matches the folder
-  and the bmad regex (bmod- for a module record; any kebab name with --any-name), the description is at
-  most 1024 characters and contains "Use when" or "Use if" (a record carries the fixed text instead), the
+  Verifies SKILL.md exists, the frontmatter has only `name`, `description`, and optional
+  `disable-model-invocation: true`, the name matches the folder and the bmad regex (bmod- for a module record;
+  any kebab name with --any-name), the description is at most 1024 characters and contains "Use when" or
+  "Use if" unless `disable-model-invocation: true` is set (a record carries the fixed text instead), the
   body is not empty, no `[TODO:` is left in any text file, bmod.toml, when present, parses and carries
   [skill] or [bmod], and customize.toml, when present, parses. A `[TODO:` inside a Markdown code span or
   fence, or in a Python string rather than a comment, is text about the marker and does not count.
@@ -73,6 +74,19 @@ def shared_frontmatter():
 
 frontmatter = shared_frontmatter()
 NO_BMAD = "error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad"
+ALLOWED_FRONTMATTER_KEYS = {"name", "description", "disable-model-invocation"}
+
+
+def is_model_invocation_disabled(meta: dict) -> bool:
+    value = meta.get("disable-model-invocation")
+    return value is True or value == "true"
+
+
+def bad_frontmatter_keys(meta: dict) -> list[str]:
+    bad = set(meta) - ALLOWED_FRONTMATTER_KEYS
+    if "disable-model-invocation" in meta and not is_model_invocation_disabled(meta):
+        bad.add("disable-model-invocation")
+    return sorted(bad)
 
 
 SHAPES = (
@@ -303,10 +317,16 @@ def check(skill_dir: Path, any_name: bool) -> dict:
                 finding("SKILL.md", 1, "frontmatter-missing", content[:80], "open with --- name/description ---")
             )
         else:
-            extra = sorted(set(meta) - {"name", "description"})
+            extra = bad_frontmatter_keys(meta)
             if extra:
                 findings.append(
-                    finding("SKILL.md", 1, "frontmatter-keys", ", ".join(extra), "keep only name and description")
+                    finding(
+                        "SKILL.md",
+                        1,
+                        "frontmatter-keys",
+                        ", ".join(extra),
+                        "keep only name, description, and optional disable-model-invocation: true",
+                    )
                 )
             name = meta.get("name", "")
             if not name:
@@ -340,7 +360,7 @@ def check(skill_dir: Path, any_name: bool) -> dict:
                                 f"a record's description is {RECORD_DESCRIPTION!r}",
                             )
                         )
-                elif not USE_WHEN_RE.search(desc):
+                elif not is_model_invocation_disabled(meta) and not USE_WHEN_RE.search(desc):
                     findings.append(finding("SKILL.md", 3, "description-trigger", desc, 'add a "Use when ..." clause'))
             if not body.strip():
                 findings.append(finding("SKILL.md", 1, "body-empty", "", "write the skill body after the frontmatter"))

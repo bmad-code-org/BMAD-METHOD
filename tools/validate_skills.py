@@ -488,6 +488,8 @@ def validate_skill(skill_dir: str) -> list[dict]:
     description = (skill_fm or {}).get("description")
     description = description if isinstance(description, str) else None
 
+    dmi = (skill_fm or {}).get("disable-model-invocation")
+    is_manual = dmi is True or dmi == "true"
     is_deprecated = bool(description and DEPRECATED_RE.search(description))
     is_record = is_module_record(skill_dir)
     name_regex = RECORD_NAME_REGEX if is_record else NAME_REGEX
@@ -542,7 +544,12 @@ def validate_skill(skill_dir: str) -> list[dict]:
                         "Replace the description with the fixed text.",
                     )
                 )
-        elif not is_deprecated and not USE_WHEN_RE.search(description) and not USE_IF_RE.search(description):
+        elif (
+            not is_deprecated
+            and not is_manual
+            and not USE_WHEN_RE.search(description)
+            and not USE_IF_RE.search(description)
+        ):
             findings.append(
                 _finding(
                     "SKILL-06",

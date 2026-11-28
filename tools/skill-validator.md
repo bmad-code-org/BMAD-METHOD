@@ -148,6 +148,7 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Detection:** Check length. Look for trigger phrases like "Use when" or "Use if" — their absence suggests the description only says _what_ but not _when_.
 - **Fix:** Append a "Use when..." clause to the description.
 - **Module record:** A module record (see SKILL-04) needs no trigger phrase. Its `description` must be exactly `Required bmod metadata. Never invoke this skill.`, so a request for BMad or for the module matches the `bmad` skill and not the record.
+- **Name-only skill:** A skill with `disable-model-invocation: true` is only ever called by name and needs no trigger phrase.
 
 ### SKILL-07 — SKILL.md Must Have Body Content
 
