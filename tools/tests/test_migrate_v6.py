@@ -1181,4 +1181,44 @@ class FoldSpecsTests(unittest.TestCase):
         report = self.fold()
         self.assertEqual(report["folded"], [])
         self.assertEqual(len(report["problems"]), 2)
+        by_spec = {p["spec"]: p["problem"] for p in report["problems"]}
+        self.assertIn("has unparsed capabilities", by_spec["_bmad-output/demo/spec-a"])
+        self.assertIn("did not parse as CAP-<n>", by_spec["_bmad-output/demo/spec-b"])
         self.assertEqual(snapshot(self.project), before)
+
+    def test_duplicate_or_non_dash_capabilities_refuse_and_comments_are_ignored(self):
+        for body, expected in (
+            ("# Dup\n\n## Capabilities\n\n- **CAP-1** First.\n- **CAP-01** Second.\n", "defines CAP-1 more than once"),
+            ("# Star\n\n## Capabilities\n\n- **CAP-1** First.\n* **CAP-2** Second.\n", "**CAP-2** Second."),
+            ("# Num\n\n## Capabilities\n\n- **CAP-1** First.\n1. **CAP-2** Second.\n", "1. **CAP-2** Second."),
+        ):
+            with self.subTest(expected=expected):
+                with tempfile.TemporaryDirectory() as tmp:
+                    project = Path(tmp)
+                    store = project / "_bmad-output"
+                    demo = store / "demo"
+                    write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+                    write(demo / "spec-x" / "spec-x.md", spec_frontmatter(companions="[]", sources="[]") + body)
+                    before = snapshot(project)
+
+                    report = migrate_v6.fold_specs(project, store)
+                    self.assertEqual(report["folded"], [])
+                    (problem,) = report["problems"]
+                    self.assertIn(expected, problem["problem"])
+                    self.assertEqual(snapshot(project), before)
+
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(
+            demo / "spec-comments" / "spec-comments.md",
+            spec_frontmatter(companions="[]", sources="[]")
+            + "# Comments\n\n## Capabilities\n\n"
+            + "<!-- single line comment -->\n"
+            + "- **CAP-1** Kept capability.\n"
+            + "<!-- multi-line\n     comment -->\n",
+        )
+        ok = self.fold()
+        self.assertEqual(ok["problems"], [])
+        demo_text = (demo / "demo.md").read_text(encoding="utf-8")
+        self.assertIn("- R1 (CAP-1): Kept capability.", demo_text)
+        self.assertNotIn("comment", demo_text)

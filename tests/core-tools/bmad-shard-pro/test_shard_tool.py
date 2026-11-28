@@ -1048,3 +1048,54 @@ def test_map_preserves_user_authored_map_prefixed_page_linked_under_map(built):
     code, out = run("map", str(built))
     assert code == 2 and "map-notes.md" in out["error"]
     assert notes.read_text(encoding="utf-8") == notes_text
+
+
+def test_lookup_ignores_non_shard_markdown_with_thematic_break(built):
+    lookup_before = (built / "identifier-lookup.md").read_text(encoding="utf-8")
+    (built / "notes.md").write_text("---\n\nSome non-shard note.\n", encoding="utf-8")
+
+    code, _ = run("lookup", str(built))
+    assert code == 0
+    assert (built / "identifier-lookup.md").read_text(encoding="utf-8") == lookup_before
+
+
+def test_map_handles_bracketed_title_and_slightly_edited_sub_map(tmp_path):
+    src = tmp_path / "big.md"
+    lines = ["# API [v2]", ""]
+    g0, g1 = [], []
+    pos = 3
+    for i in range(220):
+        lines += [f"## S{i}", f"Text {i}", f"More {i}"]
+        entry = {
+            "file": f"s-{i:03d}.md",
+            "title": f"Section {i}",
+            "summary": f"Sum {i}",
+            "start": 1 if i == 0 else pos,
+            "end": pos + 2,
+        }
+        (g0 if i < 110 else g1).append(entry)
+        pos += 3
+    src.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    folder = tmp_path / "doc-api"
+    plan = {
+        "source": str(src),
+        "folder": str(folder),
+        "title": "API [v2]",
+        "groups": [
+            {"heading": "Alpha", "shards": g0},
+            {"heading": "Empty", "shards": []},
+            {"heading": "Beta", "shards": g1},
+        ],
+    }
+    (tmp_path / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
+    code, out = run("build", str(tmp_path / "plan.json"))
+    assert code == 0, out
+    assert (folder / "map-empty.md").is_file()
+
+    sub = folder / "map-alpha.md"
+    sub.write_text(sub.read_text(encoding="utf-8") + "\nEditorial note.\n", encoding="utf-8")
+
+    code, out = run("map", str(folder))
+    assert code == 0 and out["dropped"] == []
+    assert not (folder / "map-empty.md").exists()
+    assert run("check", str(folder))[0] == 0

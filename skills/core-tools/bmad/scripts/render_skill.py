@@ -868,7 +868,7 @@ def main() -> int:
             if args.require_version > RENDERER_VERSION:
                 raise RenderError(
                     f"this skill requires render_skill.py version {args.require_version}, "
-                    f"but this project has version {RENDERER_VERSION}; run bmad setup in this project"
+                    f"but this project has version {RENDERER_VERSION}; update the bmad skill, then run bmad setup in this project"
                 )
         project_root = _resolve_project_root(args.project_root)
         roots = tuple(args.root)

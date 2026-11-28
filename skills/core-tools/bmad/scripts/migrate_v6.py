@@ -405,6 +405,7 @@ R_LINE = re.compile(r"^\s*-\s+R(\d+)\b", re.MULTILINE)
 R_SOURCE = re.compile(r"^- R\d+ \((.*?)\)", re.MULTILINE)
 CAPABILITY = re.compile(r"\A-\s+\*\*(CAP-(\d+))\*\*\s*(.*)\Z")
 CAPABILITY_FIELD = re.compile(r"\A\s+-\s+\*\*(intent|success):\*\*\s*(.*)\Z")
+LIST_ITEM = re.compile(r"\A\s*(?:[-*+]|\d+[.)])\s+")
 HEADING = re.compile(r"(?m)^## (.+?)\s*$")
 SECTION_ORDER = (
     "Description",
@@ -462,8 +463,15 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     slug = SPEC_FOLDER.match(folder.name)["slug"]
     spec_path = folder / f"{folder.name}.md"
     spec = parse_spec(yaml_checked(read_for_fold(spec_path, project_root), spec_path, project_root))
+    if spec["duplicate_capabilities"] is not None:
+        raise FoldProblem(
+            f"{relative(spec_path, project_root)} defines CAP-{spec['duplicate_capabilities']} more than once"
+        )
     if spec["unparsed_capabilities"]:
-        raise FoldProblem(f"{relative(spec_path, project_root)} has Capabilities entries that did not parse as CAP-<n>")
+        raise FoldProblem(
+            f"{relative(spec_path, project_root)} has Capabilities entries that did not parse as CAP-<n>: "
+            f"{spec['unparsed_capabilities']!r}"
+        )
     loose = folder.parent == store
     if loose:
         home = store / "backlog"
@@ -542,8 +550,16 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
             theirs_path = sibling / f"{sibling.name}.md"
             theirs_text = yaml_checked(read_for_fold(theirs_path, project_root), theirs_path, project_root)
             theirs_spec = parse_spec(theirs_text)
+            if theirs_spec["duplicate_capabilities"] is not None:
+                raise FoldProblem(
+                    f"{sibling.name} defines CAP-{theirs_spec['duplicate_capabilities']} more than once; "
+                    f"fix it before folding {folder.name}"
+                )
             if theirs_spec["unparsed_capabilities"]:
-                raise FoldProblem(f"{sibling.name} has unparsed capabilities; fix it before folding {folder.name}")
+                raise FoldProblem(
+                    f"{sibling.name} has unparsed capabilities ({theirs_spec['unparsed_capabilities']!r}); "
+                    f"fix it before folding {folder.name}"
+                )
             theirs = theirs_spec["capabilities"]
             shared = ids.keys() & {f"CAP-{n}" for n in theirs}
             for path in cap_scope(home, []) if shared else []:
@@ -745,23 +761,26 @@ def parse_spec(text: str) -> dict[str, object]:
     key = "rest"
     blocks: list[tuple[int, dict[str, str]]] = []
     cap_section = sections.get("capabilities", "")
-    unparsed_capabilities = False
-    for line in cap_section.splitlines():
+    cap_clean = re.sub(r"<!--.*?-->", "", cap_section, flags=re.DOTALL)
+    seen_caps: set[int] = set()
+    duplicate_cap: int | None = None
+    unparsed_line = ""
+    for line in cap_clean.splitlines():
         if match := CAPABILITY.match(line):
+            number = int(match.group(2))
+            if number in seen_caps and duplicate_cap is None:
+                duplicate_cap = number
+            seen_caps.add(number)
             current, key = {"rest": match.group(3).strip()}, "rest"
-            blocks.append((int(match.group(2)), current))
+            blocks.append((number, current))
         elif current is not None and (field := CAPABILITY_FIELD.match(line)):
             key = field.group(1)
             current[key] = field.group(2).strip()
         elif line.strip():
-            if line.strip().startswith("<!--"):
-                continue
-            if current is None or line.startswith("- "):
-                unparsed_capabilities = True
+            if current is None or LIST_ITEM.match(line) or "**CAP-" in line:
+                if not unparsed_line:
+                    unparsed_line = line.strip()
             else:
-                # A wrapped line continues the field above it; another bullet does not.
-                if line.lstrip().startswith("- "):
-                    key = "rest"
                 current[key] = f"{current.get(key, '')} {line.strip()}".strip()
     for number, block in blocks:
         intent, success = block.get("intent", ""), block.get("success", "")
@@ -775,7 +794,8 @@ def parse_spec(text: str) -> dict[str, object]:
         "companions": frontmatter_list(meta, "companions"),
         "sources": frontmatter_list(meta, "sources"),
         "capabilities": capabilities,
-        "unparsed_capabilities": unparsed_capabilities,
+        "unparsed_capabilities": unparsed_line,
+        "duplicate_capabilities": duplicate_cap,
         "constraints": bullets(sections.get("constraints", "")),
         "non_goals": bullets(sections.get("non-goals", "")),
         "assumptions": bullets(sections.get("assumptions", "")),
