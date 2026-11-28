@@ -365,7 +365,7 @@ def shards_in(folder: Path, main: Path) -> tuple[list[dict], list[dict]]:
     for p in sorted(folder.glob("*.md")):
         if p.name == main.name:
             continue
-        raw_text = p.read_text(encoding="utf-8")
+        raw_text = p.read_text(encoding="utf-8-sig")
         if not re.match(r"\A---[ \t]*(?:\r?\n|\Z)", raw_text):
             continue
         try:

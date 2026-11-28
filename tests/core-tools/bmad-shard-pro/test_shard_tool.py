@@ -1099,3 +1099,13 @@ def test_map_handles_bracketed_title_and_slightly_edited_sub_map(tmp_path):
     assert code == 0 and out["dropped"] == []
     assert not (folder / "map-empty.md").exists()
     assert run("check", str(folder))[0] == 0
+
+
+def test_shards_with_utf8_bom_stay_in_map_and_lookup(built):
+    part2 = built / "part-2.md"
+    part2.write_bytes(b"\xef\xbb\xbf" + part2.read_bytes())
+
+    code, out = run("map", str(built))
+    assert code == 0 and out["dropped"] == []
+    assert run("lookup", str(built))[0] == 0
+    assert "part-2.md" in (built / "identifier-lookup.md").read_text(encoding="utf-8")
