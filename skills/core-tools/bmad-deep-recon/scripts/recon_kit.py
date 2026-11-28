@@ -14,7 +14,8 @@ print one JSON object to stdout; diagnostics go to stderr. Exit codes:
 Subcommands:
   citations RESEARCH_MD
       Cross-check inline [n] markers against the source-appendix table:
-      dangling markers (no appendix row) and orphaned rows (never cited).
+      dangling markers (no appendix row), orphaned rows (never cited) and
+      duplicate rows (two rows with one id). A [n] inside code never counts.
   ledger FOLDER [--field KEY=VALUE ...]
       The run's ledger, FOLDER/claims.md: where it is, whether it exists,
       its frontmatter fields and entry count. With --field and no ledger
@@ -41,6 +42,7 @@ Subcommands:
   escape-sources RESEARCH_MD
       Emit the source-appendix table as HTML with every cell escaped and
       only validated http(s) URLs turned into links, for the briefing.
+      Every row is kept; a repeated id is listed in duplicate_rows.
   anchors RESEARCH_MD --repo PATH [--at REV]
       Re-find each `path:line (symbol) @ sha` and `sha "subject" #pr`
       citation in git. A code claim is anchored, moved, incomplete,
@@ -76,6 +78,10 @@ MD_LINK_RE = re.compile(r"\[([^\]]*)\]\(((?:[^\s()]|\([^\s()]*\))+)\)")
 BARE_URL_RE = re.compile(r"https?://(?:[^\s()|\]]|\([^\s()]*\))+")
 ROW_ID_RE = re.compile(r"\[(\d+)\]")  # appendix row id: [n], never a bare number
 FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")  # any indent: fences nest in list items
+BACKTICKS_RE = re.compile(r"`+")
+# A line that opens a new block, so an inline code span never continues across it.
+BLOCK_START_RE = re.compile(r"\s*(?:#{1,6}(?:\s|$)|>|\||(?:[-*+]|\d{1,9}[.)])(?:\s|$))")
+SINGLE_LINE_BLOCK_RE = re.compile(r"\s*(?:#{1,6}(?:\s|$)|\|)")  # a heading or a table row
 
 
 def out(payload: dict, exit_code: int) -> int:
@@ -112,13 +118,65 @@ def strip_fences(text: str) -> str:
     return "\n".join(lines)
 
 
+def strip_code_spans(text: str) -> str:
+    """Blank out inline code spans, so `argv[2]` never counts as a marker.
+
+    As in CommonMark, a span opens on a backtick run and closes on the next
+    run of the same length; a run with no closer is literal text. A backslash
+    escapes the first backtick of an opening run, but inside a span it is
+    literal, so it never stops a run from closing one. TEXT is one paragraph:
+    a span may wrap onto its next line.
+    """
+    runs = [(m.start(), m.end()) for m in BACKTICKS_RE.finditer(text)]
+    parts, start, i = [], 0, 0
+    while i < len(runs):
+        opens, end = runs[i]
+        backslashes = opens - len(text[:opens].rstrip("\\"))
+        if backslashes % 2:
+            opens += 1  # an escaped backtick is literal; the rest of the run may still open a span
+        size = end - opens
+        closer = next((j for j in range(i + 1, len(runs)) if runs[j][1] - runs[j][0] == size), None)
+        if not size or closer is None:
+            i += 1
+            continue
+        parts.append(text[start:opens])
+        parts.append(" ")
+        start = runs[closer][1]
+        i = closer + 1
+    parts.append(text[start:])
+    return "".join(parts)
+
+
+def paragraphs(lines: list[str]) -> list[str]:
+    """Group lines into the blocks an inline code span can wrap within."""
+    blocks: list[str] = []
+    group: list[str] = []
+
+    def flush() -> None:
+        if group:
+            blocks.append("\n".join(group))
+            group.clear()
+
+    for ln in lines:
+        if not ln.strip():
+            flush()
+            continue
+        if BLOCK_START_RE.match(ln):
+            flush()
+        group.append(ln)
+        if SINGLE_LINE_BLOCK_RE.match(ln):
+            flush()
+    flush()
+    return blocks
+
+
 def table_cells(line: str) -> list[str]:
     return [c.strip() for c in line.strip().strip("|").split("|")]
 
 
-def appendix_rows(text: str) -> dict[int, list[str]]:
-    """Source-appendix rows: markdown table rows whose first cell is [n]."""
-    rows: dict[int, list[str]] = {}
+def appendix_rows(text: str) -> list[tuple[int, list[str]]]:
+    """Source-appendix rows in document order: markdown table rows whose first cell is [n]."""
+    rows: list[tuple[int, list[str]]] = []
     for ln in text.splitlines():
         stripped = ln.strip()
         if not stripped.startswith("|"):
@@ -128,8 +186,12 @@ def appendix_rows(text: str) -> dict[int, list[str]]:
             continue
         m = ROW_ID_RE.fullmatch(cells[0])
         if m:
-            rows[int(m.group(1))] = cells
+            rows.append((int(m.group(1)), cells))
     return rows
+
+
+def duplicate_ids(rows: list[tuple[int, list[str]]]) -> list[int]:
+    return sorted(n for n, count in Counter(n for n, _ in rows).items() if count > 1)
 
 
 # --- citations ---------------------------------------------------------------
@@ -138,23 +200,29 @@ def appendix_rows(text: str) -> dict[int, list[str]]:
 def cmd_citations(args) -> int:
     text = strip_fences(read_text(args.file))
     rows = appendix_rows(text)
+    ids = {n for n, _ in rows}
+    duplicates = duplicate_ids(rows)
     markers: set[int] = set()
+    lines = []
     for ln in text.splitlines():
         stripped = ln.strip()
         if stripped.startswith("|"):
             cells = table_cells(stripped)
             if cells and ROW_ID_RE.fullmatch(cells[0]):
-                continue  # an appendix row is not a citation of itself
-        markers.update(int(n) for n in MARKER_RE.findall(ln))
-    dangling = sorted(markers - set(rows))
-    orphaned = sorted(set(rows) - markers)
-    ok = not dangling and not orphaned
+                ln = ""  # an appendix row is not a citation of itself
+        lines.append(ln)
+    for block in paragraphs(lines):
+        markers.update(int(n) for n in MARKER_RE.findall(strip_code_spans(block)))
+    dangling = sorted(markers - ids)
+    orphaned = sorted(ids - markers)
+    ok = not dangling and not orphaned and not duplicates
     return out(
         {
             "markers": sorted(markers),
-            "appendix_rows": sorted(rows),
+            "appendix_rows": sorted(ids),
             "dangling_markers": dangling,
             "orphaned_rows": orphaned,
+            "duplicate_rows": duplicates,
             "ok": ok,
         },
         0 if ok else 1,
@@ -482,12 +550,18 @@ def cmd_escape_sources(args) -> int:
         return 2
     invalid: list[str] = []
     body_rows = []
-    for n in sorted(rows):
-        cells = rows[n]
+    anchored: set[int] = set()
+    for n, cells in sorted(rows, key=lambda row: row[0]):
         tds = "".join(f"<td>{cell_html(c, invalid)}</td>" for c in cells[1:])
-        body_rows.append(f'<tr id="src-{n}"><td>[{n}]</td>{tds}</tr>')
+        anchor = "" if n in anchored else f' id="src-{n}"'  # an id must be unique in the page
+        anchored.add(n)
+        body_rows.append(f"<tr{anchor}><td>[{n}]</td>{tds}</tr>")
     table = '<table class="sources"><tbody>' + "".join(body_rows) + "</tbody></table>"
-    return out({"rows": len(rows), "invalid_urls": invalid, "html": table}, 1 if invalid else 0)
+    duplicates = duplicate_ids(rows)
+    return out(
+        {"rows": len(rows), "invalid_urls": invalid, "duplicate_rows": duplicates, "html": table},
+        1 if invalid or duplicates else 0,
+    )
 
 
 # --- anchors -----------------------------------------------------------------

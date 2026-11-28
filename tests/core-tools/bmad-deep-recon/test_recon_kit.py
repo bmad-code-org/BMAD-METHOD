@@ -127,6 +127,71 @@ class CitationsEdgeTest(unittest.TestCase):
         self.assertEqual(result["markers"], [1])
         self.assertTrue(result["ok"])
 
+    def test_a_marker_inside_inline_code_is_not_a_citation(self):
+        text = "Reads `argv[2]` before the check [1].\n\n| # | Source |\n|---|---|\n| [1] | a |\n| [2] | b |\n"
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], [1])
+        self.assertEqual(result["orphaned_rows"], [2])
+        self.assertEqual(code, 1)
+
+    def test_inline_code_hides_no_dangling_marker(self):
+        text = "Uses ``rows[0]`` and `` a`b[3] `` then [1].\n\n| [n] | Supports |\n| --- | --- |\n| [1] | x |\n"
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], [1])
+        self.assertTrue(result["ok"])
+        self.assertEqual(code, 0)
+
+    def test_an_unclosed_backtick_does_not_hide_later_markers(self):
+        text = "A stray ` backtick, then cited [1] and [2].\n\n| [n] | Supports |\n| --- | --- |\n| [1] | x |\n"
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], [1, 2])
+        self.assertEqual(result["dangling_markers"], [2])
+        self.assertEqual(code, 1)
+
+    def test_an_escaped_backtick_does_not_open_inline_code(self):
+        text = "Fact [1]. Literal \\` [2] \\`.\n\n| [n] | Supports |\n| --- | --- |\n| [1] | x |\n"
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], [1, 2])
+        self.assertEqual(result["dangling_markers"], [2])
+        self.assertEqual(code, 1)
+
+    def test_a_backslash_inside_inline_code_still_closes_it(self):
+        text = "Path `C:\\dir\\[2]\\` then [1].\n\n| [n] | Supports |\n| --- | --- |\n| [1] | x |\n"
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], [1])
+        self.assertTrue(result["ok"])
+
+    def test_inline_code_wrapping_onto_the_next_line_is_not_a_citation(self):
+        text = "Uses `rows\n[2]` then cites [1].\n\n| [n] | Supports |\n| --- | --- |\n| [1] | a |\n| [2] | b |\n"
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], [1])
+        self.assertEqual(result["orphaned_rows"], [2])
+        self.assertEqual(code, 1)
+
+    def test_inline_code_never_spans_a_paragraph_or_block_break(self):
+        text = (
+            "A stray ` here [1].\n\nNext paragraph ` and [2].\n"
+            "- item with ` tick [3]\n- next item ` tick [4]\n"
+            "# Heading ` [5]\nBody ` [6]\n\n"
+            "1. step ` [7]\n2) step ` [8]\n\n"
+            "| Claim | Ref |\n| --- | --- |\n| x ` | [9] |\n| y ` | [10] |\n\n"
+            "| [n] | Supports |\n| --- | --- |\n" + "".join(f"| [{n}] | s{n} |\n" for n in range(1, 11))
+        )
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], list(range(1, 11)))
+        self.assertTrue(result["ok"])
+
+    def test_a_repeated_appendix_id_is_reported(self):
+        text = (
+            "Fact [1].\n\n| # | Source |\n|---|---|\n"
+            "| [1] | first https://example.com/a |\n| [1] | second https://example.com/b |\n"
+        )
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["appendix_rows"], [1])
+        self.assertEqual(result["duplicate_rows"], [1])
+        self.assertFalse(result["ok"])
+        self.assertEqual(code, 1)
+
 
 class TallyTest(unittest.TestCase):
     def test_last_status_wins_per_ref(self):
@@ -447,6 +512,20 @@ class EscapeSourcesTest(unittest.TestCase):
         self.assertIn('href="https://en.wikipedia.org/wiki/Go_(programming_language)"', result["html"])
         self.assertEqual(result["invalid_urls"], [])
         self.assertEqual(code, 0)
+
+    def test_a_repeated_id_keeps_both_rows_and_one_anchor(self):
+        text = (
+            "Fact [1].\n\n| # | Source |\n|---|---|\n"
+            "| [1] | first https://example.com/a |\n| [1] | second https://example.com/b |\n"
+        )
+        code, result = run_text(["escape-sources"], text)
+        self.assertEqual(result["rows"], 2)
+        self.assertEqual(result["duplicate_rows"], [1])
+        self.assertIn('href="https://example.com/a"', result["html"])
+        self.assertIn('href="https://example.com/b"', result["html"])
+        self.assertLess(result["html"].index("example.com/a"), result["html"].index("example.com/b"))
+        self.assertEqual(result["html"].count('id="src-1"'), 1)
+        self.assertEqual(code, 1)
 
 
 SESSION_OLD = """class SessionStore:
