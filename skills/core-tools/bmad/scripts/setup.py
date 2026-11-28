@@ -296,9 +296,7 @@ def setup(
         else:
             set_missing_value(merged, path, value, project_root / "_bmad" / "config.toml")
             team_added.append((path, value))
-    # base_text is the file's own text only when the template adds nothing to it.
-    team_text = base_text if base_text == existing_text else None
-    config_text = text_with_answers(team_text, team_added, merged) if team_added else base_text
+    config_text = text_with_answers(base_text, team_added, merged) if team_added else base_text
     user_text = text_with_answers(user_existing_text, user_added, user_merged) if user_added else None
     if user_added:
         reject_unwritable_user_config(project_root)
@@ -408,8 +406,27 @@ def team_config_plan(project_root: Path, config_src: Path) -> tuple[str | None, 
     merged = fill_keep(template, existing)
     if not isinstance(merged, dict):
         raise Exception(f"invalid team config: {project_root / '_bmad' / 'config.toml'}")
-    base_text = existing_text if existing_text is not None and merged == existing else render_toml(merged)
+    if existing_text is None:
+        base_text = render_toml(merged)
+    elif merged == existing:
+        base_text = existing_text
+    else:
+        # The template gained keys: add them to the file's own text, so its comments and layout survive.
+        base_text = text_with_answers(existing_text, missing_scalars(merged, existing), merged)
     return existing_text, merged, base_text
+
+
+def missing_scalars(merged: dict, existing: dict, prefix: tuple[str, ...] = ()) -> list[tuple[tuple[str, ...], object]]:
+    """Each leaf of `merged` that `existing` lacks, as (path, value), in the template's order."""
+    out: list[tuple[tuple[str, ...], object]] = []
+    for key, value in merged.items():
+        path = (*prefix, str(key))
+        if isinstance(value, dict):
+            inner = existing.get(key) if isinstance(existing, dict) else None
+            out.extend(missing_scalars(value, inner if isinstance(inner, dict) else {}, path))
+        elif not isinstance(existing, dict) or key not in existing:
+            out.append((path, value))
+    return out
 
 
 def team_config_state(project_root: Path, existing_text: str | None, config_text: str) -> str:
@@ -2236,7 +2253,7 @@ def validate_module_answers(
 TABLE_HEADER = re.compile(r"\s*\[(?P<array>\[)?(?P<name>[^\[\]]+)\]\]?\s*(?:#.*)?\Z")
 
 
-def text_with_answers(text: str | None, added: list[tuple[tuple[str, ...], str]], expected: dict) -> str:
+def text_with_answers(text: str | None, added: list[tuple[tuple[str, ...], object]], expected: dict) -> str:
     """The file's own text with the new answers added, so comments and layout survive.
 
     The result must parse to exactly the expected values. When it does not, or
@@ -2253,9 +2270,9 @@ def text_with_answers(text: str | None, added: list[tuple[tuple[str, ...], str]]
     return render_toml(expected)
 
 
-def insert_answer(text: str, path: tuple[str, ...], value: str) -> str:
+def insert_answer(text: str, path: tuple[str, ...], value: object) -> str:
     table, leaf = path[:-1], path[-1]
-    entry = f"{toml_key(leaf)} = {toml_string(value)}"
+    entry = f"{toml_key(leaf)} = {toml_value(value)}"
     lines = text.split("\n")
     headers = [(index, header_path(line)) for index, line in enumerate(lines) if TABLE_HEADER.match(line)]
     for position, (index, name) in enumerate(headers):
