@@ -391,6 +391,15 @@ class CheckTest(unittest.TestCase):
             self.assertEqual(code, 0, data)
             self.assertEqual(data["findings"], [])
 
+            quoted = self.write_skill(
+                tmp,
+                "bmad-manual-quoted",
+                "---\nname: bmad-manual-quoted\ndescription: 'Manual skill.'\ndisable-model-invocation: 'true'\n---\n\nBody.\n",
+            )
+            code, data, _ = run("--check", quoted)
+            self.assertEqual(code, 0, data)
+            self.assertEqual(data["findings"], [])
+
             bad_bool = self.write_skill(
                 tmp,
                 "bmad-manual-false",

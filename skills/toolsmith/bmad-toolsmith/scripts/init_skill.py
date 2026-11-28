@@ -26,7 +26,7 @@ Check:
   Verifies SKILL.md exists, the frontmatter has only `name`, `description`, and optional
   `disable-model-invocation: true`, the name matches the folder and the bmad regex (bmod- for a module record;
   any kebab name with --any-name), the description is at most 1024 characters and contains "Use when" or
-  "Use if" unless `disable-model-invocation: true` is set (a record carries the fixed text instead), the
+  "Use if" (a record carries the fixed text instead), unless `disable-model-invocation: true` is set, the
   body is not empty, no `[TODO:` is left in any text file, bmod.toml, when present, parses and carries
   [skill] or [bmod], and customize.toml, when present, parses. A `[TODO:` inside a Markdown code span or
   fence, or in a Python string rather than a comment, is text about the marker and does not count.

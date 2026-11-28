@@ -355,6 +355,14 @@ class PrepassTest(unittest.TestCase):
                 },
             )
             self.assertTrue(prepass(ok_skill)["frontmatter_ok"])
+            quoted_skill = make_skill(
+                Path(tmp),
+                name="bmad-manual-quoted",
+                files={
+                    "SKILL.md": "---\nname: bmad-manual-quoted\ndescription: 'Manual skill.'\ndisable-model-invocation: 'true'\n---\n\nBody\n"
+                },
+            )
+            self.assertTrue(prepass(quoted_skill)["frontmatter_ok"])
             bad_skill = make_skill(
                 Path(tmp),
                 name="bmad-manual-false",

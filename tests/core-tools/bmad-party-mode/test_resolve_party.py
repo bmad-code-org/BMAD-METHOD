@@ -252,6 +252,13 @@ class TestArguments(unittest.TestCase):
         args = rp.build_parser().parse_args(["--project-root", "p", "--skill", "s", "--check-codes", "analyst", "foo"])
         self.assertEqual(args.check_codes, ["analyst", "foo"])
 
+    def test_check_codes_is_mutually_exclusive_with_party_and_list_groups(self):
+        for flag in (["--list-groups"], ["--party", "g"]):
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as caught:
+                    rp.build_parser().parse_args(["--project-root", "p", "--skill", "s", "--check-codes", "foo", *flag])
+            self.assertEqual(caught.exception.code, 2)
+
 
 class TestCheckCodes(unittest.TestCase):
     def test_detects_alias_name_guest_custom_and_ignores_ambiguous_alias(self):
@@ -264,7 +271,11 @@ class TestCheckCodes(unittest.TestCase):
         custom = [{"code": "sec-hawk", "name": "Vex", "title": "Security"}]
         collective, index, _ = rp.build_collective(agents, custom, guests)
 
-        result = rp.check_codes(["analyst", "MARY", "sec-hawk", "vex", "pip", "dev", "morpheus"], collective, index)
+        result = rp.check_codes(
+            ["analyst", "MARY", "sec-hawk", "vex", "pip", "foo-agent-analyst", "dev", "morpheus"],
+            collective,
+            index,
+        )
         self.assertEqual(
             result["collisions"],
             [
@@ -303,6 +314,13 @@ class TestCheckCodes(unittest.TestCase):
                     "title": "Helper",
                     "source": "roster",
                 },
+                {
+                    "requested": "foo-agent-analyst",
+                    "matches": "bmad-agent-analyst",
+                    "name": "Mary",
+                    "title": "Analyst",
+                    "source": "installed",
+                },
             ],
         )
         # Ambiguous shared alias `dev` resolves to neither agent in build_collective, so clear matches it.
@@ -317,9 +335,11 @@ class TestCheckCodes(unittest.TestCase):
         verdicts.update({code: None for code in result["clear"]})
         for code, matches in verdicts.items():
             with self.subTest(code=code):
-                after, _, _ = rp.build_collective(AGENTS, [*custom, {"code": code, "name": "New"}], guests)
+                after, after_idx, _ = rp.build_collective(AGENTS, [*custom, {"code": code, "name": "New"}], guests)
                 if matches is None:
                     self.assertEqual(set(after) - set(collective), {code})
+                    for token, owner in index.items():
+                        self.assertEqual(after_idx.get(token), owner)
                 else:
                     self.assertEqual(set(after), set(collective))
                     self.assertEqual(after[matches]["name"], "New")
@@ -420,6 +440,43 @@ class TestCheckCodesCli(unittest.TestCase):
         self.assertEqual([c["requested"] for c in result["collisions"]], ["sec-hawk"])
         self.assertEqual(result["clear"], ["analyst"])
         self.assertEqual(result["roster_problems"], ["bad group entry"])
+
+    def test_check_codes_exits_nonzero_when_customization_override_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project, skill = Path(tmp) / "project", Path(tmp) / "skill"
+            scripts = project / "_bmad" / "scripts"
+            scripts.mkdir(parents=True)
+            (scripts / "resolve_customization.py").write_text(
+                "import sys\nsys.stderr.write('override invalid')\nsys.exit(1)\n"
+            )
+            skill.mkdir()
+            (skill / "customize.toml").write_text('[workflow]\ndefault_party = "shipped"\n')
+            out, err = io.StringIO(), io.StringIO()
+            argv = ["resolve_party.py", "--project-root", str(project), "--skill", str(skill), "--check-codes", "foo"]
+            with (
+                mock.patch.object(sys, "argv", argv),
+                contextlib.redirect_stdout(out),
+                contextlib.redirect_stderr(err),
+            ):
+                with self.assertRaises(SystemExit) as caught:
+                    rp.main()
+        self.assertEqual(caught.exception.code, 1)
+        self.assertEqual(out.getvalue(), "")
+        self.assertIn("override invalid", err.getvalue())
+
+    def test_check_codes_rejects_empty_and_duplicate_codes(self):
+        for codes in ([""], ["   "], ["sec-hawk", "Sec-Hawk"]):
+            out, err = io.StringIO(), io.StringIO()
+            argv = ["resolve_party.py", "--project-root", "p", "--skill", "s", "--check-codes", *codes]
+            with (
+                mock.patch.object(sys, "argv", argv),
+                contextlib.redirect_stdout(out),
+                contextlib.redirect_stderr(err),
+            ):
+                with self.assertRaises(SystemExit) as caught:
+                    rp.main()
+            self.assertEqual(caught.exception.code, 2)
+            self.assertEqual(out.getvalue(), "")
 
 
 if __name__ == "__main__":
