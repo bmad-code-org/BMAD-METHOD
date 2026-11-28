@@ -55,6 +55,7 @@ A full plan is "Ready for Development" when:
 ## Conventions
 
 - Whenever this workflow captures or records a version-control revision, obtain the full canonical identifier directly from version control and preserve it verbatim.
+- Pair any ID you cite with a short plain-English handle, leaving the ID out of chat when the user does not need the code, and give named files, headings, and URLs in chat as clickable links in the host's format. Plain paths in `{plan_file}` (Code Map, tasks, `context:`) stay relative to the project root, because the implementer resolves them from there; markdown links written into `{plan_file}` stay relative to `{plan_file}`'s directory.
 
 ## On Activation
 

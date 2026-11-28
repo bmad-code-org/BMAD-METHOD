@@ -27,7 +27,7 @@ updated: ""
 
 <!-- writing:
   - Keep `{doc}` concise as the epic UX run summary/router linking `{run}/EXPERIENCE.md`, parent or delta `DESIGN.md`, and promoted mockups/wireframes.
-  - Cite `E0X-FR-xx` (or `R<n>`) and `{path.to.token}` verbatim inside backticks in prose; keep `DESIGN.md` YAML frontmatter `{path.to.token}` links resolving against declared or parent-linked tokens.
+  - Cite each requirement by its short handle and verbatim `E0X-FR-xx` (or `R<n>`) id, and backtick `{path.to.token}` in prose; keep `DESIGN.md` YAML frontmatter `{path.to.token}` links resolving against declared or parent-linked tokens.
   - Render interactive wireframes or key-screen prototypes via caller-supplied creative tools (or direct interactive HTML/SVG when invoked standalone, ingesting external design-tool exports via caller-supplied `external-design-tools.md` or `bmad-agent-ux-designer`'s installed copy if present, otherwise following the writing rules here directly) into `{run}/.working/`, verify surface mock coverage before Review, promote keepers to `{run}/mockups/` or `{run}/wireframes/`, link inline at the relevant `EXPERIENCE.md` sections, and state spines-win-on-conflict once.
   - Log any net-new global pattern or token needing parent adoption under `System impact and deferred`, and set companion `status: final` and `updated` at Close.
 -->
@@ -45,7 +45,7 @@ updated: ""
 <!-- Inventory every new or changed surface, dialog, drawer, and entry route for this epic (`| Surface | Reached from | Purpose | Covers FR/R |`) mirrored into `{run}/EXPERIENCE.md`. -->
 
 ## Flows and journeys
-<!-- Named-protagonist epic journeys with numbered steps, climax beat, and recovery/failure branches recorded in `{run}/EXPERIENCE.md#key-flows`, citing `E0X-FR-xx` / `R<n>` verbatim. -->
+<!-- Named-protagonist epic journeys with numbered steps, climax beat, and recovery/failure branches recorded in `{run}/EXPERIENCE.md#key-flows`, citing each `E0X-FR-xx` / `R<n>` by short handle and id. -->
 
 ## States and edge cases
 <!-- Matrix across epic surfaces covering cold load, empty, validation/submission error, permission denied, partial/stale data, and offline/retry behavior recorded in `{run}/EXPERIENCE.md#state-patterns`. -->

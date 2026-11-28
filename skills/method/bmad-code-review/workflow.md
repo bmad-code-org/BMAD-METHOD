@@ -18,6 +18,7 @@ Subagents are an important part of this workflow. Use them wherever a step calls
 
 - When a step directs you to another file, read it fully and follow it. Load one step at a time, when it is reached.
 - A step that shows a menu or checkpoint halts there and waits for the user.
+- Pair any ID you cite with a short plain-English handle, leaving the ID out of chat when the user does not need the code, and give named files, headings, and URLs in chat as clickable links in the host's format. Findings written to files keep the `[file:line]` form step-05 sets.
 {% if workflow.fixes == "handoff" %}
 
 ## No-code review

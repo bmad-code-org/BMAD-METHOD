@@ -37,7 +37,7 @@ updated: ""
 ## Table of Contents
 
 ## Context and program bounds
-<!-- Link the program ticket and `prd-program` (or `charter`), citing wave `OKR-N` bounds and `INV-N` invariants by ID without restating them. Summarize existing enterprise systems and compliance constraints in a crisp table. -->
+<!-- Link the program ticket and `prd-program` (or `charter`) with relative markdown links, citing wave `OKR-N` bounds and `INV-N` invariants by short handle and ID without restating their full text. Summarize existing enterprise systems and compliance constraints in a crisp table. -->
 
 ## Domain ownership and sovereignty
 <!-- Map each bounded domain or initiative (`INIT-01`..) to the canonical nouns and data stores it owns as system of record, plus data residency, tenant isolation, and sovereignty boundaries. -->

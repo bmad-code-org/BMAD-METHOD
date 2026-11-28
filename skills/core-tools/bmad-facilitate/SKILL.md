@@ -89,6 +89,10 @@ Fill every required section concisely to suit the stakes and reader without arti
 
 Tag every unconfirmed inference `[ASSUMPTION: ...]`, keeping user-confirmed claims untagged (a blanket yes leaves individual tags open until confirmed). Place open questions in the template's open-questions slot or a closing `## Open questions`, and populate any `## Table of Contents` with linked `##` entries and search cues.
 
+Pair any cited internal ID in conversation or prose with a short plain-English handle, omitting the ID in chat when the user does not need the code; keep bare IDs for frontmatter and compact matrix cells, and lead new ID definitions with a short bold handle.
+
+Link referenced files, verified headings, and URLs — relative markdown links inside `{doc}` and companions, and the host's clickable link format in chat — never inventing a path or anchor you did not verify.
+
 Replace prose flows, timelines, comparisons, and numeric trends with tables, Mermaid blocks, or beside-document `{id}-{slug}-*.svg` visuals per the caller's `visuals` (else `{workflow.visuals}`) unless template comments restrict visuals. Draw only facts present in `{doc}`, using a one-line caption and proper SVG `viewBox` sizing; when `{doc}` targets a standalone `.md` file, keep visuals inline as tables or Mermaid.
 
 `{doc}` is the running record; the view built at Close is what the reader gets. Mid-run, when seeing would move a decision faster than talking (two moods, three title treatments, a rough curve), sketch it as a quick HTML or SVG file in `{run}/.working/` (`{scratch}` when `{doc}` is a standalone `.md` file), in the strongest form the host can show, and open or present it. Sketches are disposable, need no polish, and are skipped on headless runs or when the active visuals setting or template comments restrict visuals.

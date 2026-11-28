@@ -8,7 +8,7 @@ When the document plans work the ticket tree will hold, a container is active or
 
 ## Inheriting from a parent
 
-When an upstream or parent document exists (`sources:`, `companions:`, or a parent container), read it first and ask only for what this level adds or narrows. Cite upstream ids verbatim rather than restating them, never reuse an upstream id for a different item, and continue numbering above its highest number when adding new items in the same prefix.
+When an upstream or parent document exists (`sources:`, `companions:`, or a parent container), read it first and ask only for what this level adds or narrows. Cite upstream items by a short plain-English handle plus their verbatim id (for example, `tenant isolation (INV-1)`) rather than copying their full text, linking to the upstream file and verified heading with a relative markdown link; never reuse an upstream id for a different item, and continue numbering above its highest number when adding new items in the same prefix.
 
 ## Stakes
 
@@ -20,7 +20,9 @@ Read the stakes as one of: hobby or personal use, internal, pitch or investor, p
 
 ## Ids and requirements
 
-Give stable ids to anything others will cite, each a short uppercase prefix, a hyphen, and a number, such as `REQ-3` or `FR-3`. Where the document carries requirements or scope, make each requirement testable and each edge explicit; coaching a requirements document stops when the remaining questions reach edge cases and trade-offs. Names, owners, and dates in the body come from the user, never the environment.
+Give stable ids to anything others will cite, each a short uppercase prefix, a hyphen, and a number paired with a 2–5 word bold handle (for example, `- **INV-1 — Tenant isolation:** ...` or a short name column in a table) so downstream documents and conversation echo one consistent name. Keep bare ids for frontmatter and compact matrix cells, omit ids in live chat when the user does not need the code, and link reachable files, verified headings, and URLs.
+
+Where the document carries requirements or scope, make each requirement testable and each edge explicit; coaching a requirements document stops when the remaining questions reach edge cases and trade-offs. Names, owners, and dates in the body come from the user, never the environment.
 
 ## The level below
 

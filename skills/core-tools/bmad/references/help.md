@@ -14,6 +14,8 @@ List the other `<type>-<slug>/` folders in the container and at the root of `out
 
 Answer the question first. Recommend only installed skills, with the reason the module help gives; take routes and order only from the module help. When the user wants to think through an approach, discuss the trade-offs across everything they have.
 
+Pair any ID you cite with a short plain-English handle, and give named project files, folders, and documentation URLs as clickable links in the host's format.
+
 When the help does not settle the question, go deeper in this order and stop when it does: the file in `topics` for that subject, the skill's own files, then the remote documentation the module help names. If nothing answers it, say so rather than guess.
 
 A skill whose `module` is null has no help installed: say so and relay the `install` command from `problems`. Mention `migrations` only when the user asks about upgrading.

@@ -23,7 +23,7 @@ updated: ""
 <!-- inputs: Epic container, `prd-epic`, parent `arch-spine`, live repo code, UX `DESIGN.md` / `EXPERIENCE.md`, and standing persistent facts. Only the user knows local performance budgets, rollout constraints, and trade-offs. -->
 
 <!-- writing:
-  - Cite inherited parent `AD-n`s by original ID (never renumber); local decisions allocate `AD-n` IDs above the highest ID already used across the parent spine and any sibling `arch-epic` documents (or start at `AD-1` when standalone) with `Binds`, `Prevents`, `Rule`, and optional one-line `Why`.
+  - Cite inherited parent `AD-n`s by short title and original ID (never renumber); local decisions allocate `AD-n` IDs above the highest ID already used across the parent spine and any sibling `arch-epic` documents (or start at `AD-1` when standalone) with `Binds`, `Prevents`, `Rule`, and optional one-line `Why`.
   - On updates, keep existing `AD-n` IDs stable (amend in place, never renumber or reuse retired IDs), allocate any new `AD-n` IDs above the highest ID in play across parent and siblings so no ID is allocated twice across the hierarchy, and flag any decision overriding the driving epic ticket so it can be updated.
   - Verify every proposed `AD-n` against epic and parent numeric `Passable` / `Good` `OKR-N` bounds and `INV-N` invariants before settling.
   - Flag any conflict with a parent `AD-n` as a spine impact rather than overriding silently.
@@ -38,7 +38,7 @@ updated: ""
 ## Table of Contents
 
 ## Context and inherited spine
-<!-- Link the epic ticket, `prd-epic`, and parent `arch-spine` (if any), citing target `OKR-N` bands and `INV-N` IDs. List binding parent `AD-n`s by original ID; for standalone epics with no parent spine, state the compact paradigm, operational boundary, and telemetry hook inline. -->
+<!-- Link the epic ticket, `prd-epic`, and parent `arch-spine` (if any) with relative markdown links, citing target `OKR-N` bands and `INV-N` invariants by short handle and ID. List binding parent `AD-n`s by short title and original ID; for standalone epics with no parent spine, state the compact paradigm, operational boundary, and telemetry hook inline. -->
 
 ## Codebase grounding
 <!-- Live modules, existing data models, APIs, auth/telemetry conventions, and test patterns inspected in the repo that this epic builds on or extends. -->
