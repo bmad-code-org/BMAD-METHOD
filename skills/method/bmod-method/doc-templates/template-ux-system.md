@@ -54,7 +54,7 @@ updated: ""
 <!-- Lock shared interaction primitives, banned anti-patterns, voice/microcopy posture, and baseline legibility — adding formal accessibility rules (`EXPERIENCE.md#accessibility-floor` — WCAG targets, ARIA traversal, reduced motion) only when opted in or required by stakes. -->
 
 ## Key system flows
-<!-- Named-protagonist journeys (`EXPERIENCE.md#key-flows`) covering cross-epic navigation and primary end-to-end loops with numbered steps, climax beat, and failure paths, citing ticket/PRD journey IDs verbatim. -->
+<!-- Named-protagonist journeys (`EXPERIENCE.md#key-flows`) covering cross-epic navigation and primary end-to-end loops with numbered steps, climax beat, and failure paths, citing each ticket/PRD journey by its name and verbatim id. -->
 
 ## Artifacts and handoffs
 <!-- Track `.working/` creative renders, user `imports/`, external design-tool prompts/outputs, and promoted `{run}/mockups/` or `{run}/wireframes/` paths linked inline in the spines. -->

@@ -7,9 +7,9 @@
 Rules, each a `rule` value in the findings:
   pep723-missing   no `# /// script` inline metadata block; `uv run` needs it to pick dependencies
   pep723-floor     the block has no requires-python, or its floor is below 3.11
-  test-missing     no test_<name>.py in the skill's folder under tests/ at the root holding it (the first
-                   folder above with .git or _bmad/, mirroring the skill's path below skills/), nor in the
-                   skill's own scripts/tests/; an exact copy (line endings aside)
+  test-missing     no test_<name>.py (hyphens as underscores) in the skill's folder under tests/ at the root
+                   holding it (the first folder above with .git or _bmad/, mirroring the skill's path below
+                   skills/), nor in the skill's own scripts/tests/; an exact copy (line endings aside)
                    of the memory-agent shape's wake.py or init-sanctum.py is tested in Toolsmith and never flagged
   network-call     imports a network module (urllib.request, requests, httpx, socket, http.client, aiohttp);
                    a skill script should work offline unless its docstring says why it cannot
@@ -159,7 +159,7 @@ def scan_script(
     rel = f"scripts/{path.name}"
     content = path.read_text(encoding="utf-8", errors="replace")
     has_block, requires = pep723_floor(content)
-    name = f"test_{path.stem}.py"
+    name = f"test_{path.stem.replace('-', '_')}.py"
     info = {
         "path": rel,
         "has_pep723": has_block,

@@ -380,6 +380,44 @@ class CheckTest(unittest.TestCase):
             code, data, _ = run("--check", record)
             self.assertEqual(rules(data), ["description-trigger"])
 
+    def test_disable_model_invocation_true_needs_no_trigger_and_invalid_values_fail(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            manual = self.write_skill(
+                tmp,
+                "bmad-manual",
+                "---\nname: bmad-manual\ndescription: 'Manual skill.'\ndisable-model-invocation: true\n---\n\nBody.\n",
+            )
+            code, data, _ = run("--check", manual)
+            self.assertEqual(code, 0, data)
+            self.assertEqual(data["findings"], [])
+
+            quoted = self.write_skill(
+                tmp,
+                "bmad-manual-quoted",
+                "---\nname: bmad-manual-quoted\ndescription: 'Manual skill.'\ndisable-model-invocation: 'true'\n---\n\nBody.\n",
+            )
+            code, data, _ = run("--check", quoted)
+            self.assertEqual(code, 0, data)
+            self.assertEqual(data["findings"], [])
+
+            bad_bool = self.write_skill(
+                tmp,
+                "bmad-manual-false",
+                "---\nname: bmad-manual-false\ndescription: 'Manual skill.'\ndisable-model-invocation: false\n---\n\nBody.\n",
+            )
+            code, data, _ = run("--check", bad_bool)
+            self.assertEqual(code, 1)
+            self.assertEqual(rules(data), ["description-trigger", "frontmatter-keys"])
+
+            bad_int = self.write_skill(
+                tmp,
+                "bmad-manual-one",
+                "---\nname: bmad-manual-one\ndescription: 'Manual skill. Use when asked.'\ndisable-model-invocation: 1\n---\n\nBody.\n",
+            )
+            code, data, _ = run("--check", bad_int)
+            self.assertEqual(code, 1)
+            self.assertEqual(rules(data), ["frontmatter-keys"])
+
 
 if __name__ == "__main__":
     unittest.main()

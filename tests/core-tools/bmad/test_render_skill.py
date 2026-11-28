@@ -41,6 +41,7 @@ SHARED_SCRIPTS = (
 SHIPPED_SKILLS = ("bmad-build-auto", "bmad-build", "bmad-code-review")
 RENDERED_SKILLS = (
     *SHIPPED_SKILLS,
+    "bmad-agent-dev",
     "bmad-walkthrough",
     "bmad-retrospective",
     "bmad-qa-generate-e2e-tests",
@@ -1353,6 +1354,62 @@ class RenderSkillTests(unittest.TestCase):
                 )
                 self.assertEqual(dispatched.name, "workflow.md")
                 self.assertTrue(dispatched.is_file())
+
+    def test_require_version_accepts_supported_and_halts_on_newer_or_invalid_version(self):
+        ws = self._workspace()
+        skill = self._skill(ws, "bmad-build")
+        for version in ("1", str(rs.RENDERER_VERSION)):
+            res = self._cli(ws.project, skill, args=("--require-version", version))
+            self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+
+        for bad, expected in (
+            (str(rs.RENDERER_VERSION + 1), "bmad setup"),
+            ("0", "positive integer"),
+            ("two", "invalid int value"),
+        ):
+            ws_bad = self._workspace()
+            skill_bad = self._skill(ws_bad, "bmad-build")
+            res = self._cli(ws_bad.project, skill_bad, args=("--require-version", bad))
+            self.assertEqual(res.returncode, 1)
+            self.assertTrue(res.stdout.startswith("HALT:"), res.stdout)
+            self.assertEqual(len(res.stdout.splitlines()), 1, res.stdout)
+            self.assertIn(expected, res.stdout)
+            self.assertFalse((ws_bad.bmad / "render").exists())
+
+    def test_stale_pre_version_renderer_rejects_skill_md_command(self):
+        ws = self._workspace()
+        skill = self._skill(ws, "bmad-build")
+        stale = (
+            "#!/usr/bin/env python3\n"
+            "# /// script\n"
+            '# requires-python = ">=3.11"\n'
+            "# dependencies = []\n"
+            "# ///\n"
+            "import argparse, sys\n"
+            "class RenderError(ValueError): pass\n"
+            "class _P(argparse.ArgumentParser):\n"
+            "    def error(self, msg): raise RenderError(msg)\n"
+            "p = _P()\n"
+            "p.add_argument('--project-root', required=True)\n"
+            "p.add_argument('--skill', required=True)\n"
+            "p.add_argument('--overrides')\n"
+            "p.add_argument('--set', action='append', default=[])\n"
+            "try:\n"
+            "    p.parse_args()\n"
+            "except RenderError as e:\n"
+            "    sys.stdout.write(f'HALT: {e}\\n')\n"
+            "    sys.exit(1)\n"
+        )
+        (ws.bmad / "scripts" / "render_skill.py").write_text(stale, encoding="utf-8")
+        text = (skill / "SKILL.md").read_text(encoding="utf-8")
+        fenced = re.search(r"```bash\n(.*?)```", text, re.S)
+        command = fenced.group(1).strip().replace("{project-root}", str(ws.project)).replace("{skill-root}", str(skill))
+        res = subprocess.run(command, cwd=ws.project, shell=True, text=True, encoding="utf-8", capture_output=True)
+        self.assertEqual(res.returncode, 1)
+        self.assertIn("HALT:", res.stdout)
+        self.assertIn("--require-version", res.stdout)
+        self.assertNotIn("{{ rendered(", res.stdout)
+        self.assertFalse((ws.bmad / "render").exists())
 
 
 if __name__ == "__main__":

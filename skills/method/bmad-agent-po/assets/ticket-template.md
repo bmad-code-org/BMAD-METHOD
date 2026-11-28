@@ -46,7 +46,7 @@ Refined Story (at epic inception by default, `refine = true` at pickup, bugs, or
 
 ## Constraints
 
-[SPEC writes this. Program/Initiative: each design-bending invariant (`INV-N`, `RULE-N`), citing its source id or section. Epic: the parent constraints and local rules that bind it. Story: only constraints beyond its epic's; behavior that must not change goes under Boundaries.]
+[SPEC writes this. Program/Initiative: each design-bending invariant (`INV-N`, `RULE-N`) by short handle and source id, or by source section. Epic: the parent constraints and local rules that bind it. Story: only constraints beyond its epic's; behavior that must not change goes under Boundaries.]
 
 ## Done when
 

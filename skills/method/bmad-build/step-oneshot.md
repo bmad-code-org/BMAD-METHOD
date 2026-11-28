@@ -121,8 +121,6 @@ Do not list files, repeat the plan, or walk through what you did unless asked.
 
 Offer next steps in one line: create a PR (push first if needed) when git and a remote exist; use `bmad-walkthrough`; or make another change.
 
-Stop and wait for the user.
-
 Workflow complete.
 
 ## On Complete

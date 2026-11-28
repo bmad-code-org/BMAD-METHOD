@@ -322,7 +322,7 @@ def setup(
         or bool(user_added)
         or gitignore_state == "missing"
         or render_gitignore_missing(project_root)
-        or not (custom.exists() or custom.is_symlink())
+        or not present(custom)
         or any(state != "current" for state in module_states.values())
         or bool(retirement.renames)
     )
@@ -336,7 +336,7 @@ def setup(
             custom_renames=retirement.renames,
         )
     output = output_folder(config_text, project_root)
-    if not output.exists() and not output.is_symlink():
+    if not present(output):
         changed = True
     ensure_dir(output)
 
@@ -429,17 +429,93 @@ def missing_scalars(merged: dict, existing: dict, prefix: tuple[str, ...] = ()) 
     return out
 
 
+def is_junction(path: Path) -> bool:
+    """A Windows directory junction, which is_symlink() does not report."""
+    if hasattr(os.path, "isjunction"):
+        return os.path.isjunction(path)
+    if sys.platform != "win32":
+        return False
+    try:
+        return os.lstat(path).st_reparse_tag == stat.IO_REPARSE_TAG_MOUNT_POINT
+    except OSError:
+        return False
+
+
+def is_link(path: Path) -> bool:
+    return path.is_symlink() or is_junction(path)
+
+
+def _link_target(path: Path) -> Path:
+    try:
+        raw = os.readlink(path)
+    except OSError:
+        return path.resolve()
+    raw_str = os.fspath(raw)
+    if sys.platform == "win32" and raw_str.startswith("\\\\?\\") and not raw_str.startswith("\\\\?\\UNC\\"):
+        raw_str = raw_str[4:]
+    return Path(raw_str)
+
+
+def unlink_force(path: Path) -> None:
+    try:
+        path.unlink()
+    except PermissionError:
+        # Only Windows refuses to delete a read-only file; elsewhere the mode does not matter.
+        if sys.platform != "win32" or is_link(path):
+            raise
+        os.chmod(path, stat.S_IWRITE)
+        path.unlink()
+
+
+def rmtree_force(path: Path, *, ignore_errors: bool = False) -> None:
+    """Remove a tree, clearing read-only bits inside it; a link is removed, never followed or chmodded."""
+    root = os.fspath(path)
+
+    def retry_writable(func, failed, exc) -> None:
+        if func not in (os.unlink, os.rmdir):
+            raise exc if isinstance(exc, BaseException) else exc[1]
+        failed = os.fspath(failed)
+        # chmod follows links, so a link is skipped: its target lies outside the tree.
+        for entry in (failed,) if failed == root else (os.path.dirname(failed), failed):
+            if is_link(Path(entry)):
+                continue
+            try:
+                os.chmod(entry, os.lstat(entry).st_mode | stat.S_IRWXU)
+            except OSError:
+                pass
+        func(failed)
+
+    try:
+        if is_link(path):
+            unlink_force(path)
+        elif sys.version_info >= (3, 12):
+            shutil.rmtree(path, onexc=retry_writable)
+        else:
+            shutil.rmtree(path, onerror=retry_writable)
+    except OSError:
+        if not ignore_errors:
+            raise
+
+
+def create_junction(target: Path, link: Path) -> None:
+    if sys.platform != "win32":
+        raise OSError("directory junctions are supported only on Windows")
+    import _winapi
+
+    _winapi.CreateJunction(str(target), str(link))
+
+
 def team_config_state(project_root: Path, existing_text: str | None, config_text: str) -> str:
     if existing_text is None:
         return "created"
     path = project_root / "_bmad" / "config.toml"
-    if path.is_symlink() or fill_toml(existing_text, config_text) != existing_text:
+    if is_link(path) or fill_toml(existing_text, config_text) != existing_text:
         return "updated"
     return "current"
 
 
 def reject_unusable_module_root(module_root: Path) -> None:
-    if module_root.is_symlink() or (module_root.exists() and not module_root.is_dir()):
+    if is_link(module_root) or (module_root.exists() and not module_root.is_dir()):
         raise Exception(f"module runtime is not a plain directory: {module_root}")
 
 
@@ -518,10 +594,11 @@ def lookup(data: object, keys: tuple[str, ...]) -> object:
 
 def reject_unusable_bmad(project_root: Path) -> None:
     bmad = project_root / "_bmad"
-    if bmad.is_symlink():
-        target = bmad.resolve()
+    if is_link(bmad):
+        kind = "junction" if is_junction(bmad) else "symlink"
+        target = _link_target(bmad) if kind == "junction" else bmad.resolve()
         raise Exception(
-            f"{bmad} is a symlink to {target}; setup replaces "
+            f"{bmad} is a {kind} to {target}; setup replaces "
             f"_bmad in place, so run it with --project-root "
             f"{target.parent} to fix the real installation"
         )
@@ -535,7 +612,7 @@ def user_config_path(project_root: Path) -> Path:
 
 def existing_user_config(project_root: Path) -> tuple[str | None, dict]:
     path = user_config_path(project_root)
-    if not path.exists() and not path.is_symlink():
+    if not present(path):
         return None, {}
     if not path.is_file():
         raise Exception(f"user config is not a file: {path}")
@@ -551,18 +628,18 @@ def reject_unwritable_user_config(project_root: Path) -> None:
     """Setup writes a user answer only into a plain file in a plain folder."""
     path = user_config_path(project_root)
     for candidate in (path.parent, path):
-        if candidate.is_symlink():
-            raise Exception(f"cannot add a user answer: {candidate} is a symlink")
+        if is_link(candidate):
+            raise Exception(f"cannot add a user answer: {candidate} is a symlink or junction")
     if path.parent.exists() and not path.parent.is_dir():
         raise Exception(f"cannot add a user answer: {path.parent} is not a directory")
 
 
 def custom_gitignore_state(project_root: Path) -> str:
     custom = project_root / "_bmad" / "custom"
-    if custom.is_symlink() or (custom.exists() and not custom.is_dir()):
+    if is_link(custom) or (custom.exists() and not custom.is_dir()):
         return "skipped"
     gitignore = custom / ".gitignore"
-    if not gitignore.exists() and not gitignore.is_symlink():
+    if not present(gitignore):
         return "missing"
     try:
         lines = {line.strip() for line in gitignore.read_text(encoding="utf-8-sig").splitlines()}
@@ -573,10 +650,10 @@ def custom_gitignore_state(project_root: Path) -> str:
 
 def render_gitignore_missing(project_root: Path) -> bool:
     render = project_root / "_bmad" / "render"
-    if render.is_symlink() or (render.exists() and not render.is_dir()):
+    if is_link(render) or (render.exists() and not render.is_dir()):
         return False
     gitignore = render / ".gitignore"
-    return not gitignore.exists() and not gitignore.is_symlink()
+    return not present(gitignore)
 
 
 def custom_gitignore_problems(state: str) -> list[dict[str, object]]:
@@ -675,7 +752,7 @@ def lock_path(project_root: Path, path: Path) -> Path:
 
 
 def present(path: Path) -> bool:
-    return path.exists() or path.is_symlink()
+    return path.exists() or is_link(path)
 
 
 def retirement_report(
@@ -684,7 +761,7 @@ def retirement_report(
     """Where the retired skills are still installed or customized, and what setup does about it."""
     folders = skill_folders(project_root, installation)
     custom = project_root / "_bmad" / "custom"
-    plain_custom = custom.is_dir() and not custom.is_symlink()
+    plain_custom = custom.is_dir() and not is_link(custom)
     in_use: list[dict[str, object]] = []
     renames: list[tuple[str, str]] = []
     unmoved: list[tuple[str, str]] = []
@@ -817,10 +894,10 @@ def remove_skill_paths(
             locks[lock_file] = read_skills_lock(lock_file)
     removed: list[str] = []
     for _name, path in targets:
-        if path.is_symlink() or path.is_file():
-            path.unlink()
+        if is_link(path) or path.is_file():
+            unlink_force(path)
         elif path.is_dir():
-            shutil.rmtree(path)
+            rmtree_force(path)
         else:
             continue
         removed.append(shown_path(path, project_root))
@@ -1132,7 +1209,7 @@ def next_step(
 
 def existing_team_config(project_root: Path) -> tuple[str | None, dict]:
     path = project_root / "_bmad" / "config.toml"
-    if not path.exists() and not path.is_symlink():
+    if not present(path):
         return None, {}
     if not path.is_file():
         raise Exception(f"team config is not a file: {path}")
@@ -1787,8 +1864,8 @@ def status_report(
         not bmad.is_dir()
         or shared_state != "current"
         or team_config_state(project_root, existing_text, base_text) != "current"
-        or not (custom.exists() or custom.is_symlink())
-        or not (output.exists() or output.is_symlink())
+        or not present(custom)
+        or not present(output)
         or bool(pending)
         or gitignore_state == "missing"
         or render_gitignore_missing(project_root)
@@ -2084,7 +2161,7 @@ def declared_scripts_tree(scripts: tuple[tuple[PurePosixPath, bytes], ...]) -> P
 
 
 def read_plain_tree(root: Path) -> PlainTree:
-    if not root.is_dir() or root.is_symlink():
+    if not root.is_dir() or is_link(root):
         raise Exception(f"payload scripts are not a plain directory: {root}")
     directories: list[PurePosixPath] = []
     files: list[tuple[PurePosixPath, bytes]] = []
@@ -2094,7 +2171,7 @@ def read_plain_tree(root: Path) -> PlainTree:
         raise Exception(f"cannot inspect payload scripts {root}: {error}") from error
     for entry in entries:
         relative = PurePosixPath(entry.relative_to(root).as_posix())
-        if entry.is_symlink():
+        if is_link(entry):
             raise Exception(f"payload scripts contain a symlink: {entry}")
         if entry.is_dir():
             directories.append(relative)
@@ -2119,7 +2196,7 @@ def shared_scripts_tree(src: Path) -> PlainTree:
 
 
 def tree_matches(root: Path, expected: PlainTree) -> bool:
-    if not root.is_dir() or root.is_symlink():
+    if not root.is_dir() or is_link(root):
         return False
     try:
         actual = read_plain_tree(root)
@@ -2129,7 +2206,7 @@ def tree_matches(root: Path, expected: PlainTree) -> bool:
 
 
 def tree_state(root: Path, expected: PlainTree) -> str:
-    if not root.exists() and not root.is_symlink():
+    if not present(root):
         return "missing"
     return "current" if tree_matches(root, expected) else "stale"
 
@@ -2358,21 +2435,32 @@ def materialize_bmad(
     try:
         # Seed staging so custom/, extra *.user.toml, and leftovers
         # survive replace_dir.
+        custom_junction_target: Path | None = None
         if bmad.exists():
             scripts = bmad / "scripts"
+            custom = bmad / "custom"
+            if is_junction(custom):
+                custom_junction_target = _link_target(custom)
 
-            def ignore_scripts_link(directory: str, _names: list[str]) -> set[str]:
-                if scripts.is_symlink() and Path(directory) == bmad:
-                    return {"scripts"}
-                return set()
+            def ignore_links(directory: str, _names: list[str]) -> set[str]:
+                if Path(directory) != bmad:
+                    return set()
+                ignored: set[str] = set()
+                if is_link(scripts):
+                    ignored.add("scripts")
+                if custom_junction_target is not None:
+                    ignored.add("custom")
+                return ignored
 
             shutil.copytree(
                 bmad,
                 staging,
                 dirs_exist_ok=True,
                 symlinks=True,
-                ignore=ignore_scripts_link,
+                ignore=ignore_links,
             )
+            if custom_junction_target is not None:
+                create_junction(custom_junction_target, staging / "custom")
         stage_bmad(
             staging,
             scripts_src=scripts_src,
@@ -2387,7 +2475,7 @@ def materialize_bmad(
             publish_dir_mode(staging)
         replace_dir(staging, bmad)
     except Exception:
-        shutil.rmtree(staging, ignore_errors=True)
+        rmtree_force(staging, ignore_errors=True)
         raise
 
 
@@ -2413,7 +2501,10 @@ def replace_dir(src: Path, dest: Path) -> None:
     except Exception:
         backup.rename(dest)
         raise
-    shutil.rmtree(backup)
+    try:
+        rmtree_force(backup)
+    except OSError as error:
+        raise Exception(f"{dest.name} was updated, but old backup {backup} could not be removed: {error}") from error
 
 
 def stage_bmad(
@@ -2434,22 +2525,17 @@ def stage_bmad(
     render = staging / "render"
     ensure_dir(render)
     render_gitignore = render / ".gitignore"
-    if (
-        render.is_dir()
-        and not render.is_symlink()
-        and not render_gitignore.exists()
-        and not render_gitignore.is_symlink()
-    ):
+    if render.is_dir() and not is_link(render) and not present(render_gitignore):
         write_text(render_gitignore, RENDER_GITIGNORE)
     custom = staging / "custom"
     ensure_dir(custom)
-    if custom.is_symlink() or not custom.is_dir():
+    if is_link(custom) or not custom.is_dir():
         return
     gitignore = custom / ".gitignore"
-    if not gitignore.exists() and not gitignore.is_symlink():
+    if not present(gitignore):
         write_text(gitignore, CUSTOM_GITIGNORE)
     if user_config_text is not None:
-        write_text(custom / "config.user.toml", user_config_text)
+        write_force(custom / "config.user.toml", user_config_text)
     for old, new in custom_renames:
         (custom / old).rename(custom / new)
 
@@ -2458,10 +2544,10 @@ def ensure_scripts(dest: Path, src: Path) -> None:
     source = shared_scripts_tree(src)
     if tree_matches(dest, source):
         return
-    if dest.is_symlink() or dest.is_file():
-        dest.unlink()
+    if is_link(dest) or dest.is_file():
+        unlink_force(dest)
     elif dest.exists():
-        shutil.rmtree(dest)
+        rmtree_force(dest)
     dest.mkdir(parents=True)
     for relative in source.directories:
         dest.joinpath(*relative.parts).mkdir(parents=True, exist_ok=True)
@@ -2469,15 +2555,16 @@ def ensure_scripts(dest: Path, src: Path) -> None:
         target = dest.joinpath(*relative.parts)
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src.joinpath(*relative.parts), target)
+        os.chmod(target, target.stat().st_mode | stat.S_IWUSR)
 
 
 def ensure_plain_tree(dest: Path, source: PlainTree) -> None:
     if tree_matches(dest, source):
         return
-    if dest.is_symlink() or dest.is_file():
-        dest.unlink()
+    if is_link(dest) or dest.is_file():
+        unlink_force(dest)
     elif dest.exists():
-        shutil.rmtree(dest)
+        rmtree_force(dest)
     dest.mkdir(parents=True)
     for relative in source.directories:
         dest.joinpath(*relative.parts).mkdir(parents=True, exist_ok=True)
@@ -2495,9 +2582,22 @@ def write_text(path: Path, content: str) -> None:
     )
 
 
+def write_force(path: Path, content: str, *, ensure_newline: bool = True) -> None:
+    """Write text, clearing a read-only flag on an existing regular file if needed; never chmods links."""
+    text = content if (not ensure_newline or content.endswith("\n")) else content + "\n"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        path.write_text(text, encoding="utf-8")
+    except PermissionError:
+        if is_link(path) or not path.exists():
+            raise
+        os.chmod(path, os.lstat(path).st_mode | stat.S_IWRITE)
+        path.write_text(text, encoding="utf-8")
+
+
 def ensure_file(path: Path, content: str) -> None:
-    if path.is_symlink():
-        path.unlink()
+    if is_link(path):
+        unlink_force(path)
     elif path.is_file():
         existing = path.read_text(encoding="utf-8")
         filled = fill_toml(existing, content)
@@ -2505,12 +2605,12 @@ def ensure_file(path: Path, content: str) -> None:
             return
         content = filled
     elif path.exists():
-        shutil.rmtree(path)
-    write_text(path, content)
+        rmtree_force(path)
+    write_force(path, content)
 
 
 def ensure_dir(path: Path) -> None:
-    if not path.is_symlink() and not path.exists():
+    if not is_link(path) and not path.exists():
         path.mkdir(parents=True)
 
 
