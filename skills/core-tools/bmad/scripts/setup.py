@@ -2410,8 +2410,21 @@ def fill_team_config(text: str, project_root: Path) -> str:
 
 
 def output_folder(config_text: str, project_root: Path) -> Path:
-    """Return the output folder, resolving {project-root} as render_skill does."""
-    folder = tomllib.loads(config_text).get("core", {}).get("output_folder") or "_bmad-output"
+    """Return the output folder from the last config layer that sets `core.output_folder`,
+    resolving `{project-root}` as `render_skill` does: team config first, then
+    `_bmad/custom/config.toml` and `_bmad/custom/config.user.toml`."""
+    layers = [tomllib.loads(config_text)]
+    for name in ("config.toml", "config.user.toml"):
+        path = project_root / "_bmad" / "custom" / name
+        if path.is_file():
+            layers.append(parse_toml(path.read_text(encoding="utf-8-sig"), path))
+    folder = ""
+    for layer in layers:
+        core = layer.get("core")
+        value = core.get("output_folder") if isinstance(core, dict) else None
+        if isinstance(value, str):
+            folder = value
+    folder = folder or "_bmad-output"
     root = project_root.resolve()
     return root / folder.replace("{project-root}", root.as_posix())
 
