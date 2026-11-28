@@ -18,7 +18,17 @@ Collect what the epic produced and note the source path or range of each:
 
 ## Ranges from the plans
 
-Each plan records its own `baseline_revision`, the commit its build started from, so there is no single epic-wide range. Order the plans by their baselines' place in history, oldest first (`git merge-base --is-ancestor A B` says A is older) — the order the builds started, which need not be the row order. A plan's range runs from its baseline to the next baseline in that order; the last plan's range runs to `HEAD`, marked inferred rather than recorded. When later work has landed since, end it at the last commit that belongs to this epic's tickets, judged from the plans and commit subjects, and record the cut. A plan whose `baseline_revision` is missing or `NO_VCS` gets no commit or diff evidence — record that too. Two plans sharing a baseline give the earlier one an empty range: that ticket simply has no commits of its own. Group the tickets sharing an identical range and run `git_evidence.py` once per distinct range, passing that group's `ref`s (`3.4`, as `status` spells them) as one comma-separated `--stories` value. A commit's `stories` is usually empty, since subjects rarely name a ref; the range is the attribution, and an empty list is not missing evidence. Ranges may overlap or diverge; count a shared commit or file change once in the aggregate views while keeping each ticket's range as its provenance.
+Each plan records `baseline_revision`, the commit its build started from, so there is no single epic-wide range. Check each baseline with `git merge-base --is-ancestor <sha> HEAD`, which fails when the commit is missing or off `HEAD`'s history:
+
+- **On `HEAD`'s history:** order these plans by baseline, oldest first (`git merge-base --is-ancestor A B` says A is older) — the order the builds started, which need not be the row order. Each range runs from its baseline to the next baseline in that order; the last runs to `HEAD`, marked inferred rather than recorded. If later work has landed since, end it at the last commit belonging to this epic's tickets, judged from the plans and commit subjects, and record the cut.
+- **No baseline, or one off `HEAD`'s history (squash-merged or rebased):** list the commits that touched the plan on `HEAD`'s mainline with `git log --first-parent --reverse --format=%H -- <plan>`, `<plan>` being `find`'s `plan` path. Measure from the first commit that landed this ticket to the last, `<first>~1..<last>`, and record the recovery.
+- **Shared baseline:** the earlier plan's range is empty. When `git log --first-parent -- <plan>` shows the two plans landing in different commits (parallel branches), recover each that way; otherwise the earlier ticket simply has no commits of its own.
+
+A `NO_VCS` baseline, or a recovery that finds no commit, leaves that plan with no commit or diff evidence — record the gap.
+
+Group tickets sharing an identical range and run `git_evidence.py` once per distinct range, passing that group's `ref`s (`3.4`, as `status` spells them) as one comma-separated `--stories` value. A commit's `stories` is usually empty, since subjects rarely name a ref; the range is the attribution, and an empty list is not missing evidence.
+
+Ranges may overlap or diverge; count a shared commit or file change once in the aggregate views while keeping each ticket's range as its provenance.
 
 ## Missing evidence
 

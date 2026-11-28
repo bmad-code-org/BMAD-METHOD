@@ -83,7 +83,7 @@ Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` fr
 
    Out of scope: reject or defer a finding as out of scope only when the intent itself excludes it — not because the plan's scope section or the shape of the diff says so. If only those would exclude it, keep the finding: the plan drew the line somewhere the intent did not, so it routes to intent_gap or bad_plan, never to patch or defer.
 
-   Reject any finding whose fix is to edit this build's plan.
+   Reject any finding about this build's plan file that names no defect or deviation in the code; a plan flaw that caused a defect or deviation in the code routes to intent_gap or bad_plan.
 
    All remaining findings continue to grouping.
 
@@ -146,7 +146,12 @@ Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` fr
 
 ## Finalize
 
+The final status is `built`, or `done` on a follow-up pass of a plan that was `done`.
+
+If `{plan_file}` has `## Tasks & Acceptance`, tick `- [x]` each execution task this build completed; leave the rest `[ ]` and name them under residual risks.
+
 Write the following details to `{plan_file}` under `## Auto Run Result`:
+- Status: <final status>
 - Summary of implemented change
 - Files changed with one-line descriptions
 {% if review != "none" %}
@@ -164,11 +169,11 @@ Set `{plan_file}` frontmatter `followup_review_recommended` from the computation
 Set `{plan_file}` frontmatter `followup_review_recommended: false`.
 {% endif %}
 
-The final status is `built`, or `done` on a follow-up pass of a plan that was `done`.
+Set `{plan_file}` frontmatter `status` to the final status, then verify on disk that `{plan_file}` holds an `## Auto Run Result` section whose `Status:` line matches it.
 
-If version control is unavailable, set `{plan_file}` frontmatter `status` to the final status, then proceed to HALT.
+If version control is unavailable, proceed to HALT.
 
-If version control is available, write the final status into `{plan_file}` frontmatter `status`, then:
+If version control is available:
 
 1. Commit any reviewed-diff files that remain uncommitted, including `{plan_file}` when it is tracked in that working copy. Keep commits already created during this run. Verify every reviewed-diff file appears in the change set after `{baseline_revision}` and none remains uncommitted. Do not push.
 2. Verify the version-controlled working copy is clean. Otherwise HALT with status `blocked` and blocking condition `finalization left repository dirty`.

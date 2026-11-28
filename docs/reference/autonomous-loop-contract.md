@@ -91,8 +91,9 @@ Every plan encloses its settled intent in `<intent-contract> ... </intent-contra
 
 ### `## Auto Run Result` Section
 
-At completion or halt on an existing plan, `bmad-build-auto` appends `## Auto Run Result` containing:
+At completion or halt on an existing plan, `bmad-build-auto` appends `## Auto Run Result` and verifies it on disk before committing or halting. It contains:
 
+- `Status: <final status>`, matching frontmatter `status` (plus `Blocking condition: <condition>` on `blocked`)
 - Summary of the implemented change
 - Files changed with one-line descriptions
 - Review findings breakdown (patches applied, items deferred, and every rejected finding with its reason; or `Review: none, no lenses launched`)
@@ -100,7 +101,7 @@ At completion or halt on an existing plan, `bmad-build-auto` appends `## Auto Ru
   - First pass: `true` if any patched finding was `high`, or two or more patched findings were `medium`
   - Follow-up pass (`followup_pass = true`): `true` only if this pass patched a `high` finding
 - Verification performed (command outcomes or manual inspection notes)
-- Residual risks (or blocking details on `blocked`)
+- Residual risks, including execution tasks left unticked (or blocking details on `blocked`)
 
 ### Fallback Result Artifact
 
