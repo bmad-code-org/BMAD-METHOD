@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Report the people and groups the installed modules offer.
 
@@ -30,8 +29,12 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+
+from bmod_utils import ROSTER_NAME, Module, install_command, read_document, scan  # noqa: E402
 from config_utils import ConfigError, load_central_config, load_customization  # noqa: E402
-from knowledge import ROSTER_NAME, Module, install_command, read_document, scan  # noqa: E402
 
 MEMBER_FIELDS = ("name", "icon", "title", "persona", "capabilities", "model")
 AGENT_FIELDS = ("name", "icon", "title")

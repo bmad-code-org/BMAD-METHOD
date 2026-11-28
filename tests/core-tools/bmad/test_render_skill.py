@@ -31,11 +31,11 @@ REPO = SCRIPTS_SRC.parents[3]
 SKILLS_SRC = REPO / "skills"
 CONFIG_TEMPLATE = (SCRIPTS_SRC.parent / "assets" / "config.template.toml").read_text(encoding="utf-8")
 SHARED_SCRIPTS = (
+    "bmod_utils.py",
     "config_utils.py",
     "render_skill.py",
     "resolve_config.py",
     "resolve_customization.py",
-    "setup.py",
     "setup_check.py",
 )
 SHIPPED_SKILLS = ("bmad-build-auto", "bmad-build", "bmad-code-review")

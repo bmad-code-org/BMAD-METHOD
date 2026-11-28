@@ -47,41 +47,73 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import stat
 import sys
 import tomllib
-from pathlib import Path, PurePosixPath
-from typing import NamedTuple
+from pathlib import Path
+
+# ruff: noqa: E402
 
 sys.dont_write_bytecode = True
 
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+
+from bmod_utils import (  # noqa: E402
+    MANIFEST_NAME as MANIFEST_NAME,
+)
+from bmod_utils import (
+    READ_LIMIT as READ_LIMIT,
+)
+from bmod_utils import (
+    ROSTER_NAME as ROSTER_NAME,
+)
+from bmod_utils import (
+    Module as Module,
+)
+from bmod_utils import (
+    Scan as Scan,
+)
+from bmod_utils import (
+    absent_records as absent_records,
+)
+from bmod_utils import (
+    grouped as grouped,
+)
+from bmod_utils import (
+    install_command as install_command,
+)
+from bmod_utils import (
+    is_skill as is_skill,
+)
+from bmod_utils import (
+    manifest_problem as manifest_problem,
+)
+from bmod_utils import (
+    read_document as read_document,
+)
+from bmod_utils import (
+    read_record as read_record,
+)
+from bmod_utils import (
+    resolve_skill as resolve_skill,
+)
+from bmod_utils import (
+    safe_skill_relative as safe_skill_relative,
+)
+from bmod_utils import (
+    scan as scan,
+)
 from list_templates import MODULE_FOLDER as TEMPLATES_DIR  # noqa: E402
 from list_templates import listed, read_fields, scalar  # noqa: E402
 
-MANIFEST_NAME = "bmod.toml"
 TOPICS_DIR = "help"
 HELP_NAME = f"{TOPICS_DIR}/help.md"
 ASSETS_DIR = "assets"
-ROSTER_NAME = "roster.toml"
 RETIRED_NAME = "retired.toml"
 MIGRATION_TABLE = "migration"
 MIGRATION_FIELDS = ("module", "from", "to", "title", "summary", "detect", "guide")
 MIGRATION_NAME = re.compile(r"migration-([0-9]+)\.toml")
-READ_LIMIT = 1024 * 1024
-
-
-class Module(NamedTuple):
-    code: str
-    folder: Path
-    table: dict[str, object]
-    skills: list[str]
-
-
-class Scan(NamedTuple):
-    folders: dict[str, Path]
-    modules: list[Module]
-    skills: list[dict[str, object]]
-    problems: list[dict[str, object]]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -129,166 +161,6 @@ def collect(roots: list[Path], *, include_content: bool = False) -> dict[str, ob
         "migrations": sorted(migrations, key=lambda item: (str(item["module"]), migration_number(str(item["path"])))),
         "problems": problems,
     }
-
-
-def is_skill(folder: Path) -> bool:
-    return (folder / "SKILL.md").exists() or (folder / MANIFEST_NAME).exists()
-
-
-def grouped(folder: Path) -> list[Path]:
-    """The folder itself, or the skills inside it when it only groups them."""
-    if is_skill(folder):
-        return [folder]
-    return sorted(inner for inner in folder.iterdir() if inner.is_dir() and is_skill(inner))
-
-
-def scan(roots: list[Path]) -> Scan:
-    """Find every module record and every module skill in the roots."""
-    folders: dict[str, Path] = {}
-    modules: list[Module] = []
-    problems: list[dict[str, object]] = []
-    record_codes: dict[str, str] = {}
-    pending: list[tuple[Path, Path, dict[str, object], bool]] = []
-
-    for root in roots:
-        try:
-            found = sorted(path for path in root.iterdir() if path.is_dir())
-            # A source checkout groups a module's skills in a folder of their own, such as `skills/founder/`.
-            found = [inner for path in found for inner in grouped(path)]
-        except OSError as error:
-            problems.append({"kind": "root", "root": str(root), "problem": f"cannot read root {root}: {error}"})
-            continue
-        for folder in found:
-            # The first root wins a folder name outright: a project copy shadows a
-            # user copy even when the project copy carries no bmod.toml.
-            if folder.name in folders:
-                continue
-            folders[folder.name] = folder
-            manifest = folder / MANIFEST_NAME
-            try:
-                if not manifest.is_file():
-                    continue
-                data = tomllib.loads(manifest.read_text(encoding="utf-8"))
-            except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
-                problems.append(manifest_problem(folder, f"cannot use {manifest}: {error}"))
-                continue
-            if "bmod" not in data and "skill" not in data:
-                problems.append(manifest_problem(folder, f"{manifest} has neither a [bmod] nor a [skill] table"))
-                continue
-
-            skill = data.get("skill")
-            if "skill" in data and not isinstance(skill, dict):
-                problems.append(manifest_problem(folder, f"{manifest}: 'skill' is not a table"))
-                skill = None
-            if "bmod" in data:
-                module = read_record(folder, data["bmod"], skill is not None, problems)
-                if module is not None:
-                    record_codes[folder.name] = module.code
-                    first = next((other for other in modules if other.code.casefold() == module.code.casefold()), None)
-                    if first is None:
-                        modules.append(module)
-                    else:
-                        problems.append(
-                            {
-                                "kind": "module",
-                                "skill": folder.name,
-                                "problem": f"{folder.name}: module {module.code!r} is already recorded by "
-                                f"{first.folder.name}; {first.folder.name} is used",
-                            }
-                        )
-            if skill is not None:
-                pending.append((root, folder, skill, "bmod" in data))
-
-    skills = [
-        resolve_skill(root, folder, table, own_record, record_codes) for root, folder, table, own_record in pending
-    ]
-    problems.extend(absent_records(skills, folders))
-    for entry in skills:
-        entry.pop("source")
-    return Scan(folders, modules, skills, problems)
-
-
-def manifest_problem(folder: Path, problem: str) -> dict[str, object]:
-    return {"kind": "manifest", "skill": folder.name, "manifest": str(folder / MANIFEST_NAME), "problem": problem}
-
-
-def read_record(folder: Path, table: object, has_skill: bool, problems: list[dict[str, object]]) -> Module | None:
-    manifest = folder / MANIFEST_NAME
-    if not isinstance(table, dict):
-        problems.append(manifest_problem(folder, f"{manifest}: 'bmod' is not a table"))
-        return None
-    code = table.get("code")
-    if not isinstance(code, str) or not code:
-        problems.append(manifest_problem(folder, f"{manifest}: [bmod] has no usable 'code'"))
-        return None
-    listed = table.get("skills")
-    if listed is None:
-        # A record that is also a skill, with no list, is its own one member.
-        members = [folder.name] if has_skill else []
-    elif isinstance(listed, list) and all(isinstance(name, str) and name for name in listed):
-        members = list(dict.fromkeys(listed))
-    else:
-        problems.append(manifest_problem(folder, f"{manifest}: [bmod] 'skills' is not a list of skill names"))
-        members = []
-    return Module(code, folder, table, members)
-
-
-def resolve_skill(
-    root: Path, folder: Path, table: dict[str, object], own_record: bool, record_codes: dict[str, str]
-) -> dict[str, object]:
-    bmod = folder.name if own_record else table.get("bmod")
-    if not isinstance(bmod, str) or not bmod:
-        bmod = None
-    return {
-        "skill": folder.name,
-        "module": record_codes.get(bmod) if bmod else None,
-        "bmod": bmod,
-        "root": str(root),
-        "source": table.get("source"),
-    }
-
-
-def absent_records(skills: list[dict[str, object]], folders: dict[str, Path]) -> list[dict[str, object]]:
-    """One problem per module record that skills name and no root holds."""
-    problems: list[dict[str, object]] = []
-    by_bmod: dict[str, list[dict[str, object]]] = {}
-    for entry in skills:
-        if entry["module"] is not None:
-            continue
-        if entry["bmod"] is None:
-            problems.append(
-                {
-                    "kind": "manifest",
-                    "skill": entry["skill"],
-                    "problem": f"{entry['skill']}: [skill] does not name its module record under 'bmod'",
-                }
-            )
-            continue
-        by_bmod.setdefault(str(entry["bmod"]), []).append(entry)
-    for bmod, entries in sorted(by_bmod.items()):
-        names = sorted(str(entry["skill"]) for entry in entries)
-        state = "has no usable module record" if bmod in folders else "is not installed"
-        problem: dict[str, object] = {
-            "kind": "module",
-            "bmod": bmod,
-            "skills": names,
-            "problem": f"module record {bmod} {state}; it is named by {', '.join(names)}",
-        }
-        command = None if bmod in folders else install_command(entries[0]["source"], bmod)
-        if command:
-            problem["install"] = command
-            problem["problem"] = f"{problem['problem']}; install it with `{command}`"
-        problems.append(problem)
-    return problems
-
-
-def install_command(source: object, skill: str) -> str | None:
-    if not isinstance(source, str) or not source.startswith("github:"):
-        return None
-    parts = source.removeprefix("github:").split("/")
-    if len(parts) < 2 or not all(parts[:2]):
-        return None
-    return f"npx skills add {parts[0]}/{parts[1]} --skill {skill}"
 
 
 def record_document(
@@ -486,37 +358,6 @@ def migration_number(name: str) -> int | None:
 
 def migration_problem(folder: Path, path: Path, problem: str) -> dict[str, object]:
     return {"kind": "migration", "skill": folder.name, "document": str(path), "problem": f"{path}: {problem}"}
-
-
-def read_document(path: Path, folder: Path) -> bytes:
-    """Read a knowledge document, refusing anything that is not a plain file inside the folder."""
-    resolved = path.resolve()
-    if not resolved.is_relative_to(folder.resolve()):
-        raise ValueError("resolves outside the skill folder")
-    status = resolved.stat()
-    if not stat.S_ISREG(status.st_mode):
-        raise ValueError("is not a regular file")
-    with resolved.open("rb") as handle:
-        raw = handle.read(READ_LIMIT + 1)
-    if len(raw) > READ_LIMIT:
-        raise ValueError(f"is larger than {READ_LIMIT} bytes")
-    return raw
-
-
-def safe_skill_relative(entry: str) -> PurePosixPath | None:
-    """A bmod.toml path that cannot escape the skill folder, or None if it can.
-
-    Mirrors safe_skill_relative in setup.py. A URL parses as an ordinary
-    relative path and a Windows drive prefix makes a later join discard the
-    skill folder, so both are refused by name. pathlib drops "." components
-    itself, so only ".." and an empty final component need checking.
-    """
-    if not entry or "://" in entry or "\\" in entry or ":" in entry:
-        return None
-    relative = PurePosixPath(entry)
-    if relative.is_absolute() or ".." in relative.parts or not relative.name:
-        return None
-    return relative
 
 
 if __name__ == "__main__":

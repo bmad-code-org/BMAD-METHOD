@@ -37,8 +37,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/brand/DESIGN.md",
@@ -87,8 +87,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/brand/DESIGN.md",
@@ -135,8 +135,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/brand/DESIGN.md",
@@ -235,8 +235,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/record/creator.md",
@@ -303,8 +303,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/brand/DESIGN.md",
@@ -362,8 +362,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/brand/DESIGN.md",
@@ -417,8 +417,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/notes/annual-meeting.md",
@@ -473,8 +473,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/record/creator.md",
@@ -526,8 +526,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/staged/story-bakery.md",
@@ -580,8 +580,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/staged/story-bakery.md",
@@ -632,8 +632,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/record/creator.md",
@@ -689,8 +689,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/staged/talk-roadmaps.md",
@@ -742,8 +742,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/record/creator.md",
@@ -800,8 +800,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/staged/innovation-museum.md",
@@ -852,8 +852,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/staged/innovation-museum.md",
@@ -905,8 +905,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/record/creator.md",
@@ -959,8 +959,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/record/creator.md",
@@ -1020,8 +1020,8 @@
         "to": "_bmad/scripts/roster.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/knowledge.py",
-        "to": "_bmad/scripts/knowledge.py"
+        "from": "skills/core-tools/bmad/scripts/bmod_utils.py",
+        "to": "_bmad/scripts/bmod_utils.py"
       },
       {
         "from": "files/staged/world-hush.md",

@@ -26,12 +26,16 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+
 MANIFEST_NAME = "bmod.toml"
 _MISSING = object()
 
 
 def install_command(source: str, skill: str) -> str:
-    import setup as hub
+    import bmod_utils as hub
 
     command = hub.install_command(source, skill)
     return f"`{command}`" if command is not None else f"`{skill}` from {source}"
@@ -39,7 +43,7 @@ def install_command(source: str, skill: str) -> str:
 
 def owed(skill_dir: Path, project_root: Path | None, roots: tuple[Path, ...] = ()) -> list[str]:
     """Plain sentences for the agent to relay; empty when nothing is owed."""
-    import setup as hub
+    import bmod_utils as hub
     from config_utils import ConfigError, load_central_config
 
     parsed = hub.read_bmod_file(skill_dir / MANIFEST_NAME)
@@ -106,7 +110,7 @@ def record_in_view(hub, name: str, folders: dict[str, Path]):
 
 def dependency_notes(skill_dir: Path, parsed, folders: dict[str, Path], record) -> list[str]:
     """What the skill's module record and required skills lack in the ordered view of the skills roots."""
-    import setup as hub
+    import bmod_utils as hub
 
     skill = parsed.skill
     notes: list[str] = []
