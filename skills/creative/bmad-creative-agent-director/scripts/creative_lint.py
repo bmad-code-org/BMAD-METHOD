@@ -470,6 +470,6 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     if sys.platform == "win32":
-        sys.stdout.reconfigure(encoding="utf-8")
-        sys.stderr.reconfigure(encoding="utf-8")
+        sys.stdout.reconfigure(encoding="utf-8", errors=getattr(sys.stdout, "errors", None) or "strict")
+        sys.stderr.reconfigure(encoding="utf-8", errors=getattr(sys.stderr, "errors", None) or "strict")
     sys.exit(main())
