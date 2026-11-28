@@ -5,175 +5,138 @@ sidebar:
   order: 4
 ---
 
-`bmad-party-mode` puts your installed BMad agents in one conversation, in
-character, with you steering.
+`bmad-party-mode` puts your installed BMad agents (or a custom cast of personas) into one shared conversation, in character, with you steering the discussion.
 
-## What a party is
+## What a Party Is
 
-Run `/bmad-party-mode` and the agents your installed modules provide join
-the same conversation: the PM, Architect, Dev, UX Designer, and the rest.
-They answer in character, agree, disagree, and build on each other. You
-steer: ask a follow-up, push back, bring one voice forward, or change the
-subject.
+Start a multi-agent discussion and the agents from your installed modules join the same room: the PM, Architect, Developer, UX Designer, Analyst, and others. They answer in character, agree, push back on each other, and build on earlier points. You steer the room by asking follow-ups, challenging one perspective, bringing another voice forward, or shifting the topic.
 
-Each agent brings a different priority — design, scope, what is buildable —
-so the tradeoff is visible now.
+Because each agent prioritizes a different angle (user experience, scope, technical tradeoffs, delivery cost), tensions surface early instead of midway through implementation.
 
-**Good for:**
+Good uses for a multi-agent discussion include:
 
-- Decisions with real tradeoffs
-- Brainstorming and "what are we missing?"
-- Post-mortems and retrospectives
-- Pressure-testing a plan before you commit
+- Weighing decisions with real tradeoffs
+- Brainstorming and asking "what are we missing?"
+- Running postmortems and retrospectives
+- Stress-testing a plan before committing to code
 
-You can start a party from inside any other workflow.
+You can also open a party from inside another workflow whenever you want a second opinion.
 
 :::note[Example]
 **You:** Monolith or microservices for the MVP?
 
-**Architect:** Start monolith. Microservices add operating cost you don't need at a thousand users.
+**Winston (Architect):** Start with a monolith. Microservices add operational overhead you do not need at a thousand users.
 
-**PM:** Agreed. Time to market matters more than scaling we can't prove yet.
+**John (PM):** Agreed. Time to market matters more than scaling bottlenecks we have not proven yet.
 
-**Dev:** Monolith, but with clean module boundaries so we can split a service out later without a rewrite.
+**Amelia (Dev):** Monolith, with clean module boundaries so we can extract a service later without a rewrite.
 :::
 
-## Start a party
+## Start a Discussion in Plain English
 
-Invoke the skill and say what you want; it works out whether you mean to run
-or build one.
+Open your AI coding tool's chat and describe the room you want. `bmad-party-mode` figures out whether you want to start a discussion, switch casts, or build a new party:
 
-| Goal | Type this |
+| What you want | Example prompt |
 | --- | --- |
-| Start a party in the default mode | `/bmad-party-mode` |
-| Start in a specific mode | `/bmad-party-mode --mode subagent` (also `session`, `agent-team`) |
-| Run it once, non-interactively | `/bmad-party-mode --non-interactive "review this PR"` |
-| Open a saved party | `/bmad-party-mode --party code-review-crew` |
-| See the saved parties | `/bmad-party-mode --list-groups` |
-| Create a cast on the spot | "party mode with the bridge crew of the Enterprise" |
-| Create or edit a party | "party mode, create a new party" or "party mode, edit the writers' room" |
-| Set the skill's defaults | `/bmad-customize bmad-party-mode` |
+| Default installed agents | "Start party mode: should we build billing in-house or integrate Stripe?" |
+| A cast created on the spot | "Party mode with the bridge crew of the Enterprise to debate our release freeze." |
+| One of the built-in panels | "Run party mode with the Anti-Consensus Club on our pricing tiers." |
+| Your saved rooms | "Party mode, list my saved parties." |
+| A new or updated reusable cast | "Party mode, create a new party for quarterly launch reviews" or "Party mode, edit the writers' room." |
+| Different default party settings | Run `/bmad-customize bmad-party-mode` and say what you want changed. |
 
-## Choose a mode
+### Optional Shortcut Flags
 
-One mode is active per session. It decides who does the thinking: one model
-voicing everyone, or separate agents reasoning on their own.
+If you prefer compact slash-command flags, `bmad-party-mode` also accepts them directly:
+
+| Goal | Shortcut |
+| --- | --- |
+| Start with your default party | `/bmad-party-mode` |
+| Pick a specific execution mode | `/bmad-party-mode --mode subagent` (also `session`, `agent-team`) |
+| Run once and wrap up automatically | `/bmad-party-mode --non-interactive "review this PR"` |
+| Open a saved party by id | `/bmad-party-mode --party code-review-crew` |
+| List saved parties | `/bmad-party-mode --list-groups` |
+
+## Choose How Independently Personas Think
+
+Each session runs in one mode that controls whether one AI model voices every character or separate agents work independently:
 
 | Mode | What it does | Use it when |
 | --- | --- | --- |
-| `session` | Default. One model voices every persona inline. | Almost always: conversation, brainstorming, focus groups, review panels. |
-| `subagent` | Spawns a separate agent for each persona every substantive round. | Each persona needs its own long research or file work. |
-| `agent-team` | Runs the personas as a persistent team whose members address each other directly. Claude Code only. | A live, hands-off round-table where the agents talk among themselves. |
+| `session` | Default. One model voices every persona inline. | Almost always: lively conversation, brainstorming, focus groups, and panels. |
+| `subagent` | Spawns a separate subagent for each persona on every substantive round. | Each persona needs its own long research or deep file inspection. |
+| `agent-team` | Runs personas as a persistent team addressing each other directly (Claude Code only). | You want a live, hands-off roundtable where agents exchange messages directly. |
 
-One model voicing every persona gives the liveliest room: short turns,
-interruptions, running jokes, characters who change their minds. Separate
-agents are slower, cost about three times as much, and tend to give
-speeches instead of a conversation. Use them when a persona has its own
-long piece of research or file work.
+One model voicing every persona produces the liveliest discussion: short turns, interruptions, callbacks, and characters who actually change their minds. Separate subagents are slower, cost roughly three times as many tokens, and tend to deliver longer prepared statements rather than back-and-forth dialogue, so save `subagent` mode for sessions where each persona needs to investigate different files or sources.
 
-When your tool can't run the mode you asked for, the party falls back:
-`agent-team` drops to `subagent`, then to `session`. The configured default
-lives in your customization; a runtime `--mode` flag wins for that session.
+When your coding tool does not support the mode you asked for, `bmad-party-mode` falls back gracefully (`agent-team` drops to `subagent`, then to `session`). You can set a default mode through `/bmad-customize bmad-party-mode` and override it for any single run.
 
-A party is interactive by default: the opening ask is a starting topic, and
-the room stays open until you end it. To serve one intent and stop, start
-with `--non-interactive`; the party runs to a natural close, wraps up, and
-releases any spawned agents.
+Parties are interactive by default, keeping the room open until you wrap up. Ask for a one-shot run (or pass `--non-interactive`) when you want the room to address one prompt, summarize, and close automatically.
 
-## Build your own party
+## Build Your Own Party
 
-You can also build a cast from any personas you describe and save it to
-reuse. The same skill writes the result through
-[bmad-customize](./customize-bmad.md). Two ideas do most of the work.
+You can create a reusable cast from any personas you describe, and `bmad-party-mode` saves it through [bmad-customize](./customize-bmad.md). Two ingredients make custom rooms work well:
 
-**Personas** make a member unmistakable: how they talk, what they value, how
-they argue. "Skeptical CFO" is a placeholder. "Won't approve anything without
-a payback under eighteen months, and says so first" is a persona.
+- Give each persona a recognizable voice, priority, and style of argument; "Skeptical CFO" is vague, whereas "Refuses to approve any project without payback under eighteen months and asks for unit economics first" creates a real voice.
+- Set a clear scene in one or two sentences covering the setting, tension, and who pushes hardest, so you can drop any defined persona into different rooms with different scenes.
 
-**Scenes** set the stage in one freeform line: the setting, what is
-happening, who is hostile to whom, who pushes hardest. Define a member once
-and drop them into different rooms.
-
-| Shape | What it is |
+| Cast shape | What it is |
 | --- | --- |
-| Themed cast | Famous investors, a TV ensemble — distinct voices around a topic. |
-| One-off personas | A persona or two added to the pool, no group needed. |
-| Focus group from data | Hand it customer or survey data; it builds representative personas. |
-| Review panel | Critical lenses that argue about what matters. The Code Review Crew is one. |
-| Deliberation scaffold | A room that makes you think harder without pretending to decide for you. The Anti-Consensus Club is one. |
-| Open-cast room | No fixed roster. The scene names a universe and the room is cast on the fly. |
+| Themed cast | Distinct voices around a topic, such as well-known investors or a fictional ensemble. |
+| One-off personas | One or two custom voices added to your pool without creating a full group. |
+| Focus group from data | Hand customer feedback or survey data to the skill so it builds representative personas. |
+| Review panel | Critical perspectives that debate what matters most (such as the shipped Code Review Crew). |
+| Deliberation room | A structured panel that tests assumptions without voting for you (such as the Anti-Consensus Club). |
+| Open-cast room | No fixed roster; the scene names a universe or setting and personas enter as the topic shifts. |
 
-Run `/bmad-customize bmad-party-mode` to pin a saved group as the default
-party, choose its starting mode, and set house rules for the whole session.
-
-Any set of voices becomes a party: a founder squad, a compliance team, the
-authors of the Agile Manifesto, a room of comedians.
+Run `/bmad-customize bmad-party-mode` whenever you want to pin a saved group as your default room, change the starting mode, or add house rules.
 
 ## The Code Review Crew
 
-The Code Review Crew ships alongside the default party as a template to
-study before you build your own: five viewpoints on a change that argue
-about what matters.
+The Code Review Crew ships inactive in the persona pool so you can study it or run it on demand without crowding your default room. It brings five contrasting lenses to a code change:
 
 | Member | Lens |
 | --- | --- |
-| Vex | Security — threat-models everything and names the concrete exploit path. |
-| Grumbal | The adversary — assumes the code is broken and sets out to prove it. |
-| Boundary | Edge cases — every branch, null, race, oversized input, odd timezone. |
-| Yui | The craftsman — simplicity, naming, no needless cleverness or duplication. |
-| Dana | The pragmatist — counters the perfectionists and ranks what's real versus a nit. |
+| Vex | Security: threat-models inputs and names concrete exploit paths. |
+| Grumbal | The adversary: assumes the code is broken and sets out to prove it. |
+| Boundary | Edge cases: checks nulls, races, oversized inputs, retries, and timezones. |
+| Yui | The craftsman: focuses on clarity, naming, and removing unnecessary complexity. |
+| Dana | The pragmatist: pushes back on nitpicks and separates real risks from polish. |
 
-The crew ships inactive: the members sit in the pool and never join the
-default room. Open it with `--party code-review-crew`.
+Open it by asking for the Code Review Crew or running `/bmad-party-mode --party code-review-crew`.
 
-:::note[A debate, not a review]
-The crew argues. It does not verify or triage. For a review that produces
-verified, ranked findings, use [Review a Change](../build/review-a-change.md).
+:::note[A Debate, Not a Verified Code Review]
+The Code Review Crew debates tradeoffs and surfaces angles, but it does not run verification checks or produce triaged findings. For a verified, ranked code review, see [Review a Change](../build/review-a-change.md).
 :::
 
 ## The Anti-Consensus Club
 
-The Anti-Consensus Club helps with decisions and fuzzy questions where one
-assistant might agree too quickly or keep debating after the useful work is
-done. It is not a voting body: it raises objections, checks claims, stops
-repetition, and returns the decision to you.
+The Anti-Consensus Club helps on ambiguous decisions where a single assistant might agree too quickly or circle without resolving the real question. It does not vote or decide for you; it surfaces hidden assumptions, checks evidence, stops repetition, and hands the decision back to you.
 
 | Member | Lens |
 | --- | --- |
-| Wildcard | Option generator — suggests alternative problem statements, assumptions, and examples. |
-| Level | Claim checker — checks support, missing information, and confidence. |
-| Killjoy | Loop stopper — stops repetition, fake disagreement, and unsupported speculation. |
-| Splinter | Consensus challenger — questions easy agreement and ignored tradeoffs. |
+| Wildcard | Option generator: proposes alternative problem statements, assumptions, and concrete examples. |
+| Level | Claim checker: checks what evidence exists, what is missing, and how confident the room should be. |
+| Killjoy | Loop stopper: halts repetition, fake disagreement, and unsupported speculation. |
+| Splinter | Consensus challenger: questions easy agreement and ignored tradeoffs. |
 
-Run it as `/bmad-party-mode --party anti-consensus-club`.
+Open it by asking for the Anti-Consensus Club or running `/bmad-party-mode --party anti-consensus-club`.
 
-## Steer the room
+## Steer the Room
 
-- Bring someone in: "Bring in the UX designer."
-- Go deep on one voice: "Winston, take that apart."
-- Switch rooms mid-session: "Switch to the writers' room" swaps the active group and carries the thread over.
-- Summon anyone by name, even a custom member who isn't in the current room.
+During any session, you can guide the conversation naturally:
 
-In every mode the result reads as one conversation and the personas stay in
-character.
+- Bring someone in: "Bring in Sally to react to this flow."
+- Press one voice further: "Winston, take that database assumption apart."
+- Switch rooms mid-session: "Switch to the writers' room" swaps the active group while carrying the thread over.
+- Summon any saved persona by name, even if they are not part of the current group.
 
-## Memory
+## Session Memory
 
-A party with memory keeps a record of past sessions — the dynamics between
-members, open threads, where things landed — and picks up there next time.
-It is not a transcript: it keeps the few things worth remembering, without
-breaking character.
+A party with memory keeps concise notes across sessions (group dynamics, open threads, and prior decisions) so the next conversation picks up naturally without replaying a full transcript.
 
-In a remembered party, someone who joined from an open-cast scene or a
-member you add mid-conversation is kept too; at wrap-up the room offers to
-save them into the roster. The default installed-agent room remembers unless
-you turn it off in `/bmad-customize bmad-party-mode`. Both shipped parties
-and any cast you create inline start fresh each time; save a cast as a party
-and choose memory to give it one.
+In a remembered party, personas who joined on the fly can be saved into the roster at wrap-up. The default installed-agent room keeps memory on unless you turn it off through `/bmad-customize bmad-party-mode`. Both built-in panels and ad-hoc inline casts start fresh each time unless you save a cast as a party and enable memory.
 
-## A keepsake of the session
+## Session Keepsake
 
-When you wrap up, the party offers a keepsake: one self-contained HTML
-document of the session, laid out by persona, written as
-`party-<slug>/party-<slug>.html` in the active initiative's folder, or in the
-output folder when none is active. Decline it and the party ends.
+When a session wraps up, `bmad-party-mode` offers to save a keepsake: a single self-contained HTML summary laid out by persona at `party-<slug>/party-<slug>.html` inside your active initiative folder (or your output folder when no initiative is active). Decline the offer if you do not need a saved copy.

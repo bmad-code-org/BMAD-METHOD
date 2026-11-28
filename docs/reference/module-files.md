@@ -5,19 +5,19 @@ sidebar:
   order: 4
 ---
 
-Use this page for the exact keys in a module's files. For what a module is and how to choose a registration, see [Modules and Registration](../toolsmith/modules.md). Smithy writes these files for you, and `validate_manifests.py` checks them.
+Use this page for the exact keys in a module's files. For what a module is and how to choose a registration shape, see [Modules and Registration](../toolsmith/modules.md). Smithy (`bmad-toolsmith`) writes these files for you, and `validate_manifests.py` checks them.
 
 ## Where the Files Live
 
 | File | Multi-skill module | Single-skill module |
 | --- | --- | --- |
 | `bmod.toml` with `[bmod]` | In the `bmod-<code>` record folder | In the skill's folder |
-| `bmod.toml` with `[skill]` | In each member's folder | The same file, with `[skill]` empty |
+| `bmod.toml` with `[skill]` | In each member's folder | The same file, with `[skill]` empty (unless declaring `scripts`) |
 | `help/help.md` | In the record folder | In the skill's folder |
-| `SKILL.md` | The record has one that only redirects to `bmad setup <code>` | The skill's own |
+| `SKILL.md` | The record has a stub redirecting to `bmad setup <code>` | The skill's own |
 | `roster.toml`, `retired.toml`, `migration-<n>.toml` | In the record folder | Beside `bmod.toml` |
 
-`bmad` finds a module by its `[bmod]` table. Validation requires a multi-skill record folder to be named `bmod-<code>`, and a single-skill module's folder keeps the skill's name.
+`bmad` finds a module by its `[bmod]` table. Validation requires a multi-skill record folder to be named `bmod-<code>`, while a single-skill module keeps the skill's name.
 
 ## `bmod.toml`
 
@@ -28,50 +28,50 @@ A file holds a `[bmod]` table, a `[skill]` table, or both.
 | Key | Required | Meaning |
 | --- | --- | --- |
 | `code` | Yes | Configuration namespace and the name in `bmad setup <code>`. Cannot be `_config`, `custom`, `modules`, or `scripts` |
-| `version` | Yes | The module's version, compared with its source to offer updates |
+| `version` | Yes | Valid SemVer (`MAJOR.MINOR.PATCH` with optional prerelease) compared with the source to offer updates. Rejects `-dev` prereleases (cannot be ordered by `setup.py`) and `+build` metadata (ignored during ordering) |
 | `update_source` | Yes | Where updates come from. Starts with `github:`, `https://`, `file:`, or `plugin:` |
 | `skills` | Multi-skill | Every member skill |
-| `required_skills` | No | Skills the module needs, see [Dependencies](#dependencies) |
-| `recommended_skills` | No | Skills that help beside it. Setup reports them and does not insist |
-| `pre_install_message` | For validation | Shown before an update, or before `bmad` installs the record itself |
-| `post_install_message` | For validation | Shown after installing |
+| `required_skills` | No | Skills the module needs; see [Dependencies](#dependencies) |
+| `recommended_skills` | No | Skills that help beside it; setup reports them without insisting |
+| `pre_install_message` | For validation | Shown before an update or before `bmad` installs the record itself (empty string if unused) |
+| `post_install_message` | For validation | Shown after installing (empty string if unused) |
 
-Setup accepts a record without the install messages, but `validate_manifests.py` requires both keys, empty if unused.
+Setup accepts a record without install messages, whereas `validate_manifests.py` requires both keys (empty if unused).
 
-A `github:` source is `github:<owner>/<repo>/<path>`, where `<path>` is the folder holding the skill folders, such as `skills`. With no path, the repository root is the skill. Update checks read `bmod.toml` from the `main` branch.
+A `github:` source is `github:<owner>/<repo>/<path>`, where `<path>` is the folder holding the skill folders (such as `skills` or `skills/founder`). With no path, the repository root is the skill. Update checks read `bmod.toml` from the `main` branch.
 
 ### `[[bmod.config_questions]]`
 
-Each entry is one question for `bmad setup <code>`, asked in file order.
+Each entry is one question for `bmad setup <code>`, asked in file order:
 
 | Key | Required | Meaning |
 | --- | --- | --- |
-| `key` | Yes | Dotted key, read as `modules.<code>.<key>`. Must not be the code or start with `<code>.` |
+| `key` | Yes | Dotted key read as `modules.<code>.<key>`. Must not equal `<code>` or start with `<code>.` |
 | `prompt` | Yes | The question text |
-| `default` | Yes | The default answer, with `{project-root}` kept literal |
-| `scope` | No | `team`, the default, or `user` for a personal answer that is not committed |
+| `default` | Yes | The default answer, keeping `{project-root}` literal |
+| `scope` | No | `team` (default, written to `_bmad/config.toml`) or `user` (personal, written to `_bmad/custom/config.user.toml`) |
 
 No other keys are allowed.
 
 ### `[[bmod.knowledge]]`
 
-Optional. Lists extra help documents inside the record folder, with `path` and `skills`. `skills` is `"*"`, the default, or a list of skill names.
+Optional. Lists extra help documents inside the record folder with `path` and `skills` (`"*"` by default, or a list of skill names).
 
 ### `[skill]`
 
 | Key | Required | Meaning |
 | --- | --- | --- |
-| `bmod` | In a member file | The record folder, such as `bmod-acme` |
+| `bmod` | In a member file | The record folder name, such as `bmod-acme` |
 | `source` | In a member file | Must equal the record's `update_source` |
 | `required_skills` | No | What this skill alone requires |
 | `recommended_skills` | No | What helps beside this skill |
-| `scripts` | No | Paths written like `scripts/foo.py` that setup installs to `_bmad/<code>/scripts/` |
+| `scripts` | No | Relative paths such as `scripts/foo.py` installed by setup into `_bmad/<code>/scripts/` |
 
-In a single-skill module, leave `[skill]` empty unless it declares `scripts`, because the record in the same file already names the module's one skill.
+In a single-skill module, leave `[skill]` empty unless declaring `scripts`, because `[bmod]` in the same file already identifies the skill.
 
 ### Dependencies
 
-A plain name is a skill from the same source. A table names a skill from elsewhere.
+A plain string names a skill from the same source; a table names a skill from another source:
 
 ```toml
 required_skills = [
@@ -80,11 +80,11 @@ required_skills = [
 ]
 ```
 
-`version` is optional. Module-wide needs go in `[bmod]`, including all of a single-skill module's needs. One member's needs go in its `[skill]` table.
+`version` is optional and cannot carry `+build` metadata. Module-wide dependencies go in `[bmod]` (including all dependencies of a single-skill module), while member-specific dependencies go in `[skill]`.
 
 ### Examples
 
-A record:
+A multi-skill record:
 
 ```toml
 [bmod]
@@ -102,7 +102,7 @@ prompt = "Where should release notes go?"
 default = "{project-root}/docs/releases"
 ```
 
-A member:
+A member skill:
 
 ```toml
 [skill]
@@ -124,17 +124,13 @@ post_install_message = ""
 [skill]
 ```
 
-## Reading Answers
+## Reading Setup Answers
 
-A skill reads a setup answer with one call, listing every key it needs.
-
-```bash
-uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key modules.acme.release_folder
-```
+Skills read saved setup answers through BMad's config resolver using dotted keys such as `modules.acme.release_folder`, so you do not have to parse TOML files manually. Smithy wires those lookups in for you when building a module, and you can inspect the script under `_bmad/scripts/resolve_config.py` if you need exact flags.
 
 ## `roster.toml`
 
-Required when a member is an agent. It is how `bmad` and party mode know who is available. A member with `skill` is an agent, present only while that skill is installed. A member without `skill` is a guest who exists only in groups.
+Required whenever a module includes an agent so `bmad`, `bmad-party-mode`, `bmad-forge-idea`, and `bmad-advanced-elicitation` know who is available. A member with `skill` is an installed agent; a member without `skill` is a guest available only inside groups:
 
 ```toml
 [[members]]
@@ -143,7 +139,7 @@ skill = "acme-agent-scout"
 name = "Scout"
 icon = "🔭"
 title = "Release Scout"
-persona = "Two sentences on who this agent is."
+persona = "Two sentences describing how this agent thinks and speaks."
 
 [[groups]]
 id = "release-team"
@@ -155,7 +151,7 @@ memory = false
 
 ## `retired.toml`
 
-Lists skills the module no longer ships. `bmad setup` offers to delete any still installed, and moves a renamed skill's `_bmad/custom/` files to the new name. A retired name is never reused, and a name can appear only once.
+Lists skills the module no longer ships. `bmad setup` offers to delete any still installed and moves `_bmad/custom/` override files for renamed skills to the new name. Retired names are never reused, and each name appears only once:
 
 ```toml
 renamed = [{ from = "acme-notes", to = "acme-release-notes" }]
@@ -164,18 +160,31 @@ removed = ["acme-old-check"]
 
 ## `migration-<n>.toml`
 
-A module ships a migration beside its `bmod.toml`, and `bmad migrate` runs them in `<n>` order. The file has a `[migration]` table with `module`, `from`, `to`, `title`, `summary`, `detect`, `guide`, and a `checklist` array. A file missing any of these is not listed. The file holds the rules, and `bmad` follows them.
+A module ships version migrations beside its `bmod.toml`, and `bmad migrate` executes them in numeric `<n>` order. The `[migration]` table requires `module`, `from`, `to`, `title`, `summary`, `detect`, `guide`, and `checklist` (files missing any required key are skipped):
+
+```toml
+[migration]
+module = "acme"
+from = "1"
+to = "2"
+title = "Move v1 release notes into the v2 releases folder"
+summary = "Copies legacy release files into the new per-release folder layout after making a backup."
+detect = "Legacy release-*.md files exist at the repository root without a releases/ folder."
+guide = """
+1. Back up existing release-*.md files to .acme-v1-backup/.
+2. Move each file into docs/releases/<version>/release.md.
+3. Update cross-links and report moved paths.
+"""
+checklist = [
+  "Backup created before moving any file",
+  "Every release-*.md file landed in docs/releases/<version>/release.md",
+]
+```
 
 ## Help Files
 
-`help/help.md` covers the whole module and is read by the `bmad` skill. Every other `help/*.md` is a topic file, read only when `help.md` names it. See [Write the Help](../toolsmith/modules.md#write-the-help).
+`help/help.md` summarizes the module for the `bmad` skill. Additional `help/*.md` files are topic guides read only when `help/help.md` references them. See [Write the Help](../toolsmith/modules.md#write-the-help).
 
 ## Validate
 
-In a repository with `skills/*/bmod.toml`:
-
-```bash
-uv run "{project-root}/_bmad/scripts/validate_manifests.py" --project-root "<repo>"
-```
-
-It covers manifests, membership, versions, retired names, help topics, and the roster.
+Ask Smithy (`bmad-toolsmith`) to validate your module before releasing it. Manifest validation supports both flat repositories (`skills/<skill>/bmod.toml`) and multi-module grouped repositories (`skills/<module>/<skill>/bmod.toml`, where each module's skills sit one level down under `skills/` and install flat under their skill names), checking manifest schemas, module membership, SemVer rules (rejecting `-dev` prereleases and `+build` metadata), retired names, help topics, and `roster.toml`. If you are wiring validation into CI, inspect `_bmad/scripts/validate_manifests.py` in the repository for its CLI arguments.

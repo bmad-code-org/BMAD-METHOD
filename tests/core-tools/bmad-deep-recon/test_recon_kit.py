@@ -18,10 +18,21 @@ from datetime import date
 from pathlib import Path
 from unittest import mock
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-deep-recon/scripts"))
+SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-deep-recon/scripts/recon_kit.py"
+FRONTMATTER = SCRIPT.parents[2] / "bmad" / "scripts" / "frontmatter.py"
+sys.path.insert(0, str(SCRIPT.parent))
 
-import recon_kit
-from recon_kit import add_months, main, parse_date, slugify
+import recon_kit  # noqa: E402
+from recon_kit import add_months, parse_date, slugify  # noqa: E402
+
+PROJECT = tempfile.TemporaryDirectory()  # a project with the shared scripts installed, as bmad setup leaves it
+(Path(PROJECT.name) / "_bmad" / "scripts").mkdir(parents=True)
+shutil.copy2(FRONTMATTER, Path(PROJECT.name) / "_bmad" / "scripts")
+
+
+def main(argv):
+    return recon_kit.main(["--project-root", PROJECT.name, *argv])
+
 
 REPORT = """---
 title: 'market research: widgets'
@@ -162,10 +173,12 @@ class CitationsEdgeTest(unittest.TestCase):
             "A stray ` here [1].\n\nNext paragraph ` and [2].\n"
             "- item with ` tick [3]\n- next item ` tick [4]\n"
             "# Heading ` [5]\nBody ` [6]\n\n"
-            "| [n] | Supports |\n| --- | --- |\n| [1] | a |\n| [2] | b |\n| [3] | c |\n| [4] | d |\n| [5] | e |\n| [6] | f |\n"
+            "1. step ` [7]\n2) step ` [8]\n\n"
+            "| Claim | Ref |\n| --- | --- |\n| x ` | [9] |\n| y ` | [10] |\n\n"
+            "| [n] | Supports |\n| --- | --- |\n" + "".join(f"| [{n}] | s{n} |\n" for n in range(1, 11))
         )
         code, result = run_text(["citations"], text)
-        self.assertEqual(result["markers"], [1, 2, 3, 4, 5, 6])
+        self.assertEqual(result["markers"], list(range(1, 11)))
         self.assertTrue(result["ok"])
 
     def test_a_repeated_appendix_id_is_reported(self):

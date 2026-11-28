@@ -46,6 +46,7 @@ Optional modules install the same way:
 | --- | --- | --- |
 | Toolsmith | Smithy builds, converts, reviews and packages skills, agents and modules; `bmad-eval` measures them | `npx skills add bmad-code-org/BMAD-METHOD/skills/toolsmith --skill '*'` |
 | Founder | Nadia the Founder Advisor coaches the business side of a startup, from idea and pricing to fundraising | `npx skills add bmad-code-org/BMAD-METHOD/skills/founder` |
+| Creative | Clio the Creative Director coaches voice-grounded writing, talks, stories, visuals, and breakthrough thinking | `npx skills add bmad-code-org/BMAD-METHOD/skills/creative` |
 
 To pick single skills instead, run `npx skills add bmad-code-org/BMAD-METHOD` and include `bmad` plus the record of each module you take skills from, such as `bmod-core-tools` and `bmod-method`.
 

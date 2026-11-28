@@ -1,0 +1,122 @@
+{
+  "cases": [
+    {
+      "id": "slice-prd-map-verbatim",
+      "input": "Run headless. Use bmad-agent-po (Sofia) to distill files/relay-prd.md into a new initiative under _bmad-output/ and slice it into epics.",
+      "rubric": [
+        "Four epics exist in the initiative's tickets/tickets.toml matching the PRD Epic map names and order verbatim (Arrival & Check-in, Queue & Triage, Rooming & Handoff, Follow-up & Billing).",
+        "tickets.py status on the initiative shows valid ids and zero cycles or order conflicts.",
+        "Each epic traces to its PRD entry through covers and Requirements lines.",
+        "Unowned long-horizon OKR-03 is flagged explicitly in the initiative file's Notes (not silently dropped or only mentioned in chat)."
+      ],
+      "files": [
+        "files/relay-prd.md",
+        "_bmad/config.toml",
+        "_bmad/scripts/render_skill.py",
+        "_bmad/scripts/config_utils.py",
+        "_bmad/scripts/frontmatter.py",
+        "_bmad/scripts/resolve_customization.py",
+        "_bmad/scripts/resolve_config.py"
+      ]
+    },
+    {
+      "id": "slice-no-prd-one-capability",
+      "input": "Run headless. Use bmad-agent-po (Sofia) to turn files/shift-swap-brief.md into the ticket tree under _bmad-output/ at internal company stakes.",
+      "rubric": [
+        "Creates one standalone epic (epic-*) rather than splitting into multiple epics or rollout-phase epics (no 12-store or 48-store rollout epic).",
+        "Leaves the epic unrefined (refined: false) because open product questions remain (partial shifts, 24h auto-approve), and records those gaps plus the missing success measure as Open question: lines.",
+        "Never invents answers to the open product questions or writes Assumption: lines deciding partial shifts or auto-approve.",
+        "Never loads bmad-agent-pm, bmad-agent-ux-designer, bmad-agent-architect, or bmad-facilitate inline; recommends John in a fresh chat in the report."
+      ],
+      "files": [
+        "files/shift-swap-brief.md",
+        "_bmad/config.toml",
+        "_bmad/scripts/render_skill.py",
+        "_bmad/scripts/config_utils.py",
+        "_bmad/scripts/frontmatter.py",
+        "_bmad/scripts/resolve_customization.py",
+        "_bmad/scripts/resolve_config.py"
+      ]
+    },
+    {
+      "id": "spec-one-pass-and-contradiction",
+      "input": "Run headless. Use bmad-agent-po (Sofia) to check and reconcile all unadopted runs in files/case-contradiction/epic-checkin.",
+      "rubric": [
+        "Reads all unadopted runs in one pass without modifying prd-epic-checkin.md, ux-epic-checkin/EXPERIENCE.md, or arch-epic-checkin/arch-epic-checkin.md.",
+        "Surfaces the contradiction between verified-account requirement (E01-FR-01) and anonymous guest kiosk flow (EXPERIENCE.md) as a Source conflict: line without silently picking a winner.",
+        "Does not adopt the draft arch-epic-checkin.md into companions: (flags it as unfinished draft instead)."
+      ],
+      "files": [
+        "files/case-contradiction/epic-checkin/epic-checkin.md",
+        "files/case-contradiction/epic-checkin/prd-epic-checkin/prd-epic-checkin.md",
+        "files/case-contradiction/epic-checkin/ux-epic-checkin/EXPERIENCE.md",
+        "files/case-contradiction/epic-checkin/arch-epic-checkin/arch-epic-checkin.md",
+        "_bmad/config.toml",
+        "_bmad/scripts/render_skill.py",
+        "_bmad/scripts/config_utils.py",
+        "_bmad/scripts/frontmatter.py",
+        "_bmad/scripts/resolve_customization.py",
+        "_bmad/scripts/resolve_config.py"
+      ]
+    },
+    {
+      "id": "detail-at-inception",
+      "input": "Run headless. Use bmad-agent-po (Sofia) to slice files/case-detail/epic-checkout into stories and complete epic-inception story detailing so the stories are ready to build.",
+      "rubric": [
+        "Creates tickets/tickets.toml with 1-2 sentence outcome descriptions, refine = true on each entry, no standalone go-live story, and UI references citing DESIGN.md, EXPERIENCE.md#cart-flow, and mockups/cart.html (plus arch-epic-checkout).",
+        "Pulls and details Refined Story markdown files (tickets/story-*.md) with refined: true, Given/When/Then functional + failure + measurement criteria citing epic R<n> and E01-FR-xx ids, and zero copied epic spec prose or source-code file paths.",
+        "Every epic R<n> line (including instrumentation R3) is covered by both covers and at least one acceptance criterion across the story set, and tickets.py body succeeds for each story.",
+        "tickets.py next lists the approved stories under ready_to_start with zero cycles or drift."
+      ],
+      "files": [
+        "files/case-detail/epic-checkout/epic-checkout.md",
+        "files/case-detail/epic-checkout/prd-epic-checkout/prd-epic-checkout.md",
+        "files/case-detail/epic-checkout/ux-epic-checkout/DESIGN.md",
+        "files/case-detail/epic-checkout/ux-epic-checkout/EXPERIENCE.md",
+        "files/case-detail/epic-checkout/ux-epic-checkout/mockups/cart.html",
+        "files/case-detail/epic-checkout/arch-epic-checkout/arch-epic-checkout.md",
+        "_bmad/config.toml",
+        "_bmad/scripts/render_skill.py",
+        "_bmad/scripts/config_utils.py",
+        "_bmad/scripts/frontmatter.py",
+        "_bmad/scripts/resolve_customization.py",
+        "_bmad/scripts/resolve_config.py"
+      ]
+    },
+    {
+      "id": "spec-hobby-right-size",
+      "input": "Run headless. Use bmad-agent-po (Sofia) to turn files/hobby-brief.md into the ticket tree under _bmad-output/. Keep it light for this personal weekend project.",
+      "rubric": [
+        "Proceeds directly with Sofia (records Open question: lines for CSV vs Discogs and theme, keeps requirements concise, does not bounce the user through John/Sally/Winston specialist gates or load specialist skills inline).",
+        "Keeps the work as a single lightweight standalone epic or standalone story without over-splitting into multiple epics."
+      ],
+      "files": [
+        "files/hobby-brief.md",
+        "_bmad/config.toml",
+        "_bmad/scripts/render_skill.py",
+        "_bmad/scripts/config_utils.py",
+        "_bmad/scripts/frontmatter.py",
+        "_bmad/scripts/resolve_customization.py",
+        "_bmad/scripts/resolve_config.py"
+      ]
+    },
+    {
+      "id": "refine-after-epic-prd",
+      "input": "Run headless. Use bmad-agent-po (Sofia) to refine files/case-refine/epic-alerts by adopting its final PRD run.",
+      "rubric": [
+        "Adopts files/case-refine/epic-alerts/prd-epic-alerts/prd-epic-alerts.md in one pass into sources: and companions:, writing Requirements R<n> lines citing all E02-FR-01..04 ids plus a dedicated R<n> line for alert_delivery_latency_ms instrumentation.",
+        "Sets refined: true on epic-alerts.md so tickets.py status shows has_spec: true and unrefined_epics: []."
+      ],
+      "files": [
+        "files/case-refine/epic-alerts/epic-alerts.md",
+        "files/case-refine/epic-alerts/prd-epic-alerts/prd-epic-alerts.md",
+        "_bmad/config.toml",
+        "_bmad/scripts/render_skill.py",
+        "_bmad/scripts/config_utils.py",
+        "_bmad/scripts/frontmatter.py",
+        "_bmad/scripts/resolve_customization.py",
+        "_bmad/scripts/resolve_config.py"
+      ]
+    }
+  ]
+}

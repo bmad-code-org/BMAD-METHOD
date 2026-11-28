@@ -31,9 +31,9 @@ import sys
 import tomllib
 from pathlib import Path, PurePosixPath
 
-import yaml
-
 sys.dont_write_bytecode = True
+
+import frontmatter  # noqa: E402
 
 
 def _load_setup():
@@ -59,6 +59,7 @@ reject_unusable_bmad = _setup.reject_unusable_bmad
 render_toml = _setup.render_toml
 retired_skills = _setup.retired_skills
 retirement_report = _setup.retirement_report
+skill_folders = _setup.skill_folders
 write_text = _setup.write_text
 
 # Traces the classic installer leaves under _bmad.
@@ -134,7 +135,7 @@ def stale_config_keys(project_root: Path) -> list[tuple[str, tuple[str, ...]]]:
         if path.is_symlink() or not path.is_file() or not inside_bmad(path, project_root):
             continue
         try:
-            data = tomllib.loads(path.read_text(encoding="utf-8"))
+            data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
         except (OSError, UnicodeError, tomllib.TOMLDecodeError):
             continue
         stale += [(relative, key) for key in V6_KEYS if lookup(data, key) is not _MISSING]
@@ -155,7 +156,7 @@ def stale_custom_keys(project_root: Path, retirement: Retirement) -> list[tuple[
             if path.is_symlink() or not path.is_file() or not inside_bmad(path, project_root):
                 continue
             try:
-                data = tomllib.loads(path.read_text(encoding="utf-8"))
+                data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
             except (OSError, UnicodeError, tomllib.TOMLDecodeError):
                 continue
             stale += [
@@ -182,18 +183,27 @@ def custom_key_notes(stale: list[tuple[str, tuple[str, ...]]]) -> list[str]:
 
 
 def unused_customizations(project_root: Path, installation: Installation, retirement: Retirement) -> list[str]:
-    """`_bmad/custom/` files of skills that are not installed. Files setup is about to rename are not unused."""
+    """`_bmad/custom/` files of skills that are not installed. Files setup is about to rename are not unused.
+
+    Installed means present in the active roots or in any `.<tool>/skills` of the project: a teammate's tool may
+    load a skill this host does not, and its customization is shared through the repository."""
     custom = project_root / "_bmad" / "custom"
     if custom.is_symlink() or not custom.is_dir():
         return []
     moving = {old for old, _new in (*retirement.renames, *retirement.unmoved)}
+    installed = set(installation.folders)
+    for folder in skill_folders(project_root, installation):
+        try:
+            installed.update(entry.name for entry in folder.iterdir() if entry.is_dir())
+        except OSError:
+            continue
     unused: list[str] = []
     for path in sorted(custom.iterdir(), key=lambda entry: entry.name):
         name = path.name
         stem = name.removesuffix(".toml").removesuffix(".user")
         if not name.startswith("bmad-") or not name.endswith(".toml") or name in moving:
             continue
-        if stem not in installation.folders:
+        if stem not in installed:
             unused.append(name)
     return unused
 
@@ -233,7 +243,7 @@ def clean(project_root: Path, skill_root: Path, *, roots: tuple[Path, ...] = ())
     removed = [(file, key) for file, key in stale if (file, key) not in moved]
     edits = {
         relative: text_without_keys(
-            (project_root / relative).read_text(encoding="utf-8"),
+            (project_root / relative).read_text(encoding="utf-8-sig"),
             [key for file, key in removed if file == relative],
             [key for file, key in moved if file == relative],
         )
@@ -387,6 +397,8 @@ def lines_without_key(lines: list[str], table: tuple[str, ...], leaf: str) -> li
 # and companions. The ticket file is the spec now, so the folder folds into the ticket that holds it.
 
 MEMLOG = ".memlog.md"
+# Files the operating system writes into any folder and writes again: not the user's, so a fold drops them.
+OS_JUNK = {".ds_store", "thumbs.db", "desktop.ini"}
 SPEC_FOLDER = re.compile(r"\Aspec-(?P<slug>[A-Za-z0-9][A-Za-z0-9._-]*)\Z")
 CAP_ID = re.compile(r"\bCAP-(\d+)\b")
 R_LINE = re.compile(r"^\s*-\s+R(\d+)\b", re.MULTILINE)
@@ -456,12 +468,11 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         ticket = home / f"{home.name}.md"
         if not ticket.is_file():
             raise FoldProblem("not inside a ticket folder (one holding a same-named .md) and not at the root")
+    # Everything else moves, hidden and .tmp files too: the folder is removed after, so what stays is lost.
     moving = [
         path
         for path in sorted(folder.iterdir(), key=lambda p: p.name)
-        if path.name not in (f"{folder.name}.md", MEMLOG)
-        and not path.name.endswith(".tmp")
-        and not path.name.startswith(".")
+        if path.name not in (f"{folder.name}.md", MEMLOG) and path.name.lower() not in OS_JUNK
     ]
     taken = [path.name for path in moving if (home / path.name).exists()]
     if taken:
@@ -526,8 +537,6 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     for path in (home / MEMLOG, folder / MEMLOG):
         if path.is_file():
             read_for_fold(path, project_root)
-    for path, text in writes.items():
-        path.write_text(text, encoding="utf-8")
     rewritten = [relative(path, project_root) for path in writes]
 
     references, unresolved = companion_references(spec["companions"], folder, home, project_root, store)
@@ -538,7 +547,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         text = story_text(spec, home, slug, requirements, references, sources, companions)
     else:
         text = folded_ticket_text(
-            ticket.read_text(encoding="utf-8"),
+            writes[ticket] if ticket in writes else ticket.read_text(encoding="utf-8-sig"),
             ticket,
             spec,
             requirements,
@@ -547,6 +556,9 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
             companions,
             replace_requirements,
         )
+    # The ticket is computed before anything is written, so a ticket that cannot be rewritten stops the fold here.
+    for path, changed in writes.items():
+        path.write_text(changed, encoding="utf-8")
     home.mkdir(parents=True, exist_ok=True)
     write_text(ticket, text)
 
@@ -559,7 +571,9 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         else:
             shutil.move(spec_memlog, memlog)
     elif not memlog.is_file():
-        write_text(memlog, f"---\ntopic: {spec['title']}\nupdated: {datetime.datetime.now():%Y-%m-%dT%H:%M}\n---\n")
+        write_text(
+            memlog, frontmatter.dump({"topic": spec["title"], "updated": f"{datetime.datetime.now():%Y-%m-%dT%H:%M}"})
+        )
     entries = [f"- (note) {name}, from {folder.name}: {value}" for name, value in spec["kept"]]
     entries.append(
         f"- (event) folded {folder.name}/ into {ticket.name}"
@@ -633,7 +647,7 @@ def rebase_links(text: str, file: Path, folder: Path, home: Path, ticket: Path) 
 
 def read_for_fold(path: Path, project_root: Path) -> str:
     try:
-        return path.read_text(encoding="utf-8")
+        return path.read_text(encoding="utf-8-sig")
     except (OSError, UnicodeError) as error:
         raise FoldProblem(f"{relative(path, project_root)} cannot be read: {error}") from error
 
@@ -641,8 +655,8 @@ def read_for_fold(path: Path, project_root: Path) -> str:
 def yaml_checked(text: str, path: Path, project_root: Path) -> str:
     """`text`, once its frontmatter reads as YAML, so a bad one stops the fold before anything changes."""
     try:
-        yaml.load("\n".join(split_frontmatter(text)[0]), Loader=yaml.BaseLoader)
-    except yaml.YAMLError as error:
+        frontmatter.load(split_frontmatter(text)[0])
+    except ValueError as error:
         raise FoldProblem(f"{relative(path, project_root)} has invalid frontmatter: {error}") from error
     return text
 
@@ -695,7 +709,7 @@ def has_own_spec(child: Path) -> bool:
         return False
     if any(SPEC_FOLDER.match(p.name) and (p / f"{p.name}.md").is_file() for p in child.iterdir() if p.is_dir()):
         return True
-    requirements = section_body(ticket.read_text(encoding="utf-8"), "Requirements")
+    requirements = section_body(ticket.read_text(encoding="utf-8-sig"), "Requirements")
     return any(CAP_ID.search(span.group(1)) for span in R_SOURCE.finditer(requirements))
 
 
@@ -746,19 +760,18 @@ def prose(section: str) -> str:
     return " ".join(line[2:].strip() if line.startswith("- ") else line for line in lines)
 
 
-def split_frontmatter(text: str) -> tuple[list[str], str]:
-    lines = text.splitlines()
-    if not lines or lines[0].strip() != "---":
-        return [], text
-    end = next((i for i in range(1, len(lines)) if lines[i].strip() == "---"), None)
-    if end is None:
-        return [], text
-    return lines[1:end], "\n".join(lines[end + 1 :])
+def split_frontmatter(text: str) -> tuple[str, str]:
+    """The YAML text and the body's lines joined by newlines; no frontmatter is empty YAML."""
+    try:
+        meta, body = frontmatter.split(text)
+    except ValueError:
+        return "", text
+    return meta, "\n".join(body.splitlines())
 
 
-def frontmatter_list(meta: list[str], key: str) -> list[str]:
+def frontmatter_list(meta: str, key: str) -> list[str]:
     """The items of list `key`, as text."""
-    value = (yaml.load("\n".join(meta), Loader=yaml.BaseLoader) or {}).get(key) or []
+    value = frontmatter.load(meta).get(key) or []
     return [item for item in (value if isinstance(value, list) else [value]) if item]
 
 
@@ -854,31 +867,15 @@ def folded_ticket_text(
         [f"- Assumption: {line}" for line in spec["assumptions"]]
         + [f"- Open question: {line}" for line in spec["questions"]],
     )
-    meta = with_list(meta, "sources", sources)
-    meta = with_list(meta, "companions", companions)
-    if any(re.match(r"\Atype\s*:\s*initiative\b", line) for line in meta):
-        meta = [line for line in meta if not re.match(r"\Acovers\s*:", line)]
-    front = "---\n" + "\n".join(meta) + "\n---\n" if meta else ""
+    lists = {"sources": sources, "companions": companions}
+    updates = {key: list(dict.fromkeys(frontmatter_list(meta, key) + items)) for key, items in lists.items() if items}
+    remove = ("covers",) if frontmatter.load(meta).get("type") == "initiative" else ()
+    try:
+        meta = frontmatter.set_fields(meta, updates, remove)
+    except ValueError as error:
+        raise FoldProblem(f"{ticket.name}: {error}") from error
+    front = f"---\n{meta}---\n" if meta else ""
     return front + join_sections(head, sections)
-
-
-def with_list(meta: list[str], key: str, items: list[str]) -> list[str]:
-    """The frontmatter with `key` holding its existing items plus `items`, the line added after `sources:` or at the end."""
-    if not items:
-        return meta
-    index = next((i for i, line in enumerate(meta) if re.match(rf"\A{key}\s*:", line)), None)
-    merged = list(dict.fromkeys((frontmatter_list(meta, key) if index is not None else []) + items))
-    line = f"{key}: {yaml.safe_dump(merged, default_flow_style=True, width=float('inf')).strip()}"
-    if index is not None:
-        # A block list's `- item` lines go with the key line they continue.
-        end = index + 1
-        while end < len(meta) and meta[end].lstrip().startswith("- "):
-            end += 1
-        return [*meta[:index], line, *meta[end:]]
-    after = next((i for i, line in enumerate(meta) if re.match(r"\Asources\s*:", line)), None)
-    if after is None or key == "sources":
-        return [*meta, line]
-    return [*meta[: after + 1], line, *meta[after + 1 :]]
 
 
 def story_text(
@@ -890,35 +887,38 @@ def story_text(
     sources: list[str],
     companions: list[str],
 ) -> str:
-    used = [
-        int(match.group(1))
-        for path in sorted(home.glob("*.md"))
-        if (match := re.search(r"(?m)^id:\s*(\d+)\s*$", path.read_text(encoding="utf-8")))
-    ]
+    used = []
+    for path in sorted(home.glob("*.md")):
+        try:
+            ticket_id = frontmatter.load(frontmatter.split(path.read_text(encoding="utf-8-sig"))[0]).get("id")
+        except ValueError:
+            continue
+        if isinstance(ticket_id, str) and ticket_id.isdigit():
+            used.append(int(ticket_id))
     # `next_id` at the top of the folder's tickets.toml keeps a moved-out id from being reused.
     floor = 0
     breakdown = home / "tickets.toml"
     if breakdown.is_file():
         try:
-            floor = tomllib.loads(breakdown.read_text(encoding="utf-8")).get("next_id", 0)
+            floor = tomllib.loads(breakdown.read_text(encoding="utf-8-sig")).get("next_id", 0)
         except (OSError, UnicodeError, tomllib.TOMLDecodeError):
             floor = 0
         if isinstance(floor, bool) or not isinstance(floor, int):
             floor = 0
     title = spec["title"] or slug.replace("-", " ")
-    meta = [
-        f"id: {max(max(used, default=0) + 1, floor)}",
-        "type: story",
-        f'title: "{title.replace(chr(34), chr(39))}"',
-        "parent: none",
-        "covers: []",
-        f"sources: [{', '.join(sources)}]",
-        f"companions: [{', '.join(companions)}]",
-        "after: []",
-        "refined: false",
-        "hitl: false",
-        "risk: low",
-    ]
+    meta = {
+        "id": max(max(used, default=0) + 1, floor),
+        "type": "story",
+        "title": frontmatter.Quoted(title),
+        "parent": "none",
+        "covers": [],
+        "sources": sources,
+        "companions": companions,
+        "after": [],
+        "refined": False,
+        "hitl": False,
+        "risk": "low",
+    }
     sections: list[tuple[str, str]] = [("Description", spec["why"] or title)]
     add_lines(sections, "Requirements", requirements)
     add_lines(sections, "Constraints", [f"- {line}" for line in spec["constraints"]])
@@ -930,7 +930,7 @@ def story_text(
         [f"- Assumption: {line}" for line in spec["assumptions"]]
         + [f"- Open question: {line}" for line in spec["questions"]],
     )
-    return "---\n" + "\n".join(meta) + "\n---\n\n" + join_sections(f"# {title}", sections)
+    return frontmatter.dump(meta, flow_lists=True) + "\n" + join_sections(f"# {title}", sections)
 
 
 def companion_references(
@@ -994,7 +994,7 @@ def rebase(item: str, folder: Path, home: Path, project_root: Path, store: Path)
 
 
 def memlog_body(path: Path) -> str:
-    _meta, body = split_frontmatter(path.read_text(encoding="utf-8"))
+    _meta, body = split_frontmatter(path.read_text(encoding="utf-8-sig"))
     body = body.strip("\n")
     return body + "\n" if body else ""
 

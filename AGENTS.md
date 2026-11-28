@@ -34,3 +34,8 @@ Open source framework for structured, agent-assisted software delivery. Skills l
 - Read and write frontmatter in scripts through `skills/core-tools/bmad/scripts/frontmatter.py`. Do not write YAML parsers by hand.
 
 <!-- /bmad:context -->
+
+## Skill authoring
+
+- Before editing any skill, agent, template, reference, or module `help/` file under `skills/`, read `tools/skill-authoring.md` and follow its `Read before editing` sources (`canon.md`, `standards.md`) and six-lens pre-PR check (leanness, progressive disclosure, boundary hygiene).
+- Run the structural pre-pass on every edited skill directory: `uv run skills/toolsmith/bmad-toolsmith/scripts/prepass.py <skill-dir>`.

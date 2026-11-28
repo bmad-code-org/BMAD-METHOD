@@ -60,6 +60,7 @@ query words.
 
 # BMad type -> this store's type.
 [tickets.types]
+program = ""   # empty: the program stays local; its children attach to the nearest published ancestor
 initiative = ""   # empty: the initiative stays local. Linear has no Epic object and Projects cannot nest; set to "initiative" only to map onto Linear Initiatives, which nest five deep and allow several parents, so the tree cannot round-trip.
 epic = "epic"   # label on a parent issue
 story = "story"

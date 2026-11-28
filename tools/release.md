@@ -4,7 +4,7 @@
 
 This is a hand-run process. It does not publish to npm; npm maintenance stays on `V6.12`. Use Git, `uv`, and the Node version in `docs-site/.nvmrc`. Pause other pushes and merges into `dev` until the next placeholder is pushed. Do the release in one sitting. Stop on any failed command or unexpected diff.
 
-The version lives in one place per module: the `version` line in the `[bmod]` table of `skills/method/bmod-method/bmod.toml`, `skills/core-tools/bmod-core-tools/bmod.toml`, `skills/toolsmith/bmod-toolsmith/bmod.toml`, and `skills/founder/bmad-founder-agent-advisor/bmod.toml`. The skills of a module carry no version. Every module record in this repository carries the same version, and the stamper writes them together.
+The version lives in one place per module: the `version` line in the `[bmod]` table of `skills/method/bmod-method/bmod.toml`, `skills/core-tools/bmod-core-tools/bmod.toml`, `skills/toolsmith/bmod-toolsmith/bmod.toml`, `skills/founder/bmad-founder-agent-advisor/bmod.toml`, and `skills/creative/bmad-creative-agent-director/bmod.toml`. The skills of a module carry no version. Every module record in this repository carries the same version, and the stamper writes them together.
 
 ## 1. Prepare
 
