@@ -4,7 +4,7 @@ The outcome: a skill iterated on measured results, its description tuned by a tr
 
 ## Draft
 
-Scaffold (`uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "..."`, with `--bmod <record> --source <update_source>` for a member), load `shapes/<shape>/shape.md` and the module shape the execution plan's registration line names, write `SKILL.md` to `canon.md`.
+Scaffold (`uv run "{skill-root}/scripts/init_skill.py" --name <name> --dest <parent folder> --shape <shape> --description "..."`, with `--bmod <record> --source <update_source>` for a member), load `shapes/<shape>/shape.md` and the module shape the execution plan's registration line names, write `SKILL.md` to `canon.md`.
 
 Make the description deliberately specific: widening is easier than narrowing.
 

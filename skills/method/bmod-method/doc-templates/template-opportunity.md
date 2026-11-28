@@ -1,14 +1,14 @@
 ---
 title: ""
 template: opportunity
-version: 1.1.0
+version: 1.3.0
 description: "Whether a problem is worth an initiative, before any solution."
 not_for: "A chosen solution that needs a case for building it (`brief`); a funding decision with costs (`business-case`)."
 agents: [bmad-agent-analyst]
-paced: true
-facilitation_order: [problem, who-has-it, how-big, alternatives, why-us, why-now, getting-to-market?, success-measures, critical-success-factors, recommendation]
-guidance: guidance-planning
-rubric: rubric-planning
+order: fixed
+facilitation_order: [problem, who-has-it, how-big, alternatives, why-us, why-now, getting-to-market, success-measures, critical-success-factors, recommendation]
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""
@@ -18,9 +18,11 @@ updated: ""
 
 <!-- stance: Keep the talk on the problem. When the user describes a solution, park it and ask what problem it solves. Ask what people do today to solve it, even badly, and what that costs them; who would be upset if the fix disappeared tomorrow, rather than merely interested; and name the person who needs it most. Take a position on each answer and say what evidence would change it. Treat a no-go as a good outcome. -->
 
+<!-- opening: The problem as the user has seen it, and the evidence they hold (support tickets, research, usage data, lost deals), to read before the first section. The brain dump is the problem and who has it; a solution that comes with it is parked, and the user is told so. -->
+
 <!-- inputs: Evidence the problem exists (support tickets, research, usage data, lost deals). Only the user knows the business objective it serves and why this team should take it. -->
 
-<!-- writing: Every number and piece of evidence names its source; an estimate is tagged `[ASSUMPTION: ...]`. -->
+<!-- writing: Two pages, three at most. Every number and piece of evidence names its source; an estimate is tagged `[ASSUMPTION: ...]`. -->
 
 <!-- done when: The recommendation follows from the sections above it, and a reader could disagree with it on the evidence stated. -->
 
@@ -35,10 +37,10 @@ updated: ""
 <!-- The customers or users who feel it, specific enough to find them. Ask who needs it most, and who would be upset if a fix disappeared tomorrow rather than merely interested. Done when the user could name and reach one of them. -->
 
 ## How big
-<!-- How many have it and what it is worth. You are an analyst who wants a source for every number: work it out from what the user knows, show the arithmetic, and tag each estimate. Done when a reader could check each number. -->
+<!-- How many have it and what it is worth. You are an analyst who wants a source for every number: work it out from what the user knows, show the arithmetic as a table, one row per step from the whole population down to the figure, and tag each estimate. Done when a reader could check each number. -->
 
 ## Alternatives
-<!-- How they cope today and what competitors offer. Take the customer's side: what they do now, even badly, and what it costs them. Research competitors now rather than from memory. Done when it is clear why the alternatives are not enough, or that they are. -->
+<!-- How they cope today and what competitors offer. Take the customer's side: what they do now, even badly, and what it costs them. Research competitors now rather than from memory. A table: each alternative, what it costs the customer, and where it falls short. Done when it is clear why the alternatives are not enough, or that they are. -->
 
 ## Why us
 <!-- What this team or company has that makes it the one to solve it. You are a skeptical executive: "we're passionate about it" and "we can build it" do not count; ask what others could not easily copy. Done when the advantage names something specific. -->
@@ -47,7 +49,7 @@ updated: ""
 <!-- What changed that makes this the moment, or why it can wait. Ask what is different this year from last; "it can wait" is a good answer when it is true. Done when the timing rests on a change the user can point to. -->
 
 ## Getting to market
-<!-- include when: the solution would be sold or released to external customers. How it reaches them. -->
+<!-- include when: the solution would be sold or released to external customers. How it reaches them: the channel this team already has, and what a first customer costs to win. A route nobody on the team has used is a guess and is tagged. -->
 
 ## Success measures
 <!-- How we would know it worked, including any revenue measure. Ask what result would show it did not work, too. Done when each measure could be checked. -->

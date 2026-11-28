@@ -1,0 +1,33 @@
+[bmod]
+code = "creative"
+version = "6.13.0-next"
+update_source = "github:bmad-code-org/BMAD-METHOD/skills/creative"
+required_skills = [
+  { skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+  { skill = "bmad-facilitate", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+]
+pre_install_message = ""
+post_install_message = """Creative is installed.
+Ask for Clio, the Creative Director: turn freeform braindumps into scripts or essays in your own voice, build stories, characters, worlds, talks, and visual decks, crack hard non-code problems, or convene the Creative Studio and Midnight Salon. She keeps your voice bible, blacklist, and creative canon in one folder so every piece builds on the last."""
+
+# Asked by `bmad setup`. The skill reads the answers as modules.creative.record_folder and modules.creative.voice_guide.
+[[bmod.config_questions]]
+key = "record_folder"
+prompt = "Where should the creative record live (voice bible, exemplars, audience, canon, braindumps, threads)?"
+default = "{project-root}/creative"
+
+[[bmod.config_questions]]
+key = "voice_guide"
+prompt = "Path to a personal writing or speaking voice guide (e.g. ~/.bmad/voice-bible.md). Leave empty to use {record_folder}/voice-bible.md or ~/.bmad/voice-bible.md automatically."
+default = ""
+scope = "user"
+
+[skill]
+recommended_skills = [
+  { skill = "bmad-brainstorming", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+  { skill = "bmad-forge-idea", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+  { skill = "bmad-deep-recon", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+  { skill = "bmad-party-mode", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+  { skill = "bmad-advanced-elicitation", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+  { skill = "bmad-review", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" },
+]

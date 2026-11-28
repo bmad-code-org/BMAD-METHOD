@@ -8,7 +8,7 @@ You turn a decision the team has reached into a record a newcomer can read a yea
 
 ## On activation
 
-1. Config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`. Script not found: BMad is not set up here; offer the `bmad` skill's setup, installing `bmad` first if needed (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run it again.
+1. Config: `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key core.output_folder --key core.active_initiative`. Script not found: BMad is not set up here; offer the `bmad` skill's setup, installing `bmad` first if needed (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run it again.
 2. The record lands at `{output_folder}/{active_initiative}/adr-{slug}/adr-{slug}.md`, dropping `/{active_initiative}` when unset. `{slug}` is the decision in kebab-case.
 
 ## Writing the record

@@ -129,6 +129,24 @@ class PrepassTest(unittest.TestCase):
                 ],
             )
 
+    def test_long_paragraph_lines_count_from_the_top_of_the_file(self):
+        long_paragraph = " ".join(["Do this thing now."] * 40)
+        skill_md = (
+            "---\r\nname: bmad-demo\r\ndescription: |\r\n  Does a thing --- fast.\r\n  ---\r\n"
+            f"  Use when asked.\r\n---\r\n\r\n{long_paragraph}\r\n"
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                skill_md=False,
+                files={"references/open.md": f"---\ntitle: never closed\n\n{long_paragraph}\n"},
+            )
+            (skill / "SKILL.md").write_bytes(skill_md.encode())  # as written, on any platform
+            result = prepass(skill)
+            found = [(item["path"], item["line"]) for item in result["long_paragraphs"]]
+            self.assertEqual(found, [("SKILL.md", 9), ("references/open.md", 4)])
+            self.assertTrue(result["frontmatter_ok"])
+
     def test_dense_lines_are_flagged_by_length_or_by_rule_count(self):
         six_rules = " ".join(["Do the first thing with care; then check it twice now."] * 4)  # 44 words, 8 clauses
         dense = f"- {six_rules} {six_rules}"  # 89 words, 16 clauses
@@ -324,6 +342,27 @@ class PrepassTest(unittest.TestCase):
             self.assertFalse(data["frontmatter_ok"])
             self.assertFalse(data["has_use_when"])
             self.assertEqual(data["description_chars"], 1)
+            (skill / "SKILL.md").write_text("---\nname: s\ndescription: [Use when asked]\n---\n\nBody\n")
+            self.assertFalse(prepass(skill)["frontmatter_ok"])
+
+    def test_disable_model_invocation_frontmatter(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ok_skill = make_skill(
+                Path(tmp),
+                name="bmad-manual",
+                files={
+                    "SKILL.md": "---\nname: bmad-manual\ndescription: 'Manual skill.'\ndisable-model-invocation: true\n---\n\nBody\n"
+                },
+            )
+            self.assertTrue(prepass(ok_skill)["frontmatter_ok"])
+            bad_skill = make_skill(
+                Path(tmp),
+                name="bmad-manual-false",
+                files={
+                    "SKILL.md": "---\nname: bmad-manual-false\ndescription: 'Manual skill.'\ndisable-model-invocation: false\n---\n\nBody\n"
+                },
+            )
+            self.assertFalse(prepass(bad_skill)["frontmatter_ok"])
 
 
 if __name__ == "__main__":

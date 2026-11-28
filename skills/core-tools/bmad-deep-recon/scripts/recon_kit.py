@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """recon_kit — deterministic helpers for bmad-deep-recon.
 
@@ -8,6 +9,7 @@ The mechanical half of the research workflow: everything here is exact,
 repeatable work the LLM should never re-derive by hand. All subcommands
 print one JSON object to stdout; diagnostics go to stderr. Exit codes:
 0 = pass, 1 = findings that need attention, 2 = usage/parse error.
+`--project-root DIR`, the project with BMad set up, goes before the subcommand.
 
 Subcommands:
   citations RESEARCH_MD
@@ -53,6 +55,7 @@ from __future__ import annotations
 import argparse
 import calendar
 import html
+import importlib.util
 import json
 import os
 import posixpath
@@ -64,6 +67,8 @@ from collections import Counter
 from datetime import date, datetime
 from pathlib import Path
 from urllib.parse import urlparse
+
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 
 MARKER_RE = re.compile(r"\[(\d+)\](?!\()")  # [3] but not a [3](url) link
 # URLs may hold one level of balanced parentheses, as Wikipedia's often do.
@@ -182,24 +187,16 @@ def ledger_path(folder: Path) -> tuple[Path, bool]:
     return path, True
 
 
-def ledger_fields(text: str) -> dict[str, str]:
-    lines = text.splitlines()
-    end = next((i for i in range(1, len(lines)) if lines[i] == "---"), None) if lines[:1] == ["---"] else None
-    fields: dict[str, str] = {}
-    for line in lines[1:end] if end else []:
-        key, sep, raw = line.partition(":")
-        raw = raw.strip()
-        if not sep or not key.strip():
-            continue
-        if raw.startswith('"'):
-            try:
-                raw = str(json.loads(raw))
-            except json.JSONDecodeError:
-                raw = raw.strip('"')
-        elif len(raw) >= 2 and raw[0] == raw[-1] == "'":
-            raw = raw[1:-1].replace("''", "'")
-        fields[key.strip()] = raw
-    return fields
+def ledger_parts(path: Path, text: str) -> tuple[dict[str, str], str]:
+    """The ledger's fields and its body; a ledger without frontmatter is all body."""
+    try:
+        front, body = frontmatter.split(text)
+    except ValueError:
+        return {}, text
+    try:
+        return frontmatter.load(front), body
+    except ValueError:
+        raise LedgerError(f"{path} has frontmatter that is not YAML fields") from None
 
 
 def ledger_state(path: Path, **extra) -> dict:
@@ -209,8 +206,9 @@ def ledger_state(path: Path, **extra) -> dict:
         text = path.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError) as e:
         raise LedgerError(f"cannot read {path}: {e}") from e
-    entries = sum(1 for ln in text.splitlines() if ln.startswith("- "))
-    return {"path": path.as_posix(), "exists": True, **extra, "fields": ledger_fields(text), "entries": entries}
+    fields, body = ledger_parts(path, text)
+    entries = sum(1 for ln in body.splitlines() if ln.startswith("- "))
+    return {"path": path.as_posix(), "exists": True, **extra, "fields": fields, "entries": entries}
 
 
 def append_line(path: Path, text: str) -> None:
@@ -276,14 +274,13 @@ def cmd_ledger(args) -> int:
     if path.exists() or not fields:
         return out(ledger_state(path, created=False, **extra), 0)
     fields["created"] = datetime.now().strftime("%Y-%m-%dT%H:%M")
-    front = "".join(f"{k}: {json.dumps(v, ensure_ascii=False)}\n" for k, v in fields.items())
     try:
         folder.mkdir(parents=True, exist_ok=True)
     except OSError as e:
         raise LedgerError(f"cannot create {folder}: {e.strerror or e}") from e
     try:
         with open(path, "x", encoding="utf-8", newline="\n") as handle:  # "x": two starters cannot both create it
-            handle.write(f"---\n{front}---\n\n")
+            handle.write(frontmatter.dump(fields) + "\n")
     except FileExistsError:
         return out(ledger_state(path, created=False), 0)
     except OSError as e:
@@ -317,7 +314,10 @@ ENTRY_RE = re.compile(r"^- (?:\(([\w-]+)(?: by [^)]*)?\)\s*)?(.*)$")
 
 def cmd_tally(args) -> int:
     text = read_text(args.file)
-    body = text.split("---", 2)[-1] if text.startswith("---") else text
+    try:
+        _, body = frontmatter.split(text)
+    except ValueError:
+        body = text
     by_type: dict[str, int] = {}
     by_ref: dict[int, str] = {}
     unref_status: dict[str, int] = {}
@@ -768,7 +768,10 @@ def cmd_anchors(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    global frontmatter
+
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     pc = sub.add_parser("citations", help="cross-check [n] markers vs the source appendix")
@@ -826,6 +829,14 @@ def main(argv: list[str] | None = None) -> int:
     pa.set_defaults(func=cmd_anchors)
 
     args = p.parse_args(argv)
+    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+        return 2
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
+
     try:
         return args.func(args)
     except (FileNotFoundError, GitError, LedgerError) as e:

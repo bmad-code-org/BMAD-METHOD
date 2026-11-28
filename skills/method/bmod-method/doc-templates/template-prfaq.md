@@ -1,16 +1,15 @@
 ---
 title: ""
 template: prfaq
-version: 1.1.0
+version: 1.3.0
 description: "Testing whether a product concept survives scrutiny, working backwards from its press release."
 not_for: "Writing up a product the user already believes in (`brief`); testing a problem before any solution exists (`opportunity`); committed work that needs requirements (`prd`)."
 agents: [bmad-agent-analyst]
-paced: true
+order: fixed
 facilitation_order: [press-release, customer-faq, internal-faq, verdict]
-guidance: guidance-planning
+guidance: guidance-method.md
 rubric: rubric-prfaq.md
-view: prfaq-view.html
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -18,7 +17,9 @@ updated: ""
 
 <!-- purpose: Decide whether a concept is ready to commit people or money to, before anything is built. "Go deeper first" is a good outcome. -->
 
-<!-- stance: A challenge, not a write-up, and the user should feel it from the first message: say so, and that surviving it means the concept is ready while failing here saves wasted effort. Coach directly: challenge vague thinking, and when the user is stuck offer two or three concrete alternatives rather than repeating the question. A user who leads with a solution or a technology is redirected to the customer's problem before anything is drafted; strip the buzzword and ask whether anyone still cares. The pressure holds at every stakes level and does not ease as the document firms up; when the user tires, offer to pause and resume rather than going easier. Settle early whether this is a commercial product, an internal tool, an open source project, or a community or nonprofit initiative: that sets the press release wording (an initiative announced, how to take part, a community member's quote) and what the FAQs ask (effort to adopt instead of price, maintenance and sustainability instead of unit economics and a moat). A user who cannot name a customer or a problem after a few exchanges goes to `bmad-brainstorming` or `bmad-forge-idea`, not deeper into this. -->
+<!-- stance: A challenge, not a write-up. Coach directly: challenge vague thinking, and when the user is stuck offer two or three concrete alternatives rather than repeating the question. A user who leads with a solution or a technology is redirected to the customer's problem before anything is drafted; strip the buzzword and ask whether anyone still cares. The pressure holds at every stakes level and does not ease as the document firms up; when the user tires, offer to pause and resume rather than going easier. The kind of concept sets the press release wording (an initiative announced, how to take part, a community member's quote) and what the FAQs ask (effort to adopt instead of price, maintenance and sustainability instead of unit economics and a moat). A user who cannot name a customer or a problem after a few exchanges goes to `bmad-brainstorming` or `bmad-forge-idea`, not deeper into this. -->
+
+<!-- opening: Say this is a challenge, not a write-up: the concept is tested from the customer's side, surviving it means it is ready, and failing here saves wasted effort. Ask which kind it is, a commercial product, an internal tool, an open source project, or a community or nonprofit initiative. The brain dump is the concept: the customer, their problem, why it matters to them and the rough solution. -->
 
 <!-- inputs: The customer as a specific persona, their problem as something concrete and felt, why it matters to them, and a rough solution. Only the user knows these, and all four are needed to run headless. -->
 
@@ -27,6 +28,8 @@ updated: ""
 <!-- done when: Every FAQ question has an honest, specific answer; the hardest customer objection and the question the team hopes nobody asks are both in and answered; and the verdict names what it would take to fix each weakness. -->
 
 <!-- next: Sofia (`bmad-agent-po`) writes the initiative's requirements from it, or John (`bmad-agent-pm`) comes first when the requirements still need drawing out. A verdict with serious cracks is addressed before either. -->
+
+<!-- layout: Wire-service press-release masthead and serif editorial column for the announcement, followed by distinct Customer FAQ and Internal FAQ sections with scannable Q&A cards and a highlighted verdict callout. -->
 
 # {title}
 

@@ -32,7 +32,7 @@ setup = """
 Connect, unless `gh auth status` already shows a login: `gh auth login`.
 Labels must exist before they are used. List the repo's labels (`gh label list --limit 1000 --json name`)
 and run `gh label create <name>` for each of these it lacks, comparing names ignoring case: the
-[tickets.types] values except initiative (a milestone), the [tickets.status] values except done and
+non-empty [tickets.types] values except initiative (a milestone), the [tickets.status] values except done and
 dropped (closed states), `hitl`, risk:low, risk:medium, risk:high, and P0-P3. A create that fails with
 "already exists" found the label after all: leave it. Never `--force`: it recolours a label the repo
 already has.
@@ -59,13 +59,14 @@ query = """
 One issue: `gh issue view <n> --json
 number,title,labels,assignees,state,stateReason,milestone,parent,blockedBy,subIssuesSummary,body`.
 Type, hitl, risk, severity, and status are labels — except done and dropped, the closed states per
-[tickets.status]; after is blockedBy; the body's covers holds the source requirement ids. Children: `gh issue view <n>
+[tickets.status]; after is blockedBy; the `covers —` lines in its References hold the source requirement ids. Children: `gh issue view <n>
 --json subIssues`. Words: `gh issue list --search "<words>" --state all`, narrowed by
 --label. An initiative's issues are the ones in its milestone; a standalone ticket has no milestone.
 """
 
 # BMad type -> this store's type.
 [tickets.types]
+program = ""   # empty: the program stays local; its children attach to the nearest published ancestor
 initiative = "milestone"   # an initiative is a milestone, not an issue; its epics carry it
 epic = "epic"
 story = "story"

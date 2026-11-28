@@ -25,10 +25,12 @@ Field semantics:
 - `rubric`: a list of named expectations, each gradeable to `{text, passed, evidence}` by the grader. The strong-versus-weak taxonomy below decides whether each one is worth keeping.
 - `state_prefix`: optional bracketed prime that places the skill mid-workflow (see below). Null or absent means the skill starts cold.
 - `files`: optional fixtures staged into the case's clean working directory before the run. Each is a path relative to `--project-root` or the cases file's directory, or a GitHub file URL (`https://github.com/<owner>/<repo>/blob/<ref>/<path>`, pinned to a commit or tag) for data kept in another repo. A relative path keeps its directory structure, so the input can reference it verbatim; a GitHub file lands at the workspace root under its file name. Absolute and `~` paths are refused, because cases must run on anyone's machine, and a missing fixture stops the run before it starts.
+- `files` entry as `{"from": <path or URL>, "to": <workspace path>}`: stages a fixture under another name, so cases sharing one folder can each carry their own `_bmad/config.toml` or customization.
+- `skills`: optional skill folders, relative like `files`, staged beside the skill under test for a skill that hands work to another (an agent that calls `bmad-facilitate`). The bare config gets none of them.
 
 For trigger cases the shape is lighter: a `query` and a `should_trigger` boolean, because there is no artifact to grade, only whether the skill fired.
 
-A skill-creator `evals.json` converts with `uv run {skill-root}/scripts/convert_cases.py <evals.json> --output <cases.json>`; `--to skill-creator` reverses it.
+A skill-creator `evals.json` converts with `uv run "{skill-root}/scripts/convert_cases.py" <evals.json> --output <cases.json>`; `--to skill-creator` reverses it.
 
 ## state_prefix: turn simulation in one shot
 
@@ -93,7 +95,7 @@ Generate near-miss should-trigger and should-not-trigger queries that share keyw
 Baseline runs every case with the skill staged and with nothing staged; variant runs the skill against the one at `--variant-path`; quality runs one config.
 
 ```
-uv run {skill-root}/scripts/run_evals.py \
+uv run "{skill-root}/scripts/run_evals.py" \
   --cases <cases-file> --skill-path <skill> --output-dir <dir> \
   --mode quality|baseline|variant [--variant-path <skill>] \
   --label <skill-name>-<mode> [--runs N]
@@ -103,7 +105,7 @@ uv run {skill-root}/scripts/run_evals.py \
 
 For quality, spawn the grader in `references/grader.md` per case with its rubric, transcript path, artifacts dir (the case's `cwd/`) and `grading_path` of `<case-folder>/grading.json`. Relay its rubric feedback. If a grader errors, mark the case `grading_error`, never a default verdict.
 
-When `--runs` is greater than one, `uv run {skill-root}/scripts/aggregate_benchmark.py --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>` gives mean, sample standard deviation, min, max and delta (`--runs <run-dir>/<config>` for one config).
+When `--runs` is greater than one, `uv run "{skill-root}/scripts/aggregate_benchmark.py" --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>` gives mean, sample standard deviation, min, max and delta (`--runs <run-dir>/<config>` for one config).
 
 ## Getting a skill to behave non-interactively
 

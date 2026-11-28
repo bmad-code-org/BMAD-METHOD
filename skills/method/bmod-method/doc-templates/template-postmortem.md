@@ -1,13 +1,15 @@
 ---
 title: ""
 template: postmortem
-version: 1.1.0
+version: 1.3.0
+category: risk-and-ops
 description: "Causes and actions after something went wrong, written blamelessly."
 not_for: "Judging a person's performance."
-paced: true
-facilitation_order: [impact, timeline, detection-and-response?, contributing-factors, lessons?, action-items, communication?, summary]
-guidance: guidance-planning
-rubric: rubric-planning
+agents: [bmad-agent-architect]
+order: fixed
+facilitation_order: [impact, timeline, detection-and-response, contributing-factors, lessons, action-items, communication, summary]
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""
@@ -20,9 +22,12 @@ updated: ""
   - Facts before causes: settle the timeline, then analyze.
 -->
 
+<!-- opening: What went wrong and when, in a sentence or two, and where the records of it live (logs, chat, tickets, alerts), so they are read before anyone reconstructs events from memory. No brain dump: the story as people remember it, and what they think caused it, wait for the Timeline, where each is set against the records. -->
+
 <!-- inputs: Timestamped logs, chat, tickets, alerts and emails, asked for before reconstructing anything, because records beat memory; an event placed from memory alone is tagged `[ASSUMPTION]`. Only the user knows what people saw and believed at each moment, where the team got lucky, and which actions it will commit to. -->
 
 <!-- writing:
+  - Two to three pages; the timeline and the action items are tables.
   - Roles, not names, wherever cause is discussed.
   - Prefer action items that change a system over "be more careful".
   - One time zone, stated once.
@@ -37,7 +42,7 @@ updated: ""
 ## Table of Contents
 
 ## Summary
-<!-- What happened, the impact, and where things stand, in two or three sentences, drawn from the sections above. Done when it holds nothing the sections do not. -->
+<!-- built: from the other sections. What happened, the impact, and where things stand, in two or three sentences. Done when it holds nothing the sections do not. -->
 
 ## Impact
 <!-- Who or what was affected, how much, for how long. Ask for numbers from the records: requests failed, customers affected, minutes down, money lost. Done when each figure names its source or is tagged. -->

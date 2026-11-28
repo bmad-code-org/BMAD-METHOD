@@ -10,7 +10,7 @@ from pathlib import Path
 SCRIPTS_DIR = Path(__file__).resolve().parents[3] / "skills/toolsmith/bmad-eval/scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-from run_triggers import CANARY_PREFIX, detect_load, parse_skill_md, write_synthetic_skill  # noqa: E402
+from run_triggers import CANARY_PREFIX, detect_load, frontmatter, parse_skill_md, write_synthetic_skill  # noqa: E402
 
 RUNNER = SCRIPTS_DIR / "run_triggers.py"
 FAKE = Path(__file__).resolve().parent / "fake_harness.py"
@@ -95,7 +95,7 @@ class ParseSkillTest(unittest.TestCase):
             cases = {
                 "description: 'It''s quoted. Use when x.'\n": "It's quoted. Use when x.",
                 'description: "Say \\"hi\\". Use when x."\n': 'Say "hi". Use when x.',
-                "description: |\n  Block one.\n  Block two.\n": "Block one. Block two.",
+                "description: |\n  Block one.\n  Block two.\n": "Block one.\nBlock two.",
                 "description: 'Spans\n  two lines.'\n": "Spans two lines.",
                 "description: Plain. Use when x.\n": "Plain. Use when x.",
             }
@@ -110,11 +110,13 @@ class CanaryTest(unittest.TestCase):
             token = CANARY_PREFIX + "abcd1234"
             name = write_synthetic_skill(Path(tmp), "greet", "Greets people.\nUse when greeting.", token)
             text = (Path(tmp) / name / "SKILL.md").read_text()
-            frontmatter = text.split("---")[1]
-            self.assertNotIn(token, frontmatter)
+            fields, _ = frontmatter.split(text)
+            self.assertNotIn(token, fields)
             self.assertNotIn(token, name)
             self.assertIn(f"token `{token}`", text)
-            self.assertIn("  Use when greeting.", frontmatter)
+            self.assertEqual(
+                frontmatter.load(fields), {"name": name, "description": "Greets people.\nUse when greeting."}
+            )
 
     def test_detection_needs_the_token(self):
         token = CANARY_PREFIX + "abcd1234"

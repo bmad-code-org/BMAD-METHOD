@@ -18,10 +18,21 @@ from datetime import date
 from pathlib import Path
 from unittest import mock
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-deep-recon/scripts"))
+SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-deep-recon/scripts/recon_kit.py"
+FRONTMATTER = SCRIPT.parents[2] / "bmad" / "scripts" / "frontmatter.py"
+sys.path.insert(0, str(SCRIPT.parent))
 
-import recon_kit
-from recon_kit import add_months, main, parse_date, slugify
+import recon_kit  # noqa: E402
+from recon_kit import add_months, parse_date, slugify  # noqa: E402
+
+PROJECT = tempfile.TemporaryDirectory()  # a project with the shared scripts installed, as bmad setup leaves it
+(Path(PROJECT.name) / "_bmad" / "scripts").mkdir(parents=True)
+shutil.copy2(FRONTMATTER, Path(PROJECT.name) / "_bmad" / "scripts")
+
+
+def main(argv):
+    return recon_kit.main(["--project-root", PROJECT.name, *argv])
+
 
 REPORT = """---
 title: 'market research: widgets'
@@ -189,7 +200,7 @@ class LedgerTest(unittest.TestCase):
         code, result = run(["ledger", str(self.folder), "--field", "topic=something else"])
         self.assertEqual((code, result["created"], result["entries"]), (0, False, 1))
         self.assertEqual(result["fields"]["topic"], "kilns: a study")
-        self.assertIn('topic: "kilns: a study"\n', self.ledger.read_text(encoding="utf-8"), "values are quoted")
+        self.assertIn("topic: 'kilns: a study'\n", self.ledger.read_text(encoding="utf-8"), "values are quoted")
         self.assertEqual(run_err(["ledger", str(self.folder / "x"), "--field", "no-equals"])[0], 2)
         self.assertEqual(run_err(["ledger", str(self.folder / "x"), "--field", "a b=c"])[0], 2)
 
