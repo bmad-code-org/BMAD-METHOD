@@ -387,6 +387,8 @@ def lines_without_key(lines: list[str], table: tuple[str, ...], leaf: str) -> li
 # and companions. The ticket file is the spec now, so the folder folds into the ticket that holds it.
 
 MEMLOG = ".memlog.md"
+# Files the operating system writes into any folder and writes again: not the user's, so a fold drops them.
+OS_JUNK = {".ds_store", "thumbs.db", "desktop.ini"}
 SPEC_FOLDER = re.compile(r"\Aspec-(?P<slug>[A-Za-z0-9][A-Za-z0-9._-]*)\Z")
 CAP_ID = re.compile(r"\bCAP-(\d+)\b")
 R_LINE = re.compile(r"^\s*-\s+R(\d+)\b", re.MULTILINE)
@@ -456,12 +458,11 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         ticket = home / f"{home.name}.md"
         if not ticket.is_file():
             raise FoldProblem("not inside a ticket folder (one holding a same-named .md) and not at the root")
+    # Everything else moves, hidden and .tmp files too: the folder is removed after, so what stays is lost.
     moving = [
         path
         for path in sorted(folder.iterdir(), key=lambda p: p.name)
-        if path.name not in (f"{folder.name}.md", MEMLOG)
-        and not path.name.endswith(".tmp")
-        and not path.name.startswith(".")
+        if path.name not in (f"{folder.name}.md", MEMLOG) and path.name.lower() not in OS_JUNK
     ]
     taken = [path.name for path in moving if (home / path.name).exists()]
     if taken:
