@@ -46,7 +46,6 @@ Plan JSON: see `build --help`.
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import os
 import re
@@ -56,6 +55,9 @@ from collections import Counter
 from pathlib import Path
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import frontmatter  # noqa: E402
 
 PLAN_HELP = """Plan JSON:
   {
@@ -1274,12 +1276,8 @@ def cmd_check(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    global frontmatter
-
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument(
-        "--project-root", type=Path, default=Path(), help="project folder with _bmad/scripts (default: current folder)"
-    )
+    ap.add_argument("--project-root", type=Path, default=None, help="optional project folder; kept for compatibility")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("outline", help="measure a text file and propose a cut")
     p.add_argument("source")
@@ -1318,13 +1316,6 @@ def main(argv: list[str] | None = None) -> int:
         "--all", action="store_true", help="check every sharded folder and contents list under the target folder"
     )
     args = ap.parse_args(argv)
-    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
-    if not path.is_file():
-        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
-        return 2
-    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-    frontmatter = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(frontmatter)
 
     try:
         return {

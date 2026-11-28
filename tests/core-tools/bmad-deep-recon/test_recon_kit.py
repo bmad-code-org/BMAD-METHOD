@@ -19,19 +19,14 @@ from pathlib import Path
 from unittest import mock
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-deep-recon/scripts/recon_kit.py"
-FRONTMATTER = SCRIPT.parents[2] / "bmad" / "scripts" / "frontmatter.py"
 sys.path.insert(0, str(SCRIPT.parent))
 
 import recon_kit  # noqa: E402
 from recon_kit import add_months, parse_date, slugify  # noqa: E402
 
-PROJECT = tempfile.TemporaryDirectory()  # a project with the shared scripts installed, as bmad setup leaves it
-(Path(PROJECT.name) / "_bmad" / "scripts").mkdir(parents=True)
-shutil.copy2(FRONTMATTER, Path(PROJECT.name) / "_bmad" / "scripts")
-
 
 def main(argv):
-    return recon_kit.main(["--project-root", PROJECT.name, *argv])
+    return recon_kit.main([*argv])
 
 
 REPORT = """---

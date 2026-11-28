@@ -61,7 +61,7 @@ from eval_common import (
     utc_now_iso,
     write_json,
 )
-from run_triggers import NO_BMAD, frontmatter, parse_skill_md
+from run_triggers import frontmatter, parse_skill_md
 
 CANARY_PREFIX = "ROUTED-"
 NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
@@ -224,9 +224,6 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--quiet", action="store_true")
     args = p.parse_args(argv)
-    if frontmatter is None:
-        print(NO_BMAD, file=sys.stderr)
-        return 2
     if args.runs_per_query < 1:
         print("--runs-per-query must be at least 1", file=sys.stderr)
         return 2

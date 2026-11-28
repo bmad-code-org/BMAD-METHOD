@@ -40,7 +40,6 @@ Exit codes: 0 done, 2 usage error or a missing or unreadable log.
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import os
 import re
@@ -49,6 +48,9 @@ from datetime import datetime
 from pathlib import Path
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import frontmatter  # noqa: E402
 
 NAME = "ideas.md"
 OLD_NAME = ".memlog.md"
@@ -179,10 +181,8 @@ def cmd_open(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    global frontmatter
-
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
+    p.add_argument("--project-root", type=Path, default=None, help="optional project folder; kept for compatibility")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     ps = sub.add_parser("start", help="create the session's ideas.md")
@@ -211,13 +211,6 @@ def main(argv: list[str] | None = None) -> int:
     po.set_defaults(func=cmd_open)
 
     args = p.parse_args(argv)
-    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
-    if not path.is_file():
-        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
-        return 2
-    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-    frontmatter = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(frontmatter)
 
     try:
         return args.func(args)

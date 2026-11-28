@@ -33,11 +33,10 @@ It writes nothing.
 Usage:
     uv run {skill-root}/scripts/wake.py <project-root> [--pulse]
 
-    project-root: the folder holding _bmad/, with _bmad/scripts/frontmatter.py from bmad setup
+    project-root: the folder holding _bmad/
 """
 
 import argparse
-import importlib.util
 import json
 import os
 import re
@@ -46,6 +45,9 @@ import sys
 from pathlib import Path
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import frontmatter  # noqa: E402
 
 # The skill folder is the parent of this script's scripts/; its name is the skill name.
 SKILL_ROOT = Path(__file__).resolve().parent.parent
@@ -338,21 +340,12 @@ def emit_lost_name(sanctum: Path, project_root: Path) -> None:
 
 
 def main() -> int:
-    global frontmatter
-
     parser = argparse.ArgumentParser(description="Wake the agent: print its self and maps, or route to First Breath.")
     parser.add_argument("project_root", type=Path, help="the folder holding _bmad/")
     parser.add_argument("--pulse", action="store_true", help="woken on a schedule with no one at the keyboard")
     args = parser.parse_args()
     pulse = args.pulse
     project_root = args.project_root.resolve()
-    path = project_root / "_bmad" / "scripts" / "frontmatter.py"
-    if not path.is_file():
-        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
-        return 2
-    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-    frontmatter = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(frontmatter)
     sanctum = project_root / "_bmad" / "memory" / SKILL_NAME
 
     missing = [name for name in IDENTITY_FILES if not (sanctum / name).is_file()]

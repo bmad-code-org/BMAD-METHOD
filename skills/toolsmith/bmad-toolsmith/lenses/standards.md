@@ -57,7 +57,7 @@ A `help/<topic>.md` topic loads only when `help.md` names it for the question at
 
 ## Scripts
 
-A script does work that has one right answer per input: parsing, counting, resolving paths, validating structure, rendering a template, diffing. Prose does work that turns on meaning. Tests assert what a script produced, never what a model wrote or what a prompt file says.
+A script does work that has one right answer per input: parsing, counting, resolving paths, validating structure, rendering a template, diffing. Prose does work that turns on meaning. When a script reads or writes YAML frontmatter, copy Toolsmith's `shapes/memory-agent/assets/frontmatter-template.py` unchanged into `scripts/frontmatter.py` instead of parsing YAML by hand or loading `_bmad/scripts/frontmatter.py`. Tests assert what a script produced, never what a model wrote or what a prompt file says.
 
 - Python with a PEP 723 header, `requires-python = ">=3.11"`, dependencies listed; stdlib first, with a graceful fallback when an optional import is absent.
 - argparse with `--help`. JSON on stdout when a model reads the result. Non-zero exit with a reason, never an error deferred to the model.

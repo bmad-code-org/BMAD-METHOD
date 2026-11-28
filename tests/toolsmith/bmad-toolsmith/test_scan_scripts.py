@@ -157,6 +157,18 @@ class ScanScriptsTest(unittest.TestCase):
             self.assertEqual(by_path["scripts/wake.py"]["copy_of"], "shapes/memory-agent/assets/wake-template.py")
             self.assertNotIn("copy_of", by_path["scripts/edited.py"])
 
+    def test_vendored_frontmatter_copy_is_exempt_from_test_missing(self):
+        fm = (WAKE.parent / "frontmatter-template.py").read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(Path(tmp), {"frontmatter.py": fm})
+            code, data = scan(skill)
+            self.assertEqual(code, 0, data)
+            self.assertEqual(data["findings"], [])
+            self.assertEqual(
+                data["scripts"][0].get("copy_of"),
+                "shapes/memory-agent/assets/frontmatter-template.py",
+            )
+
     def test_rules_fire(self):
         with tempfile.TemporaryDirectory() as tmp:
             skill = make_skill(

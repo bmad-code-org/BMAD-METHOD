@@ -29,10 +29,6 @@
         "to": "_bmad/scripts/list_templates.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
-      },
-      {
         "from": "skills/core-tools/bmad/scripts/roster.py",
         "to": "_bmad/scripts/roster.py"
       },
@@ -79,10 +75,6 @@
         "to": "_bmad/scripts/list_templates.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
-      },
-      {
         "from": "skills/core-tools/bmad/scripts/roster.py",
         "to": "_bmad/scripts/roster.py"
       },
@@ -125,10 +117,6 @@
       {
         "from": "skills/core-tools/bmad/scripts/list_templates.py",
         "to": "_bmad/scripts/list_templates.py"
-      },
-      {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
       },
       {
         "from": "skills/core-tools/bmad/scripts/roster.py",
@@ -178,10 +166,6 @@
         "to": "_bmad/scripts/list_templates.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
-      },
-      {
         "from": "skills/core-tools/bmad/scripts/roster.py",
         "to": "_bmad/scripts/roster.py"
       },
@@ -225,10 +209,6 @@
       {
         "from": "skills/core-tools/bmad/scripts/list_templates.py",
         "to": "_bmad/scripts/list_templates.py"
-      },
-      {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
       },
       {
         "from": "skills/core-tools/bmad/scripts/roster.py",
@@ -295,10 +275,6 @@
         "to": "_bmad/scripts/list_templates.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
-      },
-      {
         "from": "skills/core-tools/bmad/scripts/roster.py",
         "to": "_bmad/scripts/roster.py"
       },
@@ -354,10 +330,6 @@
         "to": "_bmad/scripts/list_templates.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
-      },
-      {
         "from": "skills/core-tools/bmad/scripts/roster.py",
         "to": "_bmad/scripts/roster.py"
       },
@@ -407,10 +379,6 @@
       {
         "from": "skills/core-tools/bmad/scripts/list_templates.py",
         "to": "_bmad/scripts/list_templates.py"
-      },
-      {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
       },
       {
         "from": "skills/core-tools/bmad/scripts/roster.py",
@@ -465,10 +433,6 @@
         "to": "_bmad/scripts/list_templates.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
-      },
-      {
         "from": "skills/core-tools/bmad/scripts/roster.py",
         "to": "_bmad/scripts/roster.py"
       },
@@ -516,10 +480,6 @@
       {
         "from": "skills/core-tools/bmad/scripts/list_templates.py",
         "to": "_bmad/scripts/list_templates.py"
-      },
-      {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
       },
       {
         "from": "skills/core-tools/bmad/scripts/roster.py",
@@ -572,10 +532,6 @@
         "to": "_bmad/scripts/list_templates.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
-      },
-      {
         "from": "skills/core-tools/bmad/scripts/roster.py",
         "to": "_bmad/scripts/roster.py"
       },
@@ -622,10 +578,6 @@
       {
         "from": "skills/core-tools/bmad/scripts/list_templates.py",
         "to": "_bmad/scripts/list_templates.py"
-      },
-      {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
       },
       {
         "from": "skills/core-tools/bmad/scripts/roster.py",
@@ -681,10 +633,6 @@
         "to": "_bmad/scripts/list_templates.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
-      },
-      {
         "from": "skills/core-tools/bmad/scripts/roster.py",
         "to": "_bmad/scripts/roster.py"
       },
@@ -732,10 +680,6 @@
       {
         "from": "skills/core-tools/bmad/scripts/list_templates.py",
         "to": "_bmad/scripts/list_templates.py"
-      },
-      {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
       },
       {
         "from": "skills/core-tools/bmad/scripts/roster.py",
@@ -792,10 +736,6 @@
         "to": "_bmad/scripts/list_templates.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
-      },
-      {
         "from": "skills/core-tools/bmad/scripts/roster.py",
         "to": "_bmad/scripts/roster.py"
       },
@@ -842,10 +782,6 @@
       {
         "from": "skills/core-tools/bmad/scripts/list_templates.py",
         "to": "_bmad/scripts/list_templates.py"
-      },
-      {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
       },
       {
         "from": "skills/core-tools/bmad/scripts/roster.py",
@@ -897,10 +833,6 @@
         "to": "_bmad/scripts/list_templates.py"
       },
       {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
-      },
-      {
         "from": "skills/core-tools/bmad/scripts/roster.py",
         "to": "_bmad/scripts/roster.py"
       },
@@ -949,10 +881,6 @@
       {
         "from": "skills/core-tools/bmad/scripts/list_templates.py",
         "to": "_bmad/scripts/list_templates.py"
-      },
-      {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
       },
       {
         "from": "skills/core-tools/bmad/scripts/roster.py",
@@ -1010,10 +938,6 @@
       {
         "from": "skills/core-tools/bmad/scripts/list_templates.py",
         "to": "_bmad/scripts/list_templates.py"
-      },
-      {
-        "from": "skills/core-tools/bmad/scripts/frontmatter.py",
-        "to": "_bmad/scripts/frontmatter.py"
       },
       {
         "from": "skills/core-tools/bmad/scripts/roster.py",

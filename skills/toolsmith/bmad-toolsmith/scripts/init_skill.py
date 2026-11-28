@@ -30,7 +30,7 @@ Check:
   body is not empty, no `[TODO:` is left in any text file, bmod.toml, when present, parses and carries
   [skill] or [bmod], and customize.toml, when present, parses. A `[TODO:` inside a Markdown code span or
   fence, or in a Python string rather than a comment, is text about the marker and does not count.
-  A memory agent's scripts/wake.py and scripts/init-sanctum.py must equal the shape templates in
+  A memory agent's scripts/wake.py, scripts/init-sanctum.py and scripts/frontmatter.py must equal the shape templates in
   shapes/memory-agent/assets/ of the Toolsmith skill holding this script, byte for byte apart from line endings.
   "bmod" in the output is absent, ok or invalid.
 
@@ -46,7 +46,6 @@ Exit 0 on success or a clean check, 1 on a failed check or a refused create, 2 o
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import io
 import json
 import re
@@ -56,24 +55,10 @@ import tomllib
 from pathlib import Path
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import frontmatter  # noqa: E402
 
-def shared_frontmatter():
-    """The frontmatter module of the bmad skill installed beside this one (in a source checkout, under core-tools),
-    or None when it is not installed."""
-    skills = Path(__file__).resolve().parents[2]
-    for folder in (skills / "bmad", skills.parent / "core-tools" / "bmad"):
-        path = folder / "scripts" / "frontmatter.py"
-        if path.is_file():
-            spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            return module
-    return None
-
-
-frontmatter = shared_frontmatter()
-NO_BMAD = "error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad"
 ALLOWED_FRONTMATTER_KEYS = {"name", "description", "disable-model-invocation"}
 
 
@@ -113,7 +98,11 @@ CODE_SPAN_RE = re.compile(r"(`+)(?!`).*?(?<!`)\1(?!`)")
 SHAPE_ASSETS = Path(__file__).resolve().parent.parent / "shapes" / "memory-agent" / "assets"
 # The memory-agent shape copies these templates byte for byte; a built agent's copy that differs is stale
 # (line endings aside: a CRLF checkout holds the same script).
-MEMORY_SCRIPTS = {"wake.py": "wake-template.py", "init-sanctum.py": "init-sanctum-template.py"}
+MEMORY_SCRIPTS = {
+    "wake.py": "wake-template.py",
+    "init-sanctum.py": "init-sanctum-template.py",
+    "frontmatter.py": "frontmatter-template.py",
+}
 
 
 def toml_string(value: str) -> str:
@@ -399,9 +388,6 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--source", help="update_source for the [skill] or [bmod] table")
     p.add_argument("--description", help="frontmatter description; a [TODO: ...] placeholder when omitted")
     args = p.parse_args(argv)
-    if frontmatter is None:
-        print(NO_BMAD, file=sys.stderr)
-        return 2
 
     if args.check:
         if not args.check.is_dir():

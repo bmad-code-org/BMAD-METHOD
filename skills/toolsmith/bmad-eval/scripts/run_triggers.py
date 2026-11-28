@@ -38,14 +38,16 @@ result, not an error.
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import sys
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-from eval_common import (
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import frontmatter  # noqa: E402
+from eval_common import (  # noqa: E402
     DEFAULT_SKILL_DIR,
     account_transcript,
     add_harness_args,
@@ -60,25 +62,6 @@ from eval_common import (
 )
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
-
-
-def shared_frontmatter():
-    """The frontmatter module of the bmad skill installed beside this one (in a source checkout, under core-tools),
-    or None when it is not installed."""
-    skills = Path(__file__).resolve().parents[2]
-    for folder in (skills / "bmad", skills.parent / "core-tools" / "bmad"):
-        path = folder / "scripts" / "frontmatter.py"
-        if path.is_file():
-            spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            return module
-    return None
-
-
-frontmatter = shared_frontmatter()
-NO_BMAD = "error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad"
-
 
 CANARY_PREFIX = "TRIGGER-LOADED-"
 
@@ -171,9 +154,6 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--quiet", action="store_true")
     args = p.parse_args(argv)
-    if frontmatter is None:
-        print(NO_BMAD, file=sys.stderr)
-        return 2
     if args.runs_per_query < 1:
         print("--runs-per-query must be at least 1", file=sys.stderr)
         return 2

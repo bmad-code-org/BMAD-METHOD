@@ -57,7 +57,6 @@ from __future__ import annotations
 import argparse
 import calendar
 import html
-import importlib.util
 import json
 import os
 import posixpath
@@ -71,6 +70,9 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import frontmatter  # noqa: E402
 
 MARKER_RE = re.compile(r"\[(\d+)\](?!\()")  # [3] but not a [3](url) link
 # URLs may hold one level of balanced parentheses, as Wikipedia's often do.
@@ -842,10 +844,8 @@ def cmd_anchors(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    global frontmatter
-
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
+    p.add_argument("--project-root", type=Path, default=None, help="optional project folder; kept for compatibility")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     pc = sub.add_parser("citations", help="cross-check [n] markers vs the source appendix")
@@ -903,13 +903,6 @@ def main(argv: list[str] | None = None) -> int:
     pa.set_defaults(func=cmd_anchors)
 
     args = p.parse_args(argv)
-    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
-    if not path.is_file():
-        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
-        return 2
-    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-    frontmatter = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(frontmatter)
 
     try:
         return args.func(args)

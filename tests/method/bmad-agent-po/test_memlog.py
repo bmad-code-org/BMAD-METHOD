@@ -302,18 +302,15 @@ def test_set_roundtrip_preserves_frontmatter_and_body(ws):
     assert after_body == "\n" + body.lstrip("\n")
 
 
-def test_missing_installed_module_prompts_setup(tmp_path):
+def test_runs_without_project_root_or_shared_scripts(tmp_path):
     result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--project-root", str(tmp_path), "init", "--workspace", str(tmp_path)],
+        [sys.executable, str(SCRIPT), "init", "--workspace", str(tmp_path)],
         capture_output=True,
         encoding="utf-8",
         check=False,
     )
-    assert result.returncode == 2
-    assert result.stdout == ""
-    missing = tmp_path / "_bmad" / "scripts" / "frontmatter.py"
-    assert result.stderr.splitlines() == [f"error: {missing} is missing. Run bmad setup for this project."]
-    assert not (tmp_path / MEMLOG).exists()
+    assert result.returncode == 0, result.stderr
+    assert (tmp_path / MEMLOG).is_file()
 
 
 def test_commas_in_field_survive(ws):

@@ -45,8 +45,12 @@ from pathlib import Path
 
 FLOOR = (3, 11)
 SKILL_ROOT = Path(__file__).resolve().parent.parent
-# The memory-agent shape copies these byte for byte into each agent it builds; their tests live with Toolsmith.
-COPIED_SCRIPTS = ("shapes/memory-agent/assets/wake-template.py", "shapes/memory-agent/assets/init-sanctum-template.py")
+# Copied byte for byte from Toolsmith's shape assets into skills; their canonical tests live elsewhere.
+COPIED_SCRIPTS = (
+    "shapes/memory-agent/assets/wake-template.py",
+    "shapes/memory-agent/assets/init-sanctum-template.py",
+    "shapes/memory-agent/assets/frontmatter-template.py",
+)
 PEP723_RE = re.compile(r"^# /// script\n(?P<body>(?:^#(?: .*)?\n)+?)^# ///$", re.MULTILINE)
 REQUIRES_RE = re.compile(r'^#\s*requires-python\s*=\s*"([^"]*)"', re.MULTILINE)
 VERSION_RE = re.compile(r">=\s*(\d+)\.(\d+)")
