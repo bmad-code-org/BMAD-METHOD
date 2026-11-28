@@ -1513,3 +1513,27 @@ class FoldSpecsTests(unittest.TestCase):
             with self.assertRaises(OSError) as caught:
                 migrate_v6.fold_specs(self.project, self.store)
         self.assertIn(".folding-", str(caught.exception))
+
+    def test_failure_after_external_rewrite_before_ticket_write_keeps_spec_file(self):
+        epic = self.write_epic_with_spec()
+        write(epic / "a-notes.md", "See spec-ball/spec-ball.md.\n")
+        real_write_force = migrate_v6.write_force
+
+        def fail_on_ticket(path: Path, content: str, **kwargs) -> None:
+            if path == epic / "epic-ball.md":
+                raise PermissionError("ticket locked")
+            real_write_force(path, content, **kwargs)
+
+        with mock.patch.object(migrate_v6, "write_force", side_effect=fail_on_ticket):
+            with self.assertRaises(OSError) as caught:
+                migrate_v6.fold_specs(self.project, self.store)
+        self.assertIn(".folding-", str(caught.exception))
+        self.assertIn("before writing", str(caught.exception))
+        stranded = [p for p in epic.iterdir() if p.name.startswith(".folding-")]
+        self.assertEqual(len(stranded), 1)
+        self.assertTrue((stranded[0] / "spec-ball.md").is_file())
+
+        rerun = self.fold()
+        self.assertEqual(rerun["folded"], [])
+        self.assertEqual(len(rerun["problems"]), 1)
+        self.assertIn(stranded[0].name, rerun["problems"][0]["problem"])

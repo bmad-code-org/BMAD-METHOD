@@ -663,6 +663,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         raise FoldProblem(f"cannot move {folder.name} (a file in it may be open): {error}") from error
     memlog = home / MEMLOG
     written = False
+    ticket_written = False
     try:
         for path, changed in writes.items():
             at_stage = staged / path.relative_to(folder) if path.is_relative_to(folder) else path
@@ -672,6 +673,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         home.mkdir(parents=True, exist_ok=True)
         write_force(ticket, text)
         written = True
+        ticket_written = True
 
         spec_memlog = staged / MEMLOG
         if spec_memlog.is_file():
@@ -706,11 +708,16 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
                 ) from error
             raise
         if written and staged.exists():
-            with contextlib.suppress(OSError):
-                unlink_force(staged / f"{folder.name}.md")
+            if ticket_written:
+                with contextlib.suppress(OSError):
+                    unlink_force(staged / f"{folder.name}.md")
+                raise OSError(
+                    f"fold failed after writing {relative(ticket, project_root)}; "
+                    f"leftovers remain in {relative(staged, project_root)}: {error}"
+                ) from error
             raise OSError(
-                f"fold failed after writing {relative(ticket, project_root)}; "
-                f"leftovers remain in {relative(staged, project_root)}: {error}"
+                f"fold failed after rewriting references before writing {relative(ticket, project_root)}; "
+                f"spec is preserved in {relative(staged, project_root)}: {error}"
             ) from error
         raise
     return {
