@@ -458,14 +458,20 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     spec_path = folder / f"{folder.name}.md"
     spec = parse_spec(yaml_checked(read_for_fold(spec_path, project_root), spec_path, project_root))
     loose = folder.parent == store
+    # backlog/ holds many stories, so a loose story's companions and memlog carry its name: no two stories share one.
+    prefix = f"story-{slug}-" if loose else ""
     if loose:
         home = store / "backlog"
         ticket = home / f"story-{slug}.md"
+        memlog = home / f"story-{slug}{MEMLOG}"
         if ticket.exists():
             raise FoldProblem(f"{relative(ticket, project_root)} already exists")
+        if memlog.exists():  # another story's companion can carry this name; never append to it
+            raise FoldProblem(f"{relative(memlog, project_root)} already exists")
     else:
         home = folder.parent
         ticket = home / f"{home.name}.md"
+        memlog = home / MEMLOG
         if not ticket.is_file():
             raise FoldProblem("not inside a ticket folder (one holding a same-named .md) and not at the root")
     # Everything else moves, hidden and .tmp files too: the folder is removed after, so what stays is lost.
@@ -474,7 +480,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         for path in sorted(folder.iterdir(), key=lambda p: p.name)
         if path.name not in (f"{folder.name}.md", MEMLOG) and path.name.lower() not in OS_JUNK
     ]
-    taken = [path.name for path in moving if (home / path.name).exists()]
+    taken = [prefix + path.name for path in moving if (home / (prefix + path.name)).exists()]
     if taken:
         raise FoldProblem(f"{', '.join(taken)} already exist(s) beside the ticket")
 
@@ -514,7 +520,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     # moved companion. A suffix rewrite keeps relative and absolute forms right, since the folder's parent is unchanged.
     new_prefix = "backlog/" if loose else ""
     rewrites = [(f"{folder.name}/{folder.name}.md", f"{new_prefix}{ticket.name}")]
-    rewrites += [(f"{folder.name}/{path.name}", f"{new_prefix}{path.name}") for path in moving]
+    rewrites += [(f"{folder.name}/{path.name}", f"{new_prefix}{prefix}{path.name}") for path in moving]
     # Every rewrite is read and computed first, so a file that cannot be read stops the fold before anything changes.
     writes: dict[Path, str] = {}
     for path in text_files(store, skip=(folder,)):
@@ -526,7 +532,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
             writes[path] = changed
     for path in companion_files(moving):
         text = read_for_fold(path, project_root)
-        changed = rebase_links(text, path, folder, home, ticket)
+        changed = rebase_links(text, path, folder, home, ticket, prefix)
         if changed != text:
             writes[path] = changed
     for path in cap_scope(home, folder, moving) if not loose else companion_files(moving):
@@ -534,14 +540,14 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         changed = map_caps(text)
         if changed != text:
             writes[path] = changed
-    for path in (home / MEMLOG, folder / MEMLOG):
+    for path in (memlog, folder / MEMLOG):
         if path.is_file():
             read_for_fold(path, project_root)
     rewritten = [relative(path, project_root) for path in writes]
 
-    references, unresolved = companion_references(spec["companions"], folder, home, project_root, store)
-    sources = [rebase(item, folder, home, project_root, store) for item in spec["sources"]]
-    companions = [companion_path(item, folder, home, project_root, store) for item in spec["companions"]]
+    references, unresolved = companion_references(spec["companions"], folder, home, project_root, store, prefix)
+    sources = [rebase(item, folder, home, project_root, store, prefix) for item in spec["sources"]]
+    companions = [companion_path(item, folder, home, project_root, store, prefix) for item in spec["companions"]]
     requirements = own_lines + [f"- {ids[f'CAP-{n}']} (CAP-{n}): {line}" for n, line in spec["capabilities"].items()]
     if loose:
         text = story_text(spec, home, slug, requirements, references, sources, companions)
@@ -562,7 +568,6 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     home.mkdir(parents=True, exist_ok=True)
     write_text(ticket, text)
 
-    memlog = home / MEMLOG
     spec_memlog = folder / MEMLOG
     if spec_memlog.is_file():
         if memlog.is_file():
@@ -582,14 +587,14 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     append_text(memlog, "\n".join(entries) + "\n")
 
     for path in moving:
-        shutil.move(path, home / path.name)
+        shutil.move(path, home / (prefix + path.name))
     (folder / f"{folder.name}.md").unlink()
     shutil.rmtree(folder)
     return {
         "spec": relative(folder, project_root),
         "ticket": relative(ticket, project_root),
         "ids": ids,
-        "companions": [relative(home / path.name, project_root) for path in moving],
+        "companions": [relative(home / (prefix + path.name), project_root) for path in moving],
         "unresolved": unresolved,
         "memlog": relative(memlog, project_root),
         "rewritten": rewritten,
@@ -625,21 +630,29 @@ def rewrite_reference(text: str, old: str, new: str, file: Path, base: Path, pro
 LINK_TOKEN = re.compile(r"[^\s()\[\]<>\"'`,|=:]+")
 
 
-def rebase_links(text: str, file: Path, folder: Path, home: Path, ticket: Path) -> str:
+def rebase_links(text: str, file: Path, folder: Path, home: Path, ticket: Path, prefix: str = "") -> str:
     """A companion's links as they read once it moves from the spec folder to `home`: a `./` or `../` path that
-    leaves the folder is recomputed from the new place, and a path to the spec itself names the ticket."""
+    leaves the folder, or that names a sibling a `prefix` renames, is recomputed from the new place, and a path to the
+    spec itself names the ticket. With a `prefix`, a bare relative path (`DESIGN.md`, `plans/plan.md`) that names a
+    file of the folder is recomputed too; a bare word with no `/` or extension is prose and stays."""
     spec = (folder / f"{folder.name}.md").resolve()
-    new_parent = (home / file.relative_to(folder)).parent.resolve()
+    new_parent = moved_path(file.resolve(), folder, home, prefix).parent
 
     def swap(match: re.Match[str]) -> str:
         path, hash_, anchor = match.group(0).partition("#")
         if not path.startswith(("./", "../")) and path != spec.name:
-            return match.group(0)
+            if not prefix or path.startswith("/") or not ("/" in path or "." in path.rsplit("/", 1)[-1].strip(".")):
+                return match.group(0)
+            target = (file.parent / path).resolve()
+            if not target.is_relative_to(folder.resolve()) or not target.exists():
+                return match.group(0)
         target = (file.parent / path).resolve()
         if target == spec:
             target = ticket.resolve()
-        elif target.is_relative_to(folder.resolve()) or not target.exists():
+        elif not target.exists() or (target.is_relative_to(folder.resolve()) and not prefix):
             return match.group(0)
+        else:
+            target = moved_path(target, folder, home, prefix)
         return Path(os.path.relpath(target, new_parent)).as_posix() + hash_ + anchor
 
     return LINK_TOKEN.sub(swap, text)
@@ -934,7 +947,7 @@ def story_text(
 
 
 def companion_references(
-    items: list[str], folder: Path, home: Path, project_root: Path, store: Path
+    items: list[str], folder: Path, home: Path, project_root: Path, store: Path, prefix: str = ""
 ) -> tuple[list[str], list[str]]:
     """A References line per companion: `companion — <name>` for one moving beside the ticket, else typed by its
     file name with the path rebased to the ticket's folder. A path that resolves nowhere is kept as written."""
@@ -947,22 +960,23 @@ def companion_references(
             lines.append(f"- companion — {item}")
             continue
         if target.is_relative_to(folder.resolve()):
-            lines.append(f"- companion — {target.relative_to(folder.resolve()).as_posix()}")
+            moved = moved_path(target, folder, home, prefix)
+            lines.append(f"- companion — {moved.relative_to(home.resolve()).as_posix()}")
             continue
         kind = COMPANION_TYPES.get(target.name) or re.split(r"[-_.]", target.stem, maxsplit=1)[0].lower() or "companion"
-        lines.append(f"- {kind} — {rebase(item, folder, home, project_root, store)}")
+        lines.append(f"- {kind} — {rebase(item, folder, home, project_root, store, prefix)}")
     return lines, unresolved
 
 
-def companion_path(item: str, folder: Path, home: Path, project_root: Path, store: Path) -> str:
+def companion_path(item: str, folder: Path, home: Path, project_root: Path, store: Path, prefix: str = "") -> str:
     """The companion as `companions:` lists it: a path from the project root when it resolves there, else as rebased."""
     target = resolve_companion(item, folder, project_root, store)
     if target is None:
         return item
-    target = moved_path(target, folder, home)
+    target = moved_path(target, folder, home, prefix)
     if target.is_relative_to(project_root.resolve()):
         return target.relative_to(project_root.resolve()).as_posix()
-    return rebase(item, folder, home, project_root, store)
+    return rebase(item, folder, home, project_root, store, prefix)
 
 
 def resolve_companion(item: str, folder: Path, project_root: Path, store: Path) -> Path | None:
@@ -973,19 +987,27 @@ def resolve_companion(item: str, folder: Path, project_root: Path, store: Path) 
     return None
 
 
-def moved_path(target: Path, folder: Path, home: Path) -> Path:
-    """Where a file in the spec folder, at any depth, sits once the fold moves the folder's contents beside the ticket."""
+def moved_path(target: Path, folder: Path, home: Path, prefix: str = "") -> Path:
+    """Where a file in the spec folder, at any depth, sits once the fold moves the folder's contents beside the ticket;
+    `prefix` goes before the name of each entry at the top of the folder."""
     if target.is_relative_to(folder.resolve()):
-        return home.resolve() / target.relative_to(folder.resolve())
+        parts = target.relative_to(folder.resolve()).parts
+        if not parts:
+            return home.resolve()
+        if prefix and parts == (MEMLOG,):
+            return (
+                home.resolve() / f"{prefix.removesuffix('-')}{MEMLOG}"
+            )  # the story's own memlog, as fold_spec names it
+        return home.resolve() / (prefix + parts[0]) / Path(*parts[1:])
     return target
 
 
-def rebase(item: str, folder: Path, home: Path, project_root: Path, store: Path) -> str:
+def rebase(item: str, folder: Path, home: Path, project_root: Path, store: Path, prefix: str = "") -> str:
     """The path as the ticket's folder sees it: a path from beside it, a path from the project root, else relative."""
     target = resolve_companion(item, folder, project_root, store)
     if target is None:
         return item
-    target = moved_path(target, folder, home)
+    target = moved_path(target, folder, home, prefix)
     if target.is_relative_to(home.resolve()):
         return target.relative_to(home.resolve()).as_posix()
     if target.is_relative_to(project_root.resolve()):

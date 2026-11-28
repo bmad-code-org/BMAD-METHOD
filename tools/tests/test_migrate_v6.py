@@ -814,7 +814,7 @@ class FoldSpecsTests(unittest.TestCase):
         self.assertTrue(
             text.startswith(
                 '---\nid: 5\ntype: story\ntitle: "Caddie advice"\nparent: none\ncovers: []\nsources: []\n'
-                "companions: [_bmad-output/backlog/notes.md]\nafter: []\n"
+                "companions: [_bmad-output/backlog/story-caddie-notes.md]\nafter: []\n"
                 "refined: false\nhitl: false\nrisk: low\n---\n\n# Caddie advice\n\n## Description\n\n"
                 "Players leave when the ball flies wrong.\n\n## Requirements\n\n- R1 (CAP-1): "
             ),
@@ -822,12 +822,13 @@ class FoldSpecsTests(unittest.TestCase):
         )
         self.assertIn("## Constraints\n\n- Simulation runs", text)
         self.assertIn(
-            "## Boundaries\n\n- Non-goal: Wind.\n\n## References\n\n- companion — notes.md\n\n## Notes\n\n- Assumption:",
+            "## Boundaries\n\n- Non-goal: Wind.\n\n## References\n\n- companion — story-caddie-notes.md\n\n## Notes\n\n- Assumption:",
             text,
         )
         self.assertNotIn("## Outcome", text)
-        self.assertEqual((self.store / "backlog" / "notes.md").read_text(encoding="utf-8"), "notes\n")
-        entries = memlog_entries(self.store / "backlog" / ".memlog.md")
+        self.assertEqual((self.store / "backlog" / "story-caddie-notes.md").read_text(encoding="utf-8"), "notes\n")
+        self.assertFalse((self.store / "backlog" / ".memlog.md").exists())
+        entries = memlog_entries(self.store / "backlog" / "story-caddie.memlog.md")
         self.assertEqual(
             entries[:3],
             ["- (capability) CAP-1 plausible arc", "- (decision) metric units", "- (capability) CAP-2 launch angle"],
@@ -839,6 +840,112 @@ class FoldSpecsTests(unittest.TestCase):
         )
         self.assert_references_resolve(story)
         self.assert_references_resolve(self.initiative / "initiative-golf.md")
+
+    def test_loose_specs_keep_their_own_memlog_and_companions(self):
+        for slug in ("pay", "ship"):
+            loose = self.store / f"spec-{slug}"
+            write(
+                loose / f"spec-{slug}.md",
+                spec_frontmatter(companions="[DESIGN.md]", sources="[]")
+                + SPEC_BODY.replace("# Ball flight physics", f"# {slug.title()}"),
+            )
+            write(loose / ".memlog.md", f"---\ntopic: {slug}\n---\n\n- (decision) {slug} only\n")
+            write(loose / "DESIGN.md", f"# {slug} design\n")
+        write(
+            self.initiative / "initiative-golf.md",
+            "---\ntype: initiative\n---\n\n# Golf\n\n## References\n\n- design — _bmad-output/spec-ship/DESIGN.md\n",
+        )
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(len(report["folded"]), 2, msg=report)
+        backlog = self.store / "backlog"
+        self.assertFalse((backlog / ".memlog.md").exists())
+        self.assertFalse((backlog / "DESIGN.md").exists())
+        for slug in ("pay", "ship"):
+            log = (backlog / f"story-{slug}.memlog.md").read_text(encoding="utf-8")
+            self.assertTrue(log.startswith(f"---\ntopic: {slug}\n"), msg=log)
+            entries = memlog_entries(backlog / f"story-{slug}.memlog.md")
+            self.assertEqual(entries[0], f"- (decision) {slug} only")
+            self.assertTrue(entries[-1].startswith(f"- (event) folded spec-{slug}/ into story-{slug}.md"), msg=entries)
+            self.assertEqual((backlog / f"story-{slug}-DESIGN.md").read_text(encoding="utf-8"), f"# {slug} design\n")
+            story = backlog / f"story-{slug}.md"
+            self.assertIn(f"- companion — story-{slug}-DESIGN.md", story.read_text(encoding="utf-8"))
+            self.assert_references_resolve(story)
+        self.assertIn(
+            "- design — _bmad-output/backlog/story-ship-DESIGN.md",
+            (self.initiative / "initiative-golf.md").read_text(encoding="utf-8"),
+        )
+        self.assert_references_resolve(self.initiative / "initiative-golf.md")
+
+    def test_a_loose_storys_companions_link_to_each_other_after_the_rename(self):
+        loose = self.store / "spec-caddie"
+        write(loose / "spec-caddie.md", spec_frontmatter(companions="[notes.md]", sources="[]") + SPEC_BODY)
+        write(loose / "notes.md", "See [the design](./DESIGN.md) and [the plan](./plans/plan.md).\n")
+        write(loose / "DESIGN.md", "design\n")
+        write(loose / "plans" / "plan.md", "Back to [the notes](../notes.md).\n")
+
+        self.fold()
+
+        backlog = self.store / "backlog"
+        self.assertEqual(
+            (backlog / "story-caddie-notes.md").read_text(encoding="utf-8"),
+            "See [the design](story-caddie-DESIGN.md) and [the plan](story-caddie-plans/plan.md).\n",
+        )
+        self.assertEqual(
+            (backlog / "story-caddie-plans" / "plan.md").read_text(encoding="utf-8"),
+            "Back to [the notes](../story-caddie-notes.md).\n",
+        )
+        self.assertTrue((backlog / "story-caddie-DESIGN.md").is_file())
+
+    def test_a_loose_storys_bare_and_memlog_links_resolve_after_the_rename(self):
+        loose = self.store / "spec-caddie"
+        write(loose / "spec-caddie.md", spec_frontmatter(companions="[notes.md]", sources="[]") + SPEC_BODY)
+        write(loose / ".memlog.md", MEMLOG_BALL)
+        write(
+            loose / "notes.md",
+            "See [the design](DESIGN.md), [the plan](plans/plan.md) and [the log](./.memlog.md). My notes stay notes.\n",
+        )
+        write(loose / "DESIGN.md", "design\n")
+        write(loose / "plans" / "plan.md", "plan\n")
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        backlog = self.store / "backlog"
+        notes = (backlog / "story-caddie-notes.md").read_text(encoding="utf-8")
+        self.assertEqual(
+            notes,
+            "See [the design](story-caddie-DESIGN.md), [the plan](story-caddie-plans/plan.md) and "
+            "[the log](story-caddie.memlog.md). My notes stay notes.\n",
+        )
+        for target in ("story-caddie-DESIGN.md", "story-caddie-plans/plan.md", "story-caddie.memlog.md"):
+            self.assertTrue((backlog / target).is_file(), msg=target)
+
+    def test_a_loose_storys_memlog_name_taken_by_another_storys_companion_is_reported(self):
+        pay = self.store / "spec-pay"
+        write(pay / "spec-pay.md", spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY)
+        write(pay / "ship.memlog.md", "pay's own notes\n")
+        ship = self.store / "spec-pay-ship"
+        write(ship / "spec-pay-ship.md", spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY)
+        write(ship / ".memlog.md", MEMLOG_BALL)
+
+        report = self.fold()
+
+        self.assertEqual([fold["spec"] for fold in report["folded"]], ["_bmad-output/spec-pay"])
+        self.assertEqual(
+            report["problems"],
+            [
+                {
+                    "spec": "_bmad-output/spec-pay-ship",
+                    "problem": "_bmad-output/backlog/story-pay-ship.memlog.md already exists",
+                }
+            ],
+        )
+        companion = self.store / "backlog" / "story-pay-ship.memlog.md"
+        self.assertEqual(companion.read_text(encoding="utf-8"), "pay's own notes\n")
+        self.assertEqual((ship / ".memlog.md").read_text(encoding="utf-8"), MEMLOG_BALL)
 
     def test_a_loose_story_takes_the_backlog_next_id_when_it_is_higher(self):
         loose = self.store / "spec-caddie"
@@ -954,7 +1061,7 @@ class FoldSpecsTests(unittest.TestCase):
 
         story = read_fields(self.store / "backlog" / "story-caddie.md")
         self.assertEqual((story["id"], story["title"]), ("5", title))
-        self.assertEqual(read_fields(self.store / "backlog" / ".memlog.md")["topic"], title)
+        self.assertEqual(read_fields(self.store / "backlog" / "story-caddie.memlog.md")["topic"], title)
 
     def test_a_ticket_whose_frontmatter_is_not_yaml_is_reported_and_nothing_changes(self):
         epic = self.write_epic_with_spec()
