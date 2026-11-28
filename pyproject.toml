@@ -29,8 +29,8 @@ package = false
 
 [tool.pytest.ini_options]
 addopts = "-q -ra --tb=short -n auto -p no:cacheprovider"
-testpaths = ["tools/tests", "skills"]
-# tools/tests/helpers.py, for the tests under skills/ as well.
+testpaths = ["tools/tests", "tests"]
+# tools/tests/helpers.py, for the tests under tests/ as well.
 pythonpath = ["tools/tests"]
 
 [tool.ruff]

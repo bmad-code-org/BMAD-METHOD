@@ -62,8 +62,8 @@ additional_techniques = []
 # Session output location. The running log and any final artifacts land inside
 # `{output_dir}/{output_folder_name}/`. `{topic_slug}` is filled from the session
 # topic so each topic gets its own folder — a user can brainstorm several topics
-# without collision. The intent doc is `{output_folder_name}.md`. The resume check globs
-# `brainstorm-*/.memlog.md` in the active initiative's folder and in `{output_folder}`.
+# without collision. The intent doc is `{output_folder_name}.md`. The resume check looks for
+# `brainstorm-*/ideas.md` in the active initiative's folder and in `{output_folder}`.
 output_dir = "{output_folder}/{active_initiative}"
 output_folder_name = "brainstorm-{topic_slug}"
 

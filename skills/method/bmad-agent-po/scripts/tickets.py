@@ -10,13 +10,15 @@ the repo's `tools/ticket-tree-rules.md`; the keys of an entry, an epic, and an i
 takes, are in the skill's `assets/tickets-template.toml`. Each command's `--help` says what it reads
 and returns.
 
-An initiative or epic folder keeps its own file at the top and its tickets in its `tickets/` folder:
-the `tickets.toml`, an initiative's epic folders, and the leaf files and plans. A backlog folder has no
-file of its own and holds its leaf files and plans directly. A tree with a `tickets.toml`, an epic
-folder, or a leaf file beside the container's own file is in the earlier layout and is refused; `bmad
-migrate` moves it. A parent initiative's `tickets.toml` lists `[[initiative]]` tables, its children,
-which are initiative folders beside it; `status` and `next` report them, and the other commands want
-one of the children.
+An initiative, program, or epic folder keeps its own file (`<type>-<slug>.md`) at the top and its
+breakdown in its `tickets/` folder: the `tickets.toml`, child container folders (`initiative-*` in a
+program, `epic-*` in an initiative), and the leaf files and plans. A backlog folder has no file of its
+own and holds its leaf files and plans directly. A tree with a `tickets.toml`, a container folder
+(`program-*`, `initiative-*`, `epic-*`), or a leaf file beside the container's own file is in the
+earlier layout and is refused; `bmad migrate` moves it. A program (`type: program`) or parent
+initiative (`[[initiative]]` in `tickets.toml`) holds child initiatives (`tickets/initiative-*`, or
+legacy sibling `../initiative-*` folders); `status` and `next` report them (with `status` rolling up
+counts and container metadata), and the other commands want one of the children.
 
 What this script decides itself: a leaf file joins its entry through the `id` in its frontmatter (`6`
 and `"6"` are one id); a plan joins through `ticket`, an entry id or a backlog file's stem, and is
@@ -28,7 +30,8 @@ names nothing is skipped and one whose `status` is unknown blocks its ticket; bo
 that id from coming back, and every `after` naming it is rewritten.
 
 The project root is `--project-root`, else the first folder at or above the working directory that
-holds `_bmad/`; `output_folder` and `active_initiative` come from the merged BMad config. A relative
+holds `_bmad/`; frontmatter is read through the `_bmad/scripts/frontmatter.py` of that project, or of the
+one holding a folder given; `output_folder` and `active_initiative` come from the merged BMad config. A relative
 `<dir>` that is not under the working directory is looked up under `{output_folder}`, then the
 active initiative and its `tickets/` folder, then the project root. A `tickets/` folder given as
 `<dir>` is read as the folder that holds it.
@@ -49,8 +52,6 @@ import unicodedata
 from datetime import date
 from pathlib import Path
 
-import yaml
-
 sys.dont_write_bytecode = True
 
 STATUSES = ("draft", "ready-for-dev", "in-progress", "in-review", "built", "done", "blocked", "dropped")
@@ -68,7 +69,8 @@ STATE_OF = {
     "dropped": "dropped",
 }
 LEAF_TYPES = ("story", "spike", "bug")
-CONTAINER_TYPES = ("initiative", "epic")
+CONTAINER_TYPES = ("program", "initiative", "epic")
+CONTAINER_DIR_RE = re.compile(rf"^(?:{'|'.join(CONTAINER_TYPES)})-[^/]+$")
 NAME_RE = re.compile(r"^(story|spike|bug)-(.+)\.md$")
 ID_RE = re.compile(r"^[0-9A-Za-z]+$")
 CROSS_RE = re.compile(r"^([0-9A-Za-z]+)\.([0-9A-Za-z]+)$")
@@ -76,10 +78,13 @@ EPIC_RE = re.compile(r"^epic-[^/]+$")
 BREAKDOWN = "tickets.toml"
 TICKETS = "tickets"
 TABLES = ("initiative", "epic", "entry")
-FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---(?:\n|\Z)", re.S)
 PLAN_FIELDS = ("status", "assignee", "blocked_at", "blocked_reason")
 COMMENT_RE = re.compile(r"<!--.*?-->", re.S)  # a template's example sits in one
 UNKNOWN_RE = re.compile(r"^[ \t]*(?:[-*][ \t]+)?Unknown:[ \t]*(\S.*)$", re.M)
+OPEN_QUESTION_RE = re.compile(
+    r"^[ \t]*(?:[-*+][ \t]+)?(?:\*\*[ \t]*)?(?:Open[ \t]+question|Unknown)(?:[ \t]*\*\*)?:(?:[ \t]*\*\*)?[ \t]*(\S.*)$",
+    re.M | re.I,
+)
 
 
 class TicketError(Exception):
@@ -101,53 +106,33 @@ class StoreRefusal(Exception):
 # ---------------------------------------------------------------- frontmatter
 
 
-class FrontmatterLoader(yaml.SafeLoader):
-    """YAML that types only whole numbers, `true`, `false` and null, and reads every other scalar as text:
-    `1.10` names entry 10 in epic 1, not the number 1.1, and a date is the text it was written as."""
-
-
-FrontmatterLoader.yaml_implicit_resolvers = {
-    first: [(tag, rx) for tag, rx in resolvers if tag == "tag:yaml.org,2002:null"]
-    for first, resolvers in yaml.SafeLoader.yaml_implicit_resolvers.items()
-}
-FrontmatterLoader.add_implicit_resolver("tag:yaml.org,2002:bool", re.compile(r"^(?:true|false)$"), list("tf"))
-FrontmatterLoader.add_implicit_resolver(
-    "tag:yaml.org,2002:int", re.compile(r"^-?(?:0|[1-9][0-9]*)$"), list("-0123456789")
-)
-
-
 def parse_frontmatter(text: str, where: str) -> dict:
-    """The frontmatter as `FrontmatterLoader` reads it, an absent value as `""`."""
-    m = FRONTMATTER_RE.match(text)
-    if not m:
+    """The frontmatter, typed: whole numbers, `true`, `false` and null, every other scalar as text (`1.10` names
+    entry 10 in epic 1, not the number 1.1, and a date is the text it was written as); an absent value as `""`."""
+    try:
+        block, _ = frontmatter.split(text)
+    except ValueError:
         return {}
     try:
-        data = yaml.load(m.group(1) + "\n", Loader=FrontmatterLoader)
-    except yaml.YAMLError as e:
-        mark = getattr(e, "problem_mark", None)  # its line counts from the block, which starts after `---`
+        data = frontmatter.load(block, typed=True)
+    except ValueError as e:
+        error = e.__cause__
+        if error is None:
+            raise TicketError(f"{where}: frontmatter is not `key: value` lines") from e
+        mark = getattr(error, "problem_mark", None)  # its line counts from the block, which starts after `---`
         at = f" at line {mark.line + 2}" if mark else ""
-        raise TicketError(f"{where}: frontmatter is not valid YAML{at}: {getattr(e, 'problem', None) or e}") from e
-    if data is None:
-        return {}
-    if not isinstance(data, dict):
-        raise TicketError(f"{where}: frontmatter is not `key: value` lines")
+        raise TicketError(
+            f"{where}: frontmatter is not valid YAML{at}: {getattr(error, 'problem', None) or error}"
+        ) from e
     return {key: "" if value is None else value for key, value in data.items()}
 
 
-def set_frontmatter_value(text: str, key: str, value: str) -> str:
-    """`key: value` in place of the line starting `key:`, or appended; an empty value removes that line."""
-    m = FRONTMATTER_RE.match(text)
-    if not m:
-        raise TicketError("ticket has no frontmatter")
-    block = m.group(1)
-    pattern = re.compile(rf"^{re.escape(key)}:.*$\n?", re.M)
-    if value == "":
-        block = pattern.sub("", block).rstrip("\n")
-    elif pattern.search(block):
-        block = pattern.sub(lambda _: f"{key}: {value}\n", block, count=1).rstrip("\n")
-    else:
-        block = f"{block}\n{key}: {value}"
-    return text[: m.start(1)] + block + text[m.end(1) :]
+def body_of(text: str) -> str:
+    """The text after the frontmatter, or all of it when there is none."""
+    try:
+        return frontmatter.split(text)[1]
+    except ValueError:
+        return text
 
 
 def _list(value, where: str) -> list:
@@ -155,6 +140,14 @@ def _list(value, where: str) -> list:
         return []
     if not isinstance(value, list):
         raise TicketError(f"{where}: after must be a list")
+    return value
+
+
+def _str_list(value, where: str, field: str) -> list[str]:
+    if value in (None, ""):
+        return []
+    if not isinstance(value, list) or not all(isinstance(x, str) for x in value):
+        raise TicketError(f"{where}: {field} must be a list of strings")
     return value
 
 
@@ -178,18 +171,22 @@ def read_text(path: Path) -> str:
 
 
 def tickets_dir(folder: Path) -> Path:
-    """Where a folder's `tickets.toml`, epic folders, leaf files, and plans are: `<folder>/tickets/` for an
-    initiative or an epic, the folder itself for a backlog, which has no file of its own."""
+    """Where a folder's `tickets.toml`, child container folders, leaf files, and plans are: `<folder>/tickets/`
+    for a container, the folder itself for a backlog, which has no file of its own."""
     if not (folder / f"{folder.name}.md").is_file() and not (folder / TICKETS).is_dir():
         return folder
     if (folder / BREAKDOWN).is_file() or any(
-        NAME_RE.match(p.name) or (EPIC_RE.match(p.name) and p.is_dir()) for p in folder.iterdir()
+        NAME_RE.match(p.name) or (CONTAINER_DIR_RE.match(p.name) and p.is_dir()) for p in folder.iterdir()
     ):
         raise TicketError(
             f"{folder.name} uses the earlier layout, its tickets beside {folder.name}.md instead of in "
             f"{folder.name}/{TICKETS}/; `bmad migrate` moves it"
         )
     return folder / TICKETS
+
+
+def is_container(folder: Path) -> bool:
+    return tickets_dir(folder) != folder
 
 
 def shown(folder: Path) -> str:
@@ -255,14 +252,16 @@ def load_container(folder: Path) -> dict:
     path = folder / f"{folder.name}.md"
     if not path.is_file():
         raise TicketError(f"{folder.name}: no {path.name}")
-    fm = parse_frontmatter(read_text(path), f"{folder.name}/{path.name}")
-    if fm.get("type") not in CONTAINER_TYPES:
-        raise TicketError(
-            f"{folder.name}/{path.name}: type {fm.get('type')!r} is not one of {', '.join(CONTAINER_TYPES)}"
-        )
-    status = _one_of(fm.get("status", ""), CONTAINER_STATUSES, f"{folder.name}/{path.name}", "status")
+    where = f"{folder.name}/{path.name}"
+    fm = parse_frontmatter(read_text(path), where)
+    kind = fm.get("type")
+    if kind not in CONTAINER_TYPES:
+        raise TicketError(f"{where}: type {kind!r} is not one of {', '.join(CONTAINER_TYPES)}")
+    status = _one_of(fm.get("status", ""), CONTAINER_STATUSES, where, "status")
     return {
         "slug": folder.name,
+        "type": kind,
+        "title": str(fm.get("title", "") or ""),
         "tracker_id": str(fm.get("tracker_id", "") or ""),
         "status": status,
         "refined": str(fm.get("refined", "")).lower() != "false",
@@ -272,7 +271,7 @@ def load_container(folder: Path) -> dict:
 
 def file_unknown(text: str) -> str:
     """The `Unknown:` lines of a leaf file's body, as `pull` writes an entry's `unknown` into Notes."""
-    body = COMMENT_RE.sub("", FRONTMATTER_RE.sub("", text, count=1))
+    body = COMMENT_RE.sub("", body_of(text))
     return "; ".join(m.group(1).strip() for m in UNKNOWN_RE.finditer(body))
 
 
@@ -401,22 +400,63 @@ def join_plans(rows: list[dict], plans: list[tuple[str, dict]], where: str, prob
 
 
 def epic_folders(initiative: Path) -> list[Path]:
+    td = tickets_dir(initiative)
+    if not td.is_dir():
+        return []
     return sorted(
         d
-        for d in tickets_dir(initiative).glob("epic-*")
+        for d in td.glob("epic-*")
         if d.is_dir() and ((d / f"{d.name}.md").is_file() or (tickets_dir(d) / BREAKDOWN).is_file())
     )
 
 
-def load_tree(folder: Path) -> dict:
+def _child_container_target(child: Path) -> Path | None:
+    if not child.is_dir():
+        return None
+    if child.is_symlink():
+        if (child / f"{child.name}.md").is_file():
+            return child
+        target = child.resolve()
+        if (target / f"{target.name}.md").is_file() or (tickets_dir(target) / BREAKDOWN).is_file():
+            return target
+        return None
+    if (child / f"{child.name}.md").is_file() or (tickets_dir(child) / BREAKDOWN).is_file():
+        return child
+    return None
+
+
+def initiative_folders(parent: Path) -> list[Path]:
+    td = tickets_dir(parent)
+    if not td.is_dir():
+        return []
+    return sorted(d for d in td.glob("initiative-*") if _child_container_target(d) is not None)
+
+
+def load_tree(folder: Path, *, validate_root: bool = False) -> dict:
     """The folder asked about plus every epic its tickets can name."""
-    children = load_breakdown(folder).get("initiative")
-    if children is not None:
-        names = ", ".join(c["slug"] for c in children)
-        raise TicketError(f"{folder.name}: a parent initiative holds initiatives; name one of them: {names}")
+    if validate_root and is_container(folder):
+        root = load_container(folder)
+    else:
+        rtype = _root_type(folder)
+        root = load_container(folder) if rtype == "program" else None
+    breakdown = load_breakdown(folder)
+    if root and root["type"] == "program" and ("epic" in breakdown or "entry" in breakdown):
+        raise TicketError(f"{shown(folder)}/{BREAKDOWN}: a program holds initiatives, not epics or entries")
+    children = breakdown.get("initiative")
+    is_prog = bool(root and root["type"] == "program")
+    if is_prog or children is not None:
+        slugs = [c["slug"] for c in (children or [])]
+        slugs += [d.name for d in initiative_folders(folder) if d.name not in slugs]
+        if not is_prog:
+            raise TicketError(
+                f"{folder.name}: a parent initiative holds initiatives; name one of them: {', '.join(slugs)}"
+            )
+        if slugs:
+            raise TicketError(f"{folder.name}: a program holds initiatives; name one of them: {', '.join(slugs)}")
+        raise TicketError(f"{folder.name}: a program holds initiatives")
     epics = epic_folders(folder)
     holder = folder.parent.parent if folder.parent.name == TICKETS else None
-    if epics or "epic" in load_breakdown(folder):
+    if epics or "epic" in breakdown:
         scope, initiative, folders = None, folder, None
     elif holder is not None and folder in epic_folders(holder):
         scope, initiative, folders = folder.name, holder, epic_folders(holder)
@@ -440,6 +480,7 @@ def load_tree(folder: Path) -> dict:
     for t in tickets:
         t["key"] = f"{t['epic']}/{t['id']}" if t["id"] is not None else f"{t['epic']}/{t['file']}"
     tree = {
+        "root": root,
         "scope": scope,
         "initiative": initiative,
         "folders": {f.name: f for f in folders},
@@ -766,6 +807,33 @@ def public(t: dict, tree: dict, blocks: dict | None = None) -> dict:
 # ---------------------------------------------------------------- store
 
 
+def is_path(value: str) -> bool:
+    """Whether an argument names an existing file or folder; a note or reason too long for a path does not."""
+    try:
+        return Path(value).exists()
+    except (OSError, ValueError):
+        return False
+
+
+def load_shared(args) -> None:
+    """Load the project's frontmatter module: from `--project-root`, else the project holding a folder given,
+    else the working directory."""
+    global frontmatter
+    if args.project_root:
+        root = Path(args.project_root).resolve()
+    else:
+        given = [Path(v).resolve() for v in vars(args).values() if isinstance(v, str) and is_path(v)]
+        root = next(filter(None, map(find_project_root, [*given, Path.cwd()])), None)
+    if root is None:
+        raise TicketError("no project root found: no _bmad/ at or above the working directory; pass --project-root")
+    path = root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        raise TicketError(f"{path} is missing. Run bmad setup for this project.")
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
+
+
 def find_project_root(start: Path) -> Path | None:
     for p in [start, *start.parents]:
         if (p / "_bmad").is_dir():
@@ -825,7 +893,7 @@ def active_initiative(project_root: Path) -> Path:
         raise TicketError(
             "no active initiative: set core.active_initiative in _bmad/custom/config.user.toml, or pass a folder"
         )
-    folder = (tickets_root(project_root, config) / name.strip()).resolve()
+    folder = container_of((tickets_root(project_root, config) / name.strip()).resolve())
     if not folder.is_dir():
         raise TicketError(f"active initiative folder not found: {folder}")
     return folder
@@ -884,6 +952,12 @@ def with_backlog(args, out: dict, view) -> dict:
             out["backlog"] = view(backlog)
         except (TicketError, OSError, ValueError) as e:
             out["backlog"] = {"folder": backlog.name, "error": str(e)}
+        if "ready_entries" in out["backlog"]:
+            ref_to_file = {
+                (row["ref"] if row["ref"] is not None else row["file"]): (row["file"] or row["ref"])
+                for row in out["backlog"].get("tickets", [])
+            }
+            out["backlog"]["ready_entries"] = [ref_to_file.get(r, r) for r in out["backlog"]["ready_entries"]]
         for group in ("ready_to_refine", "ready_to_start", "in_progress", "blocked", "tickets"):
             for row in out["backlog"].get(group, []):
                 # An id here could also name a ticket in the initiative; the file name cannot.
@@ -936,14 +1010,274 @@ def next_view(folder: Path) -> dict:
     }
 
 
+def _root_type(folder: Path) -> str | None:
+    if not is_container(folder):
+        return None
+    if folder.name.startswith("program-"):
+        return load_container(folder)["type"]
+    fm = _safe_frontmatter(folder / f"{folder.name}.md")
+    rtype = fm.get("type") if fm else None
+    if rtype == "program":
+        return load_container(folder)["type"]
+    return rtype
+
+
 def is_parent(folder: Path) -> bool:
-    return "initiative" in load_breakdown(folder)
+    rtype = _root_type(folder)
+    breakdown = load_breakdown(folder)
+    if rtype == "program":
+        load_container(folder)
+        if "epic" in breakdown or "entry" in breakdown:
+            raise TicketError(f"{shown(folder)}/{BREAKDOWN}: a program holds initiatives, not epics or entries")
+        return True
+    return "initiative" in breakdown
 
 
-def parent_view(folder: Path) -> dict:
-    """A parent initiative's children in build order: each with its declared `after` and, once its folder exists,
-    its file's status and its ticket counts; `waiting_on` names the prerequisites not yet done."""
-    listed = load_breakdown(folder)["initiative"]
+def _safe_frontmatter(path: Path) -> dict | None:
+    try:
+        text = read_text(path)
+        frontmatter.split(text)
+    except (OSError, UnicodeDecodeError, ValueError):
+        return None
+    try:
+        return parse_frontmatter(text, path.name)
+    except TicketError:
+        return None
+
+
+def _primary_doc(run_dir: Path) -> tuple[Path, dict] | None:
+    docs: list[tuple[Path, dict]] = []
+    try:
+        entries = sorted(run_dir.iterdir(), key=lambda p: p.name)
+    except OSError:
+        return None
+    for p in entries:
+        if p.is_file() and p.suffix == ".md":
+            fm = _safe_frontmatter(p)
+            if fm is not None and fm.get("type") not in CONTAINER_TYPES:
+                docs.append((p, fm))
+    if not docs:
+        return None
+    preferred = run_dir / f"{run_dir.name}.md"
+    for p, fm in docs:
+        if p == preferred:
+            return p, fm
+    for p, fm in docs:
+        if str(fm.get("template", "") or "").strip():
+            return p, fm
+    return docs[0]
+
+
+def _is_container_dir(d: Path) -> bool:
+    if CONTAINER_DIR_RE.match(d.name):
+        return True
+    own = d / f"{d.name}.md"
+    if own.is_file():
+        fm = _safe_frontmatter(own)
+        if fm is not None and fm.get("type") in CONTAINER_TYPES:
+            return True
+    return False
+
+
+def _prefix_template(name: str) -> str:
+    if "{" in name or "}" in name:
+        return ""
+    prefix, sep, _ = name.partition("-")
+    if not sep or not prefix or prefix in CONTAINER_TYPES or not re.match(r"^[A-Za-z0-9_]+$", prefix):
+        return ""
+    return prefix
+
+
+def _expand_ref_candidates(raw: str, folder: Path, project_root: Path | None) -> list[Path]:
+    clean = raw.split("#", 1)[0].strip()
+    if not clean or "://" in clean:
+        return []
+    if "{project-root}" in clean:
+        if project_root is None:
+            return []
+        clean = clean.replace("{project-root}", str(project_root))
+    out: list[Path] = []
+    for base in (folder, *([project_root] if project_root is not None else [])):
+        try:
+            resolved = (base / clean).resolve()
+        except OSError:
+            continue
+        if resolved not in out:
+            out.append(resolved)
+    return out
+
+
+def _unadopted_runs(folder: Path, project_root: Path | None, adopted_refs: list[str]) -> list[dict]:
+    adopted_cands = [cand for raw in adopted_refs for cand in _expand_ref_candidates(raw, folder, project_root)]
+    runs = []
+    for d in sorted(folder.iterdir(), key=lambda p: p.name):
+        if not d.is_dir() or d.name in (TICKETS, "backlog") or d.name.startswith((".", "_")) or _is_container_dir(d):
+            continue
+        primary = _primary_doc(d)
+        if primary is None:
+            continue
+        d_res = d.resolve()
+        if any(cand == d_res or cand.is_relative_to(d_res) for cand in adopted_cands):
+            continue
+        doc_path, doc_fm = primary
+        template = str(doc_fm.get("template", "") or "").strip() or _prefix_template(d.name)
+        status = str(doc_fm.get("status", "") or "").strip()
+        if not status:
+            design = d / "DESIGN.md"
+            if design.is_file() and design != doc_path:
+                design_fm = _safe_frontmatter(design)
+                if design_fm is not None:
+                    status = str(design_fm.get("status", "") or "").strip()
+        runs.append({"path": doc_path.relative_to(folder).as_posix(), "template": template, "status": status})
+    return runs
+
+
+def _companion_template(raw: str, folder: Path, project_root: Path | None) -> str:
+    clean = raw.split("#", 1)[0].strip()
+    if not clean or "://" in clean:
+        return ""
+    cands = _expand_ref_candidates(raw, folder, project_root)
+    resolved = next((c for c in cands if c.exists()), None)
+    if resolved is None:
+        return ""
+    folder_res = folder.resolve()
+    root_res = project_root.resolve() if project_root is not None else None
+    if resolved.is_dir():
+        primary = _primary_doc(resolved)
+        if primary is not None:
+            t = str(primary[1].get("template", "") or "").strip()
+            if t:
+                return t
+        return _prefix_template(resolved.name)
+    if resolved.is_file() and resolved.suffix == ".md":
+        fm = _safe_frontmatter(resolved)
+        if fm is not None:
+            t = str(fm.get("template", "") or "").strip()
+            if t:
+                return t
+    parent = resolved.parent
+    is_run_parent = (
+        parent != folder_res
+        and (root_res is None or parent != root_res)
+        and parent.name not in (TICKETS, "backlog")
+        and not parent.name.startswith((".", "_"))
+        and not _is_container_dir(parent)
+    )
+    if is_run_parent:
+        primary = _primary_doc(parent)
+        if primary is not None:
+            t = str(primary[1].get("template", "") or "").strip()
+            if t:
+                return t
+        return _prefix_template(parent.name)
+    return ""
+
+
+def file_open_questions(path: Path) -> int:
+    if not path.is_file():
+        return 0
+    text = read_text(path).replace("\r\n", "\n")
+    body = COMMENT_RE.sub("", body_of(text))
+    return sum(1 for _ in OPEN_QUESTION_RE.finditer(body))
+
+
+def container_metadata(
+    folder: Path,
+    project_root: Path | None = None,
+    *,
+    root: dict | None = None,
+    tree: dict | None = None,
+    epics_out: list[dict] | None = None,
+) -> dict:
+    ctype = root["type"] if root else None
+    closed = bool(root and root["status"] in ("done", "dropped"))
+    if ctype is None:
+        has_spec = False
+        unadopted_runs: list[dict] = []
+        companions: list[dict] = []
+        container_oq = 0
+    else:
+        own = folder / f"{folder.name}.md"
+        where = f"{folder.name}/{own.name}"
+        raw_text = read_text(own).replace("\r\n", "\n")
+        fm = parse_frontmatter(raw_text, where)
+        body = COMMENT_RE.sub("", body_of(raw_text))
+        has_spec = bool(root["refined"] and any(line.strip() for line in section_lines(body, "Requirements")))
+        sources = _str_list(fm.get("sources"), where, "sources")
+        raw_companions = _str_list(fm.get("companions"), where, "companions")
+        unadopted_runs = _unadopted_runs(folder, project_root, [*sources, *raw_companions])
+        companions = [
+            {"path": raw, "template": _companion_template(raw, folder, project_root)} for raw in raw_companions
+        ]
+        container_oq = sum(1 for _ in OPEN_QUESTION_RE.finditer(body))
+
+    if tree is None or closed:
+        return {
+            "container_type": ctype,
+            "has_spec": has_spec,
+            "unadopted_runs": unadopted_runs,
+            "companions": companions,
+            "unrefined_epics": [],
+            "ready_entries": [],
+            "open_questions_count": 0 if closed else container_oq,
+        }
+
+    ready_entries = [
+        row_ref(t, tree) or t["key"]
+        for t in classify(tree)["ready_to_start"]
+        if tree["containers"].get(t["epic"], {}).get("status") not in ("done", "dropped")
+    ]
+    if ctype == "epic":
+        unrefined_epics = [folder.name] if not root["refined"] and root["status"] not in ("done", "dropped") else []
+    elif ctype == "initiative" and tree["scope"] is None:
+        unrefined_epics = [
+            e["slug"]
+            for e in (epics_out or [])
+            if e.get("folder") is not None and not e["refined"] and e.get("status") not in ("done", "dropped")
+        ]
+    else:
+        unrefined_epics = []
+
+    if tree["scope"] is None:
+        child_epic_oq = sum(
+            file_open_questions(tree["folders"][slug] / f"{slug}.md")
+            for slug, c in tree["containers"].items()
+            if c["status"] not in ("done", "dropped")
+        )
+        open_tickets = [
+            t
+            for t in in_scope(tree)
+            if t["state"] not in ("done", "dropped")
+            and tree["containers"].get(t["epic"], {}).get("status") not in ("done", "dropped")
+        ]
+    else:
+        child_epic_oq = 0
+        open_tickets = [t for t in in_scope(tree) if t["state"] not in ("done", "dropped")]
+
+    return {
+        "container_type": ctype,
+        "has_spec": has_spec,
+        "unadopted_runs": unadopted_runs,
+        "companions": companions,
+        "unrefined_epics": unrefined_epics,
+        "ready_entries": ready_entries,
+        "open_questions_count": container_oq + child_epic_oq + sum(1 for t in open_tickets if t.get("unknown")),
+    }
+
+
+def _parent_data(folder: Path, seen: set[Path] | None = None) -> tuple[dict, dict, dict[str, Path], dict | None]:
+    seen = set() if seen is None else seen
+    resolved = folder.resolve()
+    if resolved in seen:
+        raise TicketError(f"{folder.name}: cycle in nested initiatives")
+    seen = seen | {resolved}
+
+    root = load_container(folder) if is_container(folder) else None
+    breakdown = load_breakdown(folder)
+    if root and root["type"] == "program" and ("epic" in breakdown or "entry" in breakdown):
+        raise TicketError(f"{shown(folder)}/{BREAKDOWN}: a program holds initiatives, not epics or entries")
+
+    listed = breakdown.get("initiative", [])
     where = f"{shown(folder)}/{BREAKDOWN}"
     ids = {}
     for c in listed:
@@ -953,7 +1287,22 @@ def parent_view(folder: Path) -> dict:
             raise TicketError(f"{where}: two initiatives with slug {c['slug']}")
         ids[c["slug"]] = c["id"]
     by_id = {i: slug for slug, i in ids.items()}
+    td = tickets_dir(folder)
     rows = []
+    child_paths: dict[str, Path] = {}
+
+    def load_child_row(row: dict, child: Path, child_c: dict | None = None, folder_name: str | None = None) -> None:
+        if child.resolve() in seen:
+            raise TicketError(f"{folder.name}: cycle in nested initiatives")
+        child_c = load_container(child) if child_c is None else child_c
+        if is_parent(child):
+            _, child_counts, _, _ = _parent_data(child, seen)
+        else:
+            child_counts = counts(load_tree(child)["tickets"])
+        row.update(folder=folder_name or child.name, status=child_c["status"], counts=child_counts)
+        child_paths[row["slug"]] = child
+
+    allow_sibling = not (root and root["type"] == "program") and folder.parent.name != TICKETS
     for c in listed:
         after = []
         for a in c.get("after", []):
@@ -964,12 +1313,32 @@ def parent_view(folder: Path) -> dict:
                 )
             after.append({"initiative": needed, "needs": str(a.get("needs", ""))})
         row = {"id": c["id"], "slug": c["slug"], "title": str(c.get("title", "")), "after": after, "folder": None}
-        child = folder.parent / c["slug"]
-        if child.is_dir():
-            row.update(
-                folder=child.name, status=load_container(child)["status"], counts=counts(load_tree(child)["tickets"])
-            )
+        nested = td / c["slug"]
+        child = nested if nested.is_dir() or not allow_sibling else folder.parent / c["slug"]
+        target = _child_container_target(child)
+        if target is not None:
+            load_child_row(row, target, folder_name=child.name)
         rows.append(row)
+
+    for d in initiative_folders(folder):
+        if d.name in ids:
+            continue
+        target = _child_container_target(d)
+        if target is None:
+            continue
+        if target.resolve() in seen:
+            raise TicketError(f"{folder.name}: cycle in nested initiatives")
+        child_c = load_container(target)
+        row = {
+            "id": None,
+            "slug": d.name,
+            "title": child_c["title"],
+            "after": [],
+            "folder": None,
+        }
+        load_child_row(row, target, child_c, folder_name=d.name)
+        rows.append(row)
+
     graph = {r["slug"]: [a["initiative"] for a in r["after"]] for r in rows}
     state = {}
 
@@ -992,7 +1361,52 @@ def parent_view(folder: Path) -> dict:
         conflicts += [
             {"initiative": r["slug"], "after": b} for b in graph[r["slug"]] if order.index(b) > order.index(r["slug"])
         ]
-    return {"folder": folder.name, "initiatives": rows, "order_conflict": conflicts}
+
+    agg_counts = {"total": 0}
+    for r in rows:
+        for k, v in r.get("counts", {}).items():
+            agg_counts[k] = agg_counts.get(k, 0) + v
+
+    return {"folder": folder.name, "initiatives": rows, "order_conflict": conflicts}, agg_counts, child_paths, root
+
+
+def parent_view(folder: Path) -> dict:
+    """A program or parent initiative's children in build order: each with its declared `after` and, once its
+    folder exists, its file's status and its ticket counts; `waiting_on` names the prerequisites not yet done."""
+    return _parent_data(folder)[0]
+
+
+def parent_status_view(folder: Path, project_root: Path | None = None, seen: set[Path] | None = None) -> dict:
+    seen = set() if seen is None else seen
+    view, agg_counts, child_paths, root = _parent_data(folder, seen)
+    branch_seen = seen | {folder.resolve()}
+    meta = container_metadata(folder, project_root, root=root)
+    closed = bool(root and root["status"] in ("done", "dropped"))
+    unrefined_epics: list[str] = []
+    ready_entries: list[str] = []
+    open_questions_count = meta["open_questions_count"]
+
+    if not closed:
+        for r in view["initiatives"]:
+            child = child_paths.get(r["slug"])
+            if child is None or r.get("status") in ("done", "dropped"):
+                continue
+            child_status = (
+                parent_status_view(child, project_root, branch_seen)
+                if is_parent(child)
+                else status_view(child, project_root)
+            )
+            unrefined_epics.extend(f"{r['slug']}/{e}" for e in child_status["unrefined_epics"])
+            open_questions_count += child_status["open_questions_count"]
+            if not r["waiting_on"]:
+                ready_entries.extend(f"{r['slug']}/{entry}" for entry in child_status["ready_entries"])
+
+    meta.update(
+        unrefined_epics=unrefined_epics,
+        ready_entries=ready_entries,
+        open_questions_count=open_questions_count,
+    )
+    return {**view, "counts": agg_counts, **meta}
 
 
 def cmd_next(args) -> dict:
@@ -1026,8 +1440,8 @@ def counts(tickets: list[dict]) -> dict:
     return out
 
 
-def status_view(folder: Path) -> dict:
-    tree = load_tree(folder)
+def status_view(folder: Path, project_root: Path | None = None) -> dict:
+    tree = load_tree(folder, validate_root=True)
     declared = declared_after(tree)
     tickets = in_scope(tree)
     blocks = {}
@@ -1063,20 +1477,19 @@ def status_view(folder: Path) -> dict:
             out["epics"].append(row)
     else:
         out["next_id"] = next_id(tree, tree["scope"])
+    out.update(container_metadata(folder, project_root, root=tree["root"], tree=tree, epics_out=out.get("epics")))
     return out
 
 
 def cmd_status(args) -> dict:
     folder = _folder(args)
-    store = store_name(project_root_for(args, folder))
-    view = parent_view if is_parent(folder) else status_view
-    return with_backlog(args, {"store": store, **view(folder)}, status_view)
+    root = project_root_for(args, folder)
+    store = store_name(root)
+    view = parent_status_view if is_parent(folder) else status_view
+    return with_backlog(args, {"store": store, **view(folder, root)}, lambda b: status_view(b, root))
 
 
-PULLED = """---
-{frontmatter}
----
-
+PULLED = """{frontmatter}
 # {heading}
 
 ## Description
@@ -1094,8 +1507,20 @@ Verify: {verify}
 
 
 def title_slug(title: str) -> str:
-    title = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
-    return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:60].rstrip("-") or "untitled"
+    """A title as a file name: folded to ASCII and lowercase, each run of anything else one `-` (`Café` is
+    `cafe`). A title with no ASCII letter or digit, one in Chinese or Cyrillic say, keeps its own letters, digits
+    and marks instead, the characters Unicode's identifier rule (UAX #31) allows (`修复登录`). At most 60
+    characters and 180 bytes, else `untitled`."""
+    folded = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
+    slug = re.sub(r"[^a-z0-9]+", "-", folded.lower()).strip("-")
+    if not slug:
+        text = unicodedata.normalize("NFKC", title).lower()
+        slug = "".join(c if c != "_" and f"a{c}".isidentifier() else "-" for c in text)
+        slug = re.sub(r"-+", "-", unicodedata.normalize("NFKC", slug)).strip("-")
+    slug = slug[:60]
+    while len(slug.encode("utf-8")) > 180:  # room left for `<type>-`, `-<id>` and `-plan.md` in 255 bytes
+        slug = slug[:-1]
+    return slug.rstrip("-") or "untitled"
 
 
 def resolve_ticket(tree: dict, text: str) -> dict:
@@ -1179,6 +1604,92 @@ def cmd_find(args) -> dict:
     }
 
 
+def parent_file(path: Path) -> Path | None:
+    """The file of the container a ticket file sits under: a leaf's epic or initiative, an epic's initiative."""
+    folder = path.parent
+    if path.name == f"{folder.name}.md":  # a container's own file: its parent holds its folder in `tickets/`
+        folder = folder.parent
+    folder = container_of(folder)
+    own = folder / f"{folder.name}.md"
+    return own if own.is_file() and own != path else None
+
+
+def section_lines(text: str, name: str) -> list[str]:
+    """The lines under a `## <name>` heading, up to the next heading."""
+    out, inside = [], False
+    for line in text.split("\n"):
+        if line.startswith("#"):
+            if inside and re.match(r"#{1,2} ", line):
+                break
+            if line.strip() == f"## {name}":
+                inside = True
+                continue
+        if inside:
+            out.append(line)
+    return out
+
+
+def tracker_body(path: Path) -> dict:
+    """The title and body Publish sends for a ticket file; see the `body` command's help."""
+    text = read_text(path).replace("\r\n", "\n")
+    fm = parse_frontmatter(text, path.name)
+    lines = body_of(text).split("\n")
+    heading = next((i for i, line in enumerate(lines) if line.startswith("# ")), None)
+    title = str(fm.get("title") or "") or (lines[heading][2:].strip() if heading is not None else "")
+    description = next((i for i, line in enumerate(lines) if line.strip() == "## Description"), None)
+    for i in sorted({heading, description} - {None}, reverse=True):
+        del lines[i : i + (2 if i + 1 < len(lines) and not lines[i + 1].strip() else 1)]
+    covers = fm.get("covers", "")
+    if covers == "":
+        covers = []
+    if not isinstance(covers, list):
+        raise TicketError(f"{path.name}: covers must be a list")
+    added = []
+    if covers:
+        parent = parent_file(path)
+        if parent is None:
+            raise TicketError(f"{path.name}: covers {', '.join(map(str, covers))} but no parent file holds them")
+        items = [
+            re.sub(r"^(?:[-*+]|\d+[.)])[ \t]+", "", line.strip())
+            for line in section_lines(read_text(parent).replace("\r\n", "\n"), "Requirements")
+        ]
+        missing = []
+        for c in map(str, covers):
+            hit = next((x for x in items if re.match(rf"{re.escape(c)}(?![0-9A-Za-z])", x)), None)
+            if hit is None:
+                missing.append(c)
+            else:
+                added.append(f"- covers — {hit}")
+        if missing:
+            raise TicketError(
+                f"{path.name}: covers {', '.join(missing)}, which {parent.name}'s Requirements does not hold",
+                missing=missing,
+            )
+    if added:
+        refs = next((i for i, line in enumerate(lines) if line.strip() == "## References"), None)
+        if refs is None:
+            lines += ["", "## References", "", *added]
+        else:
+            end = next((i for i in range(refs + 1, len(lines)) if re.match(r"#{1,2} ", lines[i])), len(lines))
+            last = max((i for i in range(refs + 1, end) if lines[i].strip()), default=None)
+            if last is None:  # an empty References: the lines go under its heading
+                lines[refs + 1 : refs + 1] = ["", *added]
+            else:
+                lines[last + 1 : last + 1] = added
+    return {"file": str(path), "title": title, "body": "\n".join(lines).strip("\n") + "\n"}
+
+
+def cmd_body(args) -> dict:
+    path = Path(args.ref)
+    # With a <dir>, a bare file name names a ticket in it, as for find, not a file in the working directory.
+    if path.suffix == ".md" and path.is_file() and (args.dir is None or len(path.parts) > 1):
+        return tracker_body(path.resolve())
+    t, tree = locate(args, _folder(args), args.ref)
+    if not t["file"]:
+        raise TicketError(f"{ref_name(t, tree)} has no leaf file yet; `tickets.py pull` writes it")
+    return tracker_body(tickets_dir(tree["folders"][t["epic"]]) / t["file"])
+
+
 def ref_name(t: dict, tree: dict) -> str:
     return f"{t['file'] or t['id']} in {t['epic']}"
 
@@ -1211,26 +1722,26 @@ def write_leaf(t: dict, tree: dict, root: Path | None) -> Path:
     path = tickets_dir(folder) / f"{leaf_stem(t, tree)}.md"
     if path.exists():
         raise TicketError(f"{path.name} exists already; change entry {t['id']}'s title")
-    after = [str(ref(b, t["epic"], tree)) for b in t["after"]]
+    after = [ref(b, t["epic"], tree) for b in t["after"]]
     parent = parent_reference(folder, root)
     notes = ([f"Unknown: {t['unknown']}"] if t["unknown"] else []) + t["notes"]
     # Other empty fields are left out; `after` and `hitl` stay because `status` compares them with the entry.
     # No status: the build writes it when it starts.
-    fields = [
-        ("id", str(t["id"])),
-        ("type", t["type"]),
-        ("title", json.dumps(t["title"], ensure_ascii=False)),
-        ("parent", t["epic"]),
-        ("covers", f"[{', '.join(t['covers'])}]" if t["covers"] else ""),
-        ("after", f"[{', '.join(after)}]"),
-        ("refined", "false" if t["refine"] else ""),
-        ("hitl", "true" if t["hitl"] else "false"),
-        ("risk", t["risk"]),
-        ("estimate", json.dumps(str(t["estimate"])) if t["estimate"] != "" else ""),
-    ]
+    fields = {
+        "id": t["id"],
+        "type": t["type"],
+        "title": frontmatter.Quoted(t["title"]),
+        "parent": t["epic"],
+        "covers": t["covers"] or None,
+        "after": after,
+        "refined": False if t["refine"] else None,
+        "hitl": t["hitl"],
+        "risk": t["risk"] or None,
+        "estimate": frontmatter.Quoted(str(t["estimate"])) if t["estimate"] != "" else None,
+    }
     path.write_text(
         PULLED.format(
-            frontmatter="\n".join(f"{k}: {v}" for k, v in fields if v != ""),
+            frontmatter=frontmatter.dump({k: v for k, v in fields.items() if v is not None}, flow_lists=True),
             heading=t["title"],
             parent=parent,
             description=t["description"],
@@ -1245,29 +1756,32 @@ def write_leaf(t: dict, tree: dict, root: Path | None) -> Path:
 
 
 def quoted(value: str) -> str:
-    """A double-quoted scalar that `parse_frontmatter` reads back exactly."""
+    """Text written as a double-quoted scalar, which `parse_frontmatter` reads back exactly."""
     value.encode("utf-8")  # an undecodable argument stops here, before it could be written as an escape
-    # YAML reads some of these as line breaks and refuses others in a file, so they go in as escapes.
-    text = json.dumps(value, ensure_ascii=False)
-    return "".join(
-        c if c.isprintable() else f"\\u{ord(c):04x}" if ord(c) <= 0xFFFF else f"\\U{ord(c):08x}" for c in text
-    )
+    return frontmatter.Quoted(value)
 
 
-def edit_frontmatter(path: Path, values: dict[str, str]) -> str:
-    """Set frontmatter values in a file, keeping its line endings and byte-order mark; an empty value removes
-    the line. Returns the new text."""
+def edit_frontmatter(path: Path, values: dict) -> str:
+    """Set frontmatter values in a file, keeping its other lines, its line endings and byte-order mark; an empty
+    value removes the field. Returns the new text."""
     raw = path.read_bytes()
     text = raw.decode("utf-8-sig").replace("\r\n", "\n")
     before = parse_frontmatter(text, path.name)
-    for key, value in values.items():
-        text = set_frontmatter_value(text, key, value)
-    # A line edit is right only for a one-line value; anything else would corrupt the file, so it is refused.
     try:
-        want = {k: v for k, v in before.items() if k not in values}
-        want.update({k: parse_frontmatter(f"---\n{k}: {v}\n---\n", path.name)[k] for k, v in values.items() if v})
-        ok = parse_frontmatter(text, path.name) == want
-    except TicketError:
+        block, body = frontmatter.split(text)
+    except ValueError:
+        raise TicketError("ticket has no frontmatter") from None
+    head = text[: text.index("\n") + 1]
+    closing = text[len(head) + len(block) : len(text) - len(body)]
+    changed = {k: v for k, v in values.items() if v != ""}
+    # An edit the other fields do not survive, such as removing an anchor another field names, is refused.
+    try:
+        block = frontmatter.set_fields(block, {}, tuple(k for k in values if k not in changed))
+        for key, value in changed.items():  # one at a time, so a new field goes last
+            block = frontmatter.set_fields(block, {key: value})
+        text = head + block + closing + body
+        ok = parse_frontmatter(text, path.name) == {k: v for k, v in before.items() if k not in values} | changed
+    except (ValueError, TicketError):
         ok = False
     if not ok:
         raise TicketError(f"{path.name}: {', '.join(values)} cannot be edited in place; edit the frontmatter by hand")
@@ -1294,14 +1808,14 @@ def cmd_mark(args) -> dict:
     created = not t.get("plan")
     if created:
         assignee = args.assignee if args.assignee is not None else t["assignee"]
-        fields = [
-            ("title", quoted(t["title"])),
-            ("ticket", str(t["id"]) if t["id"] is not None else quoted(t["file"][:-3])),
-            ("status", args.status),
-            ("assignee", quoted(assignee) if assignee else ""),
-            *blocked.items(),
-        ]
-        text = "---\n" + "".join(f"{k}: {v}\n" for k, v in fields if v != "") + "---\n"
+        fields = {
+            "title": quoted(t["title"]),
+            "ticket": t["id"] if t["id"] is not None else quoted(t["file"][:-3]),
+            "status": args.status,
+            "assignee": quoted(assignee) if assignee else "",
+            **blocked,
+        }
+        text = frontmatter.dump({k: v for k, v in fields.items() if v != ""})
         data = text.encode("utf-8")  # before the file is opened, so a failure leaves no empty plan
         try:
             with path.open("xb") as f:
@@ -1345,8 +1859,8 @@ def _mirror_values(item: dict, where: str) -> dict[str, str]:
             if isinstance(b, bool) or not isinstance(b, (int, str)) or (isinstance(b, str) and ("," in b or not b)):
                 raise TicketError(f"{where}: after takes ids and names without commas, not {b!r}")
             # A number stays bare, a sibling's id; a string is quoted, so a tracker id of digits stays one.
-            parts.append(str(b) if isinstance(b, int) else quoted(b))
-        values["after"] = f"[{', '.join(parts)}]"
+            parts.append(b if isinstance(b, int) else quoted(b))
+        values["after"] = parts
     return values
 
 
@@ -1485,15 +1999,14 @@ def parse_table(block: str) -> tuple[str, dict]:
     return kind, row
 
 
-def list_text(values: list, toml: bool) -> str:
-    """A list as `tickets.toml` or a leaf's frontmatter reads it back: numbers bare, strings quoted."""
-    return (
-        "["
-        + ", ".join(
-            str(v) if isinstance(v, int) else (json.dumps(v, ensure_ascii=False) if toml else quoted(v)) for v in values
-        )
-        + "]"
-    )
+def list_text(values: list) -> str:
+    """A list as `tickets.toml` reads it back: numbers bare, strings quoted."""
+    return "[" + ", ".join(str(v) if isinstance(v, int) else json.dumps(v, ensure_ascii=False) for v in values) + "]"
+
+
+def fm_list(values: list) -> list:
+    """A list as a leaf's frontmatter reads it back: numbers bare, strings quoted."""
+    return [v if isinstance(v, int) else quoted(v) for v in values]
 
 
 def set_after_line(block: str, current: list, new: list, where: str) -> str:
@@ -1503,7 +2016,164 @@ def set_after_line(block: str, current: list, new: list, where: str) -> str:
             raise ValueError
     except ValueError:
         raise TicketError(f"{where}: `after` must sit on one line to be rewritten") from None
-    return block[: m.start()] + m.group(1) + list_text(new, toml=True) + m.group(3) + block[m.end() :]
+    return block[: m.start()] + m.group(1) + list_text(new) + m.group(3) + block[m.end() :]
+
+
+NOTES_LINE_RE = re.compile(r"^[ \t]*notes[ \t]*=.*$", re.M)
+NOTES_HEADING_RE = re.compile(r"^## Notes[ \t]*$", re.M)
+HEADING_RE = re.compile(r"^#{1,2} ", re.M)
+
+
+def cmd_note(args) -> dict:
+    """Append a note to a ticket no build has started: its entry's `notes`, or its leaf file's `## Notes`."""
+    folder = _folder(args)
+    store = store_name(project_root_for(args, folder))
+    if store != "repo":
+        raise StoreRefusal(f"store is {store}: add the note through the store, not this script")
+    note = args.text.strip()
+    if not note or "\n" in note or "\r" in note:
+        raise TicketError("a note is one line of text")
+    note.encode("utf-8")  # an undecodable argument stops here, before any file is opened
+    t, tree = locate(args, folder, args.ref)
+    if t["status"] or t.get("plan"):
+        raise TicketError(f"{ref_name(t, tree)} has a plan or a status: its build has already read the ticket")
+    home = tickets_dir(tree["folders"][t["epic"]])
+    if t["file"]:
+        path = home / t["file"]
+        body = read_text(path)
+        m = NOTES_HEADING_RE.search(body)
+        if m:
+            nxt = HEADING_RE.search(body, m.end())
+            end = nxt.start() if nxt else len(body)
+            section = body[:end].rstrip("\n")
+            sep = "\n" if section[m.end() :].strip() else "\n\n"
+            body = f"{section}{sep}- {note}\n" + (f"\n{body[end:]}" if nxt else "")
+        else:
+            body = body.rstrip("\n") + f"\n\n## Notes\n\n- {note}\n"
+        path.write_text(body, encoding="utf-8")
+        return {"ticket": ref_name(t, tree), "file": str(path), "note": note}
+    path = home / BREAKDOWN
+    where = f"{shown(home)}/{BREAKDOWN}"
+    head, tables = split_tables(read_text(path))
+    parsed = [parse_table(b) for b in tables]
+    i, row = next((i, row) for i, (kind, row) in enumerate(parsed) if kind == "entry" and row["id"] == t["id"])
+    block, notes = tables[i], [*row.get("notes", []), note]
+    m = NOTES_LINE_RE.search(block)
+    if m:
+        # The whole line is replaced, once it is shown to hold the whole list.
+        try:
+            whole = tomllib.loads(m.group(0).strip()).get("notes") == row.get("notes")
+        except tomllib.TOMLDecodeError:
+            whole = False
+        if not whole:
+            raise TicketError(f"{where}: entry {t['id']}'s `notes` must sit on one line to be added to")
+        new = block[: m.start()] + f"notes = {list_text(notes)}" + block[m.end() :]
+    else:
+        body = block.rstrip("\n")
+        new = f"{body}\nnotes = {list_text(notes)}\n{block[len(body) + 1 :]}"
+    try:
+        ok = parse_table(new)[1] == {**row, "notes": notes}
+    except tomllib.TOMLDecodeError:
+        ok = False
+    if not ok:
+        raise TicketError(f"{where}: entry {t['id']}'s `notes` must sit on one line to be added to")
+    tables[i] = new
+    path.write_text(head + "".join(tables), encoding="utf-8")
+    return {"ticket": ref_name(t, tree), "file": str(path), "note": note}
+
+
+ENTRY_TEXT = ("title", "description", "verify", "unknown")
+ENTRY_LISTS = ("covers", "references", "notes")
+ENTRY_FLAGS = ("hitl", "refine", "plan_checkpoint", "done_checkpoint")
+ENTRY_KEYS = ("type", "title", "description", "verify", "covers", "after", "hitl", "risk", "estimate", "unknown",
+              "references", "notes", "refine", "plan_checkpoint", "done_checkpoint")  # fmt: skip
+
+
+def entry_block(n: int, item, where: str) -> str:
+    """An `[[entry]]` table for `tickets.toml` from a JSON object, its keys in the template's order."""
+    if not isinstance(item, dict):
+        raise TicketError(f"{where}: stdin must be one JSON object")
+    unknown = sorted(set(item) - set(ENTRY_KEYS))
+    if unknown:
+        raise TicketError(f"{where}: unknown keys {', '.join(unknown)}; the id is assigned, never given")
+    _one_of(item.get("type", ""), LEAF_TYPES, where, "type")
+    if not item.get("type") or not isinstance(item.get("title"), str) or not item["title"].strip():
+        raise TicketError(f"{where}: an entry needs a `type` and a `title`")
+    _one_of(item.get("risk", ""), ("low", "medium", "high"), where, "risk")
+    lines = ["[[entry]]", f"id = {n}"]
+    for key in ENTRY_KEYS:
+        if key not in item:
+            continue
+        v = item[key]
+        if key in ENTRY_TEXT or key in ("type", "risk"):
+            ok = isinstance(v, str)
+        elif key in ENTRY_LISTS:
+            ok = isinstance(v, list) and all(isinstance(x, str) for x in v)
+        elif key == "after":
+            ok = isinstance(v, list) and all(
+                isinstance(x, str) or (isinstance(x, int) and not isinstance(x, bool)) for x in v
+            )
+        elif key in ENTRY_FLAGS:
+            ok = isinstance(v, bool)
+        else:  # estimate
+            ok = isinstance(v, (int, float, str)) and not isinstance(v, bool)
+        if not ok:
+            raise TicketError(f"{where}: `{key}` has the wrong type")
+        if isinstance(v, list):
+            text = list_text(v)
+        elif isinstance(v, bool):
+            text = "true" if v else "false"
+        else:
+            text = json.dumps(v, ensure_ascii=False)
+        lines.append(f"{key} = {text}")
+    block = "\n".join(lines) + "\n"
+    try:
+        same = tomllib.loads(block)["entry"][0] == {"id": n, **item}
+    except tomllib.TOMLDecodeError:
+        same = False
+    if not same:
+        raise TicketError(f"{where}: the values cannot be written to TOML as given")
+    return block
+
+
+def cmd_add(args) -> dict:
+    """Append an entry to a folder's `tickets.toml` from a JSON object on stdin."""
+    folder = locate_dir(args, args.dir)
+    tree = load_tree(folder)
+    if tree["scope"] is None:
+        raise TicketError(f"{folder.name} holds epics, not entries")
+    where = f"{shown(folder)}/{BREAKDOWN}"
+    try:
+        item = json.loads(sys.stdin.read())
+    except json.JSONDecodeError as e:
+        raise TicketError(f"stdin is not JSON: {e}") from e
+    n = next_id(tree, folder.name)
+    block = entry_block(n, item, where)
+    path = tickets_dir(folder) / BREAKDOWN
+    old = path.read_bytes() if path.is_file() else None
+    text = read_text(path) if old is not None else ""
+    # Encoded before the file is opened, so text that cannot be written leaves the file as it was.
+    data = ((text.rstrip("\n") + "\n\n" if text.strip() else "") + block).encode("utf-8")
+    made = not path.parent.is_dir()  # an epic with no breakdown yet has no tickets/ folder
+    path.parent.mkdir(exist_ok=True)
+    path.write_bytes(data)
+    try:
+        load_tree(folder)  # an `after` naming nothing, or a cycle, leaves the file as it was
+    except (TicketError, ValueError) as e:
+        if old is None:
+            path.unlink()
+            if made:
+                path.parent.rmdir()
+        else:
+            path.write_bytes(old)
+        raise TicketError(f"nothing was added: {e}") from e
+    epic_id = tree["epic_ids"].get(folder.name)
+    return {
+        "folder": folder.name,
+        "id": n,
+        "ref": f"{epic_id}.{n}" if epic_id is not None else str(n),
+        "entry": tomllib.loads(block)["entry"][0],
+    }
 
 
 def cmd_move(args) -> dict:
@@ -1612,7 +2282,7 @@ def cmd_move(args) -> dict:
             after = _list(fm.get("after"), where)
             new = [new_ref(folder, where) if names_moved(e, folder) else e for e in after]
             if new != after:
-                fm_writes.append((path, {"after": list_text(new, toml=False)}))
+                fm_writes.append((path, {"after": fm_list(new)}))
                 rewritten.append({"where": where, "after": new})
     block = tables[moved]
     old_home, dest_home = tickets_dir(old), tickets_dir(dest)
@@ -1631,8 +2301,8 @@ def cmd_move(args) -> dict:
     toml_writes[toml_dest] = (existing.rstrip("\n") + "\n\n" if existing.strip() else "") + block.strip("\n") + "\n"
     moves = []
     for name, values in (
-        (t["file"], {"id": str(new_id), "parent": dest.name}),
-        (t.get("plan"), {"ticket": str(new_id)}),
+        (t["file"], {"id": new_id, "parent": dest.name}),
+        (t.get("plan"), {"ticket": new_id}),
     ):
         if not name:
             continue
@@ -1643,7 +2313,7 @@ def cmd_move(args) -> dict:
             after = _list(fm.get("after"), f"{shown(old)}/{name}")
             new = [own_ref(e, f"{shown(old)}/{name}") for e in after]
             if new != after:
-                values["after"] = list_text(new, toml=False)
+                values["after"] = fm_list(new)
                 rewritten.append({"where": f"{shown(dest)}/{name}", "after": new})
         moves.append((old_home / name, dest_home / name, values))
 
@@ -1707,17 +2377,17 @@ def cmd_move(args) -> dict:
 REF_HELP = """<ref> is `<epic id>.<entry id>`, an entry id inside an epic folder (one with a letter, from any
 folder), a tracker id, a file name, or an unbroken phrase from the title that matches one ticket."""
 
-DIR_HELP = """<dir> is an epic folder, a backlog folder, or an initiative folder (all its epics): a path, or a
-folder's name under the store, the active initiative, or its `tickets/` folder. A `tickets/` folder is
-read as the folder that holds it. Left out, it is the active initiative."""
+DIR_HELP = """<dir> is a program folder, an initiative folder, an epic folder, or a backlog folder: a path,
+or a folder's name under the store, the active container, or its `tickets/` folder. A `tickets/` folder
+is read as the folder that holds it. Left out, it is the active container (`core.active_initiative`)."""
 
 BACKLOG_HELP = (
-    "With no <dir>, a ticket the initiative does not hold is looked for in the backlog folder, "
+    "With no <dir>, a ticket the active container does not hold is looked for in the backlog folder, "
     "except by a bare number, which is ambiguous there unless it is the ticket's tracker id."
 )
 
-PARENT_HELP = """A parent initiative, whose `tickets.toml` lists `[[initiative]]` tables, works only with status
-and next; the other commands want one of its initiatives."""
+PARENT_HELP = """A program (`type: program`) or parent initiative (`[[initiative]]` in `tickets.toml`) works
+only with status and next; the other commands want one of its child initiatives."""
 
 HELP = {
     "next": f"""Tickets grouped by what can happen next, in build order.
@@ -1733,12 +2403,12 @@ settle before it starts. A prerequisite is met when it is done or in review; an 
 `risk`; a row has `drift` when the leaf file's `after` or `hitl` differs from the entry's, and `plan_checkpoint` or
 `done_checkpoint` when the entry sets it.
 
-On a parent initiative: `initiatives`, as status gives them, `order_conflict`, and `ready`, the
-initiatives waiting on none and not done or dropped.""",
-    "status": f"""Every ticket in build order.
+On a program or parent initiative: `initiatives`, as status gives them, `order_conflict`, and `ready`,
+the initiatives waiting on none and not done or dropped.""",
+    "status": f"""Every ticket in build order, plus template-agnostic container metadata.
 
 {DIR_HELP} With no <dir>, `backlog` holds the same view of the backlog folder, each row's `ref`
-its file name.
+its file name and `ready_entries` rewritten to file names.
 
 Output: `tickets` (each with `status`, `tracker_status`, `state`, `blocks`, and `drift` when the leaf file's
 `after` or `hitl` differs from the entry's, with both values), `counts` by state, `next_id` (the id a new
@@ -1749,11 +2419,19 @@ it does not list, each with its declared `after`, and `refined`, false only when
 `refined: false`. A listed epic with no folder yet has `folder` null and no `status`, `refined`,
 `gated_by`, `blocks`, or `next_id`.
 
-On a parent initiative: `initiatives`, one row per initiative its `tickets.toml` lists, in build order,
-each with `id`, `slug`, `title`, `after` (as `[{{initiative, needs}}]`), `folder` (null until the folder
-exists beside the parent), and `waiting_on`, the initiatives it is after whose file is not `status:
-done`; a row with a folder also has that file's `status` and `counts`, its tickets by state.
-`order_conflict` lists an initiative after one later in the build order.""",
+Metadata on every `status` response: `container_type` (`"program"`, `"initiative"`, `"epic"`, or null on
+`backlog/`), `has_spec`, `unadopted_runs` (`[{{path, template, status}}]`), `companions`
+(`[{{path, template}}]`), `unrefined_epics`, `ready_entries`, and `open_questions_count`. `template` comes
+from frontmatter `template:` (checking a companion's sibling primary doc before prefix fallback).
+
+On a program or parent initiative: `initiatives`, one row per listed child initiative in build order then
+any unlisted `tickets/initiative-*` folder, each with `id`, `slug`, `title`, `after` (as `[{{initiative,
+needs}}]`), `folder` (null until found in `tickets/` or beside a legacy parent), and `waiting_on`, the
+initiatives it is after whose file is not `status: done`; a row with a folder also has that file's `status`
+and `counts`, its tickets by state. `order_conflict` lists an initiative after one later in build order.
+`counts` aggregates all existing children, `has_spec`/`unadopted_runs`/`companions` stay container-local,
+and `unrefined_epics` (`<child>/<epic>`), `ready_entries` (`<child>/<ref>`), and `open_questions_count`
+roll up across open children (`waiting_on`-blocked children excluded from `ready_entries`).""",
     "find": f"""The one ticket a reference names.
 
 {DIR_HELP}
@@ -1765,6 +2443,21 @@ Output: the ticket's row; its entry's `description`, `verify`, `references`, and
 the entry is pulled, when `story_file` holds them; `unknown`; its `folder`; and the absolute paths
 `epic_file` (the file of the container it is under, null in a backlog folder), `story_file` (null until
 the entry is pulled), and `plan` (where its plan is or goes; it may not exist yet).""",
+    "body": f"""The title and body Publish sends to a tracker for a ticket, and Sync compares with.
+
+{DIR_HELP}
+{PARENT_HELP}
+{BACKLOG_HELP}
+{REF_HELP}
+A path to a ticket file, a container's own file included, is read as it is; with <dir>, a bare file name
+names a ticket in it.
+
+The body is the file without its frontmatter, its first `# ` line, or its `## Description` heading. Each
+`covers` id adds `- covers — <the line>` to the end of References, the line being the one in the parent's
+Requirements that starts with that id, its list marker dropped. A covered id the parent's Requirements
+lacks is an error naming it under `missing`. The file is not changed.
+
+Output: `file` (absolute path), `title` (the frontmatter's, else the `# ` line's), and `body`.""",
     "pull": f"""Write an entry's leaf file from its entry.
 
 <dir> is the epic folder and <id> the entry's id. The file is `<type>-<slug of the title>.md` in the
@@ -1794,6 +2487,32 @@ its tracker id, is listed under `containers` with its file's `status` and the `t
 nothing is written to it. A ticket the tree does not hold is listed under `unmatched` and the rest are
 written; values that would leave the tree unreadable write nothing, and the error then still lists
 `unmatched`.""",
+    "note": f"""Add a one-line note to a ticket no build has started. Repo store only.
+
+{DIR_HELP}
+{PARENT_HELP}
+{BACKLOG_HELP}
+{REF_HELP}
+
+The note goes last in the entry's `notes` in `tickets.toml`, or, once the entry is pulled, last under the
+leaf file's `## Notes`, which is added when missing. A ticket with a status is refused: its build has
+already read the ticket.
+
+Output: `ticket`, `file` (the file written), and `note`.""",
+    "add": f"""Append an entry to a folder's `tickets.toml`.
+
+<dir> is an epic folder, a backlog folder, or an initiative folder with no epics: a path, or a folder's
+name as for the other commands. Stdin is one JSON object with the entry's keys, as the skill's
+`assets/tickets-template.toml` describes them: `type` ({", ".join(LEAF_TYPES)}) and `title` are required;
+`description`, `verify`, `unknown`, and `risk` (low, medium, high) are strings; `covers`, `references`,
+and `notes` lists of strings; `after` a list whose numbers are sibling ids and whose strings are any
+other prerequisite form; `hitl`, `refine`, `plan_checkpoint`, and `done_checkpoint` booleans; `estimate`
+a number or a string. Any other key, `id` included, is refused.
+
+The entry takes the folder's next id (as status reports `next_id`) and goes last, its keys in the
+template's order. An `after` naming nothing, or one that makes a cycle, writes nothing.
+
+Output: `folder`, `id`, `ref` (as find on the initiative resolves it), and `entry`, the table written.""",
     "move": f"""Move an entry to another folder, with its leaf file and plan.
 
 <from> and <to> are folders as <dir> is for the other commands; <ref> names an entry in <from>.
@@ -1835,6 +2554,12 @@ def main() -> int:
     p.add_argument("dir", nargs="?", help="default: the active initiative")
     p.add_argument("ref")
     p.set_defaults(func=cmd_find)
+    p = sub.add_parser(
+        "body", help="the title and body published to a tracker", description=HELP["body"], formatter_class=raw
+    )
+    p.add_argument("dir", nargs="?", help="default: the active initiative")
+    p.add_argument("ref", help="a ticket reference, or a path to a ticket file")
+    p.set_defaults(func=cmd_body)
     p = sub.add_parser("pull", help="write an entry's leaf file", description=HELP["pull"], formatter_class=raw)
     p.add_argument("dir")
     p.add_argument("id")
@@ -1862,6 +2587,21 @@ def main() -> int:
     p.add_argument("dir", nargs="?", help="default: the active initiative")
     p.set_defaults(func=cmd_mirror)
     p = sub.add_parser(
+        "note",
+        help="add a note to a ticket no build has started (repo store only)",
+        description=HELP["note"],
+        formatter_class=raw,
+    )
+    p.add_argument("dir", nargs="?", help="default: the active initiative")
+    p.add_argument("ref")
+    p.add_argument("text")
+    p.set_defaults(func=cmd_note)
+    p = sub.add_parser(
+        "add", help="append an entry to a folder's tickets.toml", description=HELP["add"], formatter_class=raw
+    )
+    p.add_argument("dir")
+    p.set_defaults(func=cmd_add)
+    p = sub.add_parser(
         "move",
         help="move an entry, its leaf file, and its plan to another folder",
         description=HELP["move"],
@@ -1873,6 +2613,7 @@ def main() -> int:
     p.set_defaults(func=cmd_move)
     args = parser.parse_args()
     try:
+        load_shared(args)
         print(json.dumps(args.func(args), ensure_ascii=False, default=str))
         return 0
     except StoreRefusal as e:

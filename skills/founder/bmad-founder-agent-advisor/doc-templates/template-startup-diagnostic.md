@@ -1,15 +1,15 @@
 ---
 title: ""
 template: startup-diagnostic
-version: 1.0.0
+version: 1.2.0
 description: "Hard questions on whether an idea has real demand, ending in one dated assignment."
 not_for: "The whole business on one page (`lean-canvas`); running the demand test the assignment names (`validation-experiment`); the questions to ask customers (`customer-interview-script`)."
-paced: true
-facilitation_order: [stage, demand, status-quo, who-needs-it-most, smallest-paid-version?, what-surprised-you?, three-years-out?, what-the-answers-show, assignment]
-guidance: guidance-planning
+order: fixed
+facilitation_order: [stage, demand, status-quo, who-needs-it-most, smallest-paid-version, what-surprised-you, three-years-out, what-the-answers-show, assignment]
+guidance: guidance-planning.md
 rubric: rubric-startup-diagnostic.md
 agents: [bmad-founder-agent-advisor]
-html_view: always
+view: always
 status: draft
 created: ""
 updated: ""
@@ -19,20 +19,21 @@ updated: ""
 
 <!-- stance: A partner in office hours who wants the founder to win and so will not accept a vague answer. One question at a time; ask it again until the answer names a person, something they did or an amount of money. -->
 
+<!-- opening: A cold start, with no brain dump: a founder who tells the whole story first has rehearsed past the evidence these questions look for. Say in a line or two how this goes: a few hard questions one at a time, then your read and one thing to do next. With no record of the venture, ask what it is in a sentence. Then open Stage. -->
+
 <!-- inputs: `company.md` gives the venture, the stage and dated metrics; confirm the stage with the founder before using it. `insights.md` gives the conversations so far. Only the founder knows what is not there: who else they have talked to, what those people said and did, what they pay today, and what surprised them. -->
 
 <!-- writing:
+  - One to two pages.
   - Record each answer in the founder's words with its evidence under it; your read goes only in What the answers show.
   - A figure the founder does not have stays an open question; never estimate it.
 -->
 
 <!-- done when: Each answer names a real person, behaviour or amount, or says plainly that the founder does not know yet; the read says where the evidence is strong and where it is missing; and the assignment is one task with a date and a result that would change the plan. -->
 
-<!-- view: A one-page read for the founder. What the answers show leads; the stage sits as a marker on the line from no product to paying customers; each answer is a card showing how strong its evidence is; the assignment closes the page as the call to action, with its date. -->
+<!-- layout: A one-page read for the founder. What the answers show leads; the stage sits as a marker on the line from no product to paying customers; each answer is a card showing how strong its evidence is; the assignment closes the page as the call to action, with its date. -->
 
 # {title}
-
-## Table of Contents
 
 ## Stage
 <!-- One of: no product yet, has users, has paying customers, with the counts and the date. The stage decides which later sections apply and what counts as evidence in each: say which apply and why. When the record and the founder disagree, ask which is right. Done when the founder agrees the stage is what is true today, not what is planned. -->
@@ -50,7 +51,7 @@ updated: ""
 <!-- include when: no paying customers yet. The smallest thing someone would pay for this week, even if it is done by hand behind the scenes. Founders often want to build the whole product first; ask what could be sold before it exists, to whom, and for how much. Done when the version, its price and the first person to offer it to are named. -->
 
 ## What surprised you
-<!-- include when: the product has users. Something the founder saw while watching a user that they did not expect. No surprise usually means they have not watched closely; ask when they last sat with a user and what that user did first. Done when the answer is something seen, not something said in a survey. -->
+<!-- include when: the product has users or paying customers. Something the founder saw while watching a user that they did not expect. No surprise usually means they have not watched closely; ask when they last sat with a user and what that user did first. Done when the answer is something seen, not something said in a survey. -->
 
 ## Three years out
 <!-- include when: the product has users or paying customers. Whether this becomes more essential or less in three years, and the change in the world that drives it. Ask what would make it unnecessary: a large platform adding it as a feature, a change in the rules, a cheaper way to do the job. Done when the driver is named and the founder has said what would end it. -->

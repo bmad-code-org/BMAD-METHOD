@@ -198,7 +198,7 @@ starlight-toc h2,
   font-weight: 400;
   letter-spacing: -0.014em;
   line-height: 1.04;
-  max-width: 20ch;
+  max-width: none;
 }
 
 /* The home page is the masthead band: display type, a lead, then a hairline
@@ -222,18 +222,22 @@ starlight-toc h2,
   align-items: flex-start;
 }
 
+.hero .copy > * {
+  max-width: none;
+}
+
 .hero .actions {
   justify-content: flex-start;
 }
 
 .hero h1 {
   font-size: clamp(2.5rem, 4.6vw, 3.6rem);
-  max-width: 17ch;
+  max-width: none;
 }
 
 .hero .tagline {
   margin-top: 1.3rem;
-  max-width: 50ch;
+  max-width: none;
   font-size: 1.15rem;
   line-height: 1.52;
   letter-spacing: -0.008em;
@@ -281,7 +285,6 @@ starlight-toc h2,
   line-height: 1.55;
   letter-spacing: -0.008em;
   color: var(--sl-color-gray-2);
-  max-width: 52ch;
 }
 
 .sl-markdown-content :is(p, li) {

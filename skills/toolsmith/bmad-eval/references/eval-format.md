@@ -25,8 +25,12 @@ Field semantics:
 - `rubric`: a list of named expectations, each gradeable to `{text, passed, evidence}` by the grader. The strong-versus-weak taxonomy below decides whether each one is worth keeping.
 - `state_prefix`: optional bracketed prime that places the skill mid-workflow (see below). Null or absent means the skill starts cold.
 - `files`: optional fixtures staged into the case's clean working directory before the run. Each is a path relative to `--project-root` or the cases file's directory, or a GitHub file URL (`https://github.com/<owner>/<repo>/blob/<ref>/<path>`, pinned to a commit or tag) for data kept in another repo. A relative path keeps its directory structure, so the input can reference it verbatim; a GitHub file lands at the workspace root under its file name. Absolute and `~` paths are refused, because cases must run on anyone's machine, and a missing fixture stops the run before it starts.
+- `files` entry as `{"from": <path or URL>, "to": <workspace path>}`: stages a fixture under another name, so cases sharing one folder can each carry their own `_bmad/config.toml` or customization.
+- `skills`: optional skill folders, relative like `files`, staged beside the skill under test for a skill that hands work to another (an agent that calls `bmad-facilitate`). The bare config gets none of them.
 
 For trigger cases the shape is lighter: a `query` and a `should_trigger` boolean, because there is no artifact to grade, only whether the skill fired.
+
+A skill-creator `evals.json` converts with `uv run "{skill-root}/scripts/convert_cases.py" <evals.json> --output <cases.json>`; `--to skill-creator` reverses it.
 
 ## state_prefix: turn simulation in one shot
 
@@ -60,11 +64,11 @@ Strong patterns for artifact correctness:
 
 Strong patterns for process discipline:
 
-- Side-artifact existence paired with content, such as ".memlog.md captures the pricing decision with its rejected alternative and rationale."
-- Transcript tool-call patterns, such as "the transcript contains a call invoking bmad-editorial-review-prose."
+- Side-artifact existence paired with content, such as "decisions.md records the pricing decision with its rejected alternative and rationale."
+- Transcript tool-call patterns, such as "the transcript contains a call invoking bmad-review."
 - Phase ordering, such as "the polish call occurs after the brief Write and before the final JSON block."
 - Read-only enforcement, such as "the input brief.md is byte-identical to the fixture and no Write or Edit targeted it."
-- Bidirectional fidelity, such as "every decision in the memlog is reflected in the brief, and no claim in the brief is absent from the input or the memlog."
+- Bidirectional fidelity, such as "every decision the user made in the transcript is reflected in the brief, and no untagged claim in the brief is absent from the input, the files it names, and the transcript."
 
 Most process-discipline checks are deterministic reads of the transcript and filesystem, so the grader confirms them by quoting evidence rather than judging.
 
@@ -76,7 +80,7 @@ Run the case input twice in parallel in the same turn, once wrapped by the skill
 
 ### Variant: full versus stripped smallest-version
 
-Run the full skill against a stripped smallest-version of the same skill (passed as `--variant-path`), or against a snapshot of the prior version for an edit, on the same input. It settles whether a section suspected of being ceremony does real work. If the two outputs tie on the dimension the section was supposed to protect, the section is decoration and gets cut. If the small version is materially and durably worse, the section earned its keep.
+Run the full skill against a stripped smallest-version of the same skill (passed as `--variant-path`), or against a snapshot of the prior version for an edit, on the same input. It settles whether a section suspected of being ceremony does real work. If the two outputs tie on the dimension the section was supposed to protect, cut the section. If the small version is materially and durably worse, keep it.
 
 ### Quality: output versus rubric
 
@@ -85,6 +89,23 @@ Grade a single config's output against the named rubric with the read-only grade
 ### Trigger and description
 
 Generate near-miss should-trigger and should-not-trigger queries that share keywords, split them, measure real firing through the harness, and improve the description across bounded rounds with the held-out scores blinded from the improver. Trigger detection is a canary: the staged skill asks for a token at the start of the reply, and the token in the output is the load (`references/harness.md`).
+
+## Running baseline, variant and quality
+
+Baseline runs every case with the skill staged and with nothing staged; variant runs the skill against the one at `--variant-path`; quality runs one config.
+
+```
+uv run "{skill-root}/scripts/run_evals.py" \
+  --cases <cases-file> --skill-path <skill> --output-dir <dir> \
+  --mode quality|baseline|variant [--variant-path <skill>] \
+  --label <skill-name>-<mode> [--runs N]
+```
+
+`--runs` defaults to 1 for a quick look; a result counts as settled only at 3 or more. Case subsets, timeouts and workers are in the script's `--help`.
+
+For quality, spawn the grader in `references/grader.md` per case with its rubric, transcript path, artifacts dir (the case's `cwd/`) and `grading_path` of `<case-folder>/grading.json`. Relay its rubric feedback. If a grader errors, mark the case `grading_error`, never a default verdict.
+
+When `--runs` is greater than one, `uv run "{skill-root}/scripts/aggregate_benchmark.py" --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>` gives mean, sample standard deviation, min, max and delta (`--runs <run-dir>/<config>` for one config).
 
 ## Getting a skill to behave non-interactively
 

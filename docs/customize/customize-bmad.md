@@ -1,420 +1,85 @@
 ---
 title: 'Customize BMad'
-description: Change how an installed agent or workflow behaves — with bmad-customize or by hand — and know what is customizable, where an override lands, and how it merges.
+description: Change how BMad agents, workflows, and documents behave using bmad-customize, without editing installed files.
 sidebar:
   order: 1
 ---
 
-You want an agent to remember your organization's rules, a workflow to
-publish its output somewhere, a menu item that runs your own skill, or a
-different name on the roster. Each of these is an override file next to
-BMad's installed defaults. Updates do not touch your files, and you do not
-edit installed files.
+You can tailor BMad so agents follow your organization's rules, workflows match your review depth, documents include your required sections, and multi-agent rooms use your own personas. Customizations live under `_bmad/custom/` beside BMad's defaults, so updates never overwrite your changes and you never edit installed skill files.
 
-## Start with the guided path
+## Start with the BMad Agent or `bmad-customize`
 
-Run the `bmad-customize` skill and say what you want changed. It scans your
-installation for what is customizable, picks the right surface for your
-intent (an agent or a workflow), writes the override file, and verifies
-that the merged result contains your change. Use it for any per-skill
-change. The rest of this page describes what each surface exposes and how
-the pieces combine.
+Describe what you want changed in plain English inside your AI coding tool's chat. You can invoke `bmad-customize` directly, or ask the BMad Agent (`bmad`), which knows how to route your request to `bmad-customize` and apply it for you. It inspects your installed skills, chooses the right override file or document template, shows you the proposed change before writing, and verifies that the merged configuration includes your edit.
 
-It also changes the documents agents write, such as a section every PRD must have or HTML by default, by writing an extension of that document's template; you do not need to know which skill writes it. See [Write a Document Template](./write-a-document-template.md#extend-a-template).
+```text
+Hey BMad, customize the build skill to always check our API compatibility rules when modifying endpoints, and ensure we are always in thorough review mode.
+```
 
-There are two surfaces:
+```text
+/bmad-customize Add a Security Sign-off section to every PRD for the whole team.
+```
 
-| Surface | File | Shapes |
-|---|---|---|
-| Per-skill override | `_bmad/custom/<skill>.toml` | How one agent or workflow behaves when it activates: persona, facts, hooks, menu, workflow fields |
-| Central configuration | `_bmad/custom/config.toml` | Setup answers and agent descriptors that other skills read |
+Other everyday requests work the same way:
 
-`bmad-customize` writes per-skill overrides only. Central configuration is
-hand-authored; see [Central configuration](#central-configuration).
+- "Hey BMad, tell Amelia to always check our internal component library before writing new UI primitives."
+- "Hey BMad, make Mary always include a one-line risk summary when she creates a brief, just for me."
+- "Hey BMad, set my personal writing voice guide at `~/.bmad/voice-bible.md` for facilitated documents."
 
-For ready-made team recipes (an agent-wide rule, publishing to Confluence,
-swapping a template, a rebranded roster), see
-[Adopt BMad Across a Team](./adopt-bmad-across-a-team.md).
-
-## What an agent is made of
-
-Every named agent has two parts. Name, title, and domain are fixed:
-"hey Mary" always activates the analyst. Everything else is customizable:
-role, identity statement, communication style, principles, icon, menu,
-persistent facts, and activation hooks. The shipped agents are listed in
-[Agents](../reference/skills-and-agents.md#agents).
-
-The per-skill file controls how the agent behaves when it activates.
-Central configuration controls how `bmad-party-mode`, `bmad-retrospective`,
-and `bmad-advanced-elicitation` introduce the agent. Rewriting Mary's
-principles is per-skill; changing the one-line description a party uses
-to introduce her is central.
+`bmad-customize` handles agent behavior, workflow settings, and document templates end to end. You do not need to know which underlying skill or file owns a setting before asking.
 
 :::note[Prerequisites]
-
-- BMad installed in your project (see [Install BMad](../start/install-bmad.md)).
-- [`uv`](https://docs.astral.sh/uv/) on your PATH. BMad runs the resolver with `uv run`, which provisions Python for you; there is nothing to `pip install`.
+You need BMad installed and set up in your project (see [Install BMad](../start/install-bmad.md)) plus [`uv`](https://docs.astral.sh/uv/) on your PATH so BMad can run its configuration scripts.
 :::
 
-## How overrides merge
-
-Every customizable skill ships a `customize.toml` in its installed folder.
-That file is the schema: read it to see what is customizable. Never edit
-it; updates overwrite it. Instead, create sparse override files that
-contain only the fields you change.
-
-**Three layers.** The resolver reads three files and the highest wins:
-
-```text
-Priority 1 (wins): _bmad/custom/<skill>.user.toml   (personal, gitignored)
-Priority 2:        _bmad/custom/<skill>.toml        (team, committed)
-Priority 3 (base): the skill's own customize.toml   (shipped defaults)
-```
-
-`_bmad/custom/` starts empty. Files appear only when someone customizes.
-
-**Four rules, by shape.** The resolver does not treat fields differently by
-name; the merge depends only on the value's shape:
-
-| Shape | Rule |
-|---|---|
-| Scalar (string, int, bool, float) | Override wins |
-| Table | Deep merge — apply these rules recursively |
-| Array of tables where every item has `code`, or every item has `id` | Merge by that key: matching keys replace in place, new keys append |
-| Any other array (scalars, tables with no key, arrays mixing `code` and `id`) | Append — base items, then team, then user |
-
-**No removal.** An override cannot delete a base item. To suppress a
-default menu item, override it by `code` with a description or prompt that
-does nothing; to restructure an array further, fork the skill. If you
-author your own array of tables, use `code` on every item or `id` on every
-item — mixing them falls back to append.
-
-**Read-only fields.** `agent.name` and `agent.title` sit in
-`customize.toml` as metadata, but the agent never reads them at runtime.
-`name = "Bob"` in an override does nothing. For a differently named agent,
-copy the skill folder, rename it, and ship it as a custom skill.
-
-:::caution[Do not copy the whole `customize.toml`]
-Every field you omit is inherited from the layer below. A full copy locks
-in today's defaults, so the next update ships new values that your
-override silently shadows.
-:::
-
-## Customize an agent
-
-**Find the surface.** The schema is the skill's installed `customize.toml`:
-
-```text
-.claude/skills/bmad-agent-pm/customize.toml
-```
-
-The path varies by IDE — Cursor uses `.cursor/skills/`, Cline
-`.cline/skills/`, and so on. Fields live directly under `[agent]`.
-
-**Scalars.** Create `_bmad/custom/` in your project root if it does not
-exist, then add `<skill>.toml` with only the fields you change. `icon`, `role`, `identity`, and `communication_style` are scalars,
-so the override wins:
-
-```toml
-# _bmad/custom/bmad-agent-pm.toml
-
-[agent]
-icon = "🏥"
-role = "Drives product discovery for a regulated healthcare domain."
-communication_style = "Precise, regulatory-aware, asks compliance-shaped questions early."
-```
-
-**Facts, principles, and hooks.** These four arrays append: shipped items
-first, then team, then user. `persistent_facts` are static context the
-agent keeps in mind all session; an entry is a literal sentence or a
-`file:` reference (globs allowed) whose contents are loaded as facts.
-
-```toml
-[agent]
-persistent_facts = [
-  "Our org is AWS-only -- do not propose GCP or Azure.",
-  "file:{project-root}/docs/compliance/hipaa-overview.md",
-]
-
-principles = [
-  "Ship nothing that can't pass an FDA audit.",
-]
-
-# Runs before the greeting.
-activation_steps_prepend = [
-  "Scan {project-root}/docs/compliance/ and load any HIPAA-related documents as context.",
-]
-
-# Runs after the greeting, before the menu.
-activation_steps_append = [
-  "Read {project-root}/_bmad/custom/company-glossary.md if it exists.",
-]
-```
-
-Prepend runs before the greeting, when the greeting itself needs that
-context. Append runs after, for setup the user should not wait on.
-
-**Menu.** `[[agent.menu]]` is an array of tables keyed by `code`, so a
-matching code replaces the shipped item and a new code appends. Each item
-has exactly one of `skill` or `prompt`:
-
-```toml
-# Replace the shipped VALIDATE item with your own skill
-[[agent.menu]]
-code = "VALIDATE"
-description = "Review a planning document against our delivery standards"
-skill = "custom-validate-plan"
-
-# Add a new item
-[[agent.menu]]
-code = "COMPLIANCE"
-description = "Run compliance pre-check"
-prompt = """
-Read {project-root}/_bmad/custom/compliance-checklist.md
-and scan all documents in {output_folder}/{active_initiative} against it.
-"""
-```
-
-When any field points at a file, spell out the full path from
-`{project-root}`, even for a file sitting next to your override in
-`_bmad/custom/`. The agent resolves `{project-root}` at runtime.
-
-**Team or personal.** The team file (`bmad-agent-pm.toml`) is committed
-and shared: compliance rules, company persona, custom menu items. The
-personal file (`bmad-agent-pm.user.toml`) is gitignored: tone, private
-preferences, facts only you want the agent to hold.
-
-```toml
-# _bmad/custom/bmad-agent-pm.user.toml
-
-[agent]
-persistent_facts = [
-  "Always include a rough complexity estimate (low/medium/high) when presenting options.",
-]
-```
-
-## Customize a workflow
-
-Workflows — skills that drive a multi-step process, such as
-`bmad-facilitate` — use the same files and rules. Their surface lives
-under `[workflow]`. The baseline fields every customizable workflow
-exposes are the same hooks and facts as agents plus `on_complete`. For
-workflows, a `persistent_facts` entry is a literal sentence, a `file:`
-path or glob, or a `skill:` reference to a skill that holds relevant
-knowledge. `on_complete` is a string, or an array of instructions run in
-order, that runs once the workflow finishes its main output:
-
-```toml
-# _bmad/custom/bmad-facilitate.toml
-
-[workflow]
-activation_steps_prepend = [
-  "Load {project-root}/docs/product/north-star-principles.md as context.",
-]
-
-persistent_facts = [
-  "Every planning document names its regulatory risks.",
-  "file:{project-root}/docs/compliance/document-checklist.md",
-]
-
-on_complete = "Summarize the document in three bullets and offer to email it via the gws-gmail-send skill."
-```
-
-Individual workflows add fields on top — output paths, templates, toggles —
-and each follows the shape rules above. For example, `bmad-build`,
-`bmad-build-auto`, and `bmad-code-review` each expose `review`, the default
-review depth. The build skills default to `quick` and code review to
-`thorough`; this raises every build's review to four lenses:
-
-```toml
-# _bmad/custom/bmad-build.toml
-[workflow]
-review = "thorough"
-```
-
-Read a workflow's `customize.toml` to see the fields it exposes. If the
-field you need is not there, use `activation_steps_*` and
-`persistent_facts`, or open an issue asking for a customization point.
-
-**Activation order.** A customizable workflow activates in a fixed
-sequence, so you know when each hook fires:
-
-1. Resolve the `[workflow]` block (base, then team, then user).
-2. Run `activation_steps_prepend`.
-3. Load `persistent_facts` as context for the run.
-4. Load config and resolve standard variables (project name, languages, paths, date).
-5. Greet the user.
-6. Run `activation_steps_append`.
-
-The workflow body begins after step 6.
-
-## Override one rendered invocation
-
-To change a skill's customization for one run only, add `--set key=value`
-arguments or an `--overrides <file.toml>` file to the `render_skill.py`
-command in its `SKILL.md`. Persistent project and user files stay as they
-are.
-
-```bash
-uv run /abs/project/_bmad/scripts/render_skill.py \
-  --project-root /abs/project \
-  --skill /abs/path/to/bmad-build \
-  --overrides ./invocation.toml \
-  --set 'workflow.on_complete=Summarize the result in three bullets.'
-```
-
-Keys are dotted parameter paths such as `workflow.on_complete`. The
-override file has the same shape as the skill's `customize.toml`. Both
-layer on top of the persistent files, and `--set` wins over the file.
-
-String values can be written as plain text. Other types use TOML syntax:
-
-```bash
---set 'workflow.persistent_facts=["Additional context"]'
-```
-
-## Central configuration
-
-Per-skill files cover one agent or workflow. Setup answers and agent
-overrides live in three TOML files:
-
-```text
-_bmad/config.toml               (setup-owned)     team scope: setup answers
-_bmad/custom/config.toml        (human-authored)  team overrides (committed)
-_bmad/custom/config.user.toml   (human-authored)  personal overrides (gitignored), including `[core] active_initiative`
-```
-
-**Three layers**, merged with the same shape rules:
-
-```text
-Priority 1 (wins): _bmad/custom/config.user.toml
-Priority 2:        _bmad/custom/config.toml
-Priority 3 (base): _bmad/config.toml
-```
-
-**What lives where.** `bmad setup` writes the `[modules.<code>]` answers a
-module's setup questions produce, plus the `[core]` defaults. A question with
-scope `team` lands in `_bmad/config.toml`; a question with scope `user` is
-stored in `_bmad/custom/config.user.toml`. `[agents.<code>]` tables are
-optional: the roster comes from each module's `roster.toml`, and a table in
-either `_bmad/custom/` file applies on top.
-
-**Editing rules.** `bmad setup` fills in missing keys in `_bmad/config.toml`
-and never changes an existing value. To change an answer, edit its
-`modules.<code>.<key>` value in the file that holds it, or ask `bmad` to
-change it. To pin a value for the whole team, set it in
-`_bmad/custom/config.toml`. Setup adds user-scope answers to
-`_bmad/custom/config.user.toml` and moves the files of renamed skills, but
-never changes a value already in either `_bmad/custom/` file. Both files are
-the place for custom agents, descriptor overrides, and pinned values.
-
-**Rebrand an agent.** Party mode and other roster skills pick up the new
-description automatically:
-
-```toml
-# _bmad/custom/config.toml
-
-[agents.bmad-agent-pm]
-description = "Healthcare PM — regulatory-aware, stakeholder-driven, FDA-shaped questions first."
-```
-
-**Add a fictional agent.** No skill folder is needed; the descriptor alone
-lets a party include Kirk, and the `team` field filters who gets invited.
-See [Run Multi-Agent Discussions](./run-multi-agent-discussions.md).
-
-```toml
-# _bmad/custom/config.user.toml
-
-[agents.kirk]
-team = "startrek"
-name = "Captain James T. Kirk"
-title = "Starship Captain"
-icon = "🖖"
-description = "Bold, rule-bending commander. Speaks in dramatic pauses."
-```
-
-**Override a setup answer.** The override wins over `_bmad/config.toml`; a
-developer's own `_bmad/custom/config.user.toml` still wins over it:
-
-```toml
-# _bmad/custom/config.toml
-
-[core]
-output_folder = "/shared/org-bmad-output"
-```
-
-**Which surface to use:**
-
-| Need | Use |
-|---|---|
-| Add MCP tool calls to every dev workflow | Per-skill: `_bmad/custom/bmad-agent-dev.toml` `persistent_facts` |
-| Add a menu item to an agent | Per-skill: `_bmad/custom/bmad-agent-<role>.toml` `[[agent.menu]]` |
-| Swap a workflow's output template | Per-skill: `_bmad/custom/<workflow>.toml` scalar override |
-| Add, replace or extend a `bmad-facilitate` template, including John's planning templates | A template file in `_bmad/custom/facilitate-templates/`; see [Write a Document Template](./write-a-document-template.md) |
-| Rebrand an agent's public descriptor | Central: `_bmad/custom/config.toml` `[agents.<code>]` |
-| Add a custom or fictional agent to the roster | Central: `_bmad/custom/config.*.toml` new `[agents.<code>]` |
-| Set shared team defaults | Central: `_bmad/custom/config.toml` `[modules.<code>]` or `[core]` |
-| Choose which initiative your documents and tickets go to | Central: `_bmad/custom/config.user.toml` `[core] active_initiative`, or ask the `bmad` skill to switch it |
-
-## Check what resolved
-
-On activation, a shared Python script merges the files and returns the
-result as JSON. Run it yourself to see exactly what an agent or workflow
-will use:
-
-```bash
-# Resolve the full agent block
-uv run {project-root}/_bmad/scripts/resolve_customization.py \
-  --skill /abs/path/to/bmad-agent-pm \
-  --project-root {project-root} \
-  --key agent
-
-# Resolve a single field
-uv run {project-root}/_bmad/scripts/resolve_customization.py \
-  --skill /abs/path/to/bmad-agent-pm \
-  --project-root {project-root} \
-  --key agent.icon
-
-# Full dump: omit --key
-```
-
-Replace `{project-root}` with your project root; the skill resolves it
-for you at activation, but a shell will not.
-
-`--skill` points at the skill's installed directory; the script derives
-the skill name from that folder and finds the matching `_bmad/custom/`
-files itself. Output is always JSON.
-
-`--project-root` names the project whose `_bmad/custom/` files apply.
-Skills pass it on activation. Omit it and the script infers a root —
-working directory first, then its own install path, then the skill
-directory — which lands correctly in ordinary use but has to guess when a
-skill is installed under your home directory and a `~/_bmad` exists there
-too. If it picks a root with no override for that skill while another
-candidate has one, it says so on stderr rather than quietly returning
-defaults.
-
-Use `uv run` so the script gets Python 3.11 or later. If you run it with
-`python3` instead, check the version: 3.10 and earlier lack `tomllib`.
-If the script cannot run, an agent reads the three TOML files and applies
-the same rules; many workflows fall back to shipped defaults, so keep `uv`
-working if you rely on workflow overrides.
-
-## Troubleshooting
-
-**Customization not appearing.** Check that the file is in `_bmad/custom/`
-and named exactly after the skill directory. Check TOML syntax: strings
-quoted, `[section]` for tables, `[[section]]` for arrays of tables, and a
-table's scalar or array keys placed before any of its `[[subtables]]`. For
-agents, fields belong under `[agent]`. Remember that `agent.name` and
-`agent.title` are read-only.
-
-**An update broke it.** You probably copied the full `customize.toml`.
-Trim the override back to only the fields you changed.
-
-**See what is customizable.** Run `bmad-customize`, which lists every
-customizable skill and which already have overrides, or read the skill's
-`customize.toml` directly.
-
-**Reset.** Delete the override file from `_bmad/custom/`. The skill falls
-back to its shipped defaults.
+## What You Can Customize
+
+Every customization falls into one of four areas:
+
+| What you want to change | How to do it | Examples |
+| --- | --- | --- |
+| **An agent's behavior** | Tell `bmad-customize` what to change on that agent | Change role focus, communication style, principles, standing facts, startup hooks, or custom menu shortcuts |
+| **A workflow's settings** | Tell `bmad-customize` which workflow behavior to change | Raise `bmad-build` review depth to `thorough`, add `on_complete` publishing steps, or set `bmad-facilitate` defaults |
+| **A document's structure or look** | Tell `bmad-customize` what a document should ask for, contain, or render | Add a required PRD section, change default facilitation mode, or set HTML view preferences |
+| **Shared settings and custom casts** | Run `bmad setup` for shared project config, or ask `bmad-party-mode` / `bmad-customize` for custom discussion casts | Change your output folder, set a shared brand design system, or save a custom party cast |
+
+## Team Scope vs. Personal Scope
+
+Every customization can apply to the whole team or to you alone:
+
+- Team overrides live in committed files such as `_bmad/custom/<skill>.toml` and `_bmad/custom/facilitate-templates/`, so anyone who pulls the repository inherits them automatically.
+- Personal overrides live in gitignored files such as `_bmad/custom/<skill>.user.toml` and `~/.bmad/facilitate-templates/`, layering on top of team defaults for preferences only you want, such as tone, extra estimates, or a personal voice guide.
+
+When `bmad-customize` writes an override, tell it whether the rule is for your team or just for you. To undo a customization, ask `bmad-customize` to remove it or delete the file from `_bmad/custom/`.
+
+## Customizing Agents
+
+Each named agent in [Meet the Agents](../agents/agents.md) has a fixed name and domain so prompts like "talk to Mary" or "ask Winston" stay predictable. Everything else about how the agent works is customizable through `bmad-customize`:
+
+- Adjust the agent's role focus, communication style, principles, or icon.
+- Give the agent persistent standing context, such as facts or file paths (for example, a compliance handbook or glossary) that load on every session.
+- Add startup hooks to run extra steps before or after the agent greets you.
+- Add custom menu shortcuts that launch one of your own skills or run a saved prompt (for example, adding a `COMPLIANCE` shortcut to John or replacing one of Sofia's shortcuts).
+
+Changes to an agent apply whenever that agent is active. Changes to a single workflow (such as raising review depth in `bmad-build`) apply only to that workflow. If you are not sure whether a rule belongs on an agent or a workflow, ask `bmad-customize`; it explains the tradeoff and recommends the cleaner fit.
+
+## Customizing Documents and Facilitated Workflows
+
+Every structured document across BMad Method (Mary, John, Sally, and Winston), [Founder](../founder/founder.md) (Nadia), and [Creative](../creative/creative.md) (Clio) runs through one shared facilitation skill (`bmad-facilitate`) and a markdown template per document type.
+
+- To change one document type (for example, adding a Support Readiness section to every PRD), tell `bmad-customize` what the document needs. It writes a small template extension in `_bmad/custom/facilitate-templates/` so future updates to the shipped template still reach you. See [Customize a Document for Your Team](./customize-a-document-for-your-team.md).
+- To change settings across every facilitated document (such as default review standards, external handoffs, visuals, HTML views, or a personal voice guide), ask `bmad-customize` to update `bmad-facilitate`.
+- To configure a project-wide brand or design system for HTML outputs, run `bmad setup` to set the core tools design system path.
+
+## Customizing Multi-Agent Casts
+
+Multi-agent features (`bmad-party-mode`, `bmad-forge-idea`, and `bmad-advanced-elicitation`, as well as team discussions that `bmad-retrospective` launches through `bmad-party-mode`) draw their default cast from the agents installed by your modules.
+
+To build custom personas, themed casts, or reusable focus groups, ask `bmad-party-mode` to create or edit a party, or run `/bmad-customize bmad-party-mode` to manage custom members, saved groups, default party, and memory settings. See [Run Multi-Agent Discussions](./run-multi-agent-discussions.md) for examples.
+
+## Shared Project Configuration
+
+Shared project settings such as where BMad writes output, your active initiative, and module setup answers (such as your design system or Founder and Creative record folders) are managed by `bmad setup`. Ask the BMad Agent whenever you want to switch initiatives or change a setup answer.
+
+## How Configuration Layers Work
+
+If you want to understand how team overrides, personal overrides, and defaults layer and merge under `_bmad/custom/`, see [Configuration and Customization Reference](../reference/configuration.md). For team rollout patterns, see [Adopt BMad Across a Team](./adopt-bmad-across-a-team.md).

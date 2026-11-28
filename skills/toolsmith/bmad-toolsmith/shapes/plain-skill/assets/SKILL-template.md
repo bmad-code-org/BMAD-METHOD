@@ -10,9 +10,9 @@ description: '{description}'
 
 {Keep only the steps this skill needs. A skill outside BMad keeps none and this section goes.}
 
-1. Config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`. Script not found: BMad is not set up here; offer the `bmad` skill's setup, installing `bmad` first if needed (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run it again. {Add `--key modules.<code>.<key>` for each module setting this skill reads.}
-2. Customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`; on any other failure read `{skill-root}/customize.toml` and use its defaults. Run each entry of `{workflow.activation_steps_prepend}`, hold every entry of `{workflow.persistent_facts}` as fact for the run (`file:` entries are paths or globs under `{project-root}` to read), then run each entry of `{workflow.activation_steps_append}`.
-3. Output: the document lands at `{output_folder}/{active_initiative}/{type}-{slug}/{type}-{slug}.md`, dropping `/{active_initiative}` when unset. `{slug}` is what the document is about, in kebab-case.
+1. Config: `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key core.output_folder --key core.active_initiative`. Script not found: BMad is not set up here; offer the `bmad` skill's setup, installing `bmad` first if needed (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run it again. {Add `--key modules.<code>.<key>` for each module setting this skill reads.}
+2. Customization: `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`; on any other failure use `{skill-root}/customize.toml` as shipped and say the overrides were not applied. Run each entry of `{workflow.activation_steps_prepend}`, hold every entry of `{workflow.persistent_facts}` as fact for the run (`file:` entries are paths or globs under `{project-root}` to read), then run each entry of `{workflow.activation_steps_append}`.
+3. Output: the document lands at `{workflow.{type}_output_path}/{workflow.run_folder_pattern}/{workflow.run_folder_pattern}.md`, with config values filled in and `/{active_initiative}` dropped when unset. `{slug}` is what the document is about, in kebab-case. {Without `customize.toml`, write the path as `{output_folder}/{active_initiative}/{type}-{slug}/{type}-{slug}.md`.}
 
 ## {body}
 

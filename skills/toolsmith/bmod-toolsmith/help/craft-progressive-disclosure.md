@@ -2,7 +2,7 @@
 
 Read this when the user asks how long a skill should be, why Smithy split theirs into files, how its prose should be written, or what progressive disclosure means.
 
-A skill is paid for every time it runs. The entry file, `SKILL.md`, is read on every invocation; a reference is read only when the branch that names it is reached. So the question is never "how big is the skill" but "how much does one run load". A plain skill's entry aims near 800 tokens, an agent's near 1,200. A complex workflow is the right size at any total when each branch sits in its own file and loads only when reached; the same workflow loaded whole is too big at half the size.
+A skill is paid for every time it runs. The entry file, `SKILL.md`, is read on every invocation; a reference is read only when the branch that names it is reached. So the question is never "how big is the skill" but "how much does one run load". Content in the entry that only some routes use belongs in a reference; an entry whose every run needs all of it stays whole, whatever its size. A complex workflow is the right size at any total when each branch sits in its own file and loads only when reached.
 
 The rules Smithy follows and the review checks:
 

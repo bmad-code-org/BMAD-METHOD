@@ -1,90 +1,118 @@
 ---
 title: 'Modules and Registration'
-description: 'What a BMad module is, what registering a skill gives you, the three ways a skill can register, and when to use configuration or customization.'
+description: 'What a BMad module is, why the bmod format installs anywhere skills do, what registering gives you, how to design a module, and when to use configuration or customization.'
 sidebar:
   order: 10
 ---
 
-A module is a set of skills that belong together, with a record that tells the `bmad` skill about them. Registering a skill with a module is what lets BMad set it up, recommend it, and check it for updates. This page explains the choices. The exact keys are in [Module Files](../reference/module-files.md).
+A module is a set of related skills paired with a small record that tells the `bmad` skill how to set them up, recommend them, and check them for updates. The format is called `bmod`, named after its `bmod.toml` manifest file. This page explains the design choices; see [Module Files](../reference/module-files.md) for the exact schemas and keys.
+
+## Why the bmod Format
+
+A module is plain skills plus a small record folder (which is itself a skill folder). Because nothing requires a separate proprietary installer, a module travels anywhere Agent Skills work:
+
+- Add a module with `npx skills add` from GitHub, any Git URL, or a local folder into whichever AI coding tools you use, with the record installed right beside its skills.
+- Public repositories appear on [skills.sh](https://skills.sh/) once installed through the Skills CLI, and modules shipped inside external plugins can set `update_source = "plugin:<name>"` so `bmad` defers updates to that marketplace.
+- When a module has just one skill, its instructions, record, and help file live together in one folder with nothing extra to fetch.
+
+Once installed, `bmad setup <code>` reads the record in place without merging into a global manifest, so updating the module updates its record automatically. If you are bringing forward an older `module.yaml` module from BMad v6, see [Migrate an Old Module](migrate-an-old-module.md).
 
 ## What Registering Gives You
 
-| With a record | Without one |
+| With a module record | Without a record |
 | --- | --- |
-| `bmad setup <code>` asks the skill's questions | Setup never sees the skill |
-| The `bmad` skill recommends it from help | Help does not know it exists |
-| Update checks follow its source | You update it yourself |
-| Other skills can require it at a minimum version | Other skills can require it by name only |
+| `bmad setup <code>` asks the module's setup questions once and every member reads the answers | Setup never sees the skill |
+| The `bmad` skill recommends your skills from `help/help.md` | Help does not know the skill exists |
+| `bmad setup` and `bmad status` check the source repository for newer versions | You track updates manually |
+| Other skills can declare required or recommended dependencies with minimum versions | Dependencies can only be named informally |
+| `retired.toml` lets setup clean up renamed or removed skills and migrate `_bmad/custom/` overrides | Old skill folders and custom overrides remain behind |
+| `roster.toml` exposes your agents to `bmad` and `bmad-party-mode` | Multi-agent party mode leaves your agent out |
 
-A skill with no record still works, and it can still read BMad config and customization.
+An unregistered plain skill still works in your AI tool and can still read BMad config and customization if BMad is set up in the project.
 
 ## Three Ways to Register
 
-Smithy asks whether a skill is part of a module and whether more are planned, then puts the answer in the execution plan.
+During discovery, Smithy asks whether a skill stands alone or belongs to a module and records the choice in his execution plan:
 
 | Registration | What it is | Use it when |
 | --- | --- | --- |
-| Single-skill module | One folder is both the skill and its record | The default for one skill |
-| Member of a module | A small `bmod.toml` names the record, and the record lists the skill | You are building or expanding that module |
-| Plain skill | No `bmod.toml` | You want no record, or the project has no `_bmad/` folder |
+| Single-skill module | One folder holds both the skill and its module record | The default for one standalone skill |
+| Member of a module | A small `bmod.toml` points to a shared `bmod-<code>` record | You are building or extending a multi-skill module |
+| Plain skill | No `bmod.toml` | You want no module record, or the project has no `_bmad/` folder |
 
-A planned module of several skills starts as a single-skill module under its code and prefix, so nothing is renamed later. Smithy moves the record to a `bmod-<code>` folder when the second skill arrives, either when you package the skills or when you build the second one into the module. Smithy never writes a record folder for one skill.
+When you describe several skills that ship together, Smithy settles a module plan during discovery before he builds any member: the module code and folder, each member's shape, shared setup questions, agent roster, and build order. He writes the `bmod-<code>` record with the first member and attaches each subsequent skill as it is built.
 
-A plain skill can register later: [convert mode](modes.md#convert) adds a record to one skill, and [package mode](modes.md#package) wraps several.
+If you start with one skill and expect to add more later, Smithy builds it as a single-skill module using your planned module code and prefix so nothing has to be renamed later. When the second skill arrives (through a new build or [package mode](modes.md#package)), he moves the shared record into a `bmod-<code>` folder automatically.
+
+A plain skill can also register later: [convert mode](modes.md#convert) adds a record to one skill, and [package mode](modes.md#package) bundles several into a module.
 
 ## What a Module Holds
 
-**A single-skill module** keeps everything in the skill's folder. Its `bmod.toml` has a `[bmod]` table and an empty `[skill]` table, and a `help/help.md` sits beside it. A skill with nothing to ask has no configuration questions.
+A **single-skill module** keeps everything in one skill folder: its `bmod.toml` carries both the module metadata and skill marker, with `help/help.md` beside it.
 
-**A multi-skill module** has a record folder, `bmod-<code>`, beside the skills it ships.
+A **multi-skill module** adds a sibling record folder named `bmod-<code>` beside its member skills:
 
-| In the record | Purpose |
+| File in `bmod-<code>` | Purpose |
 | --- | --- |
-| `SKILL.md` | Tells anyone who opens it to run `bmad setup <code>`, and does nothing else |
-| `bmod.toml` | Code, version, source, members, dependencies, questions, and install messages |
-| `help/help.md` | What the `bmad` skill reads to guide users, with optional topic files |
-| `roster.toml` | The module's agents, so `bmad` and party mode know who is available |
-| `retired.toml` | Skills renamed or removed, so setup can clean up |
+| `SKILL.md` | Tells anyone who invokes the record directly to run `bmad setup <code>` |
+| `bmod.toml` | Code, version, update source, member list, dependencies, setup questions, and install messages |
+| `help/help.md` | Short guidance the `bmad` skill reads to recommend your skills, plus optional topic files |
+| `roster.toml` | Agent personas and multi-agent rooms available to `bmad` and `bmad-party-mode` |
+| `retired.toml` | Renamed or removed skills so setup can clean up stale files safely |
 
-Each member has its own small `bmod.toml` that names the record and its source, and lists what that skill alone requires. A skill belongs to one module. A skill it uses from another module is a dependency, not a member.
+Each member skill keeps its own small `bmod.toml` naming the record and any skill-specific dependencies. A skill belongs to one module; any skill it calls from another module is listed as a dependency rather than a member.
+
+## Design a Module
+
+Before splitting a domain into multiple skills, decide how many agents you actually need and what context they share.
+
+### One Agent or Several
+
+Start by testing whether one agent with several capabilities covers the domain better than a crowd of narrow agents. One agent keeps full context, maintains one memory of its owner, and gives users one obvious person to call: a dream journal that logs entries, analyzes recurring symbols, and coaches lucid dreaming belongs in one agent rather than three.
+
+Split into multiple agents when capabilities serve distinct roles or workflows, or when users benefit from contrasting voices in the same room. Make each agent capable of completing its own sessions independently rather than forcing constant hand-offs. Plain skills sit cleanly alongside agents for single-output tasks that need no persona, and an agent's menu can invoke them directly.
+
+### Agents That Share What They Know
+
+Each memory agent keeps its own private memory, while multiple agents in the same module can share common artifacts through workspace folders. For example, in a content module with podcast, video, and blog agents, one agent can own a writable `brand/` folder while the other two read from that same folder. See [Shared Workspace Folders (Dominion)](agents-with-memory.md#shared-workspace-folders-dominion).
+
+A module can also declare named multi-agent groups in `roster.toml` for `bmad-party-mode`; setting `memory = true` on a group lets that room remember insights across sessions.
+
+### Modules That Extend Another
+
+A module can build on another module, such as shipping extra review skills for BMad Method. List skills your module directly invokes under `required_skills` and helpful companion skills under `recommended_skills`. Prefer recommending whenever your module still provides useful work without the companion installed.
 
 ## Name Skills and Modules
 
-Skills carry the module's code as a prefix: `acme-release-notes`, and agents `acme-agent-scout`. `bmad` finds a module by its `[bmod]` table, and validation requires a multi-skill record folder to be `bmod-<code>`. The code is the configuration namespace and what users type in `bmad setup <code>`.
+Prefix every skill in a module with the module code (for example `acme-release-notes` and `acme-agent-scout`), and name a multi-skill record folder `bmod-<code>`. The module code serves as both your configuration namespace and the identifier users pass to `bmad setup <code>`.
 
-A prefix of your own tells your skills from BMad's, keeps a module's skills together in listings, and lets you group them in traces and usage reports. Reserve `bmad-` for skills shipped by the bmad-code-org. A custom skill named `bmad-` reads as official, and it could collide with a future core skill.
+Using your own prefix separates your skills from official BMad skills, groups them together in tool listings, and prevents collisions with future core releases. Reserve the `bmad-` prefix for skills published in the official `bmad-code-org` repositories.
 
 ## Configuration or Customization
 
-Modules offer two ways to change behavior, and they answer different questions.
+Modules support two distinct override mechanisms:
 
 | | Configuration | Customization |
 | --- | --- | --- |
-| Answers | What does this project need to tell the module? | How should this skill behave differently here? |
-| Defined in | `[[bmod.config_questions]]` in the record | `customize.toml` in each skill |
+| Question it answers | What project facts must the user tell this module once? | How should one skill behave differently here? |
+| Defined in | `[[bmod.config_questions]]` in the record's `bmod.toml` | `customize.toml` inside each skill |
 | Set by | `bmad setup <code>` | `bmad-customize` |
-| Read as | `modules.<code>.<key>` with `resolve_config.py` | `{workflow.<key>}` or `{agent.<key>}` after `resolve_customization.py` |
-| Example | A shared path every member reads | An activation step for one skill |
+| Read as | `modules.<code>.<key>` via `resolve_config.py` | `{workflow.<key>}` or `{agent.<key>}` via `resolve_customization.py` |
+| Example | A shared workspace path read by every member | An extra activation step or custom template for one skill |
 
-Use a configuration question for a value several skills read the same way. It is asked once, and every member reads the answer. Skip the question when a good default will do, because every question is a cost at setup. See [Make a Skill Customizable](make-a-skill-customizable.md) for the other side.
-
-A `scope = "user"` question is a personal preference and is not committed. A path the team shares stays team scope.
+Ask a setup question only when several skills share the value and no default covers everyone, since every question adds friction to setup. Mark personal preferences `scope = "user"` so they stay out of version control, and leave team paths in team scope. See [Make a Skill Customizable](make-a-skill-customizable.md) for per-skill overrides and [Configuration](../reference/configuration.md) for full details.
 
 ## Write the Help
 
-`help/help.md` has one reader: the `bmad` skill, answering a user. Write what each skill gives, when to recommend it, and what to offer next. Leave out what `bmad` cannot act on, such as install mechanics and manifest keys.
-
-Add a `help/<topic>.md` for depth, and name it in `help.md` with when to read it. A topic that `help.md` does not name is never read.
+`help/help.md` has one reader: the `bmad` skill answering a user's question. State what each skill produces, when to recommend it, and what comes next, leaving out internal schema keys and install mechanics. Because `help.md` loads on every help question across all installed modules, keep it concise and put deeper guidance in `help/<topic>.md` files explicitly referenced from `help.md`.
 
 ## Depend on Other Skills
 
-Use `required_skills` for a skill yours invokes, and `recommended_skills` for one that helps beside it. A plain name is a skill from the same source, and a table names one from elsewhere. Module-wide needs go in the record, and one member's needs go in its own file. Smithy asks during a build, and names anything you need to install.
+Declare skills your module invokes in `required_skills` and companion skills in `recommended_skills`. Use a plain skill name for another skill from the same repository, or a table with `source` (and optional minimum `version`) for external repositories. Put module-wide dependencies in the record and single-skill needs in that member's `bmod.toml`.
 
 ## Add to the BMad Method
 
-Two different things are often called this.
+People mean two different things when they talk about extending BMad Method:
 
-- **Contribute to the method.** Open a pull request to the BMAD-METHOD repository. The skill lives under `skills/method/`, takes a `bmad-` name, and its `bmod.toml` names `bmod-method`.
-- **Extend the method in your project.** Make your own module with your own prefix, whose skills require or recommend the method skills they build on. Do not edit the installed method record, because the next update overwrites it.
-
-Build any change to an installed module in its source repository for the same reason.
+- To contribute upstream, open a pull request to the `BMAD-METHOD` repository, placing the skill under `skills/method/` with a `bmad-` prefix and `bmod-method` as its record.
+- To extend locally or in your own module, create your own module with your own prefix that requires or recommends the BMad Method skills it builds on. Never edit installed `bmod-method` files directly, because the next update overwrites them; always develop changes to any module inside its source repository.

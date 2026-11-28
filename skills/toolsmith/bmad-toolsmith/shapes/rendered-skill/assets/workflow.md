@@ -1,4 +1,4 @@
-{% if workflow.{selector} not in ({allowed_values}) %}{{ halt("workflow.{selector} must be one of {allowed_values}, not " ~ workflow.{selector}) }}{% endif %}
+{% if workflow.{selector} not in ({allowed_values}) %}{{ halt('workflow.{selector} must be one of {allowed_values}, not ' ~ workflow.{selector}) }}{% endif %}
 # {title}
 
 {purpose: one paragraph. What the workflow produces, for whom, and what must be true of it for them to act. Said once.}
@@ -7,6 +7,7 @@
 
 - When a step directs you to another file, read it fully and follow it. Load one step at a time, when it is reached.
 - A step that shows a menu halts there and waits for the user.
+- To change {what the selector or block decides}, invoke the `bmad-customize` skill naming `workflow.{selector}`; if it is not installed, offer `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-customize`.
 
 ## On activation
 

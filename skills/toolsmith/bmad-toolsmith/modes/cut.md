@@ -1,22 +1,20 @@
 # Cut
 
-Rewrite a skill's prose into the fewest words that steer the model as far, for a skill built elsewhere or one the user wants tightened. The bar is `canon.md` and `lenses/lens-leanness.md`. A skill Smithy writes gets the same pass in `ship.md`.
+Rewrite a skill's prose into the fewest words that steer the model as far, for a skill built elsewhere or one the user wants tightened. The bar is `canon.md` and `lenses/lens-leanness.md`.
 
 The outcome: every prompt file of `{target}` rewritten or left as already lean, with every rule, convention, reference, protected passage and decision intact.
 
 ## Protected passages
 
-Set `{target}` to the skill folder.
+Set `{target}` to the skill folder. `{reports_folder}` was set at activation; if this session no longer holds it, run that step again.
 
 Protected by default: each file's frontmatter; an agent's `customize.toml`, which holds its persona; and what a shape template put there, a rendered skill's `SKILL.md` and the activation section of its `workflow.md`. `cut_check.py` reports a changed frontmatter itself; pass the rest to it as `--protect <file>` or `--protect <file>#<heading>`.
 
-Ask once what else to protect, decisions included. When the work comes from a ticket, the `Decision:` lines in its Notes are decisions every cutter keeps.
+Ask once what else to protect, decisions included. When the work comes from a ticket, the `Decision:` lines in its Notes are decisions every cutter keeps. Write each passage the user names, blank-line separated, to `{reports_folder}/<YYYYMMDD-HHMMSS>-<skill>-protected.txt` and pass it as `--protect-text <file>`.
 
 ## The Smithy execution plan
 
-Copy `{target}` to `{reports_folder}/<YYYYMMDD-HHMMSS>-<skill>-before/`, the old version every later step reads. Count it with `uv run {skill-root}/scripts/count_tokens.py <copy>`.
-
-The prompt files are the `.md` files outside `scripts/` and the root `customize.toml`; leave protected files and those under about 150 tokens uncut.
+Copy `{target}` to `{reports_folder}/<YYYYMMDD-HHMMSS>-<skill>-before/`, the old version every later step reads. Run `uv run "{skill-root}/scripts/cut_check.py" <copy> "{target}"`; its `tokens` lists every prompt file with its count. Leave protected files and those under about 150 tokens uncut.
 
 Show the execution plan in chat: each file with its tokens, the files not cut, the protected passages, the decisions. Then wait for the user's go.
 
@@ -28,19 +26,17 @@ Before the cutters run, take each worked example (a sample artifact, a filled-in
 
 Launch one subagent per file, in parallel, with the Cutter prompt from `modes/cut-roles.md`, filled with the file, its protected passages, and the decisions.
 
-Then run `uv run {skill-root}/scripts/cut_check.py <copy> {target} [--protect ...]` and restore, from the copy, every item it lists under a file's `lost` and every file under `missing`.
+Then run `uv run "{skill-root}/scripts/cut_check.py" <copy> "{target}" [--protect ...] [--protect-text <file>]` and restore, from the copy, every item it lists under a file's `lost` and every file under `missing`.
 
 Then one subagent per rewritten file runs the Checker. Restore each loss and meaning change it lists as the shortest sentence that states it, and apply the shorter wordings you agree with.
 
-Run the list under Checks in `ship.md` and fix until clean.
+Run the commands under Checks in `modes/validate.md` and fix until clean.
 
-When `SKILL.md` calls `render_skill.py`, render the skill with `uv run --no-cache {project-root}/_bmad/scripts/render_skill.py --project-root {project-root} --skill {target}`, once as shipped and once per allowed value of each selector with `--set workflow.<key>=<value>`; each render finishes without error. Where that script does not exist, report the render as not run.
+When `SKILL.md` calls `render_skill.py`, render the skill with `uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{target}"`, once as shipped and once per allowed value of each selector with `--set workflow.<key>=<value>`; each render finishes without error. Where that script does not exist, report the render as not run.
 
 ## Hand over
 
-Run `cut_check.py` once more and restore anything it lists.
-
-Run `count_tokens.py` on `{target}` and give a table in chat: file, tokens before (from the copy), after, percent, and the total. Under it list the Cutters' doubts and any loss you chose not to restore, with why.
+Run `cut_check.py` once more with the same flags and restore anything it lists. Print its `tokens` as a table in chat: file, before, after, percent, and the total. Under it list the Cutters' doubts and any loss you chose not to restore, with why.
 
 Commit nothing; the user reads `diff -ru <copy> {target}` and commits what they accept.
 

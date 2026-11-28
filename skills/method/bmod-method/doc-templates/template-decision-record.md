@@ -1,13 +1,15 @@
 ---
 title: ""
 template: decision-record
-version: 1.1.0
+version: 1.3.0
+category: decisions
 description: "Recording any decision: context, options, choice and consequences."
 not_for: "Asking someone to approve the choice (`proposal`)."
-paced: true
-facilitation_order: [context, decision-drivers?, options-considered, decision, consequences, confirmation?, links?, status]
-guidance: guidance-planning
-rubric: rubric-planning
+agents: [bmad-agent-architect]
+mode: fast
+facilitation_order: [context, decision-drivers, options-considered, decision, consequences, confirmation, links, status]
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""
@@ -17,9 +19,12 @@ updated: ""
 
 <!-- stance: Keep it short; most records fit on a page whatever the stakes. Press on the options and the drivers. -->
 
+<!-- opening: The decision in one line, and whether it is already made or still open, which decides whether the record argues the options or documents the choice. -->
+
 <!-- inputs: The choice, who decides, by when, and the forces at play. Only the user knows which drivers weighed most, what was ruled out in conversation, and who was consulted. -->
 
 <!-- writing:
+  - One page.
   - Context states facts and forces without arguing for the outcome.
   - The decision is one active sentence: "We will ...".
   - A changed decision gets a new record that supersedes this one; this one is not rewritten beyond its status.
@@ -39,7 +44,7 @@ updated: ""
 <!-- optional. The criteria that separated the options, most important first. -->
 
 ## Options considered
-<!-- Each real option, including doing nothing, with its main pros and cons against the drivers. You are the advocate for every option not chosen: make the best case for each before the user rules it out. If only one option is named, ask what else was considered and what tipped it. Done when each option is stated as fairly as its supporters would. -->
+<!-- Each real option, including doing nothing, with its main pros and cons against the drivers. You are the advocate for every option not chosen: make the best case for each before the user rules it out. If only one option is named, ask what else was considered and what tipped it. With three or more options or drivers, show them as a table of options against drivers. Done when each option is stated as fairly as its supporters would. -->
 
 ## Decision
 <!-- The chosen option and the reason it won. -->

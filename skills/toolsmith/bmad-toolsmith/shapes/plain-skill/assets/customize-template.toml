@@ -9,10 +9,10 @@
 
 [workflow]
 
-# Instructions run before config is loaded.
+# Instructions run after config is loaded, before the persistent facts.
 activation_steps_prepend = []
 
-# Instructions run after activation, before the work begins.
+# Instructions run after the persistent facts are loaded, before the work begins.
 activation_steps_append = []
 
 # Standing context for the whole run: literal sentences, or `file:` paths and

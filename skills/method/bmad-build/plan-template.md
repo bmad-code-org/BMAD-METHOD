@@ -12,7 +12,7 @@ review: '' # none | quick | thorough — set by step-04
 review_source: '' # pinned | auto — set with review by step-04
 lenses_ran: [] # ids of the lenses launched, set by step-04
 review_loop_iteration: 0 # incremented by step-04 before each review loopback
-context: [] # optional: `{project-root}/`-prefixed paths the implementation agent should load: companions the ticket names that this work needs, and project-wide standards. Keep short — only what isn't already distilled into the plan body.
+context: [] # `{project-root}/`-prefixed paths the implementer and reviewer should load directly: governing UX/architecture contracts (DESIGN.md, EXPERIENCE.md, mockups, contract.yaml) and project-wide standards. Keep short — only what isn't already distilled into the plan body.
 ---
 
 <!-- Target: 900–1300 tokens (less if route is oneshot). Above 1600 = high risk of context rot.
@@ -96,14 +96,14 @@ context: [] # optional: `{project-root}/`-prefixed paths the implementation agen
 
 <!-- If the approach is straightforward, delete this section. Do not write "N/A" or "None".
      Delete this section if route is oneshot. -->
-<!-- Design rationale and golden examples only when non-obvious. Keep examples to 5–10 lines. -->
+<!-- The concrete design decisions for this change, with golden examples when non-obvious. Keep examples to 5–10 lines. Never restate principles or project rules. -->
 
 DESIGN_RATIONALE_AND_EXAMPLES
 
 ## Verification
 
 <!-- If no build, test, or lint commands apply, delete this section. Do not write "N/A" or "None". -->
-<!-- How the agent confirms its own work. Prefer CLI commands. When no CLI check applies, state what to inspect manually. -->
+<!-- How the agent confirms its own work. Prefer CLI commands that run the narrowest tests covering the changed files; the full suite only when the project's instructions ask for it. When no CLI check applies, state what to inspect manually. -->
 
 **Commands:**
 - `COMMAND` -- expected: SUCCESS_CRITERIA

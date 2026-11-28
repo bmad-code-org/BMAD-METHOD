@@ -39,7 +39,8 @@ def count_tokens(text: str) -> tuple[int, str]:
         enc = tiktoken.get_encoding(ENCODING)
     except Exception:
         return len(text) // 4, "fallback"
-    return len(enc.encode(text)), "tiktoken"
+    # A prompt file may quote a special token such as <|endoftext|>; count it as text instead of raising.
+    return len(enc.encode(text, disallowed_special=())), "tiktoken"
 
 
 def iter_text_files(root: Path):

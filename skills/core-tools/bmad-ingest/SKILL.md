@@ -11,8 +11,8 @@ Run headless when the caller says so or no person is present: ask nothing.
 
 ## On activation
 
-1. Config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder`. Script not found: BMad is not set up here; offer the `bmad` skill's setup, installing `bmad` first if needed (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run it again.
-2. Customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`; on any other failure read `{skill-root}/customize.toml` and use its defaults. Run each entry of `{workflow.activation_steps_prepend}`, hold every entry of `{workflow.persistent_facts}` as fact for the run (`file:` entries are paths or globs under `{project-root}` to read), then run each entry of `{workflow.activation_steps_append}`.
+1. Config: `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key core.output_folder`. Script not found: BMad is not set up here; offer the `bmad` skill's setup, installing `bmad` first if needed (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run it again.
+2. Customization: `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`; on any other failure read `{skill-root}/customize.toml` and use its defaults. Run each entry of `{workflow.activation_steps_prepend}`, hold every entry of `{workflow.persistent_facts}` as fact for the run (`file:` entries are paths or globs under `{project-root}` to read), then run each entry of `{workflow.activation_steps_append}`.
 
 ## Keep the raw
 
@@ -24,7 +24,7 @@ Run headless when the caller says so or no person is present: ask nothing.
 
 ## Choose the template
 
-Use a template the caller or user named by path or URL. Otherwise list them: `uv run {project-root}/_bmad/scripts/list_templates.py {workflow.template_libraries} <libraries the caller passed> --folder ingest-templates --root <folder>`, with one `--root` for the project's skills folder, then one for each user-level skills folder your host loads. Script not found: the BMad install predates it; ask the `bmad` skill to update, which refreshes the shared scripts, then list again. Follow each `tool_sources` sentence to reach that library's templates too. Name any `unreachable` source, `missing` path other than `{project-root}/_bmad/custom/ingest-templates` or `~/.bmad/ingest-templates`, or `orphaned` extension, and go on without it. Read any GitHub file through `gh`.
+Use a template the caller or user named by path or URL. Otherwise list them: `uv run "{project-root}/_bmad/scripts/list_templates.py" {workflow.template_libraries} <libraries the caller passed> --folder ingest-templates --root "<folder>"`, with one `--root` for the project's skills folder, then one for each user-level skills folder your host loads. Script not found: the BMad install predates it; ask the `bmad` skill to update, which refreshes the shared scripts, then list again. Follow each `tool_sources` sentence to reach that library's templates too. Name any `unreachable` source, `missing` path other than `{project-root}/_bmad/custom/ingest-templates` or `~/.bmad/ingest-templates`, or `orphaned` extension, and go on without it. Read any GitHub file through `gh`.
 
 Use a template named by id; otherwise pick from the descriptions alone, say why in one line, and name close alternatives. Nothing fits: `meeting` for a conversation, `document` for anything else. Load the chosen template and each of its `extensions`, the first listed winning a conflict.
 

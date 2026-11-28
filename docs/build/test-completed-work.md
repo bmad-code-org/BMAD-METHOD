@@ -1,44 +1,32 @@
 ---
 title: 'Test Completed Work'
-description: Choose a test-generation skill after implementation. Use bmad-qa-generate-e2e-tests for simple coverage or bmad-tea-automate for heavier coverage.
+description: Choose a test-generation skill after implementation. Use bmad-qa-generate-e2e-tests for straightforward coverage or bmad-tea-automate for deeper test suites.
 sidebar:
-  order: 4
+  order: 5
 ---
 
-After a change is implemented, decide whether it needs more automated
-coverage and which test-generation skill should produce it. Both
-`bmad-qa-generate-e2e-tests` and `bmad-tea-automate` generate tests
-from code that already exists. The built-in skill stays simple. Automate
-is the heavier test generation: fixtures, more test levels, and knowledge-base
-patterns. See [how the built-in skill runs](#run-bmad-qa-generate-e2e-tests).
+After a feature works, decide whether it needs more automated test coverage and which test-generation skill fits best. Both `bmad-qa-generate-e2e-tests` and `bmad-tea-automate` generate tests from existing code. The built-in QA skill keeps tests lean and straightforward, while Automate (from the optional Test Architect Enterprise, or **TEA**, module) adds heavier patterns such as reusable test **fixtures** (shared setup and sample data helpers) and broader test levels.
 
-This is generated coverage of finished work. It is not code review, and it
-is not the manual observations in [Walk Through a Change](walk-through-a-change.md).
+This step adds automated coverage for finished work. It does not replace code review or the hands-on inspection in [Walk Through a Change](walk-through-a-change.md).
 
 ## Which Path?
 
 | Factor | `bmad-qa-generate-e2e-tests` | `bmad-tea-automate` |
 | --- | --- | --- |
-| **Best for** | Simple coverage of implemented features | Heavier coverage of the same kind of work |
-| **Setup** | Install the `bmad-qa-generate-e2e-tests` skill | Install the TEA module |
-| **Approach** | Generate from the code that exists | Same, standalone; optional test design improves the run |
-| **What it covers** | API and E2E; the main path and the errors a user can see | API, E2E, fixtures, more patterns; optional component tests |
+| **Best for** | Straightforward coverage of implemented features | Deeper test suites with reusable fixtures and extra layers |
+| **Setup** | Included in the method module | Install the optional TEA module |
+| **Approach** | Generates tests directly from existing code | Runs standalone on existing code; optional test design sharpens results |
+| **What it covers** | API and end-to-end tests for main paths and user-visible errors | API, end-to-end, fixtures, extra patterns, and optional component tests |
 
 :::tip[Start with built-in QA]
-Most projects should start with `bmad-qa-generate-e2e-tests`. Use
-`bmad-tea-automate` when you want heavier test generation of the same
-kind of work.
+Most projects should start with `bmad-qa-generate-e2e-tests`. Add `bmad-tea-automate` when your suite grows large enough to need structured fixtures, deeper test planning, or release quality gates.
 :::
 
-Other TEA skills (test design, trace, test review, NFRs, and gates) and
-Automate's red mode for acceptance test-driven development (ATDD) are
-available. They are not the default test-generation path.
+TEA also offers additional skills (test design, coverage tracing, test review, assessments for non-functional requirements such as performance and reliability, and release gates) plus Automate's red mode for **ATDD** (Acceptance Test-Driven Development, writing failing acceptance tests before implementation starts). To run ATDD before coding on the full build route, use `bmad-customize` to customize the implementation handoff (see [Customize BMad](../customize/customize-bmad.md)).
 
 ## Run `bmad-qa-generate-e2e-tests`
 
-Open a **fresh chat** and name the skill. You can say what to test before,
-with, or after the command — a feature, a directory, or "discover what is
-untested."
+Open a **fresh chat** and invoke the skill. Name what you want tested (a feature, a directory, a ticket, or simply "discover what is untested"):
 
 ```text
 /bmad-qa-generate-e2e-tests
@@ -48,73 +36,42 @@ untested."
 /bmad-qa-generate-e2e-tests Create API and E2E tests for the login flow.
 ```
 
-It uses whatever test setup the project already has. If there is none,
-it proposes one and waits for your go-ahead before adding anything.
+The skill follows whatever test framework your repository already uses. If no test setup exists yet, it proposes one and waits for your approval before installing or creating anything.
 
 ### What a run does
 
-1. **Decide what to test** — from what you asked for, or a ticket that is
-   in review, or what the current branch changed. It asks if none of those
-   says.
-2. **List the scenarios** — one sentence each, and waits for your
-   confirmation.
-3. **Learn how the project already tests** — and runs those tests once
-   first.
-4. **Write one test per scenario** — driving the app the way a user or an
-   API client would, with each test setting up its own data.
-5. **Run the new tests twice.** A real bug is reported, and its test is kept
-   as a known failure. No test is loosened to make it pass.
-6. **Report in chat** — what is covered, what is not and why, any bugs, and
-   the command that runs the new tests.
+1. The skill chooses what to test from your prompt, a ticket awaiting review, or the changes on your current branch, asking only if none of those makes the target clear.
+2. It proposes one-sentence test scenarios and waits for your confirmation before writing code.
+3. It inspects how your project already writes tests and runs the current suite once first.
+4. It writes one test per scenario, exercising the app the way a real user or API client does, with each test managing its own setup data so tests pass in any order.
+5. It runs the new tests twice to verify they are deterministic and not flaky, and if a new test catches a real bug in your app, it reports the bug and keeps the failing test rather than weakening the assertion.
+6. It reports in chat what is now covered, what was intentionally skipped and why, any bugs found, and the exact command to run the new tests.
 
-Generated tests stay simple on purpose: the framework's standard features,
-the project's existing helpers, and tests that pass in any order.
+Generated tests stay readable on purpose, sticking to your framework's standard APIs and existing helpers.
 
 ## What You Get
 
-- Test files where the project keeps its end-to-end tests
-- A report in chat; no summary file
-- Tests that passed twice in this session, or that record a bug they found
+- New test files placed alongside your project's existing end-to-end or API tests
+- A concise coverage and command report in chat (with no extra report file cluttering the repo)
+- Tests verified across two consecutive runs, or clear failing tests documenting bugs they uncovered
 
 ## Limits
 
-`bmad-qa-generate-e2e-tests` generates tests only. It does not review the
-implementation — that is `bmad-build` during the run, or
-[`bmad-code-review`](review-a-change.md) if you want another pass.
-
-It covers the main path and the errors a user can see, and no more. It
-does not build shared test helpers. More edge cases are follow-up work,
-or a reason to use Automate.
+`bmad-qa-generate-e2e-tests` only generates automated tests. It does not review code quality (that happens inside `bmad-build` or [`bmad-code-review`](review-a-change.md)). It focuses on primary user paths and user-visible error handling rather than building custom fixture libraries or exhaustive corner-case matrices; reach for TEA when you want that depth.
 
 ## When to Use TEA
 
-Install the TEA module when you want `bmad-tea-automate` for heavier
-test generation of the same kind of work. Automate still generates from
-existing code and can run standalone.
+Install the TEA (Test Architect Enterprise) module when you want `bmad-tea-automate` for deeper test generation or specialized quality engineering:
 
-`bmad-tea-test-design` is optional before Automate. It improves the
-run; it is not a prerequisite.
+- `bmad-tea-test-design` optionally plans risk-based test coverage before generating tests.
+- `bmad-tea-trace` optionally audits requirement-to-test traceability after tests exist.
+- Automate's red mode supports ATDD when you want failing acceptance tests written before building a new feature.
+- Test review, NFR (Non-Functional Requirement) assessments covering qualities like latency, security, or resilience, and release gates are available whenever your team's delivery bar requires them.
 
-`bmad-tea-trace` is optional after generation, to check coverage. It
-is not part of test generation.
-
-ATDD, Automate's red mode, is for features that do not exist yet. Test review, NFR assessment,
-and release gates are available when you need them. They are not required
-to generate tests.
-
-TEA is a separate module. Its current workflows, commands, and setup live
-in the [TEA documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/).
-Add it with `npx skills add bmad-code-org/bmad-method-test-architecture-enterprise`
-and run `bmad setup tea`; see [Add Modules](../customize/add-modules.md).
+TEA is maintained as a separate module with its full guide in the [TEA documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/). Install it with `npx skills add bmad-code-org/bmad-method-test-architecture-enterprise` and run `bmad setup tea`; see [Add Modules](../customize/add-modules.md).
 
 ## Where It Fits
 
-[`bmad-build`](build-a-change.md) implements a change and, if a suite
-already exists, aims to leave those tests passing. This page is the next
-testing decision: generate additional coverage for that finished work.
+[`bmad-build`](build-a-change.md) writes unit tests alongside the feature and ensures existing tests keep passing. Test generation is the optional next step when you want dedicated API or end-to-end tests on top of finished work.
 
-You can run built-in QA after one change. You do not have to wait for an
-epic to finish. A typical sequence is implement with `bmad-build`,
-optionally [walk through the result](walk-through-a-change.md), then generate
-coverage here. After a whole epic, `bmad-retrospective` is a different
-check — it judges the epic against its spec, not the test suite.
+You can run built-in QA after any single story without waiting for an entire epic to finish. A common flow is to build with `bmad-build`, optionally [walk through the change](walk-through-a-change.md), and then generate API or E2E coverage here. Once an entire epic finishes, `bmad-retrospective` performs a separate check, evaluating the epic as a whole against its spec and completion criteria rather than only running tests.

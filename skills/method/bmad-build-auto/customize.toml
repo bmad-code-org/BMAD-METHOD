@@ -59,6 +59,12 @@ Launch a subagent with no prior conversation context, with this prompt:
 > Read {plan_file} fully and implement it — the plan is the sole source of truth. Load every file listed in its frontmatter `context:` before you start.
 >
 > When done, report what you changed, how you verified it, and anything left incomplete or risky.
+>
+> Your final message is your report. Before sending it:
+>
+> - wait for any checks or tests that you started to finish
+> - stop a check that has shown no sign of progress for a long while, and report it as stuck
+> - terminate any server or watcher.
 """
 
 # Review selection: "none" launches no lens and skips triage, "quick" runs

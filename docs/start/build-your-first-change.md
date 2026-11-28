@@ -3,89 +3,71 @@ title: 'Getting Started'
 description: Install BMad and build a small Python program
 ---
 
-BMad can help you plan and build anything from a small bug fix to a project with
-a million lines of code. Let's start with something small.
+BMad helps you plan and build anything from a small bug fix to a multi-team software product. Start with one small, self-contained build to see how the loop works.
 
-Already have a repository and a small change you want to make?
-[Install BMad there](./install-bmad.md), open your coding tool in the
-repository, and run the installed `bmad-build` skill. Talk to it about the
-change you want, and it will make it happen.
+If you already have a repository and a small change in mind, [install BMad there](./install-bmad.md), open your coding tool in the repository, and invoke `bmad-build` with a short description of what you want.
 
-Otherwise, start here. You will make a working Python program in an empty
-project. This tutorial follows the
-[one-session planning path](../plan/choose-a-planning-path.md): one
-coherent request goes directly to the `bmad-build` skill.
+Otherwise, follow this tutorial to build a working Python program from scratch in an empty project. It uses the direct build path described in [Size and Stakes](./how-bmad-works.md#size-and-stakes), where one clear request goes straight to `bmad-build`.
 
 :::note[Before You Start]
-Use a macOS or Linux shell with Node.js 20.12+, Python 3, and a coding tool
-supported by BMad. The exact install and launch commands below are for Claude
-Code. If you use another supported tool, select it when installing BMad and run
-the `bmad-build` skill there instead.
+Use a macOS or Linux shell with [uv](https://docs.astral.sh/uv/), Node.js 20.12+, Python 3, Git, and an AI coding tool supported by BMad. The launch command below uses Claude Code as an example; if you use Codex, Cursor, or another supported tool, select it during install and run the chat commands inside that tool instead.
 :::
 
 ## Create an Empty Project
 
+Create a folder, initialize Git with an initial commit so `bmad-build` has a clean repository to work from, and install the core and method skill bundles:
+
 ```bash
 mkdir bmad-first-project
 cd bmad-first-project
-```
-
-:::caution[V7 Preview Alpha]
-This tutorial uses v7 of BMad, which is in preview alpha and changes often. It suits solo or small teams that can pivot before beta; the v7 release ETA is mid-November 2026, and it might be sooner. If you need stability, run `npx bmad-method install` for the v6.12 release, frozen aside from bug fixes, and follow the [V6.12 documentation](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12/docs/start).
-:::
-
-Install BMad Method with the skills CLI, then let the `bmad` skill set up the
-project:
-
-```bash
+git init
+git commit --allow-empty -m "chore: initial commit"
 npx skills add bmad-code-org/BMAD-METHOD/skills/core-tools --skill '*'
 npx skills add bmad-code-org/BMAD-METHOD/skills/method --skill '*'
 ```
 
-Open your coding tool in this directory. For Claude Code, run:
+Open your AI coding tool in this directory. For Claude Code, run:
 
 ```bash
 claude
 ```
 
-Then ask the `bmad` skill to run `bmad setup`.
+Inside your coding tool's chat (not in your shell), ask the `bmad` skill to set up the project:
+
+```text
+/bmad setup
+```
+
+Commit the generated setup files if `bmad-build` later prompts you for a clean working tree, or let it commit them when it asks.
 
 ## Build a Mars Rover
 
-Ask the `bmad-build` skill to make the
-[Mars Rover programming kata](https://codingdojo.org/kata/mars-rover/), a small
-exercise used to practice coding, without adding any design choices:
+In chat, ask `bmad-build` to implement the [Mars Rover programming kata](https://codingdojo.org/kata/mars-rover/), a small coding exercise, without specifying design choices up front:
 
 ```text
 /bmad-build write an implementation of mars rover kata
 ```
 
-This gives the `bmad-build` skill room to ask what you want. It may start with a
-question like this:
+Leaving the request open gives `bmad-build` room to ask what you want. It may start with a question like this:
 
 ```text
-`bmad-build`: Before implementation, I need one choice: which language should I use?
-You: Python 3. Make it a small old-school terminal program I can run locally,
-with no dependencies beyond Python standard library.
+bmad-build: Before implementation, I need one choice: which language should I use?
+You: Python 3. Make it a small old-school terminal program I can run locally, with no dependencies beyond the Python standard library.
 ```
 
-Your questions, answers, plan, and finished program may differ. Choose the
-behavior you want rather than copying the example answer.
+Your questions, answers, plan, and finished program will vary. Choose the behavior you want rather than copying the example answer verbatim.
 
-After you answer its questions, read its plan. Approve it or ask for changes.
-The skill then writes the program, checks its work, fixes any problems, and
-shows you what changed.
+After you answer its questions, read the plan it proposes and approve it or ask for adjustments. The skill then writes the code and tests, reviews its own work, fixes any problems it catches, and shows you what changed.
 
 ## Run the Mars Rover
 
-Depending on what you told it, the result may look something like this:
+Depending on what you requested, running the finished program in your terminal will look something like this:
 
 ```bash
 python3 mars_rover.py --size 5x5 --obstacle 2,2
 ```
 
-Enter `FFRFF`, then `MAP`, then `QUIT`. The terminal shows the rover stopping
-before the obstacle:
+Enter `FFRFF`, then `MAP`, then `QUIT`. The terminal shows the rover stopping before the obstacle:
 
 ```text
 MARS ROVER CONTROL
@@ -102,12 +84,11 @@ rover>  4  . . . . .
 rover> Mission control signing off.
 ```
 
-Open the files listed in the final message to look at your finished program.
+Open the files listed in the final message to inspect your finished program and tests.
 
 ## Ask BMad
 
-The `bmad` skill answers questions about BMad. Use it to understand what
-happened, decide what to do next, or solve a problem. Try it now:
+The `bmad` skill answers questions about BMad, explains what happened, and recommends what to do next. Try it in chat now:
 
 ```text
 /bmad Explain what bmad-build just did.
@@ -115,16 +96,11 @@ happened, decide what to do next, or solve a problem. Try it now:
 
 ## You Built It
 
-Mars Rover showed how the `bmad-build` skill turns a short request into working
-software. It clarified the request, presented a plan for your approval, wrote
-the program, and checked its work before showing you the result.
+This Mars Rover run showed how `bmad-build` turns a short request into working software: it clarified the open choices, presented a plan for your approval, wrote the program and tests, and verified its work before presenting the result.
 
 ## Keep Building
 
-1. [Install BMad in your own repository](./install-bmad.md), then run
-   the `bmad-build` skill with a short description of a small change.
-   See [Build a Change](../build/build-a-change.md) for the attended path.
-2. Continue to [Getting Deeper](../existing-codebases/getting-deeper.md) for a small change in a
-   mature codebase, followed by a larger change using a written spec.
-3. Use [Choose a Planning Path](../plan/choose-a-planning-path.md) when
-   your next change may need several implementation sessions or multiple epics.
+1. [Install BMad in your own repository](./install-bmad.md), then run `bmad-build` with a short description of a single clear change. See [Build a Change](../build/build-a-change.md) for the interactive path.
+2. [Walk through three routes](./walk-through-three-routes.md) on new projects (a quick build, Sofia's route, and the full planning route), then [walk through an existing codebase](./walk-through-an-existing-codebase.md) to see how BMad handles inherited code.
+3. Continue to [Getting Deeper](../existing-codebases/getting-deeper.md) for a small change in a mature codebase followed by a larger change backed by a written specification.
+4. Read [How BMad Works](./how-bmad-works.md) when your next project spans multiple connected features or epics.

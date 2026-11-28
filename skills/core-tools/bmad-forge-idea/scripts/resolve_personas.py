@@ -77,7 +77,7 @@ def _load_toml(path: Path):
     try:
         data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
         return data if isinstance(data, dict) else {}
-    except (OSError, tomllib.TOMLDecodeError):
+    except (OSError, UnicodeError, tomllib.TOMLDecodeError):
         return {}
 
 

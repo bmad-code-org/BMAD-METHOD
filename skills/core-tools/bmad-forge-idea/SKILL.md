@@ -1,6 +1,6 @@
 ---
 name: bmad-forge-idea
-description: Test a half-formed idea in a questioning conversation, with different personas probing its weak points, until the user can act on it or drop it with confidence. Optionally writes a short brief for planning skills to build on. Use when the user says 'forge an idea', 'pressure-test this idea', 'stress-test my thinking', or 'harden this idea'
+description: Test a half-formed idea in a questioning conversation, with different personas probing its weak points, until the user can act on it or drop it with confidence. Leaves a short record of what survived, which planning skills can build on. Use when the user says 'forge an idea', 'pressure-test this idea', 'stress-test my thinking', or 'harden this idea'
 ---
 
 # BMad Forge Idea
@@ -9,30 +9,30 @@ description: Test a half-formed idea in a questioning conversation, with differe
 
 Take a half-formed idea and pressure-test it in conversation, while changing your mind is still cheap, until it becomes something the user can act on with conviction or reject. The main risk is what the user has not examined yet: unchecked assumptions and unresolved decisions usually become more expensive problems later.
 
-The main goal is better thinking, not producing an artifact. Strengthening an idea, rejecting it, or thinking it through more clearly are all complete outcomes. Writing the forged idea to hand off to another workflow is optional. Do not steer the conversation toward "shall we build it?"
+The main goal is better thinking, not producing an artifact. Strengthening an idea, rejecting it, or thinking it through more clearly are all complete outcomes. The session keeps one short file as its record; handing that file to another workflow as the forged idea is optional. Do not steer the conversation toward "shall we build it?"
 
-This skill can be used on many kinds of ideas. When the idea is about a product or feature, what survives may be written to a short forged idea for later planning.
+This skill can be used on many kinds of ideas. When the idea is about a product or feature, the hardened file is short enough to hand to later planning.
 
 Lead by questioning, not lecturing. Ask one question at a time, press on weak points, and do not let vague claims pass without examination.
 
 ## Conventions
 
-- Scripts live in two places — run each from the exact path written, never assume co-location: the shared core scripts (`memlog.py`, `resolve_customization.py`, `resolve_config.py`) are installed by BMad core at `{project-root}/_bmad/scripts/` and are never bundled here; this skill's own `resolve_personas.py` is at `{skill-root}/scripts/`.
+- Scripts live in two places — run each from the exact path written, never assume co-location: the shared core scripts (`resolve_customization.py`, `resolve_config.py`) are installed by BMad core at `{project-root}/_bmad/scripts/` and are never bundled here; this skill's own `resolve_personas.py` is at `{skill-root}/scripts/`.
 - `{workflow.<name>}` resolves to fields in the merged `customize.toml` `[workflow]` table.
 
 ## On Activation
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`.
+1. Resolve customization: `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`.
    - Script not found: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - Any other failure: read `{skill-root}/customize.toml` directly with defaults.
 
    Apply the resolved `{workflow.*}` values throughout.
 2. Run each `{workflow.activation_steps_prepend}` entry; treat each `{workflow.persistent_facts}` entry as foundational context (`file:` entries load their contents, `skill:` names a skill to consult, others are facts verbatim).
-3. Resolve central config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`. Greet the user, and let them know they can invoke `bmad-party-mode` for multi-agent perspectives or `bmad-advanced-elicitation` for deeper exploration at any point.
+3. Resolve central config: `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key core.output_folder --key core.active_initiative`. Greet the user, and let them know they can invoke `bmad-party-mode` for multi-agent perspectives or `bmad-advanced-elicitation` for deeper exploration at any point.
    - Script not found, or no `output_folder`: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - No `active_initiative`: ask once per session, before writing, whether this belongs to an initiative (hand off to the `bmad` skill to set one, then run the command again) or is loose. Loose work drops `/{active_initiative}` from every path.
 4. Note whether a BMad persona is already active in this conversation — the user loaded one (e.g. the analyst, the storyteller) and invoked the forge from within it. If so, that persona leads the session, in voice, throughout.
-5. Resume: glob `forge-*/.memlog.md` in `{output_folder}/{active_initiative}/` and in `{output_folder}/`, and read only each match's frontmatter to find any whose `status` is not `complete`. Offer to resume one — then read its full memlog once to rebuild state and continue append-only — or to start fresh.
+5. Resume: look for `forge-*/forge-*.md` in `{workflow.forge_output_path}/` and in `{output_folder}/` whose frontmatter `status` is `open`. Offer to resume one, reading that file once to rebuild state, or to start fresh. On resume, that file is the session's file and its folder is `{workspace}`; skip *Set up the session*.
 6. Run each `{workflow.activation_steps_append}` entry.
 
 ## Open the session
@@ -58,10 +58,25 @@ Tell the user they can say **"attack this"**, **"defend this"**, or **"switch ro
 
 ### Set up the session
 
-Derive a kebab-case `{slug}` for the idea and bind the session workspace `{workspace} = {workflow.forge_output_path}/{workflow.run_folder_pattern}` (the pattern fills with `{slug}`). Create the memlog once the goal is known:
-`uv run {project-root}/_bmad/scripts/memlog.py init --workspace {workspace} --field idea="<idea>" --field goal="<goal>"`
+Derive a kebab-case `{slug}` for the idea and bind the session workspace `{workspace} = {workflow.forge_output_path}/{workflow.run_folder_pattern}` (the pattern fills with `{slug}`). Once the goal is known, create the session's file, `{workspace}/{workflow.run_folder_pattern}.md`:
 
-Tell the user the path; state is on disk now, so the session survives interruption. If init fails, don't abort — run the forge in-conversation and tell the user state won't persist this session.
+```
+---
+idea: "<idea>"
+goal: "<goal>"
+status: open
+---
+
+## Locked
+
+## Rejected
+
+## Weak points
+
+## Open
+```
+
+A file already there is this idea's earlier session: continue in it, set `status: open`, and keep what it holds. If the user chose to start fresh, add a suffix to `{slug}` (`-2`) instead, so the earlier session stays as it was. Tell the user the path; state is on disk now, so the session survives interruption.
 
 ## The forge
 
@@ -79,16 +94,21 @@ When a branch resolves, pause before moving on. Give the user a chance to raise 
 
 Do not use agreement or praise to make the interaction smoother; they lower pressure and lead to shallower thinking. Agreement is allowed only when it helps the user think better. Praise is noise. Continued engagement and ego-stroking are not objectives. In attack mode, never agree with the idea until the user ends the mode. For each answer, either challenge the weak point or build on the strong point, whichever helps the user think better.
 
-Capture as you go — each decision, assumption, crack, kill, and locked idea, one bullet in the user's meaning:
-`uv run {project-root}/_bmad/scripts/memlog.py append --workspace {workspace} --type <decision|assumption|crack|kill|direction|lock|note> --text "<gist>"`
-A `lock` is an idea the user hardens — settled, not to be reopened; locks are what the forged idea is distilled from. Don't read the memlog back except on resume. If the user raises a different branch, capture it and stay put — the loop and the stray insight both survive.
+Capture as you go, in the session's file: one bullet in the user's meaning, added to its section the moment it lands, with the reason when there is one. Add and move bullets; what is already there stays as written until the exit.
+
+- **Locked**: a decision about the idea that the user hardens — settled, not to be reopened.
+- **Rejected**: an option that was killed, and why.
+- **Weak points**: a crack or assumption that scrutiny left standing.
+- **Open**: a branch not yet resolved. It leaves only by resolving into another section.
+
+Don't read the file back except on resume. If the user raises a different branch, add it under Open and stay put — the loop and the stray insight both survive.
 
 ## The personas
 
 If a BMad persona was already active when the forge started, keep that persona as the lead voice.
 
 Resolve the available persona pool once, as soon as the goal is known:
-`uv run {skill-root}/scripts/resolve_personas.py --project-root {project-root} --skill {skill-root}`
+`uv run "{skill-root}/scripts/resolve_personas.py" --project-root "{project-root}" --skill "{skill-root}"`
 The script returns installed BMad agents (`agents`), user-defined personas (`members`), and saved parties (`parties`). Parties may include a `scene`; some are open-cast. This gives you the same roster information as `bmad-party-mode` without invoking it.
 
 Each turn uses two voices:
@@ -103,11 +123,10 @@ Voice the personas yourself by default. Spawn separate agents only when a branch
 
 The session can end in three valid states:
 
-- **Hardened** — the idea is stronger and specific enough to use. Distill the memlog into the forged idea, `{workspace}/{workflow.run_folder_pattern}.md`. Keep it extremely short: only the decisions, rejected options, and reasons that matter downstream, in the user's meaning. Do not write a prose summary, template, or conversation recap. If it reads like a document, it is too long. If planning or dev skills are installed (`bmad-agent-po`, `bmad-agent-pm`, `bmad-agent-analyst`, `bmad-build`), offer the file as their input — to Sofia, the Product Owner, as what she writes the initiative's requirements from; if none are, the file stands on its own — never treat a missing skill as an error.
-- **Killed** — the idea does not hold up. Say so plainly and record why. Finding that out early is a valid outcome.
-- **Clearer** — the user understands the idea better, but there is no hardened idea to hand off. Leave the memlog as the record; no forged idea is needed.
+- **Hardened** — the idea is stronger and specific enough to use. Tighten the session's file into the forged idea and set `status: hardened`: cut the Open section and every bullet that does not matter downstream. Keep it extremely short: only the decisions, rejected options, and reasons that matter downstream, in the user's meaning. Do not write a prose summary, template, or conversation recap. If it reads like a document, it is too long. If planning or dev skills are installed (`bmad-agent-po`, `bmad-agent-pm`, `bmad-agent-analyst`, `bmad-build`), offer the file as their input — to Sofia, the Product Owner, as what she writes the initiative's requirements from; if none are, the file stands on its own — never treat a missing skill as an error.
+- **Killed** — the idea does not hold up. Say so plainly, record why under Rejected and set `status: killed`. Finding that out early is a valid outcome.
+- **Clearer** — the user understands the idea better, but there is no hardened idea to hand off. Leave the file as the record and set `status: clarified`.
 
 Always render `{workspace}/forge-report.html` as a self-contained HTML file the user can open, with inline CSS and an inline-SVG seal or stamp. Summarize the outcome, the locked decisions, what was rejected and why, and the weak points that survived scrutiny, in the user's meaning. Credit the personas and parties that pressure-tested the idea by name, icon, and voice. Render a prominent wax-seal-style or stamped outcome mark, matched to the result: `HARDENED`, an `Idea Death Certificate` stamped `KILLED` with the cause of death, or `CLARIFIED`. Tell the user the path.
 
-Flip the status at the end: `uv run {project-root}/_bmad/scripts/memlog.py set --workspace {workspace} --key status --value complete`.
 If `{workflow.on_complete}` is non-empty, run all instructions in order.

@@ -20,6 +20,12 @@ from test_bmad_setup import (
 )
 
 MIGRATE_V6_PY = REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts" / "migrate_v6.py"
+sys.path.insert(0, str(MIGRATE_V6_PY.parent))
+import frontmatter  # noqa: E402
+
+
+def read_fields(path: Path) -> dict:
+    return frontmatter.load(frontmatter.split(path.read_text(encoding="utf-8"))[0])
 
 
 class MigrateV6Tests(unittest.TestCase):
@@ -31,7 +37,8 @@ class MigrateV6Tests(unittest.TestCase):
         self.installed = self.project / ".agents" / "skills"
         self.installed.mkdir(parents=True)
         self.skill = write_dest_bmad(self.installed)
-        shutil.copy2(MIGRATE_V6_PY, self.skill / "scripts" / "migrate_v6.py")
+        for script in (MIGRATE_V6_PY, MIGRATE_V6_PY.with_name("frontmatter.py")):
+            shutil.copy2(script, self.skill / "scripts" / script.name)
         write_core(self.installed)
         write_bmod(
             self.installed,
@@ -142,7 +149,7 @@ class MigrateV6Tests(unittest.TestCase):
 
         self.assertEqual(self.migrate()["stale_config_keys"], stale)
         self.assertEqual(self.migrate("--clean")["removed_keys"], stale)
-        self.assertEqual(tomllib.loads(user.read_text(encoding="utf-8")), {"core": {"future_key": "x"}})
+        self.assertEqual(tomllib.loads(user.read_text(encoding="utf-8-sig")), {"core": {"future_key": "x"}})
 
     def test_clean_with_nothing_to_remove_writes_nothing(self):
         before = snapshot(self.project)
@@ -537,6 +544,20 @@ class FoldSpecsTests(unittest.TestCase):
         self.assert_references_resolve(epic / "story-launch-angle.md")
         self.assertEqual(self.fold()["folded"], [])
 
+    def test_a_ticket_and_spec_saved_with_a_byte_order_mark_fold_into_one_frontmatter(self):
+        epic = self.write_epic_with_spec()
+        for path in (epic / "epic-ball.md", epic / "spec-ball" / "spec-ball.md"):
+            path.write_bytes(b"\xef\xbb\xbf" + path.read_bytes())
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        text = (epic / "epic-ball.md").read_text(encoding="utf-8")
+        self.assertTrue(text.startswith("---\n"), msg=text)
+        self.assertEqual(frontmatter.split(text)[1].count("\n---\n"), 0, msg=text)
+        self.assertIn("sources: [_bmad-output/initiative-golf/prd-golf/prd-golf.md]\n", text)
+        self.assertIn("- R1 (CAP-1): A player sees the ball follow a physically plausible arc.", text)
+
     def test_a_spec_folder_in_an_epic_of_the_tickets_layout_folds_and_maps_the_epics_tickets(self):
         epic = self.initiative / "tickets" / "epic-ball"
         write(
@@ -846,6 +867,33 @@ class FoldSpecsTests(unittest.TestCase):
         self.assertEqual(report["folded"], [])
         (problem,) = report["problems"]
         self.assertIn("spec-ball/.memlog.md cannot be read", problem["problem"])
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_a_title_with_a_colon_reads_back_from_the_story_and_the_new_memlog(self):
+        loose = self.store / "spec-caddie"
+        title = 'Caddie: the "smart" advice'
+        write(
+            loose / "spec-caddie.md",
+            spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY.replace("# Ball flight physics", f"# {title}"),
+        )
+        write(self.store / "backlog" / "bug-slice.md", "---\nid: 4\ntype: bug\n---\n\nid: 9\n")
+
+        self.assertEqual(self.fold()["problems"], [])
+
+        story = read_fields(self.store / "backlog" / "story-caddie.md")
+        self.assertEqual((story["id"], story["title"]), ("5", title))
+        self.assertEqual(read_fields(self.store / "backlog" / ".memlog.md")["topic"], title)
+
+    def test_a_ticket_whose_frontmatter_is_not_yaml_is_reported_and_nothing_changes(self):
+        epic = self.write_epic_with_spec()
+        write(epic / "epic-ball.md", "---\ntitle: Ball: flight\n---\n\n# Ball\n")
+        before = snapshot(self.project)
+
+        report = self.fold()
+
+        self.assertEqual(report["folded"], [])
+        (problem,) = report["problems"]
+        self.assertIn("epic-ball/epic-ball.md has invalid frontmatter", problem["problem"])
         self.assertEqual(snapshot(self.project), before)
 
     def test_a_parent_folded_on_a_later_run_leaves_the_folded_childs_ids_alone(self):

@@ -4,20 +4,24 @@ Read this when the user asks how an agent persona is defined, what a capability 
 
 ## Identity
 
-An agent is a skill named `<prefix>-agent-<name>` whose `customize.toml` carries an `[agent]` table: `name`, `title`, `icon`, `role`, `identity`, `communication_style` and `principles`. The persona is what the agent judges by when no capability fits, so it is written in the agent's own voice, one or two sentences each, with three to five principles that are stances rather than slogans. On activation the agent resolves that table, runs any steps a team added before or after, loads standing facts, reads config, then greets with its icon, which it keeps on every message.
+An agent is a skill named `<prefix>-agent-<name>` with a persona: a name, a title, an icon, a role, an identity, a communication style and three to five principles. The persona is what the agent judges by when no capability fits, so Smithy writes it in the agent's own voice, a sentence or two each, with principles that are stances rather than slogans. The agent greets with its icon and keeps it on every message.
 
 ## Capabilities
 
-The menu is a list of `[[agent.menu]]` items, each with a `code`, a `description` and exactly one of two things: `skill = "<installed skill>"`, when an installed skill does the job and the agent invokes it; or `prompt`, which is either the whole instruction in a sentence or two, or a line that reads a capability file under `references/`. A capability is inline when the persona plus a sentence of intent is all the model needs; the user lists it so the menu shows what is on offer. A capability file exists only where there is know-how to hold: the outcome, who acts on it, the bar, and what the model could not infer. A capability big enough to be its own skill becomes a new build, noted as a recommendation.
+The agent's menu lists what it does. Each item either runs an installed skill that does the job, or holds its own instruction: a sentence or two when the persona and a line of intent are all the model needs, or a capability file when there is know-how to hold. A capability big enough to be its own skill becomes a separate build, which Smithy notes as a recommendation. Internal capabilities load only when used, so one agent can hold many; a capability goes external when it stands alone, someone would run it without the agent, or several agents need it. Most agents mix both.
+
+## Documents
+
+An agent whose work includes documents a person talks through, such as appraisal reports, carries them as templates the `bmad-facilitate` skill runs instead of coaching them itself. Smithy has the engine write each template, puts it in the module record's `doc-templates/` (the agent's own folder when it is a single-skill module), or the agent's `assets/` outside a module, and wires the agent to hand off to the engine, which brings the questions, the review, resume in a new chat and team customization. The agent adds its persona and domain knowledge. When no persona is needed, the template alone is the smaller build.
 
 ## Customizing an agent
 
-A team changes an agent through override files, never by editing the skill: `_bmad/custom/<skill>.toml` for the team and `<skill>.user.toml` for one person. Scalars override, arrays append, menu items merge by `code`, so a team can add a capability, change the communication style or add an activation step without forking. The `bmad-customize` skill writes those files; the agent reads them. Changing `name` or `title` means a new agent.
+A team changes an agent through override files written by the `bmad-customize` skill, never by editing the agent. It can add or replace a capability, change the communication style, add standing facts or add activation steps, and the agent's next update keeps those changes. Changing the name or title makes a new agent. When teams must change what a capability does inside, the agent is a rendered agent (`help/shape-rendered-skill.md`).
 
 ## In a module
 
-An agent that joins a module gets a `[[members]]` entry in the module's `roster.toml`: code, skill, name, icon, title and a two-sentence persona, copied from its `customize.toml`. That roster is how `bmad` and party mode know who is available.
+An agent that joins a module gets an entry in the module's roster, copied from its persona. The roster is how `bmad` and party mode know who is available.
 
 ## Description
 
-The description names the persona, a short summary, then every way a user reaches it: "<Name> the <Title> does X, Y and Z. Use when the user asks to talk to <Name> or says ...". The description is the only trigger a capability inside the agent has, so each one contributes its phrases and concepts, and the list is as long as those capabilities need. A menu item that runs an installed skill adds none; that skill triggers itself. See `help/craft-description.md`.
+The description names the persona, a short summary, then every way a user reaches it, starting with asking for it by name. It is the only trigger a capability inside the agent has, so each capability adds its phrases, and the list is as long as they need. A menu item that runs an installed skill adds none; that skill triggers itself (`help/craft-description.md`).

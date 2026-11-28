@@ -5,7 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "{script}.py"
+ROOT = next(p for p in Path(__file__).resolve().parents if (p / ".git").exists() or (p / "_bmad").is_dir())
+SCRIPT = ROOT / "{skill_path}" / "scripts" / "{script}.py"
 
 
 def run(*args: str) -> subprocess.CompletedProcess[str]:

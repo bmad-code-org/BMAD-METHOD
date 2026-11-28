@@ -1,8 +1,8 @@
 # Updating a prepared document
 
-The user changes the document through its main file. The outcome is the document changed as they asked, still passing `check`, with every change in the memlog. The shards are the document now, and `.source/` stays frozen, so never edit or read from it.
+The user changes the document through its main file. The outcome is the document changed as they asked, still passing `check`. The shards are the document now, and `.source/` stays frozen, so never edit or read from it.
 
-The script is `uv run {skill-root}/scripts/shard_tool.py <command>`; the memlog script is `uv run {project-root}/_bmad/scripts/memlog.py`. `{doc_folder}` is the folder holding the main file, or the file with the contents list.
+The script is `uv run "{skill-root}/scripts/shard_tool.py" --project-root "{project-root}" <command>`.
 
 Before applying a change, find where the document already speaks to it, using the map, the identifier lookup, each shard's `related` list and search. When the change contradicts what is there, show the user both and let them decide. When it touches several shards, change all of them.
 
@@ -24,7 +24,3 @@ Then run `map`, which rewrites the map from the frontmatter and keeps its order,
 Then run `check <file>` and fix every failure.
 
 When the document has outgrown a contents list, tell the user and offer a faithful split; remove the list with `toc <file> --remove` before planning one.
-
-## Record
-
-Append each change to `{doc_folder}/.memlog.md` with `memlog.py append --type change`, and each choice the user made with `--type decision`; run `memlog.py init --workspace {doc_folder}` first when none exists. Without `_bmad/`, skip memlog writes and say so once.

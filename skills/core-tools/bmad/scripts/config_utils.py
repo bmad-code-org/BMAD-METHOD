@@ -28,7 +28,7 @@ def load_toml(path: Path, *, required: bool = False) -> dict[str, Any]:
         parsed = tomllib.loads(path.read_text(encoding="utf-8-sig"))
     except tomllib.TOMLDecodeError as error:
         raise ConfigError(f"failed to parse {path}: {error}") from error
-    except OSError as error:
+    except (OSError, UnicodeError) as error:
         raise ConfigError(f"failed to read {path}: {error}") from error
     if not isinstance(parsed, dict):
         raise ConfigError(f"TOML layer did not parse to a table: {path}")

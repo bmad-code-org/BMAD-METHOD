@@ -2,23 +2,21 @@
 
 An agent is a persona with a menu: one character the user talks to, whose capabilities are installed skills or prompts inside it.
 
-Reach it when the user wants someone to talk to who does several related things. One job, no persona: a plain skill. Must remember between sessions: `shapes/memory-agent/shape.md`.
-
 ## Files
 
 | File | From | Holds |
 |---|---|---|
-| `SKILL.md` | `assets/SKILL-template.md` | description, persona paragraph, conventions, eight activation steps, standing rules |
-| `customize.toml` | `assets/customize-template.toml` | `[agent]`: identity, activation hooks, persistent facts, persona fields, `[[agent.menu]]` |
-| `references/<capability>.md` | `assets/capability-template.md` | one internal capability each, only where there is know-how to hold; `assets/sample-capability.md` is a finished one |
+| `{target}/SKILL.md` | `shapes/agent/assets/SKILL-template.md` | description, persona paragraph, conventions, activation, standing rules |
+| `{target}/customize.toml` | `shapes/agent/assets/customize-template.toml` | `[agent]`: identity, activation hooks, persistent facts, persona fields, `[[agent.menu]]` |
+| `{target}/references/<capability>.md` | `shapes/agent/assets/capability-template.md` | one internal capability each, only where there is know-how to hold; `shapes/agent/assets/sample-capability.md` is a finished one |
 
-Build-time tokens: `{skill}` (folder name), `{name}`, `{title}`, `{icon}`, `{description}`, the persona and menu fields; `{project-root}`, `{skill-root}`, `{agent.*}` and config values are runtime.
+Fill each template with `uv run "{skill-root}/scripts/process_template.py" "{skill-root}/shapes/agent/assets/<template>" -o "{target}/<file>" --var <token>=<value> ...`, passing `{skill}` (the folder name), `{name}`, `{title}`, `{icon}`, `{description}`, the persona and menu fields, and `{config-keys}` (a ` --key modules.<code>.<key>` per module setting the agent reads, or empty). Then write by hand each `{...}` left that is not a run-time token; `{project-root}`, `{skill-root}`, `{agent.*}` and config values stay for run time. The activation steps stay as the template has them.
 
 ## Capabilities
 
 A menu item is exactly one of `skill = "<installed skill>"` or `prompt = "..."`. The prompt is the whole instruction in a sentence or two, or `Read `{skill-root}/references/<capability>.md` fully and follow it.` when a file has to hold the know-how.
 
-What is installed: list the folder beside `{skill-root}`; `uv run {project-root}/_bmad/scripts/roster.py --skill {skill-root} --project-root {project-root}` names agents and their modules.
+What is installed: list the folder beside `{skill-root}`; `uv run "{project-root}/_bmad/scripts/roster.py" --skill "{skill-root}" --project-root "{project-root}"` names agents and their modules.
 
 For each thing the agent does:
 
@@ -29,15 +27,17 @@ For each thing the agent does:
 
 Never copy another skill's content in; name it.
 
-Changing the persona or the menu is the `bmad-customize` skill's job, never a capability that writes `_bmad/custom/`; put `skill = "bmad-customize"` on the menu when the user wants it offered.
+Changing the persona or the menu is the `bmad-customize` skill's job, never a capability that writes `_bmad/custom/` (a memory agent's own dominion entries are the one exception, in its shape); put `skill = "bmad-customize"` on the menu when the user wants it offered.
+
+## Documents
+
+An agent that writes documents a person talks through carries them as templates `bmad-facilitate` runs, and the plan names both shapes: load `shapes/document-template/shape.md` whole. The agent never writes a template's document itself.
 
 ## Persona
 
-The leanness bar stops at the persona: `identity`, `communication_style` and `principles` are what the agent judges by when no capability fits. Write them, and the persona paragraph in `SKILL.md`, in its own voice, one or two sentences each: an identity with a concrete reference, a style with a simile, three to five principles, each a stance.
+Leanness does not cut the persona: `identity`, `communication_style` and `principles` are what the agent judges by when no capability fits. Write them, and the persona paragraph in `SKILL.md`, in its own voice, one or two sentences each: an identity with a concrete reference, a communication style that says how it talks, three to five principles, each a stance.
 
 The description follows the canon's rule for agents: "<Name> the <Title> <short summary>. Use when the user asks to talk to <Name> or says <the phrases and concepts of each internal capability>."
-
-The eight activation steps come over whole; edit only the config keys.
 
 "How <Name> works" is only for rules every capability obeys.
 

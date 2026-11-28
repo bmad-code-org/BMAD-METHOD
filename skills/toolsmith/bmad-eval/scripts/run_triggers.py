@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Trigger evals: does a skill's description fire on each near-miss query?
 
@@ -24,7 +25,7 @@ timing.json and cwd/ (the workspace after the run, staged skill included) under
 
 Usage:
   uv run run_triggers.py --skill-path SKILL_DIR --queries QUERIES.json --output-dir DIR
-    [--project-root DIR] [--harness HARNESS.json] [--runs-per-query N] [--threshold 0.5]
+    [--project-root DIR] [--harness HARNESS.json | --harness-name NAME ...] [--runs-per-query N] [--threshold 0.5]
     [--timeout SECS] [--workers N] [--quiet]
 
 QUERIES.json is a list of {"query": "...", "should_trigger": true|false}.
@@ -37,8 +38,8 @@ result, not an error.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
-import re
 import sys
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -47,47 +48,53 @@ from pathlib import Path
 from eval_common import (
     DEFAULT_SKILL_DIR,
     account_transcript,
+    add_harness_args,
     find_project_root,
     make_run_dir,
     read_json,
     resolve_harness,
+    run_each_harness,
     run_in_clean_room,
     utc_now_iso,
     write_json,
 )
 
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+
+
+def shared_frontmatter():
+    """The frontmatter module of the bmad skill installed beside this one (in a source checkout, under core-tools),
+    or None when it is not installed."""
+    skills = Path(__file__).resolve().parents[2]
+    for folder in (skills / "bmad", skills.parent / "core-tools" / "bmad"):
+        path = folder / "scripts" / "frontmatter.py"
+        if path.is_file():
+            spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return module
+    return None
+
+
+frontmatter = shared_frontmatter()
+NO_BMAD = "error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad"
+
+
 CANARY_PREFIX = "TRIGGER-LOADED-"
 
 
-def unquote_yaml(value: str) -> str:
-    """A YAML scalar's text: single quotes doubled inside, double quotes with backslash escapes."""
-    value = value.strip()
-    if len(value) >= 2 and value[0] == value[-1] == "'":
-        return value[1:-1].replace("''", "'")
-    if len(value) >= 2 and value[0] == value[-1] == '"':
-        return value[1:-1].replace('\\"', '"').replace("\\n", "\n").replace("\\\\", "\\")
-    return value
-
-
 def parse_skill_md(skill_path: Path) -> tuple[str, str]:
-    """Return (name, description) from SKILL.md frontmatter, quotes and block indicators removed."""
+    """Return (name, description) from SKILL.md frontmatter."""
     text = (skill_path / "SKILL.md").read_text(encoding="utf-8")
-    m = re.match(r"^---\s*\n(.*?)\n---\s*\n", text, re.DOTALL)
-    if not m:
-        raise ValueError(f"SKILL.md at {skill_path} is missing frontmatter")
-    fields: dict[str, list[str]] = {}
-    current = None
-    for line in m.group(1).splitlines():
-        if line[:1] not in (" ", "\t") and ":" in line:
-            key, _, value = line.partition(":")
-            current = key.strip()
-            fields[current] = [] if value.strip() in ("|", ">", "|-", ">-") else [value.strip()]
-        elif current and line.strip():
-            fields[current].append(line.strip())
-    name = unquote_yaml(" ".join(fields.get("name", [])))
+    try:
+        block, _ = frontmatter.split(text)
+    except ValueError:
+        raise ValueError(f"SKILL.md at {skill_path} is missing frontmatter") from None
+    fields = frontmatter.load(block)
+    name = fields.get("name", "")
     if not name:
         raise ValueError(f"SKILL.md at {skill_path} has no name")
-    return name, unquote_yaml(" ".join(fields.get("description", [])))
+    return name, fields.get("description", "").rstrip("\n")  # a block scalar's final newline is not part of it
 
 
 # --- synthetic skill and detection -------------------------------------------
@@ -98,9 +105,8 @@ def write_synthetic_skill(skills_dir: Path, skill_name: str, description: str, t
     clean_name = f"{skill_name}-trig-{token[len(CANARY_PREFIX) :]}"
     root = skills_dir / clean_name
     root.mkdir(parents=True, exist_ok=True)
-    indented = "\n  ".join(description.split("\n"))
     (root / "SKILL.md").write_text(
-        f"---\nname: {clean_name}\ndescription: |\n  {indented}\n---\n\n"
+        frontmatter.dump({"name": clean_name, "description": description}) + "\n"
         f"# {skill_name}\n\nThis skill handles: {description}\n\n"
         f"Begin your reply with the exact token `{token}`, then continue.\n",
         encoding="utf-8",
@@ -149,20 +155,34 @@ def run_query_once(
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, allow_abbrev=False
+    )
     p.add_argument("--skill-path", required=True, type=Path)
     p.add_argument("--queries", required=True, type=Path)
     p.add_argument("--output-dir", required=True, type=Path)
     p.add_argument(
         "--project-root", type=Path, default=None, help="holds _bmad/; found from the skill path when omitted"
     )
-    p.add_argument("--harness", type=Path, default=None, help="harness JSON for a project without BMad")
+    add_harness_args(p)
     p.add_argument("--runs-per-query", type=int, default=3)
     p.add_argument("--threshold", type=float, default=0.5)
     p.add_argument("--timeout", type=int, default=180)
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--quiet", action="store_true")
     args = p.parse_args(argv)
+    if frontmatter is None:
+        print(NO_BMAD, file=sys.stderr)
+        return 2
+    if args.runs_per_query < 1:
+        print("--runs-per-query must be at least 1", file=sys.stderr)
+        return 2
+    if len(args.harness_name) > 1:
+        return run_each_harness(main, list(sys.argv[1:] if argv is None else argv), args.harness_name)
+    if args.harness and args.harness_name:
+        print("pass --harness or --harness-name, not both", file=sys.stderr)
+        return 2
+    harness_name = args.harness_name[0] if args.harness_name else None
 
     skill_path = args.skill_path.resolve()
     queries_file = args.queries.resolve()
@@ -178,12 +198,14 @@ def main(argv: list[str] | None = None) -> int:
 
     project_root = args.project_root.resolve() if args.project_root else find_project_root(skill_path)
     try:
-        harness, harness_note = resolve_harness(project_root, args.harness)
+        harness, harness_note = resolve_harness(project_root, args.harness, harness_name)
     except (ValueError, json.JSONDecodeError) as e:
         print(f"harness invalid: {e}", file=sys.stderr)
         return 2
 
-    run_id, run_dir = make_run_dir(args.output_dir, f"{skill_name}-triggers")
+    run_id, run_dir = make_run_dir(
+        args.output_dir, f"{skill_name}-triggers" + (f"-{harness_name}" if harness_name else "")
+    )
     (run_dir / "queries").mkdir(parents=True, exist_ok=True)
     write_json(
         run_dir / "run.json",

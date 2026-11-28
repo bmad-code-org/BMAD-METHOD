@@ -579,8 +579,18 @@ def retired_skills(
     scoped: tuple[InstalledModule, ...],
     installed: tuple[InstalledModule, ...],
 ) -> tuple[Retired, ...]:
-    """Old names the modules renamed or removed. A name an installed module still lists is not retired."""
-    current = {name for module in installed for name in (*module.skills, *module.absent_skills)}
+    """Old names the modules renamed or removed. A name an installed module still lists is not retired,
+    unless that module's own record is retired: a module another one replaced goes whole.
+    """
+    old_names = {
+        name for module in installed for name in (*module.retired.removed, *(r.old for r in module.retired.renamed))
+    }
+    current = {
+        name
+        for module in installed
+        if module.folder not in old_names
+        for name in (*module.skills, *module.absent_skills)
+    }
     retired: list[Retired] = []
     for module in scoped:
         entries = [(rename.old, rename.new) for rename in module.retired.renamed]
@@ -1109,6 +1119,7 @@ def existing_team_config(project_root: Path) -> tuple[str | None, dict]:
     if not path.is_file():
         raise Exception(f"team config is not a file: {path}")
     try:
+        # utf-8-sig: Windows editors can save a byte-order mark, which tomllib rejects.
         text = path.read_text(encoding="utf-8-sig")
     except (OSError, UnicodeError) as error:
         raise Exception(f"cannot read team config {path}: {error}") from error
@@ -2081,7 +2092,7 @@ def read_plain_tree(root: Path) -> PlainTree:
 
 
 def shared_scripts_tree(src: Path) -> PlainTree:
-    # The bmad skill's own tests ship with its scripts but do not belong in a project.
+    # A bmad skill installed from an earlier version carries its tests, which do not belong in a project.
     tree = read_plain_tree(src)
     return PlainTree(
         tuple(path for path in tree.directories if path.parts[0] != "tests"),
@@ -2142,7 +2153,7 @@ def load_module_answers(path: Path) -> dict[tuple[str, str], str]:
     if not path.is_file():
         raise Exception(f"missing file: {path}")
     try:
-        data = tomllib.loads(path.read_text(encoding="utf-8"))
+        data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
     except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
         raise Exception(f"cannot parse module answers {path}: {error}") from error
     if not data:
