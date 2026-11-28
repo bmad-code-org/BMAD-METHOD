@@ -35,6 +35,7 @@ Use --strict when you want CI or pre-commit to enforce valid references.
 from __future__ import annotations
 
 import argparse
+import glob
 import os
 import re
 import sys
@@ -71,7 +72,14 @@ ABS_PATH_LEAK = re.compile(r"/Users/|/home/|\b[A-Za-z]:[\\/]")
 PROJECT_ROOT_IN_VALUE = re.compile(r"\{project-root\}/_bmad/[^\s'\"<>})\]`]+")
 
 # Path prefixes/patterns that only exist in installed structure, not in source
-INSTALL_ONLY_PATHS = ["_config/", "custom/", "render/bmad-build/", "render/bmad-build-auto/", "method/scripts/"]
+INSTALL_ONLY_PATHS = [
+    "_config/",
+    "custom/",
+    "render/.uv-cache",
+    "render/bmad-build/",
+    "render/bmad-build-auto/",
+    "method/scripts/",
+]
 
 # Files that are generated at install time and don't exist in the source tree
 INSTALL_GENERATED_FILES = ["config.yaml", "config.user.yaml"]
@@ -165,6 +173,15 @@ def strip_json_example_blocks(content: str) -> str:
 # --- Path Mapping ---
 
 
+def hub_skill_dir(skills_dir: str) -> str:
+    """The bmad hub skill: skills/bmad, or skills/<module>/bmad when skills are grouped by module."""
+    grouped = sorted(glob.glob(os.path.join(skills_dir, "*", "bmad", "SKILL.md")))
+    flat = os.path.join(skills_dir, "bmad")
+    if os.path.isfile(os.path.join(flat, "SKILL.md")) or not grouped:
+        return flat
+    return os.path.dirname(grouped[0])
+
+
 def map_installed_to_source(ref_path: str, skills_dir: str) -> str | None:
     # Strip {project-root}/_bmad/ or {_bmad}/ prefix
     cleaned = re.sub(r"^\{project-root\}/_bmad/", "", ref_path)
@@ -179,7 +196,7 @@ def map_installed_to_source(ref_path: str, skills_dir: str) -> str | None:
 
     # _bmad/scripts/ is installed from the bmad hub skill's scripts/
     if cleaned.startswith("scripts/"):
-        return os.path.join(skills_dir, "bmad", cleaned)
+        return os.path.join(hub_skill_dir(skills_dir), cleaned)
 
     # Fallback: map directly under skills/
     return os.path.join(skills_dir, cleaned)
@@ -296,6 +313,9 @@ def resolve_skill_relative(ref: Ref, skills_dir: str) -> str | None:
     rel_parts = rel.split(os.sep)
     if not rel.startswith("..") and len(rel_parts) > 1:
         skill_root = os.path.join(skills_dir, rel_parts[0])
+        # A folder without SKILL.md groups a module's skills; the skill is one level down.
+        if not os.path.exists(os.path.join(skill_root, "SKILL.md")) and len(rel_parts) > 2:
+            skill_root = os.path.join(skill_root, rel_parts[1])
         if skill_root not in roots:
             roots.append(skill_root)
 

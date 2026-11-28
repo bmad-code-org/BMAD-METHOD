@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-KNOWLEDGE_PY = REPO_ROOT / "skills" / "bmad" / "scripts" / "knowledge.py"
+KNOWLEDGE_PY = REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts" / "knowledge.py"
 SOURCE = "github:acme/tools/skills"
 
 

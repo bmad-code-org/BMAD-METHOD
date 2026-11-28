@@ -1,0 +1,37 @@
+<svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 910 236" role="img" aria-labelledby="el-title el-desc">
+<title id="el-title">The eval loop</title>
+<desc id="el-desc">Cases run through the skill and through the bare model. The outputs are graded and the transcripts read. When every check passes on three runs, or you say it is good enough, the loop is done. Otherwise one thing changes and the cases run again. If the skill stays behind the bare model, Smithy proposes retiring it.</desc>
+<defs>
+<marker id="el-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+<marker id="el-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+</defs>
+<rect class="node" x="10" y="45" width="100" height="40" rx="20"/>
+<text class="n" x="60" y="70">Cases</text>
+<rect class="node" x="150" y="40" width="190" height="50" rx="2"/>
+<text class="n" x="245" y="62">Run</text>
+<text class="sub mid" x="245" y="79">with and without the skill</text>
+<rect class="node" x="380" y="40" width="190" height="50" rx="2"/>
+<text class="n" x="475" y="62">Grade</text>
+<text class="sub mid" x="475" y="79">and read the transcripts</text>
+<path class="node gate" d="M680 35 L760 65 L680 95 L600 65 z"/>
+<text class="n" x="680" y="70">Passes?</text>
+<rect class="node" x="790" y="45" width="80" height="40" rx="20"/>
+<text class="n" x="830" y="70">Done</text>
+<rect class="node" x="380" y="150" width="190" height="50" rx="2"/>
+<text class="n" x="475" y="172">Change one thing</text>
+<text class="sub mid" x="475" y="189">cut what did not matter</text>
+<rect class="chip warn" x="640" y="150" width="190" height="50" rx="2"/>
+<text class="n" x="735" y="172">Propose retiring it</text>
+<text class="sub mid" x="735" y="189">the bare model caught up</text>
+<path class="edge" d="M110 65 H148" marker-end="url(#el-arrow)"/>
+<path class="edge" d="M340 65 H378" marker-end="url(#el-arrow)"/>
+<path class="edge" d="M570 65 H598" marker-end="url(#el-arrow)"/>
+<path class="edge" d="M760 65 H788" marker-end="url(#el-arrow)"/>
+<text class="k" x="640" y="24">three clean runs, or you stop</text>
+<path class="edge" d="M680 95 V113 Q680 125 668 125 H487 Q475 125 475 137 V148" marker-end="url(#el-arrow)"/>
+<text class="k" x="590" y="118">no</text>
+<path class="edge" d="M380 175 H257 Q245 175 245 163 V92" marker-end="url(#el-arrow)"/>
+<text class="k" x="262" y="168">run again</text>
+<path class="edge soft" d="M712 83 C 740 100 740 130 736 148" marker-end="url(#el-arrow-soft)"/>
+<text class="k" x="748" y="122">behind the bare model</text>
+</svg>

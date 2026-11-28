@@ -1,49 +1,21 @@
 ---
 title: 'Review a Change'
-description: Use bmad-code-review for a standalone agentic review of a PR, someone else's change, an extra pass, or a review bot.
+description: Use bmad-code-review for a standalone multi-lens review of a pull request, branch, commit, or built story.
 sidebar:
-  order: 2
+  order: 3
 ---
-Ten seconds of your attention costs more than ten minutes of inference.
-A bug that escapes to production costs at least a hundred times more
-than one caught in development.
 
-Code an agent just wrote can — and should — be reviewed and cleaned up
-by an agent before any human looks at it.
+Ten seconds of your attention costs more than ten minutes of model compute, and a bug that reaches production costs far more than one caught during development. Code an agent just wrote can and should be reviewed and cleaned up by independent reviewers before any human inspects it.
 
-If you came from [Build a Change](build-a-change.md), you have already
-seen this happen. `bmad-build` has a review and triage stage baked in.
-By the time it finishes, a round of review and fixing has already
-happened.
+If you came from [Build a Change](build-a-change.md), you have already seen this in action because `bmad-build` includes a built-in review and triage stage. If you suspect more issues remain after a build, hand `bmad-build` that story's plan (still at `status: built`) to jump straight into another review and triage pass. Once you mark the ticket done, `bmad-build` treats its plan as historical context rather than active review work. Stop running extra passes once findings narrow to low-value exotic edge cases. If a third review pass still uncovers serious problems, the real issue usually sits upstream in weak design or unclear requirements; fix the root cause instead of looping review again.
 
-If you still suspect there is more to find, run `bmad-build` again and
-hand it the plan from that run — the one it left at `status: built`.
-That skips straight to review and triage, and you can repeat it as many
-times as you want. Once you mark the ticket done, the build treats its
-plan as context for new work instead. Stop when the findings are mostly
-low-value notes about exotic corner cases. That is accidental
-complexity, not quality.
-Non-trivial findings on a third pass of agentic review usually mean
-something is wrong upstream of this change: weak internal design, a
-contradiction, or ambiguity in the rules. Fix that instead of running
-another pass.
-
-To review a change that is not a single `bmad-build` run, use
-`bmad-code-review`. It is the same kind of review and triage, but you
-can point it at any code artifact: a diff, a pull request, a file, a
-namespace, someone else's branch. See
-[how a run works](#run-bmad-code-review).
+To review anything outside a single `bmad-build` run (a pull request, another developer's branch, a commit range, or a file), use `bmad-code-review`.
 
 ## Run `bmad-code-review`
 
-Start a fresh chat and name the skill. Pass the change to review: a PR,
-commit, branch, file, or the current git state. You can describe the
-target before, with, or after the command.
+Start a fresh chat and invoke the skill with whatever target you want checked: a pull request URL, commit, branch, file, or your current uncommitted changes.
 
-If you have a spec, requirements, or even a stream of consciousness
-for what this change is supposed to implement, feed that in too. Review
-quality depends on it — without intent, the reviewers can only judge
-the diff against itself.
+If you have a spec, ticket, PR description, or brief explanation of what the change is supposed to accomplish, pass that along too. Review quality depends heavily on knowing the intent, because without it reviewers can only check the diff against itself.
 
 ```text
 run code review
@@ -53,106 +25,56 @@ run code review
 /bmad-code-review Review https://github.com/org/repo/pull/42
 ```
 
-With no target named, it looks in the ticket tree for tickets in review
-and offers them. Pick one and it reviews everything since the
-`baseline_revision` recorded in that ticket's plan, with the plan as the
-intent. You can also hand it a plan file directly.
+With no target named, `bmad-code-review` scans your ticket tree for stories awaiting review and lets you pick one. When you pick a ticket (or pass a build plan directly), it diffs every commit since that build started and uses the plan as the intent.
 
-Without a plan, the review runs in **no-plan mode**. The reviewers judge
-the diff against itself and the commit messages, and triage cannot tell
-a deliberate choice from a mistake. When the right fix depends on what
-you meant, the review doesn't pick one for you: it lists the possible
-fixes, says which one it would choose and why, and leaves the call to
-you. A generic "review this PR" bot
-is the usual way to end up here. It still finds real bugs, but it is
-much more useful when it knows the intent: a whole review pass exists to
-check whether the change does what it claims, and it can only run if it
-is told what the claims are. So make sure the bot always knows where the
-claims are. Have it pass the PR description to the review every time,
-and the ticket's plan when possible.
+Without a plan, the skill runs in **no-plan mode**. Reviewers still catch real bugs by checking the diff and commit messages, while triage flags any ambiguous fix as needing your decision (listing options and its recommendation) rather than guessing what you meant. Automated PR review bots often land in no-plan mode unless configured carefully; pass the PR description and the build plan whenever available so the intent-alignment check has real claims to verify.
 
-The skill writes a unified diff to a file, confirms the target and plan
-context with you, then launches the reviewers. This works best on a
-platform that can spawn subagents, or at least call another model from
-the command line and wait for a result.
+Before launching reviewers, the skill writes a unified diff file and confirms the target and intent context with you. This works best in a tool that supports parallel subagents (or calling another model via CLI).
 
 ## What a Run Does
 
-Active layers review the same diff independently and in parallel. Once
-every layer has reported, triage judges each finding on its own:
+All active **lenses** review the same diff independently and in parallel. Once every lens reports back, triage inspects each finding on its own merits:
 
-- **Verify** the claimed consequence at the named location, reading past
-  the diff hunk far enough to tell whether that consequence actually
-  occurs
-- **Assign severity** from the verified consequence (`low`, `medium`,
-  `high`)
-- **Dismiss** noise, refuted claims, and unsubstantiated claims, with a
-  recorded reason — never silently
-- **Route** survivors to **patch**, **defer**, or **decision needed**
+- Verify the claimed failure at the exact location, reading surrounding code outside the diff hunk to confirm the bug actually happens.
+- Assign severity (`low`, `medium`, or `high`) based on the verified impact.
+- Dismiss noise, false positives, and unsupported claims with an explicit recorded reason rather than silently dropping them.
+- Route confirmed findings to `patch`, `defer`, or `decision needed`.
 
-Patch is a problem with one clear fix. Defer is a real problem that was
-already there before this change; a problem this change caused is never
-deferred. Decision needed is a problem with more than one reasonable fix,
-where the right one depends on what you want. The review lists the
-fixes and says which one it recommends. This happens with or without a
-plan.
+A **patch** finding has one clear fix. A **defer** finding is a real pre-existing bug that was already in the codebase before this change; bugs introduced by the current change are never deferred. A **decision needed** finding has multiple reasonable fixes depending on your intent, so triage lays out the options and recommends one for your call.
 
-The review assumes someone is there to answer its questions. When nobody
-is, such as a review bot or a CI job, say so when you invoke it ("don't
-ask questions"), or start `bmad-customize` and ask to make the review
-non-interactive. It then asks nothing: it fixes the `patch` findings,
-and the report lists the decisions first for whoever reads it to make.
+By default, `bmad-code-review` runs interactively so you can answer decision questions and choose how to apply patches. When nobody is present (such as in CI or a PR bot), tell it not to ask questions when invoking it, or use `bmad-customize` to make it non-interactive permanently; it then applies clear patches automatically and puts open decisions at the top of the report.
 
-You get a findings summary. With a plan, each run appends a dated block
-of findings to the plan's `## Code Review` section; without one, the
-listing stays in the chat. You choose whether to apply patches. The
-review never changes the ticket's status: marking it done is yours.
+Every run presents a triaged summary in chat. When reviewing with a build plan, findings are appended under a dated `## Code Review` block in that plan. In both plan and no-plan runs, every `defer` finding is appended to `deferred-work.md` in your active initiative folder (or output folder if no initiative is active) so pre-existing bugs never vanish. `bmad-code-review` never changes a ticket's status; marking a story done remains your decision.
 
 ## Choose the Depth
 
-Out of the box, you get two review depths to choose from: `quick` and
-`thorough`.
+Two review depths come built in: `quick` and `thorough`.
 
-`bmad-build` and `bmad-build-auto` default to **quick**: one reviewer,
-several times cheaper and somewhat faster than thorough.
-`bmad-code-review` defaults to **thorough**: several reviewers, each
-with a different lens. Slow, expensive, tuned to find as many problems
-as possible.
+| Depth | What it runs |
+| --- | --- |
+| `quick` (default in `bmad-build` and `bmad-build-auto`) | Runs a single context-free reviewer against the plan, project rules, and diff; faster and significantly cheaper |
+| `thorough` (default in `bmad-code-review`) | Runs four independent lenses in parallel (Blind Hunter, Edge Case Hunter, Verification Gap Reviewer, and Intent Alignment Auditor); slower and uses more tokens, tuned to catch subtle bugs and missing coverage |
 
-Quick is good enough for small simple changes or throwaway prototypes.
-Thorough is highly recommended for any serious work with production
-consequences. In the latter situation, a good compromise is to default
-to quick reviews inside the personal development cycle (selectively
-bumping up to `thorough` on high risk changes), but to make sure that
-every commit or pull request is passing through `bmad-code-review` on
-`thorough` setting eventually. E.g., by a PR review bot.
+Quick review fits small changes and early prototypes. Thorough review is worth running on any code heading to production. A practical team workflow uses quick review during rapid local iteration (bumping to thorough on high-risk stories) and runs `bmad-code-review` on thorough before merging every PR, such as in a pull request review bot.
 
-Say `thorough` or `quick` when you invoke a skill to override its
-default for one run. To permanently change a skill's default, start
-`bmad-customize` and ask.
+Say `thorough` or `quick` in your prompt to override the depth for one run. To change the default permanently for any skill, invoke `bmad-customize` and tell it what default you want.
 
 ## Customize the Lenses
 
-Next level of customizing reviews is to change the lenses themselves.
-You can add your own reviewers, replace or turn off the ones you get out
-of the box, run some on another model. Start `bmad-customize` and ask
-what is possible.
+You can tailor the review lenses themselves: add team-specific reviewers (such as security or accessibility lenses), replace or disable default lenses, or route specific lenses to a different model. Invoke `bmad-customize` and ask what lens customizations are available.
 
 ## Automatic Reviews
 
-As already mentioned, you may want to run `bmad-code-review` in some
-automated workflow, such as reviewing every pull request. The skill
-assumes a human can answer its questions, so first tell it that nobody
-can: say "don't ask questions" when you invoke it, or start
-`bmad-customize` and make the review non-interactive in that environment for good.
+To wire `bmad-code-review` into an automated pipeline (such as reviewing every pull request), configure two behaviors:
 
-You also need to decide: should this automatic reviewer build, run tests and fix the code? It does all that by default. If not, mention `no-code` when invoking the skill. This tells the review session to output the findings in a form you can pass directly to the coding agent and stop at that.
+1. Set non-interactive mode by telling the skill not to ask questions in the prompt, or by using `bmad-customize` to make it non-interactive permanently in that environment.
+2. Choose between patching and handoff. By default, the review builds, runs tests, and applies clear fixes; if your review bot should stay read-only and never edit code, include `no-code` in the invocation (or configure handoff mode via `bmad-customize`) so it outputs a clean Markdown handoff block that a coding agent or developer can fix from directly.
 
-What goes into this block, how it's formatted, and where it should be written is customizable via `handoff_format` and `handoff_delivery` settings. As usual, start `bmad-customize` and ask.
+You can also ask `bmad-customize` to change what goes into the handoff block, how it is formatted, and where it gets delivered (for example, posting directly as a PR comment).
 
-## Why Does Review Take Forever?
+## Why Does Review Take a Long Time?
 
-Three explanations:
+Three common causes explain slow review runs:
 
 - [Exhaustive on purpose](#exhaustive-on-purpose)
 - [Too many rules, or huge files](#too-many-rules-or-huge-files)
@@ -160,53 +82,20 @@ Three explanations:
 
 ### Exhaustive on purpose
 
-Thorough review assumes an average bug escaping into production is worth
-more than an hour of inference. You can turn that down — see [Choose the
-Depth](#choose-the-depth) - or even skip review altogether. A long
-review can also run offline.
+Thorough review is designed around the assumption that a production bug costs far more than extra model compute. You can lower the depth (see [Choose the Depth](#choose-the-depth)), skip review on throwaway work, or run thorough reviews asynchronously on PRs. Letting teammates review unvetted AI-generated code, or shipping it straight to production, burns far more time than letting the lenses run.
 
-It is a bad idea to let teammates look at unreviewed LLM-generated code.
-It is a worse idea to put that code into production. If you care about
-the quality of the product, think about more lenses, not fewer.
-
-Do not take anyone's word for it. Pick a handful of interesting
-changes, run the full battery, look at one or two of the most
-interesting findings, and ask which is better: extra token burn, or
-living with those issues in production.
+Try it on a few real diffs yourself: run thorough review, inspect the top one or two findings, and decide whether the token spend beat shipping those defects.
 
 ### Too many rules, or huge files
 
-There are too many rules in `AGENTS.md` and the other instruction files
-the agent reads every run. Or the codebase is shaped so a reviewing
-agent has to read huge files. Those files blow the context window, or
-the agent wastes the run figuring out how to avoid them without losing
-review quality.
+Bloated instruction files (`AGENTS.md` and similar repo rules loaded on every run) or massive source files eat context fast, forcing reviewers to spend extra turns reading around them. Keep `AGENTS.md` lean with `bmad-project-context` and keep large planning specs sharded with `bmad-shard-pro`.
 
 ### Your platform
 
-Some runtimes have no subagents. Vendors, including Anthropic and
-OpenAI, sometimes ship changes that alter how subagents run. Until
-BMad catches up, the lenses execute one after another instead of in
-parallel — or they fall back to the main session, which is far worse
-for review quality than it sounds.
+Some coding tools cannot run subagents in parallel, or runtime updates temporarily change how subagents behave. When lenses fall back to running sequentially or inside the main chat session, reviews get both slower and weaker. If a review that normally takes a few minutes suddenly drags or misses obvious bugs, inspect the session to confirm subagents are still launching cleanly.
 
-If a review that usually runs for ten minutes suddenly takes an hour,
-or becomes inexplicably stupid, resume that session and ask why.
+## Why Use This Alongside Built-In `/code-review` Commands?
 
-## Why Do I Need This When My Platform Has `/code-review`?
+Many built-in review commands run a single generic pass with no triage, producing long lists of noisy suggestions that still force you to spend attention sorting signal from noise. Few verify claimed bugs against surrounding code or fix verified issues automatically.
 
-Typical `/code-review` is much simpler, and finds fewer problems. Or it
-is a black box you have no control over, running on cheap models,
-putting a ton of noise in front of your eyes — and ten seconds of your
-attention are worth more than ten minutes of inference. Or it is great,
-but really expensive, and still a generic black box.
-
-Almost none of them, at the time of this writing, do automatic
-triage/fixing that holds up.
-
-Or maybe it is in fact just great, and BMad review is inferior. Same
-test as above: take several interesting diffs, run an A/B, and either
-pick one, or make the built-in command an extra lens. If you find
-something that genuinely adds quality findings without creating too
-much noise, it is almost always worth adding as a lens — see
-[Customize the Lenses](#customize-the-lenses).
+If your platform's built-in review command already catches valuable issues on your codebase, test both on a few real diffs. If the built-in command finds bugs BMad's default lenses miss without adding noise, use `bmad-customize` to add it as an extra lens alongside the rest.

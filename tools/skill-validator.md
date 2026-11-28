@@ -10,9 +10,9 @@ Before running inference-based validation, run the deterministic validator:
 uv run --python 3.11 tools/validate_skills.py --json path/to/skill-dir
 ```
 
-This checks 11 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, PATH-02, PATH-06, SEQ-02, TPL-01.
+This checks 13 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, SKILL-08, PATH-02, PATH-06, PATH-07 (`uv run` root-path quoting), SEQ-02, TPL-01.
 
-Review its JSON output. Skip any rule that produced zero findings — it is already verified. A rule that produced findings still gets reviewed (SKILL-06's what-and-when check benefits from judgment). The 10 rules that need judgment are PATH-01, PATH-03, PATH-04, PATH-05, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03.
+Review its JSON output. Skip any purely deterministic rule that produced zero findings — it is already verified. A rule that produced findings still gets reviewed (SKILL-06's what-and-when check benefits from judgment), and PATH-07 still needs inference review for non-`uv run` shell commands and non-root path variables or placeholders even when deterministic checks pass. The 11 rules that need judgment are PATH-01, PATH-03, PATH-04, PATH-05, PATH-07, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03.
 
 ## How to Use
 
@@ -32,7 +32,7 @@ If no findings are generated (from either pass), the skill passes validation.
 - **Internal reference**: a file path from one file in the skill to another file in the same skill.
 - **External reference**: a file path from a skill file to a file outside the skill directory.
 - **Originating file**: the file that contains the reference (path resolution is relative to this file's location).
-- **Config value**: a key declared with a `prompt:` in `src/core-skills/module.yaml` or `src/bmm-skills/module.yaml`. The installer writes these to `{project-root}/_bmad/config.toml` (team scope) and `config.user.toml` (user scope); `_bmad/custom/` may override either. Examples: `project_name`, `output_folder`, `communication_language`.
+- **Config value**: a key declared in a module's `bmod.toml` (or core `config.toml`) and written to `{project-root}/_bmad/config.toml` (team scope) and `config.user.toml` (user scope); `_bmad/custom/` may override either. Examples: `project_name`, `output_folder`, `communication_language`.
 - **Customization value**: a key from the skill's own `customize.toml`, in its `[workflow]` table (most skills) or `[agent]` table (agent skills), layered with `_bmad/custom/<skill-name>.toml` and `.user.toml`.
 - **Runtime variable**: a name-value pair whose value is set during workflow execution (e.g., `plan_file`, `date`, `status`).
 - **Intra-skill path variable**: a variable whose value is a path to another file within the same skill — this is an anti-pattern.
@@ -130,7 +130,7 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Rule:** The `name` value must be the canonical root skill `bmad`, or start with `bmad-` and use only lowercase letters, numbers, and single hyphens between segments.
 - **Detection:** Regex test: `^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$`.
 - **Fix:** Rename to comply with the format (e.g., `bmad-my-skill`).
-- **Module record:** A folder whose `bmod.toml` has a `[bmod]` table and no `[skill]` table is a module record, which nobody runs. Its `name` must start with `bmod-` instead: `^bmod-[a-z0-9]+(?:-[a-z0-9]+)*$`. That the rest of the name is the module code is checked by `skills/bmad/scripts/validate_manifests.py`.
+- **Module record:** A folder whose `bmod.toml` has a `[bmod]` table and no `[skill]` table is a module record, which nobody runs. Its `name` must start with `bmod-` instead: `^bmod-[a-z0-9]+(?:-[a-z0-9]+)*$`. That the rest of the name is the module code is checked by `skills/core-tools/bmad/scripts/validate_manifests.py`.
 
 ### SKILL-05 — `name` Must Match Directory Name
 
@@ -156,6 +156,14 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Rule:** SKILL.md must have non-empty markdown body content after the frontmatter. A SKILL.md with only frontmatter is incomplete.
 - **Detection:** Extract content after the closing `---` frontmatter delimiter and check it is non-empty after trimming whitespace.
 - **Fix:** Add markdown body with skill instructions after the closing `---`.
+
+### SKILL-08 — SKILL.md Frontmatter Must Be Valid YAML
+
+- **Severity:** CRITICAL
+- **Applies to:** `SKILL.md`
+- **Rule:** The frontmatter block must parse as a YAML mapping, and `name` and `description`, when present, must be strings. The skills CLI and the agents that load a skill parse it as YAML, and skip a skill whose frontmatter fails.
+- **Detection:** Parse the `---` delimited frontmatter block with a YAML parser and check that the result is a mapping whose `name` and `description` are strings. A file with no frontmatter block is left to SKILL-02 and SKILL-03.
+- **Fix:** Correct the YAML. A common cause is an apostrophe inside a single-quoted value; write it as `''`, or use double quotes.
 
 ---
 
@@ -224,7 +232,19 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Applies to:** all scanned files, code blocks included
 - **Rule:** A skill runs its own scripts through `{skill-root}`. The agent's working directory is the project, so `uv run scripts/tool.py` does not find the script.
 - **Detection:** Deterministic. Flags `scripts/` or `./scripts/` as a separate argument after `uv run`, whatever options come before it.
-- **Fix:** `uv run {skill-root}/scripts/tool.py`.
+- **Fix:** `uv run "{skill-root}/scripts/tool.py"`.
+
+### PATH-07 — Quote Path Arguments in Shell Commands
+
+- **Severity:** HIGH
+- **Applies to:** all scanned files, code blocks included
+- **Rule:** Assume any path inserted into a shell command can contain spaces and must stay a single argument.
+  - Wrap `{project-root}` and `{skill-root}` arguments — including any path suffix — in double quotes (`"{project-root}/..."`, `"{skill-root}/..."`, `"{project-root}"`, `"{skill-root}"`).
+  - Apply the same double-quoting to any other single path variable or placeholder in a shell command (`"{doc_workspace}"`, `"{output_folder}"`, `"{target}"`, `"<ticket folder>"`, `"<folder>"`). Leave multi-argument lists (such as `{workflow.template_libraries}` or `<each library>`) unquoted as a group so each path remains its own argument.
+- **Detection:**
+  - **Deterministic (`uv run`):** Scans inline backtick commands and fenced code blocks (joining `\` line continuations) for `uv run` invocations, flagging any `{project-root}` or `{skill-root}` argument that is not wrapped in double quotes as a complete argument (catches unquoted, single-quoted, and partially quoted forms such as `"{skill-root}"/scripts/tool.py`).
+  - **Inference:** Checks all shell commands (including non-`uv run` invocations and non-root path variables or placeholders) for unquoted single-path arguments that would split on spaces.
+- **Fix:** Wrap the complete path argument in double quotes — e.g. `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`.
 
 ---
 
@@ -283,7 +303,7 @@ Every value reached during the render is part of the generation's identity. Cust
   - `{workflow.key}` — must name a key in the `[workflow]` table of the skill's own `customize.toml`.
   - `{agent.key}` — must name a key in the `[agent]` table of the skill's own `customize.toml`.
   - `{{ workflow.key }}`, `{{ agent.key }}`, `{{ config.key }}`, `{{ initiative_folder }}`, `{{ rendered("file.md") }}` and `{% %}` tags — only in a rendered skill (one whose SKILL.md invokes `render_skill.py`). In any other skill nothing will render them and they reach the agent verbatim. `workflow.key` and `agent.key` must name a key in the matching table of the skill's own `customize.toml`; a `rendered()` target must name a Markdown file in the skill other than `SKILL.md`, which the renderer excludes from its source set.
-- **Detection:** Collect all tokens in the file and classify them by form. Resolve config keys against the `prompt:` keys in `module.yaml`; resolve `{workflow.*}`, `{agent.*}`, `workflow.*` and `agent.*` expressions against the skill's `customize.toml`. Before flagging a render-time expression, grep the skill's `SKILL.md` for `render_skill.py` — if it is a rendered skill, the expression is legitimate. Flag any token that cannot be traced to a source.
+- **Detection:** Collect all tokens in the file and classify them by form. Resolve config keys against `_bmad/config.toml` / module `bmod.toml` keys; resolve `{workflow.*}`, `{agent.*}`, `workflow.*` and `agent.*` expressions against the skill's `customize.toml`. Before flagging a render-time expression, grep the skill's `SKILL.md` for `render_skill.py` — if it is a rendered skill, the expression is legitimate. Flag any token that cannot be traced to a source.
 - **Exceptions:**
   - Plain double-curly `{{name}}` with **no** `config.`, `workflow.` or `agent.` prefix — an artifact placeholder that survives rendering into the generated document, to be filled in by whoever consumes it (e.g. `{{story_key}}` in a story template). Do not flag these; in a rendered skill they must sit inside `{% raw %}`. `{{ config.key }}`, `{{ workflow.key }}`, `{{ agent.key }}` and `{{ initiative_folder }}` are **not** covered by this exception; they are render-time expressions governed by the rule above and by TPL-01.
   - Variables inside fenced code blocks that are clearly illustrative examples.

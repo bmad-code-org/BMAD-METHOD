@@ -1,0 +1,51 @@
+<svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 612" role="img" aria-labelledby="tb-title tb-desc">
+<title id="tb-title">How Smithy builds a skill</title>
+<desc id="tb-desc">Your idea goes through discovery, the execution plan, build, review and hand-off, and a skill comes out. A skill proposed from your session logs joins at discovery. Work on an existing skill, such as an edit, a conversion or packaging, joins at the execution plan. With the scaffold approach you write the skill yourself after the plan, and Smithy only validates it at hand-off.</desc>
+<defs>
+<marker id="tb-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+<marker id="tb-arrow-entry" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head accent" d="M0 0 L10 5 L0 10 z"/></marker>
+<marker id="tb-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+</defs>
+<rect class="node" x="302" y="20" width="156" height="40" rx="20"/>
+<text class="n" x="380" y="45">Your idea</text>
+<rect class="node" x="260" y="100" width="240" height="50" rx="2"/>
+<text class="n" x="380" y="122">Discovery</text>
+<text class="sub mid" x="380" y="139">asks only what is missing</text>
+<rect class="node hot" x="260" y="190" width="240" height="50" rx="2"/>
+<text class="n" x="380" y="212">Execution plan</text>
+<text class="sub mid" x="380" y="229">nothing written until you approve</text>
+<rect class="node" x="260" y="280" width="240" height="50" rx="2"/>
+<text class="n" x="380" y="302">Build</text>
+<text class="sub mid" x="380" y="319">tries it on a real input</text>
+<rect class="node" x="260" y="370" width="240" height="50" rx="2"/>
+<text class="n" x="380" y="392">Review</text>
+<text class="sub mid" x="380" y="409">five lenses read it, Smithy fixes</text>
+<rect class="node" x="260" y="460" width="240" height="50" rx="2"/>
+<text class="n" x="380" y="482">Hand-off</text>
+<text class="sub mid" x="380" y="499">validate, offer a trigger eval</text>
+<rect class="node" x="302" y="552" width="156" height="40" rx="20"/>
+<text class="n" x="380" y="577">Your skill</text>
+<path class="edge" d="M380 60 V98" marker-end="url(#tb-arrow)"/>
+<path class="edge" d="M380 150 V188" marker-end="url(#tb-arrow)"/>
+<path class="edge" d="M380 240 V278" marker-end="url(#tb-arrow)"/>
+<path class="edge" d="M380 330 V368" marker-end="url(#tb-arrow)"/>
+<path class="edge" d="M380 420 V458" marker-end="url(#tb-arrow)"/>
+<path class="edge" d="M380 510 V550" marker-end="url(#tb-arrow)"/>
+<text class="k" x="20" y="92">LOGS</text>
+<rect class="node" x="20" y="100" width="180" height="50" rx="2"/>
+<text class="n" x="110" y="122">Session logs</text>
+<text class="sub mid" x="110" y="139">the candidate you chose</text>
+<path class="edge entry" d="M200 125 H258" marker-end="url(#tb-arrow-entry)"/>
+<text class="k" x="20" y="182">EDIT · CONVERT · PACKAGE</text>
+<rect class="node" x="20" y="190" width="180" height="50" rx="2"/>
+<text class="n" x="110" y="212">Existing skill</text>
+<text class="sub mid" x="110" y="229">what you want changed</text>
+<path class="edge entry" d="M200 215 H258" marker-end="url(#tb-arrow-entry)"/>
+<text class="k" x="660" y="280">scaffold</text>
+<rect class="node" x="560" y="325" width="180" height="50" rx="2"/>
+<text class="n" x="650" y="347">You write it</text>
+<text class="sub mid" x="650" y="364">Smithy lays out the files</text>
+<path class="edge soft" d="M500 215 H638 Q650 215 650 227 V323" marker-end="url(#tb-arrow-soft)"/>
+<path class="edge soft" d="M650 375 V473 Q650 485 638 485 H502" marker-end="url(#tb-arrow-soft)"/>
+<text class="k" x="660" y="430">validate only</text>
+</svg>

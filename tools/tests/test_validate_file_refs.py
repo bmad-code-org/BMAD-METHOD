@@ -61,7 +61,7 @@ class TestMarkdownExtraction(unittest.TestCase):
     def test_all_pattern_types(self):
         content = "\n".join(
             [
-                "See {project-root}/_bmad/scripts/memlog.py for details.",
+                "See {project-root}/_bmad/scripts/resolve_config.py for details.",
                 "Load `references/help.md` and `steps/step-02.md` now.",
                 "Also `data/things.toml` applies.",
             ]
@@ -70,7 +70,7 @@ class TestMarkdownExtraction(unittest.TestCase):
         by_type = {}
         for r in refs:
             by_type.setdefault(r.type, []).append(r.raw)
-        self.assertEqual(by_type["project-root"], ["scripts/memlog.py"])
+        self.assertEqual(by_type["project-root"], ["scripts/resolve_config.py"])
         self.assertEqual(
             by_type["skill-relative"],
             ["references/help.md", "steps/step-02.md", "data/things.toml"],
@@ -147,7 +147,9 @@ class TestMapping(unittest.TestCase):
         return mapped and Path(mapped).as_posix()
 
     def test_mappings(self):
-        self.assertEqual(self.map("{project-root}/_bmad/scripts/memlog.py"), "/repo/skills/bmad/scripts/memlog.py")
+        self.assertEqual(
+            self.map("{project-root}/_bmad/scripts/resolve_config.py"), "/repo/skills/bmad/scripts/resolve_config.py"
+        )
         self.assertEqual(self.map("{_bmad}/scripts/resolve_config.py"), "/repo/skills/bmad/scripts/resolve_config.py")
         self.assertEqual(self.map("_bmad/scripts/render_skill.py"), "/repo/skills/bmad/scripts/render_skill.py")
         self.assertEqual(self.map("other/file.md"), "/repo/skills/other/file.md")
@@ -156,6 +158,7 @@ class TestMapping(unittest.TestCase):
         for ref in (
             "_config/settings.yaml",
             "custom/mine.md",
+            "render/.uv-cache",
             "render/bmad-build/x.md",
             "render/bmad-build-auto/x.md",
         ):
@@ -212,6 +215,16 @@ class TestRunClassification(ProjectCase):
         self.assertEqual(code, 0)
         self.assertIn("References checked: 1", out)
         self.assertIn("Broken references: 0", out)
+
+    def test_skill_root_resolution_in_a_module_folder(self):
+        skill = self.skill.parent / "founder" / "bmad-founder-agent-advisor"
+        write(skill / "SKILL.md", "---\nname: bmad-founder-agent-advisor\n---\n")
+        write(skill / "references" / "help.md", "target\n")
+        write(skill / "deep" / "doc.md", "Load `references/help.md`, then `references/gone.md`.\n")
+        code, out = self.run_validator(strict=True)
+        self.assertEqual(code, 1)
+        self.assertIn("[BROKEN] references/gone.md (line 1)", out)
+        self.assertIn("Broken references: 1", out)
 
     def test_prose_path_not_flagged(self):
         write(self.skill / "doc.md", "Outputs land in `no-such-dir/thing.md` later.\n")
