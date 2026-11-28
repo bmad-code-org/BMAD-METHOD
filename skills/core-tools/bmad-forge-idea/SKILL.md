@@ -22,13 +22,13 @@ Lead by questioning, not lecturing. Ask one question at a time, press on weak po
 
 ## On Activation
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`.
+1. Resolve customization: `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`.
    - Script not found: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - Any other failure: read `{skill-root}/customize.toml` directly with defaults.
 
    Apply the resolved `{workflow.*}` values throughout.
 2. Run each `{workflow.activation_steps_prepend}` entry; treat each `{workflow.persistent_facts}` entry as foundational context (`file:` entries load their contents, `skill:` names a skill to consult, others are facts verbatim).
-3. Resolve central config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`. Greet the user, and let them know they can invoke `bmad-party-mode` for multi-agent perspectives or `bmad-advanced-elicitation` for deeper exploration at any point.
+3. Resolve central config: `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key core.output_folder --key core.active_initiative`. Greet the user, and let them know they can invoke `bmad-party-mode` for multi-agent perspectives or `bmad-advanced-elicitation` for deeper exploration at any point.
    - Script not found, or no `output_folder`: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - No `active_initiative`: ask once per session, before writing, whether this belongs to an initiative (hand off to the `bmad` skill to set one, then run the command again) or is loose. Loose work drops `/{active_initiative}` from every path.
 4. Note whether a BMad persona is already active in this conversation — the user loaded one (e.g. the analyst, the storyteller) and invoked the forge from within it. If so, that persona leads the session, in voice, throughout.
@@ -108,7 +108,7 @@ Don't read the file back except on resume. If the user raises a different branch
 If a BMad persona was already active when the forge started, keep that persona as the lead voice.
 
 Resolve the available persona pool once, as soon as the goal is known:
-`uv run {skill-root}/scripts/resolve_personas.py --project-root {project-root} --skill {skill-root}`
+`uv run "{skill-root}/scripts/resolve_personas.py" --project-root "{project-root}" --skill "{skill-root}"`
 The script returns installed BMad agents (`agents`), user-defined personas (`members`), and saved parties (`parties`). Parties may include a `scene`; some are open-cast. This gives you the same roster information as `bmad-party-mode` without invoking it.
 
 Each turn uses two voices:

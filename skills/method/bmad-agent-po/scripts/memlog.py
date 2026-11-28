@@ -71,18 +71,20 @@ Commands:
 
 Addressing: `--workspace` is the run folder, and the memlog is always {workspace}/.memlog.md.
 `--path` points straight at the memlog file instead, for callers that already hold the path.
+`--project-root` names the project with BMad set up and goes before the command.
 """
 
-from __future__ import annotations  # keep type-hint syntax lazy so the script runs on 3.8+
+from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import sys
 from datetime import datetime
 from pathlib import Path
 
-import yaml
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 
 MEMLOG = ".memlog.md"
 
@@ -96,28 +98,11 @@ def resolve(args) -> Path:
     return Path(args.path) if args.path else Path(args.workspace) / MEMLOG
 
 
-def fence(text: str) -> tuple[str, str]:
-    """Return (frontmatter text, body). The closing fence is the first line that is exactly `---`."""
-    lines = text.splitlines()
-    if not lines or lines[0] != "---":
-        raise ValueError(".memlog.md has no frontmatter")
-    end = next((i for i in range(1, len(lines)) if lines[i] == "---"), None)
-    if end is None:
-        raise ValueError(".memlog.md frontmatter is not terminated")
-    return "\n".join(lines[1:end]), "\n".join(lines[end + 1 :]).lstrip("\n")
-
-
-def split(text: str) -> tuple[dict, str]:
-    """Return (frontmatter as a dict of text values in source order, body)."""
-    front, body = fence(text)
-    return yaml.load(front, Loader=yaml.BaseLoader) or {}, body
-
-
-def render(meta: dict, body: str) -> str:
+def write_log(path: Path, meta: dict, body: str) -> None:
     # Fold newlines so each field stays on one line.
     meta = {" ".join(k.splitlines()): " ".join(str(v).splitlines()) for k, v in meta.items()}
-    fm = yaml.safe_dump(meta, sort_keys=False, allow_unicode=True, width=float("inf"))
-    return "---\n" + fm + "---\n\n" + body.rstrip("\n") + "\n"
+    body = "\n".join(body.splitlines()).strip("\n")
+    write_atomic(path, frontmatter.dump(meta) + "\n" + body + "\n")
 
 
 def touch(meta: dict) -> None:
@@ -222,7 +207,7 @@ def cmd_init(args) -> int:
         k, v = pair.split("=", 1)
         meta[k.strip()] = v.strip()
     touch(meta)
-    write_atomic(path, render(meta, ""))
+    write_log(path, meta, "")
     ack(path, "")
     return 0
 
@@ -230,7 +215,7 @@ def cmd_init(args) -> int:
 def cmd_append(args) -> int:
     path = resolve(args)
     raw = path.read_text(encoding="utf-8")
-    fence(raw)  # a log without frontmatter fails here, before anything is written
+    frontmatter.split(raw)  # a log without frontmatter fails here, before anything is written
     text = " ".join(args.text.split())  # collapse newlines/runs → one-line entry, no prose bloat
     label = args.type or ""
     if args.by:
@@ -238,16 +223,18 @@ def cmd_append(args) -> int:
     tag = f"({label}) " if label else ""
     entry = f"- {tag}{text}"
     append_line(path, ("" if raw.endswith("\n") else "\n") + entry + "\n")
-    ack(path, fence(path.read_text(encoding="utf-8"))[1])
+    _, body = frontmatter.split(path.read_text(encoding="utf-8"))
+    ack(path, body)
     return 0
 
 
 def cmd_set(args) -> int:
     path = resolve(args)
-    meta, body = split(path.read_text(encoding="utf-8"))
+    fields, body = frontmatter.split(path.read_text(encoding="utf-8"))
+    meta = frontmatter.load(fields)
     meta[args.key] = args.value
     touch(meta)
-    write_atomic(path, render(meta, body))
+    write_log(path, meta, body)
     ack(path, body)
     return 0
 
@@ -260,7 +247,10 @@ def add_target(sp) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    global frontmatter
+
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     pi = sub.add_parser("init", help="create the memlog")
@@ -282,7 +272,19 @@ def main(argv: list[str] | None = None) -> int:
     pset.set_defaults(func=cmd_set)
 
     args = p.parse_args(argv)
-    return args.func(args)
+    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+        return 2
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
+
+    try:
+        return args.func(args)
+    except ValueError as exc:
+        print("error:", " ".join(str(exc).split()), file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

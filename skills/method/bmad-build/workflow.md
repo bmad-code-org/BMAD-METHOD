@@ -29,6 +29,7 @@ A plan should target a **single user-facing goal** within **900–1600 tokens**:
   - Don't split: "add validation and display errors" / "support drag-and-drop AND paste AND retry"
 - **900–1600 tokens**: Optimal range for LLM consumption. Below 900 risks ambiguity; above 1600 risks context-rot in implementation agents.
 - **Neither limit is a gate.** Both are proposals with user override.
+- **A story's slices are the plan's tasks.** A story from the tree is one goal however large. Break it into the plan's tasks. On a large story the first tasks are usually a tracer bullet, the thinnest path through every layer the story touches, working end to end, and the later tasks widen it. When it will not fit one session, work the tasks in order across sessions from the same plan, ticking each one off in the plan as it is done. Those slices stay in the plan and never become tickets.
 
 ## Conventions
 

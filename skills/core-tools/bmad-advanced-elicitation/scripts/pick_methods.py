@@ -16,7 +16,7 @@ Commands:
   list [--direction D ...] [--tier T] [--all]
                                   num, direction, name and gist; --all for the whole catalog
   show NAME_OR_NUM [...]          full rows, form included, for a brief
-  random [-n N] [--direction D ...] [--tier T] [--exclude NAME ...] [--spread]
+  random [-n N] [--direction D ...] [--tier T] [--exclude NAME_OR_NUM ...] [--spread]
                                   a random draw; --spread takes at most one per direction
 
 `list` refuses to run with neither --direction, --tier nor --all so dumping the
@@ -226,11 +226,18 @@ def find(rows: list[dict], names: list[str]) -> tuple[list[dict], list[str]]:
     return found, missing
 
 
-def exclude(rows: list[dict], names: list[str] | None) -> list[dict]:
+def exclude(rows: list[dict], names: list[str] | None, catalog: list[dict] | None = None) -> list[dict]:
+    """Drop the methods named, matched as `show` matches them: by name, alias or num.
+
+    Names resolve against CATALOG (default ROWS), so a pool already narrowed by
+    direction or tier drops the method `show` would pick, not another one an
+    alias happens to reach within the pool.
+    """
     if not names:
         return rows
-    skip = {n.strip().lower() for n in names}
-    return [r for r in rows if r["method_name"].lower() not in skip]
+    found, _ = find(rows if catalog is None else catalog, names)
+    skip = {id(r) for r in found}
+    return [r for r in rows if id(r) not in skip]
 
 
 def spread_sample(rows: list[dict], n: int, rng: random.Random | None = None) -> list[dict]:
@@ -310,7 +317,9 @@ def main(argv: list[str] | None = None) -> int:
         help="restrict to a direction (repeatable)",
     )
     pr.add_argument("--tier", choices=TIERS, help="restrict to core or more")
-    pr.add_argument("--exclude", action="append", help="method name to skip (repeatable), e.g. already offered")
+    pr.add_argument(
+        "--exclude", action="append", help="method name, alias or num to skip (repeatable), e.g. already offered"
+    )
     pr.add_argument("--spread", action="store_true", help="at most one per direction")
     args = p.parse_args(argv)
 
@@ -356,7 +365,7 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         print(fmt_rows(found, args.json, full=True))
     elif args.cmd == "random":
-        pool = exclude(filter_rows(rows, args.direction, args.tier), args.exclude)
+        pool = exclude(filter_rows(rows, args.direction, args.tier), args.exclude, rows)
         if not pool:
             print("# no methods match", file=sys.stderr)
             return 1

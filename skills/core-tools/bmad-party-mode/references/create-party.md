@@ -30,7 +30,7 @@ Ask which they're after if it isn't obvious, then proceed.
 
 ## Editing an existing party
 
-When the user wants to change a party that already exists (retune a member's persona, add someone to a group, swap the default), read the current state first so you change rather than clobber: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow` returns the merged `party_members`, `party_groups`, and `default_party`. Show the member or group being touched, capture only the delta with the user, and hand that sparse change to `bmad-customize` — it replaces a `party_members`/`party_groups` entry whose `code`/`id` matches and appends the rest, so an edit is just the changed entry, never a full rewrite.
+When the user wants to change a party that already exists (retune a member's persona, add someone to a group, swap the default), read the current state first so you change rather than clobber: `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow` returns the merged `party_members`, `party_groups`, and `default_party`. Show the member or group being touched, capture only the delta with the user, and hand that sparse change to `bmad-customize` — it replaces a `party_members`/`party_groups` entry whose `code`/`id` matches and appends the rest, so an edit is just the changed entry, never a full rewrite.
 
 ## Keeping new faces from a session
 
@@ -38,9 +38,11 @@ At the end of a remembered party, the room offers to keep the faces that showed 
 
 ## Distill from source data (when provided)
 
-When the user points you at data — a file path, a pasted table, exported profiles — read it and compress it into the requested number of representative personas. Cluster by what actually differentiates behavior (goals, budget, pains, adoption posture), not surface demographics alone. Each cluster becomes one persona with a real name and face. Name your reasoning: tell the user which segments you found and which traits drove the split, so they can correct the cut before you flesh the personas out. If they didn't say how many, propose a number from the spread in the data and let them adjust.
+When the user points you at data — a file path, a pasted table, exported profiles — read it and compress it into the requested number of representative personas. Cluster by what actually differentiates behavior (goals, budget, pains, adoption posture), not demographics such as size, plan or region. Name your reasoning: tell the user which segments you found, how much of the data each covers, and which traits drove the split, so they can correct the cut before you flesh the personas out. If they didn't say how many, propose a number from the spread in the data and let them adjust.
 
-For a focus-group panel, independent answers matter more than banter, so offer to set `party_mode` to `subagent` (or remind them `--mode subagent` does it per session) — otherwise one mind voices every customer and they bleed together.
+Keep the panel small enough to talk with, usually six or seven at most. Weight it by share: a large segment can get a second persona that differs where its members differ; small or overlapping segments can share one, so a persona may be a nuanced individual who holds more than one segment's views. Note in each persona how much of the data it speaks for. Each persona is a new person with the group's outlook and their own voice, built from what most of its records say, including what the group would welcome, not a collage of quotes from the most vivid records. List each persona's source records in its `capabilities`, and have it check them before it reacts to anything new, for what its group thinks rather than lines to repeat, and speak from its own work and life, not about the records.
+
+Write the group's `scene` so whoever speaks gives their own view before agreeing with anyone.
 
 ## Flesh out each persona
 
@@ -63,7 +65,7 @@ Keep pushing for specificity. "Skeptical CFO" is a placeholder; "won't approve a
 
 ## Write via bmad-customize
 
-**First, check for code collisions.** A custom member whose `code` matches an installed agent silently *overrides* that agent in the collective. Before composing, resolve the collective once — `uv run {skill-root}/scripts/resolve_party.py --project-root {project-root} --skill {skill-root}` — and check each new member's `code` against the returned members. On a collision, surface it ("`analyst` would override the installed Analyst — intended, or pick a different code?") and let the user confirm or rename. One check, not a gate.
+**First, check for code collisions.** A custom member whose `code` matches an installed agent silently *overrides* that agent in the collective. Before composing, resolve the collective once — `uv run "{skill-root}/scripts/resolve_party.py" --project-root "{project-root}" --skill "{skill-root}"` — and check each new member's `code` against the returned members. On a collision, surface it ("`analyst` would override the installed Analyst — intended, or pick a different code?") and let the user confirm or rename. One check, not a gate.
 
 Compose the sparse override and hand it to `bmad-customize` to place, confirm, and write — target skill `bmad-party-mode`, `[workflow]` surface. Default to the **user** override (`bmad-party-mode.user.toml`); offer the **team** file when the party is meant to be shared. Hand it the exact entries: the `party_members` tables, any `party_groups` table (including its `memory` flag), and `default_party` if the user opted in. Keep it sparse — only the new entries, never a copy of the base customize.toml. `bmad-customize` shows the TOML, waits for an explicit yes, writes, and verifies the merge; don't write the file yourself.
 

@@ -5,162 +5,74 @@ sidebar:
   order: 4
 ---
 
-Most documentation written for AI agents makes them worse.
-`bmad-project-context` captures little on purpose. This page is the evidence
-and the rules. For how to run the skill, see
-[Set and Maintain Project Context](./set-and-maintain-project-context.md).
+Long documentation written for AI coding agents often hurts more than it helps. `bmad-project-context` keeps your `AGENTS.md` block intentionally small, verified, and focused on rules that change agent behavior. For instructions on running the skill, see [Set and Maintain Project Context](./set-and-maintain-project-context.md).
 
-## What is worth writing down
+## What Is Worth Writing Down
 
-A line belongs when the fact is expensive to get from the repository — not
-whether an agent *could* derive it, but what it costs every time one doesn't,
-and whether the fact shows up before the mistake or after it.
+A rule belongs in `AGENTS.md` when the fact is expensive to rediscover on every session or only becomes obvious after an agent makes a mistake. The right question is not whether an agent could eventually derive a fact from the repository, but what happens when it fails to look in time.
 
-Two results show where that line is. On repository-level tasks, **code access
-beats documentation access** — a document describing the system loses to the
-source it describes. When models generate requirements *from* code, they are
-unreliable at producing anything not already implemented. Implementation
-behavior is recoverable from source; **intent, rationale, and what was
-deliberately rejected are not.**
+Coding agents read live source code more accurately than prose summaries of that code. A written description of files, modules, or tech stacks begins drifting on the next commit and consumes tokens (the units of text an AI model reads and pays for on every request) on every session. By contrast, intent, policy, rejected approaches, and non-obvious runtime catches cannot be recovered reliably from source alone. Writing down only those high-value facts prevents repeated errors without bloating every conversation.
 
-So what the agent can read cheaply first-hand is read live and never stored.
-A stored copy goes stale and costs tokens on every call. A line that stops
-the same costly rediscovery every session stays, even if the agent could
-eventually find it.
+## Why Bloated Instruction Files Hurt
 
-## Why most AGENTS.md files do not help
+Repository instruction files frequently fail to improve results while increasing token usage and diluting attention across too many rules. Most bloated `AGENTS.md` files restate what the repository already contains: directory layouts, framework lists, and architecture tours.
 
-Measured present versus absent, repository instruction files show **no
-improvement in success rate and +20% inference cost.** The result has been
-replicated on real repositories, with failures traced to implementation skill
-gaps rather than missing repository knowledge. In one study at scale, randomly
-generated rules matched expert-curated ones.
+When an instruction file grows long, two problems reinforce each other:
 
-Those files overwhelmingly restate what the repository already holds —
-structure, stack, architecture summaries. The studies measured *derivable*
-written context, not written context in general.
+- Agents pay the context cost of reading every line on every session, even when most lines do not apply to the current task.
+- As the always-loaded rule set grows, models follow individual instructions less reliably, so critical constraints get buried under generic background text.
 
-## When a short index in AGENTS.md does help
+Keeping the block tight makes the remaining rules far more likely to be followed.
 
-One controlled comparison ran four configurations against framework APIs
-absent from the model's training data:
+## Why Always-Loaded Pointers Beat Optional Retrieval
 
-| Configuration | Pass rate |
-|---|---|
-| No documentation | 53% |
-| Reusable skill, unaided | 53% |
-| Same skill, with explicit instructions to invoke it | 79% |
-| **Compressed documentation index in `AGENTS.md`** | **100%** |
+Agents reliably follow short rules that are already loaded in their context, whereas they frequently skip external documentation or optional tools when they have to decide on their own whether to fetch them. Even when told a reference exists, an agent will often guess paths or behavior instead of stopping to look it up.
 
-Same file format as the studies that found no improvement; opposite content —
-knowledge the model did not have, rather than a restatement of the repo. The
-index was 8KB, compressed from 40KB with no loss in performance.
+That behavior drives two rules in `bmad-project-context`:
 
-The other half matters as much. The unaided skill was **never invoked in 56%
-of cases**; telling the agent to use it raised that above 95% and still
-capped at 79%, with outcomes swinging on small wording changes. **Agents
-often skip retrieval they have to choose.** In a test over a 709-page wiki,
-agents skipped the index and guessed page paths from the question instead.
+- Anything an agent must follow on ordinary tasks belongs directly inside the `AGENTS.md` block.
+- Any pointer to a separate file must state an observable trigger (such as a specific directory path, file type, or named task) rather than a vague judgment call like "when the task is complex" or "before your first edit".
 
-An index the agent must choose to fetch gets skipped; an index already in
-context does not. Anything the agent must follow goes in `AGENTS.md`. Pointers
-out of it must name a trigger the agent can *observe* — a path, a file type, a
-concrete task — never one it must judge.
+## What Earns a Place
 
-## What earns a place
+Every candidate line faces one test: would removing this line change what an agent does? On instructions written by a human maintainer, a weak answer opens a discussion rather than triggering an automatic deletion (see [A Working Rule Stays](#a-working-rule-stays)).
 
-The test for every line: *would removing this line change agent behavior?* On
-a line a human wrote, a failed test opens a question rather than settling one
-— see [A working rule stays](#a-working-rule-stays).
+- Command caveats that config files do not reveal, such as which script is the real entry point when several look plausible, whether integration tests require a running service, or whether CI runs an extra typecheck.
+- Policy the code cannot express, including frozen paths, generated files, branch and commit rules, and security or compliance requirements stated by the team.
+- Conventions that differ from typical language or framework defaults, because an agent will follow common defaults unless told otherwise.
+- Known pitfalls backed by observed failures, such as a recorded lesson, maintainer experience, recurring fixes in git history, or a mistake caught during the session; a surprising scan finding becomes a question to ask, never an unconfirmed rule.
+- Cross-component rules and required tool or runtime versions that an agent cannot see from the single file it is editing.
+- Clear prohibitions paired with the permitted alternative, because explicit "do not X; use Y instead" rules are easier for agents to apply consistently than general advice.
 
-- **What a config file cannot say about running the project.** An invocation
-  the obvious guess gets right lives in `package.json` or CI config. What does
-  not live there is which command is right when several look plausible, and
-  the correction: integration tests need a service up first, CI runs a check
-  the test script does not.
-- **Policy the code cannot express.** Frozen paths, generated files, branch
-  rules, security and compliance requirements. These come from people, not
-  from a scan.
-- **Conventions that differ from ecosystem defaults.** Only the divergences.
-  A fact nobody would get wrong by default is not worth a line.
-- **Known pitfalls, from observed failure only.** A repository yields hundreds
-  of trap-looking facts; only observed behavior separates the few that cause
-  real mistakes. A surprising scan finding becomes a question, never a line.
-- **Cross-component rules and required versions.** The few rules that must
-  hold across parts of the system an agent cannot see from the file it is
-  editing, plus the tool versions the project actually builds with.
-- **Negative constraints over positive guidance**, which measured better, and
-  which is why a prohibition here always names the permitted alternative.
-
-## What is left out
+## What Is Left Out
 
 | Not captured | Why |
-|---|---|
-| **What the code already says** | Agents read source better than summaries of source. A paraphrase adds a second copy that goes stale while the original stays true. |
-| **Repo structure and file maps** | Structure changes with every commit — stored maps rot fastest of all, and agents derive structure fresh in seconds. |
-| **Overview and tour documents** | These are the documents that were measured to hurt. The block's job is to change behavior, not to give a tour. |
-| **Ecosystem defaults** | An LLM already knows how a typical Node, Python, or Go project works. Restating them spends budget teaching the agent what it arrived knowing. |
-| **Anything included for being interesting** | Interest is not evidence of need. |
-| **Style rules an agent should self-enforce** | That job belongs to a formatter, linter, hook, or CI check. The skill proposes the check instead, and a check that lands deletes its line. |
-| **History and edit narration** | Do not write "We removed X because…". Git holds history; the block states present truth only. |
-| **Aspirational state** | What the system *should* become belongs in specs. An agent that treats a future state as current will write the wrong code. |
+| --- | --- |
+| **What the code already says** | Agents read source code more accurately than paraphrases, and summaries drift while source stays current. |
+| **Repo structure and file maps** | Layouts change with every commit, stored maps rot fastest, and agents inspect directories fresh in seconds. |
+| **Overview and tour documents** | The block exists to change coding behavior, not to give a general introduction to the repository. |
+| **Language and framework defaults** | Models already know standard Node, Python, or Go conventions, so restating them wastes space. |
+| **Anything included for being interesting** | Curiosity is not evidence that an agent will make a mistake without the note. |
+| **Style rules an agent should self-enforce** | Formatting and mechanical style belong in a formatter, linter, hook, or CI check; once a check lands, delete the prose line. |
+| **History and edit narration** | Git records why old code was removed; the block states present truth only. |
+| **Aspirational state** | Planned changes belong in tickets and specs, because an agent that mistakes future intent for current reality writes broken code. |
 
-When the evidence supports ten lines, ten lines is the deliverable.
+When the evidence supports ten lines, ten lines is the right deliverable.
 
-## A working rule stays
+## A Working Rule Stays
 
-**A policy or pitfall is removed only when what it is about is gone** —
-deleted, or now enforced by a tool — **or when a human removes it.** Absence
-of recent failures is never grounds: a working rule erases the evidence that
-it is still needed.
+A policy or pitfall stays in the block until the thing it guards is gone, a tool enforces it mechanically, or a human maintainer explicitly retires it. An absence of recent failures is never grounds for deleting a rule, because a working rule erases the evidence that it is still needed.
 
-The same protection covers every instruction a human wrote. It goes only when
-it is stale or wrong, already enforced by a hook or a check, harmful or
-contradictory, or you approve the deletion as a line item — never because it
-looks derivable, and never because it is discoverable somewhere in the
-repository.
+The same safeguard protects every instruction a human wrote by hand. During adoption or audit, a handwritten line is removed only when it is stale or wrong, already enforced by a hook or CI check, harmful or contradictory, or approved for deletion as an explicit line item. Brevity alone or the fact that an answer exists somewhere in the codebase is never enough to delete a maintainer's rule.
 
-## Two kinds of context, two artifacts
+## Two Kinds of Context, Two Artifacts
 
-One artifact cannot serve both coding and planning work.
+Implementation context and planning context have different lifecycles and belong in different places.
 
-**Implementation context** — constraints, commands, conventions, pitfalls —
-belongs to a **code repository**: checkable against the code, stale on every
-commit, loaded on every session, so it must be tiny. That is what this skill
-owns.
+Implementation context (commands, conventions, frozen paths, and observed pitfalls) belongs to a code repository. It is verifiable against the code, can change on any commit, and loads on every coding session, which is why `bmad-project-context` keeps it small and concrete inside `AGENTS.md`.
 
-**Planning context** — rationale, rejected approaches, ownership, domain
-meaning, org standards — belongs to a **project or initiative**: traceable
-only to source documents, stale in months rather than hours, consulted in
-bursts rather than loaded continuously. That is a different capability, and it
-is coming separately.
+Planning context (product rationale, rejected options, domain definitions, and long-term goals) belongs to an initiative or epic inside `_bmad-output/`. It traces to requirements and decisions, changes over weeks or months rather than commits, and is consulted during planning and spec work rather than loaded into every minor coding session.
 
-Serving both from one file is what produced the two skills this one replaced.
+## Extra Context Is a Cost
 
-## Extra context is a cost
-
-More documentation is not more value. Extra context is a cost. Refresh
-re-checks every caveat and diffs deletions and renames against every line.
-Audit asks whether each line still changes agent behavior — subject to the
-grounds above on anything a human wrote — and ends with the block smaller or
-equal, never larger. When a claim's source disappears, the claim is fixed or
-removed, never silently pointed at a different document that still mentions
-it.
-
-Generating the first version is cheap. Keeping it true is the work, which is
-why refresh and audit exist as their own commands.
-
-## Versus the two replaced skills
-
-`bmad-document-project` scanned an existing repo and generated a documentation
-tree — overview, source tree, per-area deep dives. Large, unverified, stale on
-arrival: the kind of context that makes agents worse. Its valid instinct —
-understand the repo before working in it — survives as the discovery pass,
-which now feeds verification instead of prose.
-
-`bmad-generate-project-context` had the right instinct: a single small rules
-file of unobvious, project-specific facts. What it lacked was everything
-around the file — no verification, no maintenance loop, no way to tell an
-inference from a confirmed fact.
-
-The old skills wrote more documentation. This skill keeps less, and checks it.
+Adding lines to `AGENTS.md` is never free, because every line is read on every session and must stay accurate over time. That is why `bmad-project-context` treats maintenance as a first-class job: Refresh re-checks caveats and diffs deleted or renamed files since the last verified commit, while Audit verifies each line against the live repo and ends with a block that is the same size or smaller. Generating the first version is quick, and keeping it honest is where the lasting value comes from.

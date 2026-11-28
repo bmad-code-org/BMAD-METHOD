@@ -1,85 +1,122 @@
 ---
 title: Document Templates
-description: The templates that ship with bmad-facilitate, and which one shows each thing a template can do.
+description: The templates that ship with bmad-facilitate across BMad Method, Founder, and Creative, and which template demonstrates each capability.
 sidebar:
   order: 3
 ---
 
-Use this page to find a shipped template to copy, or to see how a template does something you want. Modules ship them, each in the `doc-templates/` folder beside its `bmod.toml` in your skills folder: `bmod-method`, `bmad-founder-agent-advisor` or `bmod-cis`.
+Use this page to find a shipped template to extend or copy, or to see a working example of a specific template capability. Modules store templates in `doc-templates/` beside their `bmod.toml`: `bmod-method` (35 templates), `bmad-founder-agent-advisor` (17 templates), and `bmad-creative-agent-director` (8 templates).
 
-To change one for your team, extend it instead of copying it, so its updates keep arriving; [Customize a Document for Your Team](../customize/customize-a-document-for-your-team.md) shows how. To start a different document from one, copy it into `_bmad/custom/facilitate-templates/` with a new `template:` id and edit the copy. [Write a Document Template](../customize/write-a-document-template.md) covers the file format.
+To customize a shipped template for your team without losing future updates, extend it; see [Customize a Document for Your Team](../customize/customize-a-document-for-your-team.md). To write a new template or inspect every frontmatter field, see [Write a Document Template](../customize/write-a-document-template.md).
 
-## Shipped templates
+## BMad Method Templates
+
+BMad Method keeps its 35 templates in `bmod-method/doc-templates/`, grouped by the default coaching agent (any agent can run another template when asked directly). Six Method templates generate a self-contained HTML artifact automatically (`view: always`): `agent-readiness`, `brand-identity`, `brief`, `pitch`, `prfaq`, and `ux-audit`.
+
+### Mary and John (Analysis and Product)
+
+| Template | Who | Level | Fits |
+| --- | --- | --- | --- |
+| `opportunity` | [Mary](../agents/mary-analyst.md) | Initiative | Whether a problem is worth pursuing before choosing a solution (`order: fixed`) |
+| `experiment` | [Mary](../agents/mary-analyst.md) or [John](../agents/john-pm.md) | Any | A measured test of one hypothesis with thresholds set before running (`order: fixed`) |
+| `prototype-plan` | [John](../agents/john-pm.md) | Any | A quick build to test an idea, options, or interaction feel (`mode: fast`) |
+| `prfaq` | [Mary](../agents/mary-analyst.md) | Pre-initiative | Stress-testing a concept by writing its press release and FAQs first (`order: fixed`, `view: always`) |
+| `brief` | [Mary](../agents/mary-analyst.md) | Pre-initiative | Why to build a product, or pitching it, in one or two pages (`view: always`) |
+| `business-case` | [Mary](../agents/mary-analyst.md) | Initiative | Funding decision covering cost, expected return, and go or no-go criteria |
+| `narrative` | [Mary](../agents/mary-analyst.md) | Program | Written argument for leadership to decide a strategy or annual plan |
+| `prd-program` | [John](../agents/john-pm.md) | Program | Outcomes, guardrails, rollout strategy, and initiative map across initiatives |
+| `prd` | [John](../agents/john-pm.md) | Initiative | Outcomes, guardrails, and epic map for work spanning several capabilities |
+| `prd-epic` | [John](../agents/john-pm.md) | Epic | One capability's requirements: user journeys, numbered requirements, rules, and measurement |
+| `pitch` | [John](../agents/john-pm.md) | Initiative or epic | Shaped, time-boxed proposal for teams betting fixed cycles (`view: always`) |
+| `charter` | [Mary](../agents/mary-analyst.md) or [John](../agents/john-pm.md) | Program | Shared mandate, benefits, scope, and governance across initiatives |
+| `srs` | [John](../agents/john-pm.md) | Initiative | Traceable, verifiable requirements for regulated or contracted work (`mode: step-by-step`) |
+| `brd` | [Mary](../agents/mary-analyst.md) | Program or initiative | Signed business requirements when an external team builds or regulators require sign-off (`mode: step-by-step`) |
+| `launch` | [John](../agents/john-pm.md) | Initiative | Coordinating a built feature's release across teams |
+
+A `business-case` or `narrative` finishes with a `## For requirements` id list so Sofia can build an initiative or program ticket from it without a separate PRD. See [Write a PRD](../plan/write-a-prd.md).
+
+### Sally (UX and Brand)
+
+| Template | Category | Fits |
+| --- | --- | --- |
+| `trigger-map` | Strategy | User-psychology trigger map: goals, target groups, desires, and fears (shared with Mary) |
+| `brand-identity` | Strategy | Reusable corporate brand kit: logos, `DESIGN.md` tokens, `BRAND.md`, and Brand Book (`view: always`) |
+| `design-direction` | Strategy | Visual dissection, taste dials, themes, or Figma/Stitch/Claude Design handoffs |
+| `ux-system` | Product UX | Initiative `DESIGN.md` tokens and shared `EXPERIENCE.md` information architecture and accessibility |
+| `ux-epic` | Product UX | Epic `EXPERIENCE.md` flows, states, microcopy, and key-screen mockups |
+| `ux-quick` | Product UX | Lightweight single-flow `EXPERIENCE.md` and wireframe (`mode: fast`) |
+| `website-design` | Websites | Marketing site, landing page, docs, or portfolio narrative and conversion design |
+| `ux-audit` | Audits | Six-dimension usability, visual craft, states, and accessibility scorecard (`order: fixed`, `view: always`) |
+
+### Winston (Architecture and Technical Operations)
+
+| Template | Fits |
+| --- | --- |
+| `arch-enterprise` | Enterprise system architecture across coupled initiatives |
+| `arch-spine` | Initiative system architecture: stack, seams, `AD-n` invariants, AI/cost bounds, and Contract Index |
+| `arch-epic` | Epic technical design against live code: story contracts, schemas, migrations, and `contract.yaml` |
+| `solution-design` | Human-facing technical RFC and proposal for review board, partner, or client sign-off |
+| `api-design` | Public API, webhook, or partner integration contract with versioning and error rules |
+| `tech-evaluation` | Weighted build-vs-buy, vendor, or stack bake-off with total cost of ownership (`order: fixed`) |
+| `migration-plan` | Data, platform, or API migration plan with parity proof and rollback gates |
+| `agent-readiness` | Codebase audit for AI-assisted delivery friction, doc noise, and pattern drift (`view: always`) |
+| `production-readiness` | Pre-launch production readiness review: SLOs, capacity, recovery, and go/no-go verdict |
+| `decision-record` | Recording a technical choice, rejected alternatives, and tradeoffs (`mode: fast`) |
+| `postmortem` | Blameless incident timeline, contributing factors, actions, and customer notice (`order: fixed`) |
+| `security-review` | Reviewing a system against OWASP Top 10, STRIDE, or a custom threat catalog |
+
+## Founder and Creative Templates
+
+All 17 Founder templates (coached by Nadia) and all 8 Creative templates (coached by Clio) set `view: always` so their self-contained HTML artifact is built automatically at close:
 
 | Template | Module | Use it for |
 | --- | --- | --- |
-| `decision-record` | BMad Method | Recording a choice, the alternatives and what it costs |
-| `postmortem` | BMad Method | Learning from something that went wrong, without blame |
-| `security-review` | BMad Method | Checking a system against the OWASP Top 10 or STRIDE |
-| `proposal` | Founder | Asking for money, time or approval |
-| `pitch-deck` | Founder | A talk or pitch with slides |
-| `accelerator-application` | Founder | An application to an accelerator, in the program's own questions |
-| `board-pack` | Founder | The pre-read sent before a board meeting |
-| `cofounder-agreement` | Founder | Co-founders agreeing roles, decisions, equity and leaving before a lawyer drafts |
-| `customer-interview-script` | Founder | A customer interview guide built on past behaviour |
-| `first-hire` | Founder | Deciding whether to hire now, and the scorecard, cost and test for the role |
-| `fundraising-plan` | Founder | Planning a raise: amount, milestones, instrument, investors and stop date |
-| `ideal-customer` | Founder | The first narrow group of customers to win and how to reach them |
-| `investor-update` | Founder | The monthly or quarterly update to investors and advisors |
-| `launch-plan` | Founder | Taking a product to market |
-| `lean-canvas` | Founder | The whole business model on one page, with its riskiest assumption |
-| `ninety-day-plan` | Founder | Two or three goals for the next ninety days, with metrics and owners |
-| `positioning` | Founder | Positioning and the one-liner |
-| `pricing` | Founder | How the product is priced and how the price is tested |
-| `startup-diagnostic` | Founder | Hard questions on whether an idea has real demand, ending in one dated assignment |
-| `validation-experiment` | Founder | Testing whether people will pay or act, with the pass mark set first |
-| `character` | Creative Intelligence Suite 0.4.0 and later | A fictional character for a story, game or campaign, on a one-page sheet |
+| `startup-diagnostic` | [Founder](../founder/founder.md) | Hard questions on whether an idea has real demand, ending in one dated assignment (`order: fixed`) |
+| `customer-interview-script` | Founder | Customer interview guide grounded in past behavior |
+| `ideal-customer` | Founder | First narrow customer segment to win and how to reach them |
+| `validation-experiment` | Founder | Testing whether people will pay or act, with the pass mark set first (`order: fixed`) |
+| `lean-canvas` | Founder | Whole business model on one page with its riskiest assumption |
+| `positioning` | Founder | Product positioning and one-liner (`order: fixed`) |
+| `pricing` | Founder | Pricing structure and how to test willingness to pay |
+| `fundraising-plan` | Founder | Planning a raise: amount, milestones, instrument, investors, and stop date |
+| `proposal` | Founder | Asking for budget, time, or stakeholder approval |
+| `accelerator-application` | Founder | Accelerator application structured around the program's questions |
+| `pitch-deck` | Founder | Investor or stakeholder talk rendered as interactive HTML slides |
+| `cofounder-agreement` | Founder | Co-founder alignment on roles, decisions, equity, and departure before legal drafting (`order: fixed`) |
+| `first-hire` | Founder | Deciding whether to hire now, with scorecard, cost, and work-sample test (`order: fixed`) |
+| `ninety-day-plan` | Founder | Two or three ninety-day goals with metrics and owners |
+| `launch-plan` | Founder | Go-to-market launch plan |
+| `investor-update` | Founder | Monthly or quarterly update to investors and advisors |
+| `board-pack` | Founder | Pre-read packet prepared before a board meeting |
+| `story` | [Creative](../creative/creative.md) | Narrative, brand origin, documentary arc, case study, or transformation story |
+| `character` | Creative | Fictional character for a story, game, or campaign with a one-page sheet |
+| `world` | Creative | Setting, magic or tech ruleset, factions, tensions, and aesthetic canon |
+| `talk-script` | Creative | Spoken keynote, conference talk, podcast, or video explainer calibrated to `measured_wpm` |
+| `presentation` | Creative | Narrative and visual slide deck delivered by a speaker |
+| `problem-solve` | Creative | Root-cause diagnosis and contradiction-breaking (TRIZ and systems thinking) |
+| `design-thinking` | Creative | Non-software human-centered design for services, workshops, and physical products |
+| `innovation-play` | Creative | Non-startup strategic exploration across Blue Ocean, Three Horizons, and S-Curve plays |
 
-## Documents John and Mary write
+## What a Template Can Do
 
-The BMad Method also ships the planning templates for John, the Product Manager (`bmad-agent-pm`), and Mary, the Business Analyst (`bmad-agent-analyst`). The templates live in the method module's `doc-templates/` folder, and each names the agents that offer it in `agents`. Mary writes the documents that decide whether and why to go ahead; John writes the ones that define what gets built and how it ships. The list says who offers each by default; either writes any of them when you ask. Both agents hand every create, update, and validate to `bmad-facilitate`, so each document works the same way. [Write a PRD](../plan/write-a-prd.md) shows the coaching and fast paths, stakes, and assumption tags they share.
-
-| Document | Who | Level | Fits |
-| --- | --- | --- | --- |
-| Opportunity assessment | Mary | Initiative | Whether a problem is worth pursuing, before any solution |
-| Experiment card | Mary or John | Any | A measured test of one hypothesis, its thresholds set before it runs |
-| Prototype plan | John | Any | A quick build to test an idea, some options, or a look and feel |
-| PRFAQ | Mary | Before an initiative | Whether a concept survives scrutiny, working back from its press release |
-| Brief | Mary | Before an initiative | Why to build a product, or pitching it, in a page or two |
-| Business case | Mary | Initiative | A funding decision: cost, expected return, go or no-go |
-| Strategy narrative | Mary | Program | A written argument for leadership to decide a strategy or annual plan |
-| PRD, light PRD | John | Any | Requirements a team builds from; the light one for a very simple project |
-| Shape Up pitch | John | Initiative or epic | A shaped, time-boxed proposal for teams that bet fixed cycles |
-| Program charter | Mary or John | Program | One mandate, benefits, scope, and governance across several initiatives |
-| Requirements specification | John | Initiative | Traceable, verifiable requirements for regulated or contracted work |
-| Business requirements document | Mary | Initiative | What the business requires and signs for, when a separate party builds, a sponsor signs, or a regulator or contract expects it |
-| Spec for a coding agent | John | One feature | A feature outside the ticket tree, with tests and acceptance |
-| Launch plan | John | Initiative | Coordinating a built feature's release across teams |
-
-The first seven come before you commit, in Clarify; the rest plan and ship the work. The brief, the PRFAQ, the experiment card, the opportunity assessment, and the pitch are walked one section at a time, in order. A brief from Mary feeds the PRD, but neither requires the other. A business case or strategy narrative stays in prose and ends with a `## For requirements` list of ids, so Sofia can write the initiative from it without a PRD.
-
-## What a template can do
-
-| To do this | Look at | How it works |
+| Capability | Example template | How it works |
 | --- | --- | --- |
-| Press the user on a thin answer | `postmortem`, Contributing factors | The section comment says when to push and what to ask |
-| Make the user pick from a list | `decision-record`, Status | The section comment names the allowed values |
-| Make the user pick from a source | `security-review`, Scope and system | The section comment points at the method catalog |
-| Drive questions from a catalog | `security-review`, `methods-security.csv` | The `methods` frontmatter names a CSV of key questions |
-| Walk the sections in order, each with its own voice | `prfaq` in `bmod-method/doc-templates/` | `paced: true` in the frontmatter, and each section comment is the brief for that part |
-| Change how a path runs | `security-review`, `stance` | The comment says what the fast path does for this document |
-| Use the shared planning rules | Any shipped template | `guidance: guidance-planning` adds stakes levels, ids and testable requirements |
-| Review against its own rubric | `proposal`, `rubric-proposal.md` | The `rubric` frontmatter names the file |
-| Set the order and what is required | Any shipped template | `facilitation_order` lists the sections by id, `?` on those not required |
-| Include a section only when it applies | `proposal`, Alternatives | `alternatives?` in the order and an `include when:` section comment |
-| Draw a diagram | `postmortem`, Timeline | A `diagram:` kind in the section comment |
-| Add a table of contents | `proposal` | A bare `## Table of Contents` heading after the title |
-| Render as slides | `pitch-deck` | `view: slides` in the frontmatter |
-| Always make the view | `pitch-deck` | `html_view: always` in the frontmatter, because the slides are the deliverable |
-| Render the same layout every time | `prfaq` in `bmod-method/doc-templates/`, `prfaq-view.html`; also `brief` and `pitch` | `view` names an HTML file whose slots a script fills at close |
-| Have a page written for each document | `character`, `character-sheet.html` | `view` names a starter, and a `view` comment gives the brief |
-| Have a page written from a brief alone | Founder's templates, such as `pitch-deck` | A `view` comment with no `view` file says where to be creative |
-| Propose rather than only ask | `character`, `stance` | The comment invites proposals; one the user accepts is theirs |
-| Write several files | `postmortem`, `companions` | The comment says when to write the customer notice and what it holds |
+| Push back on thin answers | `postmortem` (Contributing factors) | The section comment specifies when to challenge and what to ask |
+| Enforce a fixed choice list | `security-review` (Findings) | The section comment lists allowed status and severity values |
+| Drive questions from a CSV catalog | Any custom template (`methods:`) | Frontmatter `methods:` points to a relative CSV (`category`, `name`, `key_questions`) |
+| Enforce strict section order with changing voices | `prfaq` | `order: fixed` in frontmatter, with each section comment setting its own voice and stance |
+| Customize how fast mode behaves | `security-review` (`stance`) | The `stance` comment explains how fast mode operates on that document |
+| Share rules across a template family | Method or Founder templates | `guidance: guidance-method.md` or `guidance: guidance-planning.md` loads beside the template |
+| Review against a custom rubric | `proposal` (`rubric-proposal.md`) | Frontmatter `rubric:` points to a relative file or bare `rubric-general` |
+| Set discussion order separately from document order | Any shipped template | `facilitation_order` lists section ids; section comments mark required vs. optional |
+| Include conditional sections | `proposal` (Alternatives) | Section comment begins with `include when:` |
+| Request a diagram | `postmortem` (Timeline) | Section comment includes `diagram:` with a Mermaid kind or sketch instruction |
+| Auto-generate a table of contents | `proposal` | Bare `## Table of Contents` heading directly after the title |
+| Always build a self-contained HTML artifact | `brief`, `pitch`, `prfaq`, `ux-audit`, `brand-identity`, `agent-readiness`, and all Founder and Creative templates | `view: always` in frontmatter |
+| Apply project brand and design systems | `modules.core-tools.design_system` (via `bmad setup`) plus template `layout` / `style` | Project design system sets default visual tokens, while template `layout` comments or `style` references guide domain-specific composition without mechanical field injection |
+| Propose options instead of only asking | `character` (`stance`) | The comment invites concrete proposals the user can accept or reshape |
+| Track companion files | `ux-system`, `ux-epic`, `arch-epic`, `postmortem` | Frontmatter `companions: [...]` tracks sibling files across progress checks, review, and finalize |
+| Prevent cross-altitude id leaks | Multi-altitude templates | `forbid_id_prefixes: [...]` flags disallowed id prefixes during Finalize |
+| Run a custom Finalize lint script | Any domain template | Frontmatter `lint:` names a relative script or command executed in Finalize step 1 |
 
-No shipped template adds to another. [Extend a template](../customize/write-a-document-template.md#extend-a-template) shows how.
+No shipped template extends another shipped template. To add team rules on top of any shipped template, see [Extend a Template](../customize/write-a-document-template.md#extend-a-template).

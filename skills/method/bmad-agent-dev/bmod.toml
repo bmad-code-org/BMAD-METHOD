@@ -3,7 +3,9 @@ bmod = "bmod-method"
 source = "github:bmad-code-org/BMAD-METHOD/skills/method"
 recommended_skills = [
   "bmad-build",
+  "bmad-build-auto",
   "bmad-code-review",
+  "bmad-walkthrough",
   "bmad-qa-generate-e2e-tests",
   "bmad-retrospective",
   "bmad-agent-po",

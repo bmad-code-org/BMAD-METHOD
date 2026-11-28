@@ -20,6 +20,12 @@ from test_bmad_setup import (
 )
 
 MIGRATE_V6_PY = REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts" / "migrate_v6.py"
+sys.path.insert(0, str(MIGRATE_V6_PY.parent))
+import frontmatter  # noqa: E402
+
+
+def read_fields(path: Path) -> dict:
+    return frontmatter.load(frontmatter.split(path.read_text(encoding="utf-8"))[0])
 
 
 class MigrateV6Tests(unittest.TestCase):
@@ -31,7 +37,8 @@ class MigrateV6Tests(unittest.TestCase):
         self.installed = self.project / ".agents" / "skills"
         self.installed.mkdir(parents=True)
         self.skill = write_dest_bmad(self.installed)
-        shutil.copy2(MIGRATE_V6_PY, self.skill / "scripts" / "migrate_v6.py")
+        for script in (MIGRATE_V6_PY, MIGRATE_V6_PY.with_name("frontmatter.py")):
+            shutil.copy2(script, self.skill / "scripts" / script.name)
         write_core(self.installed)
         write_bmod(
             self.installed,
@@ -116,6 +123,17 @@ class MigrateV6Tests(unittest.TestCase):
             (after["legacy_leftovers"], after["stale_config_keys"], after["unused_customizations"]), ([], [], [])
         )
 
+    def test_a_customization_of_a_skill_another_tool_installed_is_not_unused(self):
+        # Only Codex has bmad-foo; a Claude Code user's --clean must not delete the team's bmad-foo.toml.
+        self.write_v6_traces()
+        write(self.project / ".codex" / "skills" / "bmad-foo" / "SKILL.md", "---\nname: bmad-foo\n---\n")
+        write(self.bmad / "custom" / "bmad-foo.toml", "[workflow]\nshared = true\n")
+
+        self.assertEqual(self.migrate()["unused_customizations"], ["_bmad/custom/bmad-sprint-planning.user.toml"])
+        self.migrate("--clean")
+        self.assertTrue((self.bmad / "custom" / "bmad-foo.toml").exists())
+        self.assertFalse((self.bmad / "custom" / "bmad-sprint-planning.user.toml").exists())
+
     def test_only_listed_v6_keys_are_removed(self):
         user = self.bmad / "custom" / "config.user.toml"
         text = '[core]\nuser_name = "Ann"\nfuture_key = "x"\n\n[modules.bmm]\nproject_knowledge = "docs"\nnew_setting = 1\n'
@@ -134,6 +152,15 @@ class MigrateV6Tests(unittest.TestCase):
             tomllib.loads(user.read_text(encoding="utf-8")),
             {"core": {"future_key": "x"}, "modules": {"bmm": {"new_setting": 1}}},
         )
+
+    def test_a_config_file_saved_with_a_byte_order_mark_is_cleaned(self):
+        user = self.bmad / "custom" / "config.user.toml"
+        user.write_bytes(b'\xef\xbb\xbf[core]\nuser_name = "Ann"\nfuture_key = "x"\n')
+        stale = [{"file": "_bmad/custom/config.user.toml", "key": "core.user_name"}]
+
+        self.assertEqual(self.migrate()["stale_config_keys"], stale)
+        self.assertEqual(self.migrate("--clean")["removed_keys"], stale)
+        self.assertEqual(tomllib.loads(user.read_text(encoding="utf-8-sig")), {"core": {"future_key": "x"}})
 
     def test_clean_with_nothing_to_remove_writes_nothing(self):
         before = snapshot(self.project)
@@ -528,6 +555,20 @@ class FoldSpecsTests(unittest.TestCase):
         self.assert_references_resolve(epic / "story-launch-angle.md")
         self.assertEqual(self.fold()["folded"], [])
 
+    def test_a_ticket_and_spec_saved_with_a_byte_order_mark_fold_into_one_frontmatter(self):
+        epic = self.write_epic_with_spec()
+        for path in (epic / "epic-ball.md", epic / "spec-ball" / "spec-ball.md"):
+            path.write_bytes(b"\xef\xbb\xbf" + path.read_bytes())
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        text = (epic / "epic-ball.md").read_text(encoding="utf-8")
+        self.assertTrue(text.startswith("---\n"), msg=text)
+        self.assertEqual(frontmatter.split(text)[1].count("\n---\n"), 0, msg=text)
+        self.assertIn("sources: [_bmad-output/initiative-golf/prd-golf/prd-golf.md]\n", text)
+        self.assertIn("- R1 (CAP-1): A player sees the ball follow a physically plausible arc.", text)
+
     def test_a_spec_folder_in_an_epic_of_the_tickets_layout_folds_and_maps_the_epics_tickets(self):
         epic = self.initiative / "tickets" / "epic-ball"
         write(
@@ -687,6 +728,67 @@ class FoldSpecsTests(unittest.TestCase):
         self.assertEqual(fold["companions"], ["_bmad-output/initiative-golf/epic-ball/glossary.md"])
         self.assertFalse((epic / "spec-ball").exists())
 
+    def test_hidden_and_tmp_files_move_beside_the_ticket(self):
+        epic = self.write_epic_with_spec()
+        write(epic / "spec-ball" / ".working" / "mock.html", "mock\n")
+        write(epic / "spec-ball" / ".draft-notes.md", "draft\n")
+        write(epic / "spec-ball" / "plan.md.tmp", "partial\n")
+
+        report = self.fold()
+
+        (fold,) = report["folded"]
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(
+            fold["companions"],
+            [
+                "_bmad-output/initiative-golf/epic-ball/.draft-notes.md",
+                "_bmad-output/initiative-golf/epic-ball/.working",
+                "_bmad-output/initiative-golf/epic-ball/glossary.md",
+                "_bmad-output/initiative-golf/epic-ball/plan.md.tmp",
+            ],
+        )
+        self.assertEqual((epic / ".working" / "mock.html").read_text(encoding="utf-8"), "mock\n")
+        self.assertEqual((epic / ".draft-notes.md").read_text(encoding="utf-8"), "draft\n")
+        self.assertEqual((epic / "plan.md.tmp").read_text(encoding="utf-8"), "partial\n")
+        self.assertFalse((epic / "spec-ball").exists())
+
+    def test_a_hidden_file_whose_name_is_taken_is_reported_and_nothing_moves(self):
+        epic = self.write_epic_with_spec()
+        write(epic / "spec-ball" / ".draft-notes.md", "the spec's draft\n")
+        write(epic / ".draft-notes.md", "the epic's own\n")
+        before = snapshot(self.project)
+
+        report = self.fold()
+
+        self.assertEqual(report["folded"], [])
+        self.assertEqual(
+            report["problems"],
+            [
+                {
+                    "spec": "_bmad-output/initiative-golf/epic-ball/spec-ball",
+                    "problem": ".draft-notes.md already exist(s) beside the ticket",
+                }
+            ],
+        )
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_loose_spec_folders_holding_os_files_all_fold(self):
+        for slug in ("caddie", "putter"):
+            loose = self.store / f"spec-{slug}"
+            write(loose / f"spec-{slug}.md", spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY)
+            write(loose / ".DS_Store", "")
+            write(loose / "Thumbs.db", "")
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(len(report["folded"]), 2, msg=report)
+        backlog = self.store / "backlog"
+        self.assertTrue((backlog / "story-caddie.md").is_file())
+        self.assertTrue((backlog / "story-putter.md").is_file())
+        self.assertFalse((backlog / ".DS_Store").exists())
+        self.assertFalse((backlog / "Thumbs.db").exists())
+
     def test_a_loose_spec_folder_becomes_a_backlog_story(self):
         loose = self.store / "spec-caddie"
         write(
@@ -744,6 +846,18 @@ class FoldSpecsTests(unittest.TestCase):
         write(loose / ".memlog.md", MEMLOG_BALL)
         write(self.store / "backlog" / "bug-slice.md", "---\nid: 4\ntype: bug\n---\n\n# Slice\n")
         write(self.store / "backlog" / "tickets.toml", "next_id = 9\n")
+
+        self.fold()
+
+        text = (self.store / "backlog" / "story-caddie.md").read_text(encoding="utf-8")
+        self.assertTrue(text.startswith("---\nid: 9\n"), msg=text)
+
+    def test_a_backlog_tickets_toml_saved_with_a_byte_order_mark_still_sets_the_next_id(self):
+        loose = self.store / "spec-caddie"
+        write(loose / "spec-caddie.md", spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY)
+        write(loose / ".memlog.md", MEMLOG_BALL)
+        write(self.store / "backlog" / "bug-slice.md", "---\nid: 4\ntype: bug\n---\n\n# Slice\n")
+        (self.store / "backlog" / "tickets.toml").write_bytes(b"\xef\xbb\xbfnext_id = 9\n")
 
         self.fold()
 
@@ -825,6 +939,33 @@ class FoldSpecsTests(unittest.TestCase):
         self.assertEqual(report["folded"], [])
         (problem,) = report["problems"]
         self.assertIn("spec-ball/.memlog.md cannot be read", problem["problem"])
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_a_title_with_a_colon_reads_back_from_the_story_and_the_new_memlog(self):
+        loose = self.store / "spec-caddie"
+        title = 'Caddie: the "smart" advice'
+        write(
+            loose / "spec-caddie.md",
+            spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY.replace("# Ball flight physics", f"# {title}"),
+        )
+        write(self.store / "backlog" / "bug-slice.md", "---\nid: 4\ntype: bug\n---\n\nid: 9\n")
+
+        self.assertEqual(self.fold()["problems"], [])
+
+        story = read_fields(self.store / "backlog" / "story-caddie.md")
+        self.assertEqual((story["id"], story["title"]), ("5", title))
+        self.assertEqual(read_fields(self.store / "backlog" / ".memlog.md")["topic"], title)
+
+    def test_a_ticket_whose_frontmatter_is_not_yaml_is_reported_and_nothing_changes(self):
+        epic = self.write_epic_with_spec()
+        write(epic / "epic-ball.md", "---\ntitle: Ball: flight\n---\n\n# Ball\n")
+        before = snapshot(self.project)
+
+        report = self.fold()
+
+        self.assertEqual(report["folded"], [])
+        (problem,) = report["problems"]
+        self.assertIn("epic-ball/epic-ball.md has invalid frontmatter", problem["problem"])
         self.assertEqual(snapshot(self.project), before)
 
     def test_a_parent_folded_on_a_later_run_leaves_the_folded_childs_ids_alone(self):

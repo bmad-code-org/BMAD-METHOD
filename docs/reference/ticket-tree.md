@@ -1,82 +1,85 @@
 ---
 title: The Ticket Tree
-description: "Reference for Sofia's ticket tree: the folder layout, what each ticket file and tickets.toml entry holds, statuses and who writes them, what makes a ticket ready, and the tickets.py commands."
+description: "Reference for Sofia's ticket tree: folder layout, altitudes, ticket and Refined Story files, tickets.toml entries, status rules, container metadata, and tickets.py commands."
 sidebar:
   order: 2
 ---
 
-These are the exact rules for the ticket tree that Sofia, the Product Owner
-(`bmad-agent-po`), keeps. For the tasks, see
-[Write and Slice the Initiative](../plan/write-and-slice-the-initiative.md),
-[Plan an Epic's Stories](../plan/plan-an-epics-stories.md), and
-[Build and Verify](../build/build-and-verify.md).
+These are the exact rules for the ticket tree maintained by Sofia, the Product Owner (`bmad-agent-po`). For step-by-step usage, see [Write and Slice the Initiative](../plan/write-and-slice-the-initiative.md), [Plan an Epic's Stories](../plan/plan-an-epics-stories.md), and [Build and Verify](../build/build-and-verify.md).
 
-## Layout
+## Layout and Altitudes
 
-The tree is the folder `active_initiative` names under `output_folder`
-(`_bmad-output` by default). Each initiative and epic keeps its own file,
-other skills' run folders, and its retrospective at the top of
-its folder. Its breakdown goes in a `tickets/` folder inside it.
+The ticket tree lives at `{output_folder}/{active_initiative}` (`_bmad-output` by default). Work starts at the lowest altitude (planning level) that holds it and moves up only when scope requires it:
+
+| Altitude | Folder | Scope |
+| --- | --- | --- |
+| Altitude 0 | `program-<slug>/` | A portfolio container grouping multiple bounded initiatives under shared outcomes. |
+| Altitude 1 | `initiative-<slug>/` | A product effort grouping multiple related capabilities (epics). |
+| Altitude 2 | `epic-<slug>/` | One cohesive capability containing stories, spikes, or bugs; a single-capability effort can live as a standalone top-level `epic-<slug>/` folder without a parent initiative. |
+
+Each container stores its own spec file (`<type>-<slug>.md`), `.memlog.md`, companion run folders (such as `prd-*`, `ux-*`, or `arch-*`), and its retrospective at the top of its folder, while its breakdown lives inside a `tickets/` subfolder:
 
 ```text
 _bmad-output/
-  initiative-<slug>/
-    initiative-<slug>.md
-    prd-<slug>/  ux-<slug>/  architecture-<slug>/
+  program-<slug>/                     # optional Altitude 0
+    program-<slug>.md
+    prd-program-<slug>/  arch-enterprise-<slug>/
     tickets/
-      tickets.toml                    # the epics, in build order
-      epic-<slug>/
-        epic-<slug>.md
-        epic-<slug>-retrospective.md
+      tickets.toml                    # [[initiative]] entries, in build order
+      initiative-<slug>/              # Altitude 1 (nested or top-level)
+        initiative-<slug>.md
+        prd-<slug>/  ux-system-<slug>/  arch-spine-<slug>/
         tickets/
-          tickets.toml                # the entries, in build order
-          story-<slug>.md             # only when refined or published
-          story-<slug>-plan.md        # written by the build
-  backlog/                            # tickets with no epic, and their plans
+          tickets.toml                # [[epic]] entries, in build order
+          epic-<slug>/                # Altitude 2 (nested or top-level)
+            epic-<slug>.md
+            epic-<slug>-retrospective.md
+            tickets/
+              tickets.toml            # [[entry]] items, in build order
+              story-<slug>.md         # Refined Story (leaf file; written by default at epic inception)
+              story-<slug>-plan.md    # local build plan written by bmad-build / bmad-build-auto
+  backlog/                            # standalone tickets with no epic, and their plans
 ```
 
-A parent initiative's `tickets.toml` lists child initiatives, each an
-ordinary initiative folder beside it, instead of epics. `tickets.py` refuses
-a tree in the earlier layout, with `tickets.toml` beside the container's own
-file: run `bmad migrate method`.
+**Leaf files** are individual story, bug, or spike markdown files (`story-<slug>.md`, `bug-<slug>.md`, `spike-<slug>.md`) stored inside an epic's `tickets/` folder (or inside `backlog/` when unattached to an epic). A **Refined Story** is a leaf file containing full Given/When/Then acceptance criteria, boundaries, and verified references, marked `refined: true` once approved by the user.
+
+### Program Container Rules
+
+A `program-<slug>/` (`type: program`) nests child `initiative-*` folders under `tickets/` (listed via `[[initiative]]` in `tickets.toml` or discovered as unlisted `tickets/initiative-*` folders). Programs reject `[[epic]]` and `[[entry]]` in their `tickets.toml`. Legacy parent initiatives (`type: initiative` with `[[initiative]]`) check `tickets/initiative-*` first and retain read compatibility for sibling `../initiative-*` folders.
+
+On a program or parent initiative container:
+
+- `tickets.py find`, `pull`, `mark`, `mirror`, `note`, `add`, and `move` exit with an error stating that the container holds initiatives. Point `core.active_initiative` at a child initiative (for example, `program-shop/tickets/initiative-checkout`) before building stories.
+- `tickets.py next` reports `initiatives`, `order_conflict`, and `ready`.
+- `tickets.py status` reports `initiatives[]` and recursively rolls up open child initiatives into aggregate `counts`, `unrefined_epics` (`<child>/<epic>`), `ready_entries` (`<child>/<ref>`), and `open_questions_count` (`done` and `dropped` children contribute only to `counts`, and `waiting_on`-blocked children are omitted from `ready_entries`).
+
+`tickets.py` refuses older layouts where `tickets.toml` or child containers sit beside `<folder>.md` instead of inside `tickets/`; run `bmad migrate method` to upgrade.
 
 ## Ticket Files
 
-An initiative or epic file is the spec at its level.
+Each container file (`program-*.md`, `initiative-*.md`, `epic-*.md`) is the specification at its altitude:
 
 | Section | Holds | Written by |
 | --- | --- | --- |
-| Description, Outcome | What the work is, and what is true when it is done | Sofia |
-| Requirements | One line per requirement, with a stable `R<n>` id naming its source: `R1 (FR-1)`, or on an epic `R1 (parent R3)` | Sofia only |
-| Constraints | Rules the work must keep, each citing its source id; no `R<n>` of their own | Sofia only |
-| Done when | Three to six checks that show the work is finished, judged at closure and by the retrospective | Sofia |
-| Boundaries | What is out of scope, and units the work only touches | Sofia |
-| References | Documents a build reads beside the ticket, such as UX files and the spine | Sofia, when she adopts them |
+| Description, Outcome | What the work is and what is true when it finishes | Sofia |
+| Requirements | Numbered lines with stable `R<n>` ids citing their source (`R1 (E01)` or `R1 (parent R1)`) | Sofia only |
+| Constraints | Rules the work must obey, citing their source id without creating new `R<n>` ids | Sofia only |
+| Done when | Three to six observable completion checks evaluated at closure and retrospective | Sofia |
+| Boundaries | Explicit non-goals and adjacent units the work only touches | Sofia |
+| References | Companion documents downstream skills read beside the ticket (such as UX docs and `arch-spine` / `arch-epic`) | Sofia |
 | Notes | `Assumption:`, `Open question:`, dated `Decision:`, and `Dropped:` lines | Sofia |
 
-The frontmatter names `sources:`, the documents the requirements were derived
-from, and `companions:`, the files downstream skills read beside the ticket.
-Only Sofia re-reads the sources, when she updates the ticket. An epic carries
-`refined: false` until it is refined; an epic file with no `refined` key counts
-as refined.
+Frontmatter lists `sources:` (upstream documents Sofia distilled into the ticket; only Sofia re-reads them during updates) and `companions:` (downstream specs read alongside the ticket). An unrefined epic carries `refined: false` until Sofia refines its requirements; an epic without a `refined` key counts as refined.
 
-A story file uses the same template at story level: Description, a `Verify:`
-line or numbered criteria, Boundaries when it has criteria, References, and
-Notes. A bug adds Reproduction, Cause Hypothesis, and Acceptance Criteria,
-plus `severity` P0 to P3; a spike has Approach and Acceptance Criteria and
-defaults to `hitl: true`.
+A **Refined Story** file (`tickets/story-<slug>.md`) uses the story template: Description, `Verify:` or numbered Given/When/Then acceptance criteria, Boundaries, References, Notes, and `refined: true` once approved (or `refined: false` while still unapproved). A bug leaf file adds Reproduction, Cause Hypothesis, Acceptance Criteria, and `severity` (`P0` to `P3`). A spike leaf file adds Approach and `Verify:` acceptance criteria and defaults to `hitl: true`.
 
-:::note[Example: the room booker]
-In the [room booker](../start/how-bmad-works.md#the-example-app), an office's meeting-room app:
-
-A refined epic, shortened:
-
+:::note[Example: Refined Epic]
 ```markdown wrap
 ---
 type: epic
 title: "Door check-in: people check in at the door"
 parent: initiative-check-in
-covers: [R3, R4]
+covers: [R1]
 risk: medium
 ---
 
@@ -84,8 +87,8 @@ risk: medium
 
 ## Requirements
 
-R1 (parent R3): A person checks in at their room's door tablet.
-R2 (parent R4): A door tablet shows its room's bookings for the day.
+R1 (parent R1): A person checks in at their room's door tablet.
+R2 (parent R1): A door tablet shows its room's bookings for the day.
 
 ## Done when
 
@@ -99,55 +102,43 @@ R2 (parent R4): A door tablet shows its room's bookings for the day.
 ```
 :::
 
-## Entries
+## Entries (`tickets.toml`)
 
-Each `[[entry]]` table in an epic's `tickets.toml` is one story, spike, or
-bug. Table order is build order.
+Each `[[entry]]` table in an epic's `tickets/tickets.toml` represents one story, spike, or bug in build order:
 
 | Key | Meaning |
 | --- | --- |
-| `id` | Never reused in its folder; `move` gives the entry a new id in its new folder. A story is named by its epic's id and its own, such as `2.1` |
+| `id` | Permanent integer id in that folder (`move` assigns the target folder's next id). Referenced externally as `<epic id>.<entry id>`, such as `2.1` |
 | `type` | `story`, `spike`, or `bug` |
-| `title`, `description` | What it delivers |
-| `verify` | How it is checked |
-| `covers` | The epic's requirement ids it delivers |
-| `after` | Real prerequisites only: a sibling's id, `"<epic id>.<entry id>"` in another epic, or `"epic-<slug>"` for a whole epic |
-| `hitl` | `true` when a person does part of the work |
-| `risk` | `low`, `medium`, or `high`: the business impact if the change is wrong |
-| `unknown` | A question that blocks the entry until it is answered and removed |
-| `refine` | `true` to write full acceptance criteria before it starts |
-| `plan_checkpoint` | A person reviews the ticket or plan before the run. Honored by whoever starts the runs, not the build |
-| `done_checkpoint` | Pause after the run until a person says continue. Honored by whoever starts the runs, not the build |
+| `title`, `description` | Short title and 1 to 2 outcome sentences (full criteria live in the Refined Story file) |
+| `verify` | How completion is verified |
+| `covers` | Epic `R<n>` requirement ids delivered by this entry |
+| `after` | Real prerequisites: a sibling id, `"<epic id>.<entry id>"` in another epic, or `"epic-<slug>"` for a whole epic |
+| `hitl` | `true` when a human performs part of the work |
+| `risk` | `low`, `medium`, or `high` business impact if the change is wrong |
+| `unknown` | An unresolved question that blocks the entry until answered and removed |
+| `refine` | Set `true` by default at epic inception so Sofia details every story into an approved Refined Story (`tickets/story-<slug>.md`, `refined: true`) before build pickup; omit only when explicitly opting to build straight from a bare entry |
+| `plan_checkpoint` | Signals an orchestrator to pause for human review before building (ignored by build skills themselves) |
+| `done_checkpoint` | Signals an orchestrator to pause for human sign-off after the build finishes (ignored by build skills themselves) |
 
-Optional keys also include `estimate`, `references`, and `notes`. A build
-that leaves work for a later story in the same epic adds a line to that story's
-`notes`, or to its file's `## Notes`, with `tickets.py note`, as long as no
-build has started it. An entry needs no file to be built. Once a story's file exists, the file is the source
-of truth: a build reads the file, and Sofia keeps the entry's `id`, `type`, `title`,
-`after`, and `hitl` equal to it. `tickets.py status` reports `drift` only for
-`after` and `hitl`.
+Optional keys include `estimate`, `references`, and `notes`. By default at epic inception, Sofia sets `refine = true` and pulls and details every entry into its Refined Story file (`tickets/story-<slug>.md`) for user approval (`refined: true`). If the user chooses to detail only the next story now, remaining `refine = true` entries stay thin in `ready_to_refine` until refined at pickup.
+
+Once a leaf file exists, it is the source of truth for builds, and Sofia keeps the entry's `id`, `type`, `title`, `after`, and `hitl` synced with it (`tickets.py status` flags `drift` when `after` or `hitl` diverge). A build may append a one-line handoff note to a later unstarted entry in the same epic with `tickets.py note` (repo store only).
 
 ## Epic and Initiative Tables
 
-An initiative's `tickets.toml` holds one `[[epic]]` table per epic, in build
-order. A parent initiative holds `[[initiative]]` tables with the same keys,
-and an initiative with no epics holds `[[entry]]` tables; a file holds one
-kind of table.
+An initiative's `tickets/tickets.toml` holds `[[epic]]` tables in build order (or `[[entry]]` tables if the initiative has no epics). A program's `tickets/tickets.toml` holds `[[initiative]]` tables. A single `tickets.toml` never mixes table kinds.
 
 | Key | Meaning |
 | --- | --- |
-| `id` | Permanent; never reused |
-| `slug` | The epic's folder, inside this `tickets/` folder; for a child initiative, its folder beside the parent's |
-| `title` | The epic's name |
-| `description` | What is true when it is done |
-| `covers` | The initiative's requirement ids it delivers |
-| `after` | The epics it depends on, as `[{ epic = 1, needs = "…" }]`, or `initiative = 1` in a parent initiative. It declares the dependency; entries pin it with their own `after`, or the epic file's `after` gates every story until that epic is done |
+| `id` | Permanent integer id counter; never reused |
+| `slug` | Child folder name inside `tickets/` |
+| `title` | Display title of the epic or initiative |
+| `description` | Observable outcome when finished |
+| `covers` | Parent `R<n>` ids delivered by this child |
+| `after` | Dependencies as `[{ epic = 1, needs = "..." }]` (or `initiative = 1` inside a program). Child entries pin specific prerequisites with their own `after`, or the epic file's `after` gates all stories until that epic is done |
 
-`tickets.py status` flags `unpinned_after`, `undeclared_after`, and
-`order_conflict`.
-
-`next_id`, at the top of the file, is the folder's id counter, written by
-`tickets.py move`.
+`next_id` at the top of `tickets.toml` tracks the next unused integer id (maintained by `tickets.py add` and `tickets.py move`).
 
 ```toml
 [[epic]]
@@ -155,77 +146,91 @@ id = 2
 slug = "epic-free-no-show-rooms"
 title = "Free no-show rooms"
 description = "A booked room nobody checks in to is freed, and anyone can book it."
-covers = ["R1", "R2"]
+covers = ["R2"]
 after = [{ epic = 1, needs = "check-ins recorded by the door tablet" }]
 ```
 
-## Status
+### Dependency Validation Flags
 
-A ticket's `status` lives in its build plan, `<type>-<slug>-plan.md`, beside
-`tickets.toml`. The plan stays local on every store; a tracker never receives
-it.
+`tickets.py status` reports three dependency integrity flags so broken cross-epic ordering is caught before implementation:
+
+| Flag | Meaning |
+| --- | --- |
+| `unpinned_after` | A container declares `after = [{ epic = N, needs = "..." }]` in its parent `tickets.toml`, but no story entry (nor the epic file itself) pins an `after` dependency on that upstream epic. |
+| `undeclared_after` | A story entry declares an `after` dependency on another epic that its own epic did not declare in the parent `tickets.toml`. |
+| `order_conflict` | An entry or container depends (`after`) on an item that appears later in `tickets.toml` build order, or forms a cycle. |
+
+## Status and Plan Files
+
+On the repository store, a ticket's live `status` lives in its local build plan (`<type>-<slug>-plan.md` beside `tickets.toml`). Plans always remain local and are never published to external trackers.
 
 | Status | Written by | Board state |
 | --- | --- | --- |
-| No plan and no file (an entry only) | Nobody yet | planned |
-| A story file with no plan yet; then `draft`, `ready-for-dev` | Nobody yet; then the build, as it plans | backlog |
-| `in-progress` | The build | in progress |
-| `blocked` | `bmad-build-auto` when it halts, with the reason in the plan | in progress |
-| `in-review`, `built` | The build; `built` is the last status it writes | review |
-| `done` | You, or a script or AI session you direct: `tickets.py mark` on the repo store; on a tracker, Sofia moves the card when you say so | done |
-| `dropped` | Sofia, when the user says so, with a `Dropped:` line | dropped |
+| No plan and no leaf file (bare entry) | Nobody yet | `planned` |
+| Leaf file with no plan yet; then `draft`, `ready-for-dev` | Sofia (leaf file); then Build as it plans | `backlog` |
+| `in-progress` | Build | `in-progress` |
+| `blocked` | `bmad-build-auto` when it halts, with `blocked_reason` | `in-progress` |
+| `in-review`, `built` | Build (`built` is the final status any build writes) | `review` |
+| `done` | You or an orchestrator via `tickets.py mark` (or Sofia on a tracker store) | `done` |
+| `dropped` | Sofia on user confirmation, with a `Dropped:` note | `dropped` |
 
-The plan's own frontmatter keys:
+Key frontmatter fields on `<type>-<slug>-plan.md`:
 
 | Key | Holds |
 | --- | --- |
-| `ticket` | The entry's id, or the file's stem for a backlog ticket |
+| `ticket` | The entry's id, or the file stem for a standalone `backlog/` ticket |
 | `status` | One of the statuses above |
-| `baseline_revision` | The commit the work starts from; code review and the retrospective diff from it |
+| `baseline_revision` | Commit SHA recorded before implementation begins (used by code review and retrospective) |
 | `type` | `feature`, `bugfix`, `refactor`, or `chore` |
-| `route` | `oneshot` or `full`, set by the build as it plans |
-| `risk` | From the entry; the build may raise it. `bmad-build-auto` never lowers it, and `bmad-build` lowers it only when you say so |
-| `assignee`, `blocked_at`, `blocked_reason` | Who has it, and when and why it was blocked; written by `tickets.py mark` |
-| `deferred`, `followup_review_recommended` | Findings set aside, and whether another review pass is advised; written by `bmad-build-auto` |
+| `route` | `oneshot` or `full` |
+| `risk` | `low`, `medium`, or `high` (started from the entry; Build Auto never lowers it) |
+| `assignee`, `blocked_at`, `blocked_reason` | Ownership and block details written by `tickets.py mark` |
+| `deferred`, `followup_review_recommended` | Deferred findings and follow-up review flag written by `bmad-build-auto` |
 
-`bmad-code-review` appends a dated block under `## Code Review` in the plan
-and never changes status. On a tracker store, `tickets.py mirror` writes the
-tracker's state to the leaf file as `tracker_status`. That state, not the
-plan's `status`, sets the board state and the ready lists, though a plan at
-`blocked`, or with a block recorded, still lists an open story as Blocked.
-The tracker state never makes a build skip planning.
+`bmad-code-review` appends dated findings under `## Code Review` in the plan and never alters `status`. On tracker stores, `tickets.py mirror` writes `tracker_id`, `remote`, and `tracker_status` to the leaf file, and `tracker_status` drives board state and ready lists (while a `blocked` plan still places an open story in Blocked).
 
 ## What Is Ready
 
-Ask Sofia "what's next?", or run `tickets.py next`. Each open ticket falls in
-one list. With a tracker store, `tickets.py next` refuses until you sync ticket
-status from the tracker and rerun it with `--synced`.
+Ask Sofia "what's next?" or run `tickets.py next` (with `--synced` on tracker stores after mirroring status):
 
-| List | When |
+| List | Included when |
 | --- | --- |
-| Blocked | Its plan is `blocked`; a prerequisite is not yet at `in-review`, `built`, or `done`; or a whole epic it waits on is not done. An `unknown` blocks only when no refinement is pending, and a dropped prerequisite still blocks |
-| In progress | Its plan is `in-progress`, `in-review`, or `built` |
-| Ready to refine | A bug, a ticket with no epic, or an entry with `refine = true`, still without approved acceptance criteria. Refining settles its `unknown`, if it has one |
-| Ready to start | Anything else that is not done or dropped |
+| **Blocked** | The plan is `blocked`; a prerequisite is not yet `in-review`, `built`, or `done`; a whole epic it waits on is not `done`; a prerequisite was `dropped`; or an unblocked `unknown` exists when no refinement is pending |
+| **In progress** | The plan is `in-progress`, `in-review`, or `built` |
+| **Ready to refine** | A bug, an unattached ticket, or an entry with `refine = true` that lacks an approved Refined Story file (`tickets/story-<slug>.md` missing or carrying `refined: false`) |
+| **Ready to start** | Any other open ticket whose prerequisites are satisfied (`in-review`, `built`, or `done`), including entries with `refine = true` whose Refined Story file has `refined: true` |
 
-A story at `built` meets the prerequisites of the stories that wait on it, so
-builds can follow one another before anyone marks it done.
+A story at `built` satisfies entry-level `after` prerequisites for downstream stories so implementation can proceed without waiting for final closure.
 
-## The Script
+## Container Status Metadata
 
-`tickets.py` reads the tree and prints one JSON object. Sofia and the build
-skills run it for you; it is installed at `_bmad/method/scripts/tickets.py`.
+`tickets.py status` emits seven template-agnostic metadata fields on every container (and `backlog/`):
 
-| Command | Does |
+| Field | Meaning |
 | --- | --- |
-| `next` | Lists what is ready to refine, ready to start, in progress, and blocked |
-| `status` | Every ticket, resolved, with problems such as drift between an entry and its file |
-| `find <ref>` | One ticket: its entry, its epic, its file if any, and its plan's path |
-| `pull <dir> <id>` | Writes an entry's file in that epic folder |
-| `mark <ref> <status>` | Writes `status` in the plan, creating it if needed; `--assignee <who>` records who has it; `--blocked <reason>` records a block, and a `mark` without it clears the block |
-| `move <from> <ref> <to>` | Moves an entry, its file, and its plan to another folder under that folder's next id, and rewrites every `after` that names it |
-| `mirror` | Records tracker ids and statuses in the leaf files |
+| `container_type` | `"program"`, `"initiative"`, `"epic"`, or `null` (`backlog/`) |
+| `has_spec` | `true` when `<folder>.md` exists, `refined` is not `false`, and `## Requirements` has non-empty content |
+| `unadopted_runs` | Container-local `[{path, template, status}]` entries for non-reserved run folders with frontmatter not yet listed in `sources:` or `companions:` |
+| `companions` | `[{path, template}]` entries resolved from frontmatter `companions:` |
+| `unrefined_epics` | Open epic slugs with `refined: false` (`<child>/<epic>` on program rollups) |
+| `ready_entries` | Ready-to-start entry refs (`<child>/<ref>` on program rollups, or file names under `backlog/`) |
+| `open_questions_count` | Count of active `Open question:` / `Unknown:` lines on the container (and open child epics) plus open tickets' `unknown` fields |
 
-Exit codes: `0` on success, `2` when the store forbids the operation, such
-as `mark` on a tracker store, and `1` on any other error, such as a malformed
-tree or no active initiative.
+## `tickets.py` Subcommands
+
+`tickets.py` is installed at `_bmad/method/scripts/tickets.py` and prints one JSON object per call. Sofia and the build skills invoke it automatically. When called without a folder argument, `next`, `status`, `find`, `body`, `mark`, `mirror`, and `note` resolve `core.active_initiative` (and `next` / `status` also report `backlog/`).
+
+| Subcommand | Purpose |
+| --- | --- |
+| `next [dir] [--synced]` | Lists tickets grouped into `ready_to_refine`, `ready_to_start`, `in_progress`, and `blocked` (or `initiatives` on a program) |
+| `status [dir]` | Resolves every ticket, container metadata field, drift warning, and dependency flag (`unpinned_after`, `undeclared_after`, `order_conflict`) |
+| `find [dir] <ref>` | Resolves one ticket: its entry, epic file, leaf file (if present), `refined` state, prerequisites, and plan path |
+| `body [dir] <ref>` | Renders the title and full markdown body to publish to an external tracker (resolving `covers` lines from the epic) |
+| `pull <dir> <id>` | Writes an entry's leaf file (`tickets/<type>-<slug>.md`) in the given folder |
+| `mark [dir] <ref> <status> [--assignee <who>] [--blocked <reason>]` | Writes `status` (plus optional assignee or block reason) to the ticket's plan file, creating frontmatter-only plans if needed (repo store only) |
+| `mirror [dir]` | Writes tracker ids, remote links, and tracker statuses into leaf files (tracker stores only) |
+| `note [dir] <ref> <text>` | Appends a one-line handoff note to an unstarted ticket's entry `notes` or leaf `## Notes` (repo store only; refuses tickets with a plan or status) |
+| `add <dir>` | Appends a new entry to a folder's `tickets/tickets.toml` using `next_id` |
+| `move <from> <ref> <to>` | Moves an entry, its leaf file, and its plan to another folder under that folder's `next_id` and rewrites every `after` pointing to it |
+
+Exit codes: `0` on success, `2` when the configured store forbids the operation (such as `mark` on a tracker store), and `1` on any other error (such as a malformed tree, program-level build command, or missing active initiative).

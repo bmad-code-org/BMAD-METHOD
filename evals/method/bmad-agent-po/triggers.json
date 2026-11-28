@@ -1,0 +1,122 @@
+[
+  {
+    "query": "create a spec from our onboarding notes in docs/onboarding-notes.md",
+    "should_trigger": true
+  },
+  {
+    "query": "distill this PRD into our initiative ticket",
+    "should_trigger": true
+  },
+  {
+    "query": "write the program ticket from our portfolio charter",
+    "should_trigger": true
+  },
+  {
+    "query": "slice this initiative PRD into epics",
+    "should_trigger": true
+  },
+  {
+    "query": "split the checkout epic into stories",
+    "should_trigger": true
+  },
+  {
+    "query": "break this capability into stories we can build",
+    "should_trigger": true
+  },
+  {
+    "query": "refine the billing epic and adopt its new PRD and UX runs",
+    "should_trigger": true
+  },
+  {
+    "query": "refine story 1.2 so we have full acceptance criteria before building",
+    "should_trigger": true
+  },
+  {
+    "query": "make a bug ticket for the password reset 500 error",
+    "should_trigger": true
+  },
+  {
+    "query": "file a spike to measure Redis latency before we slice epic 3",
+    "should_trigger": true
+  },
+  {
+    "query": "what's ready on the ticket board right now?",
+    "should_trigger": true
+  },
+  {
+    "query": "check the status of epic 2 and tell me if anything is blocked",
+    "should_trigger": true
+  },
+  {
+    "query": "start story 2.1",
+    "should_trigger": true
+  },
+  {
+    "query": "mark story 1.3 done",
+    "should_trigger": true
+  },
+  {
+    "query": "validate these tickets before we publish them to Jira",
+    "should_trigger": true
+  },
+  {
+    "query": "the vendor API contract changed mid-sprint, let's replan epic 2",
+    "should_trigger": true
+  },
+  {
+    "query": "connect Linear as our ticket store",
+    "should_trigger": true
+  },
+  {
+    "query": "Sofia, let's turn these interview notes into a standalone epic",
+    "should_trigger": true
+  },
+  {
+    "query": "write a PRD for the notifications feature",
+    "should_trigger": false
+  },
+  {
+    "query": "help me run product discovery for our new billing epic",
+    "should_trigger": false
+  },
+  {
+    "query": "design the checkout screens and mockups",
+    "should_trigger": false
+  },
+  {
+    "query": "create the system architecture spine for this initiative",
+    "should_trigger": false
+  },
+  {
+    "query": "build story 1.2",
+    "should_trigger": false
+  },
+  {
+    "query": "fix the bug where checkout drops discount codes",
+    "should_trigger": false
+  },
+  {
+    "query": "what should I do next in BMad?",
+    "should_trigger": false
+  },
+  {
+    "query": "write a product brief for my startup idea",
+    "should_trigger": false
+  },
+  {
+    "query": "write a BRD for the vendor portal",
+    "should_trigger": false
+  },
+  {
+    "query": "run a retrospective on epic 2",
+    "should_trigger": false
+  },
+  {
+    "query": "review the code changes in story 1.3",
+    "should_trigger": false
+  },
+  {
+    "query": "rename this function to calculate_discount",
+    "should_trigger": false
+  }
+]

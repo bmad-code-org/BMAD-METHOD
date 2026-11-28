@@ -2,7 +2,7 @@
 
 For a skill the user will write themselves. Its outcome: a valid folder at `{target}` with frontmatter, manifest and starting files in place, and the user knowing what to fill in. Bare paths resolve from `{skill-root}`.
 
-Load `shapes/<shape>/shape.md`, then the module shape the registration line names, if any, to learn which templates they start from. Then `uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --dirs <the folders they asked for> --description "<approved description>"`.
+Load `shapes/<shape>/shape.md`, then the module shape the registration line names, if any, to learn which templates they start from. Then `uv run "{skill-root}/scripts/init_skill.py" --name <name> --dest <parent folder> --shape <shape> --dirs <the folders they asked for> --description "<approved description>"`.
 
 - Add `--bmod <record> --source <update_source>` when the execution plan registers it as a member.
 - With no approved description, leave `--description` off; the scaffold carries a `[TODO:` marker.
