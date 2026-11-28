@@ -367,14 +367,16 @@ def main():
     args = parser.parse_args()
 
     if args.check_codes is not None:
+        deduped: list[str] = []
         seen: set[str] = set()
         for raw in args.check_codes:
             if not raw.strip():
                 parser.error("--check-codes requires non-empty codes")
             key = raw.lower()
-            if key in seen:
-                parser.error(f"duplicate code in --check-codes: {raw}")
-            seen.add(key)
+            if key not in seen:
+                seen.add(key)
+                deduped.append(raw)
+        args.check_codes = deduped
 
     project_root = Path(args.project_root).resolve()
     skill_root = Path(args.skill).resolve()

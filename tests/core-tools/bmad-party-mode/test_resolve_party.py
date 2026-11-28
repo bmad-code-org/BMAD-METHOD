@@ -464,8 +464,8 @@ class TestCheckCodesCli(unittest.TestCase):
         self.assertEqual(out.getvalue(), "")
         self.assertIn("override invalid", err.getvalue())
 
-    def test_check_codes_rejects_empty_and_duplicate_codes(self):
-        for codes in ([""], ["   "], ["sec-hawk", "Sec-Hawk"]):
+    def test_check_codes_rejects_empty_and_deduplicates_repeated_tokens(self):
+        for codes in ([""], ["   "]):
             out, err = io.StringIO(), io.StringIO()
             argv = ["resolve_party.py", "--project-root", "p", "--skill", "s", "--check-codes", *codes]
             with (
@@ -477,6 +477,10 @@ class TestCheckCodesCli(unittest.TestCase):
                     rp.main()
             self.assertEqual(caught.exception.code, 2)
             self.assertEqual(out.getvalue(), "")
+
+        result, _ = self._run_main({}, ({}, {}, [], True, []), ["morpheus", "Morpheus"])
+        self.assertEqual(result["collisions"], [])
+        self.assertEqual(result["clear"], ["morpheus"])
 
 
 if __name__ == "__main__":
