@@ -270,7 +270,8 @@ def _resolve_short_config(central: dict[str, Any], key: str, project_root: Path)
     matches = _find_config_values(central, key)
     if not matches:
         raise RenderError(f"missing config value `{key}`")
-    if len(matches) > 1:
+    # Equal values in several modules are one value; the type keeps `true` and `1` apart.
+    if len({(type(value), value) for _, value in matches}) > 1:
         paths = ", ".join(path for path, _ in matches)
         raise RenderError(f"ambiguous config value `{key}` found at: {paths}")
     path, value = matches[0]
@@ -400,7 +401,7 @@ class _Table:
 
 
 class _ConfigTable(_Table):
-    """`config.key` is the short lookup of one scalar anywhere in the central config; `config.a.b.c` is a path."""
+    """`config.key` looks up a scalar anywhere in the central config (equal copies resolve; differing copies halt); `config.a.b.c` is a path."""
 
     def __init__(self, central: dict[str, Any], table: dict[str, Any], path: str, ctx: _RenderContext) -> None:
         super().__init__(path)
