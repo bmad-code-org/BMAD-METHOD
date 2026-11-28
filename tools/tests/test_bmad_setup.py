@@ -18,6 +18,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SETUP_PY = REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts" / "setup.py"
 BMAD_SOURCE = "github:bmad-code-org/BMAD-METHOD/skills"
 SHARED_SCRIPTS = (
+    "bmod_utils.py",
     "config_utils.py",
     "render_skill.py",
     "resolve_config.py",
@@ -271,9 +272,10 @@ def user_toml_files(root: Path) -> list[Path]:
 
 
 def scripts_match(dest: Path, src: Path) -> bool:
+    setup = load_setup()
     dest_items = list(dest.iterdir())
     dest_files = {p.name: p.read_bytes() for p in dest_items if p.is_file() and not p.is_symlink()}
-    src_files = {p.name: p.read_bytes() for p in src.iterdir() if p.is_file()}
+    src_files = {p.name: p.read_bytes() for p in src.iterdir() if p.is_file() and p.name in setup.SHARED_SCRIPTS}
     return len(dest_items) == len(dest_files) and dest_files == src_files
 
 
@@ -685,6 +687,7 @@ class BmadSetupTests(unittest.TestCase):
             self._assert_scripts_identity(scripts, skill / "scripts")
 
     def test_identical_scripts_copy_stays_a_copy(self):
+        setup = load_setup()
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
@@ -693,7 +696,7 @@ class BmadSetupTests(unittest.TestCase):
             scripts = project / "_bmad" / "scripts"
             scripts.mkdir(parents=True)
             for item in (skill / "scripts").iterdir():
-                if item.is_file():
+                if item.is_file() and item.name in setup.SHARED_SCRIPTS:
                     shutil.copy2(item, scripts / item.name)
             marker = scripts / "resolve_config.py"
             source_marker = skill / "scripts" / marker.name
@@ -1782,7 +1785,7 @@ class BmadSetupRepairTests(unittest.TestCase):
             self.assertEqual(alpha["skills"], ["alpha-skill"])
             self.assertEqual(alpha["scripts"], "repaired")
             core = next(item for item in report["modules"] if item["module"] == "core-tools")
-            self.assertEqual(core["scripts"], "created")
+            self.assertEqual(core["scripts"], "current")
             config = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))
             self.assertEqual(config["modules"]["alpha"]["existing"], "keep")
             self.assertEqual(config["modules"]["alpha"]["number"], 7)
@@ -1813,7 +1816,7 @@ class BmadSetupRepairTests(unittest.TestCase):
             self.assertEqual(first["config"], "created")
             self.assertEqual(first["custom_gitignore"], "created")
             bmad = project / "_bmad"
-            self.assertEqual([item.name for item in (bmad / "core-tools" / "scripts").iterdir()], [".gitkeep"])
+            self.assertFalse((bmad / "core-tools").exists())
             self.assertTrue((bmad / "alpha" / "scripts" / "tool.py").is_file())
             self.assertFalse((bmad / "alpha" / "scripts" / ".gitkeep").exists())
             before = snapshot(project)
@@ -1832,6 +1835,55 @@ class BmadSetupRepairTests(unittest.TestCase):
             self.assertIsNone(second["next"])
             self.assertEqual(snapshot(project), before)
             self.assertEqual(bmad.stat().st_ino, inode)
+
+    def test_setup_installs_only_allowlisted_shared_scripts_and_prunes_legacy_bloat(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = root / "bmad"
+            write(skill / "SKILL.md", "---\nname: bmad\n---\n")
+            write(skill / "assets" / "config.template.toml", MINIMAL_CONFIG)
+            (skill / "scripts").mkdir(parents=True, exist_ok=True)
+            for path in (REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts").glob("*.py"):
+                shutil.copy2(path, skill / "scripts" / path.name)
+            write_core(root)
+            write_module_skill(root, "quiet-skill", "quiet")
+
+            first = setup_report(self, project, skill)
+            self.assertEqual(first["shared_scripts"], "created")
+            bmad = project / "_bmad"
+            installed_names = {p.name for p in (bmad / "scripts").iterdir()}
+            self.assertEqual(installed_names, set(setup.SHARED_SCRIPTS))
+            for excluded in ("setup.py", "migrate_v6.py", "knowledge.py", "validate_manifests.py", "stamp_release.py"):
+                self.assertFalse((bmad / "scripts" / excluded).exists(), excluded)
+            self.assertFalse((bmad / "core-tools").exists())
+            self.assertFalse((bmad / "quiet").exists())
+            self.assertTrue(status_report(self, project, skill)["current"])
+
+            # Simulate an older project with leaked shared scripts and legacy module .gitkeep / pick_methods.py.
+            for leaked in ("setup.py", "migrate_v6.py", "knowledge.py", "validate_manifests.py", "stamp_release.py"):
+                write(bmad / "scripts" / leaked, "# legacy\n")
+            write(bmad / "core-tools" / "scripts" / ".gitkeep", "")
+            write(bmad / "core-tools" / "scripts" / "pick_methods.py", "# legacy\n")
+            write(bmad / "quiet" / "scripts" / ".gitkeep", "")
+
+            stale = status_report(self, project, skill)
+            self.assertEqual(stale["shared_scripts"], "stale")
+            self.assertEqual({item["scripts"] for item in stale["modules"]}, {"stale"})
+
+            repaired = setup_report(self, project, skill)
+            self.assertEqual(repaired["shared_scripts"], "repaired")
+            self.assertEqual({item["scripts"] for item in repaired["modules"]}, {"repaired"})
+            self.assertEqual({p.name for p in (bmad / "scripts").iterdir()}, set(setup.SHARED_SCRIPTS))
+            self.assertFalse((bmad / "core-tools").exists())
+            self.assertFalse((bmad / "quiet").exists())
+
+            settled = setup_report(self, project, skill)
+            self.assertFalse(settled["changed"])
+            self.assertEqual(settled["shared_scripts"], "current")
+            self.assertEqual({item["scripts"] for item in settled["modules"]}, {"current"})
 
     def test_setup_invalid_config_and_unreadable_script_are_atomic(self):
         setup = load_setup()
@@ -3138,7 +3190,8 @@ class BmadStatusTests(unittest.TestCase):
             skill = write_dest_bmad(root)
             write_module_skill(root, "alpha-skill", "alpha", update_source="plugin:alpha")
             setup_report(self, project, skill)
-            shutil.rmtree(project / "_bmad" / "alpha")
+            if (project / "_bmad" / "alpha").exists():
+                shutil.rmtree(project / "_bmad" / "alpha")
             write(project / "_bmad" / "alpha", "a file where the module folder belongs\n")
 
             report = status_report(self, project, skill)
@@ -3561,9 +3614,9 @@ class BmadInstallMessageTests(unittest.TestCase):
             first = {item["module"]: item for item in setup_report(self, project, skill)["modules"]}
             second = {item["module"]: item for item in setup_report(self, project, skill)["modules"]}
 
-            self.assertEqual(first["alpha"]["scripts"], "created")
+            self.assertEqual(first["alpha"]["scripts"], "current")
             self.assertEqual(first["alpha"]["post_install_message"], "Run alpha-skill to start.")
-            self.assertEqual(first["quiet"]["scripts"], "created")
+            self.assertEqual(first["quiet"]["scripts"], "current")
             self.assertNotIn("post_install_message", first["quiet"])
             self.assertNotIn("post_install_message", first["blank"])
             self.assertEqual(second["alpha"]["scripts"], "current")
@@ -4276,16 +4329,16 @@ class WindowsHardeningTests(unittest.TestCase):
         setup = load_setup()
         with tempfile.TemporaryDirectory() as tmp:
             src = Path(tmp) / "src"
-            write(src / "setup.py", "print('ok')\n")
-            os.chmod(src / "setup.py", 0o444)
+            write(src / "resolve_config.py", "print('ok')\n")
+            os.chmod(src / "resolve_config.py", 0o444)
             dest = Path(tmp) / "dest"
             try:
                 setup.ensure_scripts(dest, src)
-                copied = dest / "setup.py"
+                copied = dest / "resolve_config.py"
                 self.assertTrue(copied.is_file())
                 self.assertTrue(copied.stat().st_mode & 0o200)
             finally:
-                os.chmod(src / "setup.py", 0o644)
+                os.chmod(src / "resolve_config.py", 0o644)
 
     def test_materialize_bmad_updates_readonly_config_files(self):
         setup = load_setup()

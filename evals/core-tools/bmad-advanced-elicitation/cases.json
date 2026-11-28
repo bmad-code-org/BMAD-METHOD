@@ -18,7 +18,7 @@
       "_bmad/scripts/resolve_config.py",
       "_bmad/scripts/roster.py",
       "_bmad/scripts/config_utils.py",
-      "_bmad/scripts/knowledge.py"
+      "_bmad/scripts/bmod_utils.py"
     ]
   },
   {
@@ -38,7 +38,7 @@
       "_bmad/scripts/resolve_config.py",
       "_bmad/scripts/roster.py",
       "_bmad/scripts/config_utils.py",
-      "_bmad/scripts/knowledge.py"
+      "_bmad/scripts/bmod_utils.py"
     ]
   },
   {
@@ -59,7 +59,7 @@
       "_bmad/scripts/resolve_config.py",
       "_bmad/scripts/roster.py",
       "_bmad/scripts/config_utils.py",
-      "_bmad/scripts/knowledge.py"
+      "_bmad/scripts/bmod_utils.py"
     ]
   },
   {
@@ -79,7 +79,7 @@
       "_bmad/scripts/resolve_config.py",
       "_bmad/scripts/roster.py",
       "_bmad/scripts/config_utils.py",
-      "_bmad/scripts/knowledge.py"
+      "_bmad/scripts/bmod_utils.py"
     ]
   }
 ]
