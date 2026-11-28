@@ -6,10 +6,12 @@
 
 import contextlib
 import io
+import json
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-party-mode/scripts"))
 import resolve_party as rp  # noqa: E402
@@ -379,6 +381,45 @@ class TestRejectedOverride(unittest.TestCase):
         self.assertEqual(wf, {"default_party": "shipped"})
         self.assertIn("not applied", err.getvalue())
         self.assertIn("party_members[0].code must be a string", err.getvalue())
+
+
+class TestCheckCodesCli(unittest.TestCase):
+    def _run_main(self, workflow, roster_result, codes):
+        out, err = io.StringIO(), io.StringIO()
+        argv = ["resolve_party.py", "--project-root", "p", "--skill", "s", "--check-codes", *codes]
+        with (
+            mock.patch.object(sys, "argv", argv),
+            mock.patch.object(rp, "load_workflow", return_value=workflow),
+            mock.patch.object(rp, "load_roster", return_value=roster_result),
+            contextlib.redirect_stdout(out),
+            contextlib.redirect_stderr(err),
+        ):
+            rp.main()
+        return json.loads(out.getvalue()), err.getvalue()
+
+    def test_check_codes_exits_nonzero_when_roster_unresolved(self):
+        out, err = io.StringIO(), io.StringIO()
+        argv = ["resolve_party.py", "--project-root", "p", "--skill", "s", "--check-codes", "analyst"]
+        with (
+            mock.patch.object(sys, "argv", argv),
+            mock.patch.object(rp, "load_workflow", return_value={}),
+            mock.patch.object(rp, "load_roster", return_value=({}, {}, [], False, [])),
+            mock.patch.object(rp, "_last_error", "roster script missing"),
+            contextlib.redirect_stdout(out),
+            contextlib.redirect_stderr(err),
+        ):
+            with self.assertRaises(SystemExit) as caught:
+                rp.main()
+        self.assertEqual(caught.exception.code, 1)
+        self.assertEqual(out.getvalue(), "")
+        self.assertIn("roster script missing", err.getvalue())
+
+    def test_check_codes_succeeds_on_empty_resolved_roster_and_reports_problems(self):
+        workflow = {"party_members": [{"code": "sec-hawk", "name": "Vex"}]}
+        result, _ = self._run_main(workflow, ({}, {}, [], True, ["bad group entry"]), ["sec-hawk", "analyst"])
+        self.assertEqual([c["requested"] for c in result["collisions"]], ["sec-hawk"])
+        self.assertEqual(result["clear"], ["analyst"])
+        self.assertEqual(result["roster_problems"], ["bad group entry"])
 
 
 if __name__ == "__main__":

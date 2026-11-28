@@ -704,6 +704,13 @@ class TestCliAndOutput(ProjectCase):
         write(int_one / "SKILL.md", skill_md("bmad-int-one", "Int command.", extra_fm="disable-model-invocation: 1\n"))
         self.assertEqual(len(findings_by_rule(vs.validate_skill(str(int_one)), "SKILL-06")), 1)
 
+        quoted = Path(self._tmp.name) / "bmad-quoted-manual"
+        write(
+            quoted / "SKILL.md",
+            skill_md("bmad-quoted-manual", "Manual command.", extra_fm="disable-model-invocation: 'true'\n"),
+        )
+        self.assertEqual(findings_by_rule(vs.validate_skill(str(quoted)), "SKILL-06"), [])
+
 
 if __name__ == "__main__":
     unittest.main()

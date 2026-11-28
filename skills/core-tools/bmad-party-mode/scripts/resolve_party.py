@@ -381,7 +381,13 @@ def main():
     collective, index, installed_codes = build_collective(agents, workflow.get("party_members", []), guests)
 
     if args.check_codes:
-        _emit(check_codes(args.check_codes, collective, index))
+        if not agents_ok:
+            sys.stderr.write(f"error: could not resolve installed roster: {_last_error or 'roster unavailable'}\n")
+            sys.exit(1)
+        result = check_codes(args.check_codes, collective, index)
+        if roster_problems:
+            result["roster_problems"] = roster_problems
+        _emit(result)
         return
 
     if args.party:
