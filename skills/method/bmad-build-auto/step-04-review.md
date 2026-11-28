@@ -148,9 +148,9 @@ Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` fr
 
 The final status is `built`, or `done` on a follow-up pass of a plan that was `done`.
 
-If `{plan_file}` has `## Tasks & Acceptance`, tick `- [x]` each execution task this build completed; leave the rest `[ ]` and name them under residual risks.
+If `{plan_file}` has `## Tasks & Acceptance`, tick `- [x]` every completed execution task (keep existing `[x]` ticks); leave only unfinished tasks `[ ]` and name them under residual risks.
 
-Write the following details to `{plan_file}` under `## Auto Run Result`:
+Write or update `## Auto Run Result` in `{plan_file}` so it holds a single `Status:` line matching the final status, with:
 - Status: <final status>
 - Summary of implemented change
 - Files changed with one-line descriptions
