@@ -1,14 +1,15 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 #
-# Kept deliberately in step with greptile.json: both bots read the same three
+# Kept deliberately in step with greptile.json: both bots read the same shared
 # guideline files and are given the same scoped instructions, so their findings
 # can be compared rather than merged.
 
 language: en-US
 early_access: true
 tone_instructions: |
-  Do not comment on the wording, tone, phrasing, or length of prompt text —
-  those are authoring decisions, not defects.
+  Skip subjective voice nits, but flag prompt-quality defects from
+  tools/skill-authoring.md, canon.md, and standards.md: bloat, hedging,
+  diff residue, and broken progressive disclosure. Prefer cuts over padding.
 
 reviews:
   profile: chill
@@ -73,25 +74,33 @@ reviews:
     - '!**/validation-report-*.html'
     - '!CHANGELOG.md'
   path_instructions:
-    - path: src/**
+    - path: skills/**
       instructions: |
         Source changed. Check whether docs/ needs a matching update — new
         features, changed behavior, renamed concepts, altered CLI flags, or
         modified configuration options should all be reflected in the relevant
         doc pages. Flag missing or outdated docs.
-    - path: src/*-skills/**
+    - path: skills/**/*.md
       instructions: |
-        Skill file. This is prompt text read by an agent at runtime, not
-        executable code. Confine review to claims checkable against the
-        repository: paths and cross-references that do not resolve, invocation
-        syntax that does not match the referenced skill, instructions that
-        contradict another file, documented behavior the code does not
-        implement, and violations of the rule catalog in
-        tools/skill-validator.md — that catalog is the single source of truth
-        for SKILL.md metadata, workflow constraints, step file structure, path
-        references, variable resolution, sequential execution, and skill
-        invocation syntax.
-    - path: src/bmm-skills/agents/**
+        Prompt text read by an agent at runtime (skills, agents, templates,
+        references, and module help/ files). Review against both repository
+        correctness and the Toolsmith authoring bar in tools/skill-authoring.md,
+        skills/toolsmith/bmad-toolsmith/canon.md, and
+        skills/toolsmith/bmad-toolsmith/lenses/standards.md:
+        - Correctness: unresolved paths or cross-references (module help/ files
+          use module-relative `help/<topic>.md` refs), wrong skill invocation
+          syntax, documented behavior code does not implement, and genuine
+          factual contradictions across files.
+        - Prompt quality: bloat, dense paragraphs, bolted-on hedging or exotic
+          corner cases, change-history residue ("replaces X", "no longer Y", or
+          override caveats for stale sibling docs), over-explaining what a capable
+          model can infer, broken progressive disclosure (inlining branch-only
+          procedures instead of references/ or topic files), and core-vs-module
+          leaks (skills/core-tools/ must stay 100% module-agnostic).
+        - Do not treat a concise summary that omits fallbacks documented
+          elsewhere as a contradiction, and prefer suggesting cuts or
+          simplifications over adding extra qualifiers or branches.
+    - path: skills/*/*-agent-*/**
       instructions: |
         Agent skill. The persona is configured in customize.toml under [agent]:
         check that every {agent.*} placeholder the SKILL.md interpolates has a
@@ -105,15 +114,20 @@ reviews:
       instructions: |
         Build script/tooling. Check error handling and that failures exit
         non-zero.
-    - path: src/scripts/**
+    - path: skills/**/scripts/**
       instructions: |
-        Build script/tooling. Check error handling and that failures exit
+        Skill script/tooling. Check error handling and that failures exit
         non-zero.
 
 knowledge_base:
   code_guidelines:
     enabled: true
-    filePatterns: [AGENTS.md, tools/skill-validator.md]
+    filePatterns:
+      - AGENTS.md
+      - tools/skill-authoring.md
+      - skills/toolsmith/bmad-toolsmith/canon.md
+      - skills/toolsmith/bmad-toolsmith/lenses/standards.md
+      - tools/skill-validator.md
 
 chat:
   auto_reply: true  # Response to mentions in comments, a la @coderabbit review

@@ -1,0 +1,37 @@
+<svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 178" role="img" aria-labelledby="scenario-prototype-title scenario-prototype-desc">
+<title id="scenario-prototype-title">Turn a Prototype into a Product, step by step</title>
+<desc id="scenario-prototype-desc">In Clarify, the prototype and your notes on what it taught; in Plan, Sofia writes the initiative and cuts epics, UX and architecture are adopted, and Sofia plans the first epic's stories; in Build and verify, bmad-build rebuilds it story by story.</desc>
+<defs>
+<marker id="scenario-prototype-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+<marker id="scenario-prototype-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+</defs>
+<text class="k" x="99" y="17">CLARIFY</text>
+<rect class="node hot" x="99" y="24" width="170" height="50" rx="2"/>
+<text class="n" x="184" y="46">The prototype</text>
+<text class="sub mid" x="184" y="63">used for a week</text>
+<text class="k" x="295" y="17">CLARIFY</text>
+<rect class="node" x="295" y="24" width="170" height="50" rx="2"/>
+<text class="n" x="380" y="46">Your notes</text>
+<text class="sub mid" x="380" y="63">what it taught you</text>
+<path class="edge" d="M269 49 H294" marker-end="url(#scenario-prototype-arrow)"/>
+<text class="k" x="491" y="17">PLAN</text>
+<rect class="node" x="491" y="24" width="170" height="50" rx="2"/>
+<text class="n" x="576" y="46">Sofia</text>
+<text class="sub mid" x="576" y="63">the initiative and epics</text>
+<path class="edge" d="M465 49 H490" marker-end="url(#scenario-prototype-arrow)"/>
+<text class="k" x="99" y="107">PLAN</text>
+<rect class="node" x="99" y="114" width="170" height="50" rx="2"/>
+<text class="n" x="184" y="136">UX, architecture</text>
+<text class="sub mid" x="184" y="153">adopted by Sofia</text>
+<path class="edge" d="M576 74 V92 H184 V113" marker-end="url(#scenario-prototype-arrow)"/>
+<text class="k" x="295" y="107">PLAN</text>
+<rect class="node" x="295" y="114" width="170" height="50" rx="2"/>
+<text class="n" x="380" y="136">Sofia</text>
+<text class="sub mid" x="380" y="153">the first epic's stories</text>
+<path class="edge" d="M269 139 H294" marker-end="url(#scenario-prototype-arrow)"/>
+<text class="k" x="491" y="107">BUILD</text>
+<rect class="node" x="491" y="114" width="170" height="50" rx="2"/>
+<text class="n" x="576" y="136">bmad-build</text>
+<text class="sub mid" x="576" y="153">built again, properly</text>
+<path class="edge" d="M465 139 H490" marker-end="url(#scenario-prototype-arrow)"/>
+</svg>

@@ -1,0 +1,43 @@
+<svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 424" role="img" aria-labelledby="rb-title rb-desc">
+<title id="rb-title">The room booker's check-in feature as a ticket tree</title>
+<desc id="rb-desc">One initiative, Check in or lose the room, is the spec for the feature. It has two epics, door check-in and freeing no-show rooms, each built and deployed as one unit. Each epic holds its stories in build order. Story 1.1, showing each room on its door tablet, is marked hitl because a person does part of it. Story 2.1 waits on story 1.2.</desc>
+<defs>
+<marker id="rb-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+<marker id="rb-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head soft" d="M0 0 L10 5 L0 10 z"/></marker>
+</defs>
+<rect class="node hot" x="190" y="20" width="380" height="62" rx="2"/>
+<text class="n" x="380" y="46">Check in or lose the room</text>
+<text class="sub mid" x="380" y="66">initiative · the spec for the whole feature</text>
+<path class="edge" d="M380 82 C 380 112 200 108 200 136" marker-end="url(#rb-arrow)"/>
+<path class="edge" d="M380 82 C 380 112 560 108 560 136" marker-end="url(#rb-arrow)"/>
+<rect class="node" x="40" y="138" width="320" height="58" rx="2"/>
+<text class="n" x="200" y="162">1 · Door check-in</text>
+<text class="sub mid" x="200" y="181">epic · built and deployed together</text>
+<rect class="node" x="400" y="138" width="320" height="58" rx="2"/>
+<text class="n" x="560" y="162">2 · Free no-show rooms</text>
+<text class="sub mid" x="560" y="181">epic · built and deployed together</text>
+<path class="edge" d="M60 196 V354"/>
+<path class="edge" d="M60 250 H78" marker-end="url(#rb-arrow)"/>
+<path class="edge" d="M60 302 H78" marker-end="url(#rb-arrow)"/>
+<path class="edge" d="M60 354 H78" marker-end="url(#rb-arrow)"/>
+<rect class="node" x="80" y="230" width="280" height="40" rx="2"/>
+<text class="n small" x="92" y="255">1.1  Show each room on its tablet</text>
+<rect class="chip warn" x="300" y="240" width="48" height="20" rx="2"/>
+<text class="k" x="310" y="254">hitl</text>
+<rect class="node" x="80" y="282" width="280" height="40" rx="2"/>
+<text class="n small" x="92" y="307">1.2  Check in at the door</text>
+<rect class="node" x="80" y="334" width="280" height="40" rx="2"/>
+<text class="n small" x="92" y="359">1.3  Show the day's bookings</text>
+<path class="edge" d="M420 196 V354"/>
+<path class="edge" d="M420 250 H438" marker-end="url(#rb-arrow)"/>
+<path class="edge" d="M420 302 H438" marker-end="url(#rb-arrow)"/>
+<path class="edge" d="M420 354 H438" marker-end="url(#rb-arrow)"/>
+<rect class="node" x="440" y="230" width="280" height="40" rx="2"/>
+<text class="n small" x="452" y="255">2.1  Start the no-show timer</text>
+<rect class="node" x="440" y="282" width="280" height="40" rx="2"/>
+<text class="n small" x="452" y="307">2.2  Free it after the window</text>
+<rect class="node" x="440" y="334" width="280" height="40" rx="2"/>
+<text class="n small" x="452" y="359">2.3  Keep the rest of a series</text>
+<path class="edge soft" d="M360 302 C 400 302 400 262 438 262" marker-end="url(#rb-arrow-soft)"/>
+<text class="k" x="370" y="330">after</text>
+</svg>

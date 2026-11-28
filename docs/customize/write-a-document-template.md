@@ -1,28 +1,30 @@
 ---
 title: 'Write a Document Template'
-description: Add your own template to bmad-facilitate, replace or hide a shipped one, add your team's rules to a template, and set how rendered views look.
+description: Add your own template to bmad-facilitate, replace or extend a shipped one, configure voice and visuals, and control how self-contained HTML views look.
 sidebar:
   order: 7
 ---
 
-Use the `bmad-facilitate` template library to make the skill coach your team through your own document types. Everything about a document is data. Template files say what each document asks for and what the review checks. The skill's customization says where templates live, where the result goes, and how the HTML view looks.
+Use the `bmad-facilitate` template format to teach BMad new document types or tailor existing ones to your organization. Each template is a plain markdown file specifying the sections, coaching prompts, and review criteria, while `bmad-facilitate` settings control template libraries, visuals, voice guides, and HTML views.
 
-New to templates? [How Document Templates Work](./how-document-templates-work.md) explains the pieces, and [Customize a Document for Your Team](./customize-a-document-for-your-team.md) walks through changing a shipped one. This page is the full guide to the file format.
+If you are new to templates, read [How Document Templates Work](./how-document-templates-work.md) for the overview or follow [Customize a Document for Your Team](./customize-a-document-for-your-team.md) for a guided walkthrough. This page covers the full template file format and visual configuration.
 
-## When to use this
+## When to Use This
 
-- Your team has a document type the shipped templates do not cover.
-- Your organization has its own format for a postmortem, a proposal, or a decision record.
-- A shipped template is right, but your team has rules to add: a policy to cite, a section it must contain, a check for the review.
-- Rendered views should carry your team's look.
+- Your team relies on a document type the shipped templates do not include.
+- Your organization requires a specific format for a postmortem, proposal, or architecture record.
+- A shipped template fits mostly well, and you want to add required sections, policies, or review checks.
+- You want rendered HTML artifacts to follow specific layout guidelines or visual references.
 
 :::note[Prerequisites]
-BMad installed with the core tools, and `bmad setup` run. Templates go in `_bmad/custom/facilitate-templates/`. Settings go in `_bmad/custom/bmad-facilitate.toml`, which the team commits; `bmad-facilitate.user.toml` beside it holds personal changes. `bmad-customize` writes any of these for you, an extension of a shipped template included: tell it what to change, such as "every PRD opens with a quote". How overrides merge is in [Customize BMad](./customize-bmad.md).
+BMad installed with Core Tools and `bmad setup` run. Project templates live in `_bmad/custom/facilitate-templates/`, and workflow settings live in `_bmad/custom/bmad-facilitate.toml` (team) or `bmad-facilitate.user.toml` (personal). You can ask `bmad-customize` to write any template extension or workflow setting for you; see [Customize BMad](./customize-bmad.md).
 :::
 
-## Add a template to the library
+## Add a Template to the Library
 
-Save the template in `_bmad/custom/facilitate-templates/`, with any rubric or method catalog beside it. The skill lists every markdown file there whose frontmatter has `template:`. Nothing else needs registering.
+The fastest way to author a new template is to ask `bmad-facilitate` directly in chat (for example, "bmad-facilitate, make a template for vehicle appraisal reports"). It coaches you through the structure using all the rules below and saves the file in `_bmad/custom/facilitate-templates/`. If you want a custom agent to offer the template as well, ask Smithy (`bmad-toolsmith`).
+
+To write one by hand, save a markdown file with a `template:` frontmatter field in `_bmad/custom/facilitate-templates/`, placing any rubric or method catalog beside it. No separate registration step is required.
 
 ```yaml
 ---
@@ -39,37 +41,41 @@ updated: ""
 
 | Field | What it holds |
 | --- | --- |
-| `template` | Kebab-case id. It names the run folder, and a later update uses it to find the template. |
-| `version` | Optional version of the template. It is copied into each document, so a later update can say the template has moved on. |
-| `description` | One short line saying what the template is for. Help lists it for every template on every run, so keep it under about 80 characters. Quote it, because a colon breaks unquoted YAML. |
-| `not_for` | Optional short line naming what the template is not for, and the template to use instead. Read with `description` when choosing one, and not listed in help. |
-| `paced` | Optional. `true` walks the sections in order, one at a time, for a document whose conversation matters as much as the result. See [Walk the sections in order](#walk-the-sections-in-order). |
-| `facilitation_order` | The sections by id, in the order the skill takes them up, with `?` on each one that is not required. See [Order the sections](#order-the-sections). |
-| `guidance` | Optional rules shared by a family of templates and read as part of each, as a path relative to the template, or the bare name `guidance-planning` for the shipped planning rules: stakes from hobby to regulated, `[ASSUMPTION]` tags in the body, stable ids and testable requirements, and detail pushed to the level below. Every shipped template sets it. Without it the skill names no stakes levels and tags nothing in the body; a document such as fiction says what it needs in its own comments. |
-| `agents` | Optional list of the skills that run this template, such as `[bmad-agent-pm]`. The `bmad` skill uses it to say who offers the template. A template in an agent's `assets/` folder counts as that agent's without it. |
-| `rubric` | Optional path to a rubric for the review, relative to the template, or the bare name `rubric-planning` for the shipped planning rubric. Empty uses the shipped general rubric, which suits any document. |
-| `methods` | Optional path to a method catalog, relative to the template: a CSV whose rows supply the questions the coaching asks. |
-| `output` | Optional run folder for this template. It may use `{output_folder}`, `{active_initiative}`, `{id}` and `{slug}`. |
-| `style` | Optional CSS file for this template's rendered view, relative to the template. |
-| `view` | Optional layout for the rendered view: `document`, `slides`, or an HTML file relative to the template. It says what the view looks like, not whether it is made. See [Give a template its own view](#give-a-template-its-own-view). |
-| `html_view` | Optional. Whether this template's view is made: `always`, `offer` or `never`, replacing the team's setting for this template. Set `always` when the view is the deliverable, as `pitch-deck` does for its slides. A team's `never` still stops it. |
+| `template` | Kebab-case id used to name the run folder and match updates back to the template. |
+| `version` | Optional template version copied into generated documents so later updates know if the template changed. |
+| `description` | Short line (under ~80 characters) describing what the template is for. Quote it if it contains a colon. |
+| `not_for` | Optional short line stating what the template does not cover and which template to use instead. |
+| `mode` | Optional starting mode: `freeform` (default), `step-by-step`, or `fast`. A team or user `mode` setting overrides it. |
+| `order` | Optional. Set `fixed` when section order matters as much as the result; freeform then runs step-by-step, and fast preserves order. |
+| `facilitation_order` | Section ids in the order the coach raises them. See [Order the Sections](#order-the-sections). |
+| `guidance` | Optional path relative to the template pointing to shared family rules (such as `guidance-method.md` in Method or `guidance-planning.md` in Founder). |
+| `agents` | Optional list of agent skill names that offer this template (such as `[bmad-agent-pm]`). Any agent the user asks directly can still run it. |
+| `rubric` | Optional path to a review rubric relative to the template, or `rubric-general` for the shipped default rubric. |
+| `methods` | Optional path to a CSV method catalog relative to the template supplying structured coaching questions. |
+| `companions` | Optional list of sibling filenames expected beside the main document (for example, `[DESIGN.md, EXPERIENCE.md]`), tracked across Resume, Progress, Review, and Finalize. |
+| `forbid_id_prefixes` | Optional list of disallowed id prefixes (for example, `[FR]`) checked during Finalize. |
+| `lint` | Optional custom script path or command (supporting `{doc}`, `{run}`, and `{project-root}`) executed during Finalize step 1. |
+| `output` | Optional run folder or `.md` path supporting `{project-root}`, `{output_folder}`, `{active_initiative}`, `{id}`, and `{slug}`. |
+| `style` | Optional visual style guidance for this template's HTML artifact: a CSS file, design-system doc, starter HTML file, reference screenshot path, or verbal aesthetic preference relative to the template. |
+| `layout` | Optional layout guide or reference file for the HTML artifact. Guides appearance and emphasis, never whether HTML is generated. |
+| `view` | Optional default HTML view behavior: `always`, `offer`, or `never`. Team or user `view` settings override it (`never` disables HTML views globally). |
 
-`template`, `version` and `view` stay in the finished document, as does any field you add for a view to show. The other fields stay out.
+`template` and `version` remain in finished documents, along with any extra frontmatter fields your HTML view displays; orchestration-only fields stay out of the final markdown.
 
-A method catalog has the header `category,method,name,description,key_questions`, with the key questions separated by `|`. The shipped `security-review` template uses one for the OWASP Top 10 and STRIDE:
+A method catalog CSV uses the header `category,name,key_questions`, separating questions with `|`:
 
 ```csv
-category,method,name,description,key_questions
-release,rollback,Rollback,How a change is undone.,"How is this change undone?|Who can run the rollback?"
+category,name,key_questions
+release,Rollback,"How is this change undone?|Who can run the rollback?"
 ```
 
-## Replace a shipped template
+## Replace a Shipped Template
 
-The first template with an id wins, and installed modules' templates are searched last, so a template in any library with the same `template:` value replaces one a module installed. To change an installed template, copy it from the module's `doc-templates/` folder into yours, with any rubric or catalog it names, keep its `template:` value and edit the copy. To use your organization's postmortem format, save it in your folder with `template: postmortem`.
+`bmad-facilitate` searches project and personal libraries before installed modules, and the first match for an id wins. To replace a shipped template outright, copy it (plus any rubric or catalog it references) from the module's `doc-templates/` folder into `_bmad/custom/facilitate-templates/`, keep the same `template:` id, and edit the copy.
 
-## Use more than one library
+## Use More Than One Library
 
-`template_libraries` lists where templates live, in search order. It starts with your project's `_bmad/custom/facilitate-templates/`, then `~/.bmad/facilitate-templates/` for personal templates you want in every project. An override appends to the list, and a folder that is missing or empty adds nothing.
+`template_libraries` lists template sources in search order, defaulting to `{project-root}/_bmad/custom/facilitate-templates` followed by `~/.bmad/facilitate-templates`. Ask `bmad-customize` to append extra sources (or add them to `_bmad/custom/bmad-facilitate.toml`):
 
 ```toml
 # _bmad/custom/bmad-facilitate.toml
@@ -78,28 +84,26 @@ The first template with an id wins, and installed modules' templates are searche
 template_libraries = ["https://github.com/fernhollow/doc-templates@v1.2.0"]
 ```
 
-| Entry | Example |
+| Source type | Example |
 | --- | --- |
-| A folder or one template file | `{project-root}/docs/templates` or `~/templates` |
-| A GitHub repo, folder or file, read through `gh` | `https://github.com/fernhollow/doc-templates/tree/v1.2.0/planning` |
-| A URL to one `.md` file | `https://example.com/templates/runbook.md` |
-| A sentence naming the tool that reaches it | `Search corp:confluence_search in the DOCS space for templates` |
+| Local folder or single `.md` file | `{project-root}/docs/templates` or `~/templates` |
+| GitHub repository, folder, or file (via `gh`) | `https://github.com/fernhollow/doc-templates/tree/v1.2.0/planning` |
+| Direct URL to one `.md` file | `https://example.com/templates/runbook.md` |
+| Plain sentence naming an MCP tool | `Search corp:confluence_search in the DOCS space for templates` |
 
-A library you cannot share goes in `bmad-facilitate.user.toml`, which stays out of git. A teammate without access who updates one of those documents follows its existing headings instead. If a library cannot be read, the skill names it and carries on with the others.
+Private libraries that teammates cannot access belong in `bmad-facilitate.user.toml`. If a library cannot be reached, `bmad-facilitate` reports it and continues with the remaining libraries.
 
-:::caution[Trust]
-A template overrides the skill, so a remote library can direct an agent that has tools. Point only at sources you control. A branch or tag can move, so pin a commit SHA with `@ref` when the library must not change between runs.
+:::caution[Trust Only Sources You Control]
+A template directs the agent during facilitation, so point `template_libraries` only at sources your organization controls. Pin remote GitHub references to a commit SHA or immutable tag with `@ref` when reproducibility matters.
 :::
 
-## Ship templates in a module
+## Ship Templates in a Module
 
-A module adds templates by putting them in `doc-templates/` in its record folder, the folder holding its `bmod.toml`, with any rubric or catalog beside them. They are offered once the module is installed, with no setting, and they update with the module. The shipped templates live this way in `bmod-method`, `bmod-founder` and `bmod-cis`.
+Modules ship templates inside a `doc-templates/` folder beside their `bmod.toml` along with any companion rubrics or catalogs. Installed module templates appear automatically with no extra configuration and update alongside the module (as in `bmod-method`, `bmad-founder-agent-advisor`, and `bmad-creative-agent-director`). Prefer adding new ids or `extends:` files inside shared modules, reserving full replacements for project-level `_bmad/custom/facilitate-templates/`.
 
-An organization can keep its templates in its own modules, one per program if it likes, such as `bmod-fernhollow-cards`. A module should add new ids or extend existing ones, because an extension applies wherever it sits. To replace an id outright, use a project's folder, which is searched first.
+## Write the Template File
 
-## Write the template file
-
-A template is a markdown file in three parts: the document's frontmatter, comments that guide the coaching, and its sections. Frontmatter comes first. The comments never appear in the finished document. Where a template and the skill disagree, the template wins, on every path; only a headless run still asks nothing.
+Every template has three parts: YAML frontmatter, document-level HTML comments that instruct the coach, and `##` section headings with section comments. Comments never appear in the finished document. Whenever a template rule conflicts with general skill defaults, the template wins (except that headless runs never pause to ask questions).
 
 ```markdown
 ---
@@ -107,7 +111,7 @@ title: ""
 template: runbook
 version: 1.0.0
 description: "Step-by-step instructions for one alert or recurring task."
-facilitation_order: [when-to-use, severity, steps, rollback?, escalation?]
+facilitation_order: [when-to-use, severity, steps, rollback, escalation]
 status: draft
 created: ""
 updated: ""
@@ -144,48 +148,53 @@ updated: ""
 <!-- optional. Who to call and when. -->
 ```
 
-Above the first heading, give each of these keys its own comment, a line or two. All are optional:
+Document-level comments above the first heading are all optional:
 
-| Key | What it tells the skill |
+| Key | What it tells the coach |
 | --- | --- |
-| `purpose` | The decision or job the document serves. |
-| `stance` | How to coach for this document, including how a path should run. |
-| `inputs` | What must be asked, and which of it only the user knows. Each one is asked on the coaching and fast paths unless the user already gave it, so list only what you want asked. |
-| `writing` | Rules specific to this document. |
-| `companions` | Other files to write beside the document, when, and what each holds. A file for a different reader belongs here, not overflow from the document. |
-| `done when` | The test that ends the questioning. |
-| `view` | The brief for an HTML page written for each document. See [Give a template its own view](#give-a-template-its-own-view). |
-| `next` | What to offer or do once the document is done, such as handing it to a build. |
+| `purpose` | The decision or job the finished document serves. |
+| `stance` | How to coach this document, including mode behavior. |
+| `opening` | How to begin the session (for example, opening questions, records to ask for first, or skipping the brain dump for a strict questionnaire). |
+| `inputs` | Facts that must be asked in every interactive mode unless already supplied. |
+| `writing` | Writing constraints specific to this document. |
+| `companions` | Sibling files written beside the document, when to create them, and what each holds. |
+| `done when` | The test that ends questioning and informs final review. |
+| `layout` | Visual and structural guidance for the rendered HTML artifact. |
+| `next` | Suggested follow-up actions once the document is finalized. |
 
-Add `view: slides` to the frontmatter for a slide view, or name an HTML view file; without it the HTML view is one page. In the document body, `{title}` is the only placeholder.
+In the markdown body, `{title}` is the only placeholder.
 
-Each section has one comment: a line on what goes in the section, then `diagram:` and a Mermaid kind when a picture carries the meaning (flowchart, sequence, state, timeline, gantt, er, mindmap, quadrant, journey). A section that is not required starts its comment with `optional` or `include when:` and a condition.
+Each `##` section carries one comment describing what goes in the section. Add `diagram:` when a diagram communicates better than prose (naming a Mermaid type such as `flowchart`, `sequence`, `state`, `timeline`, `gantt`, `er`, `mindmap`, `quadrant`, `journey`, or `pie`, or describing what to sketch). Start a section comment with `optional` or `include when:` for conditional sections, or `built:` for sections synthesized automatically after earlier sections settle (such as an executive summary or glossary).
 
-### Order the sections
+### Order the Sections
 
-`facilitation_order` lists every `##` section by id: its heading in lowercase, with punctuation dropped and spaces as hyphens, so `What makes it different` is `what-makes-it-different` and `What's next?` is `whats-next`. It sets the order the skill takes the sections up in, not the document's order, so an executive summary can sit first in the document and come up last. A `?` after an id marks a section that is not required.
+`facilitation_order` lists every `##` section id (lowercase heading, punctuation dropped, spaces replaced with hyphens, so `What's next?` becomes `whats-next`). It controls the order the coach discusses sections rather than their final order in the document, allowing an executive summary at the top of the file to be drafted last.
 
-The skill settles every section before it finishes, on every path. A required section is always filled. An optional one is offered when the order reaches it, and the user decides. An include-when one is checked against its condition, and the skill says what it found. The fast path settles them too, so asking for speed never drops a section quietly. Sections left out are named at the end with the reason.
+Every section is resolved before Finalize in every mode: required sections are filled, optional sections are offered to the user, and `include when:` sections are checked against their condition. Omitted sections are listed at the end with reasons.
 
-The template list reports an id that names no heading, an id listed twice, and a heading left off the list. Every shipped template sets the key. A template without it still works: a section whose comment does not start with `optional` or `include when:` is required, and the document's order is the order.
+Keep section comments focused on what belongs in the section and what to press on rather than pasting sample text that the model might imitate verbatim. A comment can also enforce fixed choices directly ("The user must pick a team from `docs/teams.md`"). See [Document Templates](../reference/document-templates.md) for shipped templates that demonstrate each pattern.
 
-Say what goes in each section, not how to write well. Leave out example content, which the model would copy.
+### Choose How a Run Walks the Sections
 
-A section comment can also steer the conversation or limit the answer, in plain sentences. The `Steps` comment above tells the skill when to press, and `Severity` limits the user to a list. A list can live elsewhere: "The user must pick a team from `docs/teams.md`." The shipped `decision-record` and `security-review` templates show both, and [Document Templates](../reference/document-templates.md) lists where to see each capability.
+Every run starts in one of three modes:
 
-### Walk the sections in order
+| Mode | How it runs |
+| --- | --- |
+| `freeform` (default) | Follows the user's thread conversationally across sections, updates the document in the background, and confirms major decisions as they settle. |
+| `step-by-step` | Works through one section at a time in `facilitation_order` and settles each before opening the next. Among shipped Method templates, `srs` and `brd` set `mode: step-by-step`. |
+| `fast` | Drafts the complete document first, then reviews assumptions with the user. Among shipped Method templates, `ux-quick`, `prototype-plan`, and `decision-record` set `mode: fast`. |
 
-Set `paced: true` when going through the sections is the point, as in a PRFAQ, where the user defends each part before moving on. The skill shows the sections in facilitation order before it starts, then takes them one at a time and finishes each before opening the next.
+A team or personal `mode` set on `bmad-facilitate` via `bmad-customize` overrides each template's default, and the user can switch modes mid-run.
 
-In a paced template, each section comment is the brief for that part of the session. A voice, stance or method it sets, such as "you are now a skeptical customer", replaces the skill's coaching defaults until the section closes, so write it as instructions to the coach rather than only a description of the content. These shipped templates are paced: Mary's `prfaq` and `brief`, John's `experiment`, `opportunity` and `pitch`, and the module's `decision-record` and `postmortem`.
+Set `order: fixed` when earlier sections must settle before later ones are worked (for example, defending a PRFAQ press release before writing FAQs). On a fixed-order template, freeform runs as step-by-step and fast still preserves order. Shipped templates using `order: fixed` are Mary's `prfaq` and `opportunity`, the `experiment` card shared by Mary and John, Sally's `ux-audit`, Winston's `tech-evaluation` and `postmortem`, and Nadia's `cofounder-agreement`, `startup-diagnostic`, `positioning`, `first-hire`, and `validation-experiment`.
 
-Every run shows a progress line on the messages that ask something: `PRFAQ · Customer FAQ (2 of 4)` when paced, `PRD · 6 of 24 done` otherwise. The total is every section in the facilitation order, and a section counts once it is settled, so the total stays the same for the whole run.
+In `step-by-step` runs, chat messages open with a progress header such as `PRFAQ · Customer FAQ (2 of 4)`. In `freeform` and `fast` runs, progress counters stay out of chat while completeness is verified before Finalize.
 
-Put a bare `## Table of Contents` heading right after the title of any template whose documents run long. Agents often read only the top of a file to judge it, so the skill fills this with a linked entry per section and a short phrase of its key terms, then checks it against the final headings. It gets no slide in a slide view.
+Add a bare `## Table of Contents` heading directly beneath the title on long templates so the skill generates and verifies a linked table of contents during Finalize.
 
-## Use a format you already have
+## Use a Format You Already Have
 
-A file with no comments is followed as written: every heading is required, in order. Save your organization's existing format in the folder with `template` and `description` in its frontmatter and it works.
+A markdown file with no comments still works: every heading becomes a required section in document order. Save your existing document structure in `_bmad/custom/facilitate-templates/` with `template` and `description` frontmatter, then add comments later whenever you want targeted coaching or conditional sections.
 
 ```markdown
 ---
@@ -207,11 +216,9 @@ status: draft
 ## Risks
 ```
 
-Add the comments when you want the coaching, the optional sections, or the diagrams.
+## Extend a Template
 
-## Extend a template
-
-An extension changes a template without copying it, so updates to the original still reach you. On every run the skill merges the template and its extensions into one file, the extensions first, and works from that file. It saves that file as `.template.md` in the run folder, so you can see exactly what the skill read. Save a file with `extends:` and the template's id in any library or module, and every run of that template includes it. Fernhollow Bank, a fictional company, uses the `proposal` template as it is, but every proposal must name an approval track from a fixed list and leave room for reviewers:
+An extension modifies a shipped template without copying it, so future updates to the base template still reach you. Save a markdown file with `extends: <id>` in `_bmad/custom/facilitate-templates/` (or ask `bmad-customize` to write it). On every run, `bmad-facilitate` merges matching extensions ahead of the base template so extension rules take precedence.
 
 ```markdown
 ---
@@ -227,84 +234,58 @@ extends: proposal
 _Reviewer comments go here._
 ```
 
-An extension can hold anything a template can:
-
-| In the extension | Effect |
+| In an extension | Effect |
 | --- | --- |
-| A section | Added where its comment says, and taken up at that point in the conversation. If the heading it names is gone, the skill places it by judgment. It is required unless its comment starts `optional` or `include when`, the same rule as a template's sections. With the same heading as a template section, it replaces that section or adds to it, as its comment says. |
-| `facilitation_order` frontmatter | Replaces the template's whole order. A template section it leaves out is removed from the document, and the template list names it under `removed`. Set it only to reorder or remove the template's sections, never just to place a new one, because a section the template adds in a later update is also left out and removed. |
-| `stance`, `inputs`, `writing` or `done when` comments | Added to the template's, and they win where they disagree with it. A policy to load goes in `inputs`; a review rule goes in `done when`. |
-| `description`, `not_for`, `guidance`, `rubric`, `methods`, `output`, `style`, `view` or `html_view` frontmatter | Replaces the template's value. |
+| A `##` section | Inserts a new section where its comment places it, or adds to / replaces an existing section with the same heading. Required unless the comment begins with `optional` or `include when:`. |
+| `facilitation_order` frontmatter | Replaces the entire section order and removes any base section omitted from the list. Set it only when reordering or dropping base sections. |
+| `stance`, `inputs`, `writing`, or `done when` comments | Appended to the base template's comments, winning wherever they conflict. |
+| Frontmatter keys (`description`, `not_for`, `guidance`, `rubric`, `methods`, `output`, `style`, `layout`, `view`, `mode`, `order`, `companions`, `forbid_id_prefixes`, `lint`) | Replaces the base template's value. An empty value (`mode: ""`, `order: ""`, `lint: ""`, `companions: []`, `forbid_id_prefixes: []`) clears the base value. |
 
-This extension opens every PRD with a quote and always makes its HTML view, while John's updates to the PRD still arrive:
+This short extension adds an opening quote and enables HTML views by default on every PRD while keeping John's shipped PRD updates flowing:
 
 ```markdown
 ---
 extends: prd
-html_view: always
+view: always
 ---
 
 ## Quote
 <!-- First, right under the title. Ask the user for a quote unique to this product before anything else. -->
 ```
 
-When extensions conflict, the first in search order wins. Use a copy only to rebuild a template, or with a new id for a different document; [Customize a Document for Your Team](./customize-a-document-for-your-team.md#step-5-when-changes-outgrow-an-extension) shows when.
+When two extensions conflict, the first in library search order wins. Rules that apply across all templates belong on `bmad-facilitate` (`persistent_facts`, `doc_standards`, and `finalize_reviewers`) rather than in individual template extensions.
 
-Rules for every document, whatever the template, go in `persistent_facts`, `doc_standards` and `finalize_reviewers` under `[workflow]` instead.
+## Visuals and Voice Guide Settings
 
-## Set the look of rendered views
+`bmad-facilitate` exposes two workflow-level content controls through `bmad-customize` (stored in `_bmad/custom/bmad-facilitate.toml` or `.user.toml`):
 
-At close the skill can render the document as one HTML file, diagrams included. The page loads its Markdown and diagram renderers from jsDelivr when opened, so a reader with no network sees the plain text instead. Raw HTML in the document shows as text, and script links are dropped.
+- `visuals` holds one instruction governing how aggressively documents use tables, Mermaid diagrams, inline SVGs, and generated images. By default, `bmad-facilitate` creates a visual whenever a diagram communicates faster than prose. Replace `visuals` (for example, `"Tables and Mermaid diagrams only. No image files."`) to restrict output forms; template-specific `diagram:` and `writing` comments still win on their own sections.
+- `voice_guide` holds an optional path to a personal writing or speaking voice guide (such as `~/.bmad/voice-bible.md`), normally set in `_bmad/custom/bmad-facilitate.user.toml`. When set, first-person author-voiced documents across modules follow your voice rather than a neutral register (Creative module runs also support `modules.creative.voice_guide`).
 
-```toml
-[workflow]
-style = "{project-root}/_bmad/style/brand.css"
-html_view = "always"
-```
+## Control Self-Contained HTML Views
 
-`style` is a CSS file applied to every view after the default styles; empty uses the default. A written voice or style guide belongs in `doc_standards` or a template's `writing` comment instead. A template's `style` overrides it for that template. `html_view` is `offer` (the default: ask at close), `always`, or `never`. A template's own `html_view` replaces it for that template, except that `never` here stops every view.
+Every document stays markdown during drafting so the coach can iterate, review, and diff it cleanly. At Close, `bmad-facilitate` can also author a single, strictly self-contained `.html` artifact from the finalized markdown and companions: all CSS, JavaScript, and local images are inlined directly into the file with zero external network requests, and the view never renders raw markdown client-side.
 
-## Give a template its own view
+Three layers control how HTML artifacts look and whether they are generated:
 
-A template stays markdown, and so does the document the skill writes, because the skill grows it section by section, reviews it and diffs it. An HTML result is a separate step at close, and all its instructions stay in the template. Choose how much freedom the page gets:
-
-| You want | In the template | What happens |
+| Control | Where to set it | What it does |
 | --- | --- | --- |
-| The same layout every time, such as a form headed for PDF | `view: invoice.html` | A script fills the file's slots. Nothing is interpreted. |
-| A shared structure that adapts to each document | `view: character-sheet.html` and a `view` comment | A subagent uses the file as a starter and follows the comment. |
-| A page invented for each document, with no template | A `view` comment alone | A subagent writes it from the comment. |
+| **Project brand or design system** (`modules.core-tools.design_system`) | `bmad setup` | Applies your organization's shared design system, palette, and typography across HTML outputs project-wide (a template's own domain-specific `layout` can still override it, such as for a fictional character sheet). |
+| **Global or template `style` and `layout`** | `bmad-customize` on `bmad-facilitate` (`style`) or template frontmatter / `layout` comment | Accepts a CSS file, a design-system doc, a starter HTML file, a reference screenshot path, or a verbal aesthetic preference. The renderer treats references as visual inspiration or fixed brand elements (masthead, palette, footer) while composing creatively around the document's content. |
+| **HTML generation default (`view`)** | `bmad-customize` on `bmad-facilitate` (`view`) or template frontmatter | Accepts `offer` (ask at close), `always` (generate automatically), or `never` (disable HTML views globally, overriding both templates and callers). |
 
-The `view` comment sits above the first heading with the other comments, and says what the page should do:
+For example, adding a `layout` comment above the first heading shapes how a template renders:
 
 ```markdown
-<!-- view: The sheet is the deliverable. `character-sheet.html` is a starter: keep to one printable page, and let this character's world set the look. -->
+<!-- layout: The sheet is the deliverable. Keep to one printable page, give key stats visual callouts, and let this character's world set the palette and typography. -->
 ```
 
-A written page comes only from the document, so it adds no claim the document does not hold. Each one costs a fresh generation, so the skill offers it at close unless the template sets `html_view: always` or the comment calls it the deliverable. Use the script for anything regulated or signed, where the page must not vary. `html_view = "never"` stops all three.
+HTML artifacts are fidelity-checked against the finalized markdown and companions before presentation so no unsupported facts enter and no settled decisions, metrics, rules, or open questions are dropped.
 
-### Slots for a filled view
-
-The view file is ordinary HTML with its CSS inline. Attributes mark where the document's content goes:
-
-| Attribute | Filled with |
-| --- | --- |
-| `data-section="Heading"` | That `##` section, rendered. Matching ignores case. |
-| `data-body` | Inside a `data-section` element, the place the section goes, so a label can sit beside it. Without one, the section replaces the element's contents. |
-| `data-field="key"` | That frontmatter value, as text. `title` falls back to the document's first heading. |
-| `data-rest` | Every section no slot names, with its heading. |
-
-```html
-<h1 data-field="title"></h1>
-<section data-section="Secrets"><h2>Secrets</h2><div data-body></div></section>
-<section data-rest></section>
-```
-
-A slot with nothing to show is removed along with its element, so a declined section leaves no empty card. Without a `data-rest` slot, a section the view does not name stays out of the page, and the render says which. The `style` setting still applies after the view's own CSS.
-
-:::tip[Templates for an agent]
-An agent's own templates ship in its `assets/` folder, and its `customize.toml` lists that folder in `template_libraries`. The agent passes the list when it runs `bmad-facilitate`, and it is searched after yours, so your copy with the same id wins. The settings in `bmad-facilitate.toml` (style, views, review and polish) still apply.
+:::tip[Templates Bundled with an Agent]
+An agent inside a module automatically offers templates in its module's `doc-templates/` folder that list the agent in `agents`. A standalone agent outside a module ships templates in its `assets/` folder and lists that folder in its `template_libraries`. Because project and personal libraries are searched first, your local overrides still take priority.
 :::
 
-## Check the result
+## Verify Your Template
 
-Run the resolver on `bmad-facilitate` with `--key workflow.template_libraries` to see the merged list; see [Check what resolved](./customize-bmad.md#check-what-resolved). Then ask `bmad-facilitate` for your new document type and confirm it offers your template.
+Ask the BMad Agent or `bmad-customize` to show the merged template and confirm your library is active (see [Configuration and Customization Reference](../reference/configuration.md)), then ask `bmad-facilitate` or the assigned agent to start a run with your new template id.
