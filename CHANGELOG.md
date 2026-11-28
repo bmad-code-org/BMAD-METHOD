@@ -74,6 +74,7 @@ This is an alpha. Major changes are still planned before 7.0.0, and an update ca
 
 ### 🐛 Fixes
 
+* `tickets.py` refuses a decimal in an entry's `after`, such as `after = [1.10]`. TOML reads that as the number 1.1, so the entry silently waited on story 1.1 instead of 1.10; the error now says to quote a dotted id.
 * `bmad migrate method --clean` keeps the customization of a skill that only another tool's folder in the project has installed, such as a teammate's `.codex/skills/`. It judged "unused" against the caller's own skills root alone and deleted the shared `_bmad/custom/<skill>.toml`.
 * `bmad setup` adds the keys a new release's config template brings to the team's `_bmad/config.toml` in place, so the file's comments and table order survive. It used to re-render the whole file whenever the template gained a key.
 * A ticket whose title has no ASCII letter or digit, one in Chinese or Cyrillic say, gets a file named in its own letters, `story-修复登录.md`, not `story-untitled.md`. Every other title names its file as before, `Café` as `cafe`.

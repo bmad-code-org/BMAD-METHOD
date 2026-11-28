@@ -980,6 +980,9 @@ covers = ["R2", "R3"]
             ("[[entry]\nid = ", "tickets.toml"),
             ('[entry]\nid = 1\ntype = "story"\n', "[[entry]]"),
             (self.BREAKDOWN.replace('covers = ["R4"]', "covers = 1"), "must be a list"),
+            # TOML reads a bare 1.10 as the number 1.1; the entry would wait on 1.1 with no error.
+            (self.BREAKDOWN.replace("after = [2, 3]", "after = [2, 1.10]"), 'in quotes, like "1.10"'),
+            (self.BREAKDOWN.replace("after = [2, 3]", "after = [2, true]"), 'in quotes, like "1.10"'),
         ):
             self.breakdown_epic(text)
             r = run("next", str(self.epic))
