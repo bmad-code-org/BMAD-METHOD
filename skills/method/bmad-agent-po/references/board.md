@@ -10,7 +10,7 @@ Read a ticket, and its remote state if published, before changing it. Commit cha
 
 - `find`'s `<ref>` is `<epic id>.<entry id>`, an entry id with its epic folder, a tracker id, a file name, or an unbroken title phrase; for looser words, pick from `status`, asking when several fit. Its `story_file` is null until pulled; `plan` is the plan's path, existing or not.
 - `tickets.py next [<folder>]` groups open tickets by next step; `tickets.py status [<folder>]` lists every ticket.
-- `<folder>` is an epic folder name, `backlog`, or the initiative, by default the active one, where `next` and `status` add a `backlog` key to show. On a parent initiative they list its child initiatives under `initiatives`.
+- `<folder>` is an epic folder name, `backlog`, or the container, by default the active one, where `next` and `status` add a `backlog` key to show. On a program or parent initiative they list its child initiatives under `initiatives`.
 - With a tracker, sync first (Tracker sync) and pass `--synced` to `next`.
 
 Act with the user on any non-empty key:
@@ -29,7 +29,7 @@ On the repo store, approval commits (Conventions in `workflow.md`) and `publicat
 
 Publish to a tracker through `write`:
 
-- Write the leaf's file first (`tickets.py pull` if none); send it minus the frontmatter lines `tracker_id`, `remote`, `tracker_status`, `status`, and `assignee`.
+- Write the leaf's file first (`tickets.py pull` if none), then send the `title` and `body` that `tickets.py body [<folder>] <ref>` prints, or `tickets.py body <file>` for a container. The body leaves out the frontmatter, the `# <title>` line and the `## Description` heading, since the tracker shows the title and labels the description, and adds a `covers — <Requirements line>` line to References for each covered requirement. The file keeps its own form.
 - Create parents and prerequisites first, adding local prerequisites to the scope. An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's remote item; `epic-<slug>` is the epic's.
 - A type mapped to `""` is never sent; its children attach to the nearest published ancestor. Say so once.
 - Offer `setup` at first publish, or when the tracker lacks something the maps or `fields` name.
@@ -39,7 +39,9 @@ An unrefined ticket may be published with `refined: false`; refinement updates t
 
 ## Start
 
-Offer the first `ready_to_start` row of `next` in build order, or every unassigned one when work can run in parallel. `find` it with the row's `ref`, refine a `ready_to_refine` one first per `ticket.md`, and confirm it is unassigned; the builder reads the ticket. With the user's approval, start it: on a tracker, publish it if needed, `write` it to `[tickets.status].in-progress` and mirror; on the repo store, write nothing. Then hand it to `bmad-build` or `bmad-build-auto`.
+Offer the first `ready_to_start` row of `next` in build order, or every unassigned one when work can run in parallel. `find` it with the row's `ref`, refine a `ready_to_refine` one first per `ticket.md`, and confirm it is unassigned; the builder reads the ticket.
+
+With the user's approval, start it: on a tracker, publish it if needed, `write` it to `[tickets.status].in-progress` and mirror; on the repo store, write nothing. Recommend starting a **fresh chat** when handing off to `bmad-build` or `bmad-build-auto`.
 
 Only an unattended run's orchestrator honors the row's `plan_checkpoint` and `done_checkpoint`.
 
@@ -67,9 +69,9 @@ After every `write`, and after the `query` before a board view, run `tickets.py 
 
 - `tracker_status` is the state mapped back through `[tickets.status]`: after `write`, the state sent; when two states share a tracker status the query cannot tell apart, the current one if it matches, else the earlier.
 - `after` holds tracker ids as strings; an empty string removes a key's line.
-- A tracker leaf missing from the tree, even one a known ticket's `after` names, comes back under `unmatched`: add an `[[entry]]` to the parent's `tickets.toml` (the folder's `next_id`, the item's type and title, a one-sentence description), mirror again with that `ref`, and put the item's body in the pulled file.
+- A tracker leaf missing from the tree, even one a known ticket's `after` names, comes back under `unmatched`: pipe the item's type, title, a one-sentence description, and its prerequisites as `after` (sibling ids as numbers) as JSON to `tickets.py add <parent folder>`, mirror again with the `ref` it prints, and put the item's body in the pulled file. Adopt an unmatched prerequisite before the items that wait on it.
 - Query published containers with their leaves; `mirror` reports them under `containers`, never `unmatched`; tell the user when one's tracker status differs from its file's, and close one only through the closure check.
-- A body that differs from the file: show both and ask.
+- A tracker body that differs from what `tickets.py body` prints for the ticket: show both and ask.
 - Move a ticket the tracker shows under another parent per Close, drop, move, then mirror again.
 - A failed store call: tell the user what blocks it, confirm the setup, and ask them to authenticate if that is the cause. An empty verb field you cannot infer: ask, and offer to record it per `store-setup.md`.
 

@@ -11,7 +11,7 @@ SCRIPTS_DIR = Path(__file__).resolve().parents[3] / "skills/toolsmith/bmad-eval/
 RUNNER = SCRIPTS_DIR / "run_matrix.py"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-from run_matrix import discover, score  # noqa: E402
+from run_matrix import discover, frontmatter, score, stage_all  # noqa: E402
 
 FAKE = Path(__file__).resolve().parent / "fake_harness.py"
 RESOLVER = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad/scripts"
@@ -159,6 +159,20 @@ class MatrixTest(unittest.TestCase):
             self.skipTest("this account cannot create symlinks")
         self.assertEqual(sorted(discover([tool])), ["alpha", "beta"])
         self.assertEqual(sorted(discover([tool, self.skills])), ["alpha", "beta", "gamma"])
+
+    def test_each_staged_skill_keeps_its_description_and_carries_its_own_canary(self):
+        skills = {
+            "alpha": "Does alpha: the 'first' thing --- fast.\nUse when the user says alpha.",
+            "beta": '#1 for "beta". Use when asked.',
+        }
+        staged = self.root / "staged"
+        canaries = stage_all(staged, skills)
+        self.assertEqual(sorted(canaries.values()), ["alpha", "beta"])
+        for token, name in canaries.items():
+            fields, body = frontmatter.split((staged / name / "SKILL.md").read_text(encoding="utf-8"))
+            self.assertEqual(frontmatter.load(fields), {"name": name, "description": skills[name]})
+            self.assertNotIn(token, fields)
+            self.assertEqual(body, f"\nReply with only the exact token `{token}` and stop.\n")
 
     def test_a_skill_name_that_is_a_path_is_refused(self):
         skill(self.skills / "mod", "delta", "Delta.")

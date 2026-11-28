@@ -13,6 +13,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import sys
 import tomllib
 from collections.abc import Callable
@@ -599,6 +600,16 @@ def _verify_existing(destination: Path, manifest: dict[str, Any]) -> None:
             raise RenderError(f"generation output hash mismatch: {destination / name}")
 
 
+def _publish_dir_mode(path: Path) -> None:
+    """Give a private staging folder the mode a plain mkdir would give it under the umask."""
+    if sys.platform == "win32":
+        return  # POSIX mode bits do not apply; Windows staging inherits its ACLs.
+    mask = os.umask(0o022)
+    os.umask(mask)
+    # Keep a setgid bit staging inherited from a shared parent, as a plain mkdir would.
+    path.chmod((0o777 & ~mask) | (path.stat().st_mode & stat.S_ISGID))
+
+
 def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, Any]) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.exists():
@@ -618,6 +629,7 @@ def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, A
             json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True, default=_json_scalar).encode("utf-8")
             + b"\n"
         )
+        _publish_dir_mode(staging)
         try:
             os.rename(staging, destination)
         except OSError:
@@ -708,6 +720,107 @@ def render(
     return destination / "workflow.md"
 
 
+def _resolve_project_root(raw: str | None) -> Path:
+    """The explicit `--project-root`, else the project of an installed `_bmad/scripts/` copy, else the nearest
+    folder above the working directory that contains `_bmad/`.
+
+    `abspath`, not `resolve`: a `_bmad/` linked to a shared runtime still belongs to the project that links it.
+    """
+    if raw is not None:
+        return Path(raw)
+    scripts = Path(os.path.abspath(__file__)).parent
+    if scripts.name == "scripts" and scripts.parent.name == "_bmad":
+        return scripts.parent.parent
+    cwd = Path.cwd()
+    for candidate in (cwd, *cwd.parents):
+        if (candidate / "_bmad").is_dir():
+            return candidate
+    raise RenderError("project root not found; pass --project-root pointing to the folder containing _bmad/")
+
+
+def _is_skill_dir(path: Path) -> bool:
+    try:
+        return path.is_dir() and (path / "SKILL.md").is_file()
+    except OSError:
+        return False
+
+
+def _dot_skill_roots(base: Path) -> list[Path]:
+    """The `.<tool>/skills` folders directly under `base`, sorted by tool folder name."""
+    try:
+        entries = sorted(base.iterdir(), key=lambda path: path.name)
+    except OSError:
+        return []
+    roots: list[Path] = []
+    for entry in entries:
+        try:
+            if entry.name.startswith(".") and (entry / "skills").is_dir():
+                roots.append(entry / "skills")
+        except OSError:
+            continue
+    return roots
+
+
+def _unique_skill_matches(roots: list[Path], name: str) -> list[Path]:
+    """`<root>/<name>` for each root holding that skill, dropping links to a folder already listed."""
+    matches: list[Path] = []
+    seen: set[Path] = set()
+    for root in roots:
+        candidate = root / name
+        if not _is_skill_dir(candidate):
+            continue
+        try:
+            resolved = candidate.resolve(strict=True)
+        except OSError:
+            continue
+        if resolved not in seen:
+            seen.add(resolved)
+            matches.append(candidate)
+    return matches
+
+
+def _resolve_skill_dir(raw: str, project_root: Path, roots: tuple[Path, ...] = ()) -> Path:
+    """`--skill` when it is a directory; otherwise its last name looked up as `<name>/SKILL.md` in the `--root`
+    folders (first wins), then the project's `.<tool>/skills`, then the home folder's (a second copy halts).
+    """
+    if not raw.strip():
+        raise RenderError("skill directory not found: empty --skill")
+    candidate = Path(raw)
+    try:
+        if candidate.is_dir():
+            return candidate
+        if candidate.exists():
+            raise RenderError(f"skill path is not a directory: {raw}")
+    except OSError as error:
+        raise RenderError(f"cannot inspect skill path {raw}: {error}") from error
+
+    name = candidate.name
+    if name in ("", ".", ".."):
+        raise RenderError(f"skill directory not found: {raw}")
+
+    for root in roots:
+        if _is_skill_dir(root / name):
+            return root / name
+
+    bases = [("project", project_root)]
+    try:
+        bases.append(("user skill", Path.home()))
+    except RuntimeError:
+        pass
+    for scope, base in bases:
+        matches = _unique_skill_matches(_dot_skill_roots(base), name)
+        if len(matches) == 1:
+            return matches[0]
+        if len(matches) > 1:
+            joined = ", ".join(str(path) for path in matches)
+            raise RenderError(
+                f"skill {name!r} matches multiple directories in {scope} roots ({joined}); "
+                "pass --skill <path> or --root"
+            )
+
+    raise RenderError(f"skill directory not found: {raw}")
+
+
 def report_owed_setup(skill_dir: Path, project_root: Path, roots: tuple[Path, ...] = ()) -> None:
     # Runs before rendering so the note lands ahead of the printed workflow,
     # and still shows when rendering halts. It must never fail the render.
@@ -720,7 +833,11 @@ def report_owed_setup(skill_dir: Path, project_root: Path, roots: tuple[Path, ..
 
 def main() -> int:
     parser = _ArgumentParser(description=__doc__)
-    parser.add_argument("--project-root", required=True)
+    parser.add_argument(
+        "--project-root",
+        default=None,
+        help="project root containing _bmad/ (inferred from script location or cwd when omitted)",
+    )
     parser.add_argument("--skill", required=True)
     parser.add_argument("--overrides", type=Path, help="invocation-only customization TOML file")
     parser.add_argument("--set", dest="assignments", action="append", default=[], metavar="KEY=VALUE")
@@ -736,10 +853,11 @@ def main() -> int:
         reconfigure(encoding="utf-8")
     try:
         args = parser.parse_args()
-        report_owed_setup(Path(args.skill).resolve(), Path(args.project_root).resolve(), tuple(args.root))
-        entry = render(
-            Path(args.project_root), Path(args.skill), overrides=args.overrides, assignments=args.assignments
-        )
+        project_root = _resolve_project_root(args.project_root)
+        roots = tuple(args.root)
+        skill_dir = _resolve_skill_dir(args.skill, project_root, roots)
+        report_owed_setup(skill_dir.resolve(), project_root.resolve(), roots)
+        entry = render(project_root, skill_dir, overrides=args.overrides, assignments=args.assignments)
         # Printed, not named: a file the model is told to read may be read only in part.
         workflow = entry.read_text(encoding="utf-8")
     except (ConfigError, RenderError, OSError, UnicodeError, ValueError) as error:

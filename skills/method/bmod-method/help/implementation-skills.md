@@ -3,16 +3,18 @@
 Read this when the question is about `bmad-build` or `bmad-build-auto`. For running stories without a human, see `help/unattended-builds.md`.
 
 **`bmad-build`** — one session of delivery: clarifies intent, plans, implements, reviews, and presents a commit.
-- Takes: free text however brief; a ticket from the tree, named by a ref such as `1.2`, its file, or its title; nothing, for the next ready ticket of the active initiative; a plan to resume; any other file as intent; or the recent conversation. With a ticket it reads the entry, its epic file and any story file in full, and opens a companion only where the ticket points; the PRD and UX are not build input.
-- Pick when: any feature, story, bug fix, or meaningful change. It is the default, and risky or foundational stories belong here because a human approves the plan.
-- Not when: typo-level or config edits, or edits the user is directing line by line.
-- Size: one session is one goal, roughly 500 changed lines, not counting tests, in a handful of files. Start it in a fresh chat.
-- Its review: built in and done by agents. By default it runs a quick review with one lens; a thorough review runs four independent lenses. The user can say `none`, `quick`, or `thorough` in the request; `thorough` suits a change that is unusually risky or makes many design decisions. It fixes clear findings itself and returns to the human when intent is in doubt. It commits and never pushes.
-- Writes: a ticket's plan beside `tickets.toml`, or in `backlog/` for a backlog ticket, at the path `tickets.py find` returns, with `ticket` and a `status` it moves as far as `built`; the user marks the ticket done. Other work gets `{output_folder}/{active_initiative}/plan-<slug>.md`. Deferred goals go in `{output_folder}/{active_initiative}/deferred-work.md`. With no initiative active, both go in `{output_folder}/`.
+
+- **Inputs:** Takes free text, a ticket from the tree (`1.2`, file, or title), nothing (the next ready ticket), a plan to resume, an intent file, or recent conversation. With a ticket, it reads the story file (or entry) and epic file in full, loads relevant `References` and `companions:` (`DESIGN.md`, `EXPERIENCE.md`, mockups, architecture contracts) into plan `context:`, follows a container's `parent:` only when the epic defers something upward, and never re-reads already-distilled `sources:`.
+- **Standalone `(Story ->) bmad-build`:** When starting from free text with no ticket, Amelia runs a quick repo scan plus a 60-second micro-preamble confirming scope and a one-line success signal (what proves it worked) before planning or building, escalating upward only if hidden multi-story coupling surfaces.
+- **Refined Stories:** Keeps every functional and measurement acceptance criterion from a Refined Story (`story-<slug>.md`) covered in the local build plan (`story-<slug>-plan.md`) alongside exact files, tasks, and tests.
+- **Pick when:** Any feature, story, bug fix, or meaningful change, including single stories taking more than one build session. Risky or foundational stories belong here because a human approves the plan.
+- **Not when:** Typo-level or config edits, or line-by-line user-directed edits.
+- **Size and review:** Target one goal per session (~500 changed lines excluding tests). Built-in agent review defaults to `quick` (one lens); `thorough` runs four independent lenses and `none` skips review. Fixes clear findings itself, asks on intent gaps, logs pre-existing issues to `deferred-work.md`, commits locally, and never pushes.
+- **Writes:** A ticket's plan beside `tickets.toml` (or in `backlog/`) at the path `tickets.py find` returns, moving `status` up to `built` so the user can mark `done`. Loose builds write `{output_folder}/{active_initiative}/plan-<slug>.md` (or `{output_folder}/plan-<slug>.md`).
 
 **`bmad-build-auto`** — one unattended build of one ticket, for a loop or script that dispatches it.
-- Do not offer it for attended work. It never asks: anything unclear halts it as `blocked` with a named reason written into the plan. It needs subagents. Its input is a ticket from the tree, one run per ticket; free text or an intent file also work. Where version control is present it also needs a clean working tree on a branch that fits the work.
-- Fits when: decisions and patterns are stable and the tickets are well specified.
-- Writes: the same plans as `bmad-build`.
 
-A significant midstream change, such as a technical limit, a new or misread requirement, a pivot, or a failed approach, means talking to Sofia the Product Owner (`bmad-agent-po`, `help/planning-skills.md`) to replan: "this changed, what now". She reads the ticket tree, proposes the path (adjust, roll back, or cut scope), updates the ticket's Requirements when what is required changed, re-slices or drops the affected entries, and records the reason as a dated Decision line.
+- Do not offer it for attended work, except to execute an approved `prototype-plan` in one pass.
+- Walks the same `parent:` chain, UX/architecture `companions:`, and Refined Story AC coverage as `bmad-build`, halting `blocked` with a named reason on any intent gap rather than asking. Requires subagents and, under git, a clean tree on an appropriate branch.
+
+A significant midstream change — technical limit, misread requirement, pivot, or failed approach — means starting a fresh chat with Sofia (`bmad-agent-po`) to `REPLAN` ("this changed, what now"). She updates the ticket's Requirements, re-slices or drops affected entries, and records a dated `Decision:` line.

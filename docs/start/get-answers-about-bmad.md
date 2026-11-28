@@ -1,79 +1,50 @@
 ---
 title: 'Get Answers About BMad'
-description: Use an LLM to quickly answer your own BMad questions
+description: Use the BMad Agent, the repository source, or the community to get quick, accurate answers about BMad.
 ---
 
-Use BMad's built-in help, source docs, or the community to get answers — from quickest to most thorough.
+Use the BMad Agent, the source repository, or the community to get answers, ordered from fastest to most thorough.
 
-## 1. Ask BMad
+## 1. Ask the BMad Agent
 
-The fastest way to get answers. The `bmad` skill is available directly in your AI session and handles over 80% of questions — it reads your active initiative, sees which `<type>-<slug>/` documents are already written, and tells you what to do next.
+The fastest way to get answers is inside your AI coding tool. [The BMad Agent](./the-bmad-agent.md) (`bmad`) is your advisor across every module you have installed: it reads your installed modules, inspects your active initiative and existing planning documents, coaches how to use BMad cohesively with any other skills in your tool, recommends what to do next, and routes to or runs skills for you when you ask.
 
+```text
+/bmad I have a SaaS idea and know all the features. Where do I start?
+/bmad What are my options for UX design?
+/bmad How does John handle updating an existing PRD?
+Hey BMad, customize the build skill to always run thorough reviews for our team.
 ```
-bmad I have a SaaS idea and know all the features. Where do I start?
-bmad What are my options for UX design?
-bmad I'm stuck on the PRD workflow
-```
 
-:::tip
-You can also use `/bmad` or `$bmad` depending on your platform, but just `bmad` should work everywhere. The same skill runs `bmad setup`, `bmad status`, and `bmad migrate method`, and switches the active initiative.
+:::tip[Invoking the BMad Agent across tools]
+Depending on your coding tool, invoke the BMad Agent with `/bmad`, `$bmad`, or plain `bmad` (or `"Hey BMad, ..."`) in chat. The same agent runs `/bmad setup`, checks installation health with `/bmad status`, migrates older project artifacts after a module upgrade, switches your active initiative, and launches or customizes skills on request.
 :::
 
-## 2. Go Deeper with Source
+## 2. Go Deeper with the Source
 
-The `bmad` skill draws on your installed configuration. For questions about BMad's internals, history, or architecture — or if you're researching BMad before installing — point your AI at the source directly.
-
-Clone or open the [BMAD-METHOD repo](https://github.com/bmad-code-org/BMAD-METHOD) and ask your AI about it. Any agent-capable tool (Claude Code, Cursor, Windsurf, etc.) can read the source and answer questions directly.
+The BMad Agent draws on your installed configuration and module help files. If you want to understand BMad's internals, check exact behavior, or explore BMad before installing it, point an agent-capable coding tool (such as Claude Code, Codex, or Cursor) directly at the [BMAD-METHOD repository](https://github.com/bmad-code-org/BMAD-METHOD).
 
 :::note[Example]
-**Q:** "Tell me the fastest way to build something with BMad"
+**Question:** "Tell me the fastest way to build something with BMad."
 
-**A:** Run `bmad-build`. Give it direct intent, an issue, a spec, or a planned story; it uses the available context and chooses the clarification, planning, implementation, and review depth needed.
+**Answer:** Run `bmad-build`. Give it a plain description, an issue link, a specification, or a planned story; it inspects the codebase and picks the right amount of planning, implementation, and review for the change.
 :::
 
-**Tips for better answers:**
+Two habits produce much better answers when asking an AI tool about the source:
 
-- **Be specific** — "What does step 3 of the PRD workflow do?" beats "How does PRD work?"
-- **Verify surprising claims** — LLMs occasionally get things wrong. Check the source file or ask on Discord.
+- Ask a concrete question such as "How does John handle updating an existing PRD?" rather than a broad question like "How do PRDs work?"
+- Verify surprising claims by checking the referenced file directly or asking in the community forum.
 
 ### Not using an agent? Use the docs site
 
-If your AI can't read local files (ChatGPT, Claude.ai, etc.), open [the BMad docs site](https://docs.bmad-method.org/).
+If you are using a web chat interface that cannot read local repository files, browse [the BMad docs site](https://docs.bmad-method.org/).
 
-## 3. Ask Someone
+## 3. Ask the Community
 
-If neither the `bmad` skill nor the source answered your question, you now have a much better question to ask.
+If neither the `bmad` skill nor the repository source answered your question, bring what you found to the community:
 
-| Channel                 | Use For                    |
-| ----------------------- | -------------------------- |
-| `help-requests` forum   | Questions                  |
-| `#suggestions-feedback` | Ideas and feature requests |
-
-**Discord:** [discord.gg/gk8jAdXWmj](https://discord.gg/gk8jAdXWmj)
-
-**GitHub Issues:** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)
-
-_You!_  
-&emsp;&emsp;_Stuck_  
-&emsp;&emsp;&emsp;&emsp;_in the queue—_  
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_waiting_  
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_for who?_
-
-_The source_  
-&emsp;&emsp;_is there,_  
-&emsp;&emsp;&emsp;&emsp;_plain to see!_
-
-_Point_  
-&emsp;&emsp;_your machine._  
-&emsp;&emsp;&emsp;&emsp;_Set it free._
-
-_It reads._  
-&emsp;&emsp;_It speaks._  
-&emsp;&emsp;&emsp;&emsp;_Ask away—_
-
-_Why wait_  
-&emsp;&emsp;_for tomorrow_  
-&emsp;&emsp;&emsp;&emsp;_when you have_  
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_today?_
-
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_—Claude_
+| Channel | Use For |
+| --- | --- |
+| `help-requests` forum on [Discord](https://discord.gg/gk8jAdXWmj) | Troubleshooting and workflow questions |
+| `#suggestions-feedback` on [Discord](https://discord.gg/gk8jAdXWmj) | Ideas and feature feedback |
+| [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) | Reproducible bugs and enhancement proposals |

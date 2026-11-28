@@ -4,7 +4,7 @@ The outcome: the smallest skill that does the job for its consumer, tried once o
 
 ## Scaffold
 
-`uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, with `--dirs` for only the folders the execution plan listed and `--bmod <record> --source <update_source>` when the execution plan registers it as a member.
+`uv run "{skill-root}/scripts/init_skill.py" --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, with `--dirs` for only the folders the execution plan listed and `--bmod <record> --source <update_source>` when the execution plan registers it as a member.
 
 Load `shapes/<shape>/shape.md`, then the module shape the registration line names, if any.
 

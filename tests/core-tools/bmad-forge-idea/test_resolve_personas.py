@@ -131,6 +131,22 @@ class TestOverrideMergeFallback(unittest.TestCase):
             self.assertEqual(wf["default_party"], "b")  # personal wins
             self.assertEqual([m["code"] for m in wf["party_members"]], ["x", "y"])  # appended
 
+    def test_a_file_saved_with_a_byte_order_mark_is_read(self):
+        with tempfile.TemporaryDirectory() as d:
+            custom = Path(d) / "_bmad" / "custom"
+            custom.mkdir(parents=True)
+            (custom / "bmad-party-mode.user.toml").write_bytes(b'\xef\xbb\xbf[workflow]\ndefault_party = "b"\n')
+
+            self.assertEqual(rp.load_party_overrides(Path(d)), {"default_party": "b"})
+
+    def test_invalid_utf8_override_file_returns_empty(self):
+        with tempfile.TemporaryDirectory() as d:
+            custom = Path(d) / "_bmad" / "custom"
+            custom.mkdir(parents=True)
+            (custom / "bmad-party-mode.user.toml").write_bytes(b"\xff\xfe[workflow]\n")
+
+            self.assertEqual(rp.load_party_overrides(Path(d)), {})
+
 
 class TestResolverInvocation(unittest.TestCase):
     """The wrapper knows the project root, so it must not let the resolver

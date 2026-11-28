@@ -38,3 +38,9 @@ Agile AI-Driven Development. Powered by BMad Core and a growing module ecosystem
 post_install_message = '''
 BMad is ready. You can ask bmad for help or suggestions at any time, and if you add modules or want to check for updates in the future, just ask the bmad agent to update.
 '''
+
+# Asked by `bmad setup`. Skills read the answer as modules.core-tools.design_system.
+[[bmod.config_questions]]
+key = "design_system"
+prompt = "Path to a brand or design system that documents and visuals should follow (a DESIGN.md, brand guide, CSS tokens, or a folder of them). If the project already has one, offer its path. Leave empty for none; it can be set later."
+default = ""

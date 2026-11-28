@@ -203,6 +203,134 @@ class RunEvalsTest(unittest.TestCase):
                 self.assertIn(said, res.stderr)
                 self.assertFalse((root / "out").exists())
 
+    def test_renamed_fixture_lands_at_its_to_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill, cases, harness = make_project(root)
+            files = [{"from": "fixtures/notes.md", "to": "_bmad/config.toml"}]
+            write(cases, json.dumps([{"id": "r", "input": "hello", "rubric": ["x"], "files": files}]))
+            res = run(
+                "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(root / "out"),
+                "--project-root", str(root), "--harness", str(harness), "--quiet",
+            )  # fmt: skip
+            self.assertEqual(res.returncode, 0, res.stderr)
+            cwd = Path(json.loads(res.stdout)["run_dir"]) / "skill" / "r" / "cwd"
+            self.assertEqual((cwd / "_bmad" / "config.toml").read_text(), "fixture\n")
+            self.assertFalse((cwd / "fixtures" / "notes.md").exists())
+
+    def test_bad_renamed_fixture_stops_before_any_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill, cases, harness = make_project(root)
+            for entry, said in (
+                ({"from": "fixtures/notes.md"}, "needs both"),
+                ({"from": "fixtures/notes.md", "to": None}, "needs both"),
+                ({"from": None, "to": "x.md"}, "needs both"),
+                ({"from": "fixtures/notes.md", "to": "../out.md"}, "inside the workspace"),
+                ({"from": "fixtures/notes.md", "to": "/tmp/out.md"}, "inside the workspace"),
+                ({"from": "fixtures/notes.md", "to": "\\tmp\\out.md"}, "inside the workspace"),
+                ({"from": "fixtures/notes.md", "to": "C:\\out.md"}, "inside the workspace"),
+                ({"from": "fixtures/notes.md", "to": "~/out.md"}, "inside the workspace"),
+            ):
+                write(cases, json.dumps([{"id": "b", "input": "hello", "rubric": ["x"], "files": [entry]}]))
+                res = run(
+                    "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(root / "out"),
+                    "--project-root", str(root), "--harness", str(harness), "--quiet",
+                )  # fmt: skip
+                self.assertEqual(res.returncode, 2, entry)
+                self.assertIn(said, res.stderr)
+
+    def test_normalized_duplicate_fixture_dest_stops_before_any_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill, cases, harness = make_project(root)
+            files = ["fixtures/notes.md", {"from": "fixtures/notes.md", "to": "./fixtures//notes.md"}]
+            write(cases, json.dumps([{"id": "d", "input": "hello", "rubric": ["x"], "files": files}]))
+            res = run(
+                "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(root / "out"),
+                "--project-root", str(root), "--harness", str(harness), "--quiet",
+            )  # fmt: skip
+            self.assertEqual(res.returncode, 2)
+            self.assertIn("one would replace the other", res.stderr)
+            self.assertFalse((root / "out").exists())
+
+    def test_companion_skills_stage_beside_the_skill_but_not_in_bare(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill, cases, harness = make_project(root)
+            write(root / "skills" / "engine" / "SKILL.md", "---\nname: engine\ndescription: Runs.\n---\n")
+            write(cases, json.dumps([{"id": "s", "input": "hello", "rubric": ["x"], "skills": ["skills/engine"]}]))
+            res = run(
+                "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(root / "out"),
+                "--project-root", str(root), "--harness", str(harness), "--mode", "baseline", "--quiet",
+            )  # fmt: skip
+            self.assertEqual(res.returncode, 0, res.stderr)
+            run_dir = Path(json.loads(res.stdout)["run_dir"])
+            staged = run_dir / "skill" / "s" / "cwd" / ".agents" / "skills"
+            self.assertTrue((staged / "engine" / "SKILL.md").is_file())
+            self.assertTrue((staged / "greet" / "SKILL.md").is_file())
+            self.assertFalse((run_dir / "bare" / "s" / "cwd" / ".agents" / "skills" / "engine").exists())
+
+    def test_missing_companion_skill_stops_before_any_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill, cases, harness = make_project(root)
+            write(cases, json.dumps([{"id": "m", "input": "hello", "rubric": ["x"], "skills": ["skills/gone"]}]))
+            res = run(
+                "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(root / "out"),
+                "--project-root", str(root), "--harness", str(harness), "--quiet",
+            )  # fmt: skip
+            self.assertEqual(res.returncode, 2)
+            self.assertIn("no SKILL.md", res.stderr)
+            self.assertFalse((root / "out").exists())
+
+    def test_companion_skill_traversal_and_collision_stop_before_any_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill, cases, harness = make_project(root)
+            write(root / "a" / "helper" / "SKILL.md", "---\nname: helper\ndescription: A.\n---\n")
+            write(root / "b" / "helper" / "SKILL.md", "---\nname: helper\ndescription: B.\n---\n")
+            write(root / "other" / "greet" / "SKILL.md", "---\nname: greet\ndescription: Shadow.\n---\n")
+            for skills, said in (
+                (["../skills/engine"], "relative to the project root"),
+                (["a/helper", "b/helper"], "collides"),
+                (["other/greet"], "collides"),
+            ):
+                write(cases, json.dumps([{"id": "c", "input": "hello", "rubric": ["x"], "skills": skills}]))
+                res = run(
+                    "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(root / "out"),
+                    "--project-root", str(root), "--harness", str(harness), "--quiet",
+                )  # fmt: skip
+                self.assertEqual(res.returncode, 2, skills)
+                self.assertIn(said, res.stderr)
+                self.assertFalse((root / "out").exists())
+
+    def test_companion_skill_colliding_with_variant_stops_before_any_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill, cases, harness = make_project(root)
+            variant = root / "variants" / "greet-v1"
+            write(variant / "SKILL.md", "---\nname: greet\ndescription: Variant.\n---\n")
+            write(root / "other" / "greet-v1" / "SKILL.md", "---\nname: greet-v1\ndescription: Shadow.\n---\n")
+            write(root / "skills" / "engine" / "SKILL.md", "---\nname: engine\ndescription: Runs.\n---\n")
+            write(cases, json.dumps([{"id": "v", "input": "hello", "rubric": ["x"], "skills": ["other/greet-v1"]}]))
+            res = run(
+                "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(root / "out"),
+                "--mode", "variant", "--variant-path", str(variant),
+                "--project-root", str(root), "--harness", str(harness), "--quiet",
+            )  # fmt: skip
+            self.assertEqual(res.returncode, 2)
+            self.assertIn("collides", res.stderr)
+            self.assertFalse((root / "out").exists())
+
+            write(cases, json.dumps([{"id": "ok", "input": "hello", "rubric": ["x"], "skills": ["skills/engine"]}]))
+            res_ok = run(
+                "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(root / "out"),
+                "--mode", "variant", "--variant-path", str(variant),
+                "--project-root", str(root), "--harness", str(harness), "--quiet",
+            )  # fmt: skip
+            self.assertEqual(res_ok.returncode, 0, res_ok.stderr)
+
     @unittest.skipIf(os.name == "nt", "the fake gh is a shell script")
     def test_github_fixture_is_fetched_at_its_ref_and_staged_by_name(self):
         with tempfile.TemporaryDirectory() as tmp:

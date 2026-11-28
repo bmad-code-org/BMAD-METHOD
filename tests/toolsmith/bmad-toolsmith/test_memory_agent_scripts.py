@@ -39,7 +39,7 @@ def make_skill(root: Path) -> tuple[Path, Path]:
     (skill / "customize.toml").write_text(customize.replace('name = "{name}"', 'name = ""'), encoding="utf-8")
     (project / "_bmad" / "custom").mkdir(parents=True)
     (project / "_bmad" / "scripts").mkdir()
-    for name in ("resolve_customization.py", "config_utils.py"):
+    for name in ("resolve_customization.py", "config_utils.py", "frontmatter.py"):
         shutil.copy(RESOLVER_SCRIPTS / name, project / "_bmad" / "scripts" / name)
     return project, skill
 
@@ -269,6 +269,11 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertNotIn("references/intake.md", table)
         capability(learned, "plan.md", "PLAN", "Plan", "retired: true\n")
         self.assertNotIn("[PLAN]", self.capabilities_section(run(self.wake, self.project).stdout))
+        (learned / "brief.md").write_text("---\ncode: BRIEF\nretired: yes\n---\n", encoding="utf-8")
+        capability(learned, "intake.md", "INTAKE", "Intake, my way", "retired: false\n")
+        table = self.capabilities_section(run(self.wake, self.project).stdout)
+        self.assertNotIn("[BRIEF]", table, "a retired capability needs no name")
+        self.assertIn("| [INTAKE] | Intake, my way | Intake, my way desc | learned, replaces built-in |", table)
 
     def test_capability_with_broken_frontmatter_is_named_and_replaces_nothing(self):
         self.birth()

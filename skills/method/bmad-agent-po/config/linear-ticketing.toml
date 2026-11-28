@@ -53,13 +53,14 @@ server exposes initiative tools.
 
 query = """
 One issue: `get_issue` with includeRelations — labels, priority, state, assignee, parent,
-project, relations, description; after is the "blocked by" relations, and the description's
-covers holds the source requirement ids. Many: `list_issues` by project, parent, label, state, or
+project, relations, description; after is the "blocked by" relations, and the `covers —` lines
+in its References hold the source requirement ids. Many: `list_issues` by project, parent, label, state, or
 query words.
 """
 
 # BMad type -> this store's type.
 [tickets.types]
+program = ""   # empty: the program stays local; its children attach to the nearest published ancestor
 initiative = ""   # empty: the initiative stays local. Linear has no Epic object and Projects cannot nest; set to "initiative" only to map onto Linear Initiatives, which nest five deep and allow several parents, so the tree cannot round-trip.
 epic = "epic"   # label on a parent issue
 story = "story"

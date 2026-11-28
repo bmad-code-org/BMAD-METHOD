@@ -9,14 +9,12 @@ skills = [
   "bmad-agent-pm",
   "bmad-agent-po",
   "bmad-agent-ux-designer",
-  "bmad-architecture",
   "bmad-build",
   "bmad-build-auto",
   "bmad-code-review",
   "bmad-project-context",
   "bmad-qa-generate-e2e-tests",
   "bmad-retrospective",
-  "bmad-ux",
   "bmad-walkthrough",
 ]
 required_skills = [{ skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills/core-tools" }]

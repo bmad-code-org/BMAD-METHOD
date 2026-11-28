@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["tiktoken"]
+# dependencies = ["pyyaml>=6.0.2,<7", "tiktoken"]
 # ///
 """cut_check: what a rewrite dropped that must survive character for character.
 
@@ -38,11 +38,12 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from count_tokens import count_tokens, read_text  # noqa: E402
+from init_skill import NO_BMAD, frontmatter  # noqa: E402
 
-FRONTMATTER_RE = re.compile(r"\A---\n.*?\n---\n", re.DOTALL)
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$", re.MULTILINE)
 JINJA_RE = re.compile(r"\{\{.*?\}\}|\{%.*?%\}", re.DOTALL)
 ROOT_PATH_RE = re.compile(r"\{(?:skill-root|project-root)\}[^\s`'\"()<>\[\],;]*")
@@ -129,14 +130,22 @@ def token_table(before: Path, after: Path, files: list[str]) -> dict:
     }
 
 
+def raw_frontmatter(text: str) -> str | None:
+    """The frontmatter's YAML text as written, or None when the file has none."""
+    try:
+        return frontmatter.split(text)[0]
+    except ValueError:
+        return None
+
+
 def lost_in(before: str, after: str, protects: list[str | None]) -> list[str]:
     jinja = Counter(" ".join(m.split()) for m in JINJA_RE.findall(before))
     jinja -= Counter(" ".join(m.split()) for m in JINJA_RE.findall(after))
     lost = list(jinja.elements())
     after_paths = {p.rstrip(".:") for p in ROOT_PATH_RE.findall(after)}
     lost += sorted({p.rstrip(".:") for p in ROOT_PATH_RE.findall(before)} - after_paths)
-    fm_before, fm_after = FRONTMATTER_RE.match(before), FRONTMATTER_RE.match(after)
-    if fm_before and (not fm_after or fm_before.group(0) != fm_after.group(0)):
+    fm_before = raw_frontmatter(before)
+    if fm_before is not None and fm_before != raw_frontmatter(after):
         lost.append("frontmatter")
     for heading in protects:
         if heading is None:
@@ -203,6 +212,10 @@ def main(argv: list[str] | None = None) -> int:
         help="file of passages, separated by blank lines, each kept verbatim",
     )
     args = p.parse_args(argv)
+    if frontmatter is None:
+        print(NO_BMAD, file=sys.stderr)
+        return 2
+
     for folder in (args.before, args.after):
         if not folder.is_dir():
             p.error(f"not a directory: {folder}")

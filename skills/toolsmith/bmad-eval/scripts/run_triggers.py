@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Trigger evals: does a skill's description fire on each near-miss query?
 
@@ -37,8 +38,8 @@ result, not an error.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
-import re
 import sys
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -58,38 +59,42 @@ from eval_common import (
     write_json,
 )
 
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+
+
+def shared_frontmatter():
+    """The frontmatter module of the bmad skill installed beside this one (in a source checkout, under core-tools),
+    or None when it is not installed."""
+    skills = Path(__file__).resolve().parents[2]
+    for folder in (skills / "bmad", skills.parent / "core-tools" / "bmad"):
+        path = folder / "scripts" / "frontmatter.py"
+        if path.is_file():
+            spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return module
+    return None
+
+
+frontmatter = shared_frontmatter()
+NO_BMAD = "error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad"
+
+
 CANARY_PREFIX = "TRIGGER-LOADED-"
 
 
-def unquote_yaml(value: str) -> str:
-    """A YAML scalar's text: single quotes doubled inside, double quotes with backslash escapes."""
-    value = value.strip()
-    if len(value) >= 2 and value[0] == value[-1] == "'":
-        return value[1:-1].replace("''", "'")
-    if len(value) >= 2 and value[0] == value[-1] == '"':
-        return value[1:-1].replace('\\"', '"').replace("\\n", "\n").replace("\\\\", "\\")
-    return value
-
-
 def parse_skill_md(skill_path: Path) -> tuple[str, str]:
-    """Return (name, description) from SKILL.md frontmatter, quotes and block indicators removed."""
+    """Return (name, description) from SKILL.md frontmatter."""
     text = (skill_path / "SKILL.md").read_text(encoding="utf-8")
-    m = re.match(r"^---\s*\n(.*?)\n---\s*\n", text, re.DOTALL)
-    if not m:
-        raise ValueError(f"SKILL.md at {skill_path} is missing frontmatter")
-    fields: dict[str, list[str]] = {}
-    current = None
-    for line in m.group(1).splitlines():
-        if line[:1] not in (" ", "\t") and ":" in line:
-            key, _, value = line.partition(":")
-            current = key.strip()
-            fields[current] = [] if value.strip() in ("|", ">", "|-", ">-") else [value.strip()]
-        elif current and line.strip():
-            fields[current].append(line.strip())
-    name = unquote_yaml(" ".join(fields.get("name", [])))
+    try:
+        block, _ = frontmatter.split(text)
+    except ValueError:
+        raise ValueError(f"SKILL.md at {skill_path} is missing frontmatter") from None
+    fields = frontmatter.load(block)
+    name = fields.get("name", "")
     if not name:
         raise ValueError(f"SKILL.md at {skill_path} has no name")
-    return name, unquote_yaml(" ".join(fields.get("description", [])))
+    return name, fields.get("description", "").rstrip("\n")  # a block scalar's final newline is not part of it
 
 
 # --- synthetic skill and detection -------------------------------------------
@@ -100,9 +105,8 @@ def write_synthetic_skill(skills_dir: Path, skill_name: str, description: str, t
     clean_name = f"{skill_name}-trig-{token[len(CANARY_PREFIX) :]}"
     root = skills_dir / clean_name
     root.mkdir(parents=True, exist_ok=True)
-    indented = "\n  ".join(description.split("\n"))
     (root / "SKILL.md").write_text(
-        f"---\nname: {clean_name}\ndescription: |\n  {indented}\n---\n\n"
+        frontmatter.dump({"name": clean_name, "description": description}) + "\n"
         f"# {skill_name}\n\nThis skill handles: {description}\n\n"
         f"Begin your reply with the exact token `{token}`, then continue.\n",
         encoding="utf-8",
@@ -167,6 +171,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--quiet", action="store_true")
     args = p.parse_args(argv)
+    if frontmatter is None:
+        print(NO_BMAD, file=sys.stderr)
+        return 2
     if args.runs_per_query < 1:
         print("--runs-per-query must be at least 1", file=sys.stderr)
         return 2

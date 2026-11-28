@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """ideas — the append-only log of a brainstorming session, `ideas.md` in the session's folder.
 
@@ -9,17 +10,17 @@ order it happened. Every output is built from it and a resume reloads it. Entrie
 added at the end; nothing is edited, reordered or removed.
 
     ---
-    topic: "Onboarding flow for a budgeting app"
-    goal: "lift week-1 retention"
-    mode: "facilitator"
-    created: "2026-06-07T14:22"
+    topic: Onboarding flow for a budgeting app
+    goal: lift week-1 retention
+    mode: facilitator
+    created: 2026-06-07T14:22
     ---
 
     - (technique) started SCAMPER
     - (idea by user) skip the signup wall: let people try with sample data first
     - (question) is open-banking consent too heavy for step one?
 
-Commands, each printing one line of JSON:
+Commands, each printing one line of JSON (`--project-root DIR`, the project with BMad set up, goes before the command):
   start --folder DIR --topic T [--goal G] [--mode M]    create DIR/ideas.md (exit 2 if the session exists)
   add   --folder DIR --text STR [--text STR ...] [--type T] [--by W]   add entries at the end, one per --text
   set   --folder DIR --key K --value V                  set a frontmatter field: `status`, `mode`
@@ -39,12 +40,15 @@ Exit codes: 0 done, 2 usage error or a missing or unreadable log.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import re
 import sys
 from datetime import datetime
 from pathlib import Path
+
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 
 NAME = "ideas.md"
 OLD_NAME = ".memlog.md"
@@ -69,44 +73,31 @@ def log_path(folder: Path) -> Path:
     return path
 
 
-def parse_value(raw: str) -> str:
-    raw = raw.strip()
-    if raw.startswith('"'):
-        try:
-            return str(json.loads(raw))
-        except json.JSONDecodeError:
-            return raw.strip('"')
-    if len(raw) >= 2 and raw[0] == raw[-1] == "'":
-        return raw[1:-1].replace("''", "'")
-    return raw
-
-
 def read(path: Path) -> tuple[dict[str, str], str]:
-    """Frontmatter fields in file order, and the body. The closing fence is the first line that is exactly `---`."""
+    """Frontmatter fields in file order, and the body."""
     try:
-        lines = path.read_text(encoding="utf-8").splitlines()
+        text = path.read_text(encoding="utf-8")
     except FileNotFoundError:
         raise LogError(f"no {NAME} in {path.parent}; run start first") from None
     except (OSError, UnicodeDecodeError) as error:
         raise LogError(f"cannot read {path}: {error}") from error
-    end = next((i for i in range(1, len(lines)) if lines[i] == "---"), None) if lines[:1] == ["---"] else None
-    if end is None:
-        raise LogError(f"{path} has no frontmatter")
-    fields: dict[str, str] = {}
-    for line in lines[1:end]:
-        key, sep, value = line.partition(":")
-        if sep and key.strip():
-            fields[key.strip()] = parse_value(value)
-    return fields, "\n".join(lines[end + 1 :]).strip("\n")
+    try:
+        front, body = frontmatter.split(text)
+    except ValueError:
+        raise LogError(f"{path} has no frontmatter") from None
+    try:
+        fields = frontmatter.load(front)
+    except ValueError:
+        raise LogError(f"{path} has frontmatter that is not YAML fields") from None
+    return fields, "\n".join(body.splitlines()).strip("\n")
 
 
 def write(path: Path, fields: dict[str, str], body: str) -> None:
     """Whole-file write through a temp file, so a crash never leaves half a log."""
-    front = "".join(
-        f"{key}: {json.dumps(' '.join(value.split()), ensure_ascii=False)}\n" for key, value in fields.items()
-    )
+    one_line = {key: " ".join(value.split()) for key, value in fields.items()}
+    block = frontmatter.dump(one_line)
     tmp = path.with_suffix(".md.tmp")
-    tmp.write_text(f"---\n{front}---\n\n{body}\n" if body else f"---\n{front}---\n", encoding="utf-8", newline="\n")
+    tmp.write_text(f"{block}\n{body}\n" if body else block, encoding="utf-8", newline="\n")
     os.replace(tmp, path)
 
 
@@ -188,7 +179,10 @@ def cmd_open(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    global frontmatter
+
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     ps = sub.add_parser("start", help="create the session's ideas.md")
@@ -217,6 +211,14 @@ def main(argv: list[str] | None = None) -> int:
     po.set_defaults(func=cmd_open)
 
     args = p.parse_args(argv)
+    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+        return 2
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
+
     try:
         return args.func(args)
     except (LogError, OSError) as error:

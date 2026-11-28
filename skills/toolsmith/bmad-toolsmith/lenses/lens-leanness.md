@@ -9,7 +9,7 @@ Severity follows size unless a bullet says otherwise: a line low, a paragraph me
 - Core-test failures: lines a capable model follows unprompted. "Make sure", "don't forget", templates that teach markdown, mechanics of a tool the model drives fluently, scoring formulas for judgment.
 - Text the smallest version would replace: write that version into `proposed_smallest` (one sentence for a passage; for a section, five lines: role, outcome, consumer, and the rules whose absence has caused a failure) and the actions lost into `predicted_delta`, often none. Recommend a variant eval through the `bmad-eval` skill when the loss is in doubt.
 - A paragraph of several topics or a sentence of several decisions (canon test 9); `long_paragraphs` points at the likely ones. High when a rule's reach is unclear; `proposed_smallest` holds the split.
-- Meta-explanation of the system to itself, or negative space ("this no longer does").
+- Meta-explanation of the system to itself, or change-history residue ("replaces X", "no longer does Y", "supersedes older Z", or override caveats papering over a stale sibling doc).
 - The same point in two places; `repeated_passages` lists candidates. Name the one place it belongs. Files with different readers, such as a subagent's brief and the builder's route file, may each carry what their reader needs.
 - A step that ends on a bound the model cannot check ("when it is clear", "once done"); recommend the condition that closes it.
 - Numbered lists that are not sequences: independent steps the model will follow in order. Recommend the goal sentence that replaces them. A sequence guarding a named failure stays.

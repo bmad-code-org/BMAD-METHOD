@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Enumerate customizable BMad skills installed alongside this one.
 
@@ -29,16 +30,16 @@ produced.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
-import re
 import sys
 import tomllib
 from pathlib import Path
 
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+
 # Top-level TOML blocks that indicate a customization surface.
 SURFACE_KEYS = ("agent", "workflow")
-
-FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 
 
 def default_skills_root() -> Path:
@@ -63,18 +64,12 @@ def read_frontmatter_description(skill_md: Path) -> str:
         text = skill_md.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):
         return ""
-    m = FRONTMATTER_RE.match(text)
-    if not m:
+    try:
+        meta = frontmatter.load(frontmatter.split(text)[0])
+    except ValueError:
         return ""
-    for line in m.group(1).splitlines():
-        stripped = line.strip()
-        if stripped.startswith("description:"):
-            value = stripped[len("description:") :].strip()
-            # Strip surrounding quotes if present.
-            if (value.startswith("'") and value.endswith("'")) or (value.startswith('"') and value.endswith('"')):
-                value = value[1:-1]
-            return value
-    return ""
+    description = meta.get("description", "")
+    return description.rstrip("\n") if isinstance(description, str) else ""  # a block's final newline is not part of it
 
 
 def load_customize(toml_path: Path) -> dict | None:
@@ -196,6 +191,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 
 def main(argv: list[str]) -> int:
+    global frontmatter
+
     args = parse_args(argv)
     project_root = Path(args.project_root).expanduser().resolve()
     if not project_root.is_dir():
@@ -204,6 +201,13 @@ def main(argv: list[str]) -> int:
             file=sys.stderr,
         )
         return 2
+    path = project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+        return 2
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
 
     primary = Path(args.skills_root).expanduser().resolve() if args.skills_root else default_skills_root()
     extras = [Path(p).expanduser().resolve() for p in args.extra_root]

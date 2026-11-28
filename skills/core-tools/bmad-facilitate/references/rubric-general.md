@@ -2,7 +2,7 @@ Rate each strong, adequate, thin or broken, judged against the document's purpos
 
 1. Serves its purpose: it does the job it exists for, for the reader it names.
 2. Usable: the reader can act on it or enjoy it without this conversation.
-3. Earned: no padding, boilerplate or theater; each section pays for its place.
+3. Earned: no padding, boilerplate or theater; each section pays for its place, and no paragraph walks through what a table or picture would show at a glance.
 4. Honest: what is unknown or inferred says so; open items fit the stakes.
 5. Fit: voice, terms, depth and length suit the reader and the stakes.
 

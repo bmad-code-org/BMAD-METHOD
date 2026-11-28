@@ -11,7 +11,7 @@ A skill whose Markdown is rendered once per run from `customize.toml` and the te
 | `{target}/step-NN-<name>.md`, one per step | `shapes/rendered-skill/assets/step.md` |
 | `{target}/customize.toml` | `shapes/rendered-skill/assets/customize-template.toml` |
 
-Fill each template with `uv run {skill-root}/scripts/process_template.py {skill-root}/shapes/rendered-skill/assets/<template> -o {target}/<file> --var <token>=<value> ...`, passing `{name}`, `{title}`, `{description}`, `{selector}`, `{block}`, the selector's values and the step names. Jinja passes through untouched. Then write by hand each `{...}` left that is not a run-time token such as `{project-root}`.
+Fill each template with `uv run "{skill-root}/scripts/process_template.py" "{skill-root}/shapes/rendered-skill/assets/<template>" -o "{target}/<file>" --var <token>=<value> ...`, passing `{name}`, `{title}`, `{description}`, `{selector}`, `{block}`, the selector's values and the step names. Jinja passes through untouched. Then write by hand each `{...}` left that is not a run-time token such as `{project-root}`.
 
 ## Rules
 

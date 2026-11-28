@@ -5,37 +5,37 @@ sidebar:
   order: 6
 ---
 
-Make John's PRD ask the questions your company cares about, without touching BMad's own files, so every PRD your team writes covers them. Then give one department a PRD of its own when its needs outgrow the shared one.
+In this hands-on walkthrough, you customize John's PRD so every PRD your team writes enforces your company's questions and metrics catalog without editing BMad's installed files, and then create a separate PRD template for one department whose needs outgrow the shared format. For background on how templates merge, see [How Document Templates Work](./how-document-templates-work.md); for the complete template file syntax, see [Write a Document Template](./write-a-document-template.md).
 
 ## What You'll Learn
 
-- Add a required section with its own coaching
-- Change how the coach works an existing section
-- See exactly what the coach read for a run
-- Choose between extending a template, replacing it and making a new one
+- Add a required section with its own coaching rules
+- Modify how the coach handles an existing section
+- Inspect the exact merged template the coach reads
+- Decide between extending a template, replacing it, and creating a new one
 
 :::note[Prerequisites]
-BMad installed with the BMad Method module, `bmad setup` run, and a coding tool open in your project. See [Install BMad](../start/install-bmad.md).
+BMad installed with the BMad Method module, `bmad setup` run, and your AI coding tool open in your project. See [Install BMad](../start/install-bmad.md).
 :::
 
 :::tip[Quick Path]
-Tell `bmad-customize` what every PRD needs. It writes an extension in `_bmad/custom/facilitate-templates/` and shows you the result. Ask it to show the merged template to see your rules in what the coach reads.
+Tell `bmad-customize` what every PRD needs. It writes a small extension in `_bmad/custom/facilitate-templates/` and shows you the merged result.
 :::
 
 ## The Example
 
-Larkspur, a fictional company, sells appointment scheduling software to clinics. Two things went wrong last quarter. A reminders feature launched while Support had no answers ready, and tickets tripled in the first week. And PRDs kept promising metrics nobody tracks, so no one could say whether a launch worked.
+Larkspur, a fictional clinic scheduling software company, hit two problems last quarter. A reminders feature launched before Support had answers ready, causing support tickets to triple in week one, and several PRDs promised metrics nobody actually tracks.
 
-Larkspur's product lead wants two changes to every PRD:
+Larkspur's product lead wants two rules on every PRD:
 
 | Change | Kind | What the coach does |
 | --- | --- | --- |
-| A **Support readiness** section | A new section | Asks who leads Support for the launch and which questions customers will ask first, and refuses "Support will figure it out" |
-| **Success metrics** taken from the company's metrics catalog | A change to a section John's PRD already has | Reads the catalog before asking, and logs an open question instead of inventing a metric |
+| A **Support readiness** section | New section | Asks who leads Support for the launch and which three questions customers will ask first, refusing "Support will figure it out" |
+| **OKRs** grounded in the company metrics catalog | Change to an existing section | Reads the catalog before asking, and logs an open question instead of inventing an untracked metric |
 
 ## Step 1: Give the Coach a Catalog to Read
 
-The metrics rule points at a file your team keeps. For this tutorial, create `docs/metrics-catalog.md` with a few rows:
+Create `docs/metrics-catalog.md` in your project with a few rows:
 
 ```markdown
 # Metrics catalog
@@ -47,19 +47,20 @@ The metrics rule points at a file your team keeps. For this tutorial, create `do
 | Tickets per 100 clinics | Support tickets opened per 100 active clinics, per week | Support Ops |
 ```
 
-## Step 2: Ask bmad-customize for the Change
+## Step 2: Ask `bmad-customize` for the Change
 
-Run the `bmad-customize` skill and say what you want in plain words:
+Open chat, invoke `bmad-customize`, and describe the rules in plain language:
 
 ```text
-Every PRD at Larkspur needs a Support readiness section after MVP scope: who leads
+Every PRD at Larkspur needs a Support readiness section after Scope and non-goals: who leads
 Support for the launch, the first three questions customers will ask with their
 answers, known issues, and where tickets escalate. Don't accept "Support will
-figure it out". Also, success metrics must come from docs/metrics-catalog.md with
-the owner it names, and a metric that isn't there becomes an open question.
+figure it out". Also, every key result in the OKRs must use a metric from
+docs/metrics-catalog.md with the owner it names, and a metric that isn't there
+becomes an open question.
 ```
 
-You do not need to know that John's PRD runs through `bmad-facilitate`. `bmad-customize` finds the `prd` template, decides this is an extension because you are adding to the PRD rather than rebuilding it, and shows you a file like this before writing it:
+You do not need to know which underlying skill writes PRDs. `bmad-customize` locates the `prd` template, chooses an extension because you are adding rules rather than rebuilding the whole document, and previews a file like this before saving:
 
 ```markdown
 ---
@@ -67,46 +68,44 @@ extends: prd
 ---
 
 ## Support readiness
-<!-- After MVP scope. What Support needs on launch day. Ask who leads Support for this launch, then ask the user to picture the first week of tickets: the three questions customers will ask first, and the answer to each. Add known issues and where a ticket escalates. Push back on "Support will figure it out": a launch with no answers ready is not ready. -->
+<!-- After Scope and non-goals. What Support needs on launch day. Ask who leads Support for this launch, then ask the user to picture the first week of tickets: the three questions customers will ask first, and the answer to each. Add known issues and where a ticket escalates. Push back on "Support will figure it out": a launch with no answers ready is not ready. -->
 
-## Success metrics
-<!-- Adds to the template's Success metrics. Every metric comes from `docs/metrics-catalog.md` and names the owner it lists; read the catalog before asking. When the user proposes a metric the catalog lacks, say so and log an open question for its owner instead of inventing a definition. -->
+## OKRs
+<!-- Adds to the template's OKRs. Every key result's metric comes from `docs/metrics-catalog.md` and names the owner it lists; read the catalog before asking. When the user proposes a metric the catalog lacks, say so and log an open question for its owner instead of inventing a definition. -->
 ```
 
-Each comment is a facilitation instruction:
+Each comment guides the coach:
 
-- **Support readiness** is a new heading, so it is added to every PRD. Its comment places it ("After MVP scope"), says what to ask and in what order, and says when to push back. It is required, because the comment does not start with `optional` or `include when`.
-- **Success metrics** has the same heading as a section John's PRD already has, so it changes that section. "Adds to" keeps John's own instructions for the section and adds Larkspur's. A comment that said "Replaces the template's Success metrics" would use Larkspur's alone.
+- The `Support readiness` comment introduces a new heading, places it after Scope and non-goals, specifies what to ask and when to push back, and marks it required by omitting `optional` or `include when`.
+- The `OKRs` comment matches an existing heading in John's PRD and begins with "Adds to", preserving John's base coaching while adding Larkspur's catalog rule (writing "Replaces the template's OKRs" instead would use Larkspur's rule alone).
 
-Say yes, and `bmad-customize` saves it in `_bmad/custom/facilitate-templates/`, under a name such as `prd-larkspur.md`, then shows the merged PRD: Support readiness is now in the facilitation order as a required section. Commit the file so your whole team gets it.
+Approve the preview, and `bmad-customize` saves it under `_bmad/custom/facilitate-templates/` (for example, `prd-larkspur.md`) and displays the merged PRD template. Commit the file so everyone on your team inherits it.
 
 ## Step 3: Write a PRD with John
 
-Talk to John (`bmad-agent-pm`):
+Start a session with John (`bmad-agent-pm`):
 
 ```text
 John, let's create a PRD for text message appointment reminders.
 ```
 
-John coaches the PRD as usual, and tells you up front that your project adds rules to it. On the fast path he raises both rules in his first batch of questions; when coaching, he raises each as the conversation reaches it. When the conversation reaches Success metrics, he offers metrics from your catalog, such as no-show rate. Propose one the catalog lacks, such as "patient happiness", and he says it is not in the catalog and records an open question for its owner instead of defining it himself. After MVP scope he asks who leads Support for the launch, then walks you through the first week of tickets. Answer "Support will figure it out" and he presses for the answers.
+John coaches the PRD as usual, incorporating both company rules. When the conversation reaches OKRs, he suggests metrics from your catalog such as no-show rate; if you propose an untracked metric like "patient happiness", he flags that it is absent from the catalog and logs an open question for its owner. After Scope and non-goals, he asks who leads Support and presses for concrete launch-week answers if you try to defer them.
 
-## Step 4: See What the Coach Read
+## Step 4: Inspect What the Coach Reads
 
-Ask `bmad-customize` to show the merged PRD template: John's PRD template merged with every extension of it, the extensions first, as the next run reads it; a run already finished read the template as it stood then. Your file's text sits at the top, under a line naming its path.
-
-If a rule ever seems ignored, look here first. Text that is in neither the merged template nor the files its `guidance` and `methods` name never reaches the coach.
+Ask `bmad-customize` to show the merged PRD template. It prints John's PRD combined with every matching extension (extensions first) exactly as the next run will read it. Whenever a custom rule seems ignored, check the merged template first, because anything absent from the merged template and its referenced guidance files never reaches the coach.
 
 ## Step 5: When Changes Outgrow an Extension
 
-Larkspur's billing team writes PRDs for changes to pricing, invoices and payments. Their documents need sections an ordinary PRD does not have, such as proration, tax and Finance sign-off, and skip some it does have. Adding those to the `prd` extension would put billing sections in every team's PRD. The more you change, the more a separate document makes sense:
+Suppose Larkspur's billing team writes PRDs for pricing, invoices, and payment changes. Their documents require proration, tax, and Finance sign-off sections while dropping sections ordinary product PRDs use. Adding billing-only sections to the shared `prd` extension would clutter every other team's PRDs.
 
-| Changes | Use | Template id |
+| Scope of changes | Approach | Frontmatter id |
 | --- | --- | --- |
-| A few sections and rules for everyone | An extension | `extends: prd` |
-| A different shape for everyone in the project | A replacement copy | `template: prd` |
-| A different document for one team or kind of work | A new template | `template: prd-billing` |
+| A few sections and rules for everyone | Extension | `extends: prd` |
+| A rebuilt shape for everyone in the project | Replacement copy | `template: prd` |
+| A separate document for one team or domain | New template | `template: prd-billing` |
 
-Billing needs the third. Ask `bmad-customize`:
+Ask `bmad-customize` to create a dedicated billing template:
 
 ```text
 The billing team needs its own PRD for changes to pricing, invoices and payments.
@@ -115,7 +114,7 @@ the day the change lands, with a worked example, and a Finance sign-off section.
 Drop Users and journeys.
 ```
 
-It copies John's template to `_bmad/custom/facilitate-templates/prd-billing.md`, gives it a new id, and adds your sections, such as:
+`bmad-customize` copies John's PRD to `_bmad/custom/facilitate-templates/prd-billing.md`, assigns a new `template` id, and adds the billing sections:
 
 ```markdown
 ---
@@ -129,13 +128,13 @@ agents: [bmad-agent-pm]
 <!-- After Features and requirements. Walk the user through the day the change lands: mid-cycle upgrades, downgrades, refunds and annual plans. Ask for one worked example with real numbers, and push until every case names who absorbs the difference. -->
 ```
 
-Three lines in its frontmatter matter:
+Three frontmatter fields control how John routes to it:
 
-- **`template: prd-billing`** makes it a new document. John's `prd` stays as it was for everyone else.
-- **`description` and `not_for`** are what John reads to choose. Ask him for "a PRD for the new annual discount" and he picks `prd-billing`; ask for one about a calendar feature and he picks `prd`.
-- **`agents: [bmad-agent-pm]`** has John offer it. Without it, the template is still usable but no agent lists it.
+- `template: prd-billing` registers it as a distinct document while leaving `prd` intact for other teams.
+- `description` and `not_for` tell John when to pick `prd-billing` versus `prd`.
+- `agents: [bmad-agent-pm]` puts it in John's document catalog.
 
-Two trade-offs come with a copy. Your `prd-larkspur.md` extension extends `prd`, not `prd-billing`, so add Support readiness to the copy too if billing launches need it, or write a second extension with `extends: prd-billing`. And a copy does not receive updates to John's template, so compare it when BMad's PRD changes.
+Note two tradeoffs when creating a separate copy: your `prd-larkspur.md` extension targets `prd` rather than `prd-billing` (so add Support readiness to `prd-billing.md` or create a second extension with `extends: prd-billing`), and a copied template does not automatically inherit updates made to John's shipped PRD.
 
 ## What You've Accomplished
 
@@ -144,37 +143,48 @@ your-project/
 ├── docs/
 │   └── metrics-catalog.md                  # read by the coach for every PRD
 ├── _bmad/custom/facilitate-templates/
-│   ├── prd-larkspur.md                     # extension: every PRD
-│   └── prd-billing.md                      # new template: billing PRDs
+│   ├── prd-larkspur.md                     # extension applied to every PRD
+│   └── prd-billing.md                      # dedicated template for billing PRDs
 └── _bmad-output/.../prd-text-reminders/
-    └── prd-text-reminders.md               # the PRD
+    └── prd-text-reminders.md               # the finished PRD
 ```
 
 ## Quick Reference
 
-| To | Do |
+| Goal | How to do it |
 | --- | --- |
-| Add a section to every PRD | A new heading in an `extends: prd` file, with a comment that places it and says what to ask |
-| Change how an existing section is coached | The same heading in the extension, with a comment that adds to or replaces the template's |
-| Remove a section | List the order in the extension's `facilitation_order` and leave the section out |
-| Make HTML views by default for PRDs | `html_view: always` in the extension's frontmatter |
-| Give one team its own document | A copy with a new `template` id, `description`, `not_for` and `agents` |
-| Check what a run reads | Ask `bmad-customize` to show the merged template |
+| Add a section to every PRD | Add a new heading in an `extends: prd` file with a comment placing it and describing what to ask |
+| Change coaching on an existing section | Reuse the heading in your extension with a comment that adds to or replaces the base rule |
+| Remove a section | Specify `facilitation_order` in the extension and omit that section |
+| Always generate HTML views for PRDs | Set `view: always` in the extension's frontmatter |
+| Set a default mode for every document | Ask `bmad-customize` to set `mode` (`step-by-step`, `freeform`, or `fast`) on `bmad-facilitate` for your team or just for you |
+| Override mode for one document | Set `mode: freeform` (or another mode) in the extension's frontmatter |
+| Enforce strict section order on one document | Set `order: fixed` in the extension's frontmatter (or `order: ""` to clear it) |
+| Give one team its own document | Create a new template with its own `template` id, `description`, `not_for`, and `agents` |
+| Verify what a run reads | Ask `bmad-customize` to show the merged template |
 
 ## Common Questions
 
-**Will updating BMad overwrite my changes?** No. Updates never touch `_bmad/custom/`. Your extension keeps applying, and John's improvements to the PRD still reach you through it.
+### Will updating BMad overwrite my changes?
 
-**Can I write these files by hand?** Yes. [Write a Document Template](./write-a-document-template.md) covers the format, and `bmad-customize` checks a file you wrote yourself.
+No. Updates never touch `_bmad/custom/`. Your extensions continue applying, and improvements to John's shipped PRD still flow through automatically.
 
-**Who gets the change?** Everyone who pulls the project, since `_bmad/custom/` is committed. For a change only you want in every project, put the file in `~/.bmad/facilitate-templates/`.
+### Can I write template files by hand?
 
-**Does this work for Mary's documents too?** Yes. Extend `brief`, `prfaq`, `business-case` or any other template the same way.
+Yes. [Write a Document Template](./write-a-document-template.md) documents the complete format, and `bmad-customize` can validate any file you edit by hand.
+
+### Who gets the change?
+
+Everyone who pulls the repository gets files committed in `_bmad/custom/facilitate-templates/`. For personal changes that follow you across projects, place them in `~/.bmad/facilitate-templates/`.
+
+### Does this work for other agents' documents too?
+
+Yes. The same extension and template workflow works for every structured document written by Mary (`bmad-agent-analyst`), John (`bmad-agent-pm`), Sally (`bmad-agent-ux-designer`), and Winston (`bmad-agent-architect`), as well as Nadia (`bmad-founder-agent-advisor`) in Founder and Clio (`bmad-creative-agent-director`) in Creative. See [Document Templates](../reference/document-templates.md) for the full list of template ids.
 
 ## Getting Help
 
-Ask the `bmad` skill, or bring questions to the [BMad Discord](https://discord.gg/gk8jAdXWmj).
+Ask the `bmad` skill in chat, or bring questions to the [BMad Discord](https://discord.gg/gk8jAdXWmj).
 
 :::tip[Key Takeaways]
-Templates are facilitation instructions: a section comment says where the section goes, what to ask and when to push. Extend a template by default so updates keep arriving, and copy it only to rebuild a document or to give one team a document of its own. The merged template shows exactly what the coach reads.
+Templates act as facilitation instructions: section comments specify placement, questions, and pushback rules. Extend shipped templates by default so upstream improvements keep arriving, and copy a template only when you need a separate document type or full redesign. Check the merged template whenever you want to verify what the coach reads.
 :::

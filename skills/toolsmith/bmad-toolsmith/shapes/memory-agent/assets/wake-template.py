@@ -33,10 +33,11 @@ It writes nothing.
 Usage:
     uv run {skill-root}/scripts/wake.py <project-root> [--pulse]
 
-    project-root: the folder holding _bmad/
+    project-root: the folder holding _bmad/, with _bmad/scripts/frontmatter.py from bmad setup
 """
 
 import argparse
+import importlib.util
 import json
 import os
 import re
@@ -44,7 +45,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-import yaml
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
 
 # The skill folder is the parent of this script's scripts/; its name is the skill name.
 SKILL_ROOT = Path(__file__).resolve().parent.parent
@@ -67,7 +68,6 @@ DATED_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})")
 # A distillation opens with `source: raw/<file>`, on one line or as a YAML list under it.
 SOURCE_RE = re.compile(r"^source:[^\n]*(?:\n[ \t]*-[^\n]*)*", re.MULTILINE)
 PERSONA_NAME_RE = re.compile(r"^- \*\*Name:\*\* ([^{*\s][^{*\n]*)$", re.MULTILINE)
-FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
 # A template placeholder is prose in braces, such as {learned at First Breath}; a bare token has no spaces.
 PLACEHOLDER_RE = re.compile(r"\{[^{}\n]*\s[^{}\n]*\}")
 
@@ -156,17 +156,18 @@ def emit_map(sanctum: Path) -> None:
         emit(pending)
 
 
-def frontmatter(path: Path) -> dict | None:
+def read_frontmatter(path: Path) -> dict | None:
     """The file's frontmatter mapping, empty when it has none; None when the block does not parse or never closes."""
     text = path.read_text(encoding="utf-8", errors="replace")
-    match = FRONTMATTER_RE.match(text)
-    if not match:
-        return None if text.startswith("---") else {}
     try:
-        meta = yaml.safe_load(match.group(1))
-    except yaml.YAMLError:
-        return None
-    return meta if isinstance(meta, dict) else None
+        return frontmatter.load(frontmatter.split(text)[0])
+    except ValueError:
+        return None if text.startswith("---") else {}
+
+
+def is_true(value: object) -> bool:
+    """A YAML 1.1 true, such as `retired: true`; the frontmatter reader keeps every value as text."""
+    return value in ("true", "True", "TRUE", "yes", "Yes", "YES", "on", "On", "ON")
 
 
 def capability_rows(folder: Path, label: str, skip: set[str]) -> tuple[dict[str, tuple[dict, str]], list[str]]:
@@ -175,10 +176,10 @@ def capability_rows(folder: Path, label: str, skip: set[str]) -> tuple[dict[str,
     for path in sorted(folder.glob("*.md")) if folder.is_dir() else []:
         if path.name in skip:
             continue
-        meta, source = frontmatter(path), f"{label}/{path.name}"
+        meta, source = read_frontmatter(path), f"{label}/{path.name}"
         if meta is None:
             problems.append(f"{source}: its frontmatter does not parse")
-        elif meta.get("code") and (meta.get("name") or meta.get("retired") is True):
+        elif meta.get("code") and (meta.get("name") or is_true(meta.get("retired"))):
             found[str(meta["code"])] = (meta, source)
         elif meta.get("code") or meta.get("name"):
             problems.append(f"{source}: its frontmatter needs both `name` and `code`")
@@ -190,7 +191,7 @@ def emit_capabilities(sanctum: Path) -> None:
     learned, learned_problems = capability_rows(sanctum / "capabilities", "capabilities", set())
     rows = []
     for code, (meta, source) in {**built_in, **learned}.items():
-        if meta.get("retired") is True:
+        if is_true(meta.get("retired")):
             continue
         kind = "learned" if code in learned else "built-in"
         if code in learned and code in built_in:
@@ -337,12 +338,21 @@ def emit_lost_name(sanctum: Path, project_root: Path) -> None:
 
 
 def main() -> int:
+    global frontmatter
+
     parser = argparse.ArgumentParser(description="Wake the agent: print its self and maps, or route to First Breath.")
     parser.add_argument("project_root", type=Path, help="the folder holding _bmad/")
     parser.add_argument("--pulse", action="store_true", help="woken on a schedule with no one at the keyboard")
     args = parser.parse_args()
     pulse = args.pulse
     project_root = args.project_root.resolve()
+    path = project_root / "_bmad" / "scripts" / "frontmatter.py"
+    if not path.is_file():
+        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
+        return 2
+    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+    frontmatter = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frontmatter)
     sanctum = project_root / "_bmad" / "memory" / SKILL_NAME
 
     missing = [name for name in IDENTITY_FILES if not (sanctum / name).is_file()]

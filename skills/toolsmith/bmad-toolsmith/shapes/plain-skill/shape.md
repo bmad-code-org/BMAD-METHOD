@@ -12,7 +12,7 @@ A `SKILL.md` an agent follows, with references, scripts or assets only where the
 | `{target}/customize.toml` | `shapes/plain-skill/assets/customize-template.toml` | the user wants team customization |
 | `{target}/bmod.toml` | the scaffold, `init_skill.py --bmod <record> --source <update_source>`; `ship.md` adds its dependency lists | the skill joins a module |
 
-Fill each template with `uv run {skill-root}/scripts/process_template.py {skill-root}/shapes/plain-skill/assets/<template> -o {target}/<file> --var <token>=<value> ...`, passing `{name}`, `{title}`, `{description}` and, for a skill that writes a document, `{type}` (the document type, such as `adr`). Then write by hand each `{...}` left that is not a run-time token; `{project-root}`, `{skill-root}`, `{workflow.*}`, `{slug}` and config values stay for run time.
+Fill each template with `uv run "{skill-root}/scripts/process_template.py" "{skill-root}/shapes/plain-skill/assets/<template>" -o "{target}/<file>" --var <token>=<value> ...`, passing `{name}`, `{title}`, `{description}` and, for a skill that writes a document, `{type}` (the document type, such as `adr`). Then write by hand each `{...}` left that is not a run-time token; `{project-root}`, `{skill-root}`, `{workflow.*}`, `{slug}` and config values stay for run time.
 
 Before drafting, read `shapes/plain-skill/assets/sample-skill/SKILL.md`, a finished plain skill at the size to aim for.
 

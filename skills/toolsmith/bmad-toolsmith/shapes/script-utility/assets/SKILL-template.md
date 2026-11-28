@@ -9,7 +9,7 @@ description: '{description}'
 ## Run
 
 ```bash
-uv run {skill-root}/scripts/{script}.py {arguments}
+uv run "{skill-root}/scripts/{script}.py" {arguments}
 ```
 
 `--help` lists every option. {When to pass which option, one line each, only where the choice takes judgment.}
