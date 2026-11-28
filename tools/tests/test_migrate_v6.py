@@ -123,6 +123,17 @@ class MigrateV6Tests(unittest.TestCase):
             (after["legacy_leftovers"], after["stale_config_keys"], after["unused_customizations"]), ([], [], [])
         )
 
+    def test_a_customization_of_a_skill_another_tool_installed_is_not_unused(self):
+        # Only Codex has bmad-foo; a Claude Code user's --clean must not delete the team's bmad-foo.toml.
+        self.write_v6_traces()
+        write(self.project / ".codex" / "skills" / "bmad-foo" / "SKILL.md", "---\nname: bmad-foo\n---\n")
+        write(self.bmad / "custom" / "bmad-foo.toml", "[workflow]\nshared = true\n")
+
+        self.assertEqual(self.migrate()["unused_customizations"], ["_bmad/custom/bmad-sprint-planning.user.toml"])
+        self.migrate("--clean")
+        self.assertTrue((self.bmad / "custom" / "bmad-foo.toml").exists())
+        self.assertFalse((self.bmad / "custom" / "bmad-sprint-planning.user.toml").exists())
+
     def test_only_listed_v6_keys_are_removed(self):
         user = self.bmad / "custom" / "config.user.toml"
         text = '[core]\nuser_name = "Ann"\nfuture_key = "x"\n\n[modules.bmm]\nproject_knowledge = "docs"\nnew_setting = 1\n'
