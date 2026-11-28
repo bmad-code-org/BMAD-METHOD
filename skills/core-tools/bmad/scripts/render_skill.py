@@ -45,6 +45,9 @@ class _ArgumentParser(argparse.ArgumentParser):
 
 
 _PARAMETER = r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*"
+# Bump when a skill comes to depend on new renderer behavior, and raise the
+# `--require-version` its SKILL.md passes, so a stale project copy halts.
+RENDERER_VERSION = 2
 
 
 def _hash_bytes(content: bytes) -> str:
@@ -839,6 +842,12 @@ def main() -> int:
         help="project root containing _bmad/ (inferred from script location or cwd when omitted)",
     )
     parser.add_argument("--skill", required=True)
+    parser.add_argument(
+        "--require-version",
+        type=int,
+        default=None,
+        help="minimum renderer contract version required by the skill",
+    )
     parser.add_argument("--overrides", type=Path, help="invocation-only customization TOML file")
     parser.add_argument("--set", dest="assignments", action="append", default=[], metavar="KEY=VALUE")
     parser.add_argument(
@@ -853,6 +862,14 @@ def main() -> int:
         reconfigure(encoding="utf-8")
     try:
         args = parser.parse_args()
+        if args.require_version is not None:
+            if args.require_version < 1:
+                raise RenderError(f"--require-version must be a positive integer, got {args.require_version}")
+            if args.require_version > RENDERER_VERSION:
+                raise RenderError(
+                    f"this skill requires render_skill.py version {args.require_version}, "
+                    f"but this project has version {RENDERER_VERSION}; run bmad setup in this project"
+                )
         project_root = _resolve_project_root(args.project_root)
         roots = tuple(args.root)
         skill_dir = _resolve_skill_dir(args.skill, project_root, roots)

@@ -848,3 +848,144 @@ def test_toc_on_a_mixed_ending_file_checks_clean(tmp_path):
     assert run("toc", str(f))[0] == 0  # a refresh re-finds both sections by their first line
     assert run("toc", str(f), "--remove")[0] == 0
     assert f.read_bytes() == original
+
+
+def test_lookup_refuses_to_wipe_table_when_no_shards_have_frontmatter(tmp_path):
+    folder = tmp_path / "doc-legacy"
+    folder.mkdir()
+    (folder / "doc-legacy.md").write_text(
+        "# Legacy\n\n## Shards\n\n- [One](./part-1.md) — part one\n", encoding="utf-8"
+    )
+    (folder / "part-1.md").write_text(
+        "# One\n\nPart of [Legacy](./doc-legacy.md).\n\n## REQ-1\n\ntext\n", encoding="utf-8"
+    )
+    lookup_before = "# Identifier lookup\n\n| Identifier | Shard |\n|---|---|\n| REQ-1 | [part-1](./part-1.md) |\n"
+    (folder / "identifier-lookup.md").write_text(lookup_before, encoding="utf-8")
+    (folder / ".shards.json").write_text(
+        json.dumps(
+            {
+                "title": "Legacy",
+                "lookup": r"\bREQ-\d+\b",
+                "groups": [{"heading": "G", "shards": [{"file": "part-1.md", "header_lines": 4}]}],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    code, out = run("lookup", str(folder))
+    assert code == 2
+    assert "no shards in doc-legacy/" in out["error"]
+    assert "pre-frontmatter" in out["error"]
+    assert (folder / "identifier-lookup.md").read_text(encoding="utf-8") == lookup_before
+
+
+def test_lookup_refuses_when_a_shard_has_broken_frontmatter(built):
+    lookup_before = (built / "identifier-lookup.md").read_text(encoding="utf-8")
+    part2 = built / "part-2.md"
+    part2.write_text(
+        part2.read_text(encoding="utf-8").replace("title: Part 2", "title: Part 2: broken"), encoding="utf-8"
+    )
+
+    code, out = run("lookup", str(built))
+    assert code == 2
+    assert "part-2.md" in out["error"]
+    assert (built / "identifier-lookup.md").read_text(encoding="utf-8") == lookup_before
+
+
+def _add_many_shards(built: Path, count: int = 190) -> None:
+    for i in range(count):
+        (built / f"extra-{i:03d}.md").write_text(
+            shard(f"Extra {i}", f"Added extra {i}", f"Body {i}.\n", group="All"), encoding="utf-8"
+        )
+
+
+def test_map_refuses_to_overwrite_a_hand_added_shard_matching_a_sub_map_name(built):
+    _add_many_shards(built)
+    (built / "map-all.md").write_text(
+        shard("Map All", "Hand-added shard", "UNIQUE HAND-WRITTEN CONTENT\n", group="All"), encoding="utf-8"
+    )
+    snap = {name: (built / name).read_bytes() for name in ("doc-sample.md", "map-all.md", ".shards.json")}
+
+    code, out = run("map", str(built))
+    assert code == 2
+    assert "map-all.md" in out["error"]
+    for name, before in snap.items():
+        assert (built / name).read_bytes() == before
+
+
+def test_map_refuses_to_overwrite_an_unrelated_file_matching_a_sub_map_name(built):
+    _add_many_shards(built)
+    (built / "map-all.md").write_text("# Notes\n\nDo not clobber me.\n", encoding="utf-8")
+    before_main = (built / "doc-sample.md").read_bytes()
+    before_file = (built / "map-all.md").read_bytes()
+
+    code, out = run("map", str(built))
+    assert code == 2
+    assert "map-all.md" in out["error"]
+    assert (built / "doc-sample.md").read_bytes() == before_main
+    assert (built / "map-all.md").read_bytes() == before_file
+
+
+def test_map_still_updates_and_drops_its_own_sub_maps(tmp_path):
+    src = tmp_path / "big.md"
+    lines = ["# Big Doc", ""]
+    g0, g1 = [], []
+    pos = 3
+    for i in range(220):
+        lines += [f"## S{i}", f"Text {i}", f"More {i}"]
+        entry = {
+            "file": f"s-{i:03d}.md",
+            "title": f"Section {i}",
+            "summary": f"Sum {i}",
+            "start": 1 if i == 0 else pos,
+            "end": pos + 2,
+        }
+        (g0 if i < 110 else g1).append(entry)
+        pos += 3
+    src.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    folder = tmp_path / "doc-big"
+    plan = {
+        "source": str(src),
+        "folder": str(folder),
+        "title": "Big Doc",
+        "groups": [
+            {"heading": "Group Zero", "shards": g0},
+            {"heading": "Group One", "shards": g1},
+        ],
+    }
+    (tmp_path / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
+    code, out = run("build", str(tmp_path / "plan.json"))
+    assert code == 0, out
+    assert (folder / "map-group-zero.md").is_file()
+    assert (folder / "map-group-one.md").is_file()
+
+    code, out = run("map", str(folder))
+    assert code == 0 and out["sub_maps"] == ["map-group-one.md", "map-group-zero.md"], out
+    assert (folder / "map-group-zero.md").is_file()
+
+    for i in range(20, 220):
+        (folder / f"s-{i:03d}.md").unlink()
+    code, out = run("map", str(folder))
+    assert code == 0 and out["sub_maps"] == [], out
+    assert not (folder / "map-group-zero.md").exists()
+    assert not (folder / "map-group-one.md").exists()
+
+
+def test_a_sub_map_never_takes_the_main_file_name(tmp_path):
+    src = tmp_path / "s.md"
+    src.write_text("\n".join(f"line {i}" for i in range(1, 501)) + "\n", encoding="utf-8")
+    shards = [
+        {"file": f"s{i}.md", "title": f"S{i}", "summary": "x", "start": i * 2 + 1, "end": i * 2 + 2} for i in range(250)
+    ]
+    folder = tmp_path / "map-all"
+    groups = [{"heading": "All", "shards": shards[:150]}, {"heading": "Rest", "shards": shards[150:]}]
+    plan = {"source": str(src), "folder": str(folder), "title": "Big", "groups": groups}
+    (tmp_path / "p.json").write_text(json.dumps(plan), encoding="utf-8")
+    code, out = run("build", str(tmp_path / "p.json"))
+    assert code == 0 and out["sub_maps"] == ["map-all-2.md", "map-rest.md"], out
+    assert shard_tool.NOTE_MARK in (folder / "map-all.md").read_text(encoding="utf-8")
+
+    code, out = run("map", str(folder))
+    assert code == 0 and out["sub_maps"] == ["map-all-2.md", "map-rest.md"], out
+    assert shard_tool.NOTE_MARK in (folder / "map-all.md").read_text(encoding="utf-8")
+    assert run("check", str(folder), "--rebuild")[0] == 0

@@ -437,7 +437,7 @@ def main_text(plan: dict, front: list[str], folder: Path, has_lookup: bool) -> t
     subs, short = {}, list(lookup)
     for g in plan["groups"]:
         name, k = f"map-{slug(g['heading'])}.md", 2
-        while name in subs:
+        while name in subs or name.casefold() == f"{folder.name}.md".casefold():
             name, k = f"map-{slug(g['heading'])}-{k}.md", k + 1
         about = g.get("summary") or "; ".join(s["title"] for s in g["shards"][:3])
         short.append(f"- [{g['heading']}](./{name}) — {len(g['shards'])} shards: {about}")
@@ -627,8 +627,9 @@ def listed_homes(path: Path) -> dict[str, set[str]]:
     return {m.group(1): set(re.findall(r"\]\(\./([^)]+)\)", m.group(2))) for m in rows if m}
 
 
-def write_lookup(folder: Path, plan: dict) -> dict:
-    shards, _ = shards_in(folder, folder / f"{folder.name}.md")
+def write_lookup(folder: Path, plan: dict, shards: list[dict] | None = None) -> dict:
+    if shards is None:
+        shards, _ = shards_in(folder, folder / f"{folder.name}.md")
     homes = lookup_homes(folder, shards, re.compile(plan["lookup"]))
     rows = [
         f"| {i} | {', '.join(f'[{Path(f).stem}](./{f})' for f in fs)} |"
@@ -657,7 +658,17 @@ def cmd_lookup(args) -> int:
         return fail(f"no {MANIFEST} in {folder}")
     if not plan.get("lookup"):
         return fail("the plan has no lookup pattern")
-    return emit({"ok": True} | write_lookup(folder, plan))
+    main = folder / f"{folder.name}.md"
+    shards, broken = shards_in(folder, main)
+    if broken:
+        names = ", ".join(b["file"] for b in broken)
+        return fail(f"cannot regenerate {LOOKUP_FILE}: frontmatter does not parse in {names}")
+    if not shards:
+        msg = f"no shards in {folder.name}/: no file's frontmatter has part_of: ./{main.name}"
+        if any("header_lines" in s for s in all_shards(plan)):
+            msg += " (shards appear to use the earlier pre-frontmatter format)"
+        return fail(msg)
+    return emit({"ok": True} | write_lookup(folder, plan, shards))
 
 
 def cmd_map(args) -> int:
@@ -695,8 +706,21 @@ def cmd_map(args) -> int:
         "groups": [{"heading": h, "summary": about.get(h), "shards": ss} for h, ss in groups.items()],
     }
     text, subs = main_text(layout, current[:fm], folder, bool(plan.get("lookup")))
+    owned = {
+        name
+        for name in set(pages) | set(plan.get("sub_maps", []))
+        if name not in by_file
+        and name not in unread
+        and not ((folder / name).exists() and frontmatter_end(read_lines(folder / name)))
+    }
+    for name in sorted(subs):
+        if (folder / name).exists() and name not in owned:
+            return fail(
+                f"sub-map {name} would overwrite a file in {folder.name}/ that shard-pro did not generate; "
+                "rename the file or the group"
+            )
     main.write_text(text, encoding="utf-8")
-    for old in (set(pages) | set(plan.get("sub_maps", []))) - set(subs):
+    for old in owned - set(subs):
         (folder / old).unlink(missing_ok=True)
     for name, body in subs.items():
         (folder / name).write_text(body, encoding="utf-8")

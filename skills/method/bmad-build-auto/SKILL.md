@@ -9,11 +9,11 @@ Replace `{project-root}` with the nearest folder containing `_bmad/`, from the w
 Replace `{skill-root}` with the absolute path to this skill's directory.
 
 ```bash
-uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"
+uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}" --require-version 2
 ```
 
 - When the invocation names a route (`oneshot` or `full`), append `--set workflow.route=<value>` to the command.
 - When the invocation names a review selection (`none`, `quick`, or `thorough`; "skip review" or "no review" mean `none`), append `--set workflow.review=<value>` to the command.
 - The command prints the skill's workflow: follow it. `HALT: <reason>`: report the reason and stop.
-- If the script does not exist, BMad is not set up in this project yet. Offer to set it up using `bmad` skill, then run the command again. If you do not have the `bmad` skill, offer to install it first.
+- If the script does not exist, or it halts over `--require-version`, BMad is missing or out of date in this project. Offer to set it up using the `bmad` skill, then run the command again. If you do not have the `bmad` skill, offer to install it first.
 - On any other output or failure, including `uv` being unavailable, report the command output and stop. Do not run any workflow source directly.

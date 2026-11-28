@@ -438,13 +438,18 @@ class FoldProblem(Exception):
     pass
 
 
+def is_spec_folder(path: Path) -> bool:
+    return bool(SPEC_FOLDER.match(path.name)) and (path / f"{path.name}.md").is_file()
+
+
 def spec_folders(store: Path) -> list[Path]:
     found: list[Path] = []
     for current, dirs, _files in os.walk(store):
         dirs[:] = sorted(d for d in dirs if not d.startswith(".") and d not in UNTOUCHED_FOLDERS)
         for name in dirs:
-            if SPEC_FOLDER.match(name) and (Path(current) / name / f"{name}.md").is_file():
-                found.append(Path(current) / name)
+            candidate = Path(current) / name
+            if is_spec_folder(candidate):
+                found.append(candidate)
     return sorted(found, key=lambda path: (len(path.parts), path.as_posix()))
 
 
@@ -457,6 +462,8 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     slug = SPEC_FOLDER.match(folder.name)["slug"]
     spec_path = folder / f"{folder.name}.md"
     spec = parse_spec(yaml_checked(read_for_fold(spec_path, project_root), spec_path, project_root))
+    if spec["unparsed_capabilities"]:
+        raise FoldProblem(f"{relative(spec_path, project_root)} has Capabilities entries that did not parse as CAP-<n>")
     loose = folder.parent == store
     if loose:
         home = store / "backlog"
@@ -484,7 +491,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     ids = {f"CAP-{n}": f"R{n + offset}" for n in spec["capabilities"]}
 
     def map_cap(match: re.Match[str]) -> str:
-        return f"R{int(match.group(1)) + offset}"
+        return ids.get(match.group(0), match.group(0))
 
     def map_caps(text: str) -> str:
         """CAP ids mapped everywhere but inside a Requirements line's parentheses, where they are a folded spec's source ids."""
@@ -529,7 +536,21 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         changed = rebase_links(text, path, folder, home, ticket)
         if changed != text:
             writes[path] = changed
-    for path in cap_scope(home, folder, moving) if not loose else companion_files(moving):
+    if not loose and ids:
+        # An id a sibling spec also defines is ambiguous where the two share scope, so a citation of it stops the fold.
+        for sibling in sorted(p for p in home.iterdir() if p != folder and is_spec_folder(p)):
+            theirs_path = sibling / f"{sibling.name}.md"
+            theirs_text = yaml_checked(read_for_fold(theirs_path, project_root), theirs_path, project_root)
+            theirs = parse_spec(theirs_text)["capabilities"]
+            shared = ids.keys() & {f"CAP-{n}" for n in theirs}
+            for path in cap_scope(home, []) if shared else []:
+                text = R_SOURCE.sub("", writes[path] if path in writes else read_for_fold(path, project_root))
+                if ambiguous := shared & {match.group(0) for match in CAP_ID.finditer(text)}:
+                    raise FoldProblem(
+                        f"{', '.join(sorted(ambiguous))} defined by both {folder.name} and {sibling.name} "
+                        f"and cited in {relative(path, project_root)}"
+                    )
+    for path in cap_scope(home, moving) if not loose else companion_files(moving):
         text = writes[path] if path in writes else read_for_fold(path, project_root)
         changed = map_caps(text)
         if changed != text:
@@ -679,22 +700,21 @@ def companion_files(moving: list[Path]) -> list[Path]:
     return files
 
 
-def cap_scope(home: Path, folder: Path, moving: list[Path]) -> list[Path]:
-    """Where a spec's `CAP` ids are cited: the ticket folder and its children, except a child container with a
-    spec of its own, folded or not, whose own fold maps its ids; only that child's ticket file, which cites the
-    parent's, is in."""
+def cap_scope(home: Path, moving: list[Path]) -> list[Path]:
+    """Where a spec's `CAP` ids are cited: the ticket folder and its children, except spec folders, the one folding
+    and its siblings alike, and a child container with a spec of its own, folded or not, whose own fold maps its ids;
+    only that child's ticket file, which cites the parent's, is in."""
     files: list[Path] = []
     for current, dirs, names in os.walk(home):
         here = Path(current)
-        if here == folder:
-            dirs[:] = []
-            continue
         files += [here / f for f in sorted(names) if f.endswith(TEXT_SUFFIXES) and not f.startswith(".")]
         kept: list[str] = []
         for d in sorted(dirs):
             if d.startswith(".") or d in UNTOUCHED_FOLDERS:
                 continue
             child = here / d
+            if is_spec_folder(child):
+                continue
             if has_own_spec(child):
                 files.append(child / f"{d}.md")
                 continue
@@ -707,7 +727,7 @@ def has_own_spec(child: Path) -> bool:
     ticket = child / f"{child.name}.md"
     if not ticket.is_file():
         return False
-    if any(SPEC_FOLDER.match(p.name) and (p / f"{p.name}.md").is_file() for p in child.iterdir() if p.is_dir()):
+    if any(is_spec_folder(p) for p in child.iterdir()):
         return True
     requirements = section_body(ticket.read_text(encoding="utf-8-sig"), "Requirements")
     return any(CAP_ID.search(span.group(1)) for span in R_SOURCE.finditer(requirements))
@@ -721,7 +741,8 @@ def parse_spec(text: str) -> dict[str, object]:
     current: dict[str, str] | None = None
     key = "rest"
     blocks: list[tuple[int, dict[str, str]]] = []
-    for line in sections.get("capabilities", "").splitlines():
+    cap_section = sections.get("capabilities", "")
+    for line in cap_section.splitlines():
         if match := CAPABILITY.match(line):
             current, key = {"rest": match.group(3).strip()}, "rest"
             blocks.append((int(match.group(2)), current))
@@ -745,6 +766,7 @@ def parse_spec(text: str) -> dict[str, object]:
         "companions": frontmatter_list(meta, "companions"),
         "sources": frontmatter_list(meta, "sources"),
         "capabilities": capabilities,
+        "unparsed_capabilities": bool(bullets(cap_section)) and not capabilities,
         "constraints": bullets(sections.get("constraints", "")),
         "non_goals": bullets(sections.get("non-goals", "")),
         "assumptions": bullets(sections.get("assumptions", "")),

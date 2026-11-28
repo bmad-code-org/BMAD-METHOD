@@ -998,3 +998,111 @@ class FoldSpecsTests(unittest.TestCase):
         self.assertIn("- R2 (CAP-2): A player sets the launch angle and sees the arc change.", text)
         self.assertEqual((epic / "glossary.md").read_text(encoding="utf-8"), "Carry: distance in the air.\n")
         self.assertNotIn("CAP-", (epic / "story-launch-angle.md").read_text(encoding="utf-8"))
+
+    def test_sibling_specs_in_one_ticket_both_fold_without_dropping_capabilities(self):
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(
+            demo / "spec-a" / "spec-a.md",
+            spec_frontmatter(companions="[a-notes.md]", sources="[]")
+            + "# Alpha\n\n## Capabilities\n\n- **CAP-1** Alpha flow.\n",
+        )
+        write(demo / "spec-a" / "a-notes.md", "Traces CAP-1.\n")
+        write(
+            demo / "spec-b" / "spec-b.md",
+            spec_frontmatter(companions="[b-notes.md]", sources="[]")
+            + "# Beta\n\n## Capabilities\n\n- **CAP-1** Beta flow.\n",
+        )
+        write(demo / "spec-b" / "b-notes.md", "Traces CAP-1.\n")
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(len(report["folded"]), 2)
+        demo_text = (demo / "demo.md").read_text(encoding="utf-8")
+        self.assertIn("- R1 (CAP-1): Alpha flow.", demo_text)
+        self.assertIn("- R2 (CAP-1): Beta flow.", demo_text)
+        self.assertEqual((demo / "a-notes.md").read_text(encoding="utf-8"), "Traces R1.\n")
+        self.assertEqual((demo / "b-notes.md").read_text(encoding="utf-8"), "Traces R2.\n")
+
+    def test_sibling_specs_with_disjoint_caps_only_rewrite_their_own_ids(self):
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(demo / "tickets.toml", '[[entry]]\nid = "1"\nname = "One"\ncovers = ["CAP-1", "CAP-2"]\n')
+        write(
+            demo / "spec-a" / "spec-a.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Alpha\n\n## Capabilities\n\n- **CAP-1** One.\n",
+        )
+        write(
+            demo / "spec-b" / "spec-b.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Beta\n\n## Capabilities\n\n- **CAP-2** Two.\n",
+        )
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        demo_text = (demo / "demo.md").read_text(encoding="utf-8")
+        self.assertIn("- R1 (CAP-1): One.", demo_text)
+        self.assertIn("- R3 (CAP-2): Two.", demo_text)
+        self.assertEqual(
+            tomllib.loads((demo / "tickets.toml").read_text(encoding="utf-8"))["entry"][0]["covers"],
+            ["R1", "R3"],
+        )
+
+    def test_sibling_specs_with_shared_cap_cited_by_ticket_children_are_refused(self):
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(demo / "tickets.toml", '[[entry]]\nid = "1"\nname = "One"\ncovers = ["CAP-1"]\n')
+        write(
+            demo / "spec-a" / "spec-a.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Alpha\n\n## Capabilities\n\n- **CAP-1** One.\n",
+        )
+        write(
+            demo / "spec-b" / "spec-b.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Beta\n\n## Capabilities\n\n- **CAP-1** Two.\n",
+        )
+        before = snapshot(self.project)
+
+        report = self.fold()
+
+        self.assertEqual(report["folded"], [])
+        self.assertEqual(len(report["problems"]), 2)
+        self.assertIn("defined by both spec-a and spec-b", report["problems"][0]["problem"])
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_spec_with_unparsed_capabilities_is_not_deleted(self):
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(
+            demo / "spec-bad" / "spec-bad.md",
+            spec_frontmatter(companions="[]", sources="[]")
+            + "# Bad\n\n## Capabilities\n\n- **R1** Already rewritten.\n",
+        )
+        before = snapshot(self.project)
+
+        report = self.fold()
+
+        self.assertEqual(report["folded"], [])
+        self.assertEqual(len(report["problems"]), 1)
+        self.assertIn("did not parse as CAP-<n>", report["problems"][0]["problem"])
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_sibling_spec_with_invalid_frontmatter_stops_the_fold_without_crashing(self):
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(
+            demo / "spec-a" / "spec-a.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Alpha\n\n## Capabilities\n\n- **CAP-1** One.\n",
+        )
+        write(
+            demo / "spec-b" / "spec-b.md",
+            "---\ntitle: [unclosed\n---\n\n# Beta\n\n## Capabilities\n\n- **CAP-1** Two.\n",
+        )
+        before = snapshot(self.project)
+
+        report = self.fold()
+
+        self.assertEqual(report["folded"], [])
+        self.assertEqual(len(report["problems"]), 2)
+        self.assertIn("spec-b.md has invalid frontmatter", report["problems"][0]["problem"])
+        self.assertEqual(snapshot(self.project), before)
