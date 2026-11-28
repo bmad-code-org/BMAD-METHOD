@@ -130,6 +130,7 @@ def check_repo(project_root: Path) -> RepoReport:
         for table, source in (("bmod", parsed.bmod), ("skill", parsed.skill)):
             if source is not None:
                 problems += requirement_problems(name, table, source, shipped)
+    problems += script_problems(files, folders)
     documents = 0
     for name, record in records.items():
         folder = folders[name]
@@ -468,6 +469,20 @@ def as_list(value: object) -> list:
     return value if isinstance(value, list) else []
 
 
+def script_problems(files: dict[str, setup.ParsedFile], folders: dict[str, Path]) -> list[str]:
+    problems: list[str] = []
+    for name, parsed in files.items():
+        folder = folders[name]
+        manifest = folder / setup.MANIFEST_NAME
+        declared = (*(parsed.bmod.scripts if parsed.bmod else ()), *(parsed.skill.scripts if parsed.skill else ()))
+        for relative in declared:
+            try:
+                setup.read_declared_script(folder, relative, manifest)
+            except Exception as error:
+                problems.append(str(error))
+    return problems
+
+
 def runtime_problems(skills_dir: Path, folders: dict[str, Path]) -> list[str]:
     """The tree as `bmad` itself would discover it. Runs only on a tree the checks above accept."""
     if any(folder.parent != skills_dir for folder in folders.values()):
@@ -486,6 +501,11 @@ def runtime_problems(skills_dir: Path, folders: dict[str, Path]) -> list[str]:
         f"skills/: setup.py finds no module record {missing['bmod']!r} for {missing['skill']!r}"
         for missing in installation.missing_records
     ]
+    for installed in installation.modules:
+        try:
+            setup.read_module_scripts(installed)
+        except Exception as error:
+            problems.append(f"skills/: setup.py reports: {error}")
     report = knowledge.collect([skills_dir])
     problems += [f"skills/: knowledge.py reports: {problem['problem']}" for problem in report["problems"]]
     return problems

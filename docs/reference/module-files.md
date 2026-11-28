@@ -33,6 +33,7 @@ A file holds a `[bmod]` table, a `[skill]` table, or both.
 | `skills` | Multi-skill | Every member skill |
 | `required_skills` | No | Skills the module needs; see [Dependencies](#dependencies) |
 | `recommended_skills` | No | Skills that help beside it; setup reports them without insisting |
+| `scripts` | No | Relative paths such as `scripts/foo.py` owned by the module record and installed by setup into `_bmad/<code>/scripts/` |
 | `pre_install_message` | For validation | Shown before an update or before `bmad` installs the record itself (empty string if unused) |
 | `post_install_message` | For validation | Shown after installing (empty string if unused) |
 
@@ -65,7 +66,7 @@ Optional. Lists extra help documents inside the record folder with `path` and `s
 | `source` | In a member file | Must equal the record's `update_source` |
 | `required_skills` | No | What this skill alone requires |
 | `recommended_skills` | No | What helps beside this skill |
-| `scripts` | No | Relative paths such as `scripts/foo.py` installed by setup into `_bmad/<code>/scripts/` |
+| `scripts` | No | Relative paths such as `scripts/foo.py` owned by this skill and installed by setup into `_bmad/<code>/scripts/` (prefer `[bmod]` `scripts` for module-wide shared scripts) |
 
 In a single-skill module, leave `[skill]` empty unless declaring `scripts`, because `[bmod]` in the same file already identifies the skill.
 

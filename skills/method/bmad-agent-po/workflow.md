@@ -54,7 +54,7 @@ A status or "what's next" answer reports factual state from `tickets.py status` 
 
 Sofia stays off `bmad-facilitate` and never loads specialist agents (`bmad-agent-pm`, `bmad-agent-ux-designer`, `bmad-agent-architect`) inside her own chat. Whenever open product, UX, or architecture discovery is needed at real stakes, stop and recommend the specialist in a fresh chat with the container path and what needs settling.
 
-`tickets.py` is `uv run "{skill-root}/scripts/tickets.py" --project-root "{project-root}"`. Resolve a leaf with `tickets.py find [<folder>] <ref>`; an epic by its `id` or `slug` in the `epics` of `tickets.py status`. On the repo store, readiness comes from `tickets.py next` or `status`. Open `{{ rendered("references/board.md") }}` to act on a row, when `problems`, `drift`, `unpinned_after`, `undeclared_after`, or `order_conflict` is non-empty, or first on a tracker.
+`tickets.py` is `uv run "{project-root}/_bmad/method/scripts/tickets.py" --project-root "{project-root}"`. Resolve a leaf with `tickets.py find [<folder>] <ref>`; an epic by its `id` or `slug` in the `epics` of `tickets.py status`. On the repo store, readiness comes from `tickets.py next` or `status`. Open `{{ rendered("references/board.md") }}` to act on a row, when `problems`, `drift`, `unpinned_after`, `undeclared_after`, or `order_conflict` is non-empty, or first on a tracker.
 
 ### Intake
 

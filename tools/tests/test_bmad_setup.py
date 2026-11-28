@@ -4350,6 +4350,45 @@ class WindowsHardeningTests(unittest.TestCase):
             self.assertFalse(setup.present(j2))
             self.assertEqual((shared / "bmad-build.toml").read_text(), "[workflow]\nroute = 'full'\n")
 
+    def test_bmod_scripts_install_without_member_skill_scripts(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_bmod(
+                root,
+                "bmod-demo",
+                "demo",
+                skills=["demo-skill"],
+                extra_fields={"scripts": ["scripts/shared.py"]},
+            )
+            write(root / "bmod-demo" / "scripts" / "shared.py", "print('shared')\n")
+            write_skill(root, "demo-skill", bmod="bmod-demo")
+
+            report = setup_report(self, project, skill, "--module", "demo")
+            self.assertEqual(report["problems"], [])
+            self.assertEqual((project / "_bmad" / "demo" / "scripts" / "shared.py").read_bytes(), b"print('shared')\n")
+
+    def test_bmod_scripts_conflict_with_member_skill_script_raises(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            skill = write_dest_bmad(root)
+            write_bmod(
+                root,
+                "bmod-demo",
+                "demo",
+                skills=["demo-skill"],
+                extra_fields={"scripts": ["scripts/shared.py"]},
+            )
+            write(root / "bmod-demo" / "scripts" / "shared.py", "print('record')\n")
+            write_skill(root, "demo-skill", bmod="bmod-demo", scripts={"scripts/shared.py": b"print('skill')\n"})
+
+            (module,) = [m for m in setup.discover_installation(skill).modules if m.module == "demo"]
+            with self.assertRaisesRegex(Exception, "two different scripts"):
+                setup.read_module_scripts(module)
+
 
 if __name__ == "__main__":
     unittest.main()

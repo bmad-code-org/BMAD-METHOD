@@ -16,7 +16,11 @@
         "_bmad/scripts/config_utils.py",
         "_bmad/scripts/frontmatter.py",
         "_bmad/scripts/resolve_customization.py",
-        "_bmad/scripts/resolve_config.py"
+        "_bmad/scripts/resolve_config.py",
+        {
+          "from": "skills/method/bmod-method/scripts/tickets.py",
+          "to": "_bmad/method/scripts/tickets.py"
+        }
       ]
     },
     {
@@ -35,7 +39,11 @@
         "_bmad/scripts/config_utils.py",
         "_bmad/scripts/frontmatter.py",
         "_bmad/scripts/resolve_customization.py",
-        "_bmad/scripts/resolve_config.py"
+        "_bmad/scripts/resolve_config.py",
+        {
+          "from": "skills/method/bmod-method/scripts/tickets.py",
+          "to": "_bmad/method/scripts/tickets.py"
+        }
       ]
     },
     {
@@ -56,7 +64,11 @@
         "_bmad/scripts/config_utils.py",
         "_bmad/scripts/frontmatter.py",
         "_bmad/scripts/resolve_customization.py",
-        "_bmad/scripts/resolve_config.py"
+        "_bmad/scripts/resolve_config.py",
+        {
+          "from": "skills/method/bmod-method/scripts/tickets.py",
+          "to": "_bmad/method/scripts/tickets.py"
+        }
       ]
     },
     {
@@ -80,7 +92,11 @@
         "_bmad/scripts/config_utils.py",
         "_bmad/scripts/frontmatter.py",
         "_bmad/scripts/resolve_customization.py",
-        "_bmad/scripts/resolve_config.py"
+        "_bmad/scripts/resolve_config.py",
+        {
+          "from": "skills/method/bmod-method/scripts/tickets.py",
+          "to": "_bmad/method/scripts/tickets.py"
+        }
       ]
     },
     {
@@ -97,7 +113,11 @@
         "_bmad/scripts/config_utils.py",
         "_bmad/scripts/frontmatter.py",
         "_bmad/scripts/resolve_customization.py",
-        "_bmad/scripts/resolve_config.py"
+        "_bmad/scripts/resolve_config.py",
+        {
+          "from": "skills/method/bmod-method/scripts/tickets.py",
+          "to": "_bmad/method/scripts/tickets.py"
+        }
       ]
     },
     {
@@ -115,7 +135,11 @@
         "_bmad/scripts/config_utils.py",
         "_bmad/scripts/frontmatter.py",
         "_bmad/scripts/resolve_customization.py",
-        "_bmad/scripts/resolve_config.py"
+        "_bmad/scripts/resolve_config.py",
+        {
+          "from": "skills/method/bmod-method/scripts/tickets.py",
+          "to": "_bmad/method/scripts/tickets.py"
+        }
       ]
     }
   ]

@@ -49,20 +49,26 @@ def owed(skill_dir: Path, project_root: Path | None, roots: tuple[Path, ...] = (
     notes: list[str] = []
 
     record = parsed.bmod
+    record_dir: Path | None = skill_dir if record is not None else None
     viewed = False
     if roots:
         # The record that wins the ordered view is the one setup uses, so it is the one read here.
         try:
             folders, _ = hub.locate_skills(hub.unique_folders((*roots, skill_dir.parent)), skill_dir.parent)
-            record = record or record_in_view(hub, skill.bmod, folders)
+            if record is None:
+                record = record_in_view(hub, skill.bmod, folders)
+                record_dir = hub.skill_path(folders, skill.bmod)
             notes.extend(dependency_notes(skill_dir, parsed, folders, record))
             viewed = True
         except Exception:
             # An unreadable file in a root says nothing about the dependencies; the local notes still apply.
             pass
     if record is None and not viewed:
-        other = hub.read_bmod_file(skill_dir.parent / skill.bmod / MANIFEST_NAME)
-        record = other.bmod if other is not None else None
+        other_dir = skill_dir.parent / skill.bmod
+        other = hub.read_bmod_file(other_dir / MANIFEST_NAME)
+        if other is not None:
+            record = other.bmod
+            record_dir = other_dir
 
     if record is None or project_root is None or not (project_root / "_bmad").is_dir():
         return notes
@@ -85,8 +91,14 @@ def owed(skill_dir: Path, project_root: Path | None, roots: tuple[Path, ...] = (
                 )
 
     installed_scripts = project_root / "_bmad" / record.code / "scripts"
-    for relative in skill.scripts:
-        packaged = skill_dir.joinpath(*relative.parts)
+    declared_scripts = [(skill_dir, relative) for relative in skill.scripts]
+    if record_dir is not None:
+        existing = set(skill.scripts) if record_dir == skill_dir else set()
+        for relative in record.scripts:
+            if relative not in existing:
+                declared_scripts.append((record_dir, relative))
+    for source_dir, relative in declared_scripts:
+        packaged = source_dir.joinpath(*relative.parts)
         placed = installed_scripts.joinpath(*relative.parts[1:])
         if not placed.is_file() or (packaged.is_file() and placed.read_bytes() != packaged.read_bytes()):
             notes.append(
