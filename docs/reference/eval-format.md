@@ -1,11 +1,11 @@
 ---
 title: Eval Format
-description: 'The files bmad-eval reads and writes: cases, trigger queries, rubric expectations, runner commands, harness keys, and run folders.'
+description: 'The files bmad-eval reads and writes: cases, trigger queries, rubric expectations, runner commands and flags, harness keys, and run folders.'
 sidebar:
   order: 5
 ---
 
-Use this page for the exact formats `bmad-eval` reads and writes. For when to run which mode, see [Eval Runner](../toolsmith/bmad-eval.md).
+Use this page for the exact formats and runner CLI flags `bmad-eval` uses. For when to run each mode, see [Eval Runner](../toolsmith/bmad-eval.md).
 
 ## File Layout
 
@@ -25,11 +25,11 @@ Use this page for the exact formats `bmad-eval` reads and writes. For when to ru
         └── <skill-name>/
 ```
 
-Evals sit outside the skill, so installing the skill never copies them. `bmad-eval` looks for cases in the file you name, then the skill's folder under `evals/` in the nearest folder above the skill holding one, mirroring its path below `skills/` (`evals/core-tools/bmad-brainstorming/`), then `<skill>/evals/` for a skill built elsewhere, then anywhere under `<project-root>/evals/`. A run never stages the skill's own `evals/` folder, so the model under test cannot read its rubric.
+Evals live outside the skill folder so installing the skill never copies them. `bmad-eval` checks the explicit cases path first, then `evals/<module>/<skill-name>/` mirroring the skill's path under `skills/`, then `<skill>/evals/`, and finally anywhere under `<project-root>/evals/`. A run never stages the skill's own `evals/` folder, keeping rubrics out of reach of the model under test.
 
 ## Cases
 
-`cases.json` is a JSON array of cases, or an object with a `cases` array. One case looks like this:
+`cases.json` is a JSON array of cases or an object with a `cases` array:
 
 ```json
 {
@@ -46,27 +46,28 @@ Evals sit outside the skill, so installing the skill never copies them. `bmad-ev
 
 | Field | Meaning |
 | --- | --- |
-| `id` | Stable identifier, used as the case's folder name in the run |
-| `input` | The realistic user request, sent as given after any `state_prefix` |
-| `rubric` | Named expectations, each graded to `{text, passed, evidence}` |
-| `state_prefix` | Optional bracketed text that places the skill mid-workflow. Null or absent starts cold |
+| `id` | Stable identifier used as the case's folder name in the run output |
+| `input` | Realistic user prompt sent after any `state_prefix` |
+| `rubric` | Concrete grading checks, each evaluated to `{text, passed, evidence}` |
+| `state_prefix` | Optional bracketed context placing the skill mid-workflow (`null` or absent starts cold) |
 | `files` | Optional fixtures staged into the clean working directory |
+| `skills` | Optional companion skill folders staged beside the skill under test (omitted in `bare` mode) |
 
-Each entry in `files` is a path relative to `--project-root` or the cases file's folder, or a GitHub file URL pinned to a commit or tag, `https://github.com/<owner>/<repo>/blob/<ref>/<path>`, for data kept in another repo. A relative path keeps its folders, so the input can name it as written; a GitHub file lands at the workspace root under its file name. Absolute and `~` paths are refused so the cases run on anyone's machine, and a missing fixture stops the run before any case starts.
+Each entry in `files` can be a relative path (from `--project-root` or the cases file's folder), a pinned GitHub file URL (`https://github.com/<owner>/<repo>/blob/<ref>/<path>`), or `{"from": "<path or GitHub URL>", "to": "<workspace-relative path>"}`. Rooted, drive-qualified, `~`, and `..` paths are rejected so cases stay portable, and duplicate destinations or missing fixtures fail fast before any case starts. Companion folders in `skills` must be relative paths containing a `SKILL.md` with unique folder names.
 
 ## `state_prefix`
 
-The runner prepends the prefix to `input` and sends the result as one message, so one case can test any mid-workflow moment.
+The runner prepends `state_prefix` to `input` as a single message so one case can exercise any mid-workflow state:
 
 ```text
 [the skill has already worked through discovery; on turn 4 the user was asked about stakeholders and responded:] User said: "just me and a PM"
 ```
 
-Only a case where the conversation itself is the deliverable needs real multiple turns.
+Only cases where multi-turn dialogue itself is under test need real multiple turns.
 
 ## Trigger Queries
 
-`triggers.json` is a JSON array of `{query, should_trigger}` records.
+`triggers.json` is a JSON array of `{query, should_trigger}` objects:
 
 ```json
 [
@@ -75,11 +76,11 @@ Only a case where the conversation itself is the deliverable needs real multiple
 ]
 ```
 
-Aim for about twenty queries, roughly half of each kind, varied in form. Make the should-not queries near misses that share keywords and domain with the real ones.
+Aim for roughly twenty varied queries split evenly between positive and negative cases, using realistic near misses that share domain vocabulary for `should_trigger: false`.
 
 ## Trigger Matrix
 
-A suite that spans skills lives in `evals/suites/<suite-name>/`. Its `trigger-matrix.json` is a JSON array of `{query, expect, also_ok}` records: `expect` is the skill that should load, or `null` for none, and `also_ok` names skills that may load instead.
+Cross-skill suites live in `evals/suites/<suite-name>/trigger-matrix.json` as an array of `{query, expect, also_ok}` objects, where `expect` is the expected skill name (or `null` when no skill should load) and `also_ok` lists acceptable alternatives:
 
 ```json
 [
@@ -89,94 +90,50 @@ A suite that spans skills lives in `evals/suites/<suite-name>/`. Its `trigger-ma
 ]
 ```
 
-Every skill of the install is staged at once, each with its real description, so a query fails when another skill loads in its place. Write queries where two descriptions could both claim the request, and keep `also_ok` to skills that would serve it as well.
+Every skill in the provided folders is staged simultaneously with its real description, catching description collisions across skills.
 
 ## Strong and Weak Expectations
 
-A wrong output must not be able to pass an expectation. A weak one is worse than none, because a passing check reads as proof.
+A defective output should never pass a rubric check. Weak checks create false confidence:
 
-| Weak | Why |
+| Weak check | Why it fails |
 | --- | --- |
-| "brief.md exists" | Passes for an empty file. Pair it with a content check |
-| "the brief is high quality" | Cannot be graded. State the property concretely |
-| Anything that follows from understanding the prompt | Proves nothing |
+| `"brief.md exists"` | Passes for an empty file; pair with content requirements |
+| `"the brief is high quality"` | Subjective and ungradable; name concrete verifiable properties |
+| Anything implied by simply reading the prompt | Does not measure whether the skill added value |
 
-| Strong | Example |
+| Strong check type | Example |
 | --- | --- |
-| Specific facts | "incorporates at least two findings from section X" |
-| Structure | "word count between 250 and 1500" |
-| Negative assertions | "does not introduce content from unrelated sections" |
-| Frontmatter | "frontmatter contains title, status, created, updated" |
-| Bounded output | "the final message contains a JSON object with intent='create'" |
-| Side artifacts | "the Decisions section records the pricing decision with its rejected alternative" |
-| Tool calls | "the transcript contains a call invoking bmad-editorial-review-prose" |
-| Phase order | "the polish call occurs after the brief Write and before the final JSON block" |
-| Read-only inputs | "the input is byte-identical to the fixture" |
+| Specific facts | `"incorporates at least two findings from section X"` |
+| Structure | `"word count between 250 and 1500"` |
+| Negative assertions | `"does not introduce content from unrelated sections"` |
+| Frontmatter | `"frontmatter contains title, status, created, and updated"` |
+| Bounded output | `"the final message contains a JSON object with intent='create'"` |
+| Side artifacts | `"the Decisions section records the pricing decision with its rejected alternative"` |
+| Tool calls | `"the transcript contains a call invoking bmad-review with lenses=prose"` |
+| Phase order | `"the polish call occurs after the brief Write and before the final JSON block"` |
+| Read-only inputs | `"the input fixture is byte-identical to the original"` |
 
 ## Non-Interactive Runs
 
-Single-shot modes need the skill to finish without stopping to ask. Start the input with the literal `Run headless.`, use a keyword from the skill's own headless section, or give enough context that no question is needed. A `state_prefix` can also supply the answer the skill would ask for. A skill with no headless path needs a headless mode, or a human in the loop for that case.
+Single-shot eval modes require the skill to finish without stopping for input. Start `input` with `Run headless.`, use a headless keyword supported by the skill, or supply answers in `state_prefix`.
 
-## Runner Commands
+## Running Evals and Helper Scripts
 
-Agents run these for you. They are listed for reading a run or running one by hand.
+Invoke `bmad-eval` (or ask the BMad Agent to run evals for a skill) and describe the mode you want: baseline, variant, quality, single-skill triggers, or a multi-skill trigger matrix. `bmad-eval` handles invoking the underlying Python scripts automatically, including configuring repeat counts, concurrency, timeouts, pass thresholds, benchmark aggregation across runs, and converting legacy eval files.
 
-Baseline, variant, and quality:
-
-```bash
-uv run "{skill-root}/scripts/run_evals.py" \
-  --cases <cases-file> --skill-path <skill> --output-dir <dir> \
-  --mode quality|baseline|variant [--variant-path <skill>] \
-  --label <skill-name>-<mode> [--runs N]
-```
-
-Trigger:
-
-```bash
-uv run "{skill-root}/scripts/run_triggers.py" \
-  --skill-path <skill> --queries <queries-file> --output-dir <dir> \
-  [--runs-per-query N]
-```
-
-Trigger matrix, given the folders that hold the install's skills:
-
-```bash
-uv run "{skill-root}/scripts/run_matrix.py" \
-  --skills <folder> [--skills <folder> ...] --queries <trigger-matrix.json> --output-dir <dir> \
-  [--runs-per-query N]
-```
-
-Aggregate the time, tokens, and tool calls of repeated runs into mean, sample standard deviation, min, max, and delta:
-
-```bash
-uv run "{skill-root}/scripts/aggregate_benchmark.py" --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>
-```
-
-Convert a skill-creator file, or add `--to skill-creator` to reverse it:
-
-```bash
-uv run "{skill-root}/scripts/convert_cases.py" <evals.json> --output <cases.json>
-```
-
-| Exit code | Meaning |
-| --- | --- |
-| 0 | The run completed. A trigger or matrix query failing its threshold is a result, not an error |
-| 1 | A case errored or timed out, or the command was not found |
-| 2 | Usage error |
-| 3 | No harness is recorded |
-
-`--runs` defaults to 1, which counts as a quick look. A result is settled at 3 or more.
+If you want to run evals directly from CI or inspect exact CLI flags and exit codes, see the runner scripts (`run_evals.py`, `run_triggers.py`, `run_matrix.py`, `aggregate_benchmark.py`, and `convert_cases.py`) inside the `bmad-eval` skill's `scripts/` folder in the repository.
 
 ## Harness Keys
 
-The harness is the coding tool that evals run through. These keys are recorded under `[workflow.harness]` in `bmad-eval`'s customization. In a project without BMad, write the same keys to a JSON file and pass its path with `--harness`.
+A harness defines the coding tool command used to execute eval runs. Tell the BMad Agent or `bmad-customize` to configure `bmad-eval`'s default harness (or additional named harnesses for comparing tools or models), or supply a standalone JSON file when BMad is not set up in the repository:
 
 | Key | Holds |
 | --- | --- |
-| `command` | The argv for one non-interactive run, with `{prompt}` standing for the input and the flag that turns off permission prompts |
-| `skill_dir` | The folder under the workspace that the tool reads skills from |
-| `env` | Environment variables a run needs. A value is set as given, `~` means the fresh home folder, and an empty value forwards the host's |
-| `home_files` | Files or folders under your home that keep you logged in, placed at the same path in the fresh home folder |
+| `command` | Command argv array for one non-interactive run, using `{prompt}` for the input and disabling interactive permission prompts |
+| `skill_dir` | Relative folder inside the clean workspace where the tool reads skills |
+| `env` | Environment variables (`~` expands to the fresh home folder; an empty string forwards the host variable) |
+| `home_files` | Home-directory files or folders copied into the fresh home folder to keep authentication working |
 
 ```toml
 [workflow.harness]
@@ -186,7 +143,7 @@ env = { USER = "" }
 home_files = ["Library/Keychains"]
 ```
 
-Further harnesses, one per tool or model to compare, are named tables with the same keys. Pass `--harness-name <name>` to any runner to run through one; repeat it to run once per name. Each name gets its own run folder, and the output is one JSON object keyed by name.
+Additional harnesses for comparing tools or models live under `[workflow.harnesses.<name>]` and are selected with `--harness-name <name>`:
 
 ```toml
 [workflow.harnesses.codex]
@@ -198,15 +155,15 @@ home_files = [".codex/auth.json"]
 
 ## Run Folders
 
-Each run is a dated folder under the output folder, which is the configured reports folder when BMad is set up and `~/bmad-evals/` otherwise. `run.json` names the harness command. Each case folder, and each trigger attempt, holds:
+Each run creates a dated folder under the configured reports folder (or `~/bmad-evals/` outside a BMad project) with `run.json` recording the harness command. Each case or trigger attempt folder contains:
 
 | File | Holds |
 | --- | --- |
-| The prompt | What was sent |
-| The transcript | What the harness printed |
-| `stderr.txt` | The error stream |
-| `cwd/` | The workspace after the run |
-| `timing.json` | Timing, written when the invocation ends |
-| `grading.json` | Grades, when quality mode ran |
+| Prompt file | Exact input sent to the harness |
+| Transcript | Full output printed by the harness |
+| `stderr.txt` | Standard error output |
+| `cwd/` | Workspace state after the run |
+| `timing.json` | Elapsed time and usage metrics |
+| `grading.json` | Rubric grades (when quality mode ran) |
 
-Run folders are never deleted, overwritten, or rotated.
+Run folders are never overwritten, rotated, or deleted automatically.

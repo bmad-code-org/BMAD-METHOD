@@ -54,6 +54,21 @@ class ConfigUtilsTests(unittest.TestCase):
             with self.assertRaisesRegex(ConfigError, "failed to parse"):
                 load_toml(path)
 
+    def test_layer_saved_with_a_byte_order_mark_loads(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "config.toml"
+            path.write_bytes(b'\xef\xbb\xbf[core]\noutput_folder = "out"\n')
+
+            self.assertEqual(load_toml(path), {"core": {"output_folder": "out"}})
+
+    def test_invalid_utf8_layer_raises_config_error(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "bad.toml"
+            path.write_bytes(b"\xff\xfe[core]\n")
+
+            with self.assertRaisesRegex(ConfigError, "failed to read"):
+                load_toml(path)
+
     def test_missing_optional_layer_is_empty(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "optional.toml"

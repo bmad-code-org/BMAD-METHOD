@@ -1,60 +1,41 @@
 ---
 title: Make a Small Change
-description: 'Scenario: a change one session can finish, handed straight to bmad-build with no planning documents.'
+description: 'Scenario: one clear, self-contained change handed straight to bmad-build with no planning documents.'
 sidebar:
   order: 1
 ---
 
-Use this route when you know what should change and one session can build it.
-Most changes are like this and need no planning document.
+Use this route when you know what needs to change and the work is one clear, self-contained behavior with no shared decisions across multiple features. Most everyday fixes and small additions fit here and need no planning documents.
 
-The example is the [room booker](../start/how-bmad-works.md#the-example-app),
-an office's meeting-room app. The room list should show each room's capacity.
+The example uses the [room booker](../start/how-bmad-works.md#the-example-app), an office meeting-room app. You want the room list to display each room's seating capacity next to its name.
 
 ![Make a Small Change: describe the change to bmad-build, answer what only you know, let it build, review and commit, then check the result. Every step is in Build and verify](/diagrams/scenario-small-change.svg)
 
 ## Steps
 
-1. **Hand the change to `bmad-build`** in a fresh chat in the repository,
-   starting from a clean working tree.
+1. Hand the change to `bmad-build` in a fresh chat inside the repository, starting from a clean Git working tree.
 
    ```text wrap
    /bmad-build show each room's capacity next to its name in the room list
    ```
 
-2. **Answer what only you know.** It may ask whether capacity shows as a
-   number or an icon; it reads the code for everything else.
-3. **Let it build.** A change this small goes straight to code; its plan file
-   only records the run. A larger one gets a plan you approve before any code
-   is written.
-4. **Read what it reports.** It writes the change and its tests, reviews its
-   own work, and commits locally. When the repository has a remote, it offers
-   to open a pull request.
-5. **Check the result yourself.** A change with no ticket has nothing to mark
-   done.
+2. Answer only the product choices it cannot read from code, such as whether capacity should display as a plain number or alongside an icon; it inspects the repository for everything else.
+3. Let it build: very small changes (roughly 100 lines or fewer) go straight to code while the plan file records the run, whereas larger changes pause with a written plan for your approval before editing code.
+4. Review what it reports once it writes the change and its tests, reviews its own diff, commits locally, and offers to open a pull request if the repository has a Git remote.
+5. Verify the result yourself; because this change has no ticket on a board, there is nothing to mark done afterward.
 
-[Build a Change](../build/build-a-change.md) covers each step of the run. By
-default a change of about 100 lines or fewer skips plan approval; set
-`route_selection` under `[workflow]` in `_bmad/custom/bmad-build.toml` to
-change the rule, or `route` to `oneshot` or `full` to force one path.
+[Build a Change](../build/build-a-change.md) walks through every step of a run. If you want to change when `bmad-build` pauses for plan approval or always require a plan, invoke `bmad-customize` and describe the rule you want; see [Customize BMad](../customize/customize-bmad.md).
 
 ## What You Have at the End
 
-One local commit with the change and its tests, and the build's plan file
-recording the run. No initiative, epic, or story was written, because nothing
-needed one.
+One local commit containing the change and its tests, plus a build plan file recording what was verified. No initiative, epic, or story was created because the change did not need one.
 
 ## Skip Ahead When
 
-The change is a typo, a renamed label, or a formatting fix. Ask your agent
-directly; `bmad-build` stays out of obvious, low-risk edits.
+The edit is a typo, a renamed label, or a minor formatting adjustment. Ask your AI coding tool directly; `bmad-build` stays out of obvious, low-risk edits.
 
 ## When It Turns Out Bigger
 
-If the change needs several sessions, or raises a question only someone else
-can answer, stop before building. Take the route in
-[Build from a Conversation](./build-from-a-conversation.md), or see
-[Plan the Work](../plan/plan-the-work.md).
+If the change touches multiple connected features, requires shared UX or technical decisions, or raises open questions only stakeholders can settle, stop before writing code. Switch to [Build from a Conversation](./build-from-a-conversation.md) or [Plan the Work](../plan/plan-the-work.md).
 
-New to BMad? [Build Your First Change](../start/build-your-first-change.md)
-walks through one build in an empty project.
+New to BMad? Follow [Build Your First Change](../start/build-your-first-change.md) to run your first build in an empty project.

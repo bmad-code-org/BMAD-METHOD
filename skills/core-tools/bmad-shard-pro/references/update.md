@@ -2,7 +2,7 @@
 
 The user changes the document through its main file. The outcome is the document changed as they asked, still passing `check`. The shards are the document now, and `.source/` stays frozen, so never edit or read from it.
 
-The script is `uv run "{skill-root}/scripts/shard_tool.py" <command>`.
+The script is `uv run "{skill-root}/scripts/shard_tool.py" --project-root "{project-root}" <command>`.
 
 Before applying a change, find where the document already speaks to it, using the map, the identifier lookup, each shard's `related` list and search. When the change contradicts what is there, show the user both and let them decide. When it touches several shards, change all of them.
 

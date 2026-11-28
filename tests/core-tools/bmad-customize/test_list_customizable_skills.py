@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -27,6 +28,7 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-customize/scripts/list_customizable_skills.py"
+FRONTMATTER = SCRIPT.parents[2] / "bmad" / "scripts" / "frontmatter.py"
 
 
 def _load_module():
@@ -37,6 +39,10 @@ def _load_module():
 
 
 MODULE = _load_module()
+sys.path.insert(0, str(FRONTMATTER.parent))
+import frontmatter  # noqa: E402
+
+MODULE.frontmatter = frontmatter  # main() loads the project's copy; the scanner tests call past it
 
 
 def _make_skill(parent: Path, name: str, body: str, skill_md: str | None = None) -> Path:
@@ -56,6 +62,8 @@ class ScannerTest(unittest.TestCase):
         self.skills.mkdir(parents=True)
         self.custom = self.root / "_bmad" / "custom"
         self.custom.mkdir(parents=True)
+        (self.root / "_bmad" / "scripts").mkdir()
+        shutil.copy2(FRONTMATTER, self.root / "_bmad" / "scripts")
 
     def tearDown(self):
         self.tmp.cleanup()
@@ -160,6 +168,16 @@ class ScannerTest(unittest.TestCase):
         _make_skill(self.skills, "bmad-list", '[agent]\nicon = "x"\n', "---\n[unfinished]\n---\n")
         result = MODULE.scan_skills([self.skills], self.root)
         self.assertEqual(result["agents"][0]["description"], "")
+
+    def test_missing_or_malformed_metadata_gives_an_empty_description(self):
+        for name, skill_md in (
+            ("bmad-bad", "---\ndescription: a: b\n---\n"),
+            ("bmad-listdesc", "---\ndescription: [one, two]\n---\n"),
+        ):
+            _make_skill(self.skills, name, '[agent]\nicon = "x"\n', skill_md)
+        _make_skill(self.skills, "bmad-nofile", '[agent]\nicon = "x"\n')
+        result = MODULE.scan_skills([self.skills], self.root)
+        self.assertEqual([entry["description"] for entry in result["agents"]], [""] * 3)
 
     def test_multiple_skills_roots_are_merged(self):
         extra_root = self.root / "extra-skills"

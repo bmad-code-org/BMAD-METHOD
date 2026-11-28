@@ -1,0 +1,9 @@
+category,method,name,description,key_questions
+find-it,headlines-only,Headlines Only,Write only the slide headlines as full claims and read them in order as the whole talk.,"Does the arc make sense from headlines alone?|Which headline is a label, not a claim?|Which slide is missing between two headlines?"
+find-it,one-picture,One Picture Per Idea,"For each slide, name the single picture that proves its headline.","If this slide could show only one thing, what would it be?|Is that a number, a comparison, a sequence, or a scene?|What would you delete to make room for it?"
+shape-it,hero-number,The Hero Number,Find the one figure that makes the problem undeniable and give it a slide to itself.,Which number would make the room go quiet?|Compared with what?|Is it real and sourced?
+shape-it,before-after,Before and After,Show the same thing in two states side by side.,What does it look like today?|What does it look like after?|What single change explains the difference?
+shape-it,build-the-diagram,Build the Diagram,Reveal a process or model one step at a time instead of all at once.,What is the first piece the audience needs?|What does each step add?|Where does the payoff appear?
+shape-it,visual-metaphor,The Visual Metaphor,Find an everyday image the audience already understands that carries the idea.,"What does this idea work like in ordinary life?|Would the audience get it in three seconds?|Where does the metaphor break, and does that matter?"
+test-it,three-second-glance,The Three-Second Glance,Show each slide for three seconds and ask what someone took away.,What would a glance take from this slide?|Is that the headline's point?|What is fighting for attention?
+test-it,squint-test,The Squint Test,Squint at the slide and check that the one important thing still stands out.,What do you see first when you squint?|Is it the right thing?|What can fade back?

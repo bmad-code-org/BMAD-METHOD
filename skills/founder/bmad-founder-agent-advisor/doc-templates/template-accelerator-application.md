@@ -5,7 +5,7 @@ version: 1.2.0
 description: "An application to an accelerator such as YC, Techstars or Antler, in its own questions."
 not_for: "A written ask to a funder, grant or client (`proposal`); the deck (`pitch-deck`); planning the whole raise (`fundraising-plan`); testing whether the idea has demand at all (`startup-diagnostic`)."
 facilitation_order: [company, problem, progress, founders, insight-and-competition, business-model, funding-and-structure, why-this-program, founder-video]
-guidance: guidance-planning
+guidance: guidance-planning.md
 rubric: rubric-accelerator-application.md
 agents: [bmad-founder-agent-advisor]
 view: always

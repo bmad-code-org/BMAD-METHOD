@@ -1,392 +1,135 @@
 ---
 title: 'Adopt BMad Across a Team'
-description: Recipes that make every developer's BMad follow your organization's rules, tools, templates, and agent roster — without forking a skill.
+description: Practical recipes to make every teammate's BMad follow your organization's rules, tools, templates, and discussion casts without forking a skill.
 sidebar:
   order: 2
 ---
 
-You lead a team and want every developer's BMad to use the same tools,
-follow the same conventions, publish to the same systems, and know the same
-people. Each recipe below is one override file under `_bmad/custom/`,
-committed to the repository so everyone inherits it on pull.
+When you roll BMad out to a team, you want every developer, designer, and PM to follow the same conventions, consult the same internal tools, and produce documents in the format your organization expects. Every recipe below saves its configuration under `_bmad/custom/` (or `_bmad/config.toml` via `bmad setup`), committed to your repository so teammates inherit it on `git pull`.
 
-Pick the surface this way:
+Choose where a rule belongs by how broadly it applies:
 
-- The rule applies wherever an engineer does dev work: customize the **dev agent**.
-- The rule applies only to one workflow, such as writing planning documents: customize **that workflow**. For one kind of document, such as the product brief, extend **its template**.
-- The change alters who is on the roster, or a path the whole team shares: edit **central config**.
+- Rules that apply whenever an engineer does implementation or review work belong on Amelia (`bmad-agent-dev`).
+- Rules that apply to every structured document across Mary, John, Sally, Winston, Nadia, and Clio belong on `bmad-facilitate`.
+- Rules that apply to one document type (such as every PRD or brief) belong in a template extension under `_bmad/custom/facilitate-templates/`.
+- Shared repository settings (such as output folder or a brand design system) belong in `bmad setup`.
 
-For how override files merge with the shipped defaults, see
-[Customize BMad](./customize-bmad.md). This page never repeats those
-mechanics; it shows what to write.
-
-:::tip[Applying these recipes]
-Run the `bmad-customize` skill and describe the intent; it writes the
-file for recipes 1 through 4 and 6 and verifies the merge. Recipe 5, the agent roster in central config, is hand-authored.
+:::tip[Start with `bmad-customize` for Every Recipe]
+You do not need to hand-author TOML files to roll these out. Open chat, invoke `/bmad-customize`, and paste or adapt the plain-English request at the start of each recipe. `bmad-customize` creates the right file under `_bmad/custom/` and verifies the merged result. For the full TOML schema and merge rules, see [Configuration and Customization Reference](../reference/configuration.md).
 :::
 
-Every per-skill recipe has a team form and a personal form. `bmad-agent-dev.toml`
-is committed to git and applies to the whole team; `bmad-agent-dev.user.toml`
-is gitignored and layers personal preferences on top. The same split holds
-for every skill file and for central config.
+Every per-skill customization has a team file (`_bmad/custom/<skill>.toml`, committed) and an optional personal file (`_bmad/custom/<skill>.user.toml`, gitignored) so individuals can layer personal preferences without changing team defaults.
 
-## Recipe 1: Shape an agent across every workflow it dispatches
+## Recipe 1: Standardize Tools Across All Dev Work
 
-**File and key:** `_bmad/custom/bmad-agent-dev.toml`, `[agent] persistent_facts`.
+Use this when every coding and review run should check the same documentation servers, internal libraries, or issue trackers. Placing the rule on Amelia (`bmad-agent-dev`) applies it to every workflow she dispatches.
 
-Use this to standardize tool use and external systems for all dev work.
-One file applies to every workflow the agent runs — build, code review,
-test generation — and every engineer who pulls the repo inherits it.
+Ask `bmad-customize` in chat:
 
-**Example:** Mason always uses Context7 for library docs and falls back to
-Linear when a ticket is not in the ticket tree.
-
-```toml
-# _bmad/custom/bmad-agent-dev.toml
-
-[agent]
-
-persistent_facts = [
-  "For any library documentation lookup (React, TypeScript, Zod, Prisma, etc.), call the context7 MCP tool (`mcp__context7__resolve_library_id` then `mcp__context7__get_library_docs`) before relying on training-data knowledge. Up-to-date docs trump memorized APIs.",
-  "When a ticket reference cannot be resolved in the ticket tree, search Linear via `mcp__linear__search_issues` using the story ID or title before asking the user to clarify. If Linear returns a match, treat it as the authoritative story source.",
-]
+```text
+/bmad-customize For the whole team on Amelia (bmad-agent-dev): always look up
+library documentation via our context7 MCP tool before relying on memory, and
+if a ticket reference is missing from the local ticket tree, search Linear via
+our Linear MCP tool before asking the user.
 ```
 
-## Recipe 2: Enforce conventions inside one workflow
+`bmad-customize` adds those standing facts to `_bmad/custom/bmad-agent-dev.toml`. Commit the file so every engineer gets the same behavior.
 
-**File and key:** `_bmad/custom/bmad-facilitate.toml`, `[workflow] persistent_facts`; for one document type, a file in `_bmad/custom/facilitate-templates/` that extends its template.
+## Recipe 2: Enforce Conventions Across Facilitated Documents
 
-Use this when the rule shapes the content of a workflow's output — for compliance, audit, or a downstream consumer — and should not follow the agent into other work. `bmad-facilitate` runs every document John (`bmad-agent-pm`) and Mary (`bmad-agent-analyst`) write, so a fact on it reaches all of them; a `file:` entry loads a conventions document you already maintain.
+`bmad-facilitate` powers every structured document written by Mary (`bmad-agent-analyst`), John (`bmad-agent-pm`), Sally (`bmad-agent-ux-designer`), and Winston (`bmad-agent-architect`), as well as Nadia (`bmad-founder-agent-advisor`) and Clio (`bmad-creative-agent-director`).
 
-**Example:** every planning document follows the organization's publishing conventions.
+To apply an organization-wide publishing guide to every facilitated document, ask `bmad-customize`:
 
-```toml
-# _bmad/custom/bmad-facilitate.toml
-
-[workflow]
-
-persistent_facts = [
-  "file:{project-root}/docs/enterprise/publishing-conventions.md",
-]
+```text
+/bmad-customize For the whole team on bmad-facilitate: load
+docs/enterprise/publishing-conventions.md as standing context on every document run.
 ```
 
-The facts load before the engine drafts, so the conventions are known in time.
+To add a rule to just one document type (for example, requiring a Compliance section on every product brief), tell `bmad-customize` about that document:
 
-A rule for one document type goes in an extension of its template, so it does not reach the others. Every product brief carries compliance fields. A section an extension adds is required unless its comment says optional, and its comment says where it goes:
-
-```markdown
----
-extends: brief
----
-
-<!-- inputs: The owner, the target release and the security review status; only the user knows them. -->
-
-## Compliance
-<!-- After Scope. Owner, target release and security review status. -->
+```text
+/bmad-customize Every product brief needs a required Compliance section after
+Scope capturing the owner, target release, and security review status.
 ```
 
-## Recipe 3: Publish completed output to external systems
+`bmad-customize` writes a small template extension in `_bmad/custom/facilitate-templates/` rather than copying the whole template, so future updates to the shipped brief still reach your team. See [Customize a Document for Your Team](./customize-a-document-for-your-team.md) for a full walkthrough.
 
-**File and key:** `_bmad/custom/bmad-facilitate.toml`, `[workflow] on_complete`.
+## Recipe 3: Publish Finished Documents to External Systems
 
-Use this to send finished output to an external system (Confluence, Notion,
-SharePoint) and open follow-up work (Jira, Linear, Asana). `on_complete` is
-the right hook because it runs exactly once, after the workflow's output is
-written; `activation_steps_append` runs on every activation, before the
-work starts.
+Use a completion hook when finished documents should publish automatically to Confluence, Notion, or SharePoint, or offer to open a tracker epic once finalized.
 
-**Example:** planning documents publish to Confluence and offer an optional Jira epic.
+Ask `bmad-customize`:
 
-```toml
-# _bmad/custom/bmad-facilitate.toml
-
-[workflow]
-
-on_complete = """
-Publish and offer follow-up:
-
-1. Read the document's file path from the prior step. If its frontmatter `status` is not `final`, stop and tell the user which open question blocks publication.
-2. Call `mcp__atlassian__confluence_create_page` with:
-   - space: "PRODUCT"
-   - parent: "Planning"
-   - title: the document's title
-   - body: the document's markdown contents
-   Capture the returned page URL.
-3. Tell the user: "Published to Confluence: <url>".
-4. Ask: "Want me to open a Jira epic for this now?"
-5. If yes, call `mcp__atlassian__jira_create_issue` with:
-   - type: "Epic"
-   - project: "PROD"
-   - summary: the document's title
-   - description: a short summary plus a link back to the Confluence page.
-   Report the epic key and URL.
-6. If no, exit cleanly.
-
-If either MCP tool fails, report the failure, print the document's path,
-and ask the user to publish manually.
-"""
+```text
+/bmad-customize For the whole team on bmad-facilitate: after finalizing a
+document, if its status is final, publish the markdown to Confluence space
+"PRODUCT" under parent page "Planning" using our Atlassian MCP tool, share the
+returned URL, and ask whether to open a Jira epic in project "PROD". If the
+tool fails, report the error and print the local file path.
 ```
 
-Publishing to Confluence does not change anyone else's work, so it runs
-without asking. Creating a Jira epic is visible to the team, so confirm
-first. If a tool fails, give the user the file path instead of dropping
-the output.
+`bmad-customize` writes the instruction into `on_complete` (or `external_handoffs` if you want multiple independent publishing targets that stack) in `_bmad/custom/bmad-facilitate.toml`.
 
-## Recipe 4: Swap in your own output template
+## Recipe 4: Apply Your Team's Brand and Document Formats
 
-**File:** a template in `_bmad/custom/facilitate-templates/` with the shipped template's id.
+BMad separates project-wide visual branding from individual document templates:
 
-Use this when the shipped structure does not match the format your organization expects. `bmad-facilitate` searches that folder first and the installed modules last, so a file there with the same `template:` id replaces the shipped one for John, Mary and anyone who calls the engine directly.
+- To apply a shared brand or design system, run `bmad setup` in chat and point the core tools `design_system` setting at your team's brand guide, CSS, or design-system doc so every facilitated HTML view across the project inherits it automatically unless a specific template overrides the look.
+- To set a custom visual style or HTML default, ask `bmad-customize` to set `style` or `view` (`offer`, `always`, or `never`) on `bmad-facilitate` for your team.
+- To use a custom template format when your organization already has a strict postmortem or PRD layout that differs sharply from the shipped version, ask `bmad-customize` to replace that template or create a dedicated variant (such as `prd-billing`) in `_bmad/custom/facilitate-templates/`. See [Write a Document Template](./write-a-document-template.md).
 
-Copy the shipped brief from `bmod-method/doc-templates/template-brief.md` in your skills folder, with `brief-view.html` beside it, which its `layout` names. Keep `template: brief` and the other frontmatter keys, and edit the copy. Here the description changes:
+## Recipe 5: Build Shared Custom Discussion Casts
 
-```markdown
----
-title: ""
-template: brief
-version: 1.0.0
-description: "Why to build it, in the format the steering committee reads."
-status: draft
-created: ""
-updated: ""
----
+Multi-agent features (`bmad-party-mode`, `bmad-forge-idea`, and `bmad-advanced-elicitation`, plus team discussions that `bmad-retrospective` launches via `bmad-party-mode`) use your installed module agents by default.
+
+To give your team a reusable review panel, customer focus group, or executive advisory room, ask `bmad-party-mode` directly in chat:
+
+```text
+/bmad-party-mode Create a team party called "launch-review-board" with a
+skeptical security lead, an enterprise support manager, and a finance
+controller. Scene: Pre-launch go/no-go review. Push for concrete rollback plans
+and support readiness before anyone says ship. Save it for the whole team.
 ```
 
-The folder versions alongside the override files. When several teams share one repository, each can add its own folder to `template_libraries` from `bmad-facilitate.user.toml` without touching the committed file. To add rules without copying the template, extend it instead (recipe 2). See [Write a Document Template](./write-a-document-template.md).
+`bmad-party-mode` authors the custom `party_members` and `party_groups` entries in `_bmad/custom/bmad-party-mode.toml` via `bmad-customize`. Anyone on the team can then open that room by name (for example, "party mode with launch-review-board"), and `bmad-forge-idea` can draw from the same custom personas automatically. See [Run Multi-Agent Discussions](./run-multi-agent-discussions.md).
 
-## Recipe 5: Customize the agent roster
+## Recipe 6: Pin Shared Project Settings
 
-**File:** `_bmad/custom/config.toml` (team) or `_bmad/custom/config.user.toml` (personal).
+When every teammate should share the same output folder or module defaults, set those answers during `bmad setup` (which writes team-scope defaults to `_bmad/config.toml`) or pin overrides in `_bmad/custom/config.toml`. For example, to move `_bmad-output` to a shared folder across the team, ask `bmad` to update `core.output_folder` or pin `[core] output_folder` in `_bmad/custom/config.toml` (see [Configuration and Customization Reference](../reference/configuration.md)). Keep personal settings such as `core.active_initiative` out of the committed team file so teammates do not overwrite each other's active work.
 
-Use central config to change who roster-driven skills (`bmad-party-mode`,
-`bmad-retrospective`, `bmad-advanced-elicitation`) see, and to pin setup
-answers the whole team shares. Per-skill files shape how one agent behaves
-when it activates; central config shapes what other skills see when they
-look at the roster. See
-[Central configuration](./customize-bmad.md#central-configuration) for the
-file layout.
+## Recipe 7: Connect Knowledge Sources and Polish Rules
 
-### 5a. Rebrand an agent for the whole team
+For teams with internal knowledge bases or strict editorial guidelines, `bmad-facilitate` supports three advanced workflow settings through `bmad-customize`:
 
-**Key:** `[agents.bmad-agent-analyst] description`.
+| Setting | What it does |
+| --- | --- |
+| `external_sources` | Queries the MCP tools or internal databases you specify when specific topics (such as competitors or regulatory domains) come up during a session. |
+| `external_handoffs` | Stacks multiple independent publishing targets (such as Confluence and Notion) that run after finalize while keeping local files intact if a tool is unavailable. |
+| `doc_standards` | Points `bmad-facilitate` at your organization's writing guide (for example, `docs/enterprise/voice-and-tone.md`) or adds specific rules such as ISO 8601 dates, stacked on top of the default structural and prose review passes. |
 
-```toml
-# _bmad/custom/config.toml (committed — applies to every developer)
+Example prompt:
 
-[agents.bmad-agent-analyst]
-description = "Mary the Regulatory-Aware Business Analyst — channels Porter and Minto, but lives and breathes FDA audit trails. Speaks like a forensic investigator presenting a case file."
+```text
+/bmad-customize For the whole team on bmad-facilitate: add
+docs/enterprise/voice-and-tone.md to doc_standards, require ISO 8601 dates
+(YYYY-MM-DD), and when competitors come up, query corp:competitive_db before
+drafting differentiation sections.
 ```
 
-Party mode introduces Mary with the new description. It does not change
-how she works when she activates; that still comes from her `[agent]`
-override, as in recipe 1.
+## Reinforce Universal Rules in `AGENTS.md`
 
-### 5b. Add a fictional agent
+BMad customizations load when a BMad skill runs. For short, universal rules that should also hold in plain coding chats when no BMad skill is active (such as using a specific test command or MCP documentation tool), keep them in your repository's `AGENTS.md` via `bmad-project-context` (see [Set and Maintain Project Context](../existing-codebases/set-and-maintain-project-context.md)).
 
-**Key:** `[agents.<code>]` with a `team` value.
-
-A full descriptor is enough for roster features; no skill folder is
-needed. Personal files suit this, since a cast is a matter of taste.
-
-```toml
-# _bmad/custom/config.user.toml (personal — gitignored)
-
-[agents.spock]
-team = "startrek"
-name = "Commander Spock"
-title = "Science Officer"
-icon = "🖖"
-description = "Logic first, emotion suppressed. Begins observations with 'Fascinating.' Never rounds up. Counterpoint to any argument that relies on gut instinct."
-
-[agents.mccoy]
-team = "startrek"
-name = "Dr. Leonard McCoy"
-title = "Chief Medical Officer"
-icon = "⚕️"
-description = "Country doctor's warmth, short fuse. 'Dammit Jim, I'm a doctor not a ___.' Ethics-driven counterweight to Spock."
-```
-
-Ask party mode to "invite the Enterprise crew": it filters by
-`team = "startrek"` and includes Spock and McCoy. You can include real
-BMad agents in the same party.
-
-### 5c. Pin team settings
-
-**Key:** `[core] output_folder`.
-
-When the team needs one answer for a setting such as where BMad writes its
-output, pin it here; it overrides `_bmad/config.toml`, and a developer's own
-`_bmad/custom/config.user.toml` still wins over it. `output_folder` holds every initiative folder, the ticket tree, and
-`backlog/`, so pinning it moves all of them together.
-
-```toml
-# _bmad/custom/config.toml
-
-[core]
-output_folder = "{project-root}/shared/bmad-output"
-```
-
-Personal settings stay in each developer's own
-`_bmad/custom/config.user.toml`; the team file should not set them.
-
-## Reinforce global rules in your IDE's session file
-
-BMad customizations load when a skill activates. Most IDE tools also load
-a global instruction file at the start of every session, before any skill
-runs: `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, or
-`.github/copilot-instructions.md`. For a rule that should hold in a plain
-chat with no skill active, restate it there too, if it is short enough to
-repeat.
-
-**Example:** one line in the repository's `CLAUDE.md` reinforcing the
-dev-agent rule from recipe 1.
-
-```markdown
-Look up library docs through the context7 MCP tool (`mcp__context7__resolve_library_id` then `mcp__context7__get_library_docs`) before relying on training-data knowledge.
-```
-
-Each layer owns its own scope:
-
-| Layer | Scope | Use for |
-|---|---|---|
-| IDE session file (`CLAUDE.md` / `AGENTS.md`) | Every session, before any skill activates | Short, universal rules that should survive outside BMad |
-| BMad agent customization | Every workflow the agent dispatches | Agent-specific behavior |
-| BMad workflow customization | One workflow run | Output shape, publishing hooks, templates |
-| BMad central config | Agent roster and shared settings | Who is on the roster and which paths the team shares |
-
-Keep the IDE file short. The model reads it every turn.
-
-## Recipe 6: Advanced fields
-
-**File and keys:** `_bmad/custom/bmad-facilitate.toml`, `[workflow] external_sources`,
-`external_handoffs`, and `doc_standards`; template files in
-`_bmad/custom/facilitate-templates/`.
-
-Some workflows expose more fields than recipes 1 through 5 use. Check a
-workflow's `customize.toml` to see which of these it has; the examples use
-`bmad-facilitate`, which runs every document John (`bmad-agent-pm`) writes, so
-its settings apply to his documents too. The same pattern applies wherever a
-field appears.
-
-### On-demand knowledge sources
-
-`external_sources` connects the workflow to internal knowledge bases,
-competitive databases, or compliance references. The agent consults them
-only when the conversation surfaces a matching need, never preemptively.
-
-```toml
-# _bmad/custom/bmad-facilitate.toml
-
-[workflow]
-external_sources = [
-  "When the user mentions a competitor or market segment, query corp:competitive_db (category={project_name}) before drafting the differentiation section.",
-  "For regulatory domains (healthcare, fintech, education), consult corp:compliance_reference before drafting domain-specific sections.",
-]
-```
-
-Each entry names the MCP tool, the trigger, and the fields the tool needs.
-If the tool is unavailable at runtime, the workflow falls back to standard
-behavior and notes the gap.
-
-### Automatic output publishing
-
-`external_handoffs` sends finished artifacts to an external system after
-the workflow finalizes. Unlike `on_complete` (recipe 3), it is an append
-array: team entries stack, and each handoff fires independently.
-
-```toml
-# _bmad/custom/bmad-facilitate.toml
-
-[workflow]
-external_handoffs = [
-  "After finalize, upload the document to Confluence via corp:confluence_upload (space_key='PROD', parent_page='Planning'). Capture and surface the returned page URL.",
-  "Mirror to Notion via notion:create_page (database_id='abc123', title=the document's title).",
-]
-```
-
-If a named tool is unavailable, that handoff is skipped and flagged; the
-local files always exist.
-
-### Finalize-time doc standards
-
-At finalize, after the content is complete and before the user sees it,
-`doc_standards` applies your writing standards to the document.
-Each entry is a `skill:`, `file:`, or plain-text directive; the passes run
-in declared order within a document. It is an append array, so your entries
-stack on the workflow's shipped default
-(`skill:bmad-review lenses=structure,prose`). Put broad structural passes
-before narrow prose passes.
-
-```toml
-# _bmad/custom/bmad-facilitate.toml
-
-[workflow]
-doc_standards = [
-  "file:{project-root}/docs/enterprise/voice-and-tone.md",
-  "All dates must use ISO 8601 format (YYYY-MM-DD).",
-  "Replace any use of 'leverage' with 'use'.",
-]
-```
-
-### Template libraries and extensions
-
-John and `bmad-facilitate` change templates the same way: put a file in
-`_bmad/custom/facilitate-templates/`. A new `template:` id adds a template, and a
-shipped id replaces it. To swap in a regulated-industry PRD, save it there with
-`template: prd` and a `rubric:` beside it. A file with `extends:` adds your
-rules without copying the template, so updates to the original still reach you:
-
-```markdown
----
-extends: business-case
----
-
-<!-- done when: Every cost line names its source. -->
-
-## Budget Owner
-<!-- required, after the cost section. The budget owner and cost center. -->
-```
-
-The template file format and extensions are in
-[Write a Document Template](./write-a-document-template.md).
-
-## Combining recipes
-
-All six recipes compose. One workflow file can set `persistent_facts`
-(recipe 2) and `on_complete` (recipe 3), with your template beside it in `facilitate-templates/` (recipe 4); the
-agent-wide rule (recipe 1) lives in a separate file under the agent's
-name; central config (recipe 5) pins the roster and shared paths; advanced
-fields (recipe 6) add sources and handoffs. Every layer applies.
-
-```toml
-# _bmad/custom/bmad-facilitate.toml (workflow)
-
-[workflow]
-persistent_facts = ["..."]
-on_complete = """ ... """
-```
-
-```toml
-# _bmad/custom/bmad-agent-analyst.toml (agent — Mary dispatches the brief)
-
-[agent]
-persistent_facts = ["Always include a 'Regulatory Review' section when the domain involves healthcare, finance, or children's data."]
-```
-
-Mary loads the regulatory-review rule when she activates. When the user
-asks her for a brief, the engine adds your conventions,
-writes to your template, and publishes to Confluence on
-completion. For planning with several people or teams, see
-[Plan Inside an Organization](../plan/plan-inside-an-organization.md).
+| Layer | Scope | Best used for |
+| --- | --- | --- |
+| `AGENTS.md` (via `bmad-project-context`) | Every coding session, even outside BMad | Short repo-wide rules, command caveats, and observed pitfalls |
+| Agent customization | Every workflow that agent runs | Role focus, tool defaults, and persistent domain rules |
+| Workflow or template customization | One workflow or one document type | Review depth, required sections, editorial standards, publishing hooks |
+| Shared project config (`bmad setup`) | Whole project | Output folder, design system, and module setup answers |
 
 ## Troubleshooting
 
-**Override not taking effect?** Check that the file is under
-`_bmad/custom/` with the exact skill directory name (`bmad-agent-dev.toml`,
-not `bmad-dev.toml`). See
-[Customize BMad](./customize-bmad.md#troubleshooting) for the rest.
-
-**MCP tool name unknown?** Use the exact name the MCP server exposes in the
-current session; ask your IDE assistant to list the available MCP tools.
-A name written into `persistent_facts` or `on_complete` does nothing if
-that server is not connected.
+- When an override does not take effect, ask `bmad-customize` to inspect your overrides, or verify the file under `_bmad/custom/` matches the exact skill directory name (for example, `bmad-agent-dev.toml`, not `bmad-dev.toml`).
+- When an MCP tool does not run, confirm the exact tool name exposed by your connected MCP server in the current session, because a rule naming a disconnected server is skipped until that server is active.
+- When you need exact TOML keys or CLI inspection commands, see [Configuration and Customization Reference](../reference/configuration.md). For multi-team planning workflows, see [Plan Inside an Organization](../plan/plan-inside-an-organization.md).

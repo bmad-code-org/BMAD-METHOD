@@ -1,13 +1,13 @@
 ---
 title: ""
 template: charter
-version: 1.3.0
+version: 1.4.0
 description: "A program's mandate, benefits, scope and governance across its initiatives."
-not_for: "A single initiative (`brief` or `prd`); funding one piece of work (`business-case`); choosing a strategy (`narrative`)."
+not_for: "A program's outcomes, guardrails, rollout strategy and initiative map (`prd-program`); a single initiative (`brief` or `prd`); funding one piece of work (`business-case`); choosing a strategy (`narrative`)."
 agents: [bmad-agent-analyst, bmad-agent-pm]
 facilitation_order: [justification, vision, strategic-alignment, benefits, scope, initiatives, rules, stakeholders, governance, timeline, risks-and-issues]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""
@@ -21,7 +21,7 @@ updated: ""
 
 <!-- inputs: The strategy the program serves and the initiatives in view. Only the user knows the sponsor, decision rights, budget and dates. -->
 
-<!-- writing: No requirements; each initiative gets its own document. About six pages. Ids (SM-N, RULE-N) are global, and each initiative's documents cite them. -->
+<!-- writing: No requirements; each initiative gets its own document. Ids (OKR-N, RULE-N) are global, and each initiative's documents cite them. -->
 
 <!-- done when: Any initiative can be judged in or out of the program from this charter, and anyone can tell who decides what. -->
 
@@ -39,7 +39,7 @@ updated: ""
 <!-- The strategy or objectives it serves. -->
 
 ## Benefits
-<!-- A table of SM-N measurable outcomes, each with where it stands today, the target, an owner and an expected date. Ask how each will be measured and who would notice if it slipped; a benefit nobody would measure is cut. -->
+<!-- A table of OKR-N measurable outcomes, each with current baseline when known, Passable / Good / Excellent target bands, how production measures it, an owner, and an expected date. Ask how each will be measured and who would notice if it slipped; a benefit nobody would measure is cut. -->
 
 ## Scope
 <!-- What the program covers and excludes. Ask which piece of work people will try to add next, and settle now whether it is in. -->

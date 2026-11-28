@@ -5,8 +5,8 @@ version: 1.2.0
 description: "Planning a raise: amount, milestones, instrument, investors, timeline, stop date."
 not_for: "The deck shown to investors (`pitch-deck`); a written ask to one funder or grant body (`proposal`); applying to a program (`accelerator-application`); reporting to investors already in (`investor-update`)."
 facilitation_order: [why-raise-now, milestones, amount, instrument, investors, materials, timeline, stop-date-and-plan-b, summary]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-planning.md
+rubric: rubric-planning.md
 agents: [bmad-founder-agent-advisor]
 view: always
 status: draft

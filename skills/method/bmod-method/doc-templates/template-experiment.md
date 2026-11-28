@@ -7,8 +7,8 @@ not_for: "Learning by building something (`prototype-plan`); a change already de
 agents: [bmad-agent-analyst, bmad-agent-pm]
 order: fixed
 facilitation_order: [hypothesis, test, thresholds, guardrails, duration, result]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""

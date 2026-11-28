@@ -5,7 +5,7 @@ version: 1.2.0
 description: "The pre-read sent before a board meeting: decisions needed, metrics, plan, risks, cash."
 not_for: "The regular update to all investors when there is no board meeting (`investor-update`)."
 facilitation_order: [decisions-needed, metrics, progress-against-plan, cash, risks, discussion-topics, summary]
-guidance: guidance-planning
+guidance: guidance-planning.md
 rubric: rubric-investor-update.md
 agents: [bmad-founder-agent-advisor]
 view: always

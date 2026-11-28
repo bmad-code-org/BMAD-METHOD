@@ -2,12 +2,14 @@
 title: ""
 template: postmortem
 version: 1.3.0
+category: risk-and-ops
 description: "Causes and actions after something went wrong, written blamelessly."
 not_for: "Judging a person's performance."
+agents: [bmad-agent-architect]
 order: fixed
 facilitation_order: [impact, timeline, detection-and-response, contributing-factors, lessons, action-items, communication, summary]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""

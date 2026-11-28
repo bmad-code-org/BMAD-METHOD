@@ -5,8 +5,8 @@ version: 1.2.0
 description: "A founder's test of whether people will pay or act, with the pass mark set first."
 not_for: "A guide for discovery conversations (`customer-interview-script`); hard questions that pick what to test (`startup-diagnostic`)."
 facilitation_order: [assumption, test, who-sees-it, pass-mark, cost-and-time, what-participants-are-told, result]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-planning.md
+rubric: rubric-planning.md
 agents: [bmad-founder-agent-advisor]
 order: fixed
 view: always

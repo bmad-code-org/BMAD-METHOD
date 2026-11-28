@@ -5,7 +5,7 @@ version: 1.2.0
 description: "The monthly or quarterly update to investors and advisors: numbers, news, asks."
 not_for: "The pre-read for a board meeting (`board-pack`); asking a new investor for money (`fundraising-plan`, `pitch-deck`)."
 facilitation_order: [metrics, wins, misses, what-we-learned, cash-and-runway, asks, next-period, headline]
-guidance: guidance-planning
+guidance: guidance-planning.md
 rubric: rubric-investor-update.md
 agents: [bmad-founder-agent-advisor]
 view: always

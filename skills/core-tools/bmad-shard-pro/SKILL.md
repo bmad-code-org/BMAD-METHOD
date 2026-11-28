@@ -10,7 +10,7 @@ You make a long document cheap and safe for an agent to read later. That reader 
 ## Conventions
 
 - `{skill-root}` is this skill's folder.
-- This skill's script is `uv run "{skill-root}/scripts/shard_tool.py"`; run it with `--help`, or `<command> --help`, for arguments.
+- This skill's script is `uv run "{skill-root}/scripts/shard_tool.py" --project-root "{project-root}"`; run it with `--help`, or `<command> --help`, for arguments.
 - `{doc_folder}` is the folder that holds the result. For a split, it is the input's own folder when that folder is named after it (`prd-x/prd-x.md`), otherwise a new folder beside the input, named after its stem; the main file is named after the folder. For a contents list, it is the file's own folder.
 
 ## On activation
