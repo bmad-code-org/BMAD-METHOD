@@ -61,4 +61,4 @@ updated: ""
 <!-- Go or no-go, and the reason. Weigh cost against return yourself, say your position to the user first, and say what figure would change it. A no-go, or funding only the MVP, is a good outcome. -->
 
 ## For requirements
-<!-- include when: the work has a ticket. Assembled from the settled sections, with nothing asked for it: a table of the stable ids of each outcome, capability and rule, for the Product Owner. -->
+<!-- include when: the work has a ticket. Assembled from the settled sections, with nothing asked for it: a table of each outcome, capability and rule by stable id and short handle, for the Product Owner. -->

@@ -10,6 +10,7 @@ lifecycle status the log would have to mutate.
 """
 
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -37,7 +38,7 @@ def ws(tmp_path):
 
 
 def read(ws):
-    return (Path(ws) / MEMLOG).read_text(encoding="utf-8")
+    return (Path(ws) / MEMLOG).read_text(encoding="utf-8-sig")
 
 
 def read_log(text):
@@ -420,3 +421,62 @@ def test_fields_that_clash_with_yaml_round_trip_as_yaml(ws):
     want = {"topic": "Fix #42: login", "commit": "0123456", "flag": "yes", "owner: alex": "x", "a --- b": "y"}
     assert {k: v for k, v in read_log(read(ws))[0].items() if k != "updated"} == want
     assert {k: v for k, v in yaml.safe_load(frontmatter.split(read(ws))[0]).items() if k != "updated"} == want
+
+
+def test_init_writes_lf_line_endings(ws):
+    init(ws)
+    raw = (Path(ws) / MEMLOG).read_bytes()
+    assert b"\r\n" not in raw
+
+
+def test_append_preserves_lf_even_when_os_linesep_is_crlf(ws, monkeypatch):
+    init(ws)
+    monkeypatch.setattr(os, "linesep", "\r\n")
+    append(ws, "first", entry_type="note")
+    append(ws, "second", entry_type="note")
+    raw = (Path(ws) / MEMLOG).read_bytes()
+    assert b"\r\n" not in raw
+    assert entries(ws) == ["- (note) first", "- (note) second"]
+
+
+def test_append_preserves_crlf_and_bom_and_handles_missing_trailing_newline(ws):
+    init(ws)
+    path = Path(ws) / MEMLOG
+    path.write_bytes(b"\xef\xbb\xbf" + path.read_bytes().replace(b"\n", b"\r\n").rstrip(b"\r\n"))
+    append(ws, "crlf entry", entry_type="note")
+    raw = path.read_bytes()
+    assert raw.startswith(b"\xef\xbb\xbf---\r\n")
+    assert b"\r\n" in raw
+    assert b"\n" not in raw.replace(b"\r\n", b"")
+    assert entries(ws) == ["- (note) crlf entry"]
+
+
+def test_set_preserves_lf_or_crlf_and_bom(ws):
+    init(ws)
+    append(ws, "kept", entry_type="note")
+    path = Path(ws) / MEMLOG
+    assert b"\r\n" not in path.read_bytes()
+    assert run(ws, "set", "--workspace", ws, "--key", "mode", "--value", "lf") == 0
+    assert b"\r\n" not in path.read_bytes()
+
+    crlf_bom = b"\xef\xbb\xbf" + path.read_bytes().replace(b"\n", b"\r\n")
+    path.write_bytes(crlf_bom)
+    assert run(ws, "set", "--workspace", ws, "--key", "mode", "--value", "crlf") == 0
+    after = path.read_bytes()
+    assert after.startswith(b"\xef\xbb\xbf")
+    assert b"\r\n" in after
+    assert b"\n" not in after.replace(b"\r\n", b"")
+    assert read_log(read(ws))[0]["mode"] == "crlf"
+    assert entries(ws) == ["- (note) kept"]
+
+
+def test_append_and_set_handle_cr_only_line_endings(ws):
+    init(ws)
+    path = Path(ws) / MEMLOG
+    path.write_bytes(path.read_bytes().replace(b"\n", b"\r"))
+    append(ws, "cr entry", entry_type="note")
+    assert b"\n" not in path.read_bytes()
+    assert run(ws, "set", "--workspace", ws, "--key", "mode", "--value", "cr") == 0
+    assert b"\n" not in path.read_bytes()
+    assert read_log(read(ws))[0]["mode"] == "cr"
+    assert entries(ws) == ["- (note) cr entry"]

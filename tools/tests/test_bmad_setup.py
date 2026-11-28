@@ -3,6 +3,7 @@ import importlib.util
 import json
 import os
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -3084,6 +3085,23 @@ class BmadStatusTests(unittest.TestCase):
             self.assertIsNone(status_report(self, project, skill)["next"])
             self.assertFalse(setup_report(self, project, skill)["changed"])
 
+    def test_an_output_folder_moved_in_team_custom_layer_alone_is_the_one_setup_keeps(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            setup_report(self, project, skill)
+            write(project / "_bmad" / "custom" / "config.toml", '[core]\noutput_folder = "{project-root}/docs/work"\n')
+            shutil.rmtree(project / "_bmad-output")
+
+            self.assertEqual(status_report(self, project, skill)["next"], "bmad setup")
+            self.assertTrue(setup_report(self, project, skill)["changed"])
+            self.assertTrue((project / "docs" / "work").is_dir())
+            self.assertFalse((project / "_bmad-output").exists())
+            self.assertIsNone(status_report(self, project, skill)["next"])
+            self.assertFalse(setup_report(self, project, skill)["changed"])
+
     def test_status_owes_setup_whenever_setup_would_write(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -4127,6 +4145,210 @@ class BmadKnowledgeEntryTests(unittest.TestCase):
             with self.subTest(second=second), self.assertRaises(Exception) as caught:
                 self.parse(self.entry('"help.md"') + self.entry(second))
             self.assertIn("repeats", str(caught.exception))
+
+
+class WindowsHardeningTests(unittest.TestCase):
+    def test_reject_unusable_bmad_stops_on_junction_without_renaming(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            target = root / "shared-bmad"
+            target.mkdir()
+            bmad = root / "_bmad"
+            bmad.mkdir()
+            with (
+                mock.patch.object(setup, "is_junction", side_effect=lambda p: p == bmad),
+                mock.patch.object(setup, "_link_target", return_value=target),
+            ):
+                with self.assertRaises(Exception) as caught:
+                    setup.reject_unusable_bmad(root)
+            self.assertIn("junction", str(caught.exception))
+            self.assertIn(str(target), str(caught.exception))
+
+    def test_remove_skill_paths_unlinks_junction_without_rmtree_or_touching_target(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            target = root / ".agents" / "skills" / "bmad-old"
+            write(target / "SKILL.md", "keep me\n")
+            link = root / ".claude" / "skills" / "bmad-old"
+            link.mkdir(parents=True)
+            write(root / "skills-lock.json", json.dumps({"version": 1, "skills": {"bmad-old": {}}}) + "\n")
+            unlinked: list[Path] = []
+
+            def fake_unlink(p: Path) -> None:
+                unlinked.append(p)
+                p.rmdir()
+
+            with (
+                mock.patch.object(setup, "is_junction", side_effect=lambda p: p == link and p not in unlinked),
+                mock.patch.object(setup, "unlink_force", side_effect=fake_unlink),
+                mock.patch.object(setup, "rmtree_force", side_effect=AssertionError("should not rmtree a junction")),
+            ):
+                result = setup.remove_skill_paths(root, (link.parent,), [("bmad-old", link)])
+            self.assertEqual(unlinked, [link])
+            self.assertFalse(link.exists())
+            self.assertTrue((target / "SKILL.md").is_file())
+            self.assertEqual(result["locks"], [{"file": "skills-lock.json", "entries_removed": ["bmad-old"]}])
+            self.assertEqual(json.loads((root / "skills-lock.json").read_text())["skills"], {})
+
+    def test_materialize_bmad_preserves_custom_junction_and_skips_copying_it(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            bmad = root / "_bmad"
+            custom = bmad / "custom"
+            custom.mkdir(parents=True)
+            write(custom / "bmad-build.toml", "[workflow]\nroute = 'oneshot'\n")
+            target = root / "shared-custom"
+            target.mkdir()
+            src = root / "skill-src"
+            write(src / "scripts" / "setup.py", "print('ok')\n")
+            created_junctions: list[tuple[Path, Path]] = []
+            with (
+                mock.patch.object(setup, "is_junction", side_effect=lambda p: p == custom),
+                mock.patch.object(setup, "_link_target", return_value=target),
+                mock.patch.object(setup, "create_junction", side_effect=lambda t, j: created_junctions.append((t, j))),
+            ):
+                self.assertEqual(setup.custom_gitignore_state(root), "skipped")
+                setup.materialize_bmad(root, src, '[core]\noutput_folder = "_bmad-output"\n', {})
+            self.assertEqual(len(created_junctions), 1)
+            self.assertEqual(created_junctions[0][0], target)
+            self.assertEqual(created_junctions[0][1].name, "custom")
+            self.assertFalse((custom / "bmad-build.toml").exists())
+
+    def test_rmtree_force_clears_readonly_bits_inside_the_tree_only(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as tmp:
+            outer = Path(tmp) / "outer"
+            ro_dir = outer / "ro-dir"
+            ro_file = ro_dir / "nested" / "file.txt"
+            write(ro_file, "readonly\n")
+            os.chmod(ro_file, 0o444)
+            os.chmod(ro_file.parent, 0o555)
+            outer_mode = outer.stat().st_mode
+            setup.rmtree_force(ro_dir)
+            self.assertFalse(ro_dir.exists())
+            self.assertEqual(outer.stat().st_mode, outer_mode)
+
+    def test_replace_dir_reports_a_backup_it_could_not_remove(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write(root / "_bmad" / "old.txt", "old\n")
+            write(root / "staging" / "new.txt", "new\n")
+            with mock.patch.object(setup, "rmtree_force", side_effect=PermissionError("denied")):
+                with self.assertRaises(Exception) as caught:
+                    setup.replace_dir(root / "staging", root / "_bmad")
+            self.assertIn("_bmad was updated, but old backup", str(caught.exception))
+            self.assertTrue((root / "_bmad" / "new.txt").is_file())
+
+    def test_rmtree_force_removes_a_symlink_without_touching_its_target(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "target"
+            write(target / "keep.txt", "keep\n")
+            link = Path(tmp) / "link"
+            try:
+                link.symlink_to(target, target_is_directory=True)
+            except OSError:
+                self.skipTest("symlinks unavailable")
+            setup.rmtree_force(link)
+            self.assertFalse(setup.present(link))
+            self.assertTrue((target / "keep.txt").is_file())
+
+    @unittest.skipIf(sys.platform == "win32", "POSIX folder permissions")
+    def test_rmtree_force_leaves_the_mode_of_a_link_target_in_a_read_only_folder(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "target.sh"
+            write(target, "echo hi\n")
+            os.chmod(target, 0o755)
+            locked = Path(tmp) / "tree" / "locked"
+            locked.mkdir(parents=True)
+            (locked / "link").symlink_to(target)
+            os.chmod(locked, 0o555)
+            setup.rmtree_force(locked.parent)
+            self.assertFalse(locked.parent.exists())
+            self.assertEqual(stat.S_IMODE(target.stat().st_mode), 0o755)
+
+    def test_ensure_scripts_clears_readonly_bit_on_copied_scripts(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as tmp:
+            src = Path(tmp) / "src"
+            write(src / "setup.py", "print('ok')\n")
+            os.chmod(src / "setup.py", 0o444)
+            dest = Path(tmp) / "dest"
+            try:
+                setup.ensure_scripts(dest, src)
+                copied = dest / "setup.py"
+                self.assertTrue(copied.is_file())
+                self.assertTrue(copied.stat().st_mode & 0o200)
+            finally:
+                os.chmod(src / "setup.py", 0o644)
+
+    def test_materialize_bmad_updates_readonly_config_files(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill = root / "skill"
+            write(skill / "scripts" / "setup.py", "print('ok')\n")
+            write(root / "_bmad" / "config.toml", '[core]\noutput_folder = "_bmad-output"\n')
+            write(root / "_bmad" / "custom" / "config.user.toml", "# old\n")
+            os.chmod(root / "_bmad" / "config.toml", 0o444)
+            os.chmod(root / "_bmad" / "custom" / "config.user.toml", 0o444)
+
+            setup.materialize_bmad(
+                root,
+                skill,
+                '[core]\noutput_folder = "_bmad-output"\nlanguage = "en"\n',
+                {},
+                user_config_text='[core]\nuser = "alex"\n',
+            )
+
+            self.assertIn('language = "en"', (root / "_bmad" / "config.toml").read_text(encoding="utf-8"))
+            self.assertIn('user = "alex"', (root / "_bmad" / "custom" / "config.user.toml").read_text(encoding="utf-8"))
+
+    @unittest.skipUnless(sys.platform == "win32", "Windows junctions and S_IREAD attributes")
+    def test_windows_real_junction_and_readonly_cleanup(self):
+        import _winapi
+
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            shared = root / "shared-custom"
+            write(shared / "bmad-build.toml", "[workflow]\nroute = 'full'\n")
+            project = root / "project"
+            skill = root / "skill"
+            write(skill / "scripts" / "setup.py", "print('v1')\n")
+            bmad = project / "_bmad"
+            bmad.mkdir(parents=True)
+            _winapi.CreateJunction(str(shared), str(bmad / "custom"))
+            setup.ensure_dir(project / "_bmad-output")
+            setup.materialize_bmad(project, skill, '[core]\noutput_folder = "_bmad-output"\n', {})
+            self.assertTrue(setup.is_junction(project / "_bmad" / "custom"))
+            self.assertEqual((shared / "bmad-build.toml").read_text(), "[workflow]\nroute = 'full'\n")
+
+            self.assertEqual(sorted(p.name for p in project.iterdir()), ["_bmad", "_bmad-output"])
+
+            stale = project / "_bmad" / "stale-dir"
+            ro = stale / "locked.txt"
+            write(ro, "ro\n")
+            os.chmod(ro, 0o444)
+            _winapi.CreateJunction(str(shared), str(stale / "nested-link"))
+            setup.rmtree_force(stale)
+            self.assertFalse(stale.exists())
+            self.assertEqual((shared / "bmad-build.toml").read_text(), "[workflow]\nroute = 'full'\n")
+
+            j1 = root / "j1"
+            j2 = root / "j2"
+            _winapi.CreateJunction(str(shared), str(j1))
+            _winapi.CreateJunction(str(shared), str(j2))
+            setup.unlink_force(j1)
+            setup.rmtree_force(j2)
+            self.assertFalse(setup.present(j1))
+            self.assertFalse(setup.present(j2))
+            self.assertEqual((shared / "bmad-build.toml").read_text(), "[workflow]\nroute = 'full'\n")
 
 
 if __name__ == "__main__":

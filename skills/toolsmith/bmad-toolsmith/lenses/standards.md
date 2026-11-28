@@ -61,7 +61,7 @@ A script does work that has one right answer per input: parsing, counting, resol
 
 - Python with a PEP 723 header, `requires-python = ">=3.11"`, dependencies listed; stdlib first, with a graceful fallback when an optional import is absent.
 - argparse with `--help`. JSON on stdout when a model reads the result. Non-zero exit with a reason, never an error deferred to the model.
-- A test at `{tests}/test_<name>.py` using `unittest`.
+- A test at `{tests}/test_<name>.py` (hyphens as underscores) using `unittest`.
 - No model ids or time estimates anywhere in a skill.
 
 ## Memory agents

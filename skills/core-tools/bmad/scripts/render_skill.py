@@ -45,6 +45,9 @@ class _ArgumentParser(argparse.ArgumentParser):
 
 
 _PARAMETER = r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*"
+# Bump when a skill comes to depend on new renderer behavior, and raise the
+# `--require-version` its SKILL.md passes, so a stale project copy halts.
+RENDERER_VERSION = 2
 
 
 def _hash_bytes(content: bytes) -> str:
@@ -181,7 +184,7 @@ def _require_review_layers(value: Any, label: str) -> list[dict[str, str]]:
 
 def _keyed_by_code(tables: list[dict[str, Any]]) -> bool:
     """Menus key their items on `code`; review layers on `id`. Same order as `structural_merge`."""
-    return all("code" in table for table in tables)
+    return all(isinstance(table.get("code"), str) for table in tables)
 
 
 def _require_keyed_tables(value: Any, label: str, key: str) -> list[dict[str, str]]:
@@ -267,7 +270,8 @@ def _resolve_short_config(central: dict[str, Any], key: str, project_root: Path)
     matches = _find_config_values(central, key)
     if not matches:
         raise RenderError(f"missing config value `{key}`")
-    if len(matches) > 1:
+    # Equal values in several modules are one value; the type keeps `true` and `1` apart.
+    if len({(type(value), value) for _, value in matches}) > 1:
         paths = ", ".join(path for path, _ in matches)
         raise RenderError(f"ambiguous config value `{key}` found at: {paths}")
     path, value = matches[0]
@@ -397,7 +401,7 @@ class _Table:
 
 
 class _ConfigTable(_Table):
-    """`config.key` is the short lookup of one scalar anywhere in the central config; `config.a.b.c` is a path."""
+    """`config.key` looks up a scalar anywhere in the central config (equal copies resolve; differing copies halt); `config.a.b.c` is a path."""
 
     def __init__(self, central: dict[str, Any], table: dict[str, Any], path: str, ctx: _RenderContext) -> None:
         super().__init__(path)
@@ -839,6 +843,12 @@ def main() -> int:
         help="project root containing _bmad/ (inferred from script location or cwd when omitted)",
     )
     parser.add_argument("--skill", required=True)
+    parser.add_argument(
+        "--require-version",
+        type=int,
+        default=None,
+        help="minimum renderer contract version required by the skill",
+    )
     parser.add_argument("--overrides", type=Path, help="invocation-only customization TOML file")
     parser.add_argument("--set", dest="assignments", action="append", default=[], metavar="KEY=VALUE")
     parser.add_argument(
@@ -853,6 +863,14 @@ def main() -> int:
         reconfigure(encoding="utf-8")
     try:
         args = parser.parse_args()
+        if args.require_version is not None:
+            if args.require_version < 1:
+                raise RenderError(f"--require-version must be a positive integer, got {args.require_version}")
+            if args.require_version > RENDERER_VERSION:
+                raise RenderError(
+                    f"this skill requires render_skill.py version {args.require_version}, "
+                    f"but this project has version {RENDERER_VERSION}; update the bmad skill, then run bmad setup in this project"
+                )
         project_root = _resolve_project_root(args.project_root)
         roots = tuple(args.root)
         skill_dir = _resolve_skill_dir(args.skill, project_root, roots)

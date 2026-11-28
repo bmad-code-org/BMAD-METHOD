@@ -17,10 +17,12 @@ by `_bmad/scripts/roster.py`) with the user's custom `party_members` and
   * --party <id> — full member detail for one chosen group, on demand
     (e.g. when the user switches rooms). Unknown id returns the available
     names instead of an error wall.
+  * --check-codes CODE [CODE ...] — check proposed custom member codes against
+    every resolvable code, alias, and name in the full collective.
 
 The merge is deterministic (a keyed union; a custom member whose code
-matches an installed agent overrides it), so the orchestrator consumes a
-resolved roster instead of re-deriving it every session.
+resolves to any existing member's code, alias, or name overrides it), so the
+orchestrator consumes a resolved roster instead of re-deriving it every session.
 
 Stdlib only (Python 3.11+ for tomllib). Shells out to the project's roster.py
 and resolve_customization.py. An install whose `_bmad/scripts` predates
@@ -30,6 +32,7 @@ missing customization resolver falls back to reading customize.toml directly.
   resolve_party.py --project-root P --skill S
   resolve_party.py --project-root P --skill S --list-groups
   resolve_party.py --project-root P --skill S --party writers-room   (alias: --group)
+  resolve_party.py --project-root P --skill S --check-codes analyst sec-hawk
 """
 
 import argparse
@@ -101,8 +104,8 @@ def merge_groups(roster_groups: list, custom_groups: list) -> list:
     return list(merged.values())
 
 
-def load_workflow(project_root: Path, skill_root: Path):
-    """Merged [workflow] table. Falls back to the skill's base customize.toml."""
+def load_workflow(project_root: Path, skill_root: Path, *, strict: bool = False):
+    """Merged [workflow] table. Falls back to the skill's base customize.toml unless strict."""
     script = project_root / "_bmad" / "scripts" / "resolve_customization.py"
     data = _run_json(
         [
@@ -118,7 +121,11 @@ def load_workflow(project_root: Path, skill_root: Path):
     )
     if data is not None and "workflow" in data:
         return data["workflow"]
-    _warn(f"party customization override not applied, using the shipped party: {_last_error or 'no workflow table'}")
+    reason = _last_error or "no workflow table"
+    if strict:
+        sys.stderr.write(f"error: could not resolve party customization: {reason}\n")
+        sys.exit(1)
+    _warn(f"party customization override not applied, using the shipped party: {reason}")
     # Fallback: read the skill's base customize.toml directly (no override merge).
     toml_path = skill_root / "customize.toml"
     if toml_path.exists():
@@ -311,22 +318,70 @@ def group_detail(g, collective, index):
     return detail
 
 
+def check_codes(requested_codes, collective, index):
+    """Split proposed custom codes into those that would collide with or override a member and those that are clear.
+
+    Checks the exact/lowercased code as well as the derived alias so existing aliases are never silently broken.
+    """
+    collisions, clear = [], []
+    for raw in requested_codes:
+        canonical = index.get(raw) or index.get(raw.lower())
+        if canonical not in collective:
+            alias = _alias(raw).lower()
+            if alias != raw.lower():
+                canonical = index.get(alias)
+        if canonical in collective:
+            entry = collective[canonical]
+            collisions.append(
+                {
+                    "requested": raw,
+                    "matches": canonical,
+                    "name": entry["name"],
+                    "title": entry.get("title", ""),
+                    "source": entry["source"],
+                }
+            )
+        else:
+            clear.append(raw)
+    return {"collisions": collisions, "clear": clear}
+
+
 def build_parser():
     ap = argparse.ArgumentParser(description="Resolve the party-mode roster, lazily.")
     ap.add_argument("--project-root", required=True)
     ap.add_argument("--skill", required=True, help="Path to the bmad-party-mode skill dir")
-    ap.add_argument("--party", "--group", dest="party", help="Resolve full detail for this group id")
-    ap.add_argument("--list-groups", action="store_true", help="Group names only")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--party", "--group", dest="party", help="Resolve full detail for this group id")
+    mode.add_argument("--list-groups", action="store_true", help="Group names only")
+    mode.add_argument(
+        "--check-codes",
+        nargs="+",
+        metavar="CODE",
+        help="Check proposed member codes for collisions against the full collective",
+    )
     return ap
 
 
 def main():
-    args = build_parser().parse_args()
+    parser = build_parser()
+    args = parser.parse_args()
+
+    if args.check_codes is not None:
+        deduped: list[str] = []
+        seen: set[str] = set()
+        for raw in args.check_codes:
+            if not raw.strip():
+                parser.error("--check-codes requires non-empty codes")
+            key = raw.lower()
+            if key not in seen:
+                seen.add(key)
+                deduped.append(raw)
+        args.check_codes = deduped
 
     project_root = Path(args.project_root).resolve()
     skill_root = Path(args.skill).resolve()
 
-    workflow = load_workflow(project_root, skill_root)
+    workflow = load_workflow(project_root, skill_root, strict=args.check_codes is not None)
     agents, guests, roster_groups, agents_ok, roster_problems = load_roster(project_root, skill_root)
     groups = merge_groups(roster_groups, workflow.get("party_groups", []) or [])
     default_party = workflow.get("default_party", "") or ""
@@ -346,6 +401,16 @@ def main():
         return
 
     collective, index, installed_codes = build_collective(agents, workflow.get("party_members", []), guests)
+
+    if args.check_codes:
+        if not agents_ok:
+            sys.stderr.write(f"error: could not resolve installed roster: {_last_error or 'roster unavailable'}\n")
+            sys.exit(1)
+        result = check_codes(args.check_codes, collective, index)
+        if roster_problems:
+            result["roster_problems"] = roster_problems
+        _emit(result)
+        return
 
     if args.party:
         g = find_group(groups, args.party)

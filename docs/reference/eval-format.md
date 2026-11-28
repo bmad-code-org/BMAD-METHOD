@@ -101,6 +101,8 @@ A defective output should never pass a rubric check. Weak checks create false co
 | `"brief.md exists"` | Passes for an empty file; pair with content requirements |
 | `"the brief is high quality"` | Subjective and ungradable; name concrete verifiable properties |
 | Anything implied by simply reading the prompt | Does not measure whether the skill added value |
+| `"kept intact somewhere"` or `"or equivalent"` | Escape clause; a backup copy of the input can satisfy it while the deliverable is broken |
+| A reply claiming the file work was done | Passes for a skill that wrote nothing; check the files it wrote |
 
 | Strong check type | Example |
 | --- | --- |

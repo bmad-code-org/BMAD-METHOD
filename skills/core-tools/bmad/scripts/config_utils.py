@@ -39,16 +39,17 @@ def _detect_keyed_merge_field(items: list[Any]) -> str | None:
     if not items or not all(isinstance(item, dict) for item in items):
         return None
     for candidate in _KEYED_MERGE_FIELDS:
-        if all(candidate in item for item in items):
-            for item in items:
-                value = item[candidate]
-                if not isinstance(value, str):
-                    raise ConfigError(
-                        f"keyed array identifier `{candidate}` must be a string, got {type(value).__name__}"
-                    )
-                if not value:
-                    raise ConfigError(f"keyed array identifier `{candidate}` must not be empty")
-            return candidate
+        if not all(candidate in item for item in items):
+            continue
+        values = [item[candidate] for item in items]
+        if not any(isinstance(value, str) for value in values):
+            continue
+        for value in values:
+            if not isinstance(value, str):
+                raise ConfigError(f"keyed array identifier `{candidate}` must be a string, got {type(value).__name__}")
+            if not value:
+                raise ConfigError(f"keyed array identifier `{candidate}` must not be empty")
+        return candidate
     return None
 
 

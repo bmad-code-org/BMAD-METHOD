@@ -10,9 +10,9 @@
 
 To HALT with a final status and optional blocking condition. The halts `blocked plan supplied` and `dropped plan supplied` write nothing, so the plan keeps its first reason or its `dropped` status: go straight to 3.
 
-1. **A ticket from the tree** (`{ticket_args}` is set) with final status `blocked`: run `uv run "{project-root}/_bmad/method/scripts/tickets.py" --project-root "{project-root}" mark {ticket_args} blocked --blocked <blocking condition>`, with each argument quoted for the shell, which writes `status`, `blocked_at`, and `blocked_reason` to `{plan_file}` and creates it when there is none. Then append missing result details under `## Auto Run Result` in `{plan_file}`. If `mark` fails, follow 2 instead.
+1. **A ticket from the tree** (`{ticket_args}` is set) with final status `blocked`: run `uv run "{project-root}/_bmad/method/scripts/tickets.py" --project-root "{project-root}" mark {ticket_args} blocked --blocked <blocking condition>`, with each argument quoted for the shell, which writes `status`, `blocked_at`, and `blocked_reason` to `{plan_file}` and creates it when there is none. Then write or update `## Auto Run Result` in `{plan_file}` with `Status: blocked`, `Blocking condition: <blocking condition>`, and any run details not already recorded. If `mark` fails, follow 2 instead.
 2. **Otherwise:**
-   - If `{plan_file}` is known and exists, update `status` in frontmatter and append missing result details under `## Auto Run Result`.
+   - If `{plan_file}` is known and exists, update `status` in frontmatter and write or update `## Auto Run Result` with `Status: <final status>` (plus `Blocking condition: <blocking condition>` when blocked) and any run details not already recorded.
    - If `{plan_file}` is unknown or missing, create `{{ initiative_folder }}/bmad-build-auto-result-<slug-or-timestamp>.md` with:
      ```markdown
      ---
@@ -24,7 +24,7 @@ To HALT with a final status and optional blocking condition. The halts `blocked 
      Status: <final status>
      Blocking condition: <blocking condition, if any>
      ```
-3. Follow **On Complete** below, then stop the workflow.
+3. When this HALT wrote to `{plan_file}`, verify on disk that it holds the final `status` in frontmatter and a `## Auto Run Result` section whose `Status:` line matches it, so orchestrators reading either location agree. Follow **On Complete** below, then stop the workflow.
 
 ### On Complete
 
@@ -55,6 +55,7 @@ A full plan is "Ready for Development" when:
 ## Conventions
 
 - Whenever this workflow captures or records a version-control revision, obtain the full canonical identifier directly from version control and preserve it verbatim.
+- Pair any ID you cite with a short plain-English handle, leaving the ID out of chat when the user does not need the code, and give named files, headings, and URLs in chat as clickable links in the host's format. Plain paths in `{plan_file}` (Code Map, tasks, `context:`) stay relative to the project root, because the implementer resolves them from there; markdown links written into `{plan_file}` stay relative to `{plan_file}`'s directory.
 
 ## On Activation
 

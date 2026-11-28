@@ -9,6 +9,7 @@ Every finding you report carries a source reference (file, line, commit, or log)
 ## Conventions
 
 - Never state time estimates — AI has changed development speed, so hour/day/week predictions are noise.
+- Pair any ID you cite with a short plain-English handle, leaving the ID out of chat when the user does not need the code, and give named files, headings, and URLs in chat as clickable links in the host's format. In the retrospective document, link local files and headings with relative markdown links and keep external URLs as full links.
 
 ## Modes
 

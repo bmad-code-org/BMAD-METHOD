@@ -77,6 +77,7 @@ Addressing: `--workspace` is the run folder, and the memlog is always {workspace
 from __future__ import annotations
 
 import argparse
+import codecs
 import importlib.util
 import json
 import os
@@ -98,11 +99,19 @@ def resolve(args) -> Path:
     return Path(args.path) if args.path else Path(args.workspace) / MEMLOG
 
 
-def write_log(path: Path, meta: dict, body: str) -> None:
+def detect_eol(raw: bytes) -> str:
+    if b"\r\n" in raw:
+        return "\r\n"
+    if b"\r" in raw and b"\n" not in raw:
+        return "\r"
+    return "\n"
+
+
+def write_log(path: Path, meta: dict, body: str, *, eol: str = "\n", bom: bool = False) -> None:
     # Fold newlines so each field stays on one line.
     meta = {" ".join(k.splitlines()): " ".join(str(v).splitlines()) for k, v in meta.items()}
     body = "\n".join(body.splitlines()).strip("\n")
-    write_atomic(path, frontmatter.dump(meta) + "\n" + body + "\n")
+    write_atomic(path, frontmatter.dump(meta) + "\n" + body + "\n", eol=eol, bom=bom)
 
 
 def touch(meta: dict) -> None:
@@ -111,19 +120,22 @@ def touch(meta: dict) -> None:
     meta["updated"] = now()
 
 
-def write_atomic(path: Path, text: str) -> None:
+def write_atomic(path: Path, text: str, *, eol: str = "\n", bom: bool = False) -> None:
     """Temp + flush + fsync + atomic rename, so a crash never half-writes an entry."""
+    encoded = text.replace("\n", eol).encode("utf-8")
+    if bom:
+        encoded = codecs.BOM_UTF8 + encoded
     tmp = path.with_suffix(path.suffix + ".tmp")
-    with open(tmp, "w", encoding="utf-8") as f:
-        f.write(text)
+    with open(tmp, "wb") as f:
+        f.write(encoded)
         f.flush()
         os.fsync(f.fileno())
     os.replace(tmp, path)
 
 
-def append_line(path: Path, text: str) -> None:
+def append_line(path: Path, text: str, *, eol: str = "\n") -> None:
     """Add text at end of file in one OS append write, then sync it to disk. Never creates the file."""
-    data = text.replace("\n", os.linesep).encode("utf-8")  # match text-mode line endings
+    data = text.replace("\n", eol).encode("utf-8")
     if sys.platform != "win32":
         fd = os.open(path, os.O_WRONLY | os.O_APPEND)
         try:
@@ -214,7 +226,9 @@ def cmd_init(args) -> int:
 
 def cmd_append(args) -> int:
     path = resolve(args)
-    raw = path.read_text(encoding="utf-8")
+    raw_bytes = path.read_bytes()
+    eol = detect_eol(raw_bytes)
+    raw = raw_bytes.decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
     frontmatter.split(raw)  # a log without frontmatter fails here, before anything is written
     text = " ".join(args.text.split())  # collapse newlines/runs → one-line entry, no prose bloat
     label = args.type or ""
@@ -222,19 +236,23 @@ def cmd_append(args) -> int:
         label = f"{label} by {args.by}".strip()  # attribution: "(idea by user)" / "(by coach)"
     tag = f"({label}) " if label else ""
     entry = f"- {tag}{text}"
-    append_line(path, ("" if raw.endswith("\n") else "\n") + entry + "\n")
-    _, body = frontmatter.split(path.read_text(encoding="utf-8"))
+    append_line(path, ("" if raw.endswith("\n") else "\n") + entry + "\n", eol=eol)
+    _, body = frontmatter.split(path.read_text(encoding="utf-8-sig"))
     ack(path, body)
     return 0
 
 
 def cmd_set(args) -> int:
     path = resolve(args)
-    fields, body = frontmatter.split(path.read_text(encoding="utf-8"))
+    raw_bytes = path.read_bytes()
+    eol = detect_eol(raw_bytes)
+    bom = raw_bytes.startswith(codecs.BOM_UTF8)
+    raw = raw_bytes.decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
+    fields, body = frontmatter.split(raw)
     meta = frontmatter.load(fields)
     meta[args.key] = args.value
     touch(meta)
-    write_log(path, meta, body)
+    write_log(path, meta, body, eol=eol, bom=bom)
     ack(path, body)
     return 0
 

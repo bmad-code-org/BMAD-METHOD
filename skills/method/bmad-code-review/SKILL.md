@@ -14,9 +14,9 @@ If the invocation asks for a `no-code` review, append `--set workflow.fixes=hand
 If the invocation is clearly non-interactive -- it says not to ask questions, or a bot, a CI job or another workflow is running the review -- append `--set workflow.interactive=false`. When in doubt, don't.
 
 ```bash
-uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"
+uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}" --require-version 2
 ```
 
 - The command prints the skill's workflow: follow it. `HALT: <reason>`: report the reason and stop.
-- If the script does not exist, BMad is not set up in this project yet. Offer to set it up using `bmad` skill, then run the command again. If you do not have the `bmad` skill, offer to install it first.
+- If the script does not exist, or it halts over `--require-version`, BMad is missing or out of date in this project. Offer to set it up using the `bmad` skill, then run the command again. If you do not have the `bmad` skill, offer to install it first.
 - On any other output or failure, including `uv` being unavailable, report the command output and stop. Do not run any workflow source directly.
