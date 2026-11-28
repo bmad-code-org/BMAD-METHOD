@@ -405,6 +405,43 @@ def test_missing_required_flag_exits_1(capsys):
     fails(capsys, "runway", "--cash", "1000")
 
 
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ("market-size", "--accounts", "inf", "--annual-price", "10"),
+        ("market-size", "--accounts", "100", "--annual-price", "inf"),
+        ("market-size", "--accounts", "100", "--annual-price", "1e309"),
+        ("runway", "--cash", "inf", "--costs", "100"),
+        ("runway", "--cash", "1000", "--costs", "100", "--scenario", "rich:cash=inf"),
+        ("unit-economics", "--arpa", "100", "--gross-margin", "80", "--cac", "inf", "--churn", "3"),
+    ],
+)
+def test_non_finite_number_exits_1(capsys, argv):
+    # float() takes inf, 1e309 and nan; they gave a traceback or non-standard JSON (Infinity, NaN).
+    fails(capsys, *argv)
+
+
+def test_oversized_json_integer_in_a_cap_table_exits_1(tmp_path, capsys):
+    # json.loads keeps huge integers exact; converting one to float raises OverflowError.
+    path = tmp_path / "cap.json"
+    path.write_text('{"holders": [{"name": "A", "shares": -1' + "0" * 400 + "}]}")
+    fails(capsys, "safes", "--cap-table", str(path))
+    path.write_text('{"holders": [{"name": "A", "shares": 1' + "0" * 400 + "}]}")
+    fails(capsys, "safes", "--cap-table", str(path))
+
+
+def test_non_finite_amount_in_a_spec_or_cap_table_exits_1(tmp_path, capsys):
+    path = tmp_path / "cap.json"
+    path.write_text(json.dumps({"holders": [{"name": "A", "shares": 1000}]}))
+    fails(capsys, "safes", "--cap-table", str(path), "--safe", "Friend:inf")
+    path.write_text('{"holders": [{"name": "A", "shares": Infinity}]}')
+    fails(capsys, "safes", "--cap-table", str(path))
+    fails(
+        capsys, "model", "--cash", "1", "--costs", "1", "--start", "2026-01",
+        "--expense", "Laptop:2026-02:inf", "--out", str(tmp_path / "m.csv"),
+    )  # fmt: skip
+
+
 # safes before a priced round
 
 
