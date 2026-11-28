@@ -91,7 +91,7 @@ Every plan encloses its settled intent in `<intent-contract> ... </intent-contra
 
 ### `## Auto Run Result` Section
 
-At completion or halt on an existing plan, `bmad-build-auto` appends `## Auto Run Result` and verifies it on disk before committing or halting. It contains:
+At completion or halt on an existing plan (except `blocked plan supplied` and `dropped plan supplied`, which write nothing), `bmad-build-auto` writes or updates `## Auto Run Result` and verifies it on disk before committing or halting. On an early halt before implementation, only `Status`, `Blocking condition`, and any run details gathered so far are recorded. Full runs contain:
 
 - `Status: <final status>`, matching frontmatter `status` (plus `Blocking condition: <condition>` on `blocked`)
 - Summary of the implemented change
