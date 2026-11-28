@@ -1724,6 +1724,16 @@ covers = ["R2", "R3"]
                 self.assertIn("story-a-plan.md", out["problems"][0])
             self.assertEqual(self.files(self.next()["ready_to_start"]), [None])
 
+    def test_an_orphan_plans_id_is_never_given_out_again(self):
+        # Entry 12 was deleted by hand; its plan stayed. A new entry 12 would read `done` from the old plan.
+        self.breakdown_epic()
+        self.add("story-old-thing-plan.md", plan(12, "done"))
+        out = json.loads(run("status", str(self.epic)).stdout)
+        self.assertEqual(out["next_id"], 13)
+        self.assertEqual(len(out["problems"]), 1)
+        self.add("story-split-plan.md", plan("20a", "done"))
+        self.assertEqual(json.loads(run("status", str(self.epic)).stdout)["next_id"], 21)
+
     def test_a_loose_plan_at_the_initiative_root_is_not_a_problem(self):
         self.breakdown_epic()
         (self.initiative / "plan-loose-tooling-fix.md").write_text(plan("", "in-progress"), encoding="utf-8")
