@@ -21,7 +21,7 @@ updated: ""
 
 <!-- inputs: The strategy the program serves and the initiatives in view. Only the user knows the sponsor, decision rights, budget and dates. -->
 
-<!-- writing: No requirements; each initiative gets its own document. Ids (OKR-N, RULE-N) are global, carry a short bold handle at definition time, and each initiative's documents cite them by handle and id. -->
+<!-- writing: No requirements; each initiative gets its own document. Ids (OKR-N, RULE-N) are global and carry a short bold handle where they are defined. -->
 
 <!-- done when: Any initiative can be judged in or out of the program from this charter, and anyone can tell who decides what. -->
 
@@ -48,7 +48,7 @@ updated: ""
 <!-- Each initiative in one line, in dependency order, and their dependencies. Once they are listed, ask which must come first and which could wait until the first has reported. When the list outruns the people or the budget, say so and make the case for running fewer at once; the user decides. diagram: flowchart -->
 
 ## Rules
-<!-- include when: something binds every initiative, whichever one it touches. `RULE-N — <short handle>`, one line each. A rule from a `brd` keeps its id. -->
+<!-- include when: something binds every initiative, whichever one it touches. `- **RULE-N — <short handle>:** <rule>`, one line each. A rule from a `brd` keeps its id. -->
 
 ## Stakeholders
 <!-- A table: who is affected, what each needs from the program, and how each is kept involved. Ask who could stop it and has not been asked. -->

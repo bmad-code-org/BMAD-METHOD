@@ -14,7 +14,7 @@ List the other `<type>-<slug>/` folders in the container and at the root of `out
 
 Answer the question first. Recommend only installed skills, with the reason the module help gives; take routes and order only from the module help. When the user wants to think through an approach, discuss the trade-offs across everything they have.
 
-When naming an existing project file, folder, or documentation URL in an answer, render it as a clickable link in the host's format and pair any cited ID with a short plain-English handle.
+Pair any ID you cite with a short plain-English handle, and give named project files, folders, and documentation URLs as clickable links in the host's format.
 
 When the help does not settle the question, go deeper in this order and stop when it does: the file in `topics` for that subject, the skill's own files, then the remote documentation the module help names. If nothing answers it, say so rather than guess.
 

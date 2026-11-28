@@ -22,7 +22,7 @@ updated: ""
 
 <!-- inputs: The sponsor, the process being changed, and any business case, charter, contract or policy behind it. Only the user knows who signs, which rules are binding and what is out. -->
 
-<!-- writing: Requirements are outcomes the business needs, not system behavior. Ids (BR-N, RULE-N) are global and never reused. A rule is stated once, in Business rules with a short bold handle, and cited by handle and id everywhere else. Objectives and cost link to the business case or charter where one exists instead of repeating it. `status: final` does not record a signature; the approval block does. -->
+<!-- writing: Requirements are outcomes the business needs, not system behavior. Ids (BR-N, RULE-N) are global and never reused. A rule is stated once, in Business rules with a short bold handle, and cited by handle and id everywhere else. Objectives link to the business case or charter where one exists, and cost links to the business case, instead of repeating them. `status: final` does not record a signature; the approval block does. -->
 
 <!-- done when: Every BR-N has an owner, a source, a priority and a way to verify it; every rule has an id and an owner; nothing in the document names a screen, a field or an API; and the approval block names who signs. -->
 
@@ -49,7 +49,7 @@ updated: ""
 <!-- A table: BR-N, the requirement as an outcome, owner, source, priority, how it will be verified. When everything comes back as a must, ask what the business would give up first, and rank from that answer. -->
 
 ## Business rules
-<!-- `RULE-N — <short handle>`, kept apart from requirements: each rule states what must hold or how a term is defined, with its owner and source. Use a decision table where the logic is dense. -->
+<!-- `- **RULE-N — <short handle>:** <rule>`, kept apart from requirements: each rule states what must hold or how a term is defined, with its owner and source. Use a decision table where the logic is dense. -->
 
 ## Constraints and assumptions
 <!-- optional. Limits the business sets on budget, dates, policy or suppliers, and what is assumed true. -->

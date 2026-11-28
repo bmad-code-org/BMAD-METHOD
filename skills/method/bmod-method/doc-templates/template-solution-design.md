@@ -29,7 +29,7 @@ updated: ""
 <!-- writing:
   - Write for busy technical reviewers who did not attend the design sessions.
   - Carry architecture, sequence, and boundary shape in Mermaid diagrams and comparison tables rather than long prose walls.
-  - Cite parent `OKR-N`, `INV-N`, and `AD-n` IDs directly rather than redefining them.
+  - Cite parent `OKR-N`, `INV-N`, and `AD-n` items by short handle and id, linking the parent document, rather than redefining them.
 -->
 
 <!-- done when: Problem and constraints are grounded; at least two realistic alternatives are fairly weighed; end-to-end flows, failure/security posture, rollout/rollback, and cost/effort are concrete; and an approver can sign off or reject cleanly. -->
