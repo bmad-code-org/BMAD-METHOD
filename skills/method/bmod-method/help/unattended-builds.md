@@ -55,7 +55,7 @@ When review halts on `intent gap`, the run saves the attempted change as a patch
 - `followup_review_recommended`: true when review fixed a high finding or two or more medium ones. It is a suggestion; dispatching the ticket again gives another pass.
 - `risk` in the frontmatter: `low`, `medium`, or `high`, the ticket's risk confirmed or raised at planning. `bmad-build` writes it too. A CI process can read it to decide how much review a change gets; BMad ships no such process.
 - `deferred` in the frontmatter: real findings that were not this ticket's problem. Nothing files them; the user decides whether to make tickets.
-- `Auto Run Result`: summary, review findings, verification, residual risks.
+- `Auto Run Result`: status, summary, review findings, verification, residual risks.
 - The run commits locally and never pushes.
 - After the epic's last ticket, recommend `bmad-retrospective`.
 

@@ -12,7 +12,7 @@
 
 ### Mark Plan Built
 
-Change `{plan_file}` status to `built` in the frontmatter.
+In `{plan_file}`, tick `- [x]` every completed execution task (keep existing `[x]` ticks); leave only unfinished tasks `[ ]` and name them in the summary. Then change `{plan_file}` status to `built` in the frontmatter.
 
 ### Commit and Complete
 
