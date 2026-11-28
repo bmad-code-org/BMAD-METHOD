@@ -49,7 +49,7 @@ def main(argv: list[str] | None = None) -> int:
     report = collect(roots, args.project_root.resolve() if args.project_root else None)
     reconfigure = getattr(sys.stdout, "reconfigure", None)
     if reconfigure is not None:
-        reconfigure(encoding="utf-8")
+        reconfigure(encoding="utf-8", errors=getattr(sys.stdout, "errors", None) or "strict")
     sys.stdout.write(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
     return 0
 
@@ -221,6 +221,6 @@ def apply_central_agents(
 if __name__ == "__main__":
     if sys.platform == "win32":
         # Piped output on Windows defaults to a legacy code page, not UTF-8.
-        sys.stdout.reconfigure(encoding="utf-8")
-        sys.stderr.reconfigure(encoding="utf-8")
+        sys.stdout.reconfigure(encoding="utf-8", errors=getattr(sys.stdout, "errors", None) or "strict")
+        sys.stderr.reconfigure(encoding="utf-8", errors=getattr(sys.stderr, "errors", None) or "strict")
     sys.exit(main())

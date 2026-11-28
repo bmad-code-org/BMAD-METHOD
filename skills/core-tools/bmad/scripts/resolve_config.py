@@ -38,7 +38,7 @@ def write_json_stdout(output) -> None:
     """Pin stdout to UTF-8 — a Windows cp1252 default cannot encode emoji icons."""
     reconfigure = getattr(sys.stdout, "reconfigure", None)
     if reconfigure is not None:
-        reconfigure(encoding="utf-8")
+        reconfigure(encoding="utf-8", errors=getattr(sys.stdout, "errors", None) or "strict")
     sys.stdout.write(json.dumps(output, indent=2, ensure_ascii=False) + "\n")
 
 
@@ -79,6 +79,6 @@ def main() -> int:
 if __name__ == "__main__":
     if sys.platform == "win32":
         # Piped output on Windows defaults to a legacy code page, not UTF-8.
-        sys.stdout.reconfigure(encoding="utf-8")
-        sys.stderr.reconfigure(encoding="utf-8")
+        sys.stdout.reconfigure(encoding="utf-8", errors=getattr(sys.stdout, "errors", None) or "strict")
+        sys.stderr.reconfigure(encoding="utf-8", errors=getattr(sys.stderr, "errors", None) or "strict")
     raise SystemExit(main())

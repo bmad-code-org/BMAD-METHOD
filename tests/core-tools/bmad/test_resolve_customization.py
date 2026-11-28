@@ -1,3 +1,5 @@
+import importlib.util
+import io
 import json
 import os
 import shutil
@@ -6,6 +8,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad/scripts/resolve_customization.py"
 
@@ -68,6 +71,20 @@ class ResolveCustomizationStdoutTests(unittest.TestCase):
             self.assertIn("🧭", output)
             resolved = json.loads(output)
             self.assertEqual(resolved["agent"]["icon"], "🧭")
+
+    def test_write_json_stdout_preserves_stream_error_handler(self):
+        spec = importlib.util.spec_from_file_location("resolve_customization", SCRIPT)
+        module = importlib.util.module_from_spec(spec)
+        with mock.patch.object(sys, "path", [str(SCRIPT.parent), *sys.path]):
+            spec.loader.exec_module(module)
+        raw = io.BytesIO()
+        stream = io.TextIOWrapper(raw, encoding="ascii", errors="surrogateescape")
+        with mock.patch.object(sys, "stdout", stream):
+            module.write_json_stdout({"path": "bad\udc80name"})
+        stream.flush()
+        self.assertEqual(stream.encoding, "utf-8")
+        self.assertEqual(stream.errors, "surrogateescape")
+        self.assertIn(b"bad\x80name", raw.getvalue())
 
 
 def write(path: Path, body: str) -> None:

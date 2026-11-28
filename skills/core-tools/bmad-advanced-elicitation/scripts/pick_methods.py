@@ -284,7 +284,9 @@ def fmt_rows(rows: list[dict], as_json: bool, full: bool = False) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8")  # don't die on locale code pages
+        sys.stdout.reconfigure(
+            encoding="utf-8", errors=getattr(sys.stdout, "errors", None) or "strict"
+        )  # don't die on locale code pages
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument(
         "--file", type=Path, help="method CSV (default: the customization's methods_file, else assets/methods.csv)"
@@ -378,6 +380,6 @@ def main(argv: list[str] | None = None) -> int:
 if __name__ == "__main__":
     if sys.platform == "win32":
         # Piped output on Windows defaults to a legacy code page, not UTF-8.
-        sys.stdout.reconfigure(encoding="utf-8")
-        sys.stderr.reconfigure(encoding="utf-8")
+        sys.stdout.reconfigure(encoding="utf-8", errors=getattr(sys.stdout, "errors", None) or "strict")
+        sys.stderr.reconfigure(encoding="utf-8", errors=getattr(sys.stderr, "errors", None) or "strict")
     sys.exit(main())

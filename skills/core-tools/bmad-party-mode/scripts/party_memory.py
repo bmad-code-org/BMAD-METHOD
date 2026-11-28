@@ -113,5 +113,5 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     for stream in (sys.stdout, sys.stderr):
-        stream.reconfigure(encoding="utf-8")
+        stream.reconfigure(encoding="utf-8", errors=getattr(stream, "errors", None) or "strict")
     sys.exit(main())
