@@ -1,16 +1,14 @@
 ---
 title: ""
 template: brief
-version: 1.1.0
+version: 1.3.0
 description: "Why to build a product, or pitching it, in a page or two."
 not_for: "Committed work that needs requirements (`prd`); a formal funding decision on cost and return (`business-case`); testing a problem before any solution exists (`opportunity`)."
 agents: [bmad-agent-analyst]
-paced: true
-facilitation_order: [problem, solution, what-makes-it-different, who-it-serves, success-criteria, scope, the-ask?, vision?, executive-summary]
-guidance: guidance-planning
-rubric: rubric-planning
-view: brief-view.html
-html_view: always
+facilitation_order: [problem, solution, what-makes-it-different, who-it-serves, success-criteria, scope, the-ask, vision, executive-summary]
+guidance: guidance-method.md
+rubric: rubric-planning.md
+view: always
 status: draft
 created: ""
 updated: ""
@@ -26,12 +24,12 @@ updated: ""
 
 <!-- done when: Someone who reads only the executive summary can say what this is, who it is for, and why it matters now. -->
 
+<!-- layout: Editorial product brief: a bold masthead with status and date metadata, a highlighted lead callout for the executive summary, a balanced multi-column grid for problem, solution, differentiation, audience, success criteria, and scope, and a distinct decision-ask footer. -->
+
 # {title}
 
-## Table of Contents
-
 ## Executive summary
-<!-- Distill what the other sections settled into two or three paragraphs of narrative, compelling enough to stand alone: what this is, the problem it solves, why it matters and why now. Draft it yourself, then ask the user whether a sponsor who reads nothing else would know what to do. Done when it says nothing the sections do not hold. -->
+<!-- built: from the settled sections. Distill what they settled into two or three paragraphs of narrative, compelling enough to stand alone: what this is, the problem it solves, why it matters and why now. Draft it yourself, then ask the user whether a sponsor who reads nothing else would know what to do. Done when it says nothing the sections do not hold. -->
 
 ## Problem
 <!-- Push hardest here, where briefs most often overclaim. Who feels the pain, how they cope today, and what the status quo costs them, with real scenarios, real frustrations and real consequences. Ask for the strongest evidence that someone actually has this problem; a problem the user assumes, rather than has seen, is said to be one. Done when the user can name someone who has it and what it costs them. -->

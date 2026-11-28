@@ -4,7 +4,7 @@ The outcome is a figure the founder can put in front of an investor, a funder or
 
 ## What you cannot infer
 
-- The script is `uv run {skill-root}/scripts/founder_numbers.py <subcommand> ...`; `--help` on it or a subcommand gives the flags. Subcommands:
+- The script is `uv run "{skill-root}/scripts/founder_numbers.py" <subcommand> ...`; `--help` on it or a subcommand gives the flags. Subcommands:
   - `runway`: months of cash left, the month it runs out, and whether current growth reaches breakeven first (default alive). `--costs` is gross monthly costs, the record's net burn plus revenue. `--scenario` compares flat changes, such as a hire's cost or a new raise.
   - `personal-runway`: for quitting a job: how long savings last, keeping a buffer.
   - `unit-economics`: lifetime value, LTV to acquisition cost, payback months.

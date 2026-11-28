@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Report the knowledge documents the installed modules offer.
 
@@ -55,7 +56,7 @@ from typing import NamedTuple
 sys.dont_write_bytecode = True
 
 from list_templates import MODULE_FOLDER as TEMPLATES_DIR  # noqa: E402
-from list_templates import frontmatter, unquote  # noqa: E402
+from list_templates import listed, read_fields, scalar  # noqa: E402
 
 MANIFEST_NAME = "bmod.toml"
 TOPICS_DIR = "help"
@@ -397,23 +398,22 @@ def module_templates(
             continue
         for path in found:
             try:
-                meta = frontmatter(read_document(path, owner).decode("utf-8"))
+                meta = read_fields(read_document(path, owner).decode("utf-8"))
             except (OSError, ValueError) as error:
                 problems.append(
                     {"kind": "document", "skill": owner.name, "document": str(path), "problem": f"{path}: {error}"}
                 )
                 continue
-            extends, template = meta.get("extends"), meta.get("template")
+            extends, template = scalar(meta, "extends"), scalar(meta, "template")
             if not extends and not template:
                 continue
-            listed = [unquote(name.strip()) for name in meta.get("agents", "").strip("[]").split(",") if name.strip()]
-            agents = list(dict.fromkeys([*([skill] if skill else []), *listed]))
+            agents = list(dict.fromkeys([*([skill] if skill else []), *listed(meta.get("agents"))]))
             templates.append(
                 {
                     "module": module.code,
                     **({"extends": extends} if extends else {"id": template}),
-                    **({"version": meta["version"]} if meta.get("version") else {}),
-                    "description": meta.get("description", ""),
+                    **({"version": scalar(meta, "version")} if scalar(meta, "version") else {}),
+                    "description": scalar(meta, "description"),
                     **({"agents": agents} if agents else {}),
                 }
             )

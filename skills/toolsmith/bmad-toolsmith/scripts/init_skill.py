@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """init_skill: scaffold a new skill folder, or check an existing one.
 
@@ -44,6 +45,7 @@ Exit 0 on success or a clean check, 1 on a failed check or a refused create, 2 o
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import io
 import json
 import re
@@ -51,6 +53,27 @@ import sys
 import tokenize
 import tomllib
 from pathlib import Path
+
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+
+
+def shared_frontmatter():
+    """The frontmatter module of the bmad skill installed beside this one (in a source checkout, under core-tools),
+    or None when it is not installed."""
+    skills = Path(__file__).resolve().parents[2]
+    for folder in (skills / "bmad", skills.parent / "core-tools" / "bmad"):
+        path = folder / "scripts" / "frontmatter.py"
+        if path.is_file():
+            spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return module
+    return None
+
+
+frontmatter = shared_frontmatter()
+NO_BMAD = "error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad"
+
 
 SHAPES = (
     "plain-skill",
@@ -79,10 +102,6 @@ SHAPE_ASSETS = Path(__file__).resolve().parent.parent / "shapes" / "memory-agent
 MEMORY_SCRIPTS = {"wake.py": "wake-template.py", "init-sanctum.py": "init-sanctum-template.py"}
 
 
-def yaml_single_quoted(value: str) -> str:
-    return "'" + value.replace("'", "''") + "'"
-
-
 def toml_string(value: str) -> str:
     return json.dumps(value)
 
@@ -90,54 +109,29 @@ def toml_string(value: str) -> str:
 # --- frontmatter ---------------------------------------------------------------
 
 
-def frontmatter_block(content: str) -> tuple[str | None, str]:
-    """Return (frontmatter text or None, body)."""
-    text = content.lstrip()
-    if not text.startswith("---"):
-        return None, content
-    end = text.find("\n---", 3)
-    if end == -1:
-        return None, content
-    after = text[end + 4 :]
-    if after and not after.startswith(("\n", "\r")):
-        return None, content
-    return text[3:end].strip("\r\n"), after
-
-
-def parse_frontmatter(content: str) -> tuple[dict[str, str] | None, str]:
-    """Parse `key: value` frontmatter, folding indented continuation lines; return (dict or None, body)."""
-    block, body = frontmatter_block(content)
-    if block is None:
-        return None, body
-    result: dict[str, str] = {}
-    key: str | None = None
-    value = ""
-    for line in block.split("\n"):
-        colon = line.find(":")
-        if colon > 0 and line[:1] not in (" ", "\t"):
-            if key is not None:
-                result[key] = strip_quotes(value.strip())
-            key = line[:colon].strip()
-            value = line[colon + 1 :]
-        elif key is not None and not line.lstrip().startswith("#"):
-            value += "\n" + line
-    if key is not None:
-        result[key] = strip_quotes(value.strip())
-    return result, body
-
-
-def strip_quotes(value: str) -> str:
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
-        inner = value[1:-1]
-        return inner.replace("''", "'") if value[0] == "'" else inner
-    return value
+def parse_frontmatter(content: str) -> tuple[dict | None, str]:
+    """Return (frontmatter as a dict, or None when missing, not a YAML mapping, or name or description is not text; body)."""
+    try:
+        block, body = frontmatter.split(content)
+    except ValueError:
+        return None, content  # with no frontmatter the whole file is the body
+    try:
+        meta = frontmatter.load(block, typed=True)
+    except ValueError:
+        meta = None
+    if meta is not None:  # typed, so `name: 123` is not text; an absent value is empty text
+        meta = {key: "" if value is None else value for key, value in meta.items()}
+    ok = isinstance(meta, dict) and all(isinstance(meta.get(k, ""), str) for k in ("name", "description"))
+    if ok and "description" in meta:
+        meta["description"] = meta["description"].rstrip("\n")  # a block scalar's final newline is not part of it
+    return (meta if ok else None), body
 
 
 # --- create --------------------------------------------------------------------
 
 
 def skill_md(name: str, description: str) -> str:
-    return f"---\nname: {name}\ndescription: {yaml_single_quoted(description)}\n---\n\n# {name}\n"
+    return f"{frontmatter.dump({'name': name, 'description': description})}\n# {name}\n"
 
 
 def bmod_toml(shape: str, name: str, bmod: str | None, source: str | None) -> str:
@@ -385,6 +379,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--source", help="update_source for the [skill] or [bmod] table")
     p.add_argument("--description", help="frontmatter description; a [TODO: ...] placeholder when omitted")
     args = p.parse_args(argv)
+    if frontmatter is None:
+        print(NO_BMAD, file=sys.stderr)
+        return 2
 
     if args.check:
         if not args.check.is_dir():

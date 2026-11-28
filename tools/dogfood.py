@@ -60,8 +60,11 @@ def fail(message: str) -> None:
 
 
 def run(cmd: list[str], cwd: Path) -> str:
+    # npx is npx.cmd on Windows, which CreateProcess does not find by its bare name.
+    program = shutil.which(cmd[0]) or cmd[0]
     try:
-        done = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+        # git, npx and uv print UTF-8; without an encoding Windows decodes with its ANSI code page.
+        done = subprocess.run([program, *cmd[1:]], cwd=cwd, capture_output=True, encoding="utf-8")
     except FileNotFoundError:
         fail(f"{cmd[0]} is required and was not found on PATH")
     if done.returncode != 0:

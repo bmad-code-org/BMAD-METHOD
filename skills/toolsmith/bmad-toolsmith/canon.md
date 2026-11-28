@@ -77,7 +77,9 @@ A skill only ever invoked by its name, as a slash command, needs no trigger at a
 
 ## Who reads this
 
-Your reader is a model that knows only what you wrote and what it can look up. Cut meta-explanation, notes on what the text no longer does, restated facts, and mechanics belonging in the file that performs them. Say each point once, in the place it belongs. What the model can find by looking, a file's contents, a command's help, a flag, stays in the environment, where it cannot go stale.
+Your reader is a stateless session that sees only the current file and what it can look up. Write what is true now; cut meta-explanation, change-history residue ("replaces X", "no longer Y", "supersedes older Z"), and restated facts, and fix stale sibling docs in place rather than adding override caveats.
+
+Say each point once, in the file that performs it. What the model can find by looking — a file's contents, a command's help, a flag — stays in the environment, where it cannot go stale.
 
 ## The two-version comparison
 

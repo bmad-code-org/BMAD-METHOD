@@ -47,7 +47,7 @@ Offer what the outcome implies but nobody named: the sibling intent (update besi
 
 ## Registration
 
-Run `uv run {skill-root}/scripts/registry.py --project-root {project-root}`. Ask whether it is part of a module, naming any it could plausibly join, and whether the user plans more skills.
+Run `uv run "{skill-root}/scripts/registry.py" --project-root "{project-root}"`. Ask whether it is part of a module, naming any it could plausibly join, and whether the user plans more skills.
 
 The guess is a single-skill module: its own `bmod.toml` and `help/help.md` in the one folder, visible to `bmad` setup, help and updates. Except:
 

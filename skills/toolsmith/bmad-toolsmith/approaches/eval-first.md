@@ -4,7 +4,7 @@ Outcome: the cases exist before the skill does, so the skill is built to pass th
 
 ## Scaffold
 
-Run `uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, adding `--bmod <record> --source <update_source>` when the execution plan registers it as a member. It refuses a folder that exists, so it runs before the cases are written.
+Run `uv run "{skill-root}/scripts/init_skill.py" --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, adding `--bmod <record> --source <update_source>` when the execution plan registers it as a member. It refuses a folder that exists, so it runs before the cases are written.
 
 Load `shapes/<shape>/shape.md`, then the module shape the registration line names, if any.
 

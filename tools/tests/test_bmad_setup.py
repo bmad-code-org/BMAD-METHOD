@@ -351,6 +351,46 @@ class BmadSetupTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("failed to parse", result.stderr)
 
+    @unittest.skipIf(sys.platform == "win32", "POSIX mode bits")
+    def test_new_bmad_gets_the_umask_mode_and_an_existing_one_keeps_its_own(self):
+        for umask, expected in ((0o022, 0o755), (0o027, 0o750)):
+            with self.subTest(umask=oct(umask)), tempfile.TemporaryDirectory() as temp_dir:
+                root = Path(temp_dir)
+                project = root / "project"
+                skill = write_dest_bmad(root)
+                project.mkdir()
+                previous = os.umask(umask)
+                try:
+                    result = run_setup_python(project, skill)
+                finally:
+                    os.umask(previous)
+                self.assertEqual(result.returncode, 0, msg=result.stderr)
+                self.assertEqual((project / "_bmad").stat().st_mode & 0o777, expected)
+
+                # A rewrite keeps the mode the user gave _bmad.
+                (project / "_bmad").chmod(0o751)
+                shared = project / "_bmad" / "scripts" / SHARED_SCRIPTS[0]
+                shared.write_text(shared.read_text(encoding="utf-8") + "# stale\n", encoding="utf-8")
+                result = run_setup_python(project, skill)
+                self.assertEqual(result.returncode, 0, msg=result.stderr)
+                self.assertTrue(json.loads(result.stdout)["changed"], msg=result.stdout)
+                self.assertEqual((project / "_bmad").stat().st_mode & 0o777, 0o751)
+
+    @unittest.skipIf(sys.platform == "win32", "POSIX mode bits")
+    def test_new_bmad_keeps_the_setgid_bit_a_shared_project_gives(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            project.chmod(0o2775)
+            probe = project / "probe"
+            probe.mkdir()
+            result = run_setup_python(project, skill)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            setgid = (project / "_bmad").stat().st_mode & 0o2000
+            self.assertEqual(setgid, probe.stat().st_mode & 0o2000)
+
     def test_first_setup_fixture_dest_bmad(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -2767,6 +2807,39 @@ class BmadConfigScopeTests(unittest.TestCase):
                 user_text + '\n[modules.alpha]\nnote_style = "prose"\n',
             )
 
+    def test_keys_a_new_template_adds_keep_the_comments_and_layout_of_the_team_file(self):
+        # A release that adds a key to config.template.toml used to re-render every project's committed
+        # config.toml, dropping its comments and reordering its tables.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project, skill = self.fixture(root)
+            self.answer_all(project, skill)
+            team_file = project / "_bmad" / "custom" / ".." / "config.toml"
+            team_text = (
+                "# the team's own notes\n"
+                + team_file.read_text(encoding="utf-8")
+                + "\n# the table after alpha\n[modules.zeta]\nother = 1  # keep me\n"
+            )
+            write(team_file, team_text)
+            write(
+                skill / "assets" / "config.template.toml",
+                MINIMAL_CONFIG.replace(
+                    "[agents.bmad-agent-pm]",
+                    'review_language = "English"\nstrict = true\n\n[agents.bmad-agent-pm]',
+                )
+                + '\n[agents.bmad-agent-new]\nname = "Nia"\n',
+            )
+
+            self.assertEqual(setup_report(self, project, skill)["config"], "updated")
+
+            expected = team_text.replace(
+                'output_folder = "{project-root}/_bmad-output"\n',
+                'output_folder = "{project-root}/_bmad-output"\nreview_language = "English"\nstrict = true\n',
+            )
+            expected += '\n[agents.bmad-agent-new]\nname = "Nia"\n'
+            self.assertEqual(team_file.read_text(encoding="utf-8"), expected)
+            self.assertEqual(setup_report(self, project, skill)["config"], "current")
+
     def test_a_table_that_cannot_be_placed_by_text_is_rendered_with_every_value_kept(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             project, skill = self.fixture(Path(temp_dir))
@@ -2848,6 +2921,27 @@ class BmadConfigScopeTests(unittest.TestCase):
                 self.assertFalse(report["current"])
                 self.assertIsNone(report["next"])
             self.assertEqual(gitignore.read_text(encoding="utf-8"), "# *.user.toml\nnotes/\n")
+
+    def test_files_saved_with_a_byte_order_mark_are_read_and_left_alone(self):
+        # Windows PowerShell 5.1 (Set-Content -Encoding UTF8) and Notepad's "UTF-8 with BOM" write one.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, skill = self.fixture(Path(temp_dir))
+            self.answer_all(project, skill)
+            files = [
+                project / "_bmad" / "config.toml",
+                project / "_bmad" / "custom" / "config.user.toml",
+                project / "_bmad" / "custom" / ".gitignore",
+            ]
+            for path in files:
+                path.write_bytes(b"\xef\xbb\xbf" + path.read_bytes())
+            before = {path: path.read_bytes() for path in files}
+
+            self.assertEqual(self.pending(project, skill), [])
+            for report in (status_report(self, project, skill), setup_report(self, project, skill)):
+                self.assertEqual(report["custom_gitignore"], "current")
+                self.assertEqual(report["problems"], [])
+            self.assertFalse(report["changed"])
+            self.assertEqual({path: path.read_bytes() for path in files}, before)
 
     def test_a_custom_folder_without_a_gitignore_gets_one(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -3801,6 +3895,24 @@ class BmadRetiredSkillTests(unittest.TestCase):
         write(self.installed / "bmod-method" / "retired.toml", "removed = [\n")
         report = setup_report(self, self.project, self.skill)
         self.assertEqual([problem["kind"] for problem in report["problems"]], ["retired-file"])
+        self.assertEqual(report["retired_skills"], [])
+
+    def test_a_module_record_left_in_its_old_folder_is_retired_and_removed(self):
+        write_bmod(self.installed, "bmod-demo", "demo", skills=("bmod-demo",), skill={"bmod": "bmod-demo"})
+        write(self.installed / "bmod-demo" / "retired.toml", retired_toml((), ("demo-old",)))
+        write_bmod(self.installed, "demo-old", "demo", update_source=BMAD_SOURCE)
+
+        report = status_report(self, self.project, self.skill)
+        self.assertEqual(
+            [(problem["kind"], problem["folder"], problem["kept"]) for problem in report["problems"]],
+            [("duplicate-module", "demo-old", "bmod-demo")],
+        )
+        self.assertEqual([entry["skill"] for entry in report["retired_skills"]], ["demo-old"])
+
+        removal = setup_report(self, self.project, self.skill, "--remove-retired", "demo-old")
+        self.assertEqual(removal["removed"], [".agents/skills/demo-old"])
+        report = status_report(self, self.project, self.skill)
+        self.assertEqual(report["problems"], [])
         self.assertEqual(report["retired_skills"], [])
 
     def test_bad_retired_lists_are_rejected(self):

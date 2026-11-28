@@ -167,7 +167,7 @@ class ScanPathsTest(unittest.TestCase):
                         "---\nname: bmad-demo\ndescription: 'Demo. Use when testing.'\n---\n\n"
                         "Run `python3 scripts/go.py` then `python -m json.tool out.json`.\n"
                         "```\npip install rich\n```\n"
-                        "Written in Python with argparse. Fine: `uv run {skill-root}/scripts/go.py`.\n"
+                        'Written in Python with argparse. Fine: `uv run "{skill-root}/scripts/go.py"`.\n'
                     ),
                     "scripts/go.py": "print(1)\n",
                 },
@@ -185,8 +185,8 @@ class ScanPathsTest(unittest.TestCase):
                 {
                     "SKILL.md": (
                         "---\nname: bmad-demo\ndescription: 'Demo. Use when testing.'\n---\n\n"
-                        "Run `uv run {skill-root}/scripts/go.py` then read `references/notes.md`.\n"
-                        "Runtime: `uv run {project-root}/_bmad/scripts/resolve_config.py`.\n"
+                        'Run `uv run "{skill-root}/scripts/go.py"` then read `references/notes.md`.\n'
+                        'Runtime: `uv run "{project-root}/_bmad/scripts/resolve_config.py"`.\n'
                         "Invoke the `bmad-eval` skill. Output goes to `{output_folder}/report.md`.\n"
                     ),
                     "references/notes.md": "Back to `../SKILL.md` and `scripts/go.py`.\n",
@@ -273,8 +273,8 @@ class ScanPathsTest(unittest.TestCase):
                 {
                     "SKILL.md": (
                         "Read `{skill-root}/modes/nope.md` and `{skill-root}/modes/here.md`.\n"
-                        "Run `uv run {skill-root}/scripts/gone.py --flag x` then `uv run {skill-root}/scripts/go.py`.\n"
-                        "```bash\nuv run {skill-root}/scripts/fenced-gone.py\n```\n"
+                        'Run `uv run "{skill-root}/scripts/gone.py" --flag x` then `uv run "{skill-root}/scripts/go.py"`.\n'
+                        '```bash\nuv run "{skill-root}/scripts/fenced-gone.py"\n```\n'
                         "Templates: `{skill-root}/references/<name>.md`, `{skill-root}/*.md`, {skill-root}/scripts/.\n"
                         "Escape: `{skill-root}/../bmad-other/SKILL.md`.\n"
                     ),
@@ -299,6 +299,40 @@ class ScanPathsTest(unittest.TestCase):
                     ("SKILL.md", 4, "missing-file", "{skill-root}/scripts/fenced-gone.py"),
                     ("SKILL.md", 7, "cross-skill-ref", "{skill-root}/../bmad-other/SKILL.md"),
                     ("customize.toml", 4, "missing-file", "{skill-root}/modes/missing-menu.md"),
+                ],
+            )
+
+    def test_unquoted_root_path_in_uv_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                {
+                    "SKILL.md": (
+                        "---\nname: bmad-demo\ndescription: 'Demo. Use when testing.'\n---\n\n"
+                        "Run `uv run {skill-root}/scripts/go.py --project-root {project-root}`.\n"
+                        "Single quotes: `uv run '{skill-root}/scripts/go.py'`.\n"
+                        'Partial: `uv run "{skill-root}"/scripts/go.py`.\n'
+                        'Fine: `uv run "{skill-root}/scripts/go.py" --project-root "{project-root}"`.\n'
+                        "Prose via `uv run`: `{skill-root}/scripts/go.py`.\n"
+                        "```bash\n"
+                        'uv run "{project-root}/_bmad/scripts/resolve_config.py" \\\n'
+                        "  --project-root {project-root}\n"
+                        "```\n"
+                    ),
+                    "scripts/go.py": "print(1)\n",
+                },
+            )
+            code, data = scan(skill)
+            self.assertEqual(code, 1)
+            hits = [(f["line"], f["rule"], f["text"]) for f in data["findings"]]
+            self.assertEqual(
+                hits,
+                [
+                    (6, "unquoted-root-path", "{skill-root}/scripts/go.py"),
+                    (6, "unquoted-root-path", "{project-root}"),
+                    (7, "unquoted-root-path", "'{skill-root}/scripts/go.py'"),
+                    (8, "unquoted-root-path", '"{skill-root}"/scripts/go.py'),
+                    (13, "unquoted-root-path", "{project-root}"),
                 ],
             )
 
@@ -371,6 +405,47 @@ class ScanPathsTest(unittest.TestCase):
             skill = make_skill(Path(tmp), {"SKILL.md": "Writes `docs/plan.md` for the user.\n"})
             code, data = scan(skill)
             self.assertEqual(code, 0, data)
+
+    def test_unquoted_root_path_handles_redirections(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                {
+                    "SKILL.md": (
+                        'Ok: `uv run "{skill-root}/scripts/go.py" <"{project-root}/in.json" >"{project-root}/out.json" 2>"{project-root}/err.log"`.\n'
+                        'Bad: `uv run "{skill-root}/scripts/go.py" >{project-root}/out.json`.\n'
+                    ),
+                    "scripts/go.py": "print(1)\n",
+                },
+            )
+            code, data = scan(skill)
+            self.assertEqual(code, 1)
+            self.assertEqual(
+                [(f["line"], f["rule"], f["text"]) for f in data["findings"]],
+                [(2, "unquoted-root-path", "{project-root}/out.json")],
+            )
+
+    def test_unquoted_root_path_preserves_lines_and_closing_fences(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                {
+                    "SKILL.md": (
+                        "See `abcdefghijklmnopqrstuvwxyz` first.\n"
+                        "uv run {project-root}/_bmad/scripts/resolve_config.py\n"
+                        "```toml\n"
+                        "prompt = 'uv run {skill-root}/scripts/go.py'\n"
+                        "  ````\n"
+                    ),
+                    "scripts/go.py": "print(1)\n",
+                },
+            )
+            code, data = scan(skill)
+            self.assertEqual(code, 1)
+            self.assertEqual(
+                [(f["line"], f["rule"], f["text"]) for f in data["findings"]],
+                [(2, "unquoted-root-path", "{project-root}/_bmad/scripts/resolve_config.py")],
+            )
 
     def test_not_a_directory(self):
         res = subprocess.run([sys.executable, str(SCRIPT), "/nonexistent"], capture_output=True, text=True)

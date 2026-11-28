@@ -1,6 +1,6 @@
 <svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 178" role="img" aria-labelledby="ps-title ps-desc">
 <title id="ps-title">The initiative's states, in order</title>
-<desc id="ps-desc">The initiative's states in order, each with its next step: no initiative yet, Sofia writes it; open questions, Sofia walks them with you; not sliced, Sofia cuts it into epics; shared design, optionally bmad-ux, adopted; shared decisions, optionally bmad-architecture, adopted; epic not refined, Sofia refines it; no stories yet, Sofia plans them; stories ready, bmad-build, one per chat.</desc>
+<desc id="ps-desc">The initiative's states in order, each with its next step: no initiative yet, Sofia writes it; open questions, Sofia walks them with you; not sliced, Sofia cuts it into epics; shared design, optionally Sally, adopted; shared decisions, optionally Winston, adopted; epic not refined, Sofia refines it; no stories yet, Sofia plans them; stories ready, bmad-build, one per chat.</desc>
 <defs>
 <marker id="ps-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
 <marker id="ps-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
@@ -22,12 +22,12 @@
 <text class="k" x="589" y="17">INITIATIVE · optional</text>
 <rect class="node" x="589" y="24" width="170" height="50" rx="2"/>
 <text class="n" x="674" y="46">Shared design?</text>
-<text class="sub mid" x="674" y="63">bmad-ux, adopted</text>
+<text class="sub mid" x="674" y="63">Sally, adopted</text>
 <path class="edge soft" d="M563 49 H588" marker-end="url(#ps-arrow-soft)"/>
 <text class="k" x="1" y="107">INITIATIVE · optional</text>
 <rect class="node" x="1" y="114" width="170" height="50" rx="2"/>
 <text class="n" x="86" y="136">Shared decisions?</text>
-<text class="sub mid" x="86" y="153">bmad-architecture, adopted</text>
+<text class="sub mid" x="86" y="153">Winston, adopted</text>
 <path class="edge soft" d="M674 74 V92 H157.9 V113" marker-end="url(#ps-arrow-soft)"/>
 <text class="k" x="197" y="107">EPIC</text>
 <rect class="node" x="197" y="114" width="170" height="50" rx="2"/>

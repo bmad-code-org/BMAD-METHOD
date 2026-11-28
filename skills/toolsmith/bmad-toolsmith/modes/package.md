@@ -4,7 +4,7 @@ Wrap one or more existing skills into a module so `bmad` sets them up, answers h
 
 ## Read what exists
 
-For each skill the user points at, alone or in a folder, run `uv run {skill-root}/scripts/prepass.py <skill>`. Read raw files only for what it does not give: the `[agent]` block in `customize.toml`, each path or value the skill hardcodes or reads from config, and the skills it invokes.
+For each skill the user points at, alone or in a folder, run `uv run "{skill-root}/scripts/prepass.py" <skill>`. Read raw files only for what it does not give: the `[agent]` block in `customize.toml`, each path or value the skill hardcodes or reads from config, and the skills it invokes.
 
 A skill whose `bmod.toml` carries `[skill]` without `[bmod]` belongs to another module: it can be a dependency here, not a member. Say so.
 
@@ -26,6 +26,6 @@ Show one Smithy execution plan and wait for a yes or changes:
 
 On approval set `{target}` to the folder holding the record and its members, the skill folder itself for a single-skill module. Load `shapes/single-skill-module/shape.md` or `shapes/multi-skill-module/shape.md` and emit its files.
 
-Then rewrite each skill's config reads to `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key modules.<code>.<key>`, one call per skill with every key it needs, dropping the hardcoded value each replaces. Touch nothing else in the skills.
+Then rewrite each skill's config reads to `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key modules.<code>.<key>`, one call per skill with every key it needs, dropping the hardcoded value each replaces. Touch nothing else in the skills.
 
 Load `ship.md`.

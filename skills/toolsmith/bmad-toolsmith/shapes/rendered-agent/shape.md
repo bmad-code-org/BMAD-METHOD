@@ -13,7 +13,7 @@ Load `shapes/agent/shape.md` first and keep its Capabilities, Documents, Persona
 | `{target}/references/<capability>.md` | `shapes/rendered-agent/assets/capability.md` | one internal capability each |
 | `{target}/customize.toml` | `shapes/rendered-agent/assets/customize-template.toml` | `[agent]` as the agent shape has it; `[workflow]`: every customization point |
 
-Fill each template with `uv run {skill-root}/scripts/process_template.py {skill-root}/shapes/rendered-agent/assets/<template> -o {target}/<file> --var <token>=<value> ...`, passing `{skill}` (the folder name), `{name}`, `{title}`, `{icon}`, `{description}`, the persona and menu fields, and `{capability}`, `{selector}` and `{block}` for one capability; repeat a capability's blocks by hand for the others. Jinja passes through untouched. Then write by hand each `{...}` left that is not a run-time token; `{project-root}` and `{skill-root}` stay for run time.
+Fill each template with `uv run "{skill-root}/scripts/process_template.py" "{skill-root}/shapes/rendered-agent/assets/<template>" -o "{target}/<file>" --var <token>=<value> ...`, passing `{skill}` (the folder name), `{name}`, `{title}`, `{icon}`, `{description}`, the persona and menu fields, and `{capability}`, `{selector}` and `{block}` for one capability; repeat a capability's blocks by hand for the others. Jinja passes through untouched. Then write by hand each `{...}` left that is not a run-time token; `{project-root}` and `{skill-root}` stay for run time.
 
 ## Rules
 

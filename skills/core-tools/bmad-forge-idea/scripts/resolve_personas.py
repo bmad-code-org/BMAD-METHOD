@@ -75,10 +75,9 @@ def _load_toml(path: Path):
     if not path.exists():
         return {}
     try:
-        with path.open("rb") as f:
-            data = tomllib.load(f)
+        data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
         return data if isinstance(data, dict) else {}
-    except (OSError, tomllib.TOMLDecodeError):
+    except (OSError, UnicodeError, tomllib.TOMLDecodeError):
         return {}
 
 

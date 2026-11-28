@@ -23,12 +23,13 @@ persistent_facts = []
 #   "For internal standards, consult corp:kb_search (database='engineering') before web search."
 external_sources = []
 
-# Polish passes at finalize, in order, structural before prose: `skill:NAME [args]`, `file:PATH` or plain text.
+# Polish passes at finalize, structural before prose: `skill:NAME [args]`, `file:PATH` or plain text.
+# `file:` and plain-text rules apply in every depth tier; `skill:` passes scale with Finalize depth.
 doc_standards = [
   "skill:bmad-review lenses=structure,prose",
 ]
 
-# Run beside the rubric walker, same prefixes; resolved only when the review runs.
+# Run beside the rubric walker in Standard and Thorough (skipped in Quick / lowest stakes).
 finalize_reviewers = []
 
 # Where finished documents go beyond local files; each entry names the tool, destination and fields.
@@ -37,6 +38,13 @@ external_handoffs = []
 
 # Run after close: one instruction, or an array run in order.
 on_complete = ""
+
+# The mode every run starts in, over each template's own `mode`; empty leaves it to the template,
+# else "freeform". "freeform" works conversationally across sections in any order, updating the
+# document quietly in the background; "step-by-step" takes the sections one at a time in order;
+# "fast" drafts first and then walks the assumptions. The user can switch anytime during a run. A
+# template with `order: fixed` runs freeform as step-by-step.
+mode = ""
 
 # Run folder for a template with no `output`; `{active_initiative}` is dropped when none is set.
 output = "{output_folder}/{active_initiative}/{id}-{slug}"
@@ -51,8 +59,22 @@ template_libraries = [
   "~/.bmad/facilitate-templates",
 ]
 
-# A CSS file applied to every rendered view, after the default styles; empty uses the default.
+# Design guidance applied to every HTML view, over each template's own: a CSS file, a design-system
+# doc, a starter HTML file, a reference screenshot path, or verbal aesthetic preferences; empty
+# lets each document's domain drive the visual design. A calling agent's own `style` wins for its
+# runs. The project's brand or design system is a setup answer (core-tools `design_system`), not this.
 style = ""
 
-# "offer", "always" or "never"; a template's own `html_view` replaces it, and "never" here stops every view.
-html_view = "offer"
+# How far documents go in showing instead of telling: one instruction, used wherever a template
+# does not say otherwise. Replace it to change the forms used, or to hold documents to text and tables.
+visuals = "Wherever a reader would take in a picture faster than the paragraph it replaces, make the picture: a flow, a sequence, a timeline, a structure, a comparison, figures with a trend or a split. A table or a Mermaid diagram covers most of these. Draw an SVG yourself for what they show poorly: a scale with its thresholds marked, a two-by-two, before-and-after bars, nested sizes, a rough sketch of a screen or a layout. Use a generated image when a tool for one is available and the picture is of a thing, not of data. Leave out any picture that only decorates or restates a point one sentence makes."
+
+# Global view default: "offer", "always", or "never" ("never" disables HTML views everywhere,
+# overriding both templates and callers). Empty leaves it to the caller or template, else "offer".
+# Otherwise a calling agent's own `view` and `visuals` win for its runs.
+view = ""
+
+# Optional path to a personal writing/speaking voice guide (e.g. ~/.bmad/voice-bible.md), set via
+# _bmad/custom/bmad-facilitate.user.toml when you want first-person author-voiced documents across modules
+# to follow your voice. Empty leaves non-Creative runs in their plain register; callers pass their own.
+voice_guide = ""

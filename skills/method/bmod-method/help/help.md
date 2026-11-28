@@ -4,135 +4,160 @@ This document covers the skills of the `method` module: what each one gives the 
 
 ## How the method works
 
-The method turns an intent of any size into working software. Recommend the smallest path that safely fits the work; never march the user through every skill. A project may hold only some of these skills: recommend from what is installed, and say plainly when a step has no installed skill rather than inventing a substitute.
+BMad v7 organizes work as one **Intent-Spec Tree** across three everyday altitudes (`Story -> Epic -> Initiative`), with an optional `Program` umbrella above them when a larger goal, theme, or program spans multiple initiatives. Enter at the lowest altitude whose blast radius contains the work, and promote upward only if hidden coupling surfaces.
 
-**The ticket is the spec.** The initiative, epic or story file is the spec at its level. Every skill that works on a ticket reads it first and in full and trusts it; its `sources:` are re-read only by Sofia when she updates it, and a `companions:` file only where the ticket points. Talk to Sofia the Product Owner (`bmad-agent-po`) to fill its Requirements from whatever the user has (a PRD, a brief, notes, a transcript), keep it in step with its sources, and slice from it.
+**Any intent feeds Sofia's Minimal Altitude SOT.** Whether the input is a PRD, BRD, brief, PRFAQ, UX design, `bmad-ingest` transcript, or plain notes, Sofia (`bmad-agent-po`) owns the `program-*.md`, `initiative-*.md`, or `epic-*.md` spec at that altitude.
 
-A transcript, a chat or email thread, or a voice memo goes through `bmad-ingest` first when it is installed, and the note it returns is the input. A sharded document is given to any skill as its main file, named after its folder, which links to every shard. The method adds note templates for `standup`, `retrospective` (the meeting, not `bmad-retrospective`'s epic review), `sprint-review`, `discovery-workshop` and `user-interview`.
+Downstream skills read the ticket first and in full, loading linked `companions:` where the ticket points and re-reading `sources:` only when Sofia updates the spec. A sharded document is passed by its main file named after its folder. The method also ships note templates for `standup`, `retrospective` (the meeting, not `bmad-retrospective`), `sprint-review`, `discovery-workshop`, and `user-interview`.
 
-The four phases are analysis (ideation, research, is it worth building), planning (what exactly, and in what slices), implementation (build it), and validation (is it right). They describe what kind of help a skill gives. They are not a mandatory sequence to complete.
+**Recommend across all installed modules.** Combine what `knowledge.py` and `list_templates.py` surface — including custom org templates and other modules such as Test Architect (TEA) or organization `bmod` extensions — and say plainly when a step has no installed skill.
 
-Project size decides how many build sessions the work needs. Stakes decide how heavy the planning gets. A large hobby project keeps planning light; a small change to a regulated system may not.
+**Default to fresh-chat handoffs.** Agents never load another specialist skill inline; every handoff gives one primary recommendation (plus zero to two relevant installed alternatives) and advises starting a fresh chat or compacting before continuing.
+
+The four phases — analysis, planning, implementation, and validation — are capabilities, not a mandatory conveyor belt. Blast radius decides the altitude, and stakes decide how deep the planning goes.
 
 ## More detail
 
-This document should be enough to route the user and say what to do next. Each topic file below sits in this folder and goes deeper on one subject. Read one only when the question is about that subject, using the path the knowledge script lists for it.
+This document routes and names next steps. Read a topic file below only when the user asks about that subject, using the path `knowledge.py` lists for it.
 
 | Topic file | Read when the user asks about |
 |---|---|
-| `help/analysis-skills.md` | The brief or the PRFAQ from Mary (`bmad-agent-analyst`) in depth: what each gives, when to pick it, when not to, how they relate; and her other documents. |
-| `help/planning-skills.md` | `bmad-agent-po` (Sofia), `bmad-agent-pm` (John) and his planning documents, `bmad-ux`, `bmad-architecture` in depth, and customizing John's templates. |
+| `help/altitudes.md` | Why v7 uses four altitudes, the fractal Intent-Spec Tree, the Coupling Test, upward promotion and ripples, Spec vs Ticket vs Refined Story vs Build Plan, tiered OKRs/invariants, and Mary's upstream role. |
+| `help/analysis-skills.md` | The brief or the PRFAQ from Mary (`bmad-agent-analyst`) in depth: what each gives, when to pick it, when not to, how they relate, and her other documents. |
+| `help/planning-skills.md` | `bmad-agent-po` (Sofia), `bmad-agent-pm` (John), `bmad-agent-ux-designer` (Sally), and `bmad-agent-architect` (Winston) in depth, plus customizing facilitated templates. |
 | `help/implementation-skills.md` | `bmad-build` or `bmad-build-auto` in depth. |
 | `help/validation-skills.md` | `bmad-code-review`, `bmad-walkthrough`, `bmad-qa-generate-e2e-tests`, or `bmad-retrospective` in depth. |
-| `help/prototyping.md` | Prototyping or vibe coding first, what a prototype is good for (worth doing, feasibility, complexity, unknowns), non-engineers prototyping, what to do with a prototype afterwards, whether planning still matters after a good first version. |
+| `help/prototyping.md` | Prototyping or vibe coding first, what a prototype proves, non-engineers prototyping, and whether to throw away or keep a prototype. |
 | `help/existing-codebase.md` | Using BMad on an inherited, brownfield, or long-lived codebase. |
-| `help/preparing-a-repo-for-agents.md` | Getting a codebase ready for agentic coding, inconsistent agent output, how much documentation to keep (small ADRs, not heavy docs), regular refactoring, holding quality over time. |
-| `help/artifact-lifetime.md` | Whether to keep PRDs, specs, stories, and build records after the work is done, archiving, closing out an epic, keeping old plans from misleading agents. |
-| `help/monorepo-and-polyrepo.md` | Where to install BMad and keep planning when work spans one repository or several; the workspace layout for a poly repo. |
-| `help/working-in-an-organization.md` | A team or enterprise: an existing PRD, Jira or another tracker, approvals and sign-off, document owners, several engineers in parallel, requirements changing mid-flight. |
-| `help/ticketing-and-epics.md` | How Sofia's ticket tree works (initiatives, planning an epic's stories, the breakdown, building from an entry, refining), plan status, review, and retrospective. |
-| `help/ticketing-setup.md` | Setting up and driving the ticket tree with Sofia: the store, several repos, trackers, the phrases to say, the hand-off to `bmad-build`. |
-| `help/unattended-builds.md` | `bmad-build-auto`, building stories with no human present, a blocked run and how to retry, what to check after a run. |
-| `help/review-choices.md` | Review depth, skipping review, another review pass, when to stop, slow reviews, customizing review. |
-| `help/project-context.md` | `bmad-project-context` in depth: what belongs in `AGENTS.md`, why the block is small, its intents, removing a rule. |
+| `help/preparing-a-repo-for-agents.md` | Getting a codebase ready for agentic coding, inconsistent agent output, keeping documentation small (ADRs), and regular refactoring. |
+| `help/artifact-lifetime.md` | Keeping PRDs, specs, stories, and build plans after delivery, archiving, closing out an epic, and keeping old plans from misleading agents. |
+| `help/monorepo-and-polyrepo.md` | Installing BMad and storing planning across one repository or a polyrepo workspace. |
+| `help/working-in-an-organization.md` | A team or enterprise: an existing PRD, Jira or another tracker, approvals, single-owner docs, parallel engineers, and mid-flight requirement changes. |
+| `help/ticketing-and-epics.md` | The fractal ticket tree (`program-*`, `initiative-*`, `epic-*`), `tickets.toml`, Refined Stories, plan status, review, and retrospective. |
+| `help/ticketing-setup.md` | Setting up and driving the ticket tree with Sofia: store config, trackers, common phrases, and hand-off to `bmad-build`. |
+| `help/unattended-builds.md` | `bmad-build-auto`, building stories unattended, blocked runs, retries, and post-run checks. |
+| `help/review-choices.md` | Review depth, skipping review, extra review passes, when to stop, slow reviews, and customizing review. |
+| `help/project-context.md` | `bmad-project-context` in depth: what belongs in `AGENTS.md`, why the block stays small, intents, and removing rules. |
+
+## Which level
+
+Altitude comes from blast radius, never from team size or session count. When genuinely unsure between two adjacent levels, start at the lighter one and promote upward if coupling surfaces.
+
+| Blast radius | Altitude | Primary path | Written by |
+|---|---|---|---|
+| Obvious typo, config, or line-by-line edit | Direct edit | Edit directly (no skill) | Human / coding agent |
+| One bounded story (one or more build sessions) | **Story** | `(Story ->) bmad-build` (bring a `backlog/` story or start inline with Amelia's 60s micro-preamble + 1-line success signal) | `bmad-build` (or Sofia for `backlog/`) |
+| One cohesive capability spanning multiple stories | **Epic** (`epic-<slug>/`) | Real stakes & open discovery: `prd-epic` (auto Mini-Spine); hobby or already settled: Sofia directly | John (`prd-epic`) then Sofia (`epic-*.md`) |
+| Two or more capabilities sharing outcomes, invariants, or nouns | **Initiative** (`initiative-<slug>/`) | Thin Spine `prd` (+ optional `ux-system`, `arch-spine`) then Sofia; or Sofia directly if settled | John (`prd`) then Sofia (`initiative-*.md`) |
+| Multiple initiatives serving one larger goal, theme, or program | **Program** (`program-<slug>/`, optional) | Loosely coupled goal/theme: Mary (`narrative` or `charter`) + Sofia (`program-*` rollup), skipping `arch-enterprise`; technically coupled waves: John (`prd-program`) + Winston (`arch-enterprise`) | John (`prd-program`), Mary (`narrative`/`charter`), Sofia (`program-*.md`) |
+
+A project's `core.active_initiative` can point at any container (`program-*`, `initiative-*`, or `epic-*`), top-level or nested.
 
 ## Routing
 
-Every "what next" is answered by the state of the spec at its altitude: the initiative file, then each epic file. Upstream skills exist to feed it.
+Every "what next" reads the active container's state (`program-*`, `initiative-*`, or `epic-*`) across installed modules.
 
 ```mermaid
 flowchart TD
-    A(["Request"]) --> B{"One session can understand, build, review and finish it?"}
-    B -->|obvious, low-risk edit| B1(["Just edit. No skill"])
-    B -->|yes| B2(["bmad-build"])
-    B -->|no| C{"Initiative file exists?<br/>an active initiative may be set with none written yet"}
+    A(["Request"]) --> B{"Blast radius"}
+    B -->|"Obvious low-risk edit"| B1(["Edit directly — no skill"])
+    B -->|"1 bounded story (1+ sessions)"| B2(["bmad-build inline 60s preamble + 1-line signal, or backlog/ story"])
+    B -->|"1 capability, multi-story (epic-*)"| E0{"Epic container exists?"}
+    E0 -->|"Yes"| H
+    E0 -->|"No, real stakes & open questions"| E1["Fresh chat: John (prd-epic w/ Mini-Spine)"]
+    E0 -->|"No, hobby or settled"| S0["Sofia writes epic-* SOT"]
+    E1 --> S0
+    S0 --> H
+    B -->|"2+ capabilities (initiative-*) or multi-initiative (program-*)"| C{"Container file exists?"}
 
-    C -->|no| D{"Work the idea out before it becomes the spec?<br/>the user wants to, or cannot yet say what it is"}
-    D -->|no| S1["Talk to Sofia the Product Owner to write the initiative from what exists: a PRD, UX, a brief, notes, an idea explained<br/>sources (what the Requirements derive from) and companions (what downstream reads beside the ticket) go in the frontmatter"]
-    D -->|cannot name a customer or problem| E1["bmad-forge-idea, bmad-brainstorming"]
-    D -->|unsure it is worth building| E2["A PRFAQ from Mary the Business Analyst, or a prototype"]
-    D -->|wants it written down, shareable| E3["Talk to Mary the Business Analyst for a brief"]
-    D -->|needs real detail, stakeholders, compliance, integrations| E4["Talk to John the Product Manager to create the PRD"]
-    D -->|thinks in screens and flows| E5["bmad-ux"]
-    E1 & E2 & E3 & E4 & E5 --> S1
-    S1 --> F
+    C -->|"No"| D{"Need upstream shaping first?"}
+    D -->|"No — inputs already clear"| S1["Sofia writes Minimal Altitude SOT (program-* or initiative-*)"]
+    D -->|"Explore problem/idea"| D1["bmad-forge-idea / bmad-brainstorming / Mary (brief, prfaq, brd, charter)"]
+    D -->|"Define product & map"| D2["John (prd-program or thin prd)"]
+    D -->|"Lead UX-first"| D3["Sally (trigger-map, ux-system)"]
+    D1 & D2 & D3 --> S1
 
-    C -->|yes| F{"State of the initiative file"}
-    F -->|open questions or assumptions| F1["Talk to Sofia the Product Owner to resolve them<br/>answers go to the source, the ticket, or both"]
-    F -->|a new or changed input: UX added, PRD edited, an architecture| F2["Talk to Sofia the Product Owner to update the initiative<br/>the input becomes a source or companion; each disagreement with the spec goes to the user: fix or ignore"]
-    F -->|not sliced| S2["Talk to Sofia the Product Owner to slice into epics, or into entries directly when the user asks<br/>each epic is written thin, refined: false"]
-    S2 --> G{"Would separately built epics have to share decisions?<br/>stack, contracts, formats, hosting"}
-    G -->|yes| G1["bmad-architecture reads the initiative<br/>then talk to Sofia the Product Owner to adopt it as a companion the epics cite"]
-    G -->|no| H
+    C -->|"Yes"| F{"Container state"}
+    F -->|"Unadopted runs or open questions"| F1["Sofia reconciles in one pass, surfacing contradictions"]
+    F -->|"Not sliced"| S2["Sofia slices verbatim map: program -> initiatives, or initiative -> thin epics (refined: false)"]
+    S2 --> G{"Cross-child UI or shared tech seams?"}
+    G -->|"Yes (fresh chat each)"| G1["Sally (ux-system) / Winston (arch-spine or arch-enterprise) -> Sofia adopts companions"]
+    G -->|"No"| H
     G1 --> H
-    F1 & F2 --> F
-    F -->|sliced, epics remain| H
+    F1 --> F
+    F -->|"Sliced, containers remain"| H
 
-    H{"State of each epic file"} -->|refined: false| S7["Talk to Sofia the Product Owner to refine the epic, scaled to the initiative<br/>each open point settled now, spiked, or left to the stories; the user may add a PRD from John, or a bmad-ux, bmad-architecture or bmad-deep-recon run on the epic"]
-    H -->|refined, no entries| S3["Talk to Sofia the Product Owner to plan the epic's stories: entries in tickets.toml"]
-    H -->|an entry needs criteria first: a bug, refine = true| S5["Talk to Sofia the Product Owner to refine it"]
-    H -->|entries ready| I["bmad-build per entry<br/>bmad-build-auto when no one is present"]
-    H -->|blocked| S6["Talk to Sofia the Product Owner to settle it as a dated Decision, or spike it"]
-    H -->|a change surfaced mid-build| S4["Talk to Sofia the Product Owner to replan: she updates, re-slices or drops, and records the Decision"]
-    S3 & S4 & S5 & S6 & S7 --> H
-    I --> J["Review: inside bmad-build, bmad-code-review, or bmad-walkthrough<br/>the user marks the ticket done"]
-    J --> H
-    H -->|every ticket built, done or dropped| K["bmad-retrospective<br/>then talk to Sofia the Product Owner to close the epic"]
+    H{"Child container state"} -->|"Unsliced child initiative"| F
+    H -->|"Epic refined: false"| S7{"Open product discovery?"}
+    S7 -->|"Yes"| J1["Fresh chat: John (prd-epic) -> inline parent updates"]
+    S7 -->|"No / user says skip"| S7b["Sofia fills epic-* SOT directly"]
+    J1 --> S7b
+    S7b --> UX{"Real stakes: UI epic lacking ux-epic, or shared contracts?"}
+    UX -->|"Yes (fresh chat each)"| UX1["Offer Sally (ux-epic) before slicing; Winston (arch-epic) for contracts/migrations"]
+    UX -->|"No"| S3
+    UX1 --> S3
+    H -->|"Epic refined: true, no entries"| S3["Sofia slices chunky journey stories in tickets.toml + authors Refined Stories (or at pickup if left thin)"]
+    H -->|"Entry refined or ready"| I["Fresh chat per story: bmad-build (or bmad-build-auto) -> Review -> Human marks done"]
+    H -->|"Blocked or mid-build change"| S6["Sofia settles/spikes or REPLANs"]
+    I --> H
+    H -->|"All epic tickets built, done, or dropped"| K["bmad-retrospective -> Sofia closes epic"]
     K --> F
-    F -->|every epic done| L(["Initiative done. Plans stay as evidence"])
+    F -->|"All child containers done"| L(["Container done. Plans stay as live evidence"])
 ```
 
-Rules the diagram leans on:
+Rules the routing rests on:
 
-- The shaping skills feed each other before they feed the spec: a brief or PRFAQ before a PRD when the requirements still need drawing out; `bmad-ux` before or after a PRD, and it may lead on its own; a PRFAQ verdict with serious gaps is addressed before anything else. Sofia the Product Owner takes more than one input.
-- A prototype fits anywhere before the initiative file, and suits enterprise work, hobby work, and non-engineers; a throwaway needs no skill. Thrown away, talk to Sofia the Product Owner to write the initiative from its notes; kept, it is an existing codebase (`help/prototyping.md`).
-- Risk, unclear requirements, architectural reach, or several people push work up from one session even when it is small.
-- An epic file with no `refined` key counts as refined.
-- Mid-path, recommend the next unfinished step of the route the user is on, not a restart. After a change, work resumes at the earliest affected step; unaffected work is not replayed.
-- After `bmad-build`: open a PR, or `bmad-qa-generate-e2e-tests` when end-to-end coverage is wanted. The work is complete when the intent is satisfied, its chosen checks pass, and no chosen review leaves material findings open, not when every skill has run.
+- Upstream shaping skills feed each other or Sofia's SOT directly; Sally (`bmad-agent-ux-designer`) may lead UX-first before any PRD.
+- A prototype fits anywhere before committing (`help/prototyping.md`); keep thrown-away notes or an existing prototype as input to Sofia.
+- Keep specialists in fresh chats: Sofia never invokes John, Sally, or Winston inline and never invents product or UX discovery answers.
+- Single-story work stays a story, even when it takes two build sessions; an epic holds one story only when already inside an initiative or when discovery/architecture requires an epic container.
+- Mid-path, resume at the earliest affected step without replaying unaffected work; other installed modules (such as TEA test planning or org `bmod` extensions) slot in wherever their own `help.md` applies.
+- Work finishes when the intent is satisfied, chosen checks pass, and no material review findings remain open — not when every skill has run.
 
 ## Match the situation
 
-Situations the diagram does not settle.
-
 | The user says or has | Recommend | Because |
 |---|---|---|
-| "Create a spec", "write the initiative", "distill this PRD", "slice this", "tickets", "what's ready", "where are we", "this changed, what now", "ask Sofia", "the product owner" | Talk to Sofia the Product Owner (`bmad-agent-po`) to do what the phrase says | Each phrase dispatches to one of her capabilities (SPEC, TICKETS, REFINE, BOARD, VALIDATE, REPLAN, STORE); asked, she lists them. |
-| "Create a PRD", "write the PRD", "update the PRD", "validate this PRD", "review my PRD", "draft the program charter", "shape a pitch", "plan the launch", "ask John", "the PM", "the product manager" | Talk to John the Product Manager (`bmad-agent-pm`) to do what the phrase says | Each phrase dispatches to one of his capabilities (CREATE, UPDATE, VALIDATE); he picks the document from the altitude. |
-| "Write a product brief", "create a PRFAQ", "work backwards", "run the PRFAQ challenge", "stress-test this concept", "write the BRD", "write the business case", "is this problem worth pursuing", "write the strategy narrative", "market research", "competitive analysis", "ask Mary", "the analyst" | Talk to Mary the Business Analyst (`bmad-agent-analyst`) to do what the phrase says | Each phrase dispatches to one of her capabilities (BRAINSTORM, RESEARCH, CREATE, UPDATE, VALIDATE, CONTEXT); she picks the document from what the user wants. |
-| One bug or story to track, with no epic to hold it | Talk to Sofia the Product Owner to write it as a `backlog/` ticket, or an entry in the epic the user names | Standalone leaves live in `backlog/`, are refined first, and build like any entry. |
-| The work is more than one initiative's worth | Talk to Sofia the Product Owner to propose a parent initiative | The parent is an ordinary initiative whose breakdown lists child initiatives in build order; each child keeps initiative, epic and story. Set the active initiative to the child being worked, or to the parent to see the whole. |
-| Work spans several repositories | Install BMad at a workspace root that holds them all, with planning kept there | One session then reaches the plan and every project (`help/monorepo-and-polyrepo.md`). |
-| "How do I get my repo ready for AI agents?", or agents keep producing inconsistent work | Consistent patterns, a good initial `AGENTS.md`, end-to-end tests, and cleanup first when quality is low | Agents copy what they find (`help/preparing-a-repo-for-agents.md`). |
-| An inherited or brownfield codebase | A small `bmad-build` change first; `bmad-project-context` and `bmad-walkthrough` as needed | No up-front documentation pass is required (`help/existing-codebase.md`). |
-| A team with an existing PRD, a tracker, approvals, or several engineers | The full path only when approvers, parallel teams, or required documents call for it | The existing PRD is input, each document has one owner, and sign-off attaches to skill results (`help/working-in-an-organization.md`). |
-| Wants tickets or a tracker (Jira, Linear, GitHub) as the record | Talk to Sofia the Product Owner to connect it | Tickets are the board. |
-| A v6 project (`epics.md`, `sprint-status.yaml`, dated folders under the planning folder) that wants the v7 layout | `bmad migrate method`, before anything else | The module ships `migration-1.toml`: the rules for turning the planning folder into an initiative, moving document folders into it whole, and turning epics and sprint status into a ticket tree. Unrecognized files outside the planning folder stay where they are. The `bmad` skill plans it with the user, then performs it. |
-| `tickets.py` stops with an error naming `bmad migrate`, or `tickets.toml` or epic folders sit directly in an initiative folder | `bmad migrate method` | The module ships `migration-2.toml`: it moves each initiative's and epic's breakdown into a `tickets/` folder inside it and rewrites the paths that pointed at the moved files. |
+| One bounded feature or tool needing two build sessions | `(Story ->) bmad-build` | Session count never forces an initiative; Amelia runs a 60s micro-preamble + 1-line success signal inline and promotes only if coupling surfaces. |
+| One capability needing a few stories, no multi-epic initiative | `epic-<slug>/`: John (`prd-epic`) for real stakes, or Sofia directly for hobby/settled | Standalone top-level epics include an auto Mini-Spine Preamble and lift cleanly into an initiative later if needed. |
+| Work spans multiple initiatives serving one goal, theme, or program | `program-<slug>/`: Mary (`narrative` or `charter`) + Sofia (`program-*`) when initiatives are independent; John (`prd-program`) + Winston (`arch-enterprise`) when initiatives share cross-domain seams | Scales by coupling rather than company size: independent initiatives share an outcome rollup without enterprise architecture, while coupled waves coordinate contracts and rollout. |
+| "Create a spec", "write the initiative", "distill this PRD", "slice this", "what's ready", "replan", "ask Sofia" | Sofia (`bmad-agent-po`) | Dispatches to her capabilities (SPEC, TICKETS, REFINE, BOARD, VALIDATE, REPLAN, STORE); asked, she lists them. |
+| "Create/update/validate a PRD", "draft the program charter", "shape a pitch", "plan the launch", "ask John" | John (`bmad-agent-pm`) | Coaches, updates, or validates product documents across `prd-program`, `prd`, `prd-epic`, `srs`, `pitch`, `launch`, `prototype-plan`, `charter`, and `experiment`. |
+| "Write a brief", "create a PRFAQ", "write the BRD", "business case", "strategy narrative", "market research", "ask Mary" | Mary (`bmad-agent-analyst`) | Runs BRAINSTORM, RESEARCH, and CONTEXT, and facilitates upstream analysis docs (`brief`, `prfaq`, `opportunity`, `business-case`, `narrative`, `brd`, `charter`, `experiment`, `trigger-map`). |
+| "Design the UX", "brand identity", "DESIGN.md", "EXPERIENCE.md", "wireframes", "audit this UI", "ask Sally" | Sally (`bmad-agent-ux-designer`) | Facilitates `trigger-map`, `brand-identity`, `design-direction`, `ux-system`, `ux-epic`, `ux-quick`, `website-design`, and `ux-audit`, plus mockups and Figma/Stitch/Claude Design handoffs. |
+| "Architecture", "arch-spine", "epic tech design", "RFC", "build vs buy", "agent readiness", "ADR", "ask Winston" | Winston (`bmad-agent-architect`) | Facilitates `arch-enterprise`, `arch-spine`, `arch-epic`, `solution-design`, `tech-evaluation`, `api-design`, `agent-readiness`, `migration-plan`, `production-readiness`, `decision-record`, `postmortem`, and `security-review`. |
+| "How should I build this", "review depth", "retry blocked ticket", "run the epic unattended", "ask Amelia" | Amelia (`bmad-agent-dev`) | Guides `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-walkthrough`, and `bmad-retrospective`. |
+| One standalone bug or story to track outside an epic | Sofia (`bmad-agent-po`) for `backlog/`, or an entry in a named epic | Standalone leaves live in `backlog/` and build like any story. |
+| Work spans several repositories | Install BMad at the workspace root above them | One session reaches the ticket tree and every project (`help/monorepo-and-polyrepo.md`). |
+| Inherited codebase or preparing a repo for AI agents | Small `bmad-build` change first; `bmad-project-context`, `bmad-walkthrough`, Winston `agent-readiness` | Clean patterns and a lean `AGENTS.md` beat heavy upfront docs (`help/existing-codebase.md`, `help/preparing-a-repo-for-agents.md`). |
+| Existing PRD, external tracker, approvals, or parallel engineers | Full path + single-owner docs when approvers or parallel seams require it | See `help/working-in-an-organization.md` and `help/ticketing-setup.md`. |
+| A v6 project (`epics.md`, `sprint-status.yaml`) or pre-`tickets/` v7 layout | `bmad migrate method` before anything else | `migration-1.toml` moves v6 artifacts into an initiative; `migration-2.toml` nests breakdowns under `tickets/`. |
 
 ## The skills
 
-One line per skill: what it is for and what it writes. Paths are in the active initiative's folder, `{output_folder}/{active_initiative}/`, or in `{output_folder}/` when none is active; each document is a `<type>-<slug>/` folder holding `<type>-<slug>.md`. A document from John, or a `bmad-ux` or `bmad-architecture` run, on an epic lands in the epic's folder instead, and Sofia adopts it as the epic's companion. Each initiative's and epic's breakdown sits in a `tickets/` folder inside it. With no active initiative, `bmad-agent-po` offers to create one; the other planning skills hand off to the `bmad` skill to set one. Showing, switching, creating, or clearing the active initiative is a `bmad` request. `planning_artifacts` and `implementation_artifacts` are no longer read.
+Paths resolve under `{output_folder}/{active_initiative}/` (where `active_initiative` holds any `program-*`, `initiative-*`, or `epic-*` container — top-level or nested), or `{output_folder}/` when none is active. Each facilitated run creates a `<type>-<slug>/<type>-<slug>.md` folder, and epic-level runs land inside their epic (`<epic>/<template id>-<slug>/`).
+
+Standalone skills — Winston's technical docs, Sally's branding/websites/audits/quick UX, Mary's pre-commitment docs, `bmad-build`, and `bmad-agent-po` container creation — work without an active initiative. Managing `active_initiative` is a `bmad` command; `planning_artifacts` and `implementation_artifacts` are obsolete.
 
 | Skill | For | Writes |
 |---|---|---|
 | **Analysis** (`help/analysis-skills.md`) | | |
-| `bmad-agent-analyst` | Mary the Business Analyst brainstorms and researches with the user, then coaches a document that decides whether and why to go ahead out of them: a brief (a 1-2 page account of a product the user believes in; it does not judge the idea), a PRFAQ (tests whether a concept survives scrutiny: press release, hard FAQs, researched claims, a verdict), an opportunity assessment, a business case, a strategy narrative or a business requirements document. She shares the experiment card and the program charter with John. | `<id>-<slug>/<id>-<slug>.md`, such as `brief-<slug>/brief-<slug>.md` |
+| `bmad-agent-analyst` | Mary brainstorms and researches (`bmad-deep-recon`), then facilitates `brief`, `prfaq`, `opportunity`, `business-case`, `narrative`, `brd` (plus `trigger-map` with Sally, and `charter`/`experiment` with John). | `<id>-<slug>/<id>-<slug>.md` |
 | **Planning** (`help/planning-skills.md`) | | |
-| `bmad-agent-po` | Sofia the Product Owner. Writes a ticket's Requirements and Constraints from any input, with a stable `R<n>` id per line naming its source, naming the gaps and walking them with the user, or recording each as an Open question line, when the input is sparse, and updates them when the input changes. Slices initiatives into thin epics and epics into stories, refines an epic or a story, runs the board (start, block, close, drop), validates, replans a change mid-flight, and connects a tracker. Stories are entries in `tickets.toml`; a file is written only when one is reviewed, refined, or published. A bug is a `backlog/` file or an entry in its epic. | The ticket file, with `.memlog.md` and companions beside it; the ticket tree under `{output_folder}/{active_initiative}/`, plus `{output_folder}/backlog/` |
-| `bmad-agent-pm` | John the Product Manager coaches a document that defines what gets built or how it ships out of the user, picked by altitude and sized to the stakes: a PRD, light PRD, prototype plan, spec for a coding agent, Shape Up pitch, requirements specification or launch plan. He shares the experiment card and the program charter with Mary. He also updates and validates them. Either writes any of these when the user asks them to. | `<id>-<slug>/<id>-<slug>.md`, such as `prd-<slug>/prd-<slug>.md` |
-| `bmad-ux` | How the product looks and works. May lead, follow, or stand alone. Can produce mocks and wireframes. | `ux-<slug>/` with `DESIGN.md`, `EXPERIENCE.md`, and `ux-<slug>.md` naming them |
-| `bmad-architecture` | Settles only the decisions that keep separately built parts consistent. Coaches a user with no architecture knowledge, recommends a current starter, and covers hosting and deployment. | `architecture-<slug>/architecture-<slug>.md` |
+| `bmad-agent-po` | Sofia owns Minimal Altitude SOT (`program-*`, `initiative-*`, `epic-*`), single-pass `unadopted_runs` reconciliation, contradiction arbitration, scoped slicing (verbatim PRD maps, chunky journey stories), design-linked `tickets.toml` entries, inception Refined Stories, board, validate, replan, and trackers. | Container `.md`, `.memlog.md`, `tickets/tickets.toml`, `story-<slug>.md`, `{output_folder}/backlog/` |
+| `bmad-agent-pm` | John facilitates `prd-program`, `prd`, `prd-epic`, `srs`, `prototype-plan`, `pitch`, `launch` (plus `charter` and `experiment` with Mary), as well as updates and read-only validation. | `<id>-<slug>/<id>-<slug>.md` |
+| `bmad-agent-ux-designer` | Sally facilitates `trigger-map`, `brand-identity`, `design-direction`, `ux-system`, `ux-epic`, `ux-quick`, `website-design`, and `ux-audit`, plus creative HTML mockups and Stitch/Claude Design/Figma handoffs. | `<id>-<slug>/` (or `branding/`) with `DESIGN.md`, `EXPERIENCE.md` / `BRAND.md`, mockups, `<id>-<slug>.md` |
+| `bmad-agent-architect` | Winston facilitates `arch-enterprise`, `arch-spine`, `arch-epic` (+ `contract.yaml`), `solution-design`, `tech-evaluation`, `api-design`, `agent-readiness`, `migration-plan`, `production-readiness`, `decision-record`, `postmortem`, and `security-review`. | `<id>-<slug>/<id>-<slug>.md` |
 | **Implementation** (`help/implementation-skills.md`) | | |
-| `bmad-build` | One session of delivery: clarifies intent, plans, implements, reviews, commits. The default for any real change. Takes free text, a ticket from the tree (nothing means the next ready one), or any file as intent. Reads a ticket in full with its epic. | A ticket's plan beside `tickets.toml`, or `plan-<slug>.md`; `deferred-work.md` |
-| `bmad-build-auto` | One unattended build of one ticket, dispatched by a loop or script. Never for attended work. | The same plans as `bmad-build` |
+| `bmad-build` | Delivery session: clarifies (60s micro-preamble + 1-line signal when standalone), walks parent contracts (`DESIGN.md`, `EXPERIENCE.md`, mockups, architecture) into `context:`, keeps every Refined Story AC covered in the plan, implements, reviews, and commits. | `story-<slug>-plan.md` beside `tickets.toml` (or in `backlog/`), `plan-<slug>.md`, `deferred-work.md` |
+| `bmad-build-auto` | Unattended single-ticket build for loops/scripts (or approved prototype plans), walking the same parent contracts and halting `blocked` on any intent gap. | Same plan paths as `bmad-build` |
 | **Validation** (`help/validation-skills.md`) | | |
-| `bmad-code-review` | Agent review of any diff, PR, or branch, with triaged findings; with no argument it offers the tickets in review. Redundant right after a thorough `bmad-build` review of the same change. | A dated block in the plan's `## Code Review` section, or chat |
-| `bmad-walkthrough` | The human reviews a change block by block, guided. Also a way to learn unfamiliar code. | `walkthrough-<slug>/` with the narrative and a `-log.md` |
-| `bmad-qa-generate-e2e-tests` | API and end-to-end tests for features that already exist. | Tests where the project keeps its end-to-end tests; the report is in chat |
-| `bmad-retrospective` | Judges a finished epic folder in the ticket tree as a whole against its `Done when`. | `epic-<slug>-retrospective.md` in the epic folder, plus each approved `adr-<decision-slug>.md` beside the code it governs, or in the decisions folder when system-wide |
+| `bmad-code-review` | Agent review of any diff, PR, branch, or `in-review` ticket with verified, triaged findings (redundant right after a thorough `bmad-build` review). | Dated block in plan's `## Code Review` section, or chat |
+| `bmad-walkthrough` | Guided block-by-block human walkthrough of a commit, PR, file, or directory. | `walkthrough-<slug>/` narrative and log |
+| `bmad-qa-generate-e2e-tests` | API and end-to-end tests for existing features following the project's test harness. | E2E tests in project test dir; report in chat |
+| `bmad-retrospective` | Evaluates a finished epic folder against its `Done when` across all tickets and plans. | `epic-<slug>-retrospective.md` and approved `adr-<slug>.md` files |
 | **Any time** (`help/project-context.md`) | | |
-| `bmad-project-context` | Keeps a small, verified block of rules for agents. Use it when an agent got something wrong in this repo, a repo has no usable `AGENTS.md`, or the stack was just decided. It gives no repo overview. | `{project-root}/AGENTS.md` |
+| `bmad-project-context` | Maintains a small, verified rules block in `AGENTS.md` (not a repo overview). | `{project-root}/AGENTS.md` |
 
 ### Who reviews what
 
@@ -145,19 +170,19 @@ One line per skill: what it is for and what it writes. Paths are in the active i
 
 ## The agents
 
-Six named experts, each owning a phase and staying in the conversation across turns. An agent carries its role's judgment, offers a menu of the skills it owns, and helps the user decide what to do and why before and between skill runs. Offer one whenever the user wants an expert to work with rather than a single skill to run, is unsure where to begin in a phase, or likes the experience of interacting with unique personas. In the future these agents will have the ability to retain memory and work autonomously which is why they are still a core part of the project.
+Six named experts owning phases across conversations. Offer an agent whenever the user wants a thinking partner rather than a single skill, or wants to converse across turns before and between skill runs.
 
 | Agent | Phase | Work with them to |
 |---|---|---|
-| Mary, analyst — `bmad-agent-analyst` | Analysis | Brainstorm, research a market, domain, technology, or competitor, then shape a document that decides whether and why to go ahead: a brief, a PRFAQ, an opportunity assessment, a business case, a strategy narrative or a business requirements document. |
-| John, product manager — `bmad-agent-pm` | Planning | Turn a vision into a PRD or another planning document, and check readiness. |
-| Sofia, product owner — `bmad-agent-po` | Planning | Write a ticket's requirements from whatever exists, slice it into epics and stories, run the board, and replan a change mid-flight. Say what you want, or ask what she can do. |
-| Sally, UX designer — `bmad-agent-ux-designer` | Planning | Work out how the product looks and behaves. |
-| Winston, architect — `bmad-agent-architect` | Planning | Settle the technical decisions that keep the parts consistent, and check readiness. |
-| Amelia, developer — `bmad-agent-dev` | Implementation and validation | Build stories, generate tests, review code, and run a retrospective. |
+| Mary, analyst — `bmad-agent-analyst` | Analysis | Brainstorm, run `bmad-deep-recon`, and decide whether and why to build (`brief`, `prfaq`, `opportunity`, `business-case`, `narrative`, `brd`, `trigger-map`, `charter`, `experiment`). |
+| John, product manager — `bmad-agent-pm` | Planning | Shape product contracts by altitude (`prd-program`, `prd`, `prd-epic`, `srs`, `pitch`, `launch`, `prototype-plan`, `charter`, `experiment`). |
+| Sofia, product owner — `bmad-agent-po` | Planning | Reconcile any intent into `program-*`/`initiative-*`/`epic-*` SOT, slice verbatim maps and chunky stories, refine stories, run the board, and replan mid-flight. |
+| Sally, UX designer — `bmad-agent-ux-designer` | Planning | Shape user psychology, brand kits, visual direction, `DESIGN.md`/`EXPERIENCE.md`, key-screen mockups, websites, and UI audits. |
+| Winston, architect — `bmad-agent-architect` | Planning | Settle technical boundaries (`arch-enterprise`, `arch-spine`, `arch-epic`), RFCs, bake-offs, APIs, readiness, migrations, ADRs, and security/postmortem docs. |
+| Amelia, developer — `bmad-agent-dev` | Implementation and validation | Choose the build or review depth, troubleshoot blocked runs, and run ready tickets unattended. |
 
-An agent and its skills are two ways into the same work: a skill run directly does the job, and an agent adds a guide who knows the whole phase. `bmad-party-mode` brings the agents together in one discussion and offers the `product-team` room.
+`bmad-party-mode` brings installed agents together in one discussion and offers the `product-team` room.
 
 ## When this document is not enough
 
-For a `method` question this document, its topic files, and the installed skills cannot answer, fetch the documentation site at `https://docs.bmad-method.org/` and follow the pages relevant to the question. The source repository it links to is the final authority on how anything actually behaves.
+For a `method` question this document, its topic files, and installed skills cannot answer, fetch `https://docs.bmad-method.org/` and follow the relevant pages; the linked source repository is the final authority on actual behavior.

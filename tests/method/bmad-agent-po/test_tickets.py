@@ -13,6 +13,7 @@ from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/method/bmad-agent-po/scripts/tickets.py"
 CONFIG_UTILS = SCRIPT.parents[3] / "core-tools" / "bmad" / "scripts" / "config_utils.py"
+FRONTMATTER = CONFIG_UTILS.with_name("frontmatter.py")
 
 
 def ticket(
@@ -97,6 +98,8 @@ class TreeCase(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
         (self.root / "_bmad" / "custom").mkdir(parents=True)
+        (self.root / "_bmad" / "scripts").mkdir()
+        shutil.copy(FRONTMATTER, self.root / "_bmad" / "scripts" / "frontmatter.py")
         self.initiative = self.root / "out" / "initiative-checkout"
         self.initiative.mkdir(parents=True)
         (self.initiative / "initiative-checkout.md").write_text("---\ntype: initiative\n---\n# Checkout\n")
@@ -771,6 +774,131 @@ covers = ["R2", "R3"]
             text.endswith("## References\n\n- parent — out/initiative-checkout/tickets/epic-cart/epic-cart.md\n"), text
         )
 
+    def add_entry(self, folder, item):
+        return run("add", str(folder), stdin=json.dumps(item))
+
+    def test_add_appends_an_entry_with_the_next_id_and_find_resolves_it(self):
+        self.pricing()
+        self.breakdown_epic()
+        before = (tk(self.epic) / "tickets.toml").read_text(encoding="utf-8")
+        n = json.loads(run("status", str(self.epic)).stdout)["next_id"]
+        item = {"type": "story", "title": "Remove an item", "description": "A shopper removes an item.",
+                "covers": ["R1"], "after": [1, "epic-pricing"], "hitl": False, "risk": "low"}  # fmt: skip
+        r = self.add_entry(self.epic, item)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        self.assertEqual((out["folder"], out["id"], out["ref"]), ("epic-cart", n, f"2.{n}"))
+        self.assertEqual(out["entry"], {"id": n, **item})
+        text = (tk(self.epic) / "tickets.toml").read_text(encoding="utf-8")
+        self.assertTrue(text.startswith(before.rstrip("\n") + "\n\n[[entry]]\nid = "), text)
+        self.assertEqual(tomllib.loads(text)["entry"][-1], {"id": n, **item})
+        hit = json.loads(run("find", str(self.initiative), out["ref"]).stdout)
+        self.assertEqual(hit["title"], "Remove an item")
+
+    def test_add_creates_a_backlog_breakdown(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", 3, kind="bug"), backlog)
+        r = self.add_entry(backlog, {"type": "bug", "title": "Totals round wrong"})
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout)["id"], 4)
+        self.assertEqual(
+            (backlog / "tickets.toml").read_text(encoding="utf-8"),
+            '[[entry]]\nid = 4\ntype = "bug"\ntitle = "Totals round wrong"\n',
+        )
+
+    def test_add_writes_the_first_entry_of_an_epic_with_no_tickets_folder(self):
+        fresh = self.add_epic("epic-fresh")
+        self.assertFalse((fresh / "tickets").exists())
+        r = self.add_entry(fresh, {"type": "story", "title": "First"})
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout)["id"], 1)
+        self.assertEqual(tomllib.loads((fresh / "tickets" / "tickets.toml").read_text())["entry"][0]["title"], "First")
+        r = self.add_entry(self.add_epic("epic-other"), {"type": "story", "title": "x", "after": [9]})
+        self.assertEqual(r.returncode, 1)
+        self.assertFalse((self.initiative / "tickets" / "epic-other" / "tickets").exists())
+
+    def test_add_refuses_bad_input_and_writes_nothing(self):
+        self.breakdown_epic()
+        path = tk(self.epic) / "tickets.toml"
+        before = path.read_bytes()
+        for item in (
+            {"type": "story"},
+            {"type": "epic", "title": "x"},
+            {"type": "story", "title": "x", "id": 9},
+            {"type": "story", "title": "x", "hitl": "yes"},
+            {"type": "story", "title": "x", "risk": "huge"},
+            {"type": "story", "title": "x", "after": [99]},
+            [{"type": "story", "title": "x"}],
+        ):
+            r = self.add_entry(self.epic, item)
+            self.assertEqual(r.returncode, 1, item)
+            self.assertIn("error", json.loads(r.stderr))
+            self.assertEqual(path.read_bytes(), before, item)
+        r = run("add", str(self.epic), stdin='{"type": "story", "title": "\\ud800"}')  # a lone surrogate
+        self.assertEqual(r.returncode, 1, r.stderr)
+        self.assertEqual(path.read_bytes(), before)
+        self.assertEqual(self.add_entry(self.initiative, {"type": "story", "title": "x"}).returncode, 1)
+
+    EPIC_REQUIREMENTS = (
+        "---\ntype: epic\ncovers: [R2]\nafter: []\n---\n# Cart\n\n## Description\n\nThe cart.\n\n"
+        "## Requirements\n\n- R10 (parent R3): Totals show tax.\n- R1 (parent R2): A shopper can add an item.\n\n"
+        "## References\n\n- parent — out/initiative-checkout/initiative-checkout.md, section Requirements\n"
+    )
+    LEAF = (
+        '---\nid: 1\ntype: story\ntitle: "Add an item"\nparent: epic-cart\ncovers: [R1, R10]\nafter: []\n'
+        "tracker_id: SHOP-4\nhitl: false\n---\n\n# Add an item\n\n## Description\n\nA shopper adds an item.\n\n"
+        "## Requirements\n\nVerify: the cart shows it.\n\n## References\n\n- parent — epic-cart.md, section Requirements\n\n"
+        "## Notes\n\n- Decision: one item at a time.\n"
+    )
+
+    def body(self, *args):
+        r = run("body", *args)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        return json.loads(r.stdout)
+
+    def test_body_is_the_file_without_frontmatter_title_or_description_heading_plus_covers_lines(self):
+        (self.epic / "epic-cart.md").write_text(self.EPIC_REQUIREMENTS, encoding="utf-8")
+        self.add("story-add-an-item.md", self.LEAF)
+        out = self.body(str(self.epic), "1")
+        self.assertEqual(out["title"], "Add an item")
+        self.assertEqual(out["file"], str(tk(self.epic).resolve() / "story-add-an-item.md"))
+        self.assertEqual(
+            out["body"],
+            "A shopper adds an item.\n\n## Requirements\n\nVerify: the cart shows it.\n\n## References\n\n"
+            "- parent — epic-cart.md, section Requirements\n"
+            "- covers — R1 (parent R2): A shopper can add an item.\n"
+            "- covers — R10 (parent R3): Totals show tax.\n\n"
+            "## Notes\n\n- Decision: one item at a time.\n",
+        )
+        self.assertEqual((tk(self.epic) / "story-add-an-item.md").read_text(encoding="utf-8"), self.LEAF)
+        self.assertEqual(self.body(str(tk(self.epic) / "story-add-an-item.md")), out)
+        (self.root / "story-add-an-item.md").write_text('---\ntitle: "other"\n---\n\nNot this one.\n')
+        r = run("body", str(self.epic), "story-add-an-item.md", cwd=self.root)
+        self.assertEqual(json.loads(r.stdout), out, r.stderr)
+
+    def test_body_of_an_epic_reads_its_covers_from_the_initiative(self):
+        (self.initiative / "initiative-checkout.md").write_text(
+            "---\ntype: initiative\n---\n# Checkout\n\n## Requirements\n\nR2 (prd FR-1): Shoppers buy online.\n"
+        )
+        (self.epic / "epic-cart.md").write_text(self.EPIC_REQUIREMENTS, encoding="utf-8")
+        out = self.body(str(self.epic / "epic-cart.md"))
+        self.assertEqual(out["title"], "Cart")
+        self.assertTrue(out["body"].startswith("The cart.\n\n## Requirements\n"), out["body"])
+        self.assertTrue(
+            out["body"].endswith("section Requirements\n- covers — R2 (prd FR-1): Shoppers buy online.\n"), out["body"]
+        )
+
+    def test_body_refuses_a_covered_id_the_parent_lacks_and_an_entry_not_yet_pulled(self):
+        (self.epic / "epic-cart.md").write_text(self.EPIC_REQUIREMENTS.replace("- R10", "- R11"), encoding="utf-8")
+        self.add("story-add-an-item.md", self.LEAF)
+        r = run("body", str(self.epic), "1")
+        self.assertEqual(r.returncode, 1)
+        self.assertEqual(json.loads(r.stderr)["missing"], ["R10"])
+        self.breakdown_epic()
+        r = run("body", str(self.epic), "2")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("tickets.py pull", json.loads(r.stderr)["error"])
+
     def test_find_by_cross_ref_id_file_tracker_id_and_title(self):
         pricing = self.pricing()
         self.breakdown_epic()
@@ -852,6 +980,9 @@ covers = ["R2", "R3"]
             ("[[entry]\nid = ", "tickets.toml"),
             ('[entry]\nid = 1\ntype = "story"\n', "[[entry]]"),
             (self.BREAKDOWN.replace('covers = ["R4"]', "covers = 1"), "must be a list"),
+            # TOML reads a bare 1.10 as the number 1.1; the entry would wait on 1.1 with no error.
+            (self.BREAKDOWN.replace("after = [2, 3]", "after = [2, 1.10]"), 'in quotes, like "1.10"'),
+            (self.BREAKDOWN.replace("after = [2, 3]", "after = [2, true]"), 'in quotes, like "1.10"'),
         ):
             self.breakdown_epic(text)
             r = run("next", str(self.epic))
@@ -1258,6 +1389,8 @@ covers = ["R2", "R3"]
             json.loads(run("find", str(self.epic), "2").stdout)["notes"], ["Reuse the grid.", 'A "quoted" note.']
         )
         self.assertEqual(json.loads(run("find", str(self.epic), "4").stdout)["notes"], [])
+        long_note = "x" * 300  # too long for a file name, so it is not mistaken for one
+        self.assertEqual(run("note", str(self.epic), "4", long_note).returncode, 0)
 
         run("pull", str(self.epic), "1")
         leaf = tk(self.epic) / "story-scaffold.md"
@@ -1446,7 +1579,8 @@ covers = ["R2", "R3"]
         folder = Path(outside.name) / "epic-cart"
         folder.mkdir()
         (folder / "story-scaffold.md").write_text(ticket("", 1))
-        self.assertEqual(json.loads(run("next", str(folder)).stdout)["store"], "repo")
+        r = run("next", str(folder), cwd=outside.name)
+        self.assertEqual((r.returncode, json.loads(r.stderr)["error"].split(";")[1]), (1, " pass --project-root"))
         r = run("--project-root", str(self.root), "next", str(folder))
         self.assertEqual(r.returncode, 2)
         r = run("--project-root", str(self.root), "mark", str(folder), "1", "done")
@@ -1589,6 +1723,16 @@ covers = ["R2", "R3"]
                 self.assertEqual(len(out["problems"]), 1)
                 self.assertIn("story-a-plan.md", out["problems"][0])
             self.assertEqual(self.files(self.next()["ready_to_start"]), [None])
+
+    def test_an_orphan_plans_id_is_never_given_out_again(self):
+        # Entry 12 was deleted by hand; its plan stayed. A new entry 12 would read `done` from the old plan.
+        self.breakdown_epic()
+        self.add("story-old-thing-plan.md", plan(12, "done"))
+        out = json.loads(run("status", str(self.epic)).stdout)
+        self.assertEqual(out["next_id"], 13)
+        self.assertEqual(len(out["problems"]), 1)
+        self.add("story-split-plan.md", plan("20a", "done"))
+        self.assertEqual(json.loads(run("status", str(self.epic)).stdout)["next_id"], 21)
 
     def test_a_loose_plan_at_the_initiative_root_is_not_a_problem(self):
         self.breakdown_epic()
@@ -1932,7 +2076,6 @@ class ActiveInitiativeTests(TreeCase):
 
     def setUp(self):
         super().setUp()
-        (self.root / "_bmad" / "scripts").mkdir()
         shutil.copy(CONFIG_UTILS, self.root / "_bmad" / "scripts" / "config_utils.py")
         self.configure("initiative-checkout")
         self.seed()
@@ -2162,6 +2305,9 @@ def load_tickets():
     spec = importlib.util.spec_from_file_location("tickets_under_test", SCRIPT)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    spec = importlib.util.spec_from_file_location("frontmatter_under_test", FRONTMATTER)
+    module.frontmatter = importlib.util.module_from_spec(spec)  # main() loads the project's copy
+    spec.loader.exec_module(module.frontmatter)
     return module
 
 
@@ -2200,28 +2346,28 @@ class FrontmatterTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "plan.md"
             path.write_text("---\nstatus: 'blocked' # was\nblocked_reason: x\nnotes: keep # me\n---\n")
-            self.t.edit_frontmatter(path, {"status": "done", "blocked_reason": "", "assignee": '"a"'})
+            self.t.edit_frontmatter(path, {"status": "done", "blocked_reason": "", "assignee": self.t.quoted("a")})
             self.assertEqual(path.read_text(), '---\nstatus: done\nnotes: keep # me\nassignee: "a"\n---\n')
 
-    def test_an_edit_it_cannot_make_cleanly_is_refused_unwritten(self):
-        for block, values in (
-            ("status: blocked\nblocked_reason: |\n  first\n\n  second", {"status": "done", "blocked_reason": ""}),
-            ('status: blocked\n"blocked_reason": x', {"blocked_reason": ""}),
-            ("assignee: &owner alex\nblocked_reason: *owner", {"assignee": ""}),
-            ("after:\n- 1\n- 2", {"after": "[3]"}),
-            ("status: x", {"status": "a: b"}),
+    def test_an_edit_replaces_a_whole_field_however_it_is_written(self):
+        for block, values, expected in (
+            ("status: blocked\nblocked_reason: |\n  first\n\n  second", {"blocked_reason": ""}, "status: blocked\n"),
+            ('status: blocked\n"blocked_reason": x', {"blocked_reason": ""}, "status: blocked\n"),
+            ("after:\n- 1\n- 2\nrisk: low", {"after": [3, self.t.quoted("x")]}, 'after: [3, "x"]\nrisk: low\n'),
+            ("status: x", {"status": "a: b"}, "status: 'a: b'\n"),
         ):
             with self.subTest(block=block), tempfile.TemporaryDirectory() as tmp:
                 path = Path(tmp) / "plan.md"
-                path.write_text(f"---\n{block}\n---\n")
-                with self.assertRaisesRegex(self.t.TicketError, "by hand"):
-                    self.t.edit_frontmatter(path, values)
-                self.assertEqual(path.read_text(), f"---\n{block}\n---\n")
+                path.write_bytes(f"\ufeff---\n{block}\n---\n# x\n".replace("\n", "\r\n").encode())
+                self.t.edit_frontmatter(path, values)
+                written = f"\ufeff---\n{expected}---\n# x\n".replace("\n", "\r\n").encode()
+                self.assertEqual(path.read_bytes(), written)
 
     def test_a_quoted_value_reads_back_exactly(self):
         for value in ("a   # b", "line\x85break\u2028and\u2029more", "del\x7f c1\x9f", 'it\'s "x" \\ y'):
             with self.subTest(value=value):
-                self.assertEqual(self.parse(f"reason: {self.t.quoted(value)}"), {"reason": value})
+                text = self.t.frontmatter.dump({"reason": self.t.quoted(value)})
+                self.assertEqual(self.t.parse_frontmatter(text, "x.md"), {"reason": value})
 
 
 class TitleSlugTests(unittest.TestCase):
@@ -2281,6 +2427,710 @@ class TitleSlugTests(unittest.TestCase):
         self.assertEqual(self.slug("登" * 80), "登" * 60)
         self.assertEqual(self.slug("\U00020000" * 80), "\U00020000" * 45)
         self.assertEqual(self.slug("🚀🚀"), "untitled")
+
+
+class FractalStoreAndMetadataTests(TreeCase):
+    def setUp(self):
+        super().setUp()
+        shutil.copy(CONFIG_UTILS, self.root / "_bmad" / "scripts" / "config_utils.py")
+        self.configure("initiative-checkout")
+
+    def configure(self, initiative, output_folder="{project-root}/out"):
+        line = f'active_initiative = "{initiative}"\n' if initiative is not None else ""
+        (self.root / "_bmad" / "config.toml").write_text(
+            f'[core]\noutput_folder = "{output_folder}"\n{line}', encoding="utf-8"
+        )
+
+    def ok(self, r):
+        self.assertEqual(r.returncode, 0, r.stderr)
+        return json.loads(r.stdout)
+
+    def fails(self, r, message=None):
+        self.assertEqual(r.returncode, 1, r.stdout)
+        err = json.loads(r.stderr)["error"]
+        if message is not None:
+            self.assertIn(message, err)
+        return err
+
+    def make_container(self, path, kind, body="", **fm_extra):
+        path.mkdir(parents=True, exist_ok=True)
+        lines = ["---", f"type: {kind}"]
+        for k, v in fm_extra.items():
+            lines.append(f"{k}: {v}")
+        lines.append("---")
+        if body:
+            lines += ["", body]
+        (path / f"{path.name}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        return path
+
+    def test_program_with_nested_unlisted_and_nested_parent_rollup(self):
+        prog = self.make_container(
+            self.root / "out" / "program-shop",
+            "program",
+            "# Shop Program\n\n## Requirements\n\nR1: Unified shop.\n\n## Notes\n\n- Open question: Program Q1\n",
+        )
+        # Program-local run folder (must appear in program's unadopted_runs, never children's)
+        prog_run = prog / "prd-program"
+        prog_run.mkdir()
+        (prog_run / "prd-program.md").write_text("---\ntemplate: prd-program\nstatus: draft\n---\n")
+
+        # Child 1: listed initiative-a with one refined/ready entry and one unrefined epic
+        init_a = self.make_container(
+            prog / "tickets" / "initiative-a",
+            "initiative",
+            "# Init A\n\n## Requirements\n\nR1: A.\n\n## Notes\n\n- Open question: Init A Q\n",
+        )
+        epic_a1 = self.make_container(
+            init_a / "tickets" / "epic-a1",
+            "epic",
+            "# A1\n\n## Notes\n\n- Unknown: Epic A1 Q\n",
+            refined="false",
+        )
+        (tk(epic_a1) / "tickets.toml").write_text(
+            '[[entry]]\nid = 1\ntype = "story"\ntitle = "A1 ready"\n\n'
+            '[[entry]]\nid = 2\ntype = "story"\ntitle = "A1 unknown"\nunknown = "Need API"\n'
+        )
+        (tk(init_a) / "tickets.toml").write_text('[[epic]]\nid = 1\nslug = "epic-a1"\n')
+        child_run = init_a / "prd-a"
+        child_run.mkdir()
+        (child_run / "prd-a.md").write_text("---\ntemplate: prd\nstatus: complete\n---\n")
+
+        # Child 2: unlisted nested initiative-b
+        init_b = self.make_container(prog / "tickets" / "initiative-b", "initiative", "# Init B\n")
+        epic_b1 = self.make_container(init_b / "tickets" / "epic-b1", "epic", "# B1\n")
+        (tk(epic_b1) / "tickets.toml").write_text('[[entry]]\nid = 1\ntype = "story"\ntitle = "B1 story"\n')
+        self.add("story-b1-story.md", ticket("in-progress", 1, refined="true"), epic_b1)
+        (tk(init_b) / "tickets.toml").write_text('[[epic]]\nid = 1\nslug = "epic-b1"\n')
+
+        # Child 3: listed nested parent initiative-group -> initiative-leaf
+        init_grp = self.make_container(
+            prog / "tickets" / "initiative-group",
+            "initiative",
+            "# Group\n\n## Notes\n\n- Open question: Group Q\n",
+        )
+        init_leaf = self.make_container(init_grp / "tickets" / "initiative-leaf", "initiative", "# Leaf\n")
+        epic_leaf = self.make_container(init_leaf / "tickets" / "epic-leaf", "epic", "# Leaf Epic\n", refined="false")
+        (tk(epic_leaf) / "tickets.toml").write_text('[[entry]]\nid = 1\ntype = "story"\ntitle = "Leaf ready"\n')
+        (tk(init_leaf) / "tickets.toml").write_text('[[epic]]\nid = 1\nslug = "epic-leaf"\n')
+        (tk(init_grp) / "tickets.toml").write_text('[[initiative]]\nid = 1\nslug = "initiative-leaf"\ntitle = "Leaf"\n')
+
+        (tk(prog) / "tickets.toml").write_text(
+            '[[initiative]]\nid = 1\nslug = "initiative-a"\ntitle = "Init A"\n\n'
+            '[[initiative]]\nid = 2\nslug = "initiative-group"\ntitle = "Group"\n'
+        )
+
+        st = self.ok(run("status", str(prog)))
+        self.assertEqual(st["container_type"], "program")
+        self.assertTrue(st["has_spec"])
+        self.assertEqual(
+            st["unadopted_runs"], [{"path": "prd-program/prd-program.md", "template": "prd-program", "status": "draft"}]
+        )
+        self.assertEqual(st["companions"], [])
+        self.assertEqual(
+            [(r["id"], r["slug"], r["folder"]) for r in st["initiatives"]],
+            [
+                (1, "initiative-a", "initiative-a"),
+                (2, "initiative-group", "initiative-group"),
+                (None, "initiative-b", "initiative-b"),
+            ],
+        )
+        for r in st["initiatives"]:
+            self.assertEqual(
+                set(r.keys()), {"id", "slug", "title", "after", "folder", "status", "counts", "waiting_on"}
+            )
+        self.assertEqual(st["counts"], {"total": 4, "planned": 3, "in-progress": 1})
+        self.assertEqual(
+            st["unrefined_epics"],
+            ["initiative-a/epic-a1", "initiative-group/initiative-leaf/epic-leaf"],
+        )
+        self.assertEqual(
+            st["ready_entries"],
+            ["initiative-a/1.1", "initiative-group/initiative-leaf/1.1"],
+        )
+        # Program Q1 (1) + Init A Q (1) + Epic A1 Q (1) + A1 entry 2 unknown (1) + Group Q (1) = 5
+        self.assertEqual(st["open_questions_count"], 5)
+
+        nxt = self.ok(run("next", str(prog)))
+        self.assertEqual(nxt["initiatives"], st["initiatives"])
+        self.assertEqual(nxt["ready"], ["initiative-a", "initiative-group", "initiative-b"])
+        for forbidden in (
+            "counts",
+            "container_type",
+            "has_spec",
+            "unadopted_runs",
+            "companions",
+            "unrefined_epics",
+            "ready_entries",
+            "open_questions_count",
+        ):
+            self.assertNotIn(forbidden, nxt)
+
+        # Nested active_initiative works directly
+        self.configure("program-shop/tickets/initiative-a")
+        nested_st = self.ok(run("status", cwd=self.root))
+        self.assertEqual(nested_st["folder"], "initiative-a")
+        self.assertEqual(nested_st["container_type"], "initiative")
+        self.assertEqual(nested_st["ready_entries"], ["1.1"])
+
+        # Errors: [[epic]] or [[entry]] inside a program's tickets.toml
+        (tk(prog) / "tickets.toml").write_text('[[epic]]\nid = 1\nslug = "epic-a1"\n')
+        self.fails(run("status", str(prog)), "program holds initiatives")
+        (tk(prog) / "tickets.toml").write_text('[[entry]]\nid = 1\ntype = "story"\ntitle = "Nope"\n')
+        self.fails(run("next", str(prog)), "program holds initiatives")
+
+        # Cycle in [[initiative]] after
+        (tk(prog) / "tickets.toml").write_text(
+            '[[initiative]]\nid = 1\nslug = "initiative-a"\nafter = [{ initiative = 2 }]\n\n'
+            '[[initiative]]\nid = 2\nslug = "initiative-group"\nafter = [{ initiative = 1 }]\n'
+        )
+        self.fails(run("status", str(prog)), "cycle through")
+
+        # Top-level parent listing itself as a sibling child cycles and exits 1
+        self_parent = self.make_container(self.root / "out" / "initiative-self", "initiative")
+        (tk(self_parent) / "tickets.toml").write_text('[[initiative]]\nid = 1\nslug = "initiative-self"\n')
+        self.fails(run("status", str(self_parent)), "cycle")
+
+    def test_program_symlink_cycle_exits_1(self):
+        real_init = self.make_container(self.root / "out" / "initiative-real", "initiative")
+        real_epic = self.make_container(real_init / "tickets" / "epic-real", "epic")
+        (tk(real_epic) / "tickets.toml").write_text('[[entry]]\nid = 1\ntype = "story"\ntitle = "Symlinked"\n')
+        (tk(real_init) / "tickets.toml").write_text('[[epic]]\nid = 1\nslug = "epic-real"\n')
+
+        prog_ok = self.make_container(self.root / "out" / "program-symlink", "program")
+        (prog_ok / "tickets").mkdir()
+        alias = prog_ok / "tickets" / "initiative-alias"
+        try:
+            alias.symlink_to(real_init)
+        except OSError:
+            self.skipTest("symlinks unavailable")
+        st_ok = self.ok(run("status", str(prog_ok)))
+        self.assertEqual(st_ok["initiatives"][0]["slug"], "initiative-alias")
+        self.assertEqual(st_ok["initiatives"][0]["folder"], "initiative-alias")
+        self.assertEqual(st_ok["counts"], {"total": 1, "planned": 1})
+        self.assertEqual(st_ok["ready_entries"], ["initiative-alias/1.1"])
+        nxt_ok = self.ok(run("next", str(prog_ok)))
+        self.assertEqual(nxt_ok["ready"], ["initiative-alias"])
+
+        prog = self.make_container(self.root / "out" / "program-loop", "program")
+        (prog / "tickets").mkdir()
+        loop_link = prog / "tickets" / "initiative-loop"
+        loop_link.symlink_to(prog)
+        self.fails(run("status", str(prog)), "cycle")
+
+    def test_program_rollup_gating_for_done_dropped_and_waiting_on(self):
+        prog = self.make_container(self.root / "out" / "program-gated", "program")
+        for slug, status, refined in (
+            ("initiative-done", "done", "false"),
+            ("initiative-dropped", "dropped", "false"),
+            ("initiative-open", "", "false"),
+            ("initiative-blocked", "", "false"),
+        ):
+            init = self.make_container(
+                prog / "tickets" / slug,
+                "initiative",
+                f"# {slug}\n\n## Notes\n\n- Open question: Q in {slug}\n",
+                status=status,
+            )
+            epic = self.make_container(init / "tickets" / f"epic-{slug}", "epic", refined=refined)
+            (tk(epic) / "tickets.toml").write_text(f'[[entry]]\nid = 1\ntype = "story"\ntitle = "{slug} story"\n')
+            (tk(init) / "tickets.toml").write_text(f'[[epic]]\nid = 1\nslug = "epic-{slug}"\n')
+
+        (tk(prog) / "tickets.toml").write_text(
+            '[[initiative]]\nid = 1\nslug = "initiative-done"\n\n'
+            '[[initiative]]\nid = 2\nslug = "initiative-dropped"\n\n'
+            '[[initiative]]\nid = 3\nslug = "initiative-open"\n\n'
+            '[[initiative]]\nid = 4\nslug = "initiative-blocked"\nafter = [{ initiative = 3 }]\n'
+        )
+
+        st = self.ok(run("status", str(prog)))
+        # All 4 existing children contribute to aggregate counts
+        self.assertEqual(st["counts"], {"total": 4, "planned": 4})
+        # done/dropped excluded from unrefined_epics & open_questions_count; waiting_on-blocked stays in both
+        self.assertEqual(
+            st["unrefined_epics"],
+            ["initiative-open/epic-initiative-open", "initiative-blocked/epic-initiative-blocked"],
+        )
+        self.assertEqual(st["open_questions_count"], 2)
+        # waiting_on-blocked excluded from ready_entries
+        self.assertEqual(st["ready_entries"], ["initiative-open/1.1"])
+
+    def test_empty_program_status_next_and_ticket_command_errors(self):
+        prog = self.make_container(self.root / "out" / "program-alpha", "program")
+        st = self.ok(run("status", str(prog)))
+        self.assertEqual(st["folder"], "program-alpha")
+        self.assertEqual(st["container_type"], "program")
+        self.assertEqual(st["initiatives"], [])
+        self.assertEqual(st["counts"], {"total": 0})
+        self.assertFalse(st["has_spec"])
+        self.assertEqual(st["unadopted_runs"], [])
+        self.assertEqual(st["companions"], [])
+        self.assertEqual(st["unrefined_epics"], [])
+        self.assertEqual(st["ready_entries"], [])
+        self.assertEqual(st["open_questions_count"], 0)
+
+        nxt = self.ok(run("next", str(prog)))
+        self.assertEqual(nxt["initiatives"], [])
+        self.assertEqual(nxt["ready"], [])
+        self.assertNotIn("container_type", nxt)
+
+        for args in (
+            ("find", str(prog), "1"),
+            ("pull", str(prog), "1"),
+            ("mark", str(prog), "1", "done"),
+            ("note", str(prog), "1", "hello"),
+            ("add", str(prog)),
+            ("move", str(prog), "1", str(self.epic)),
+            ("move", str(self.epic), "1", str(prog)),
+        ):
+            stdin = '{"type":"story","title":"x"}' if args[0] == "add" else None
+            if args == ("move", str(self.epic), "1", str(prog)):
+                (tk(self.epic) / "tickets.toml").write_text('[[entry]]\nid = 1\ntype = "story"\ntitle = "S"\n')
+            self.fails(run(*args, stdin=stdin), "program holds initiatives")
+
+        self.write_store("jira")
+        self.fails(run("mirror", str(prog), stdin="[]"), "program holds initiatives")
+
+    def test_legacy_sibling_parent_initiative_status_and_next(self):
+        self.seed(s1="done")
+        (self.epic / "epic-cart.md").write_text("---\ntype: epic\nrefined: false\n---\n# Cart\n")
+        parent = self.shop()
+        st = self.ok(run("status", str(parent)))
+        self.assertEqual(st["container_type"], "initiative")
+        self.assertEqual(st["counts"], {"total": 5, "done": 1, "backlog": 4})
+        self.assertEqual(st["unrefined_epics"], ["initiative-checkout/epic-cart"])
+        self.assertEqual(st["ready_entries"], [])
+        checkout, payments, refunds = st["initiatives"]
+        self.assertEqual(
+            set(checkout.keys()), {"id", "slug", "title", "after", "folder", "status", "counts", "waiting_on"}
+        )
+        self.assertIsNone(payments["folder"])
+        self.assertIsNone(refunds["folder"])
+
+        nxt = self.ok(run("next", str(parent)))
+        self.assertEqual(nxt["initiatives"], st["initiatives"])
+        self.assertEqual(nxt["ready"], ["initiative-checkout"])
+        self.assertNotIn("counts", nxt)
+        self.assertNotIn("container_type", nxt)
+
+        # Unlisted nested tickets/initiative-* on parent initiative appears in ticket-command errors
+        self.make_container(parent / "tickets" / "initiative-nested", "initiative")
+        self.fails(
+            run("find", str(parent), "1"),
+            "initiative-shop: a parent initiative holds initiatives; name one of them: "
+            "initiative-checkout, initiative-payments, initiative-refunds, initiative-nested",
+        )
+
+    def test_program_ignores_sibling_initiatives_and_empty_nested_tickets_dir(self):
+        # out/initiative-checkout already exists from TreeCase.setUp(), sibling to program-shop
+        prog = self.make_container(self.root / "out" / "program-isolated", "program")
+        (tk(prog) / "tickets.toml").write_text(
+            '[[initiative]]\nid = 1\nslug = "initiative-checkout"\ntitle = "C"\n\n'
+            '[[initiative]]\nid = 2\nslug = "initiative-placeholder"\ntitle = "P"\n'
+        )
+        # Empty placeholder dirs (unlisted and listed) with no .md or tickets.toml must not fail
+        (prog / "tickets" / "initiative-empty" / "tickets").mkdir(parents=True)
+        (prog / "tickets" / "initiative-placeholder").mkdir(parents=True)
+
+        st = self.ok(run("status", str(prog)))
+        self.assertEqual(len(st["initiatives"]), 2)
+        self.assertIsNone(st["initiatives"][0]["folder"])
+        self.assertIsNone(st["initiatives"][1]["folder"])
+        self.assertEqual(st["counts"], {"total": 0})
+        nxt = self.ok(run("next", str(prog)))
+        self.assertEqual(nxt["initiatives"], st["initiatives"])
+        self.assertEqual(nxt["ready"], ["initiative-checkout", "initiative-placeholder"])
+
+        # A nested parent initiative must not fall back to a sibling inside the program's tickets/ dir
+        self.make_container(prog / "tickets" / "initiative-a", "initiative")
+        grp = self.make_container(prog / "tickets" / "initiative-group", "initiative")
+        (tk(grp) / "tickets.toml").write_text('[[initiative]]\nid = 1\nslug = "initiative-a"\ntitle = "A"\n')
+        grp_st = self.ok(run("status", str(grp)))
+        self.assertIsNone(grp_st["initiatives"][0]["folder"])
+        self.assertEqual(grp_st["counts"], {"total": 0})
+
+    def test_standalone_and_nested_epic_scoping_and_validation(self):
+        # Standalone epic under output_folder
+        epic_auth = self.make_container(
+            self.root / "out" / "epic-auth",
+            "epic",
+            "# Auth\n\n## Requirements\n\nR1: Login.\n\n## Notes\n\n- Open question: Auth Q\n",
+            refined="false",
+        )
+        (tk(epic_auth) / "tickets.toml").write_text('[[entry]]\nid = 1\ntype = "story"\ntitle = "Login"\n')
+        self.configure("epic-auth")
+        for args in (("status", str(epic_auth)), ("status",)):
+            st = self.ok(run(*args, cwd=self.root))
+            self.assertEqual(st["container_type"], "epic")
+            self.assertEqual(st["unrefined_epics"], ["epic-auth"])
+            self.assertEqual(st["ready_entries"], ["1"])
+            self.assertEqual(st["open_questions_count"], 1)
+        self.assertEqual(self.ok(run("next", cwd=self.root))["ready_to_start"][0]["id"], 1)
+        self.assertEqual(self.ok(run("find", "1", cwd=self.root))["title"], "Login")
+
+        # Nested epic-pricing beside sibling epic-cart must not leak sibling's unrefined/open questions
+        pricing = self.pricing()
+        (self.epic / "epic-cart.md").write_text(
+            "---\ntype: epic\nrefined: false\n---\n# Cart\n\n## Notes\n\n- Open question: Sibling Cart Q\n"
+        )
+        self.add("story-cart-q.md", ticket("draft", 1), self.epic)
+        (self.initiative / "initiative-checkout.md").write_text(
+            "---\ntype: initiative\n---\n# Checkout\n\n## Notes\n\n- Open question: Init Q\n"
+        )
+        pricing_st = self.ok(run("status", str(pricing)))
+        self.assertEqual(pricing_st["container_type"], "epic")
+        self.assertEqual(pricing_st["unrefined_epics"], [])
+        self.assertEqual(pricing_st["open_questions_count"], 0)
+
+        # Invalid root type or status exits 1 on status, and on program-* for all commands
+        bad = self.make_container(self.root / "out" / "epic-bad", "story")
+        self.fails(run("status", str(bad)), "not one of program, initiative, epic")
+        bad_prog = self.make_container(self.root / "out" / "program-bad", "story")
+        self.fails(run("status", str(bad_prog)), "not one of program, initiative, epic")
+        self.fails(run("next", str(bad_prog)), "not one of program, initiative, epic")
+        self.fails(run("find", str(bad_prog), "1"), "not one of program, initiative, epic")
+        bad_status = self.make_container(self.root / "out" / "epic-bad-st", "epic", status="waiting")
+        self.fails(run("status", str(bad_status)), "in-progress, done, dropped")
+
+        # Existing initiatives with non-canonical status or missing type still run find/mark/next cleanly
+        for slug, init_md, status_err in (
+            ("initiative-planned", "---\ntype: initiative\nstatus: planned\n---\n", "in-progress, done, dropped"),
+            ("initiative-untyped", "# Untyped Container\n", "not one of program, initiative, epic"),
+        ):
+            leg = self.root / "out" / slug
+            leg_ep = self.make_container(leg / "tickets" / "epic-work", "epic")
+            (leg / f"{slug}.md").write_text(init_md)
+            (tk(leg_ep) / "tickets.toml").write_text('[[entry]]\nid = 1\ntype = "story"\ntitle = "Active"\n')
+            (tk(leg) / "tickets.toml").write_text('[[epic]]\nid = 1\nslug = "epic-work"\n')
+            self.assertEqual(self.ok(run("find", str(leg), "1.1"))["title"], "Active")
+            self.assertEqual(self.ok(run("next", str(leg)))["ready_to_start"][0]["id"], 1)
+            self.ok(run("mark", str(leg), "1.1", "in-progress"))
+            self.assertEqual(self.ok(run("next", str(leg)))["in_progress"][0]["id"], 1)
+            self.fails(run("status", str(leg)), status_err)
+
+        # Misnested container dirs beside <folder>.md fail with earlier-layout error
+        for sub_name in ("program-sub", "initiative-sub", "epic-sub"):
+            mis = self.make_container(self.root / "out" / f"program-mis-{sub_name}", "program")
+            (mis / sub_name).mkdir()
+            self.fails(run("status", str(mis)), "uses the earlier layout")
+
+    def test_unadopted_runs_custom_templates_and_ignores(self):
+        epic = self.make_container(self.root / "out" / "epic-runs", "epic")
+        # Non-matching run filename with template:
+        prd = epic / "prd-cart"
+        prd.mkdir()
+        (prd / "prd-epic-cart.md").write_text("---\ntemplate: prd-epic\nstatus: complete\n---\n")
+        # Custom template
+        arch = epic / "arch-security-test-auth"
+        arch.mkdir()
+        (arch / "arch-security-test-auth.md").write_text("---\ntemplate: arch-security-test\n---\n")
+        # Legacy UX wrapper (empty status) + sibling DESIGN.md (status: final)
+        ux = epic / "ux-cart"
+        ux.mkdir()
+        (ux / "ux-cart.md").write_text("---\n---\n")
+        (ux / "DESIGN.md").write_text("---\nstatus: final\n---\n")
+        # Tier-3 fallback: no <dir>.md and no template:, picks first sorted .md with frontmatter
+        custom = epic / "research-market"
+        custom.mkdir()
+        (custom / "00-readme.md").write_text("# No frontmatter\n")
+        (custom / "01-notes.md").write_text("---\nstatus: draft\n---\n")
+        # Ignored folders (misnested program-*/initiative-*/epic-* beside <folder>.md are rejected by tickets_dir)
+        for ignored in ("tickets", "backlog", ".git", "_scratch"):
+            (epic / ignored).mkdir(exist_ok=True)
+        (epic / "plain-dir").mkdir()
+        (epic / "plain-dir" / "notes.md").write_text("# No frontmatter here\n")
+        (epic / "imposter-dir").mkdir()
+        (epic / "imposter-dir" / "imposter-dir.md").write_text("---\ntype: epic\n---\n")
+        (epic / "imposter-dir" / "DESIGN.md").write_text("---\nstatus: final\n---\n")
+
+        st = self.ok(run("status", str(epic)))
+        self.assertEqual(
+            st["unadopted_runs"],
+            [
+                {
+                    "path": "arch-security-test-auth/arch-security-test-auth.md",
+                    "template": "arch-security-test",
+                    "status": "",
+                },
+                {"path": "prd-cart/prd-epic-cart.md", "template": "prd-epic", "status": "complete"},
+                {"path": "research-market/01-notes.md", "template": "research", "status": "draft"},
+                {"path": "ux-cart/ux-cart.md", "template": "ux", "status": "final"},
+            ],
+        )
+
+        # Adopt via sources: and companions: (including dir-level adoption)
+        (epic / "epic-runs.md").write_text(
+            "---\n"
+            "type: epic\n"
+            "sources: [prd-cart/prd-epic-cart.md, research-market]\n"
+            "companions: [arch-security-test-auth/arch-security-test-auth.md, ux-cart/DESIGN.md]\n"
+            "---\n"
+        )
+        st = self.ok(run("status", str(epic)))
+        self.assertEqual(st["unadopted_runs"], [])
+        self.assertEqual(
+            st["companions"],
+            [
+                {"path": "arch-security-test-auth/arch-security-test-auth.md", "template": "arch-security-test"},
+                {"path": "ux-cart/DESIGN.md", "template": "ux"},
+            ],
+        )
+
+    def test_companions_fragment_project_root_url_non_md_and_errors(self):
+        # External output_folder + --project-root
+        ext_tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(ext_tmp.cleanup)
+        ext_out = Path(ext_tmp.name)
+        epic = self.make_container(ext_out / "epic-cart", "epic")
+
+        ux = epic / "ux-epic-cart"
+        ux.mkdir()
+        (ux / "ux-epic-cart.md").write_text("---\ntemplate: ux-epic\n---\n")
+        (ux / "EXPERIENCE.md").write_text("# Experience\n")
+
+        arch = self.root / "docs" / "arch-epic-cart"
+        arch.mkdir(parents=True)
+        (arch / "arch-epic-cart.md").write_text("---\ntemplate: arch-epic\n---\n")
+        # Invalid binary / non-md file must never trigger frontmatter parse
+        (arch / "contract.yaml").write_bytes(b"openapi: 3.0.0\n# \xff\n")
+
+        broken = epic / "ux-broken"
+        broken.mkdir()
+        (broken / "ux-broken.md").write_text("---\ntemplate: ux-custom\n---\n")
+        (broken / "bad.md").write_bytes(b"---\ntemplate: x\n---\n\xff")
+
+        # Existing non-md in a run folder with no sibling .md still resolves prefix fallback
+        arch_raw = epic / "arch-raw"
+        arch_raw.mkdir()
+        (arch_raw / "contract.yaml").write_text("openapi: 3.0.0\n")
+
+        # Existing plain hyphenated file directly in container must not guess "api" from stem
+        (epic / "api-spec.md").write_text("# API Spec\n")
+
+        companions = [
+            "ux-epic-cart/EXPERIENCE.md#checkout",
+            "{project-root}/docs/arch-epic-cart/contract.yaml",
+            "https://example.com/spec#auth",
+            "ux-broken/bad.md",
+            "arch-raw/contract.yaml",
+            "api-spec.md",
+            "{project-root}/contract.yaml",
+            "{project-root}/missing-prefix/doc.md",
+            "missing-prefix/doc.md",
+            "plain.md",
+        ]
+        (epic / "epic-cart.md").write_text(
+            "---\ntype: epic\ncompanions:\n" + "".join(f'  - "{c}"\n' for c in companions) + "---\n"
+        )
+        st = self.ok(run("--project-root", str(self.root), "status", str(epic)))
+        # ux-epic-cart, ux-broken, and arch-raw were adopted via companions:
+        self.assertEqual(st["unadopted_runs"], [])
+        self.assertEqual(
+            st["companions"],
+            [
+                {"path": "ux-epic-cart/EXPERIENCE.md#checkout", "template": "ux-epic"},
+                {"path": "{project-root}/docs/arch-epic-cart/contract.yaml", "template": "arch-epic"},
+                {"path": "https://example.com/spec#auth", "template": ""},
+                {"path": "ux-broken/bad.md", "template": "ux-custom"},
+                {"path": "arch-raw/contract.yaml", "template": "arch"},
+                {"path": "api-spec.md", "template": ""},
+                {"path": "{project-root}/contract.yaml", "template": ""},
+                {"path": "{project-root}/missing-prefix/doc.md", "template": ""},
+                {"path": "missing-prefix/doc.md", "template": ""},
+                {"path": "plain.md", "template": ""},
+            ],
+        )
+
+        # Also verify via active_initiative with external output_folder (no explicit --project-root)
+        self.configure("epic-cart", output_folder=ext_out.as_posix())
+        st_active = self.ok(run("status", cwd=self.root))
+        self.assertEqual(st_active["companions"], st["companions"])
+        self.assertEqual(st_active["unadopted_runs"], [])
+
+        # Invalid sources: / companions: values fail naming the field
+        for bad_fm, field in (
+            ("sources: single.md", "sources"),
+            ("companions: single.md", "companions"),
+            ("sources: [123]", "sources"),
+            ("companions: [true]", "companions"),
+        ):
+            (epic / "epic-cart.md").write_text(f"---\ntype: epic\n{bad_fm}\n---\n")
+            self.fails(run("--project-root", str(self.root), "status", str(epic)), field)
+
+    def test_has_spec_and_open_questions_count(self):
+        # 1. Frontmatter-only stub -> has_spec false
+        stub = self.make_container(self.root / "out" / "epic-stub", "epic")
+        self.assertFalse(self.ok(run("status", str(stub)))["has_spec"])
+
+        # 2. refined: false epic with Requirements -> has_spec false
+        unref = self.make_container(
+            self.root / "out" / "epic-unref", "epic", "# Unref\n\n## Requirements\n\nR1: Thing.\n", refined="false"
+        )
+        self.assertFalse(self.ok(run("status", str(unref)))["has_spec"])
+
+        # 3. Outcome only -> has_spec false
+        outcome = self.make_container(self.root / "out" / "initiative-outcome", "initiative", "## Outcome\n\nFast.\n")
+        self.assertFalse(self.ok(run("status", str(outcome)))["has_spec"])
+
+        # 4. Requirements with only HTML comment + CRLF -> has_spec false
+        commented = self.make_container(self.root / "out" / "epic-commented", "epic")
+        (commented / "epic-commented.md").write_bytes(
+            b"---\r\ntype: epic\r\n---\r\n# C\r\n\r\n## Requirements\r\n\r\n<!-- placeholder -->\r\n"
+        )
+        self.assertFalse(self.ok(run("status", str(commented)))["has_spec"])
+
+        # 5. Populated Requirements with CRLF -> has_spec true
+        (commented / "epic-commented.md").write_bytes(
+            b"---\r\ntype: epic\r\n---\r\n# C\r\n\r\n## Requirements\r\n\r\nR1: Real.\r\n"
+        )
+        self.assertTrue(self.ok(run("status", str(commented)))["has_spec"])
+
+        # Open questions count across container, open child epics, and open tickets (excluding comments & done/dropped)
+        (self.initiative / "initiative-checkout.md").write_text(
+            "---\ntype: initiative\n---\n# Checkout\n\n## Notes\n\n"
+            "- Open question: Init Q1\n"
+            "- **open question:** Init Q2\n"
+            "<!-- - Open question: commented out -->\n"
+            "**Unknown**: Init Q3\n"
+        )
+        (self.epic / "epic-cart.md").write_text(
+            "---\ntype: epic\n---\n# Cart\n\n## Notes\n\n* unknown: Epic Q1\n<!-- - Unknown: commented out -->\n"
+        )
+        (tk(self.epic) / "tickets.toml").write_text(
+            '[[entry]]\nid = 1\ntype = "story"\ntitle = "Open unknown"\nunknown = "Host?"\n\n'
+            '[[entry]]\nid = 2\ntype = "story"\ntitle = "Done unknown"\nunknown = "Old?"\n\n'
+            '[[entry]]\nid = 3\ntype = "story"\ntitle = "Dropped unknown"\nunknown = "Cut?"\n\n'
+            '[[entry]]\nid = 4\ntype = "story"\ntitle = "Pulled unknown"\n'
+        )
+        self.add(
+            "story-pulled-unknown.md",
+            ticket("draft", 4) + "\n## Notes\n\n- Unknown: Pulled gap\n<!-- - Unknown: comment -->\n",
+            self.epic,
+        )
+        self.add("story-done-unknown-plan.md", plan(2, "done"), self.epic)
+        self.add("story-dropped-unknown-plan.md", plan(3, "dropped"), self.epic)
+
+        done_epic = self.add_epic("epic-done", status="done")
+        (done_epic / "epic-done.md").write_text(
+            "---\ntype: epic\nstatus: done\n---\n# Done\n\n## Notes\n\n- Open question: Ignored\n"
+        )
+        (tk(done_epic) / "tickets.toml").write_text(
+            '[[entry]]\nid = 1\ntype = "story"\ntitle = "In done epic"\nunknown = "Ignored"\n'
+        )
+        (tk(self.initiative) / "tickets.toml").write_text(
+            '[[epic]]\nid = 1\nslug = "epic-cart"\n\n[[epic]]\nid = 2\nslug = "epic-done"\n'
+        )
+
+        st = self.ok(run("status", str(self.initiative)))
+        # Init (3) + Epic Cart (1) + Open ticket 1 (1) + Pulled ticket 4 (1) = 6
+        self.assertEqual(st["open_questions_count"], 6)
+
+    def test_backlog_status_direct_and_with_backlog(self):
+        backlog = self.add_backlog()
+        self.add("bug-a.md", ticket("ready-for-dev", 3, kind="bug", refined="true"), backlog)
+        self.add("bug-b.md", ticket("ready-for-dev", kind="bug", refined="true"), backlog)
+        self.add("bug-c.md", ticket("draft", 4, kind="bug"), backlog)
+
+        direct = self.ok(run("status", str(backlog)))
+        self.assertIsNone(direct["container_type"])
+        self.assertFalse(direct["has_spec"])
+        self.assertEqual(direct["unadopted_runs"], [])
+        self.assertEqual(direct["companions"], [])
+        self.assertEqual(direct["unrefined_epics"], [])
+        self.assertEqual(direct["ready_entries"], ["3", "bug-b.md"])
+        self.assertEqual(direct["open_questions_count"], 0)
+
+        with_active = self.ok(run("status", cwd=self.root))
+        bl = with_active["backlog"]
+        self.assertIsNone(bl["container_type"])
+        self.assertEqual(bl["ready_entries"], ["bug-a.md", "bug-b.md"])
+
+    def test_closed_containers_clear_unrefined_ready_and_open_questions(self):
+        # 1. Done epic run directly
+        done_epic = self.make_container(
+            self.root / "out" / "epic-closed",
+            "epic",
+            "# Closed\n\n## Notes\n\n- Open question: Old Q\n",
+            status="done",
+            refined="false",
+        )
+        (tk(done_epic) / "tickets.toml").write_text(
+            '[[entry]]\nid = 1\ntype = "story"\ntitle = "Ready"\n\n'
+            '[[entry]]\nid = 2\ntype = "story"\ntitle = "Unknown"\nunknown = "Gap"\n'
+        )
+        epic_st = self.ok(run("status", str(done_epic)))
+        self.assertEqual(epic_st["unrefined_epics"], [])
+        self.assertEqual(epic_st["ready_entries"], [])
+        self.assertEqual(epic_st["open_questions_count"], 0)
+
+        # 2. Dropped initiative run directly
+        dropped_init = self.make_container(
+            self.root / "out" / "initiative-dropped-direct",
+            "initiative",
+            "# Dropped\n\n## Notes\n\n- Open question: Init Q\n",
+            status="dropped",
+        )
+        sub_epic = self.make_container(
+            dropped_init / "tickets" / "epic-sub",
+            "epic",
+            "# Sub\n\n## Notes\n\n- Open question: Sub Q\n",
+            refined="false",
+        )
+        (tk(sub_epic) / "tickets.toml").write_text(
+            '[[entry]]\nid = 1\ntype = "story"\ntitle = "Sub ready"\n\n'
+            '[[entry]]\nid = 2\ntype = "story"\ntitle = "Sub unknown"\nunknown = "Gap"\n'
+        )
+        (tk(dropped_init) / "tickets.toml").write_text('[[epic]]\nid = 1\nslug = "epic-sub"\n')
+        init_st = self.ok(run("status", str(dropped_init)))
+        self.assertEqual(init_st["unrefined_epics"], [])
+        self.assertEqual(init_st["ready_entries"], [])
+        self.assertEqual(init_st["open_questions_count"], 0)
+
+        # 3. Done program run directly (keeps aggregate counts, clears rollup lists/open questions)
+        done_prog = self.make_container(
+            self.root / "out" / "program-closed",
+            "program",
+            "# Closed Program\n\n## Notes\n\n- Open question: Prog Q\n",
+            status="done",
+        )
+        child_init = self.make_container(
+            done_prog / "tickets" / "initiative-child",
+            "initiative",
+            "# Child\n\n## Notes\n\n- Open question: Child Q\n",
+        )
+        child_epic = self.make_container(child_init / "tickets" / "epic-child", "epic", refined="false")
+        (tk(child_epic) / "tickets.toml").write_text('[[entry]]\nid = 1\ntype = "story"\ntitle = "Ready"\n')
+        (tk(child_init) / "tickets.toml").write_text('[[epic]]\nid = 1\nslug = "epic-child"\n')
+        (tk(done_prog) / "tickets.toml").write_text('[[initiative]]\nid = 1\nslug = "initiative-child"\n')
+        prog_st = self.ok(run("status", str(done_prog)))
+        self.assertEqual(prog_st["counts"], {"total": 1, "planned": 1})
+        self.assertEqual(prog_st["unrefined_epics"], [])
+        self.assertEqual(prog_st["ready_entries"], [])
+        self.assertEqual(prog_st["open_questions_count"], 0)
+
+        # 4. Open initiative & program exclude done/dropped epic entries from ready_entries while keeping counts & next
+        open_prog = self.make_container(self.root / "out" / "program-mixed-epics", "program")
+        mixed_init = self.make_container(open_prog / "tickets" / "initiative-mixed", "initiative")
+        ep_done = self.make_container(mixed_init / "tickets" / "epic-done", "epic", status="done")
+        ep_drop = self.make_container(mixed_init / "tickets" / "epic-dropped", "epic", status="dropped")
+        ep_open = self.make_container(mixed_init / "tickets" / "epic-open", "epic")
+        for ep, title in ((ep_done, "Done S"), (ep_drop, "Drop S"), (ep_open, "Open S")):
+            (tk(ep) / "tickets.toml").write_text(f'[[entry]]\nid = 1\ntype = "story"\ntitle = "{title}"\n')
+        (tk(mixed_init) / "tickets.toml").write_text(
+            '[[epic]]\nid = 1\nslug = "epic-done"\n\n'
+            '[[epic]]\nid = 2\nslug = "epic-dropped"\n\n'
+            '[[epic]]\nid = 3\nslug = "epic-open"\n'
+        )
+        (tk(open_prog) / "tickets.toml").write_text('[[initiative]]\nid = 1\nslug = "initiative-mixed"\n')
+
+        mixed_st = self.ok(run("status", str(mixed_init)))
+        self.assertEqual(mixed_st["counts"], {"total": 3, "planned": 3})
+        self.assertEqual(mixed_st["ready_entries"], ["3.1"])
+        mixed_nxt = self.ok(run("next", str(mixed_init)))
+        self.assertEqual([r["ref"] for r in mixed_nxt["ready_to_start"]], ["1.1", "2.1", "3.1"])
+
+        open_prog_st = self.ok(run("status", str(open_prog)))
+        self.assertEqual(open_prog_st["counts"], {"total": 3, "planned": 3})
+        self.assertEqual(open_prog_st["ready_entries"], ["initiative-mixed/3.1"])
 
 
 if __name__ == "__main__":

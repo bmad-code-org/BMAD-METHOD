@@ -10,6 +10,7 @@ lifecycle status the log would have to mutate.
 """
 
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -18,7 +19,10 @@ import pytest
 import yaml
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/method/bmad-agent-po/scripts/memlog.py"
+FRONTMATTER = SCRIPT.parents[3] / "core-tools" / "bmad" / "scripts" / "frontmatter.py"
+sys.path.insert(0, str(FRONTMATTER.parent))
 sys.path.insert(0, str(SCRIPT.parent))
+import frontmatter  # noqa: E402
 import memlog  # noqa: E402
 
 MEMLOG = ".memlog.md"
@@ -26,6 +30,9 @@ MEMLOG = ".memlog.md"
 
 @pytest.fixture
 def ws(tmp_path):
+    scripts = tmp_path / "_bmad" / "scripts"
+    scripts.mkdir(parents=True)
+    shutil.copy2(FRONTMATTER, scripts)
     return str(tmp_path)
 
 
@@ -33,8 +40,17 @@ def read(ws):
     return (Path(ws) / MEMLOG).read_text(encoding="utf-8")
 
 
+def read_log(text):
+    fields, body = frontmatter.split(text)
+    return frontmatter.load(fields), body
+
+
+def run(project_root, *args):
+    return memlog.main(["--project-root", project_root, *args])
+
+
 def body_of(ws):
-    return memlog.split(read(ws))[1]
+    return frontmatter.split(read(ws))[1]
 
 
 def entries(ws):
@@ -46,7 +62,7 @@ def init(ws, **fields):
     argv = ["init", "--workspace", ws]
     for k, v in fields.items():
         argv += ["--field", f"{k}={v}"]
-    assert memlog.main(argv) == 0
+    assert run(ws, *argv) == 0
 
 
 def append(ws, text, entry_type=None, by=None):
@@ -55,7 +71,7 @@ def append(ws, text, entry_type=None, by=None):
         argv += ["--type", entry_type]
     if by:
         argv += ["--by", by]
-    assert memlog.main(argv) == 0
+    assert run(ws, *argv) == 0
 
 
 # --- init ---------------------------------------------------------------
@@ -63,7 +79,7 @@ def append(ws, text, entry_type=None, by=None):
 
 def test_init_writes_frontmatter_fields(ws):
     init(ws)
-    meta, body = memlog.split(read(ws))
+    meta, body = read_log(read(ws))
     assert meta["topic"] == "Reinvent the lunchbox"
     assert meta["goal"] == "ideas for a pitch"
     assert "updated" in meta
@@ -73,54 +89,54 @@ def test_init_writes_frontmatter_fields(ws):
 def test_init_has_no_lifecycle_status(ws):
     # A memory log carries no "status" flag; completion is an appended entry, not frontmatter.
     init(ws)
-    meta, _ = memlog.split(read(ws))
+    meta, _ = read_log(read(ws))
     assert "status" not in meta
 
 
 def test_init_arbitrary_fields(ws):
     init(ws, topic="T", audience="board")
-    meta, _ = memlog.split(read(ws))
+    meta, _ = read_log(read(ws))
     assert meta["audience"] == "board"
 
 
 def test_init_refuses_overwrite(ws):
     init(ws)
-    assert memlog.main(["init", "--workspace", ws, "--field", "topic=other"]) == 2
+    assert run(ws, "init", "--workspace", ws, "--field", "topic=other") == 2
 
 
-def test_init_creates_missing_workspace(tmp_path):
-    nested = str(tmp_path / "a" / "b")
-    assert memlog.main(["init", "--workspace", nested, "--field", "topic=T"]) == 0
+def test_init_creates_missing_workspace(ws):
+    nested = str(Path(ws) / "a" / "b")
+    assert run(ws, "init", "--workspace", nested, "--field", "topic=T") == 0
     assert (Path(nested) / MEMLOG).is_file()
 
 
 def test_init_rejects_malformed_field(ws):
-    assert memlog.main(["init", "--workspace", ws, "--field", "noequals"]) == 2
+    assert run(ws, "init", "--workspace", ws, "--field", "noequals") == 2
 
 
 # --- addressing: --workspace and --path are interchangeable --------------
 
 
-def test_path_addressing_targets_the_file_directly(tmp_path):
-    target = tmp_path / "run" / ".memlog.md"
-    assert memlog.main(["init", "--path", str(target), "--field", "topic=T"]) == 0
+def test_path_addressing_targets_the_file_directly(ws):
+    target = Path(ws) / "run" / ".memlog.md"
+    assert run(ws, "init", "--path", str(target), "--field", "topic=T") == 0
     assert target.is_file()
-    assert memlog.main(["append", "--path", str(target), "--text", "an idea", "--type", "idea"]) == 0
-    body = memlog.split(target.read_text(encoding="utf-8"))[1]
+    assert run(ws, "append", "--path", str(target), "--text", "an idea", "--type", "idea") == 0
+    body = read_log(target.read_text(encoding="utf-8"))[1]
     assert "- (idea) an idea" in body
 
 
 def test_workspace_and_path_resolve_to_same_file(ws):
     init(ws)
     via_path = str(Path(ws) / MEMLOG)
-    assert memlog.main(["append", "--path", via_path, "--text", "from path"]) == 0
-    assert memlog.main(["append", "--workspace", ws, "--text", "from workspace"]) == 0
+    assert run(ws, "append", "--path", via_path, "--text", "from path") == 0
+    assert run(ws, "append", "--workspace", ws, "--text", "from workspace") == 0
     assert entries(ws) == ["- from path", "- from workspace"]
 
 
 def test_target_is_required(ws):
     with pytest.raises(SystemExit):
-        memlog.main(["append", "--text", "orphan"])  # neither --workspace nor --path
+        run(ws, "append", "--text", "orphan")  # neither --workspace nor --path
 
 
 # --- append: flat chronological order is the whole point -----------------
@@ -161,7 +177,7 @@ def test_completion_is_an_entry_not_a_status(ws):
     # The documented way to mark a session done: append it. Frontmatter never gains a status.
     init(ws)
     append(ws, "session complete", entry_type="event")
-    meta, _ = memlog.split(read(ws))
+    meta, _ = read_log(read(ws))
     assert "status" not in meta
     assert entries(ws)[-1] == "- (event) session complete"
 
@@ -233,46 +249,76 @@ def test_free_vocabulary_is_not_enforced(ws):
 
 def test_set_adds_field(ws):
     init(ws)
-    memlog.main(["set", "--workspace", ws, "--key", "mode", "--value", "partner"])
-    assert memlog.split(read(ws))[0]["mode"] == "partner"
+    run(ws, "set", "--workspace", ws, "--key", "mode", "--value", "partner")
+    assert read_log(read(ws))[0]["mode"] == "partner"
 
 
 def test_set_replaces_field(ws):
     init(ws, topic="T", mode="facilitator")
-    memlog.main(["set", "--workspace", ws, "--key", "mode", "--value", "partner"])
-    assert memlog.split(read(ws))[0]["mode"] == "partner"
+    run(ws, "set", "--workspace", ws, "--key", "mode", "--value", "partner")
+    assert read_log(read(ws))[0]["mode"] == "partner"
 
 
 def test_set_preserves_body(ws):
     init(ws)
     append(ws, "keep me", entry_type="idea")
-    memlog.main(["set", "--workspace", ws, "--key", "mode", "--value", "partner"])
-    meta, body = memlog.split(read(ws))
+    run(ws, "set", "--workspace", ws, "--key", "mode", "--value", "partner")
+    meta, body = read_log(read(ws))
     assert meta["mode"] == "partner"
     assert "- (idea) keep me" in body
 
 
+def test_set_reports_malformed_frontmatter_on_one_line(ws, capsys):
+    raw = "---\ntopic: Auth: phase 2\n---\n\n- keep me\n"
+    (Path(ws) / MEMLOG).write_text(raw, encoding="utf-8")
+
+    assert run(ws, "set", "--workspace", ws, "--key", "mode", "--value", "partner") == 2
+
+    output = capsys.readouterr()
+    assert output.out == ""
+    assert output.err.startswith("error: mapping values are not allowed here")
+    assert len(output.err.splitlines()) == 1
+    assert read(ws) == raw
+
+
 def test_updated_stays_last(ws):
     init(ws)
-    memlog.main(["set", "--workspace", ws, "--key", "owner", "--value", "BMad"])
-    meta = memlog.split(read(ws))[0]
+    run(ws, "set", "--workspace", ws, "--key", "owner", "--value", "BMad")
+    meta = read_log(read(ws))[0]
     assert list(meta)[-1] == "updated"
 
 
 # --- robustness ---------------------------------------------------------
 
 
-def test_roundtrip_render_is_stable(ws):
+def test_set_roundtrip_preserves_frontmatter_and_body(ws):
     init(ws)
     append(ws, "one", entry_type="idea")
-    meta, body = memlog.split(read(ws))
-    assert memlog.split(memlog.render(meta, body)) == (meta, body)
+    meta, body = read_log(read(ws))
+    assert run(ws, "set", "--workspace", ws, "--key", "topic", "--value", meta["topic"]) == 0
+    after, after_body = read_log(read(ws))
+    assert {k: v for k, v in after.items() if k != "updated"} == {k: v for k, v in meta.items() if k != "updated"}
+    assert after_body == "\n" + body.lstrip("\n")
+
+
+def test_missing_installed_module_prompts_setup(tmp_path):
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--project-root", str(tmp_path), "init", "--workspace", str(tmp_path)],
+        capture_output=True,
+        encoding="utf-8",
+        check=False,
+    )
+    assert result.returncode == 2
+    assert result.stdout == ""
+    missing = tmp_path / "_bmad" / "scripts" / "frontmatter.py"
+    assert result.stderr.splitlines() == [f"error: {missing} is missing. Run bmad setup for this project."]
+    assert not (tmp_path / MEMLOG).exists()
 
 
 def test_commas_in_field_survive(ws):
     init(ws, topic="cars, trains, and planes")
     append(ws, "z", entry_type="idea")
-    meta, _ = memlog.split(read(ws))
+    meta, _ = read_log(read(ws))
     assert meta["topic"] == "cars, trains, and planes"
 
 
@@ -281,7 +327,7 @@ def test_triple_dash_in_field_does_not_corrupt_frontmatter(ws):
     # and the body never leaks frontmatter text.
     init(ws, topic="Pricing --- tiers --- and add-ons")
     append(ws, "an idea", entry_type="idea")
-    meta, body = memlog.split(read(ws))
+    meta, body = read_log(read(ws))
     assert meta["topic"] == "Pricing --- tiers --- and add-ons"
     assert entries(ws) == ["- (idea) an idea"]
     assert "topic:" not in body  # frontmatter never bled into the body
@@ -289,9 +335,9 @@ def test_triple_dash_in_field_does_not_corrupt_frontmatter(ws):
 
 def test_newline_in_field_is_neutralized(ws):
     # A value carrying a newline can't break the fence on the next round-trip.
-    memlog.main(["init", "--workspace", ws, "--field", "topic=line one\nline two"])
+    run(ws, "init", "--workspace", ws, "--field", "topic=line one\nline two")
     append(ws, "x", entry_type="idea")
-    meta, _ = memlog.split(read(ws))
+    meta, _ = read_log(read(ws))
     assert "\n" not in meta["topic"]
 
 
@@ -320,7 +366,7 @@ def test_ack_entry_count_climbs(ws, capsys):
 def test_first_entry_after_init(ws):
     init(ws)
     append(ws, "first", entry_type="idea")
-    meta, _ = memlog.split(read(ws))
+    meta, _ = read_log(read(ws))
     assert meta["topic"] == "Reinvent the lunchbox"
     assert entries(ws) == ["- (idea) first"]
 
@@ -328,16 +374,16 @@ def test_first_entry_after_init(ws):
 def test_append_does_not_restamp_updated(ws):
     init(ws)
     path = Path(ws) / MEMLOG
-    path.write_text(read(ws).replace(memlog.split(read(ws))[0]["updated"], "2000-01-01T00:00"), encoding="utf-8")
+    path.write_text(read(ws).replace(read_log(read(ws))[0]["updated"], "2000-01-01T00:00"), encoding="utf-8")
     append(ws, "a")
     append(ws, "b")
-    assert memlog.split(read(ws))[0]["updated"] == "2000-01-01T00:00"
+    assert read_log(read(ws))[0]["updated"] == "2000-01-01T00:00"
     assert entries(ws) == ["- a", "- b"]
 
 
 def test_append_to_missing_log_fails_and_creates_nothing(ws):
     with pytest.raises(FileNotFoundError):
-        memlog.main(["append", "--workspace", ws, "--text", "orphan"])
+        run(ws, "append", "--workspace", ws, "--text", "orphan")
     assert not (Path(ws) / MEMLOG).exists()
 
 
@@ -355,7 +401,7 @@ def test_parallel_appends_all_land(ws):
     n = 40
     procs = [
         subprocess.Popen(
-            [sys.executable, str(SCRIPT), "append", "--workspace", ws, "--text", f"entry {i}"],
+            [sys.executable, str(SCRIPT), "--project-root", ws, "append", "--workspace", ws, "--text", f"entry {i}"],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,
         )
@@ -364,12 +410,13 @@ def test_parallel_appends_all_land(ws):
     failures = [p.stderr.read().decode() for p in procs if p.wait() != 0]
     assert failures == []
     assert sorted(entries(ws)) == sorted(f"- entry {i}" for i in range(n))
+    assert not (Path(ws) / "_bmad" / "scripts" / "__pycache__").exists()
 
 
 def test_fields_that_clash_with_yaml_round_trip_as_yaml(ws):
     init(ws, topic="Fix #42: login", commit="0123456", flag="yes")
-    memlog.main(["set", "--workspace", ws, "--key", "owner: alex", "--value", "x"])
-    memlog.main(["set", "--workspace", ws, "--key", "a\n---\nb", "--value", "y"])
+    run(ws, "set", "--workspace", ws, "--key", "owner: alex", "--value", "x")
+    run(ws, "set", "--workspace", ws, "--key", "a\n---\nb", "--value", "y")
     want = {"topic": "Fix #42: login", "commit": "0123456", "flag": "yes", "owner: alex": "x", "a --- b": "y"}
-    assert {k: v for k, v in memlog.split(read(ws))[0].items() if k != "updated"} == want
-    assert {k: v for k, v in yaml.safe_load(read(ws).split("---\n")[1]).items() if k != "updated"} == want
+    assert {k: v for k, v in read_log(read(ws))[0].items() if k != "updated"} == want
+    assert {k: v for k, v in yaml.safe_load(frontmatter.split(read(ws))[0]).items() if k != "updated"} == want

@@ -16,7 +16,7 @@ When the user wants to rethink the skill from its outcomes rather than adjust it
 
 ## Apply
 
-Make the change to the standard of `canon.md` and cut any line the change makes dead. Fit the existing voice and structure.
+Make the change to the standard of `canon.md` and cut any line the change makes dead. Fit the existing voice and structure, splitting or rewriting a dense paragraph rather than bolting clauses onto it.
 
 When the change touches the description or adds a capability, write or extend `{evals}/triggers.json` with queries for the new ground and near misses, so ship's trigger eval covers the change.
 

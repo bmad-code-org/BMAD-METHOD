@@ -61,13 +61,14 @@ project has a level above Epic; then epics take it as --parent.
 query = """
 One work item: `acli jira workitem view <key> --json --fields
 key,issuetype,summary,status,assignee,parent,labels,issuelinks,resolution,description`. after is the
-"is blocked by" links; Done with resolution Won't Do is dropped; the description's covers holds the source requirement ids. Children:
+"is blocked by" links; Done with resolution Won't Do is dropped; the `covers —` lines in its References hold the source requirement ids. Children:
 `search --jql "parent = <key>"`. Words: `search --jql 'project = <key> AND text ~ "<words>"'`,
 narrowed by issuetype or status per the maps.
 """
 
 # BMad type -> this store's type.
 [tickets.types]
+program = ""   # empty: the program stays local; its children attach to the nearest published ancestor
 initiative = ""   # empty: the initiative stays local. Jira's default hierarchy is Epic > Story > Subtask; a level above Epic needs Plans (Premium or Enterprise). Set to "Initiative" only when the project has that level.
 epic = "Epic"
 story = "Story"

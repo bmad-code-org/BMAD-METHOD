@@ -17,7 +17,7 @@ The contract a built skill meets; the canon covers the prose.
 ## Paths
 
 - `{project-root}` is the nearest folder holding `_bmad/`, `{skill-root}` the skill's folder.
-- A skill's own script runs as `uv run {skill-root}/scripts/<name>.py`, a runtime script as `uv run {project-root}/_bmad/scripts/<name>.py`. Never a bare `scripts/` call, which resolves from the working directory, and never `python`, `python3` or `pip`: `uv run` reads the script's PEP 723 header for its dependencies.
+- A skill's own script runs as `uv run "{skill-root}/scripts/<name>.py"`, a runtime script as `uv run "{project-root}/_bmad/scripts/<name>.py"`. Never a bare `scripts/` call, which resolves from the working directory, and never `python`, `python3` or `pip`: `uv run` reads the script's PEP 723 header for its dependencies.
 - Every backticked path resolves to a real file. Never a path into another skill: write "invoke the `<name>` skill".
 - Never `module.yaml`, `module-help.csv` or `_bmad/config.yaml`, the old format.
 - Config is read with `resolve_config.py --key core.<key>` or `--key modules.<code>.<key>`, customization with `resolve_customization.py --key workflow` or `--key agent`. Config values already hold `{project-root}`; never prefix them.
@@ -51,7 +51,9 @@ When users will change a value, the body says so in one line: invoke the `bmad-c
 
 ## Help files
 
-A module record's `help/` has one reader, the `bmad` help agent. `help.md` loads on every help question for every installed module, so it stays a short routing index: what each skill gives, when to recommend it, what to offer next, and which topic file answers what. A `help/<topic>.md` is read only when `help.md` names it for the question at hand. No help file holds install mechanics or `bmod.toml` key detail; the help agent cannot act on them.
+A module record's `help/` has one reader, the `bmad` help agent. `help.md` loads on every help question for every installed module, so it stays a short routing index: what each skill gives, when to recommend it, what to offer next, and which topic file answers what.
+
+A `help/<topic>.md` topic loads only when `help.md` names it for the question at hand. Cross-references between help files use module-relative `help/<topic>.md` paths (checked by `validate_manifests.py`). No help file holds install mechanics or `bmod.toml` key detail; the help agent cannot act on them.
 
 ## Scripts
 

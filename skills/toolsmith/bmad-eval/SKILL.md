@@ -21,7 +21,7 @@ Read the named reference fully when its mode runs. Cases live in `cases.json` un
 
 ## On activation
 
-1. Read config with `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder` and customization with `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. Absent keys are fine. `{reports_folder}` is `{workflow.reports_folder}` with `{output_folder}` filled in.
+1. Read config with `uv run "{project-root}/_bmad/scripts/resolve_config.py" --project-root "{project-root}" --key core.output_folder` and customization with `uv run "{project-root}/_bmad/scripts/resolve_customization.py" --skill "{skill-root}" --project-root "{project-root}" --key workflow`. Absent keys are fine. `{reports_folder}` is `{workflow.reports_folder}` with `{output_folder}` filled in.
 2. Verify `<skill-path>/SKILL.md` exists, or for the matrix that at least one `SKILL.md` sits below each skills folder; halt with a clear error if not.
 3. When the run uses the default harness and `workflow.harness.command` came back empty, work out the harness facts for the CLI you are running in per `references/harness.md`, prove them on one case, and record them by invoking the `bmad-customize` skill (install: `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-customize`); the runner reads them from there. When nobody is at the keyboard, stop and show the table to record instead.
 4. Find the cases file: the one the user named, then the skill's folder under `evals/` in the nearest folder above the skill holding one, mirroring its path below `skills/`, then `<skill-path>/evals/` for a skill built elsewhere, then anywhere under `<project-root>/evals/`. If nothing is found, halt and say so; the runner does not invent cases.
@@ -34,7 +34,7 @@ The skill under test is the directory holding `SKILL.md`. The project root is th
 Trigger:
 
 ```
-uv run {skill-root}/scripts/run_triggers.py \
+uv run "{skill-root}/scripts/run_triggers.py" \
   --skill-path <skill> --queries <queries-file> --output-dir <dir> \
   [--runs-per-query N]
 ```
@@ -42,7 +42,7 @@ uv run {skill-root}/scripts/run_triggers.py \
 Matrix, with the folders that hold the install's skills (the repository's `skills/`, or the skills folders the user's tool loads):
 
 ```
-uv run {skill-root}/scripts/run_matrix.py \
+uv run "{skill-root}/scripts/run_matrix.py" \
   --skills <folder> [--skills <folder> ...] --queries <trigger-matrix.json> --output-dir <dir> \
   [--runs-per-query N]
 ```
