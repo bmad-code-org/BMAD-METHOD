@@ -17,7 +17,7 @@ Fill each template with `uv run "{skill-root}/scripts/process_template.py" "{ski
 
 ## Rules
 
-- `SKILL.md` only runs `uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"`, maps the words of the invocation to `--set workflow.<key>=<value>`, follows the printed `workflow.md`, and halts on any failure. It holds no Jinja, because the renderer excludes it.
+- `SKILL.md` only runs `uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}" --require-version 2`, maps the words of the invocation to `--set workflow.<key>=<value>`, follows the printed `workflow.md`, and halts on any failure. It holds no Jinja, because the renderer excludes it.
 - Jinja (`{{ agent.key }}`, `{{ workflow.key }}`, `{% if %}`, `rendered("references/<capability>.md")`) lives only in `workflow.md` and the capabilities. `agent` is the `[agent]` table and `workflow` the `[workflow]` table, both with the team's overrides merged in.
 - An agent-facing `{{placeholder}}` sits inside `{% raw %}...{% endraw %}`; a single-brace `{placeholder}` passes through untouched.
 - The agent's documents go under `{{ initiative_folder }}`.

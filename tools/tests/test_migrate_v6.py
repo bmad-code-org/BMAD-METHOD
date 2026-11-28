@@ -22,6 +22,7 @@ from test_bmad_setup import (
 MIGRATE_V6_PY = REPO_ROOT / "skills" / "core-tools" / "bmad" / "scripts" / "migrate_v6.py"
 sys.path.insert(0, str(MIGRATE_V6_PY.parent))
 import frontmatter  # noqa: E402
+import migrate_v6  # noqa: E402
 
 
 def read_fields(path: Path) -> dict:
@@ -998,3 +999,226 @@ class FoldSpecsTests(unittest.TestCase):
         self.assertIn("- R2 (CAP-2): A player sets the launch angle and sees the arc change.", text)
         self.assertEqual((epic / "glossary.md").read_text(encoding="utf-8"), "Carry: distance in the air.\n")
         self.assertNotIn("CAP-", (epic / "story-launch-angle.md").read_text(encoding="utf-8"))
+
+    def test_sibling_specs_in_one_ticket_both_fold_without_dropping_capabilities(self):
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(
+            demo / "spec-a" / "spec-a.md",
+            spec_frontmatter(companions="[a-notes.md]", sources="[]")
+            + "# Alpha\n\n## Capabilities\n\n- **CAP-1** Alpha flow.\n",
+        )
+        write(demo / "spec-a" / "a-notes.md", "Traces CAP-1.\n")
+        write(
+            demo / "spec-b" / "spec-b.md",
+            spec_frontmatter(companions="[b-notes.md]", sources="[]")
+            + "# Beta\n\n## Capabilities\n\n- **CAP-1** Beta flow.\n",
+        )
+        write(demo / "spec-b" / "b-notes.md", "Traces CAP-1.\n")
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(len(report["folded"]), 2)
+        demo_text = (demo / "demo.md").read_text(encoding="utf-8")
+        self.assertIn("- R1 (CAP-1): Alpha flow.", demo_text)
+        self.assertIn("- R2 (CAP-1): Beta flow.", demo_text)
+        self.assertEqual((demo / "a-notes.md").read_text(encoding="utf-8"), "Traces R1.\n")
+        self.assertEqual((demo / "b-notes.md").read_text(encoding="utf-8"), "Traces R2.\n")
+
+    def test_sibling_specs_with_disjoint_caps_only_rewrite_their_own_ids(self):
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(demo / "tickets.toml", '[[entry]]\nid = "1"\nname = "One"\ncovers = ["CAP-1", "CAP-2"]\n')
+        write(
+            demo / "spec-a" / "spec-a.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Alpha\n\n## Capabilities\n\n- **CAP-1** One.\n",
+        )
+        write(
+            demo / "spec-b" / "spec-b.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Beta\n\n## Capabilities\n\n- **CAP-2** Two.\n",
+        )
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        demo_text = (demo / "demo.md").read_text(encoding="utf-8")
+        self.assertIn("- R1 (CAP-1): One.", demo_text)
+        self.assertIn("- R3 (CAP-2): Two.", demo_text)
+        self.assertEqual(
+            tomllib.loads((demo / "tickets.toml").read_text(encoding="utf-8"))["entry"][0]["covers"],
+            ["R1", "R3"],
+        )
+
+    def test_sibling_specs_with_shared_cap_cited_by_ticket_children_are_refused(self):
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(demo / "tickets.toml", '[[entry]]\nid = "1"\nname = "One"\ncovers = ["CAP-1"]\n')
+        write(
+            demo / "spec-a" / "spec-a.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Alpha\n\n## Capabilities\n\n- **CAP-1** One.\n",
+        )
+        write(
+            demo / "spec-b" / "spec-b.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Beta\n\n## Capabilities\n\n- **CAP-1** Two.\n",
+        )
+        before = snapshot(self.project)
+
+        report = self.fold()
+
+        self.assertEqual(report["folded"], [])
+        self.assertEqual(len(report["problems"]), 2)
+        self.assertIn("defined by both spec-a and spec-b", report["problems"][0]["problem"])
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_spec_with_unparsed_capabilities_is_not_deleted(self):
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(
+            demo / "spec-bad" / "spec-bad.md",
+            spec_frontmatter(companions="[]", sources="[]")
+            + "# Bad\n\n## Capabilities\n\n- **R1** Already rewritten.\n",
+        )
+        before = snapshot(self.project)
+
+        report = self.fold()
+
+        self.assertEqual(report["folded"], [])
+        self.assertEqual(len(report["problems"]), 1)
+        self.assertIn("did not parse as CAP-<n>", report["problems"][0]["problem"])
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_sibling_spec_with_invalid_frontmatter_stops_the_fold_without_crashing(self):
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(
+            demo / "spec-a" / "spec-a.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Alpha\n\n## Capabilities\n\n- **CAP-1** One.\n",
+        )
+        write(
+            demo / "spec-b" / "spec-b.md",
+            "---\ntitle: [unclosed\n---\n\n# Beta\n\n## Capabilities\n\n- **CAP-1** Two.\n",
+        )
+        before = snapshot(self.project)
+
+        report = self.fold()
+
+        self.assertEqual(report["folded"], [])
+        self.assertEqual(len(report["problems"]), 2)
+        self.assertIn("spec-b.md has invalid frontmatter", report["problems"][0]["problem"])
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_partially_unparsed_capabilities_before_or_after_valid_cap_are_not_deleted(self):
+        for body in (
+            "# Mixed\n\n## Capabilities\n\n- **R1** Unparsed before.\n- **CAP-2** Valid.\n",
+            "# Mixed\n\n## Capabilities\n\n- **CAP-1** Valid.\n  - **intent:** Kept intent.\n- **R2** Unparsed after.\n",
+        ):
+            with self.subTest(body=body):
+                with tempfile.TemporaryDirectory() as tmp:
+                    project = Path(tmp)
+                    store = project / "_bmad-output"
+                    demo = store / "demo"
+                    write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+                    write(demo / "spec-mixed" / "spec-mixed.md", spec_frontmatter(companions="[]", sources="[]") + body)
+                    before = snapshot(project)
+
+                    report = migrate_v6.fold_specs(project, store)
+
+                    self.assertEqual(report["folded"], [])
+                    self.assertEqual(len(report["problems"]), 1)
+                    self.assertIn("did not parse as CAP-<n>", report["problems"][0]["problem"])
+                    self.assertEqual(snapshot(project), before)
+
+    def test_zero_padded_cap_id_rewrites_and_triggers_sibling_ambiguity(self):
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(demo / "tickets.toml", '[[entry]]\nid = "1"\nname = "One"\ncovers = ["CAP-01"]\n')
+        write(
+            demo / "spec-a" / "spec-a.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Alpha\n\n## Capabilities\n\n- **CAP-01** One.\n",
+        )
+        write(
+            demo / "spec-b" / "spec-b.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Beta\n\n## Capabilities\n\n- **CAP-1** Two.\n",
+        )
+        before = snapshot(self.project)
+
+        refused = self.fold()
+        self.assertEqual(refused["folded"], [])
+        self.assertEqual(len(refused["problems"]), 2)
+        self.assertIn("defined by both spec-a and spec-b", refused["problems"][0]["problem"])
+        self.assertEqual(snapshot(self.project), before)
+
+        shutil.rmtree(demo / "spec-b")
+        write(demo / "spec-a" / "notes.md", "Traces CAP-01.\n")
+        write(
+            demo / "spec-a" / "spec-a.md",
+            spec_frontmatter(companions="[notes.md]", sources="[]")
+            + "# Alpha\n\n## Capabilities\n\n- **CAP-01** One.\n",
+        )
+        report = self.fold()
+        self.assertEqual(report["problems"], [])
+        self.assertIn("- R1 (CAP-1): One.", (demo / "demo.md").read_text(encoding="utf-8"))
+        self.assertEqual((demo / "notes.md").read_text(encoding="utf-8"), "Traces R1.\n")
+        self.assertEqual(
+            tomllib.loads((demo / "tickets.toml").read_text(encoding="utf-8"))["entry"][0]["covers"],
+            ["R1"],
+        )
+
+    def test_sibling_spec_with_unparsed_capabilities_stops_the_fold(self):
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(
+            demo / "spec-a" / "spec-a.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Alpha\n\n## Capabilities\n\n- **CAP-1** One.\n",
+        )
+        write(
+            demo / "spec-b" / "spec-b.md",
+            spec_frontmatter(companions="[]", sources="[]") + "# Beta\n\n## Capabilities\n\n- **R1** Unparsed.\n",
+        )
+        before = snapshot(self.project)
+
+        report = self.fold()
+        self.assertEqual(report["folded"], [])
+        self.assertEqual(len(report["problems"]), 2)
+        by_spec = {p["spec"]: p["problem"] for p in report["problems"]}
+        self.assertIn("has unparsed capabilities", by_spec["_bmad-output/demo/spec-a"])
+        self.assertIn("did not parse as CAP-<n>", by_spec["_bmad-output/demo/spec-b"])
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_duplicate_or_non_dash_capabilities_refuse_and_comments_are_ignored(self):
+        for body, expected in (
+            ("# Dup\n\n## Capabilities\n\n- **CAP-1** First.\n- **CAP-01** Second.\n", "defines CAP-1 more than once"),
+            ("# Star\n\n## Capabilities\n\n- **CAP-1** First.\n* **CAP-2** Second.\n", "**CAP-2** Second."),
+            ("# Num\n\n## Capabilities\n\n- **CAP-1** First.\n1. **CAP-2** Second.\n", "1. **CAP-2** Second."),
+        ):
+            with self.subTest(expected=expected):
+                with tempfile.TemporaryDirectory() as tmp:
+                    project = Path(tmp)
+                    store = project / "_bmad-output"
+                    demo = store / "demo"
+                    write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+                    write(demo / "spec-x" / "spec-x.md", spec_frontmatter(companions="[]", sources="[]") + body)
+                    before = snapshot(project)
+
+                    report = migrate_v6.fold_specs(project, store)
+                    self.assertEqual(report["folded"], [])
+                    (problem,) = report["problems"]
+                    self.assertIn(expected, problem["problem"])
+                    self.assertEqual(snapshot(project), before)
+
+        demo = self.store / "demo"
+        write(demo / "demo.md", "---\nid: 1\ntype: epic\n---\n\n# Demo\n\n## Requirements\n")
+        write(
+            demo / "spec-comments" / "spec-comments.md",
+            spec_frontmatter(companions="[]", sources="[]")
+            + "# Comments\n\n## Capabilities\n\n"
+            + "<!-- single line comment -->\n"
+            + "- **CAP-1** Kept capability.\n"
+            + "<!-- multi-line\n     comment -->\n",
+        )
+        ok = self.fold()
+        self.assertEqual(ok["problems"], [])
+        demo_text = (demo / "demo.md").read_text(encoding="utf-8")
+        self.assertIn("- R1 (CAP-1): Kept capability.", demo_text)
+        self.assertNotIn("comment", demo_text)

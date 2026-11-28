@@ -45,6 +45,27 @@ class ConfigUtilsTests(unittest.TestCase):
     def test_non_string_keyed_identifier_is_rejected(self):
         with self.assertRaisesRegex(ConfigError, "identifier `id` must be a string"):
             structural_merge([{"id": "valid"}], [{"id": 42}])
+        with self.assertRaisesRegex(ConfigError, "identifier `code` must be a string"):
+            structural_merge([{"code": "valid", "id": "a"}], [{"code": 42, "id": "b"}])
+
+    def test_non_string_code_falls_through_to_string_id_keyed_merge(self):
+        base = [{"code": 1, "id": "a", "v": 1}, {"code": 2, "id": "b", "v": 1}]
+        override = [{"code": 10, "id": "a", "v": 2}, {"code": 3, "id": "c", "v": 3}]
+        self.assertEqual(
+            structural_merge(base, override),
+            [
+                {"code": 10, "id": "a", "v": 2},
+                {"code": 2, "id": "b", "v": 1},
+                {"code": 3, "id": "c", "v": 3},
+            ],
+        )
+
+    def test_all_non_string_key_candidates_fall_back_to_append(self):
+        self.assertEqual(
+            structural_merge([{"code": 200, "msg": "ok"}], [{"code": 404, "msg": "missing"}]),
+            [{"code": 200, "msg": "ok"}, {"code": 404, "msg": "missing"}],
+        )
+        self.assertEqual(structural_merge([], [{"code": 200}]), [{"code": 200}])
 
     def test_present_malformed_optional_layer_is_rejected(self):
         with tempfile.TemporaryDirectory() as temp_dir:
