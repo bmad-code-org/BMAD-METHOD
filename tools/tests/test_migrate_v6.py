@@ -1,4 +1,7 @@
+import contextlib
+import io
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -6,6 +9,7 @@ import tempfile
 import tomllib
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from test_bmad_setup import (
     REPO_ROOT,
@@ -332,6 +336,78 @@ class MigrateV6Tests(unittest.TestCase):
                 "bmm/v6-shims",
             ],
         )
+
+    def test_a_linked_custom_folder_is_not_cleaned(self):
+        # A junction on Windows, which needs no privilege and which `Path.is_symlink` does not see.
+        shared = self.root / "shared-custom"
+        write(shared / "bmad-other-skill.toml", "[workflow]\nkeep = true\n")
+        write(shared / "bmad-agent-po.toml", '[workflow]\non_complete = "x"\n')
+        custom = self.bmad / "custom"
+        shutil.rmtree(custom)
+        if sys.platform == "win32":
+            import _winapi
+
+            _winapi.CreateJunction(str(shared), str(custom))
+        else:
+            custom.symlink_to(shared, target_is_directory=True)
+        write(self.bmad / "_config" / "manifest.yaml", "installation: v6\n")
+        before = snapshot(shared)
+
+        report = self.migrate()
+        cleaned = self.migrate("--clean")
+
+        self.assertEqual(report["unused_customizations"], [])
+        self.assertEqual(cleaned["removed_files"], ["_bmad/_config/manifest.yaml"])
+        self.assertEqual(cleaned["removed_customizations"], [])
+        self.assertEqual(snapshot(shared), before)
+
+    def test_clean_removes_read_only_entries(self):
+        self.write_v6_traces()
+        shims = self.bmad / "core" / "v6-shims"
+        read_only = (
+            self.bmad / "_config" / "manifest.yaml",
+            shims / "shim.md",
+            shims,
+            self.bmad / "config.toml",
+            self.bmad / "custom" / "bmad-sprint-planning.user.toml",
+        )
+        for path in read_only:
+            path.chmod(0o555 if path.is_dir() else 0o444)
+
+        report = self.migrate("--clean")
+
+        self.assertEqual(report["not_removed"], [])
+        self.assertFalse((self.bmad / "_config").exists())
+        self.assertFalse((self.bmad / "core").exists())
+        self.assertFalse((self.bmad / "custom" / "bmad-sprint-planning.user.toml").exists())
+        team = tomllib.loads((self.bmad / "config.toml").read_text(encoding="utf-8"))
+        self.assertNotIn("user_name", team["core"])
+
+    def test_a_file_that_cannot_be_removed_does_not_stop_the_rest(self):
+        self.write_v6_traces()
+        locked = self.bmad / "_config" / "manifest.yaml"
+        import migrate_v6
+
+        unlink = migrate_v6.unlink_force
+
+        def unlink_unless_locked(path: Path) -> None:
+            if path == locked:
+                raise PermissionError("in use")
+            unlink(path)
+
+        out = io.StringIO()
+        with mock.patch.object(migrate_v6, "unlink_force", unlink_unless_locked), contextlib.redirect_stdout(out):
+            code = migrate_v6.main(["--project-root", str(self.project), "--skill", str(self.skill), "--clean"])
+        report = json.loads(out.getvalue())
+
+        self.assertEqual(code, 1)
+        self.assertTrue((self.project / report["backup"] / "_bmad" / "_config" / "manifest.yaml").is_file())
+        self.assertEqual(report["not_removed"], [{"file": "_bmad/_config/manifest.yaml", "error": "in use"}])
+        self.assertTrue(locked.is_file())
+        self.assertEqual(report["removed_files"], ["_bmad/config.user.toml", "_bmad/core/v6-shims"])
+        self.assertFalse((self.bmad / "core").exists())
+        self.assertIn({"file": "_bmad/config.toml", "key": "core.user_name"}, report["removed_keys"])
+        self.assertEqual(report["removed_customizations"], ["_bmad/custom/bmad-sprint-planning.user.toml"])
 
 
 def spec_frontmatter(**lists: str) -> str:
@@ -1222,3 +1298,63 @@ class FoldSpecsTests(unittest.TestCase):
         demo_text = (demo / "demo.md").read_text(encoding="utf-8")
         self.assertIn("- R1 (CAP-1): Kept capability.", demo_text)
         self.assertNotIn("comment", demo_text)
+
+    def test_a_folder_that_cannot_move_stops_the_fold_before_any_write_and_a_rerun_folds_it(self):
+        epic = self.write_epic_with_spec()
+        before = snapshot(self.project)
+        real_rename = os.rename
+
+        def held_open(src, dst):
+            if Path(src).name == "spec-ball":
+                raise PermissionError("a file in it is open")
+            return real_rename(src, dst)
+
+        with mock.patch("os.rename", side_effect=held_open):
+            report = migrate_v6.fold_specs(self.project, self.store)
+
+        self.assertEqual(report["folded"], [])
+        (problem,) = report["problems"]
+        self.assertIn("cannot move spec-ball", problem["problem"])
+        self.assertEqual(snapshot(self.project), before)
+
+        retry = self.fold()
+        self.assertEqual(retry["problems"], [])
+        self.assertEqual(len(retry["folded"]), 1)
+        self.assertFalse((epic / "spec-ball").exists())
+
+    def test_a_fold_that_stops_after_staging_leaves_the_folder_under_its_own_name(self):
+        epic = self.write_epic_with_spec()
+
+        with mock.patch.object(migrate_v6, "write_text", side_effect=PermissionError("ticket is locked")):
+            with self.assertRaises(PermissionError):
+                migrate_v6.fold_specs(self.project, self.store)
+
+        self.assertTrue((epic / "spec-ball" / "spec-ball.md").is_file())
+        self.assertEqual([p.name for p in epic.iterdir() if p.name.startswith(".folding-")], [])
+
+    def test_read_only_files_in_the_spec_folder_fold_cleanly(self):
+        epic = self.write_epic_with_spec()
+        spec = epic / "spec-ball"
+        write(spec / "notes.tmp", "tmp\n")
+        for name in ("spec-ball.md", ".memlog.md", "notes.tmp"):
+            os.chmod(spec / name, 0o444)
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(len(report["folded"]), 1)
+        self.assertFalse(spec.exists())
+        self.assertEqual(
+            memlog_entries(epic / ".memlog.md")[-1],
+            "- (event) folded spec-ball/ into epic-ball.md; CAP-1 is R1, CAP-2 is R2",
+        )
+
+    def test_rmtree_force_removes_read_only_files_and_folders(self):
+        tree = self.project / "tree"
+        write(tree / "inner" / "locked.md", "x\n")
+        os.chmod(tree / "inner" / "locked.md", 0o444)
+        os.chmod(tree / "inner", 0o555)
+
+        migrate_v6.rmtree_force(tree)
+
+        self.assertFalse(tree.exists())
