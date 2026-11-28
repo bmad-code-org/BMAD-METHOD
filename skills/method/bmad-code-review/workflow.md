@@ -18,6 +18,7 @@ Subagents are an important part of this workflow. Use them wherever a step calls
 
 - When a step directs you to another file, read it fully and follow it. Load one step at a time, when it is reached.
 - A step that shows a menu or checkpoint halts there and waits for the user.
+- Pair any requirement, invariant, or decision ID in findings or chat with a short plain-English handle, and render file, line, and ticket references as clickable links (relative markdown links inside `{plan_file}`, host-clickable links in chat).
 {% if workflow.fixes == "handoff" %}
 
 ## No-code review

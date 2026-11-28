@@ -55,6 +55,7 @@ A full plan is "Ready for Development" when:
 ## Conventions
 
 - Whenever this workflow captures or records a version-control revision, obtain the full canonical identifier directly from version control and preserve it verbatim.
+- Pair cited requirement, invariant, or decision IDs in `{plan_file}` and run results with a short plain-English handle, and link referenced files, verified headings, and URLs using relative markdown links inside `{plan_file}` and CWD-relative `path:line` or clickable links in output.
 
 ## On Activation
 

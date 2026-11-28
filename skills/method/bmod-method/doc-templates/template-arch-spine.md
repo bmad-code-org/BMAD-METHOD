@@ -23,7 +23,7 @@ updated: ""
 <!-- inputs: Initiative container, PRD (`OKR-N`, `INV-N`, shared nouns, journeys, epic map), existing codebase, UX spines, and standing persistent facts. Only the user knows non-functional trade-offs, operational constraints, and team preferences. -->
 
 <!-- writing:
-  - Inherit parent `arch-enterprise` `AD-n`s by original ID (read-only, never renumbered); surface conflicts rather than overriding.
+  - Inherit parent `arch-enterprise` `AD-n`s by short title and original ID (read-only, never renumbered); surface conflicts rather than overriding.
   - On updates, keep existing `AD-n` IDs stable (amend in place, never renumber or reuse retired IDs) and allocate new `AD-n` IDs above the highest ID already used in this spine and any child `arch-epic` under it so no ID is ever allocated twice across the hierarchy; flag any decision overriding the driving ticket so it can be updated.
   - Every `AD-n` carries `Binds`, `Prevents`, `Rule`, optional one-line `Why`, and `[ADOPTED]` when pre-settled.
   - Verify every proposed `AD-n` against numeric `Passable` and `Good` `OKR-N` bounds and binary `INV-N` invariants before settling.
@@ -37,7 +37,7 @@ updated: ""
 ## Table of Contents
 
 ## Context and inherited invariants
-<!-- Link the initiative ticket and PRD, citing `OKR-N` (with numeric `Passable` / `Good` bounds), `INV-N`, and shared nouns by ID without restating them. If a parent `arch-enterprise` exists, table its binding `AD-n`s by original ID and note brownfield conventions ratified from code. -->
+<!-- Link the initiative ticket and PRD with relative markdown links, citing `OKR-N` (with numeric `Passable` / `Good` bounds), `INV-N`, and shared nouns by short handle and ID without restating their full text. If a parent `arch-enterprise` exists, table its binding `AD-n`s by short title and original ID and note brownfield conventions ratified from code. -->
 
 ## Coupling radar
 <!-- include when: a multi-epic PRD or ticket has cross-epic saved notes. Sweep every `Saved for this epic` note in the PRD or ticket and extract only cross-cutting patterns (shared domain events, auth/session model, async queues, caching, audit rails). Record each cross-cutting signal without designing single-epic tables or endpoints. -->

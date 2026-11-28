@@ -34,6 +34,7 @@ A plan should target a **single user-facing goal** within **900–1600 tokens**:
 ## Conventions
 
 - Whenever this workflow captures or records a version-control revision, obtain the full canonical identifier directly from version control and preserve it verbatim.
+- Pair cited requirement, invariant, or decision IDs in plans and chat with a short plain-English handle (omitting the ID in chat when unneeded), and link referenced files, verified headings, and URLs using relative markdown links inside `{plan_file}` and the host's clickable link format in chat.
 
 ## On Activation
 

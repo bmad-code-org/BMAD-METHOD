@@ -61,12 +61,12 @@ Refined Story (at epic inception by default, `refine = true` at pickup, bugs, or
 
 ## References
 
-[`type — location, section`, location a path from {project-root} or a url. A line per source or companion SPEC adopts, typed by content (`prd`, `design`, `architecture`, `glossary`, `parent`). Initiative/Program: section pointers into sources and companions. Epic: parent Requirements plus adopted `ux-*` / `arch-*` sections. UI Story: parent epic plus `DESIGN.md`, `EXPERIENCE.md#<section>`, promoted mockups/wireframes, and any `arch-epic` / `contract.yaml` / `AD-n` anchors.]
+[`type — [label](relative-path#section)` using relative markdown links from this ticket file (or a url); keep frontmatter `sources:`/`companions:` as plain paths from `{project-root}`. A line per source or companion SPEC adopts, typed by content (`prd`, `design`, `architecture`, `glossary`, `parent`). Initiative/Program: section pointers into sources and companions. Epic: parent Requirements plus adopted `ux-*` / `arch-*` sections. UI Story: parent epic plus `DESIGN.md`, `EXPERIENCE.md#<section>`, promoted mockups/wireframes, and any `arch-epic` / `contract.yaml` / `AD-n` anchors.]
 
-- parent — [path or url, section Requirements]
-- [companion — a file beside this one, named for its content]
-- [design — ux-system-<slug>/DESIGN.md, ux-epic-<slug>/EXPERIENCE.md#<section>, ux-epic-<slug>/mockups/<screen>.html]
-- [architecture — arch-epic-<slug>/arch-epic-<slug>.md (AD-n), arch-epic-<slug>/contract.yaml]
+- parent — [parent ticket](../parent.md#requirements)
+- [companion — [companion name](./companion.md)]
+- [design — [DESIGN.md](../ux-system-<slug>/DESIGN.md), [EXPERIENCE.md — section](../ux-epic-<slug>/EXPERIENCE.md#<section>), [screen mockup](../ux-epic-<slug>/mockups/<screen>.html)]
+- [architecture — [arch-epic (AD-n)](../arch-epic-<slug>/arch-epic-<slug>.md), [contract.yaml](../arch-epic-<slug>/contract.yaml)]
 
 ## Notes
 

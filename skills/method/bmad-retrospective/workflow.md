@@ -9,6 +9,7 @@ Every finding you report carries a source reference (file, line, commit, or log)
 ## Conventions
 
 - Never state time estimates — AI has changed development speed, so hour/day/week predictions are noise.
+- Pair any ticket, requirement, or decision ID in the retrospective or chat with its short plain-English handle, and link cited files, commits, tickets, and verified sections (relative markdown links in the retrospective document, host-clickable links in chat).
 
 ## Modes
 
