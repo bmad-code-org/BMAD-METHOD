@@ -5,8 +5,8 @@ version: 1.2.0
 description: "How the product is priced: value metric, packages, evidence and how it is tested."
 not_for: "A demand test before anything is priced (`validation-experiment`); the one-page model with revenue and costs (`lean-canvas`); the best-fit customer and the alternative they compare against (`positioning`, `ideal-customer`)."
 facilitation_order: [buyer-and-value, value-metric, evidence-customers-will-pay, first-customers, packages, unit-economics, testing-and-changing-the-price, price]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-planning.md
+rubric: rubric-planning.md
 agents: [bmad-founder-agent-advisor]
 view: always
 status: draft

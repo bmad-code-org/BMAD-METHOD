@@ -42,6 +42,7 @@ The files are the store: `tickets.py find`, `next`, and `status` answer from the
 
 # BMad type -> this store's type.
 [tickets.types]
+program = "program"
 initiative = "initiative"
 epic = "epic"
 story = "story"

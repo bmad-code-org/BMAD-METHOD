@@ -1,13 +1,14 @@
 ---
 title: ""
 template: brd
-version: 1.3.0
-description: "What the business requires and signs for in an initiative a separate party builds."
-not_for: "Product work inside one organization (`opportunity`, `prd`); a funding decision (`business-case`); what the system shall do, line by line (`srs`)."
+version: 1.4.0
+description: "What the business requires and signs for across a program or initiative a separate party builds."
+not_for: "Product work inside one organization (`opportunity`, `prd-program`, `prd`); a funding decision (`business-case`); what the system shall do, line by line (`srs`)."
 agents: [bmad-agent-analyst]
+mode: step-by-step
 facilitation_order: [objectives, stakeholders, scope, current-and-future-process, business-requirements, business-rules, constraints-and-assumptions, cost-and-benefit, traceability, open-questions, approval, summary]
-guidance: guidance-planning
-rubric: rubric-planning
+guidance: guidance-method.md
+rubric: rubric-planning.md
 status: draft
 created: ""
 updated: ""
@@ -21,11 +22,9 @@ updated: ""
 
 <!-- inputs: The sponsor, the process being changed, and any business case, charter, contract or policy behind it. Only the user knows who signs, which rules are binding and what is out. -->
 
-<!-- writing: About 3,000 words. Requirements are outcomes the business needs, not system behavior. Ids (BR-N, RULE-N) are global and never reused. A rule is stated once, in Business rules, and cited everywhere else. Objectives and cost point at the business case or charter where one exists instead of repeating it. -->
+<!-- writing: Requirements are outcomes the business needs, not system behavior. Ids (BR-N, RULE-N) are global and never reused. A rule is stated once, in Business rules, and cited everywhere else. Objectives and cost point at the business case or charter where one exists instead of repeating it. `status: final` does not record a signature; the approval block does. -->
 
 <!-- done when: Every BR-N has an owner, a source, a priority and a way to verify it; every rule has an id and an owner; nothing in the document names a screen, a field or an API; and the approval block names who signs. -->
-
-<!-- next: `status: final` does not record a signature; the approval block does. After sign-off, `prd` or `srs` cites the BR-N and RULE-N ids in its own requirements, and a later Update of this BRD fills the traceability table's empty columns. -->
 
 # {title}
 

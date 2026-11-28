@@ -26,7 +26,7 @@ The session runs in one of three stances, chosen by the user — set explicitly 
    - Script not found, or no `output_folder`: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - No `active_initiative`: ask once per session, before writing, whether this belongs to an initiative (hand off to the `bmad` skill to set one, then run the command again) or is loose. Loose work drops `/{active_initiative}` from every path.
 4. **If launched headless** (a machine signal, not a human asking for output — `references/headless.md` lists them): load `references/headless.md` and follow it for the whole run; never load it otherwise. Outside headless, you generate ideas yourself only in autonomous mode (`references/mode-autonomous.md`) — never in facilitator or partner mode.
-5. **Otherwise (interactive):** greet the user. Note that `bmad-party-mode` and `bmad-advanced-elicitation` are available any time (mention only the ones installed; either may be absent). Run `uv run "{skill-root}/scripts/ideas.py" open --root "{workflow.output_dir}" --root "{output_folder}" --glob "<pattern>"`, the pattern being `{workflow.output_folder_name}` with `*` for `{topic_slug}`, and offer to resume any session it lists (`## Resuming`) or start fresh (`## Run a Session`).
+5. **Otherwise (interactive):** greet the user. Run `uv run "{skill-root}/scripts/ideas.py" --project-root "{project-root}" open --root "{workflow.output_dir}" --root "{output_folder}" --glob "<pattern>"`, the pattern being `{workflow.output_folder_name}` with `*` for `{topic_slug}`, and offer to resume any session it lists (`## Resuming`) or start fresh (`## Run a Session`).
 
 Run each `{workflow.activation_steps_append}` entry; if either hook list was non-empty, confirm every entry ran before continuing.
 
@@ -40,9 +40,9 @@ These fight your defaults, in every mode; hold them deliberately. The stance you
 
 **The ideas log**, `{doc_workspace}/ideas.md`, is the session's memory: the single source every output builds from, and the file a resume reloads. Whatever isn't in it is gone. Log every idea, decision, question, and bit of user direction — anything you'd regret losing if the window closed — one line each, the gist in the user's meaning, in time order; never edit or reorder. Skip your prompts and small talk. Every write to it goes through the script `ideas.py`:
 
-- `uv run "{skill-root}/scripts/ideas.py" start --folder "{doc_workspace}" --topic "<topic>" --goal "<goal>" --mode <facilitator|partner|autonomous>` — create it once topic, goal, and stance are known.
-- `uv run "{skill-root}/scripts/ideas.py" add --folder "{doc_workspace}" --type <kind> --text "<one-line gist>"` — log one entry; repeat `--text` to log several of one kind in one call. `--type` ∈ `idea`/`insight`/`question`/`decision`/`direction`/`technique` (a switch: `--text "started <name>"`); omit for a plain note. Add `--by user`/`--by coach` to mark authorship — **required in Creative Partner mode** (renders `(idea by user)`); skip it otherwise.
-- `uv run "{skill-root}/scripts/ideas.py" set --folder "{doc_workspace}" --key status --value complete` — flip status at wrap-up.
+- `uv run "{skill-root}/scripts/ideas.py" --project-root "{project-root}" start --folder "{doc_workspace}" --topic "<topic>" --goal "<goal>" --mode <facilitator|partner|autonomous>` — create it once topic, goal, and stance are known.
+- `uv run "{skill-root}/scripts/ideas.py" --project-root "{project-root}" add --folder "{doc_workspace}" --type <kind> --text "<one-line gist>"` — log one entry; repeat `--text` to log several of one kind in one call. `--type` ∈ `idea`/`insight`/`question`/`decision`/`direction`/`technique` (a switch: `--text "started <name>"`); omit for a plain note. Add `--by user`/`--by coach` to mark authorship — **required in Creative Partner mode** (renders `(idea by user)`); skip it otherwise.
+- `uv run "{skill-root}/scripts/ideas.py" --project-root "{project-root}" set --folder "{doc_workspace}" --key status --value complete` — flip status at wrap-up.
 
 ## Run a Session
 

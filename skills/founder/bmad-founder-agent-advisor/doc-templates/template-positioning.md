@@ -5,7 +5,7 @@ version: 1.2.0
 description: "Positioning and the one-liner: alternatives, unique value, best-fit customer, category."
 not_for: "The first narrow group to win and how to reach them (`ideal-customer`); the message, channels and weeks of a launch (`launch-plan`); one page on the whole business (`lean-canvas`)."
 facilitation_order: [competitive-alternatives, unique-value, best-fit-customer, market-category, positioning-statement, one-liner]
-guidance: guidance-planning
+guidance: guidance-planning.md
 rubric: rubric-positioning.md
 agents: [bmad-founder-agent-advisor]
 order: fixed

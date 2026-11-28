@@ -1,4 +1,5 @@
 import importlib.util
+import os
 import sys
 import tempfile
 import unittest
@@ -53,6 +54,15 @@ class OutputFolderTests(unittest.TestCase):
 
     def test_the_project_root_with_a_trailing_slash_is_the_project_root_itself(self):
         self.assertEqual(setup.output_folder(config("{project-root}/"), self.project), self.project)
+
+    def test_relative_project_root_does_not_double_prefix(self):
+        rel = Path(self.project.name)
+        old_cwd = Path.cwd()
+        try:
+            os.chdir(self.project.parent)
+            self.assertEqual(setup.output_folder(config("{project-root}/docs/out"), rel), self.project / "docs/out")
+        finally:
+            os.chdir(old_cwd)
 
     def test_setup_and_render_agree_on_where_the_folder_is(self):
         for value in PLACEHOLDER_SPELLINGS:

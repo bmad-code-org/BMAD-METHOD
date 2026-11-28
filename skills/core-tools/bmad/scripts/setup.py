@@ -13,6 +13,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import sys
 import tomllib
 import urllib.error
@@ -295,9 +296,7 @@ def setup(
         else:
             set_missing_value(merged, path, value, project_root / "_bmad" / "config.toml")
             team_added.append((path, value))
-    # base_text is the file's own text only when the template adds nothing to it.
-    team_text = base_text if base_text == existing_text else None
-    config_text = text_with_answers(team_text, team_added, merged) if team_added else base_text
+    config_text = text_with_answers(base_text, team_added, merged) if team_added else base_text
     user_text = text_with_answers(user_existing_text, user_added, user_merged) if user_added else None
     if user_added:
         reject_unwritable_user_config(project_root)
@@ -407,8 +406,27 @@ def team_config_plan(project_root: Path, config_src: Path) -> tuple[str | None, 
     merged = fill_keep(template, existing)
     if not isinstance(merged, dict):
         raise Exception(f"invalid team config: {project_root / '_bmad' / 'config.toml'}")
-    base_text = existing_text if existing_text is not None and merged == existing else render_toml(merged)
+    if existing_text is None:
+        base_text = render_toml(merged)
+    elif merged == existing:
+        base_text = existing_text
+    else:
+        # The template gained keys: add them to the file's own text, so its comments and layout survive.
+        base_text = text_with_answers(existing_text, missing_scalars(merged, existing), merged)
     return existing_text, merged, base_text
+
+
+def missing_scalars(merged: dict, existing: dict, prefix: tuple[str, ...] = ()) -> list[tuple[tuple[str, ...], object]]:
+    """Each leaf of `merged` that `existing` lacks, as (path, value), in the template's order."""
+    out: list[tuple[tuple[str, ...], object]] = []
+    for key, value in merged.items():
+        path = (*prefix, str(key))
+        if isinstance(value, dict):
+            inner = existing.get(key) if isinstance(existing, dict) else None
+            out.extend(missing_scalars(value, inner if isinstance(inner, dict) else {}, path))
+        elif not isinstance(existing, dict) or key not in existing:
+            out.append((path, value))
+    return out
 
 
 def team_config_state(project_root: Path, existing_text: str | None, config_text: str) -> str:
@@ -522,7 +540,8 @@ def existing_user_config(project_root: Path) -> tuple[str | None, dict]:
     if not path.is_file():
         raise Exception(f"user config is not a file: {path}")
     try:
-        text = path.read_text(encoding="utf-8")
+        # utf-8-sig: Windows editors can save a byte-order mark, which tomllib rejects.
+        text = path.read_text(encoding="utf-8-sig")
     except (OSError, UnicodeError) as error:
         raise Exception(f"cannot read user config {path}: {error}") from error
     return text, parse_toml(text, path)
@@ -546,7 +565,7 @@ def custom_gitignore_state(project_root: Path) -> str:
     if not gitignore.exists() and not gitignore.is_symlink():
         return "missing"
     try:
-        lines = {line.strip() for line in gitignore.read_text(encoding="utf-8").splitlines()}
+        lines = {line.strip() for line in gitignore.read_text(encoding="utf-8-sig").splitlines()}
     except (OSError, UnicodeError):
         return "unprotected"
     return "current" if lines & GITIGNORE_COVERS_USER_CONFIG else "unprotected"
@@ -578,8 +597,18 @@ def retired_skills(
     scoped: tuple[InstalledModule, ...],
     installed: tuple[InstalledModule, ...],
 ) -> tuple[Retired, ...]:
-    """Old names the modules renamed or removed. A name an installed module still lists is not retired."""
-    current = {name for module in installed for name in (*module.skills, *module.absent_skills)}
+    """Old names the modules renamed or removed. A name an installed module still lists is not retired,
+    unless that module's own record is retired: a module another one replaced goes whole.
+    """
+    old_names = {
+        name for module in installed for name in (*module.retired.removed, *(r.old for r in module.retired.renamed))
+    }
+    current = {
+        name
+        for module in installed
+        if module.folder not in old_names
+        for name in (*module.skills, *module.absent_skills)
+    }
     retired: list[Retired] = []
     for module in scoped:
         entries = [(rename.old, rename.new) for rename in module.retired.renamed]
@@ -1108,7 +1137,8 @@ def existing_team_config(project_root: Path) -> tuple[str | None, dict]:
     if not path.is_file():
         raise Exception(f"team config is not a file: {path}")
     try:
-        text = path.read_text(encoding="utf-8")
+        # utf-8-sig: Windows editors can save a byte-order mark, which tomllib rejects.
+        text = path.read_text(encoding="utf-8-sig")
     except (OSError, UnicodeError) as error:
         raise Exception(f"cannot read team config {path}: {error}") from error
     return text, parse_toml(text, path)
@@ -2141,7 +2171,7 @@ def load_module_answers(path: Path) -> dict[tuple[str, str], str]:
     if not path.is_file():
         raise Exception(f"missing file: {path}")
     try:
-        data = tomllib.loads(path.read_text(encoding="utf-8"))
+        data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
     except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
         raise Exception(f"cannot parse module answers {path}: {error}") from error
     if not data:
@@ -2223,7 +2253,7 @@ def validate_module_answers(
 TABLE_HEADER = re.compile(r"\s*\[(?P<array>\[)?(?P<name>[^\[\]]+)\]\]?\s*(?:#.*)?\Z")
 
 
-def text_with_answers(text: str | None, added: list[tuple[tuple[str, ...], str]], expected: dict) -> str:
+def text_with_answers(text: str | None, added: list[tuple[tuple[str, ...], object]], expected: dict) -> str:
     """The file's own text with the new answers added, so comments and layout survive.
 
     The result must parse to exactly the expected values. When it does not, or
@@ -2240,9 +2270,9 @@ def text_with_answers(text: str | None, added: list[tuple[tuple[str, ...], str]]
     return render_toml(expected)
 
 
-def insert_answer(text: str, path: tuple[str, ...], value: str) -> str:
+def insert_answer(text: str, path: tuple[str, ...], value: object) -> str:
     table, leaf = path[:-1], path[-1]
-    entry = f"{toml_key(leaf)} = {toml_string(value)}"
+    entry = f"{toml_key(leaf)} = {toml_value(value)}"
     lines = text.split("\n")
     headers = [(index, header_path(line)) for index, line in enumerate(lines) if TABLE_HEADER.match(line)]
     for position, (index, name) in enumerate(headers):
@@ -2303,9 +2333,10 @@ def fill_team_config(text: str, project_root: Path) -> str:
 
 
 def output_folder(config_text: str, project_root: Path) -> Path:
-    """Return the output folder, resolving {project-root} exactly as render_skill does."""
-    folder = tomllib.loads(config_text).get("core", {}).get("output_folder", "_bmad-output") or "_bmad-output"
-    return project_root / folder.replace("{project-root}", project_root.as_posix())
+    """Return the output folder, resolving {project-root} as render_skill does."""
+    folder = tomllib.loads(config_text).get("core", {}).get("output_folder") or "_bmad-output"
+    root = project_root.resolve()
+    return root / folder.replace("{project-root}", root.as_posix())
 
 
 def materialize_bmad(
@@ -2350,10 +2381,24 @@ def materialize_bmad(
             user_config_text=user_config_text,
             custom_renames=custom_renames,
         )
+        if not bmad.exists():
+            # Staging is private while it fills; a new _bmad gets the mode a plain mkdir would.
+            # An existing one keeps its own mode, which copytree carried onto staging.
+            publish_dir_mode(staging)
         replace_dir(staging, bmad)
     except Exception:
         shutil.rmtree(staging, ignore_errors=True)
         raise
+
+
+def publish_dir_mode(path: Path) -> None:
+    """Give a private staging folder the mode a plain mkdir would give it under the umask."""
+    if sys.platform == "win32":
+        return  # POSIX mode bits do not apply; Windows staging inherits its ACLs.
+    mask = os.umask(0o022)
+    os.umask(mask)
+    # Keep a setgid bit staging inherited from a shared parent, as a plain mkdir would.
+    path.chmod((0o777 & ~mask) | (path.stat().st_mode & stat.S_ISGID))
 
 
 def replace_dir(src: Path, dest: Path) -> None:

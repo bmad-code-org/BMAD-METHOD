@@ -6,22 +6,31 @@
 
 import io
 import json
+import shutil
 import sys
+import tempfile
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 import pytest
-import yaml
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-shard-pro/scripts"))
+SKILLS = Path(__file__).resolve().parents[3] / "skills/core-tools"
+sys.path.insert(0, str(SKILLS / "bmad-shard-pro/scripts"))
+sys.path.insert(0, str(SKILLS / "bmad/scripts"))
 
+import frontmatter  # noqa: E402
 import shard_tool  # noqa: E402
+
+shard_tool.frontmatter = frontmatter  # main() loads the project's copy; the unit tests call past it
+PROJECT = tempfile.TemporaryDirectory()
+(Path(PROJECT.name) / "_bmad" / "scripts").mkdir(parents=True)
+shutil.copy2(SKILLS / "bmad/scripts/frontmatter.py", Path(PROJECT.name) / "_bmad" / "scripts")
 
 
 def run(*argv: str) -> tuple[int, dict]:
     out = io.StringIO()
     with redirect_stdout(out), redirect_stderr(io.StringIO()):
-        code = shard_tool.main(list(argv))
+        code = shard_tool.main(["--project-root", PROJECT.name, *argv])
     return code, json.loads(out.getvalue())
 
 
@@ -48,8 +57,7 @@ def doc(sections: int = 6, para: int = 40) -> str:
 
 
 def front(path: Path) -> dict:
-    lines = path.read_text(encoding="utf-8").splitlines()
-    return yaml.safe_load("\n".join(lines[1 : shard_tool.frontmatter_end(lines) - 1]))
+    return frontmatter.load(frontmatter.split(path.read_text(encoding="utf-8"))[0])
 
 
 def shard(title: str, summary: str, body: str, group: str = "All") -> str:
@@ -713,3 +721,130 @@ def test_toc_refresh_keeps_a_hand_added_line_that_repeats_a_title(tmp_path):
     lines = f.read_text(encoding="utf-8").splitlines()
     starts = [int(x.split()[1][1:].split("-")[0]) for x in lines if x.startswith("- L")]
     assert [lines[a - 1] for a in starts] == ["## Notes", "## B"]
+
+
+# --- line endings and characters splitlines() treats as breaks -----------------------------------------------
+
+ODD_LINES = ["# Sample", "", "## One", "Intro\fpage two", "a b\x0bc\x1cd\u0085e", "", "## Two", "body", "last"]
+
+
+def test_outline_counts_lines_as_grep_does(tmp_path):
+    src = tmp_path / "g.md"
+    src.write_bytes(b"# T\r\n\r\nIntro\x0cpage two\r\n\r\n## One\r\nbody\r\n")
+    _, out = run("outline", str(src))
+    assert out["lines"] == 6
+    assert [(h["line"], h["text"]) for h in out["headings"] if h["level"] == 2] == [(5, "One")]
+
+
+@pytest.mark.parametrize("eol", ["\r\n", "\n"])
+def test_shards_are_byte_slices_of_the_source(tmp_path, eol):
+    src = tmp_path / "sample.md"
+    src.write_bytes((eol.join(ODD_LINES) + eol).encode("utf-8"))
+    plan = faithful_plan(tmp_path, src, len(ODD_LINES), [7])
+    code, out = run("build", str(plan))
+    assert code == 0, out
+    folder = tmp_path / "doc-sample"
+    first = (folder / "part-1.md").read_bytes()
+    second = (folder / "part-2.md").read_bytes()
+    assert first.endswith((eol.join(ODD_LINES[:6]) + eol).encode("utf-8"))
+    assert second.endswith((eol.join(ODD_LINES[6:]) + eol).encode("utf-8"))
+    if eol == "\r\n":
+        assert first.count(b"\n") == first.count(b"\r\n")
+    assert run("check", str(folder), "--rebuild")[0] == 0
+
+
+def test_rebuild_check_fails_when_a_shard_loses_its_line_endings(tmp_path):
+    src = tmp_path / "sample.md"
+    src.write_bytes(("\r\n".join(ODD_LINES) + "\r\n").encode("utf-8"))
+    run("build", str(faithful_plan(tmp_path, src, len(ODD_LINES), [7])))
+    folder = tmp_path / "doc-sample"
+    part = folder / "part-2.md"
+    part.write_bytes(part.read_bytes().replace(b"\r\n", b"\n"))
+    code, out = run("check", str(folder), "--rebuild")
+    assert code == 1
+    assert any(f["check"] == "rebuild" for f in out["failures"]), out
+
+
+def test_rebuild_check_fails_when_a_form_feed_is_lost(tmp_path):
+    src = tmp_path / "sample.md"
+    src.write_bytes(("\n".join(ODD_LINES) + "\n").encode("utf-8"))
+    run("build", str(faithful_plan(tmp_path, src, len(ODD_LINES), [7])))
+    folder = tmp_path / "doc-sample"
+    part = folder / "part-1.md"
+    part.write_bytes(part.read_bytes().replace(b"\x0c", b"\n"))
+    assert run("check", str(folder), "--rebuild")[0] == 1
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "# T\r\n\r\nIntro\fpage two\r\n\r\n## One\r\nbody\r\n\r\n## Two\r\nmore\r\n",
+        "# T\n\nIntro\fpage two\n\n## One\nbody\n\n## Two\nmore",
+    ],
+    ids=["crlf", "lf-no-final-newline"],
+)
+def test_toc_add_then_remove_leaves_the_file_identical(tmp_path, text):
+    f = tmp_path / "doc.md"
+    f.write_bytes(text.encode("utf-8"))
+    original = f.read_bytes()
+    plan = {"groups": [{"heading": "All", "shards": [{"start": 5, "title": "One"}, {"start": 8, "title": "Two"}]}]}
+    (tmp_path / "toc.json").write_text(json.dumps(plan), encoding="utf-8")
+    code, out = run("toc", str(f), "--plan", str(tmp_path / "toc.json"))
+    assert code == 0, out
+    added = f.read_bytes()
+    assert b"\x0c" in added
+    if b"\r\n" in original:
+        assert added.count(b"\n") == added.count(b"\r\n")
+    assert run("check", str(f))[0] == 0
+    code, out = run("toc", str(f), "--remove")
+    assert code == 0, out
+    assert f.read_bytes() == original
+
+
+def test_a_source_without_a_final_newline_rebuilds_byte_for_byte(tmp_path):
+    src = tmp_path / "sample.md"
+    src.write_bytes("\n".join(ODD_LINES).encode("utf-8"))
+    run("build", str(faithful_plan(tmp_path, src, len(ODD_LINES), [7])))
+    folder = tmp_path / "doc-sample"
+    assert (folder / "part-1.md").read_bytes().endswith(b"\n")
+    assert (folder / "part-2.md").read_bytes().endswith(b"\nlast")
+    assert run("check", str(folder), "--rebuild")[0] == 0
+
+
+def test_rebuild_check_fails_when_a_shard_loses_its_final_newline(tmp_path):
+    src = tmp_path / "sample.md"
+    src.write_bytes(("\n".join(ODD_LINES) + "\n").encode("utf-8"))
+    run("build", str(faithful_plan(tmp_path, src, len(ODD_LINES), [6])))  # part-1 ends on a line of text
+    folder = tmp_path / "doc-sample"
+    part = folder / "part-1.md"
+    assert part.read_bytes().endswith(b"e\n")
+    part.write_bytes(part.read_bytes()[:-1])  # same lines, one newline fewer
+    code, out = run("check", str(folder), "--rebuild")
+    assert code == 1
+    assert any(f["check"] == "rebuild" for f in out["failures"]), out
+
+
+def test_map_and_lookup_rows_saved_with_crlf_still_check_clean(built):
+    # An editor that saves the lines it touched with CRLF leaves the map and the lookup with mixed endings.
+    for name in ("doc-sample.md", shard_tool.LOOKUP_FILE):
+        path = built / name
+        data = path.read_bytes()
+        cut = data.index(b"](./part-2.md)") if name == "doc-sample.md" else data.index(b"| FR-AB-003 |")
+        end = data.index(b"\n", cut)
+        path.write_bytes(data[:end] + b"\r" + data[end:])
+    code, out = run("check", str(built))
+    assert code == 0, out
+
+
+def test_toc_on_a_mixed_ending_file_checks_clean(tmp_path):
+    f = tmp_path / "doc.md"
+    f.write_bytes(b"# T\r\n\r\nIntro\n\n## One\r\nbody\n\n## Two\r\nmore\n")
+    original = f.read_bytes()
+    plan = {"groups": [{"heading": "All", "shards": [{"start": 5, "title": "One"}, {"start": 8, "title": "Two"}]}]}
+    (tmp_path / "toc.json").write_text(json.dumps(plan), encoding="utf-8")
+    assert run("toc", str(f), "--plan", str(tmp_path / "toc.json"))[0] == 0
+    code, out = run("check", str(f))
+    assert code == 0, out
+    assert run("toc", str(f))[0] == 0  # a refresh re-finds both sections by their first line
+    assert run("toc", str(f), "--remove")[0] == 0
+    assert f.read_bytes() == original

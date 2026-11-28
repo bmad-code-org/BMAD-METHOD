@@ -8,14 +8,21 @@ import contextlib
 import io
 import json
 import os
+import shutil
 import sys
 import tempfile
 import unittest
 from datetime import datetime
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-brainstorming/scripts"))
+SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-brainstorming/scripts/ideas.py"
+FRONTMATTER = SCRIPT.parents[2] / "bmad" / "scripts" / "frontmatter.py"
+sys.path.insert(0, str(SCRIPT.parent))
 import ideas  # noqa: E402
+
+PROJECT = tempfile.TemporaryDirectory()  # a project with the shared scripts installed, as bmad setup leaves it
+(Path(PROJECT.name) / "_bmad" / "scripts").mkdir(parents=True)
+shutil.copy2(FRONTMATTER, Path(PROJECT.name) / "_bmad" / "scripts")
 
 # A session as the shared script of earlier versions wrote it: unquoted YAML, blank lines under the fence.
 OLD_LOG = """---
@@ -35,7 +42,7 @@ updated: 2026-06-07T14:22
 def run(*args):
     out, err = io.StringIO(), io.StringIO()
     with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
-        code = ideas.main(list(args))
+        code = ideas.main(["--project-root", PROJECT.name, *args])
     return code, json.loads(out.getvalue()) if out.getvalue().strip() else None, err.getvalue()
 
 

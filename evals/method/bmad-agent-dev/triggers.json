@@ -1,6 +1,6 @@
 [
   {
-    "query": "Mason, should I walk through 2.3 myself before I call it done?",
+    "query": "Amelia, should I walk through 2.3 myself before I call it done?",
     "should_trigger": true
   },
   {
@@ -36,7 +36,7 @@
     "should_trigger": true
   },
   {
-    "query": "hey Mason, the unattended run left a patch file next to the plan and reverted the code, what is that for?",
+    "query": "hey Amelia, the unattended run left a patch file next to the plan and reverted the code, what is that for?",
     "should_trigger": true
   },
   {

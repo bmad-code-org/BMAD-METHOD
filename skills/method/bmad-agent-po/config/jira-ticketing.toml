@@ -68,6 +68,7 @@ narrowed by issuetype or status per the maps.
 
 # BMad type -> this store's type.
 [tickets.types]
+program = ""   # empty: the program stays local; its children attach to the nearest published ancestor
 initiative = ""   # empty: the initiative stays local. Jira's default hierarchy is Epic > Story > Subtask; a level above Epic needs Plans (Premium or Enterprise). Set to "Initiative" only when the project has that level.
 epic = "Epic"
 story = "Story"

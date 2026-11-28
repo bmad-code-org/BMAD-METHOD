@@ -1,109 +1,59 @@
 ---
 title: 'Finish an Epic'
-description: Judge a finished epic from the evidence it left (the diff, the commits, the plans) instead of trusting memory.
+description: Run bmad-retrospective to judge a finished epic from its commits, diffs, and build plans instead of memory, handle rejected verdicts, and approve decision records.
 sidebar:
   order: 2
 ---
 
-Run `bmad-retrospective` when every ticket of an epic (its stories, spikes,
-and bugs) is finished, before Sofia closes the epic. It reads
-what the epic left in the ticket tree — the epic file, each ticket's plan,
-the diff, and the commits — and uses that evidence instead of anyone's
-recollection. It produces a written review, proposed action items and
-decision records, and a verdict on whether the epic met its Requirements and
-Done when checks.
+Run `bmad-retrospective` when every ticket in an epic (its stories, bugs, and spikes) has finished, before asking Sofia to close the epic. Instead of relying on recollection, it inspects the evidence left behind (the epic spec, story files, build plans, Git commits, and full combined diff) and produces a written report, proposed action items, optional Architecture Decision Records (ADRs), and a clear acceptance verdict.
 
 ## Why Run It After an Epic
 
-An epic ships as a stack of tickets, each built and reviewed on its own. Each
-ticket passed its own review in isolation, so the bugs that survive to this
-point are the ones isolation hides. Nine sessions each add a little to the
-same file, and none of them ever sees the oversized module they built
-together. No session judged the epic as a whole against what it set out to
-deliver either. The end of an epic is the moment to close that gap: the diff
-is fresh and the session logs have not been cleared.
+An epic ships as a sequence of stories, each built and reviewed in isolation. Isolated reviews catch local bugs, while cross-story problems slip through: several sessions each add helper code to the same module until it grows unwieldy, two stories solve similar problems with conflicting patterns, or the combined behavior drifts slightly from the epic's original goal. Running a retrospective at the end of an epic closes that gap while the diff is fresh.
 
 ## What It Looks For
 
-- **Aggregate defects**: the architecture that drifted, the helper written
-  twice, the file that grew a little in every session.
-- **Diff-scope review**: it hands the epic's diff to
-  [`bmad-review`](../reference/skills-and-agents.md#bmad-review), weighting the seams between
-  tickets where no single session saw both sides.
-- **Spec reconciliation**: where the built code diverged from what the epic
-  and the initiative's requirements described.
-- **A behavior check**: when the epic changed runtime behavior, it exercises
-  the changed flows end to end. Passing tests do not substitute for running
-  the system.
-- **Follow-through**: whether the previous epic's action items were actually
-  done.
-- **An acceptance verdict**: the epic judged against its own Requirements and
-  Done when checks.
+- Aggregate defects across stories, including architecture drift, duplicated helpers, oversized modules, and inconsistent patterns that no single story diff exposed.
+- A whole-epic diff review that passes the combined epic diff to [`bmad-review`](../reference/skills-and-agents.md#bmad-review), focusing especially on seams between stories where no single coding session saw both sides.
+- Spec reconciliation that identifies places where implemented behavior diverged from the epic's or initiative's stated requirements.
+- An end-to-end behavior check that exercises changed runtime flows end to end whenever the epic changed runtime behavior, because passing unit tests alone do not prove the live system works together.
+- Follow-through on previous action items to check whether commitments agreed in the prior epic's retrospective actually landed.
+- An acceptance verdict judging the completed epic directly against its requirements and completion criteria.
 
-Every finding carries a source reference: a file, a line, a commit, a log. A
-claim it can't point at doesn't make the report. Before it reads, it asks
-what you want weighted, such as a story that felt rushed; your answer focuses
-the review but never becomes a finding without a source.
+Every finding must cite concrete evidence: a file path, line number, commit, or log entry. Claims without direct evidence are dropped. Before analysis starts, the skill invites you to share any going-in concerns (such as a story that felt rushed); your input guides where it looks closely, though nothing enters the report without verified evidence.
 
 ## What It Reads
 
-The retrospective works on one epic folder in the ticket tree that
-Sofia, the Product Owner (`bmad-agent-po`), keeps (see
-[The Ticket Tree](../reference/ticket-tree.md)):
+The retrospective inspects one epic folder inside your ticket tree (see [The Ticket Tree](../reference/ticket-tree.md)):
 
-- **`tickets/tickets.toml`**: the epic's tickets, in build order.
-- **The epic file**: its `Done when` checks, the criteria the verdict judges.
-- **The epic's requirements**: what each ticket's `covers` points at, and the
-  initiative lines each one cites.
-- **Each ticket's plan and story file**: the plan's frozen decisions,
-  triage log, verification, plan changes, and any `## Code Review` blocks;
-  the story file only when the ticket was refined.
-- **The git history**: each plan's diff and commits, from its
-  `baseline_revision` to the next plan's.
-- **The previous epic's retrospective**: its action items, to check whether
-  they landed.
+- The epic's story list and spec, including every planned ticket in build order, the epic's requirements and completion checks, and the parent initiative lines they trace back to.
+- Each ticket's story file and build plan. Because Sofia writes refined story files by default when an epic is planned, nearly every story provides both its acceptance criteria and its build plan (decisions made during planning, verification notes, review blocks, and plan changes), while entries you chose to keep light supply their build plan and entry details.
+- Git history showing each story's exact commits and diffs across the epic.
+- The previous epic's retrospective, when one exists, to verify whether earlier action items were completed.
 
-A ticket counts as finished when it is `built`, `done`, or `dropped`. Builds
-stop at `built`; you, or a script or AI session you direct, mark a ticket
-done. Mark them done before the retrospective; it lists any still at
-`built`.
+A ticket counts as finished once it reaches `built`, `done`, or `dropped`. Builds stop at `built`, and you mark stories done through Sofia. You can run the retrospective while stories are still at `built` (the report notes which ones have not been marked done yet), or mark them done with Sofia beforehand.
 
 ## What You Get
 
-- **A retrospective document**, `epic-<slug>-retrospective.md` in the epic
-  folder, with the evidence inventory, findings grouped with their sources,
-  the verdict, and proposed action items. Apart from the decision records
-  you approve, which go beside the code they govern or in the decisions
-  folder when system-wide, it is the only file the skill writes. It does not
-  mark the epic or any ticket done.
-- **A verdict** of `accepted`, `accepted-with-open-items`, or `rejected`,
-  recorded in the document's frontmatter, which tells you whether to start
-  the next epic or hold and fix first. When the checks aren't met, or any
-  ticket is unfinished, the verdict is `rejected` unless a person overrides
-  it. When you then ask Sofia to close the epic, she checks it against its
-  Done when; if no retrospective exists yet, she offers one first.
+- A retrospective report (`epic-<slug>-retrospective.md`) saved inside the epic folder with the evidence inventory, sourced findings, proposed action items, and verdict. Aside from any Architecture Decision Records (ADRs) you explicitly approve, this report is the only file the retrospective writes, and it never edits the epic spec, story files, or ticket statuses.
+- An acceptance verdict recorded in the report as `accepted`, `accepted-with-open-items`, or `rejected`. If completion criteria failed or any ticket remained unfinished, the verdict defaults to `rejected` unless you explicitly override it interactively.
 
 :::note[Example: the room booker]
-In the [room booker](../start/how-bmad-works.md#the-example-app), an office's meeting-room app, epic 1 (door check-in) has all 3 stories
-built. You mark the last one done, then run the retrospective on the
-finished epic:
+In the [room booker](../start/how-bmad-works.md#the-example-app), an office meeting-room app, epic 1 (door check-in) has all 3 stories built. You mark them done and run the retrospective:
 
 **You:**
 
 ```text wrap
-/bmad-agent-po mark story 1.3 done
+/bmad-agent-po mark stories 1.1, 1.2, and 1.3 done
 ```
 
 ```text wrap
 /bmad-retrospective 1
 ```
-**`bmad-retrospective`:** Verdict: `accepted-with-open-items`. All three Done when
-checks are met. Open item: nothing tells facilities when a door tablet goes
-offline. People at that door cannot check in, and the server still frees the
-room. Proposed action: alert facilities when a tablet stops reporting.
 
-It files nothing itself. You tell Sofia, then have her close the epic once
-you confirm:
+**`bmad-retrospective`:** Verdict is `accepted-with-open-items`. All three completion checks passed. Open item: nothing alerts facilities when a door tablet goes offline, so people at that door cannot check in while the server still frees the room. Proposed action: add an offline tablet alert for facilities.
+
+Because the retrospective never files tickets itself, you ask Sofia to log the follow-up and close the epic:
 
 **You:**
 
@@ -118,28 +68,26 @@ you confirm:
 
 ## What to Do with the Output
 
-The skill proposes; you decide what runs. Nothing touches your code or your
-specs automatically.
+The retrospective proposes; you decide what changes. Nothing alters your codebase or specs automatically:
 
-- **Action items** feed the normal dev loop as fix-now work or fresh tickets.
-  The retrospective writes them up; it doesn't execute them.
-- **Spec reconciliations** arrive with the evidence attached. Take each to
-  Sofia ("this changed, what now") so she updates the ticket. An uncertain
-  interpretation is never written into a spec on its own.
-- **Decision records** (ADRs) are written beside the code they govern only
-  when you approve each one, and committing them is up to you.
-- **The verdict** is the gate. A rejected epic, or one accepted with open
-  items, tells the next planning step what to carry forward.
+- Take fix-now action items straight into `bmad-build`, or ask Sofia to file follow-up stories or backlog bugs.
+- Bring documented spec reconciliations to Sofia ("this changed, what now") so she updates the spec cleanly instead of letting code and docs drift apart.
+- Review any proposed Architecture Decision Records (ADRs), which capture significant technical choices made during implementation. Only the ADRs you approve get written (beside the code they govern or in your decisions folder), and committing them stays up to you.
+
+### When the Verdict Is `rejected`
+
+A `rejected` verdict means either an epic ticket is still unfinished or one or more completion criteria failed verification. Work through the blocking items listed in the report (finish the remaining story, apply fixes with `bmad-build`, or reconcile a changed requirement with Sofia), then run `/bmad-retrospective` on the same epic again.
+
+Re-running `/bmad-retrospective` on an epic that already has a retrospective file automatically loads the existing report, reconciles it against the new commits and answers, and resumes from the first incomplete phase instead of starting over from scratch. Once the updated verdict is `accepted` (or `accepted-with-open-items` with your agreement), ask Sofia to close the epic.
 
 ## Running It
 
-Invoke `bmad-retrospective` with the epic folder, or the epic's id or slug in
-the active initiative. With no input, it offers the epics whose tickets are
-all finished. By default, it stops at the written report and verdict.
+Invoke `/bmad-retrospective` with the epic number, slug, or folder path (or ask [Amelia](../agents/amelia-dev.md) to run it). With no argument, it lists every epic whose tickets have finished so you can pick one. By default, it stops after writing the report and verdict.
 
-| You want                 | Do this                                                                                                                      |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| A standard review        | `/bmad-retrospective`                                                                                                        |
-| A specific epic          | `/bmad-retrospective 3`, or the epic's slug or folder                                                                        |
-| The team to talk it over | Ask to "discuss it as a team"; it convenes [party mode](../customize/run-multi-agent-discussions.md) over the real findings, off by default |
-| An unattended run        | `-H <epic>`: verdict on the evidence alone                                                                                   |
+| You want | Do this |
+| --- | --- |
+| Pick from finished epics | `/bmad-retrospective` |
+| Review a specific epic | `/bmad-retrospective 3` (or the epic's slug or folder) |
+| Re-check after fixes or resume an interrupted run | Run `/bmad-retrospective 3` again; it reconciles new commits automatically |
+| Hold a multi-agent team discussion on the findings | Ask to "discuss it as a team" to launch [party mode](../customize/run-multi-agent-discussions.md) grounded in the verified findings (off by default) |
+| Run unattended in automation | Invoke in non-interactive (headless) mode naming the epic explicitly to get an evidence-only report and verdict with no prompts |

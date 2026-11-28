@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """list-templates — list the templates in a set of libraries, for any skill that fills templates.
 
@@ -24,14 +25,15 @@ adds without a list of its own is appended to the order. Each listed id must
 name a heading, no id may repeat, and every heading of the template, and of the extensions that
 set a list, must be listed; what breaks this comes back in `order_problems`. An extension's list
 may leave out a heading of the template: that section is removed and named in `removed`. `guidance`,
-`rubric`, `methods`, `style` and `layout` are relative to their file and come back resolved; a bare
-name with no extension, such as `slides`, comes back as it is.
+`rubric`, `methods`, `style`, `layout` and relative-script `lint` values are relative to their file
+and come back resolved; a bare name with no extension, such as `slides`, and command-string `lint` hooks
+come back as written. `companions` and `forbid_id_prefixes` come back as lists.
 
 `mode` is the mode a run starts in and `view` whether a rendered view is made: the first `--libraries-of`
-skill's `workflow` value when set, else the template's, else `step-by-step` and `offer`; with `order: fixed`,
-`freeform` becomes `step-by-step`. A value not allowed (`step-by-step`, `freeform` or `fast`; `offer`, `always`
+skill's `workflow` value when set, else the template's, else `freeform` and `offer`; with `order: fixed`,
+`freeform` becomes `step-by-step`. A value not allowed (`freeform`, `step-by-step` or `fast`; `offer`, `always`
 or `never`; `order` other than `fixed`) is skipped and named in `order_problems`. `style` is the customization's when set, else the
-template's. An extension's empty `mode` or `order` clears the template's.
+template's. An extension's empty `mode`, `order`, `lint`, `companions` or `forbid_id_prefixes` clears the template's.
 
 `--brief` keeps only each template's id, description, not_for, category, agents and output, for choosing
 one; `agents` there is who offers the template: those it names, else the skill whose folder holds it,
@@ -42,11 +44,11 @@ without its removed sections, with every path made absolute.
 
 Prints JSON:
   templates     id, version, description, not_for, category, agents, facilitation_order, guidance, rubric,
-                methods, output, style, layout, view, mode, order, file, source, extensions, order_problems,
-                removed, in search order
+                methods, output, style, layout, view, mode, order, companions, forbid_id_prefixes, lint,
+                file, source, extensions, order_problems, removed, in search order
   shadowed      id, file, source, kept, agents: templates hidden by an earlier one with the same id
   orphaned      extends, file, source: extensions whose template was not found
-  unreachable   source, reason: sources that could not be read
+  unreachable   source, reason: sources that could not be read, and files whose frontmatter is not YAML
   missing       local paths that do not exist
   tool_sources  sentences for the agent to follow
   merged        the path written, with --merge
@@ -66,8 +68,10 @@ from urllib.parse import quote, urljoin, urlsplit
 from urllib.parse import unquote as url_unquote
 from urllib.request import Request, urlopen
 
-FRONTMATTER = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*(?:\n|\Z)", re.DOTALL)
-KEY = re.compile(r"^([A-Za-z_]+):[ \t]*(.*?)[ \t]*$", re.MULTILINE)
+sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+
+import frontmatter  # noqa: E402
+
 GITHUB = re.compile(
     r"^https://github\.com/(?P<owner>[^/]+)/(?P<repo>[^/@]+?)(?:\.git)?"
     r"(?:/(?:tree|blob)/(?P<tree_ref>[^/@]+)(?:/(?P<path>[^@]*?))?)?/?(?:@(?P<ref>[^/]+))?/?$"
@@ -75,10 +79,11 @@ GITHUB = re.compile(
 MODULE_FOLDER = "doc-templates"
 FIELDS = (
     "version", "description", "not_for", "category", "agents", "facilitation_order", "guidance", "rubric", "methods", "output", "style",
-    "layout", "view", "mode", "order",
+    "layout", "view", "mode", "order", "companions", "forbid_id_prefixes", "lint",
 )  # fmt: skip
-CLEARABLE = ("mode", "order")
-MODES = ("step-by-step", "freeform", "fast")
+LIST_CLEARABLE = ("companions", "forbid_id_prefixes")
+CLEARABLE = ("mode", "order", "lint", *LIST_CLEARABLE)
+MODES = ("freeform", "step-by-step", "fast")
 VIEWS = ("offer", "always", "never")
 ALLOWED = {"mode": MODES, "view": VIEWS, "order": ("fixed",)}
 SECTION = re.compile(r"^##[ \t]+(.+?)[ \t#]*$")
@@ -88,17 +93,18 @@ BUILT = re.compile(r"^\s*<!--\s*built\s*:", re.IGNORECASE)
 TIMEOUT = 30
 
 
-def unquote(value: str) -> str:
-    if len(value) >= 2 and value[0] == value[-1] == '"':
-        return value[1:-1].replace('\\"', '"')
-    if len(value) >= 2 and value[0] == value[-1] == "'":
-        return value[1:-1].replace("''", "'")
-    return value
+def read_fields(text: str) -> dict:
+    """A file's frontmatter fields, empty when it has none or they are not YAML."""
+    try:
+        return frontmatter.load(frontmatter.split(text)[0])
+    except ValueError:
+        return {}
 
 
-def frontmatter(text: str) -> dict[str, str]:
-    m = FRONTMATTER.match(text.replace("\r\n", "\n"))
-    return {key: unquote(value) for key, value in KEY.findall(m.group(1))} if m else {}
+def scalar(meta: dict, key: str, default: str | None = "") -> str | None:
+    """The field's text, or default when it is absent or not text."""
+    value = meta.get(key)
+    return value if isinstance(value, str) else default
 
 
 def run_gh(args: list[str]) -> str:
@@ -144,6 +150,39 @@ def beside(file: str, value: str) -> str:
     return urljoin(file, value) if "://" in file else str(Path(file).parent / value)
 
 
+COMMAND_RUNNERS = frozenset({
+    "uv", "python", "python3", "py", "node", "npx", "bash", "sh", "zsh", "fish",
+    "pwsh", "powershell", "ruby", "perl", "deno", "bun", "go", "cargo", "make",
+    "just", "ruff", "pytest", "npm", "pnpm", "yarn", "cmd",
+})  # fmt: skip
+LINT_SCRIPT_SUFFIXES = frozenset({".py", ".sh", ".bash", ".zsh", ".js", ".mjs", ".cjs", ".ts", ".rb", ".pl", ".ps1"})
+
+
+def is_lint_script_path(value: str, base_file: str = "") -> bool:
+    """Whether `value` names a local/URL script path rather than a shell command string."""
+    if not value or "://" in value or value.startswith("{") or not Path(value).suffix:
+        return False
+    if any(ch in value for ch in ('"', "'", "{", "}", "|", ";", "&")) or re.search(r"\s--?[A-Za-z0-9]", value):
+        return False
+    if not any(c.isspace() for c in value):
+        return True
+    if base_file and "://" not in base_file and (Path(base_file).parent / value).is_file():
+        return True
+    if Path(value).expanduser().is_file():
+        return True
+    first = value.split(None, 1)[0].lower()
+    if first in COMMAND_RUNNERS:
+        return False
+    return Path(value).suffix.lower() in LINT_SCRIPT_SUFFIXES or "/" in value or "\\" in value
+
+
+def beside_lint(file: str, value: str) -> str:
+    """Resolve `lint:` relative to `file` when it is a script path; leave command strings verbatim."""
+    if not is_lint_script_path(value, base_file=file):
+        return value
+    return beside(file, value)
+
+
 def module_libraries(roots: list[str], folder_name: str = MODULE_FOLDER) -> list[str]:
     """The `folder_name` folder of each module record, once each, roots in order."""
     libraries: dict[Path, str] = {}
@@ -160,13 +199,13 @@ def module_libraries(roots: list[str], folder_name: str = MODULE_FOLDER) -> list
     return list(libraries.values())
 
 
-def listed(value: str) -> list[str]:
-    """A one-line YAML list, `[a, 'b']`, as its items."""
-    return [unquote(name.strip()) for name in value.strip("[]").split(",") if name.strip()]
+def listed(value: object) -> list[str]:
+    """A YAML list's text items; anything else is no list."""
+    return [item.strip() for item in value if isinstance(item, str) and item.strip()] if isinstance(value, list) else []
 
 
-def unreadable_order(meta: dict[str, str]) -> bool:
-    """Whether the file has a `facilitation_order` key that is not a one-line list."""
+def unreadable_order(meta: dict) -> bool:
+    """Whether the file has a `facilitation_order` key that is not a list of ids."""
     return "facilitation_order" in meta and not listed(meta["facilitation_order"])
 
 
@@ -238,24 +277,27 @@ def order_problems(
     return problems
 
 
-def fields(file: str, meta: dict[str, str]) -> dict[str, object]:
+def fields(file: str, meta: dict) -> dict[str, object]:
     """What a template or extension sets, with its paths resolved."""
     return {
-        "version": meta.get("version", ""),
-        "description": meta.get("description", ""),
-        "not_for": meta.get("not_for", ""),
-        "category": meta.get("category", ""),
-        "agents": listed(meta.get("agents", "")),
-        "facilitation_order": listed(meta.get("facilitation_order", "")),
-        "guidance": beside(file, meta.get("guidance", "")),
-        "rubric": beside(file, meta.get("rubric", "")),
-        "methods": beside(file, meta.get("methods", "")),
-        "output": meta.get("output", ""),
-        "style": beside(file, meta.get("style", "")),
-        "layout": beside(file, meta.get("layout", "")),
-        "view": meta.get("view", ""),
-        "mode": meta.get("mode"),
-        "order": meta.get("order"),
+        "version": scalar(meta, "version"),
+        "description": scalar(meta, "description"),
+        "not_for": scalar(meta, "not_for"),
+        "category": scalar(meta, "category"),
+        "agents": listed(meta.get("agents")),
+        "facilitation_order": listed(meta.get("facilitation_order")),
+        "guidance": beside(file, scalar(meta, "guidance")),
+        "rubric": beside(file, scalar(meta, "rubric")),
+        "methods": beside(file, scalar(meta, "methods")),
+        "output": scalar(meta, "output"),
+        "style": beside(file, scalar(meta, "style")),
+        "layout": beside(file, scalar(meta, "layout")),
+        "view": scalar(meta, "view"),
+        "mode": scalar(meta, "mode", None),
+        "order": scalar(meta, "order", None),
+        "companions": listed(meta["companions"]) if "companions" in meta else None,
+        "forbid_id_prefixes": listed(meta["forbid_id_prefixes"]) if "forbid_id_prefixes" in meta else None,
+        "lint": beside_lint(file, scalar(meta, "lint")) if "lint" in meta else None,
     }
 
 
@@ -279,8 +321,15 @@ def scan(sources: list[str]) -> dict:
             unreachable.append({"source": source, "reason": str(e)})
             continue
         for file, text in files:
-            meta = frontmatter(text)
-            if meta.get("extends"):
+            try:
+                meta = frontmatter.load(frontmatter.split(text)[0])
+            except ValueError as e:
+                if text.startswith("---") and "not terminated" not in str(e):
+                    unreachable.append(
+                        {"source": file, "reason": f"its frontmatter is not YAML: {' '.join(str(e).split())}"}
+                    )
+                continue
+            if scalar(meta, "extends"):
                 extensions.setdefault(meta["extends"], []).append(
                     {
                         "file": file,
@@ -292,12 +341,12 @@ def scan(sources: list[str]) -> dict:
                     }
                 )
                 continue
-            template_id = meta.get("template")
+            template_id = scalar(meta, "template")
             if not template_id:
                 continue
             if template_id in found:
                 kept = found[template_id]["file"]
-                agents = listed(meta.get("agents", ""))
+                agents = listed(meta.get("agents"))
                 shadowed.append({"id": template_id, "file": file, "source": source, "kept": kept, "agents": agents})
                 continue
             found[template_id] = {
@@ -349,7 +398,11 @@ def scan(sources: list[str]) -> dict:
         template["_bad_extension_orders"] = [e["file"] for e in adding if e["_bad_order"]]
     for template in found.values():
         for key in CLEARABLE:
-            template[key], template["_own"][key] = template[key] or "", template["_own"][key] or ""
+            default: object = [] if key in LIST_CLEARABLE else ""
+            if template[key] is None:
+                template[key] = list(default) if isinstance(default, list) else default
+            if template["_own"][key] is None:
+                template["_own"][key] = list(default) if isinstance(default, list) else default
         own, added = template.pop("_headings"), template.pop("_extension_headings", [])
         must, template["removed"] = own + template.pop("_must_list", []), []
         if template.pop("_order_from_extension", False):
@@ -364,10 +417,12 @@ def scan(sources: list[str]) -> dict:
                 template["facilitation_order"], must, own + added, built, template.get("_placed", [])
             )
         if template.pop("_bad_order") and not template["facilitation_order"]:
-            template["order_problems"] = ["`facilitation_order` must be a one-line list, such as `[problem, scope]`"]
+            template["order_problems"] = [
+                "`facilitation_order` must be a list of section ids, such as `[problem, scope]`"
+            ]
         template["order_problems"] += template.pop("_extension_problems", [])
         template["order_problems"] += [
-            f"`facilitation_order` in {file} is ignored: it must be a one-line list, such as `[problem, scope]`"
+            f"`facilitation_order` in {file} is ignored: it must be a list of section ids, such as `[problem, scope]`"
             for file in template.pop("_bad_extension_orders", [])
         ]
     return {
@@ -387,8 +442,11 @@ BRIEF = ("id", "description", "not_for", "category", "agents", "output")
 def body(text: str) -> str:
     """A file's text after its frontmatter."""
     text = text.replace("\r\n", "\n")
-    m = FRONTMATTER.match(text)
-    return text[m.end() :].strip("\n") if m else text.strip("\n")
+    try:
+        text = frontmatter.split(text)[1]
+    except ValueError:
+        pass
+    return text.strip("\n")
 
 
 def drop_sections(text: str, ids: list[str]) -> str:
@@ -419,35 +477,23 @@ def absolute(value: str) -> str:
     return Path(value).expanduser().resolve().as_posix()
 
 
-def yaml_value(value: object) -> str:
-    if isinstance(value, list):
-        return "[" + ", ".join(value) + "]"
-    return json.dumps(value, ensure_ascii=False)
+def absolute_lint(value: str) -> str:
+    """Make a script-path `lint:` absolute; leave command strings verbatim."""
+    if not is_lint_script_path(value):
+        return value
+    return absolute(value)
 
 
 def merged_frontmatter(template: dict) -> str:
     """The template's frontmatter with every value its extensions changed, paths made absolute."""
-    m = FRONTMATTER.match(template["_text"].replace("\r\n", "\n"))
-    entries: list[list[str]] = []
-    for line in m.group(1).split("\n") if m else []:
-        if KEY.match(line) or not entries:
-            entries.append([line])
-        else:
-            entries[-1].append(line)
+    text = template["_text"].replace("\r\n", "\n")
     own = template["_own"]
     values = {key: template[key] for key in FIELDS if template[key] != own[key]}
-    raw = frontmatter(template["_text"])
-    values.update({key: absolute(template[key]) for key in PATH_KEYS if absolute(template[key]) != raw.get(key, "")})
-    lines, written = [], set()
-    for entry in entries:
-        key = KEY.match(entry[0]).group(1) if KEY.match(entry[0]) else None
-        if key in values:
-            lines.append(f"{key}: {yaml_value(values[key])}")
-            written.add(key)
-        else:
-            lines.extend(entry)
-    lines += [f"{key}: {yaml_value(values[key])}" for key in FIELDS if key in values and key not in written]
-    return "---\n" + "\n".join(lines) + "\n---"
+    raw = read_fields(text)
+    values.update({key: absolute(template[key]) for key in PATH_KEYS if absolute(template[key]) != scalar(raw, key)})
+    if absolute_lint(template["lint"]) != scalar(raw, "lint"):
+        values["lint"] = absolute_lint(template["lint"])
+    return "---\n" + frontmatter.set_fields(frontmatter.split(text)[0], values) + "---"
 
 
 def merged(template: dict) -> str:
@@ -582,8 +628,13 @@ def main(argv: list[str]) -> int:
             return 1
         if args.merge:
             out = Path(args.merge).expanduser()
+            try:
+                text = merged(result["templates"][0])
+            except ValueError as e:  # frontmatter set_fields cannot rewrite, such as a flow mapping
+                print(json.dumps({"error": f"cannot merge `{args.template}`: {e}"}, indent=2))
+                return 1
             out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(merged(result["templates"][0]), encoding="utf-8")
+            out.write_text(text, encoding="utf-8")
             result["merged"] = str(out)
     for template in result["templates"]:
         for key in [k for k in template if k.startswith("_")]:

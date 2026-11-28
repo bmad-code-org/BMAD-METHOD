@@ -1,95 +1,64 @@
 ---
 title: Write a PRD
-description: Write a PRD with John, the Product Manager, or another planning document with John or Mary, the Business Analyst. Covers stakes, step-by-step, freeform and fast modes, assumption tags, and which document fits.
+description: Write a PRD with John, the Product Manager, or another planning document with John or Mary, the Business Analyst. Covers stakes, working modes, assumption tags, and choosing the right level.
 sidebar:
   order: 2
 ---
 
-Use John, the Product Manager (`bmad-agent-pm`), when people must agree on
-what the product is before anyone builds it. A PRD answers "what should we
-build and why". It does not say how. It comes at two levels: a thin PRD for
-work with several capabilities, which names the epics, and a detailed PRD for
-one epic, written when that epic's turn comes. Write one when:
+Use John, the Product Manager (`bmad-agent-pm`), when people must agree on what a product should do before anyone starts coding. A PRD (Product Requirements Document) answers what to build and why without dictating how engineers should implement it. It works at two main levels: a concise PRD for work spanning several capabilities that maps out the epics, and a detailed epic PRD written when a specific epic's turn arrives. Write a PRD when:
 
 - Several people or teams must agree on the product
-- Several epics must not diverge from one account of it
-- Integrations or SLAs are involved
-- Someone outside the team must approve what gets built: a sponsor, funding,
-  or a launch
+- Several epics must stay aligned with one shared definition
+- External integrations or service-level agreements (SLAs) are involved
+- Someone outside the build team must approve scope, funding, or launch
 
-Across several initiatives, John writes a program PRD: outcomes, the
-initiatives and their order, and shared invariants. He adds a program charter when
-governance is the question.
+Across several initiatives, John writes a program PRD covering portfolio outcomes, initiative order, and shared rules, or a program charter when governance is the main question.
 
-Which document depends on the work itself, not on team size or time:
+The right document depends on the size of the work, not on team size or deadlines:
 
 | The work is | Level | Written as |
 | --- | --- | --- |
-| One story: one end-to-end behavior | Story | A story ticket from Sofia |
-| More than one story of one capability | Epic | The epic PRD |
-| Several capabilities that share outcomes, invariants or nouns | Initiative | The PRD, thin, with its epic map |
-| Several initiatives | Program | The PRD at program level |
+| One end-to-end user behavior | Story | A story ticket from Sofia |
+| Several stories for one capability | Epic | An epic PRD |
+| Several capabilities sharing outcomes, rules, or concepts | Initiative | A concise initiative PRD with its epic map |
+| Several coordinated initiatives | Program | A program PRD, or a program charter for governance |
 
-Start at the lowest level that holds the work; John moves it up when it proves
-bigger.
+Start at the lowest level that holds the work; John moves up a level if the scope proves larger.
 
-Skip it when one person decides and the intent fits in a few paragraphs: give
-those to Sofia directly. A PRD is an optional input to the initiative, never a
-prerequisite.
+Skip a PRD when one person makes the calls and the goal fits in a few paragraphs: hand those notes straight to Sofia. A PRD is an optional input to your initiative, never a prerequisite.
 
 ## Steps
 
 ### 1. Start with Everything You Have
 
-Ask for John by name, tell him what you're trying to achieve, and point him at
-your inputs, such as a brief, research, cited notes, or an existing PRD from
-Confluence or Notion. You don't need to name a document: he proposes the one
-that fits, says why, and names close alternatives, and nothing starts until you
-confirm. Naming one, as in "a PRD", skips that choice. With no initiative active, he first offers the `bmad` skill to create
-one: accept, so the PRD and the initiative Sofia writes from it share one
-folder. He opens the way the document's template says. For a PRD he asks whether this is a new product or a change to one, unless your request answered it, and for a brain dump: who it is for, what they do with it, what must be true when it ships, and every input he should read. Then he asks whether there is anything else. In a separate message he echoes back the purpose, the reader and the stakes he read, so you can correct them. Before the first section he asks the few questions whose answers would change several sections, such as who buys it or what it must never do, so the big forks are settled before any section depends on them.
+Ask for John by name, describe what you want to achieve, and point him at any existing material such as a product brief, research notes, call summaries, or an existing PRD from Confluence or Notion. You do not need to know which document type fits: John proposes the right one, explains why, names close alternatives, and waits for your confirmation before starting. If you already ask for "a PRD", he skips that selection step.
+
+If no active initiative is set yet, John first offers to set one up with the `bmad` skill so the PRD and the initiative Sofia later writes share the same folder.
+
+Next, John asks whether this is a new product or a change to an existing one (unless you already said) and invites a quick brain dump: who the product is for, what they do with it, what must be true when it ships, and any files he should read. In a separate reply, he plays back the purpose, audience, and stakes he heard so you can correct him early. Before drafting any section, he asks the few big questions whose answers ripple across the whole document, such as who buys it or what it must never do.
 
 ### 2. Choose the Mode
 
-By default John takes the PRD step-by-step: one section at a time, in order, settling each before the next, with your brain dump already written into the sections it filled. Ask for freeform and he recaps, reviews and pushes in whatever order fits, and shows you every section before the review, so none goes in unseen. Ask for fast, or for speed, and he asks what the template requires, topped up with a few high-impact questions of his own, then drafts the rest. To make one mode the start for every document, for yourself or your team, ask `bmad-customize` to set `mode` for `bmad-facilitate`.
+By default, John works in `freeform` mode: you talk naturally across topics while he updates the document quietly in the background and plays back major decisions as they settle. You can switch anytime to `step-by-step` to walk through sections in order, or ask for `fast` mode so he asks only the high-impact questions and drafts the rest with `[ASSUMPTION]` tags for you to review. To change the default mode for yourself or your team, invoke `bmad-customize` and tell it which mode you prefer for planning documents.
 
-Either way he asks only what only you know and finds other facts himself. The
-stakes change how hard he pushes and what he fills in without you:
+In every mode, John asks only for judgment calls that belong to you and looks up other facts himself. The stakes of the project change how hard he pushes and what he fills in on his own:
 
 | Stakes | What changes |
 | --- | --- |
-| Hobby or personal | One line can fill a section; no reviewers run |
-| Internal, pitch or investor, publication, public launch | He fills gaps himself, tags each `[ASSUMPTION]`, and pushes back harder as the stakes rise |
-| Regulated or contracted | He asks instead of guessing, and invents no regulation, citation, or threshold |
+| Hobby or personal | Short answers can fill a section; no automated review passes run |
+| Internal, investor pitch, publication, or public launch | He fills gaps himself, marks each with `[ASSUMPTION]`, and pushes back harder as stakes rise |
+| Regulated or contracted | He asks instead of guessing and invents no regulation, citation, or threshold |
 
-Read every tag: one that only a stakeholder can settle is a question to take
-to that person, not a guess to accept. Accept each item one by one; a blanket
-"take your recommendations" leaves the tags open. A tag stays where it is
-until you accept that item. At Finalize, John settles the tags that block a
-decision, one at a time, and defers the rest to the PRD's open questions.
-After a headless run, or a yes to a group, the tags still open move to the
-template's assumptions section or a closing `## Assumptions` list, one line
-each.
+Read every `[ASSUMPTION]` tag carefully: any guess that only a stakeholder can confirm is a question for that person, not something to accept blindly. Confirm items one by one, because a blanket "accept everything" leaves tags open. When you finalize, John walks through any assumption that blocks a decision one at a time and moves lower-priority unknowns to open questions. If a document finishes in an unattended (non-interactive) run, or if you approve a batch at once, any unconfirmed tags are collected into a closing Assumptions list so nothing hides in the prose.
 
-Length fits the stakes, under a ceiling set by the level: about 2,000 words
-for an initiative, 3,000 at most for a program, and about 2,000 for an epic. Past that, detail moves down a level. A PRD padded to look
-thorough has failed.
+Document length stays bounded by its level: roughly 2,000 words for an initiative PRD, up to 3,000 for a program PRD, and roughly 2,000 for an epic PRD. Extra detail belongs one level down rather than bloating the parent document.
 
 ### 3. Keep the First Version Small
 
-Once the epic map is proposed, and before he settles the scope, John
-steps back and weighs what was asked for against the team and the date. When
-it looks ambitious, he says so, names what could wait and why, and argues for
-a first version small enough to finish, test, and learn from. He presses
-hardest when the work tests an idea, eases off where a mandate or regulation
-fixes the scope, and skips this when the work is already lean. The call is
-yours: what you keep stays.
+Once the epic map is on the table and before scope locks in, John checks what you asked for against your team and timeline. When the plan looks ambitious, he says so, points out what can wait and why, and makes the case for a smaller first version you can finish, test, and learn from. He pushes hardest when you are validating a new idea, eases off when a mandate or regulation fixes scope, and skips this check when the plan is already lean. The final call is always yours.
 
 :::note[Example: the room booker]
-In the [room booker](../start/how-bmad-works.md#the-example-app), an office's meeting-room app:
-
-You have the cited note `bmad-ingest` wrote from a call about rooms booked and
-never used, and `facilities-email.md`, where facilities set out its rules.
+In the [room booker](../start/how-bmad-works.md#the-example-app), an office meeting-room app, you have a call summary from `bmad-ingest` about rooms booked and left empty, plus `facilities-email.md` with facilities' rules.
 
 **You:**
 
@@ -97,22 +66,17 @@ never used, and `facilities-email.md`, where facilities set out its rules.
 /bmad-agent-pm Help me work out room check-in: rooms get booked and never used. Read the rooms call note and facilities-email.md
 ```
 
-**John:** A PRD fits this: the check-in rules people must agree on before
-anyone builds. If you first need to decide whether it's worth doing at all, an
-opportunity write-up comes before it. Start the PRD?
+**John:** A PRD fits this because people need to agree on the check-in rules before anyone builds. If you first need to decide whether it is worth doing at all, an opportunity assessment comes before it. Start the PRD?
 
 **You:** Yes, the PRD.
 
-**John:** Tell me everything first: why this PRD, who acts on it, and every
-input I should read.
+**John:** Tell me everything first: why this PRD, who acts on it, and every input I should read.
 
 After your brain dump:
 
-**John:** Purpose: agree the check-in rules before anyone builds. Readers:
-facilities and two developers. Stakes: internal. We'll go step by step;
-say freeform or fast to change that.
+**John:** Purpose: agree on the check-in rules before anyone builds. Readers: facilities and two developers. Stakes: internal. We will work freeform; say step-by-step or fast to switch, or tell me to finish anytime.
 
-After the conversation, part of `prd-check-in/prd-check-in.md`:
+After the conversation, part of `prd-check-in/prd-check-in.md` looks like this:
 
 ```markdown wrap
 ## Invariants
@@ -135,98 +99,50 @@ First: E01, because E02 has nothing to act on without check-ins.
 
 ## Finalize, Validate, and Update
 
-Finalize settles the blocking tags as in step 2 and asks you to read the
-three decisions it is least sure of. Sessions pause and resume: a new chat
-picks up from the document, which marks the sections still open. Each open
-question (`OQ-N`) names an owner, when it is needed, and what it blocks.
-Names, owners, and dates come from you; John never guesses them.
+Finalizing settles every assumption that blocks a decision and asks you to verify the three calls John is least confident about. You can pause and resume in a fresh chat anytime because the document marks which sections are still open. Each open question records an owner, when an answer is needed, and what it blocks; John never guesses names, owners, or dates.
 
-Validate reviews the PRD without changing it, gives you the findings in the
-conversation, and offers an update from them. Update
-reconciles the PRD with a change and shows conflicts with earlier decisions
-before it applies anything. When the PRD changes after the initiative is
-written, run Sofia again with it; see
-[Learn and Adjust](../learn/learn-and-adjust.md#a-change-mid-flight).
+Ask John to **validate** a PRD to get a review report in chat without editing the file, with an option to apply fixes afterward. Ask him to **update** a PRD when requirements change so he reconciles conflicts with earlier decisions before editing anything. When a PRD changes after Sofia has already created the initiative, bring the updated PRD back to Sofia; see [Learn and Adjust](../learn/learn-and-adjust.md#a-change-mid-flight).
 
 ## What You Get
 
-`prd-<slug>/prd-<slug>.md` in the active initiative's folder, for Sofia to
-lift into the initiative's Requirements and Constraints and to use as the
-split into epics. An epic's PRD lands in its own folder inside that epic's
-folder, where Sofia refines the epic from it.
+An initiative PRD lands in `prd-<slug>/prd-<slug>.md` inside the active initiative's folder, ready for Sofia to distill into the initiative's requirements and epic split. An epic PRD lands inside that epic's folder, where Sofia uses it to refine the epic and plan stories.
 
 ### The PRD for several capabilities
 
-Thin on purpose: ten to fifteen minutes to read, and no requirement lists.
+This document stays short on purpose (a ten- to fifteen-minute read) and avoids exhaustive low-level requirement lists.
 
-- **Sections:** Problem and users, OKRs, Scope and non-goals, Invariants,
-  Shared nouns and seams, Journeys, Epic map, and Deferred decisions and
-  risks.
-- **The conversation runs in a different order from the document.** After
-  your brain dump John proposes the epics, then works scope, OKRs, invariants
-  and shared nouns, and ends with what is deferred and which epic goes first.
-- **Epic map:** the epics are the work's cohesive capabilities, taken from the
-  journey you described: each is something a person could see working by
-  itself. John proposes them in his read-back and you confirm or reshuffle.
-  Each gets three to five lines, with one outcome someone could check and the
-  OKRs it moves. Nothing is said here about how a team will deliver it.
-- **A detail that belongs to one epic** is saved under that epic, in your
-  words, and stays out of every other section. That is how the PRD stays thin
-  without anything being lost.
-- **One capability only:** John says so and offers the epic PRD. Capabilities
-  that share no outcome, invariant or noun: he says it looks like more than
-  one initiative and asks which to take first.
-- **OKRs (`OKR-N`):** John asks what you want shown when it ships and who
-  judges it, then proposes key results in three bands for you to react to:
-  Passable (the floor to ship), Good (the target for this delivery) and
-  Excellent (the long-horizon stretch). Each names how production will
-  measure it. A band you have not reacted to stays marked as his proposal.
-- **Invariants (`INV-N`):** pass or fail, with nothing graded: who may see
-  what, an audit trail, a legal obligation. Anything that can be better or
-  worse is an OKR. Every epic inherits them.
-- **Done when it is ready to slice, not complete:** the OKRs are agreed, the
-  invariants and shared nouns are settled enough that the first epic will not
-  corner the second, every deferred decision names who settles it, and the
-  first epic is chosen.
+- The document covers eight sections: Problem and users, OKRs (Objectives and Key Results), Scope and non-goals, Invariants, Shared nouns and seams, Journeys, Epic map, and Deferred decisions and risks.
+- Conversation order differs from document order: after your brain dump, John proposes the epics first, then settles scope, OKRs, hard rules, and shared concepts, and finishes with deferred decisions and which epic goes first.
+- Each entry in the epic map is one cohesive capability a user can see working on its own, described in three to five lines with one verifiable outcome and the OKRs it moves.
+- Details that belong to only one epic are parked under that epic's entry in your own words so nothing gets lost without cluttering the rest of the PRD.
+- John runs a right-sizing check as scope takes shape: if the work turns out to be a single capability, he offers an epic PRD instead, and if capabilities share no goals, rules, or concepts, he flags that they look like separate initiatives and asks which to tackle first.
+- OKRs are written in three bands: Passable (minimum to ship), Good (target for this delivery), and Excellent (stretch goal), along with how production will measure them, and any band you have not confirmed stays marked as his proposal.
+- Invariants record non-negotiable pass/fail rules (such as permissions, audit trails, or legal rules) that every epic inherits, kept separate from graded OKRs.
+- The PRD is ready to slice once OKRs are agreed, hard rules and shared concepts are settled enough that the first epic will not paint the second into a corner, deferred decisions have owners, and the first epic is picked.
 
 ### The PRD for one epic
 
-Written when the epic's turn comes and it still has open product questions,
-with its own template, `prd-epic`. Ask
-John for "the PRD for epic E02" and point him at the parent PRD.
+Write an epic PRD when an epic's turn arrives and it still has open product questions. Ask John for "the PRD for epic E02" and point him at the parent PRD if you have one.
 
-- **Sections:** Context, Journeys and flows, Requirements, Rules, edge cases
-  and failure modes, Instrumentation, and Open questions. Seams, Product
-  specifics and Changes to the parent join when they apply.
-- **It inherits.** John reads the parent PRD, what it saved for this epic and
-  the code built so far, plays back what is known, and asks only what this
-  epic adds: which OKRs it moves, to which band, and what is out.
-- **Requirements** are distilled from the journeys and rules you walk through,
-  ten to twenty-five of them, numbered with the epic's id, such as
-  `E02-FR-07`.
-- **With no parent PRD,** Context carries a short version of what a parent
-  would have settled: the problem, what is out, a few key results in three
-  bands, and the invariants.
-- **Pictures:** a journey that branches, a noun that moves through states and
-  an exchange between systems are drawn in place of prose.
+- The document covers Context, Journeys and flows, Requirements, Rules, edge cases and failure modes, Instrumentation, Chunky story slice map, and Open questions, plus Seams, Product specifics, and Changes to the parent when they apply.
+- John inherits settled context by reading the parent PRD, the notes saved for this epic, and the code already built, playing back what is already decided and asking only what this epic adds (which OKRs it moves, which target band it aims for, and what stays out).
+- Requirements are distilled from the user journeys and edge cases you walk through and numbered with the epic's prefix (such as `E02-FR-07`) so every requirement is testable and traces back to a journey or rule.
+- A chunky story slice map proposes right-sized, end-to-end stories for the epic along with a full coverage table mapping every functional requirement and measurement check to an owning story, which Sofia adopts directly when slicing stories.
+- If detailed epic discovery uncovers a change to a shared rule, concept, or sibling epic, interactive runs can apply agreed updates directly back to the parent PRD with your confirmation.
+- When written standalone without a parent PRD, the Context section captures a concise summary of the problem, non-goals, three-band key results, and invariants.
+- Branching journeys, state lifecycles, and multi-system exchanges are drawn as diagrams instead of long paragraphs wherever prose drags.
 
 ## Other Documents
 
-Most work needs no planning document, or only one of these:
+Most projects need no planning document or only one of these:
 
 | Document | Who | Fits |
 | --- | --- | --- |
-| PRD | John | Outcomes, guardrails and the epic map for work with several capabilities |
-| Epic PRD | John | One capability's detailed requirements, written when its turn comes |
-| Prototype plan | John | A hobby project, or an idea to try before committing |
-| Brief | Mary, the Business Analyst (`bmad-agent-analyst`) | Why to build a product, or pitching it, in a page or two |
-| Requirements specification | John | A regulated or contracted baseline: traceable, verifiable requirements |
-| Business requirements document (BRD) | Mary | What the business signs for, before a PRD, when a separate party builds, a sponsor signs, or a regulator expects it |
+| Initiative PRD | John | Outcomes, guardrails, and epic map for work spanning several capabilities |
+| Epic PRD | John | Detailed requirements and story slice map for one capability when its turn arrives |
+| Prototype plan | John | A personal project or an idea to test before committing |
+| Product brief | Mary, the Business Analyst (`bmad-agent-analyst`) | Explaining why to build a product, or pitching it, in one or two pages |
+| Requirements specification | John | A regulated or contracted baseline with traceable, verifiable requirements |
+| Business requirements document (BRD) | Mary | What business stakeholders sign off on before a PRD when an external party builds, a sponsor signs, or a regulator expects it |
 
-Ask for a document by name, or describe the work and let the agent pick, say
-why, and name close alternatives. Every document John and Mary write works the
-same way: create, update, or validate. The full list, from the opportunity
-assessment to the launch plan, is in
-[Document Templates](../reference/document-templates.md#documents-john-and-mary-write).
-To make every PRD ask the questions your company cares about, see
-[Customize a Document for Your Team](../customize/customize-a-document-for-your-team.md).
+Ask for a document by name, or describe what you are trying to decide and let John or Mary suggest the right fit. Every document they write supports creating, updating, and validating in the same way. For the full catalog and template IDs, see [Document Templates](../reference/document-templates.md#mary-and-john-analysis-and-product). To add company-specific questions or standards to every PRD, see [Customize a Document for Your Team](../customize/customize-a-document-for-your-team.md).
