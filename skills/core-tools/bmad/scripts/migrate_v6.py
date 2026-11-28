@@ -22,11 +22,13 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime
 import importlib.util
 import os
 import re
 import shutil
+import stat
 import sys
 import tomllib
 from pathlib import Path, PurePosixPath
@@ -53,14 +55,19 @@ USER_CONFIG = _setup.USER_CONFIG
 _MISSING = _setup._MISSING
 discover_installation = _setup.discover_installation
 header_path = _setup.header_path
+is_link = _setup.is_link
 lookup = _setup.lookup
 present = _setup.present
 reject_unusable_bmad = _setup.reject_unusable_bmad
 render_toml = _setup.render_toml
 retired_skills = _setup.retired_skills
 retirement_report = _setup.retirement_report
+rmtree_force = _setup.rmtree_force
 skill_folders = _setup.skill_folders
+unlink_force = _setup.unlink_force
+write_force = _setup.write_force
 write_text = _setup.write_text
+
 
 # Traces the classic installer leaves under _bmad.
 LEGACY_LEFTOVERS = (
@@ -188,7 +195,7 @@ def unused_customizations(project_root: Path, installation: Installation, retire
     Installed means present in the active roots or in any `.<tool>/skills` of the project: a teammate's tool may
     load a skill this host does not, and its customization is shared through the repository."""
     custom = project_root / "_bmad" / "custom"
-    if custom.is_symlink() or not custom.is_dir():
+    if is_link(custom) or not custom.is_dir() or not inside_bmad(custom, project_root):
         return []
     moving = {old for old, _new in (*retirement.renames, *retirement.unmoved)}
     installed = set(installation.folders)
@@ -199,6 +206,8 @@ def unused_customizations(project_root: Path, installation: Installation, retire
             continue
     unused: list[str] = []
     for path in sorted(custom.iterdir(), key=lambda entry: entry.name):
+        if is_link(path):
+            continue
         name = path.name
         stem = name.removesuffix(".toml").removesuffix(".user")
         if not name.startswith("bmad-") or not name.endswith(".toml") or name in moving:
@@ -256,30 +265,57 @@ def clean(project_root: Path, skill_root: Path, *, roots: tuple[Path, ...] = ())
         "removed_keys": [],
         "moved_keys": [],
         "removed_customizations": [],
+        "not_removed": [],
         "notes": [],
     }
     if not (leftovers or stale or unused):
         return report
     backup = backup_bmad(project_root)
     report["backup"] = backup.relative_to(project_root).as_posix()
+    removed_files: list[str] = []
+    removed_customizations: list[str] = []
+    not_removed: list[dict[str, str]] = []
     for relative in leftovers:
         path = bmad.joinpath(*PurePosixPath(relative).parts)
-        if path.is_dir() and not path.is_symlink():
-            shutil.rmtree(path)
-        else:
-            path.unlink()
-        prune_empty_parents(path.parent, bmad)
+        try:
+            if path.is_dir() and not is_link(path):
+                rmtree_force(path)
+            else:
+                unlink_force(path)
+        except OSError as error:
+            not_removed.append({"file": f"_bmad/{relative}", "error": str(error)})
+            continue
+        removed_files.append(f"_bmad/{relative}")
+        with contextlib.suppress(OSError):
+            prune_empty_parents(path.parent, bmad)
+    succeeded_files: set[str] = set()
     for relative, text in edits.items():
-        write_text(project_root / relative, text)
+        try:
+            write_force(project_root / relative, text)
+        except OSError as error:
+            not_removed.append({"file": relative, "error": str(error)})
+        else:
+            succeeded_files.add(relative)
     for name in unused:
-        (bmad / "custom" / name).unlink()
-    report["removed_files"] = [f"_bmad/{relative}" for relative in leftovers]
-    report["removed_keys"] = [{"file": relative, "key": ".".join(path)} for relative, path in removed]
-    report["moved_keys"] = [
-        {"file": relative, "key": ".".join(path), "to": f"agent.{path[-1]}"} for relative, path in moved
+        target = bmad / "custom" / name
+        try:
+            unlink_force(target)
+        except OSError as error:
+            not_removed.append({"file": f"_bmad/custom/{name}", "error": str(error)})
+        else:
+            removed_customizations.append(f"_bmad/custom/{name}")
+    report["removed_files"] = removed_files
+    report["removed_keys"] = [
+        {"file": relative, "key": ".".join(path)} for relative, path in removed if relative in succeeded_files
     ]
-    report["removed_customizations"] = [f"_bmad/custom/{name}" for name in unused]
-    report["notes"] = custom_key_notes(custom_keys)
+    report["moved_keys"] = [
+        {"file": relative, "key": ".".join(path), "to": f"agent.{path[-1]}"}
+        for relative, path in moved
+        if relative in succeeded_files
+    ]
+    report["removed_customizations"] = removed_customizations
+    report["not_removed"] = not_removed
+    report["notes"] = custom_key_notes([(file, key) for file, key in custom_keys if file in succeeded_files])
     return report
 
 
@@ -289,14 +325,19 @@ def backup_bmad(project_root: Path) -> Path:
     now = datetime.datetime.now()
     backup = project_root / f"{BACKUP_PREFIX}{now:%Y%m%d-%H%M}"
     if present(backup):
-        backup = project_root / f"{BACKUP_PREFIX}{now:%Y%m%d-%H%M%S}"
+        base = f"{BACKUP_PREFIX}{now:%Y%m%d-%H%M%S}"
+        backup = project_root / base
+        suffix = 1
+        while present(backup):
+            backup = project_root / f"{base}-{suffix}"
+            suffix += 1
     shutil.copytree(project_root / "_bmad", backup / "_bmad", symlinks=True)
     write_text(backup / ".gitignore", "*")
     return backup
 
 
 def prune_empty_parents(folder: Path, stop: Path) -> None:
-    while folder != stop and folder.is_dir() and not folder.is_symlink() and not any(folder.iterdir()):
+    while folder != stop and folder.is_dir() and not is_link(folder) and not any(folder.iterdir()):
         folder.rmdir()
         folder = folder.parent
 
@@ -427,6 +468,9 @@ def fold_specs(project_root: Path, store: Path) -> dict[str, object]:
     if not store.is_dir():
         raise Exception(f"{store} is not a folder")
     report: dict[str, object] = {"mode": "fold-specs", "folded": [], "problems": []}
+    for stranded in stranded_folds(store):
+        rel = relative(stranded, project_root)
+        report["problems"].append({"spec": rel, "problem": f"leftover staging folder from an interrupted fold: {rel}"})
     for folder in spec_folders(store):
         try:
             report["folded"].append(fold_spec(project_root, store, folder))
@@ -441,6 +485,16 @@ class FoldProblem(Exception):
 
 def is_spec_folder(path: Path) -> bool:
     return bool(SPEC_FOLDER.match(path.name)) and (path / f"{path.name}.md").is_file()
+
+
+def stranded_folds(store: Path) -> list[Path]:
+    found: list[Path] = []
+    for current, dirs, _files in os.walk(store):
+        for name in sorted(dirs):
+            if name.startswith(".folding-"):
+                found.append(Path(current) / name)
+        dirs[:] = sorted(d for d in dirs if not d.startswith(".") and d not in UNTOUCHED_FOLDERS)
+    return sorted(found, key=lambda path: (len(path.parts), path.as_posix()))
 
 
 def spec_folders(store: Path) -> list[Path]:
@@ -574,7 +628,11 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         changed = map_caps(text)
         if changed != text:
             writes[path] = changed
+    if is_link(ticket):
+        raise FoldProblem(f"{relative(ticket, project_root)} is a symlink or junction")
     for path in (home / MEMLOG, folder / MEMLOG):
+        if is_link(path):
+            raise FoldProblem(f"{relative(path, project_root)} is a symlink or junction")
         if path.is_file():
             read_for_fold(path, project_root)
     rewritten = [relative(path, project_root) for path in writes]
@@ -596,35 +654,72 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
             companions,
             replace_requirements,
         )
-    # The ticket is computed before anything is written, so a ticket that cannot be rewritten stops the fold here.
-    for path, changed in writes.items():
-        path.write_text(changed, encoding="utf-8")
-    home.mkdir(parents=True, exist_ok=True)
-    write_text(ticket, text)
-
+    # The folder moves to a hidden name before anything is written: on Windows a file in it that another program
+    # holds open stops the fold here, with the store untouched.
+    staged = folder.with_name(f".folding-{folder.name}-{os.urandom(4).hex()}")
+    try:
+        os.rename(folder, staged)
+    except OSError as error:
+        raise FoldProblem(f"cannot move {folder.name} (a file in it may be open): {error}") from error
     memlog = home / MEMLOG
-    spec_memlog = folder / MEMLOG
-    if spec_memlog.is_file():
-        if memlog.is_file():
-            append_text(memlog, memlog_body(spec_memlog))
-            spec_memlog.unlink()
-        else:
-            shutil.move(spec_memlog, memlog)
-    elif not memlog.is_file():
-        write_text(
-            memlog, frontmatter.dump({"topic": spec["title"], "updated": f"{datetime.datetime.now():%Y-%m-%dT%H:%M}"})
-        )
-    entries = [f"- (note) {name}, from {folder.name}: {value}" for name, value in spec["kept"]]
-    entries.append(
-        f"- (event) folded {folder.name}/ into {ticket.name}"
-        + ("; " + ", ".join(f"{old} is {new}" for old, new in ids.items()) if ids else "")
-    )
-    append_text(memlog, "\n".join(entries) + "\n")
+    written = False
+    ticket_written = False
+    try:
+        for path, changed in writes.items():
+            at_stage = staged / path.relative_to(folder) if path.is_relative_to(folder) else path
+            write_force(at_stage, changed, ensure_newline=False)
+            if not path.is_relative_to(folder):
+                written = True
+        home.mkdir(parents=True, exist_ok=True)
+        write_force(ticket, text)
+        written = True
+        ticket_written = True
 
-    for path in moving:
-        shutil.move(path, home / path.name)
-    (folder / f"{folder.name}.md").unlink()
-    shutil.rmtree(folder)
+        spec_memlog = staged / MEMLOG
+        if spec_memlog.is_file():
+            if memlog.is_file():
+                append_force(memlog, memlog_body(spec_memlog))
+            else:
+                os.rename(spec_memlog, memlog)
+        elif not memlog.is_file():
+            write_force(
+                memlog,
+                frontmatter.dump({"topic": spec["title"], "updated": f"{datetime.datetime.now():%Y-%m-%dT%H:%M}"}),
+            )
+        entries = [f"- (note) {name}, from {folder.name}: {value}" for name, value in spec["kept"]]
+        entries.append(
+            f"- (event) folded {folder.name}/ into {ticket.name}"
+            + ("; " + ", ".join(f"{old} is {new}" for old, new in ids.items()) if ids else "")
+        )
+        append_force(memlog, "\n".join(entries) + "\n")
+
+        for path in moving:
+            os.rename(staged / path.name, home / path.name)
+        # What is left (the spec, its memlog, .tmp and hidden files) goes, read-only files included.
+        rmtree_force(staged)
+    except BaseException as error:
+        if not written and staged.exists() and not folder.exists():
+            try:
+                os.rename(staged, folder)
+            except OSError as restore_error:
+                raise OSError(
+                    f"fold failed and could not restore {relative(staged, project_root)} to {folder.name}: "
+                    f"{restore_error}"
+                ) from error
+            raise
+        if written and staged.exists():
+            if ticket_written:
+                with contextlib.suppress(OSError):
+                    unlink_force(staged / f"{folder.name}.md")
+                raise OSError(
+                    f"fold failed after writing {relative(ticket, project_root)}; "
+                    f"leftovers remain in {relative(staged, project_root)}: {error}"
+                ) from error
+            raise OSError(
+                f"fold failed after rewriting references before writing {relative(ticket, project_root)}; "
+                f"spec is preserved in {relative(staged, project_root)}: {error}"
+            ) from error
+        raise
     return {
         "spec": relative(folder, project_root),
         "ticket": relative(ticket, project_root),
@@ -1059,6 +1154,19 @@ def append_text(path: Path, text: str) -> None:
         handle.write(("" if not current or current.endswith("\n") else "\n") + text)
 
 
+def append_force(path: Path, text: str) -> None:
+    """`append_text`, clearing a read-only flag on an existing regular file if needed; never chmods links."""
+    if not text:
+        return
+    try:
+        append_text(path, text)
+    except PermissionError:
+        if is_link(path) or not path.exists():
+            raise
+        os.chmod(path, os.lstat(path).st_mode | stat.S_IWRITE)
+        append_text(path, text)
+
+
 def report(project_root: Path, skill_root: Path, *, roots: tuple[Path, ...] = ()) -> dict[str, object]:
     """The traces `--clean` would remove. Reads only."""
     reject_unusable_bmad(project_root)
@@ -1088,8 +1196,9 @@ def main(argv: list[str] | None = None) -> int:
         _setup.print_json(fold_specs(project_root, args.fold_specs.resolve()))
         return 0
     run = clean if args.clean else report
-    _setup.print_json(run(project_root, skill_root, roots=roots))
-    return 0
+    result = run(project_root, skill_root, roots=roots)
+    _setup.print_json(result)
+    return 1 if result.get("not_removed") else 0
 
 
 if __name__ == "__main__":

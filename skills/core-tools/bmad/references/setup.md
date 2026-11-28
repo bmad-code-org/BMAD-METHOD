@@ -54,6 +54,8 @@ Then run with no mode flag, adding `--module-answers <file>` when you wrote one,
 
 **Clean up v6.** Run `uv run --no-cache "{skill-root}/scripts/migrate_v6.py" --project-root "{project-root}" --skill "{skill-root}"`, plus each `--root`. It lists `legacy_leftovers`, `stale_config_keys` and `unused_customizations`: v6 traces v7 does not read, with `notes` on them. When any list is not empty, show the lists and the notes as given and offer once to remove them. On yes, run it again with `--clean`: it copies `_bmad/` to `.v6-v7-migration-backup-<datetime>/` first, then removes them. Report the backup and what was removed.
 
+If `not_removed` is non-empty, `--clean` exits 1 with the JSON report: show the backup, what was removed, and `not_removed`, then rerun once the blocking file is unlocked or writable.
+
 **Migrations.** Do steps 1 and 2 of `references/migrate.md`, Find and Match. Name each that applies with its `title`, `from` and `to`, and ask; on yes, continue with its steps 3 and 4.
 
 **Answers.** On a first install, or when the user asks to change an answer, show the `answers` from the setup run, each key with its value and file, and offer to change any. A change is your edit to `modules.<code>.<key>` in that file.

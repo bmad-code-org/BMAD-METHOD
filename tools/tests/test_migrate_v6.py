@@ -1,11 +1,16 @@
+import contextlib
+import io
 import json
+import os
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
 import tomllib
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from test_bmad_setup import (
     REPO_ROOT,
@@ -332,6 +337,126 @@ class MigrateV6Tests(unittest.TestCase):
                 "bmm/v6-shims",
             ],
         )
+
+    def test_a_linked_custom_folder_is_not_cleaned(self):
+        # A junction on Windows, which needs no privilege and which `Path.is_symlink` does not see.
+        shared = self.root / "shared-custom"
+        write(shared / "bmad-other-skill.toml", "[workflow]\nkeep = true\n")
+        write(shared / "bmad-agent-po.toml", '[workflow]\non_complete = "x"\n')
+        custom = self.bmad / "custom"
+        shutil.rmtree(custom)
+        if sys.platform == "win32":
+            import _winapi
+
+            _winapi.CreateJunction(str(shared), str(custom))
+        else:
+            custom.symlink_to(shared, target_is_directory=True)
+        write(self.bmad / "_config" / "manifest.yaml", "installation: v6\n")
+        before = snapshot(shared)
+
+        report = self.migrate()
+        cleaned = self.migrate("--clean")
+
+        self.assertEqual(report["unused_customizations"], [])
+        self.assertEqual(cleaned["removed_files"], ["_bmad/_config/manifest.yaml"])
+        self.assertEqual(cleaned["removed_customizations"], [])
+        self.assertEqual(snapshot(shared), before)
+
+    def test_clean_removes_read_only_entries(self):
+        self.write_v6_traces()
+        shims = self.bmad / "core" / "v6-shims"
+        read_only = (
+            self.bmad / "_config" / "manifest.yaml",
+            shims / "shim.md",
+            shims,
+            self.bmad / "config.toml",
+            self.bmad / "custom" / "bmad-sprint-planning.user.toml",
+        )
+        for path in read_only:
+            path.chmod(0o555 if path.is_dir() else 0o444)
+
+        report = self.migrate("--clean")
+
+        self.assertEqual(report["not_removed"], [])
+        self.assertFalse((self.bmad / "_config").exists())
+        self.assertFalse((self.bmad / "core").exists())
+        self.assertFalse((self.bmad / "custom" / "bmad-sprint-planning.user.toml").exists())
+        team = tomllib.loads((self.bmad / "config.toml").read_text(encoding="utf-8"))
+        self.assertNotIn("user_name", team["core"])
+
+    def test_a_file_that_cannot_be_removed_does_not_stop_the_rest(self):
+        self.write_v6_traces()
+        locked = self.bmad / "_config" / "manifest.yaml"
+        unlink = migrate_v6.unlink_force
+
+        def unlink_unless_locked(path: Path) -> None:
+            if path == locked:
+                raise PermissionError("in use")
+            unlink(path)
+
+        out = io.StringIO()
+        with mock.patch.object(migrate_v6, "unlink_force", unlink_unless_locked), contextlib.redirect_stdout(out):
+            code = migrate_v6.main(["--project-root", str(self.project), "--skill", str(self.skill), "--clean"])
+        report = json.loads(out.getvalue())
+
+        self.assertEqual(code, 1)
+        self.assertTrue((self.project / report["backup"] / "_bmad" / "_config" / "manifest.yaml").is_file())
+        self.assertEqual(report["not_removed"], [{"file": "_bmad/_config/manifest.yaml", "error": "in use"}])
+        self.assertTrue(locked.is_file())
+        self.assertEqual(report["removed_files"], ["_bmad/config.user.toml", "_bmad/core/v6-shims"])
+        self.assertFalse((self.bmad / "core").exists())
+        self.assertIn({"file": "_bmad/config.toml", "key": "core.user_name"}, report["removed_keys"])
+        self.assertEqual(report["removed_customizations"], ["_bmad/custom/bmad-sprint-planning.user.toml"])
+
+    def test_linked_file_inside_plain_custom_folder_is_not_removed(self):
+        shared = self.root / "shared-skill.toml"
+        write(shared, "[workflow]\nkeep = true\n")
+        link = self.bmad / "custom" / "bmad-not-installed.toml"
+        try:
+            link.symlink_to(shared)
+        except OSError:
+            self.skipTest("symlinks unavailable")
+
+        report = self.migrate()
+        cleaned = self.migrate("--clean")
+
+        self.assertEqual(report["unused_customizations"], [])
+        self.assertEqual(cleaned["removed_customizations"], [])
+        self.assertTrue(link.is_symlink())
+        self.assertEqual(shared.read_text(encoding="utf-8"), "[workflow]\nkeep = true\n")
+
+    def test_failed_config_rewrite_during_clean_records_not_removed_and_exits_one(self):
+        self.write_v6_traces()
+        config_path = self.bmad / "config.toml"
+        real_write_force = migrate_v6.write_force
+
+        def fail_config(path: Path, content: str, **kwargs) -> None:
+            if path.resolve() == config_path.resolve():
+                raise PermissionError("config locked")
+            real_write_force(path, content, **kwargs)
+
+        out = io.StringIO()
+        with mock.patch.object(migrate_v6, "write_force", fail_config), contextlib.redirect_stdout(out):
+            code = migrate_v6.main(["--project-root", str(self.project), "--skill", str(self.skill), "--clean"])
+        report = json.loads(out.getvalue())
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["not_removed"], [{"file": "_bmad/config.toml", "error": "config locked"}])
+        self.assertFalse(any(k["file"] == "_bmad/config.toml" for k in report["removed_keys"]))
+        self.assertFalse(any(k["file"] == "_bmad/config.toml" for k in report["moved_keys"]))
+        self.assertIn("user_name", config_path.read_text(encoding="utf-8"))
+
+    def test_backup_bmad_appends_numeric_suffix_when_timestamps_collide(self):
+        fixed = mock.Mock()
+        fixed.now.return_value = __import__("datetime").datetime(2026, 11, 27, 12, 0, 5)
+        (self.project / f"{migrate_v6.BACKUP_PREFIX}20261127-1200").mkdir()
+        (self.project / f"{migrate_v6.BACKUP_PREFIX}20261127-120005").mkdir()
+
+        with mock.patch.object(migrate_v6.datetime, "datetime", fixed):
+            backup = migrate_v6.backup_bmad(self.project)
+
+        self.assertEqual(backup.name, f"{migrate_v6.BACKUP_PREFIX}20261127-120005-1")
+        self.assertTrue((backup / "_bmad").is_dir())
 
 
 def spec_frontmatter(**lists: str) -> str:
@@ -1222,3 +1347,193 @@ class FoldSpecsTests(unittest.TestCase):
         demo_text = (demo / "demo.md").read_text(encoding="utf-8")
         self.assertIn("- R1 (CAP-1): Kept capability.", demo_text)
         self.assertNotIn("comment", demo_text)
+
+    def test_a_folder_that_cannot_move_stops_the_fold_before_any_write_and_a_rerun_folds_it(self):
+        epic = self.write_epic_with_spec()
+        before = snapshot(self.project)
+        real_rename = os.rename
+
+        def held_open(src, dst):
+            if Path(src).name == "spec-ball":
+                raise PermissionError("a file in it is open")
+            return real_rename(src, dst)
+
+        with mock.patch("os.rename", side_effect=held_open):
+            report = migrate_v6.fold_specs(self.project, self.store)
+
+        self.assertEqual(report["folded"], [])
+        (problem,) = report["problems"]
+        self.assertIn("cannot move spec-ball", problem["problem"])
+        self.assertEqual(snapshot(self.project), before)
+
+        retry = self.fold()
+        self.assertEqual(retry["problems"], [])
+        self.assertEqual(len(retry["folded"]), 1)
+        self.assertFalse((epic / "spec-ball").exists())
+
+    def test_a_fold_that_stops_after_staging_leaves_the_folder_under_its_own_name(self):
+        epic = self.write_epic_with_spec()
+
+        with mock.patch.object(migrate_v6, "write_force", side_effect=PermissionError("ticket is locked")):
+            with self.assertRaises(PermissionError):
+                migrate_v6.fold_specs(self.project, self.store)
+
+        self.assertTrue((epic / "spec-ball" / "spec-ball.md").is_file())
+        self.assertEqual([p.name for p in epic.iterdir() if p.name.startswith(".folding-")], [])
+
+    def test_read_only_files_in_the_spec_folder_fold_cleanly(self):
+        epic = self.write_epic_with_spec()
+        spec = epic / "spec-ball"
+        write(spec / "notes.tmp", "tmp\n")
+        for name in ("spec-ball.md", ".memlog.md", "notes.tmp"):
+            os.chmod(spec / name, 0o444)
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(len(report["folded"]), 1)
+        self.assertFalse(spec.exists())
+        self.assertEqual(
+            memlog_entries(epic / ".memlog.md")[-1],
+            "- (event) folded spec-ball/ into epic-ball.md; CAP-1 is R1, CAP-2 is R2",
+        )
+
+    def test_read_only_companion_ticket_and_destination_memlog_fold_cleanly(self):
+        epic = self.write_epic_with_spec()
+        write(epic / "shared.md", "Traces spec-ball/spec-ball.md and CAP-1.\n")
+        write(epic / ".memlog.md", "---\ntopic: Existing\nupdated: 2026-01-01T00:00\n---\n\n- (note) earlier entry\n")
+        for target in (epic / "shared.md", epic / "epic-ball.md", epic / ".memlog.md"):
+            os.chmod(target, 0o444)
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(len(report["folded"]), 1)
+        self.assertFalse((epic / "spec-ball").exists())
+        self.assertIn("Traces epic-ball.md and R1.", (epic / "shared.md").read_text(encoding="utf-8"))
+        self.assertIn("- R1 (CAP-1):", (epic / "epic-ball.md").read_text(encoding="utf-8"))
+        self.assertEqual(
+            memlog_entries(epic / ".memlog.md")[-1],
+            "- (event) folded spec-ball/ into epic-ball.md; CAP-1 is R1, CAP-2 is R2",
+        )
+
+    def test_symlinked_memlog_is_refused_without_touching_target(self):
+        for location in ("spec", "home"):
+            with self.subTest(location=location):
+                with tempfile.TemporaryDirectory() as tmp:
+                    root = Path(tmp)
+                    outside = root / "outside-secret.md"
+                    original = "---\ntopic: Secret\n---\n\n- (note) keep untouched\n"
+                    write(outside, original)
+                    os.chmod(outside, 0o444)
+                    project = root / "project"
+                    store = project / "_bmad-output"
+                    epic = store / "initiative-golf" / "epic-ball"
+                    write(epic / "epic-ball.md", "---\nid: 1\ntype: epic\n---\n\n# Ball\n\n## Requirements\n")
+                    spec = epic / "spec-ball"
+                    write(
+                        spec / "spec-ball.md",
+                        spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY,
+                    )
+                    link = (spec if location == "spec" else epic) / ".memlog.md"
+                    try:
+                        link.symlink_to(outside)
+                    except OSError:
+                        self.skipTest("symlinks unavailable")
+                    mode_before = stat.S_IMODE(outside.stat().st_mode)
+
+                    report = migrate_v6.fold_specs(project, store)
+
+                    self.assertEqual(report["folded"], [])
+                    (problem,) = report["problems"]
+                    self.assertIn("symlink or junction", problem["problem"])
+                    self.assertEqual(stat.S_IMODE(outside.stat().st_mode), mode_before)
+                    self.assertEqual(outside.read_text(encoding="utf-8"), original)
+                    self.assertTrue(spec.exists())
+
+    def test_symlinked_ticket_is_refused_without_touching_target(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            outside = root / "outside-ticket.md"
+            original = "---\nid: 1\ntype: epic\n---\n\n# Outside\n\n## Requirements\n"
+            write(outside, original)
+            os.chmod(outside, 0o444)
+            project = root / "project"
+            store = project / "_bmad-output"
+            epic = store / "initiative-golf" / "epic-ball"
+            write(epic / "spec-ball" / "spec-ball.md", spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY)
+            ticket_link = epic / "epic-ball.md"
+            try:
+                ticket_link.symlink_to(outside)
+            except OSError:
+                self.skipTest("symlinks unavailable")
+            mode_before = stat.S_IMODE(outside.stat().st_mode)
+
+            report = migrate_v6.fold_specs(project, store)
+
+            self.assertEqual(report["folded"], [])
+            (problem,) = report["problems"]
+            self.assertIn("symlink or junction", problem["problem"])
+            self.assertEqual(stat.S_IMODE(outside.stat().st_mode), mode_before)
+            self.assertEqual(outside.read_text(encoding="utf-8"), original)
+            self.assertTrue((epic / "spec-ball").exists())
+
+    def test_failure_after_ticket_write_prevents_refold_and_reports_stranded_staging(self):
+        epic = self.write_epic_with_spec()
+
+        with mock.patch.object(migrate_v6, "rmtree_force", side_effect=PermissionError("cleanup locked")):
+            with self.assertRaises(OSError) as caught:
+                migrate_v6.fold_specs(self.project, self.store)
+        self.assertIn(".folding-", str(caught.exception))
+        self.assertFalse((epic / "spec-ball").exists())
+        stranded = [p for p in epic.iterdir() if p.name.startswith(".folding-")]
+        self.assertEqual(len(stranded), 1)
+        self.assertFalse((stranded[0] / "spec-ball.md").exists())
+
+        rerun = self.fold()
+        self.assertEqual(rerun["folded"], [])
+        self.assertEqual(len(rerun["problems"]), 1)
+        self.assertIn(stranded[0].name, rerun["problems"][0]["problem"])
+        ticket_text = (epic / "epic-ball.md").read_text(encoding="utf-8")
+        self.assertEqual(ticket_text.count("- R1 (CAP-1):"), 1)
+
+    def test_failure_naming_staged_path_when_rollback_rename_fails(self):
+        self.write_epic_with_spec()
+        real_rename = os.rename
+
+        def fail_rollback(src, dst):
+            if Path(src).name.startswith(".folding-"):
+                raise PermissionError("restore denied")
+            return real_rename(src, dst)
+
+        with (
+            mock.patch.object(migrate_v6, "write_force", side_effect=PermissionError("ticket locked")),
+            mock.patch("os.rename", side_effect=fail_rollback),
+        ):
+            with self.assertRaises(OSError) as caught:
+                migrate_v6.fold_specs(self.project, self.store)
+        self.assertIn(".folding-", str(caught.exception))
+
+    def test_failure_after_external_rewrite_before_ticket_write_keeps_spec_file(self):
+        epic = self.write_epic_with_spec()
+        write(epic / "a-notes.md", "See spec-ball/spec-ball.md.\n")
+        real_write_force = migrate_v6.write_force
+
+        def fail_on_ticket(path: Path, content: str, **kwargs) -> None:
+            if path == epic / "epic-ball.md":
+                raise PermissionError("ticket locked")
+            real_write_force(path, content, **kwargs)
+
+        with mock.patch.object(migrate_v6, "write_force", side_effect=fail_on_ticket):
+            with self.assertRaises(OSError) as caught:
+                migrate_v6.fold_specs(self.project, self.store)
+        self.assertIn(".folding-", str(caught.exception))
+        self.assertIn("before writing", str(caught.exception))
+        stranded = [p for p in epic.iterdir() if p.name.startswith(".folding-")]
+        self.assertEqual(len(stranded), 1)
+        self.assertTrue((stranded[0] / "spec-ball.md").is_file())
+
+        rerun = self.fold()
+        self.assertEqual(rerun["folded"], [])
+        self.assertEqual(len(rerun["problems"]), 1)
+        self.assertIn(stranded[0].name, rerun["problems"][0]["problem"])
