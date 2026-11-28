@@ -2536,7 +2536,7 @@ def stage_bmad(
     if not present(gitignore):
         write_text(gitignore, CUSTOM_GITIGNORE)
     if user_config_text is not None:
-        write_text(custom / "config.user.toml", user_config_text)
+        write_force(custom / "config.user.toml", user_config_text)
     for old, new in custom_renames:
         (custom / old).rename(custom / new)
 
@@ -2583,6 +2583,19 @@ def write_text(path: Path, content: str) -> None:
     )
 
 
+def write_force(path: Path, content: str, *, ensure_newline: bool = True) -> None:
+    """Write text, clearing a read-only flag on an existing regular file if needed; never chmods links."""
+    text = content if (not ensure_newline or content.endswith("\n")) else content + "\n"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        path.write_text(text, encoding="utf-8")
+    except PermissionError:
+        if is_link(path) or not path.exists():
+            raise
+        os.chmod(path, os.lstat(path).st_mode | stat.S_IWRITE)
+        path.write_text(text, encoding="utf-8")
+
+
 def ensure_file(path: Path, content: str) -> None:
     if is_link(path):
         unlink_force(path)
@@ -2594,7 +2607,7 @@ def ensure_file(path: Path, content: str) -> None:
         content = filled
     elif path.exists():
         rmtree_force(path)
-    write_text(path, content)
+    write_force(path, content)
 
 
 def ensure_dir(path: Path) -> None:

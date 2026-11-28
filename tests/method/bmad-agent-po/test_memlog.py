@@ -468,3 +468,13 @@ def test_set_preserves_lf_or_crlf_and_bom(ws):
     assert b"\n" not in after.replace(b"\r\n", b"")
     assert read_log(read(ws))[0]["mode"] == "crlf"
     assert entries(ws) == ["- (note) kept"]
+
+
+def test_append_and_set_handle_cr_only_line_endings(ws):
+    init(ws)
+    path = Path(ws) / MEMLOG
+    path.write_bytes(path.read_bytes().replace(b"\n", b"\r"))
+    append(ws, "cr entry", entry_type="note")
+    assert run(ws, "set", "--workspace", ws, "--key", "mode", "--value", "cr") == 0
+    assert read_log(read(ws))[0]["mode"] == "cr"
+    assert entries(ws) == ["- (note) cr entry"]

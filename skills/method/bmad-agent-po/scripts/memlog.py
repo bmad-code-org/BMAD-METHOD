@@ -224,7 +224,7 @@ def cmd_append(args) -> int:
     path = resolve(args)
     raw_bytes = path.read_bytes()
     eol = detect_eol(raw_bytes)
-    raw = raw_bytes.decode("utf-8-sig").replace("\r\n", "\n")
+    raw = raw_bytes.decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
     frontmatter.split(raw)  # a log without frontmatter fails here, before anything is written
     text = " ".join(args.text.split())  # collapse newlines/runs → one-line entry, no prose bloat
     label = args.type or ""
@@ -243,7 +243,7 @@ def cmd_set(args) -> int:
     raw_bytes = path.read_bytes()
     eol = detect_eol(raw_bytes)
     bom = raw_bytes.startswith(codecs.BOM_UTF8)
-    raw = raw_bytes.decode("utf-8-sig").replace("\r\n", "\n")
+    raw = raw_bytes.decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
     fields, body = frontmatter.split(raw)
     meta = frontmatter.load(fields)
     meta[args.key] = args.value

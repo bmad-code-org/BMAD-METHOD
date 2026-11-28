@@ -3,6 +3,7 @@ import io
 import json
 import os
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -1325,7 +1326,7 @@ class FoldSpecsTests(unittest.TestCase):
     def test_a_fold_that_stops_after_staging_leaves_the_folder_under_its_own_name(self):
         epic = self.write_epic_with_spec()
 
-        with mock.patch.object(migrate_v6, "write_text", side_effect=PermissionError("ticket is locked")):
+        with mock.patch.object(migrate_v6, "write_force", side_effect=PermissionError("ticket is locked")):
             with self.assertRaises(PermissionError):
                 migrate_v6.fold_specs(self.project, self.store)
 
@@ -1358,3 +1359,56 @@ class FoldSpecsTests(unittest.TestCase):
         migrate_v6.rmtree_force(tree)
 
         self.assertFalse(tree.exists())
+
+    def test_read_only_companion_ticket_and_destination_memlog_fold_cleanly(self):
+        epic = self.write_epic_with_spec()
+        write(epic / "shared.md", "Traces spec-ball/spec-ball.md and CAP-1.\n")
+        write(epic / ".memlog.md", "---\ntopic: Existing\nupdated: 2026-01-01T00:00\n---\n\n- (note) earlier entry\n")
+        for target in (epic / "shared.md", epic / "epic-ball.md", epic / ".memlog.md"):
+            os.chmod(target, 0o444)
+
+        report = self.fold()
+
+        self.assertEqual(report["problems"], [])
+        self.assertEqual(len(report["folded"]), 1)
+        self.assertFalse((epic / "spec-ball").exists())
+        self.assertIn("Traces epic-ball.md and R1.", (epic / "shared.md").read_text(encoding="utf-8"))
+        self.assertIn("- R1 (CAP-1):", (epic / "epic-ball.md").read_text(encoding="utf-8"))
+        self.assertEqual(
+            memlog_entries(epic / ".memlog.md")[-1],
+            "- (event) folded spec-ball/ into epic-ball.md; CAP-1 is R1, CAP-2 is R2",
+        )
+
+    def test_symlinked_memlog_is_refused_without_touching_target(self):
+        for location in ("spec", "home"):
+            with self.subTest(location=location):
+                with tempfile.TemporaryDirectory() as tmp:
+                    root = Path(tmp)
+                    outside = root / "outside-secret.md"
+                    original = "---\ntopic: Secret\n---\n\n- (note) keep untouched\n"
+                    write(outside, original)
+                    os.chmod(outside, 0o444)
+                    project = root / "project"
+                    store = project / "_bmad-output"
+                    epic = store / "initiative-golf" / "epic-ball"
+                    write(epic / "epic-ball.md", "---\nid: 1\ntype: epic\n---\n\n# Ball\n\n## Requirements\n")
+                    spec = epic / "spec-ball"
+                    write(
+                        spec / "spec-ball.md",
+                        spec_frontmatter(companions="[]", sources="[]") + SPEC_BODY,
+                    )
+                    link = (spec if location == "spec" else epic) / ".memlog.md"
+                    try:
+                        link.symlink_to(outside)
+                    except OSError:
+                        self.skipTest("symlinks unavailable")
+                    mode_before = stat.S_IMODE(outside.stat().st_mode)
+
+                    report = migrate_v6.fold_specs(project, store)
+
+                    self.assertEqual(report["folded"], [])
+                    (problem,) = report["problems"]
+                    self.assertIn("symlink or junction", problem["problem"])
+                    self.assertEqual(stat.S_IMODE(outside.stat().st_mode), mode_before)
+                    self.assertEqual(outside.read_text(encoding="utf-8"), original)
+                    self.assertTrue(spec.exists())

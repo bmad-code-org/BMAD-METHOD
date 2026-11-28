@@ -65,16 +65,8 @@ retirement_report = _setup.retirement_report
 rmtree_force = _setup.rmtree_force
 skill_folders = _setup.skill_folders
 unlink_force = _setup.unlink_force
+write_force = _setup.write_force
 write_text = _setup.write_text
-
-
-def write_force(path: Path, text: str) -> None:
-    """`write_text`, clearing a read-only flag or adding the owner's write bit that blocks it."""
-    try:
-        write_text(path, text)
-    except PermissionError:
-        path.chmod(path.stat().st_mode | stat.S_IWRITE)
-        write_text(path, text)
 
 
 # Traces the classic installer leaves under _bmad.
@@ -623,7 +615,11 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         changed = map_caps(text)
         if changed != text:
             writes[path] = changed
+    if is_link(ticket):
+        raise FoldProblem(f"{relative(ticket, project_root)} is a symlink or junction")
     for path in (home / MEMLOG, folder / MEMLOG):
+        if is_link(path):
+            raise FoldProblem(f"{relative(path, project_root)} is a symlink or junction")
         if path.is_file():
             read_for_fold(path, project_root)
     rewritten = [relative(path, project_root) for path in writes]
@@ -656,19 +652,18 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     try:
         for path, changed in writes.items():
             at_stage = staged / path.relative_to(folder) if path.is_relative_to(folder) else path
-            at_stage.write_text(changed, encoding="utf-8")
+            write_force(at_stage, changed, ensure_newline=False)
         home.mkdir(parents=True, exist_ok=True)
-        write_text(ticket, text)
+        write_force(ticket, text)
 
         spec_memlog = staged / MEMLOG
         if spec_memlog.is_file():
             if memlog.is_file():
-                append_text(memlog, memlog_body(spec_memlog))
+                append_force(memlog, memlog_body(spec_memlog))
             else:
                 os.rename(spec_memlog, memlog)
-                os.chmod(memlog, os.stat(memlog).st_mode | stat.S_IWRITE)
         elif not memlog.is_file():
-            write_text(
+            write_force(
                 memlog,
                 frontmatter.dump({"topic": spec["title"], "updated": f"{datetime.datetime.now():%Y-%m-%dT%H:%M}"}),
             )
@@ -677,7 +672,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
             f"- (event) folded {folder.name}/ into {ticket.name}"
             + ("; " + ", ".join(f"{old} is {new}" for old, new in ids.items()) if ids else "")
         )
-        append_text(memlog, "\n".join(entries) + "\n")
+        append_force(memlog, "\n".join(entries) + "\n")
 
         for path in moving:
             os.rename(staged / path.name, home / path.name)
@@ -686,7 +681,8 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     except BaseException:
         # A fold stopped part way leaves the folder under its own name, where the next run and the user see it.
         if staged.exists() and not folder.exists():
-            os.rename(staged, folder)
+            with contextlib.suppress(OSError):
+                os.rename(staged, folder)
         raise
     return {
         "spec": relative(folder, project_root),
@@ -1120,6 +1116,19 @@ def append_text(path: Path, text: str) -> None:
     with path.open("r+", encoding="utf-8") as handle:
         current = handle.read()
         handle.write(("" if not current or current.endswith("\n") else "\n") + text)
+
+
+def append_force(path: Path, text: str) -> None:
+    """`append_text`, clearing a read-only flag on an existing regular file if needed; never chmods links."""
+    if not text:
+        return
+    try:
+        append_text(path, text)
+    except PermissionError:
+        if is_link(path) or not path.exists():
+            raise
+        os.chmod(path, os.lstat(path).st_mode | stat.S_IWRITE)
+        append_text(path, text)
 
 
 def report(project_root: Path, skill_root: Path, *, roots: tuple[Path, ...] = ()) -> dict[str, object]:

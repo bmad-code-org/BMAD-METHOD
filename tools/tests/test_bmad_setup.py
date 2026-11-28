@@ -4249,6 +4249,28 @@ class WindowsHardeningTests(unittest.TestCase):
             finally:
                 os.chmod(src / "setup.py", 0o644)
 
+    def test_materialize_bmad_updates_readonly_config_files(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill = root / "skill"
+            write(skill / "scripts" / "setup.py", "print('ok')\n")
+            write(root / "_bmad" / "config.toml", '[core]\noutput_folder = "_bmad-output"\n')
+            write(root / "_bmad" / "custom" / "config.user.toml", "# old\n")
+            os.chmod(root / "_bmad" / "config.toml", 0o444)
+            os.chmod(root / "_bmad" / "custom" / "config.user.toml", 0o444)
+
+            setup.materialize_bmad(
+                root,
+                skill,
+                '[core]\noutput_folder = "_bmad-output"\nlanguage = "en"\n',
+                {},
+                user_config_text='[core]\nuser = "alex"\n',
+            )
+
+            self.assertIn('language = "en"', (root / "_bmad" / "config.toml").read_text(encoding="utf-8"))
+            self.assertIn('user = "alex"', (root / "_bmad" / "custom" / "config.user.toml").read_text(encoding="utf-8"))
+
     @unittest.skipUnless(sys.platform == "win32", "Windows junctions and S_IREAD attributes")
     def test_windows_real_junction_and_readonly_cleanup(self):
         import _winapi
@@ -4278,6 +4300,16 @@ class WindowsHardeningTests(unittest.TestCase):
             _winapi.CreateJunction(str(shared), str(stale / "nested-link"))
             setup.rmtree_force(stale)
             self.assertFalse(stale.exists())
+            self.assertEqual((shared / "bmad-build.toml").read_text(), "[workflow]\nroute = 'full'\n")
+
+            j1 = root / "j1"
+            j2 = root / "j2"
+            _winapi.CreateJunction(str(shared), str(j1))
+            _winapi.CreateJunction(str(shared), str(j2))
+            setup.unlink_force(j1)
+            setup.rmtree_force(j2)
+            self.assertFalse(setup.present(j1))
+            self.assertFalse(setup.present(j2))
             self.assertEqual((shared / "bmad-build.toml").read_text(), "[workflow]\nroute = 'full'\n")
 
 
