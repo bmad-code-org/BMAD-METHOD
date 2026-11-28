@@ -158,6 +158,7 @@ class TestMapping(unittest.TestCase):
         for ref in (
             "_config/settings.yaml",
             "custom/mine.md",
+            "render/.uv-cache",
             "render/bmad-build/x.md",
             "render/bmad-build-auto/x.md",
         ):

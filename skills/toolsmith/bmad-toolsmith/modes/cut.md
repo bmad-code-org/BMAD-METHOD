@@ -32,7 +32,7 @@ Then one subagent per rewritten file runs the Checker. Restore each loss and mea
 
 Run the commands under Checks in `modes/validate.md` and fix until clean.
 
-When `SKILL.md` calls `render_skill.py`, render the skill with `uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{target}"`, once as shipped and once per allowed value of each selector with `--set workflow.<key>=<value>`; each render finishes without error. Where that script does not exist, report the render as not run.
+When `SKILL.md` calls `render_skill.py`, render the skill with `uv run --cache-dir "{project-root}/_bmad/render/.uv-cache" "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{target}"`, once as shipped and once per allowed value of each selector with `--set workflow.<key>=<value>`; each render finishes without error. Where that script does not exist, report the render as not run.
 
 ## Hand over
 

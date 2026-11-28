@@ -15,7 +15,7 @@ Fill each template with `uv run "{skill-root}/scripts/process_template.py" "{ski
 
 ## Rules
 
-- `SKILL.md` only renders: it runs `uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"`, maps the words of the invocation to `--set workflow.<key>=<value>`, follows the printed `workflow.md`, and halts on any failure.
+- `SKILL.md` only renders: it runs `uv run --cache-dir "{project-root}/_bmad/render/.uv-cache" "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"`, maps the words of the invocation to `--set workflow.<key>=<value>`, follows the printed `workflow.md`, and halts on any failure.
 - Jinja (`{{ workflow.key }}`, `{% if %}`, `rendered("step-02-<name>.md")`) lives only in `workflow.md` and the steps; the renderer excludes `SKILL.md`.
 - An agent-facing `{{placeholder}}` sits inside `{% raw %}...{% endraw %}`; a single-brace `{placeholder}` passes through untouched.
 - The skill's documents go under `{{ initiative_folder }}`, the output folder plus the active initiative, if set.
