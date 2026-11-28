@@ -42,7 +42,7 @@ sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from count_tokens import count_tokens, read_text  # noqa: E402
-from init_skill import NO_BMAD, frontmatter  # noqa: E402
+from init_skill import frontmatter  # noqa: E402
 
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$", re.MULTILINE)
 JINJA_RE = re.compile(r"\{\{.*?\}\}|\{%.*?%\}", re.DOTALL)
@@ -212,9 +212,6 @@ def main(argv: list[str] | None = None) -> int:
         help="file of passages, separated by blank lines, each kept verbatim",
     )
     args = p.parse_args(argv)
-    if frontmatter is None:
-        print(NO_BMAD, file=sys.stderr)
-        return 2
 
     for folder in (args.before, args.after):
         if not folder.is_dir():

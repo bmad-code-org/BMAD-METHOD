@@ -15,7 +15,6 @@ sys.path.insert(0, str(FRONTMATTER.parent))
 import frontmatter  # noqa: E402
 
 GOOD_DESCRIPTION = "Counts things in a folder. Use when the user asks how big a skill is."
-NO_BMAD_SKILL = "error: install the bmad skill: npx skills add bmad-code-org/BMAD-METHOD --skill bmad"
 
 
 def run(*args, script=SCRIPT):
@@ -75,23 +74,14 @@ class CreateTest(unittest.TestCase):
             code, data, _ = run("--check", Path(tmp) / "bmad-demo")
             self.assertEqual(code, 0, data)
 
-    def test_the_frontmatter_module_comes_from_the_bmad_skill_installed_beside_it(self):
+    def test_uses_vendored_frontmatter_without_bmad_skill(self):
         with tempfile.TemporaryDirectory() as tmp:
             skills = Path(tmp) / "skills"
             shutil.copytree(SCRIPT.parents[1], skills / "bmad-toolsmith")
             script = skills / "bmad-toolsmith" / "scripts" / "init_skill.py"
             code, data, err = run("--name", "bmad-demo", "--dest", tmp, "--shape", "plain-skill", script=script)
-            self.assertEqual((code, data), (2, None))
-            self.assertEqual(
-                err.splitlines(),
-                [NO_BMAD_SKILL],
-            )
-            self.assertFalse((Path(tmp) / "bmad-demo").exists())
-
-            (skills / "bmad" / "scripts").mkdir(parents=True)
-            shutil.copy2(FRONTMATTER, skills / "bmad" / "scripts")
-            code, data, err = run("--name", "bmad-demo", "--dest", tmp, "--shape", "plain-skill", script=script)
             self.assertEqual(code, 0, err)
+            self.assertTrue(data["ok"])
             self.assertTrue((Path(tmp) / "bmad-demo" / "SKILL.md").is_file())
 
     def test_doc_templates_dir(self):

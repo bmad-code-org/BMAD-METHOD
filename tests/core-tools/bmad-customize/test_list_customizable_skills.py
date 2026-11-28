@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -28,7 +27,6 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-customize/scripts/list_customizable_skills.py"
-FRONTMATTER = SCRIPT.parents[2] / "bmad" / "scripts" / "frontmatter.py"
 
 
 def _load_module():
@@ -39,10 +37,6 @@ def _load_module():
 
 
 MODULE = _load_module()
-sys.path.insert(0, str(FRONTMATTER.parent))
-import frontmatter  # noqa: E402
-
-MODULE.frontmatter = frontmatter  # main() loads the project's copy; the scanner tests call past it
 
 
 def _make_skill(parent: Path, name: str, body: str, skill_md: str | None = None) -> Path:
@@ -62,8 +56,6 @@ class ScannerTest(unittest.TestCase):
         self.skills.mkdir(parents=True)
         self.custom = self.root / "_bmad" / "custom"
         self.custom.mkdir(parents=True)
-        (self.root / "_bmad" / "scripts").mkdir()
-        shutil.copy2(FRONTMATTER, self.root / "_bmad" / "scripts")
 
     def tearDown(self):
         self.tmp.cleanup()

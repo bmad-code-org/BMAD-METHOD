@@ -23,14 +23,15 @@ Subcommands:
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import re
 import sys
 from pathlib import Path
-from types import ModuleType
 
 sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import frontmatter  # noqa: E402
 
 REGEX_BLOCK_RE = re.compile(r"^ {0,3}```regex[ \t]*\n(.*?)^ {0,3}```[ \t]*$", re.MULTILINE | re.DOTALL)
 SCOPE_LINE_RE = re.compile(r"^#\s*scope\s*:\s*(\S+)", re.IGNORECASE)
@@ -45,7 +46,6 @@ LEADING_INVENTED_RE = re.compile(r"^(?:\s*\[INVENTED\])+", re.IGNORECASE)
 WORD_RE = re.compile(r"[^\W_]+(?:['’\-][^\W_]+)*")
 SENTENCE_SPLIT_RE = re.compile(r"([.!?][\"')\]”’]*)\s+")
 VALID_SCOPES = {"all": "all", "spoken": "spoken", "scripts": "spoken", "written": "written"}
-_FRONTMATTER_CACHE: dict[Path, ModuleType] = {}
 
 
 def die(message: str) -> None:
@@ -58,61 +58,16 @@ def _blank_preserving_newlines(match: re.Match[str]) -> str:
     return re.sub(r"[^\n]", "", match.group(0))
 
 
-def _find_frontmatter_path(target_path: Path | None = None, project_root: Path | None = None) -> Path | None:
-    rel_candidates = (
-        Path("_bmad") / "scripts" / "frontmatter.py",
-        Path("skills") / "core-tools" / "bmad" / "scripts" / "frontmatter.py",
-    )
-    roots: list[Path] = []
-    if project_root is not None:
-        resolved_root = project_root.resolve()
-        for rel in rel_candidates:
-            candidate = resolved_root / rel
-            if candidate.is_file():
-                return candidate
-        roots.append(resolved_root)
-    if target_path is not None:
-        roots.append(target_path.resolve().parent)
-    roots.extend((Path.cwd(), Path(__file__).resolve().parent))
-
-    seen_dirs: set[Path] = set()
-    for start in roots:
-        for directory in (start, *start.parents):
-            if directory in seen_dirs:
-                continue
-            seen_dirs.add(directory)
-            for rel in rel_candidates:
-                candidate = directory / rel
-                if candidate.is_file():
-                    return candidate
-    return None
-
-
-def _load_frontmatter_module(target_path: Path | None = None, project_root: Path | None = None) -> ModuleType:
-    path = _find_frontmatter_path(target_path, project_root)
-    if path is None:
-        die("frontmatter.py not found; run bmad setup or pass --project-root")
-    if path in _FRONTMATTER_CACHE:
-        return _FRONTMATTER_CACHE[path]
-    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-    if spec is None or spec.loader is None:
-        die(f"could not load frontmatter helper: {path}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    _FRONTMATTER_CACHE[path] = module
-    return module
-
-
 def split_frontmatter(
     text: str,
     target_path: Path | None = None,
     project_root: Path | None = None,
 ) -> tuple[str, int]:
     """Return `(body_text, body_start_line_1based)` with leading YAML frontmatter stripped."""
+    del target_path, project_root
     normalized = text.replace("\r\n", "\n")
-    fm = _load_frontmatter_module(target_path, project_root)
     try:
-        _, body = fm.split(normalized)
+        _, body = frontmatter.split(normalized)
     except ValueError:
         return normalized, 1
     start_line = normalized[: len(normalized) - len(body)].count("\n") + 1

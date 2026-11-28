@@ -9,7 +9,6 @@ What counts as settled, which order the count follows, and the exit code for a m
 
 import importlib.util
 import json
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -17,21 +16,14 @@ from pathlib import Path
 import pytest
 
 SCRIPT = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-facilitate/scripts/progress.py"
-FRONTMATTER = SCRIPT.parents[2] / "bmad" / "scripts" / "frontmatter.py"
 _SPEC = importlib.util.spec_from_file_location("progress", SCRIPT)
 progress = importlib.util.module_from_spec(_SPEC)
 sys.modules["progress"] = progress
 _SPEC.loader.exec_module(progress)
-sys.path.insert(0, str(FRONTMATTER.parent))
-import frontmatter  # noqa: E402
-
-progress.frontmatter = frontmatter  # main() loads the project's copy; the counting tests call past it
 
 
 @pytest.fixture
 def project(tmp_path):
-    (tmp_path / "_bmad" / "scripts").mkdir(parents=True)
-    shutil.copy2(FRONTMATTER, tmp_path / "_bmad" / "scripts")
     return str(tmp_path)
 
 
@@ -176,13 +168,12 @@ def test_a_byte_order_mark_does_not_hide_the_templates_order(tmp_path, project, 
     assert json.loads(capsys.readouterr().out)["place"] == 2
 
 
-def test_a_project_without_the_shared_scripts_is_told_to_run_setup(tmp_path):
+def test_runs_without_project_root_or_shared_scripts(tmp_path):
     (tmp_path / "d.md").write_text(DOC)
     result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--project-root", str(tmp_path), str(tmp_path / "d.md")],
+        [sys.executable, str(SCRIPT), str(tmp_path / "d.md")],
         capture_output=True,
         text=True,
     )
-    missing = tmp_path / "_bmad" / "scripts" / "frontmatter.py"
-    assert result.returncode == 2
-    assert result.stderr.splitlines() == [f"error: {missing} is missing. Run bmad setup for this project."]
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout)["total"] == 4

@@ -4,8 +4,7 @@
       "id": "kestrel-manual",
       "input": "Run headless. Our agents need to work from this compressor service manual but it's too long and the headings are just numbers: kestrel-k200-manual.md. Sort it out so they can find things. I won't be around, so don't wait for me.",
       "files": [
-        "https://github.com/bmad-code-org/bmad-method-sample-data/blob/59de7a03913129cff4c6808f2445f4da00ea9b31/shardtest/kestrel-k200-manual/kestrel-k200-manual.md",
-        "_bmad/scripts/frontmatter.py"
+        "https://github.com/bmad-code-org/bmad-method-sample-data/blob/59de7a03913129cff4c6808f2445f4da00ea9b31/shardtest/kestrel-k200-manual/kestrel-k200-manual.md"
       ],
       "rubric": [
         "The deliverable rebuilds the original manual exactly, compared against the input fixture. If the manual was split, the bodies of the shards listed in .shards.json, with their frontmatter and the blank line under it removed and joined in manifest order, reproduce the original line for line, with nothing missing, added, changed, reordered or repeated. If it was not split, the original file equals the input fixture except for an added contents list. A copy under .source/ may serve as the reference after a split, but neither .source/ nor any other copy outside the deliverable counts as the deliverable. Quote the text of paragraphs 2-6a, 3-4a, 5-5 and Table C-3 as samples",
@@ -20,8 +19,7 @@
       "id": "meridian-proposal",
       "input": "Run headless. Agents keep reading our client proposal, meridian-proposal.md. Should it be sharded for them? Do whatever is right and tell me what you did; I'm not around to answer questions.",
       "files": [
-        "https://github.com/bmad-code-org/bmad-method-sample-data/blob/59de7a03913129cff4c6808f2445f4da00ea9b31/shardtest/meridian-proposal/meridian-proposal.md",
-        "_bmad/scripts/frontmatter.py"
+        "https://github.com/bmad-code-org/bmad-method-sample-data/blob/59de7a03913129cff4c6808f2445f4da00ea9b31/shardtest/meridian-proposal/meridian-proposal.md"
       ],
       "rubric": [
         "The final reply recommends against splitting the proposal into multiple files, giving its short length (about 3,000 words) or its whole-document purpose as the reason",
@@ -33,8 +31,7 @@
       "id": "tidewater-prd",
       "input": "Run headless. Our agents have to work from this huge PRD, tidewater-prd.md (about 134k words). Make it navigable for them. I'm away, so decide yourself and tell me what you did.",
       "files": [
-        "https://github.com/bmad-code-org/bmad-method-sample-data/blob/59de7a03913129cff4c6808f2445f4da00ea9b31/shardtest/tidewater-prd/tidewater-prd.md",
-        "_bmad/scripts/frontmatter.py"
+        "https://github.com/bmad-code-org/bmad-method-sample-data/blob/59de7a03913129cff4c6808f2445f4da00ea9b31/shardtest/tidewater-prd/tidewater-prd.md"
       ],
       "rubric": [
         "The deliverable rebuilds the original PRD exactly, compared against the input fixture. If the PRD was split, the bodies of the shards listed in .shards.json, with their frontmatter and the blank line under it removed and joined in manifest order, reproduce the original line for line, with nothing missing, added, changed, reordered or repeated. If it was not split, the original file equals the input fixture except for an added contents list. A copy under .source/ may serve as the reference after a split, but neither .source/ nor any other copy outside the deliverable counts as the deliverable. Quote FR-WO-015, NFR-RET-004, Appendix A and the section 5.3 plan table as samples",

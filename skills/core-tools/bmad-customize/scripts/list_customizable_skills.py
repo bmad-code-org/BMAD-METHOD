@@ -30,13 +30,15 @@ produced.
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import sys
 import tomllib
 from pathlib import Path
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import frontmatter  # noqa: E402
 
 # Top-level TOML blocks that indicate a customization surface.
 SURFACE_KEYS = ("agent", "workflow")
@@ -191,8 +193,6 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 
 def main(argv: list[str]) -> int:
-    global frontmatter
-
     args = parse_args(argv)
     project_root = Path(args.project_root).expanduser().resolve()
     if not project_root.is_dir():
@@ -201,13 +201,6 @@ def main(argv: list[str]) -> int:
             file=sys.stderr,
         )
         return 2
-    path = project_root / "_bmad" / "scripts" / "frontmatter.py"
-    if not path.is_file():
-        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
-        return 2
-    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-    frontmatter = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(frontmatter)
 
     primary = Path(args.skills_root).expanduser().resolve() if args.skills_root else default_skills_root()
     extras = [Path(p).expanduser().resolve() for p in args.extra_root]

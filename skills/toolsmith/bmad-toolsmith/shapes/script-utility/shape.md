@@ -22,5 +22,6 @@ Fill each template with `uv run "{skill-root}/scripts/process_template.py" "{ski
 - It prints one JSON object with stable keys when a model reads the result, plain text when a person does.
 - On failure it exits non-zero with a one-line reason on stderr, so the agent reports instead of guessing.
 - It makes no network calls and bakes in no model ids.
+- When the script reads or writes YAML frontmatter, copy `shapes/memory-agent/assets/frontmatter-template.py` byte for byte to `{target}/scripts/frontmatter.py` and import sibling `frontmatter`; `scan_scripts.py` recognizes exact copies automatically.
 - Judgment stays out of the script: when a result needs interpreting, `SKILL.md` says what each outcome asks the agent to do next.
 - The test uses `unittest`, runs the script as a subprocess on a fixture built in a temp directory, and covers the success path and the one-line failure.

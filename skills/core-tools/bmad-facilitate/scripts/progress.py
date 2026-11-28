@@ -24,13 +24,15 @@ project with BMad set up. Exits 2 when a file is missing.
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import re
 import sys
 from pathlib import Path
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import frontmatter  # noqa: E402
 
 SECTION = re.compile(r"^##[ \t]+(.+?)[ \t#]*$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
@@ -135,20 +137,11 @@ def progress(document: str, template: str = "", doc_path: Path | None = None) ->
 
 
 def main(argv: list[str] | None = None) -> int:
-    global frontmatter
-
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
+    p.add_argument("--project-root", type=Path, default=None, help="optional project folder; kept for compatibility")
     p.add_argument("document", help="path to the facilitated document")
     p.add_argument("template", nargs="?", help="the merged template")
     args = p.parse_args(argv)
-    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
-    if not path.is_file():
-        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
-        return 2
-    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-    frontmatter = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(frontmatter)
 
     paths = [Path(a) for a in (args.document, args.template) if a]
     missing = [str(p) for p in paths if not p.is_file()]

@@ -78,7 +78,6 @@ from __future__ import annotations
 
 import argparse
 import codecs
-import importlib.util
 import json
 import os
 import sys
@@ -86,6 +85,9 @@ from datetime import datetime
 from pathlib import Path
 
 sys.dont_write_bytecode = True  # Keep cache files out of the installed scripts tree.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import frontmatter  # noqa: E402
 
 MEMLOG = ".memlog.md"
 
@@ -265,10 +267,8 @@ def add_target(sp) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    global frontmatter
-
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--project-root", type=Path, required=True, help="project folder with _bmad/scripts")
+    p.add_argument("--project-root", type=Path, default=None, help="optional project folder; kept for compatibility")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     pi = sub.add_parser("init", help="create the memlog")
@@ -290,13 +290,6 @@ def main(argv: list[str] | None = None) -> int:
     pset.set_defaults(func=cmd_set)
 
     args = p.parse_args(argv)
-    path = args.project_root / "_bmad" / "scripts" / "frontmatter.py"
-    if not path.is_file():
-        print(f"error: {path} is missing. Run bmad setup for this project.", file=sys.stderr)
-        return 2
-    spec = importlib.util.spec_from_file_location("bmad_frontmatter", path)
-    frontmatter = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(frontmatter)
 
     try:
         return args.func(args)

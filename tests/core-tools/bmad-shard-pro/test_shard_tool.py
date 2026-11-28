@@ -6,31 +6,23 @@
 
 import io
 import json
-import shutil
 import sys
-import tempfile
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 import pytest
 
-SKILLS = Path(__file__).resolve().parents[3] / "skills/core-tools"
-sys.path.insert(0, str(SKILLS / "bmad-shard-pro/scripts"))
-sys.path.insert(0, str(SKILLS / "bmad/scripts"))
+SCRIPTS = Path(__file__).resolve().parents[3] / "skills/core-tools/bmad-shard-pro/scripts"
+sys.path.insert(0, str(SCRIPTS))
 
 import frontmatter  # noqa: E402
 import shard_tool  # noqa: E402
-
-shard_tool.frontmatter = frontmatter  # main() loads the project's copy; the unit tests call past it
-PROJECT = tempfile.TemporaryDirectory()
-(Path(PROJECT.name) / "_bmad" / "scripts").mkdir(parents=True)
-shutil.copy2(SKILLS / "bmad/scripts/frontmatter.py", Path(PROJECT.name) / "_bmad" / "scripts")
 
 
 def run(*argv: str) -> tuple[int, dict]:
     out = io.StringIO()
     with redirect_stdout(out), redirect_stderr(io.StringIO()):
-        code = shard_tool.main(["--project-root", PROJECT.name, *argv])
+        code = shard_tool.main([*argv])
     return code, json.loads(out.getvalue())
 
 

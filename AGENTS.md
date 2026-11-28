@@ -31,7 +31,7 @@ Open source framework for structured, agent-assisted software delivery. Skills l
 - Leave runtime choices as prose: when the model decides a value while running, the alternatives stay in the text. Render-time conditionals are only for values fixed before the render.
 - Prefer deleting an instruction to hedging it.
 - Automated tests assert outcomes produced by deterministic code. Do not write automated tests for LLM output or for static source text.
-- Read and write frontmatter in scripts through `skills/core-tools/bmad/scripts/frontmatter.py`. Do not write YAML parsers by hand.
+- Read and write frontmatter in scripts through `frontmatter.py` (`skills/core-tools/bmad/scripts/frontmatter.py`, vendored byte-for-byte into a skill's `scripts/frontmatter.py` via `shapes/memory-agent/assets/frontmatter-template.py`). Do not write YAML parsers by hand.
 
 <!-- /bmad:context -->
 

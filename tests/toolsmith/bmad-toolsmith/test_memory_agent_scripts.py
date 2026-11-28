@@ -28,6 +28,7 @@ def make_skill(root: Path) -> tuple[Path, Path]:
     (skill / "references").mkdir()
     shutil.copy(ASSETS / "wake-template.py", skill / "scripts" / "wake.py")
     shutil.copy(ASSETS / "init-sanctum-template.py", skill / "scripts" / "init-sanctum.py")
+    shutil.copy(ASSETS / "frontmatter-template.py", skill / "scripts" / "frontmatter.py")
     for name in TEMPLATES:
         shutil.copy(ASSETS / name, skill / "assets" / name)
     (skill / "references" / "first-breath.md").write_text("birth\n", encoding="utf-8")
@@ -39,7 +40,7 @@ def make_skill(root: Path) -> tuple[Path, Path]:
     (skill / "customize.toml").write_text(customize.replace('name = "{name}"', 'name = ""'), encoding="utf-8")
     (project / "_bmad" / "custom").mkdir(parents=True)
     (project / "_bmad" / "scripts").mkdir()
-    for name in ("resolve_customization.py", "config_utils.py", "frontmatter.py"):
+    for name in ("resolve_customization.py", "config_utils.py"):
         shutil.copy(RESOLVER_SCRIPTS / name, project / "_bmad" / "scripts" / name)
     return project, skill
 
