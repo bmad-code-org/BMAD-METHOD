@@ -676,6 +676,16 @@ class TestCliAndOutput(ProjectCase):
         self.assertEqual(code, 0)
         self.assertIn("Skills scanned: 1", out)
 
+    def test_a_skill_md_saved_with_a_byte_order_mark_is_accepted(self):
+        outside = Path(self._tmp.name) / "bom-skill" / "bmad-bom"
+        outside.mkdir(parents=True)
+        (outside / "SKILL.md").write_bytes(
+            b"\xef\xbb\xbf" + skill_md("bmad-bom", "Handles BOM files. Use when testing BOM input.").encode("utf-8")
+        )
+
+        code, out, _ = self.run_validator(skill_dir=outside, strict=True)
+        self.assertEqual(code, 0, out)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -8,7 +8,8 @@ _FENCE = re.compile(r"^---[ \t]*(?:\r?\n|\Z)", re.MULTILINE)
 
 
 def split(text: str) -> tuple[str, str]:
-    """Return the YAML text and body as written. Both fences must start a line."""
+    """Return the YAML text and body as written, a leading byte-order mark dropped. Both fences must start a line."""
+    text = text.removeprefix("\ufeff")
     opening = _FENCE.match(text)
     if opening is None:
         raise ValueError("document has no frontmatter")

@@ -134,7 +134,7 @@ def stale_config_keys(project_root: Path) -> list[tuple[str, tuple[str, ...]]]:
         if path.is_symlink() or not path.is_file() or not inside_bmad(path, project_root):
             continue
         try:
-            data = tomllib.loads(path.read_text(encoding="utf-8"))
+            data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
         except (OSError, UnicodeError, tomllib.TOMLDecodeError):
             continue
         stale += [(relative, key) for key in V6_KEYS if lookup(data, key) is not _MISSING]
@@ -155,7 +155,7 @@ def stale_custom_keys(project_root: Path, retirement: Retirement) -> list[tuple[
             if path.is_symlink() or not path.is_file() or not inside_bmad(path, project_root):
                 continue
             try:
-                data = tomllib.loads(path.read_text(encoding="utf-8"))
+                data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
             except (OSError, UnicodeError, tomllib.TOMLDecodeError):
                 continue
             stale += [
@@ -233,7 +233,7 @@ def clean(project_root: Path, skill_root: Path, *, roots: tuple[Path, ...] = ())
     removed = [(file, key) for file, key in stale if (file, key) not in moved]
     edits = {
         relative: text_without_keys(
-            (project_root / relative).read_text(encoding="utf-8"),
+            (project_root / relative).read_text(encoding="utf-8-sig"),
             [key for file, key in removed if file == relative],
             [key for file, key in moved if file == relative],
         )
@@ -536,7 +536,7 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
         text = story_text(spec, home, slug, requirements, references, sources, companions)
     else:
         text = folded_ticket_text(
-            writes[ticket] if ticket in writes else ticket.read_text(encoding="utf-8"),
+            writes[ticket] if ticket in writes else ticket.read_text(encoding="utf-8-sig"),
             ticket,
             spec,
             requirements,
@@ -636,7 +636,7 @@ def rebase_links(text: str, file: Path, folder: Path, home: Path, ticket: Path) 
 
 def read_for_fold(path: Path, project_root: Path) -> str:
     try:
-        return path.read_text(encoding="utf-8")
+        return path.read_text(encoding="utf-8-sig")
     except (OSError, UnicodeError) as error:
         raise FoldProblem(f"{relative(path, project_root)} cannot be read: {error}") from error
 
@@ -698,7 +698,7 @@ def has_own_spec(child: Path) -> bool:
         return False
     if any(SPEC_FOLDER.match(p.name) and (p / f"{p.name}.md").is_file() for p in child.iterdir() if p.is_dir()):
         return True
-    requirements = section_body(ticket.read_text(encoding="utf-8"), "Requirements")
+    requirements = section_body(ticket.read_text(encoding="utf-8-sig"), "Requirements")
     return any(CAP_ID.search(span.group(1)) for span in R_SOURCE.finditer(requirements))
 
 
@@ -879,7 +879,7 @@ def story_text(
     used = []
     for path in sorted(home.glob("*.md")):
         try:
-            ticket_id = frontmatter.load(frontmatter.split(path.read_text(encoding="utf-8"))[0]).get("id")
+            ticket_id = frontmatter.load(frontmatter.split(path.read_text(encoding="utf-8-sig"))[0]).get("id")
         except ValueError:
             continue
         if isinstance(ticket_id, str) and ticket_id.isdigit():
@@ -889,7 +889,7 @@ def story_text(
     breakdown = home / "tickets.toml"
     if breakdown.is_file():
         try:
-            floor = tomllib.loads(breakdown.read_text(encoding="utf-8")).get("next_id", 0)
+            floor = tomllib.loads(breakdown.read_text(encoding="utf-8-sig")).get("next_id", 0)
         except (OSError, UnicodeError, tomllib.TOMLDecodeError):
             floor = 0
         if isinstance(floor, bool) or not isinstance(floor, int):
@@ -983,7 +983,7 @@ def rebase(item: str, folder: Path, home: Path, project_root: Path, store: Path)
 
 
 def memlog_body(path: Path) -> str:
-    _meta, body = split_frontmatter(path.read_text(encoding="utf-8"))
+    _meta, body = split_frontmatter(path.read_text(encoding="utf-8-sig"))
     body = body.strip("\n")
     return body + "\n" if body else ""
 

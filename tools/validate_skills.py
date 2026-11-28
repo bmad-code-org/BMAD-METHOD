@@ -167,7 +167,7 @@ def skill_frontmatter(content: str) -> tuple[dict | None, tuple[str, int | None]
 
 def safe_read_file(file_path: str, findings: list[dict], rel_file: str | None) -> str | None:
     try:
-        with open(file_path, encoding="utf-8", errors="replace", newline="") as f:
+        with open(file_path, encoding="utf-8-sig", errors="replace", newline="") as f:
             return f.read()
     except OSError as error:
         findings.append(

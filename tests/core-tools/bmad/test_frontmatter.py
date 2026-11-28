@@ -121,3 +121,7 @@ def test_quoted_text_is_written_in_double_quotes():
         '---\ntitle: "Login: the \\"magic\\" link"\nafter: [1, x]\n---\n'
     )
     assert frontmatter.set_fields("", {"a": "1"}) == "a: '1'\n"
+
+
+def test_split_accepts_a_leading_byte_order_mark():
+    assert frontmatter.split("\ufeff---\ntopic: BOM\n---\nBody\n") == ("topic: BOM\n", "Body\n")
