@@ -100,7 +100,11 @@ def resolve(args) -> Path:
 
 
 def detect_eol(raw: bytes) -> str:
-    return "\r\n" if b"\r\n" in raw else "\n"
+    if b"\r\n" in raw:
+        return "\r\n"
+    if b"\r" in raw and b"\n" not in raw:
+        return "\r"
+    return "\n"
 
 
 def write_log(path: Path, meta: dict, body: str, *, eol: str = "\n", bom: bool = False) -> None:

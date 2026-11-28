@@ -475,6 +475,8 @@ def test_append_and_set_handle_cr_only_line_endings(ws):
     path = Path(ws) / MEMLOG
     path.write_bytes(path.read_bytes().replace(b"\n", b"\r"))
     append(ws, "cr entry", entry_type="note")
+    assert b"\n" not in path.read_bytes()
     assert run(ws, "set", "--workspace", ws, "--key", "mode", "--value", "cr") == 0
+    assert b"\n" not in path.read_bytes()
     assert read_log(read(ws))[0]["mode"] == "cr"
     assert entries(ws) == ["- (note) cr entry"]

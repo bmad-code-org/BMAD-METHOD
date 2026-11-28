@@ -468,6 +468,9 @@ def fold_specs(project_root: Path, store: Path) -> dict[str, object]:
     if not store.is_dir():
         raise Exception(f"{store} is not a folder")
     report: dict[str, object] = {"mode": "fold-specs", "folded": [], "problems": []}
+    for stranded in stranded_folds(store):
+        rel = relative(stranded, project_root)
+        report["problems"].append({"spec": rel, "problem": f"leftover staging folder from an interrupted fold: {rel}"})
     for folder in spec_folders(store):
         try:
             report["folded"].append(fold_spec(project_root, store, folder))
@@ -482,6 +485,16 @@ class FoldProblem(Exception):
 
 def is_spec_folder(path: Path) -> bool:
     return bool(SPEC_FOLDER.match(path.name)) and (path / f"{path.name}.md").is_file()
+
+
+def stranded_folds(store: Path) -> list[Path]:
+    found: list[Path] = []
+    for current, dirs, _files in os.walk(store):
+        for name in sorted(dirs):
+            if name.startswith(".folding-"):
+                found.append(Path(current) / name)
+        dirs[:] = sorted(d for d in dirs if not d.startswith(".") and d not in UNTOUCHED_FOLDERS)
+    return sorted(found, key=lambda path: (len(path.parts), path.as_posix()))
 
 
 def spec_folders(store: Path) -> list[Path]:
@@ -649,12 +662,16 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
     except OSError as error:
         raise FoldProblem(f"cannot move {folder.name} (a file in it may be open): {error}") from error
     memlog = home / MEMLOG
+    written = False
     try:
         for path, changed in writes.items():
             at_stage = staged / path.relative_to(folder) if path.is_relative_to(folder) else path
             write_force(at_stage, changed, ensure_newline=False)
+            if not path.is_relative_to(folder):
+                written = True
         home.mkdir(parents=True, exist_ok=True)
         write_force(ticket, text)
+        written = True
 
         spec_memlog = staged / MEMLOG
         if spec_memlog.is_file():
@@ -678,11 +695,23 @@ def fold_spec(project_root: Path, store: Path, folder: Path) -> dict[str, object
             os.rename(staged / path.name, home / path.name)
         # What is left (the spec, its memlog, .tmp and hidden files) goes, read-only files included.
         rmtree_force(staged)
-    except BaseException:
-        # A fold stopped part way leaves the folder under its own name, where the next run and the user see it.
-        if staged.exists() and not folder.exists():
-            with contextlib.suppress(OSError):
+    except BaseException as error:
+        if not written and staged.exists() and not folder.exists():
+            try:
                 os.rename(staged, folder)
+            except OSError as restore_error:
+                raise OSError(
+                    f"fold failed and could not restore {relative(staged, project_root)} to {folder.name}: "
+                    f"{restore_error}"
+                ) from error
+            raise
+        if written and staged.exists():
+            with contextlib.suppress(OSError):
+                unlink_force(staged / f"{folder.name}.md")
+            raise OSError(
+                f"fold failed after writing {relative(ticket, project_root)}; "
+                f"leftovers remain in {relative(staged, project_root)}: {error}"
+            ) from error
         raise
     return {
         "spec": relative(folder, project_root),
